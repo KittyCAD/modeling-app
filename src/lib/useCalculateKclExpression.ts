@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useKclContext } from '@src/lang/KclProvider'
@@ -11,6 +11,7 @@ import { parse, resultIsOk } from '@src/lang/wasm'
 import { getCalculatedKclExpressionValue } from '@src/lib/kclHelpers'
 import { kclManager } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
+import { getInVariableCase } from '@src/lib/utils'
 
 const isValidVariableName = (name: string) =>
   /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(name)
@@ -80,8 +81,16 @@ export function useCalculateKclExpression({
   const initialCalcResult: number | string =
     Number.isNaN(Number(value)) || !isValueParsable ? 'NAN' : value
   const [calcResult, setCalcResult] = useState(initialCalcResult)
-  const [newVariableName, setNewVariableName] = useState('')
+  const [newVariableName, _setNewVariableName] = useState('')
   const [isNewVariableNameUnique, setIsNewVariableNameUnique] = useState(true)
+
+  const setNewVariableName = useCallback(
+    (value: string) => {
+      const camelCaseValue = value ? getInVariableCase(value) : ''
+      _setNewVariableName(camelCaseValue || '')
+    },
+    [_setNewVariableName]
+  )
 
   useEffect(() => {
     setTimeout(() => {

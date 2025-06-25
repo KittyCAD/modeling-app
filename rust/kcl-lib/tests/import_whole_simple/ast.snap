@@ -1,6 +1,6 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
-description: Result of parsing import_whole.kcl
+description: Result of parsing import_whole_simple.kcl
 ---
 {
   "Ok": {
@@ -8,6 +8,7 @@ description: Result of parsing import_whole.kcl
       {
         "commentStart": 0,
         "end": 0,
+        "moduleId": 0,
         "path": {
           "type": "Kcl",
           "filename": "exported_mod.kcl"
@@ -17,6 +18,7 @@ description: Result of parsing import_whole.kcl
           "alias": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "foo",
             "start": 0,
             "type": "Identifier"
@@ -34,6 +36,7 @@ description: Result of parsing import_whole.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "bar",
             "start": 0,
             "type": "Identifier"
@@ -44,9 +47,11 @@ description: Result of parsing import_whole.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "foo",
                   "start": 0,
                   "type": "Identifier"
@@ -63,6 +68,7 @@ description: Result of parsing import_whole.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "z",
                       "start": 0,
                       "type": "Identifier"
@@ -70,6 +76,7 @@ description: Result of parsing import_whole.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "1",
                       "start": 0,
                       "type": "Literal",
@@ -85,9 +92,11 @@ description: Result of parsing import_whole.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "translate",
                     "start": 0,
                     "type": "Identifier"
@@ -98,6 +107,7 @@ description: Result of parsing import_whole.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -106,15 +116,18 @@ description: Result of parsing import_whole.kcl
             ],
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -126,9 +139,11 @@ description: Result of parsing import_whole.kcl
       {
         "commentStart": 0,
         "end": 0,
+        "moduleId": 0,
         "name": {
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "name": "settings",
           "start": 0,
           "type": "Identifier"
@@ -140,19 +155,23 @@ description: Result of parsing import_whole.kcl
             "key": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "defaultLengthUnit",
               "start": 0,
               "type": "Identifier"
             },
+            "moduleId": 0,
             "start": 0,
             "type": "ObjectProperty",
             "value": {
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "mm",
                 "start": 0,
                 "type": "Identifier"
@@ -168,12 +187,14 @@ description: Result of parsing import_whole.kcl
         "type": "Annotation"
       }
     ],
+    "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {
@@ -186,6 +207,7 @@ description: Result of parsing import_whole.kcl
         {
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "NonCodeNode",
           "value": {

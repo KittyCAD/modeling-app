@@ -1,6 +1,7 @@
 import path from 'path'
 import { bracket } from '@e2e/playwright/fixtures/bracket'
 import type { Page } from '@playwright/test'
+import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
 import { reportRejection } from '@src/lib/trap'
 import * as fsp from 'fs/promises'
 
@@ -421,10 +422,7 @@ extrude002 = extrude(profile002, length = 150)
       await page.keyboard.press('Enter')
 
       // Click the checkbox
-      const submitButton = page.getByText('Confirm Export')
-      await expect(submitButton).toBeVisible()
-
-      await page.keyboard.press('Enter')
+      await cmdBar.submit()
 
       // Find the toast.
       // Look out for the toast message
@@ -461,8 +459,7 @@ extrude002 = extrude(profile002, length = 150)
       await page.keyboard.press('Enter')
 
       // Click the checkbox
-      await expect(submitButton).toBeVisible()
-      await page.keyboard.press('Enter')
+      await cmdBar.submit()
 
       // Find the toast.
       // Look out for the toast message
@@ -482,6 +479,7 @@ extrude002 = extrude(profile002, length = 150)
   test('ensure you CAN export while an export is already going', async ({
     page,
     homePage,
+    cmdBar,
   }) => {
     const u = await getUtils(page)
     await test.step('Set up the code and durations', async () => {
@@ -516,11 +514,11 @@ extrude002 = extrude(profile002, length = 150)
     const successToastMessage = page.getByText(`Exported successfully`)
 
     await test.step('second export', async () => {
-      await clickExportButton(page)
+      await clickExportButton(page, cmdBar)
 
       await expect(exportingToastMessage).toBeVisible()
 
-      await clickExportButton(page)
+      await clickExportButton(page, cmdBar)
 
       await test.step('The first export still succeeds', async () => {
         await Promise.all([
@@ -537,7 +535,7 @@ extrude002 = extrude(profile002, length = 150)
 
     await test.step('Successful, unblocked export', async () => {
       // Try exporting again.
-      await clickExportButton(page)
+      await clickExportButton(page, cmdBar)
 
       // Find the toast.
       // Look out for the toast message
@@ -880,7 +878,7 @@ s2 = startSketchOn(XY)
   })
 })
 
-async function clickExportButton(page: Page) {
+async function clickExportButton(page: Page, cmdBar: CmdBarFixture) {
   await test.step('Running export flow', async () => {
     // export the model
     const exportButton = page.getByTestId('export-pane-button')
@@ -896,9 +894,6 @@ async function clickExportButton(page: Page) {
     await page.keyboard.press('Enter')
 
     // Click the checkbox
-    const submitButton = page.getByText('Confirm Export')
-    await expect(submitButton).toBeVisible()
-
-    await page.keyboard.press('Enter')
+    await cmdBar.submit()
   })
 }

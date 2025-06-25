@@ -24,7 +24,7 @@ import type {
   Program,
   SourceRange,
 } from '@src/lang/wasm'
-import { defaultSourceRange } from '@src/lang/wasm'
+import { defaultSourceRange } from '@src/lang/sourceRange'
 import type { ArtifactEntry, ArtifactIndex } from '@src/lib/artifactIndex'
 import type { CommandArgument } from '@src/lib/commandTypes'
 import type { DefaultPlaneStr } from '@src/lib/planes'

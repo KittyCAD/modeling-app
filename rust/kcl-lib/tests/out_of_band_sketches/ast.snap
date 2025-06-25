@@ -13,18 +13,22 @@ description: Result of parsing out_of_band_sketches.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "sketch001",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "arguments": [],
             "callee": {
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "startSketchOn",
                 "start": 0,
                 "type": "Identifier"
@@ -35,6 +39,7 @@ description: Result of parsing out_of_band_sketches.kcl
             },
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
@@ -42,9 +47,11 @@ description: Result of parsing out_of_band_sketches.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "XZ",
                 "start": 0,
                 "type": "Identifier"
@@ -55,11 +62,13 @@ description: Result of parsing out_of_band_sketches.kcl
               "type": "Name"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -72,6 +81,7 @@ description: Result of parsing out_of_band_sketches.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "profile001",
             "start": 0,
             "type": "Identifier"
@@ -85,6 +95,7 @@ description: Result of parsing out_of_band_sketches.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "at",
                       "start": 0,
                       "type": "Identifier"
@@ -95,6 +106,7 @@ description: Result of parsing out_of_band_sketches.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "27.67",
                           "start": 0,
                           "type": "Literal",
@@ -107,6 +119,7 @@ description: Result of parsing out_of_band_sketches.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "239.34",
                           "start": 0,
                           "type": "Literal",
@@ -118,6 +131,7 @@ description: Result of parsing out_of_band_sketches.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -128,9 +142,11 @@ description: Result of parsing out_of_band_sketches.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "startProfile",
                     "start": 0,
                     "type": "Identifier"
@@ -141,6 +157,7 @@ description: Result of parsing out_of_band_sketches.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -148,9 +165,11 @@ description: Result of parsing out_of_band_sketches.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "sketch001",
                     "start": 0,
                     "type": "Identifier"
@@ -168,6 +187,7 @@ description: Result of parsing out_of_band_sketches.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
@@ -178,6 +198,7 @@ description: Result of parsing out_of_band_sketches.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "414.61",
                           "start": 0,
                           "type": "Literal",
@@ -190,6 +211,7 @@ description: Result of parsing out_of_band_sketches.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "0",
                           "start": 0,
                           "type": "Literal",
@@ -201,6 +223,7 @@ description: Result of parsing out_of_band_sketches.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -211,9 +234,11 @@ description: Result of parsing out_of_band_sketches.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "line",
                     "start": 0,
                     "type": "Identifier"
@@ -224,6 +249,7 @@ description: Result of parsing out_of_band_sketches.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -236,6 +262,7 @@ description: Result of parsing out_of_band_sketches.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
@@ -246,6 +273,7 @@ description: Result of parsing out_of_band_sketches.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "33.98",
                           "start": 0,
                           "type": "Literal",
@@ -259,6 +287,7 @@ description: Result of parsing out_of_band_sketches.kcl
                           "argument": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "raw": "389.36",
                             "start": 0,
                             "type": "Literal",
@@ -270,6 +299,7 @@ description: Result of parsing out_of_band_sketches.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "operator": "-",
                           "start": 0,
                           "type": "UnaryExpression",
@@ -277,6 +307,7 @@ description: Result of parsing out_of_band_sketches.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -287,9 +318,11 @@ description: Result of parsing out_of_band_sketches.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "line",
                     "start": 0,
                     "type": "Identifier"
@@ -300,6 +333,7 @@ description: Result of parsing out_of_band_sketches.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -308,12 +342,14 @@ description: Result of parsing out_of_band_sketches.kcl
             ],
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "0": [
                   {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "start": 0,
                     "type": "NonCodeNode",
                     "value": {
@@ -327,6 +363,7 @@ description: Result of parsing out_of_band_sketches.kcl
                   {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "start": 0,
                     "type": "NonCodeNode",
                     "value": {
@@ -340,6 +377,7 @@ description: Result of parsing out_of_band_sketches.kcl
                   {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "start": 0,
                     "type": "NonCodeNode",
                     "value": {
@@ -356,11 +394,13 @@ description: Result of parsing out_of_band_sketches.kcl
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -373,18 +413,22 @@ description: Result of parsing out_of_band_sketches.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "sketch002",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "arguments": [],
             "callee": {
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "startSketchOn",
                 "start": 0,
                 "type": "Identifier"
@@ -395,6 +439,7 @@ description: Result of parsing out_of_band_sketches.kcl
             },
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
@@ -402,9 +447,11 @@ description: Result of parsing out_of_band_sketches.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "XY",
                 "start": 0,
                 "type": "Identifier"
@@ -415,11 +462,13 @@ description: Result of parsing out_of_band_sketches.kcl
               "type": "Name"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -432,6 +481,7 @@ description: Result of parsing out_of_band_sketches.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "profile002",
             "start": 0,
             "type": "Identifier"
@@ -445,6 +495,7 @@ description: Result of parsing out_of_band_sketches.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "at",
                       "start": 0,
                       "type": "Identifier"
@@ -455,6 +506,7 @@ description: Result of parsing out_of_band_sketches.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "67.04",
                           "start": 0,
                           "type": "Literal",
@@ -468,6 +520,7 @@ description: Result of parsing out_of_band_sketches.kcl
                           "argument": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "raw": "63.5",
                             "start": 0,
                             "type": "Literal",
@@ -479,6 +532,7 @@ description: Result of parsing out_of_band_sketches.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "operator": "-",
                           "start": 0,
                           "type": "UnaryExpression",
@@ -486,6 +540,7 @@ description: Result of parsing out_of_band_sketches.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -496,9 +551,11 @@ description: Result of parsing out_of_band_sketches.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "startProfile",
                     "start": 0,
                     "type": "Identifier"
@@ -509,6 +566,7 @@ description: Result of parsing out_of_band_sketches.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -516,9 +574,11 @@ description: Result of parsing out_of_band_sketches.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "sketch002",
                     "start": 0,
                     "type": "Identifier"
@@ -536,6 +596,7 @@ description: Result of parsing out_of_band_sketches.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
@@ -546,6 +607,7 @@ description: Result of parsing out_of_band_sketches.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "282.37",
                           "start": 0,
                           "type": "Literal",
@@ -558,6 +620,7 @@ description: Result of parsing out_of_band_sketches.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "0",
                           "start": 0,
                           "type": "Literal",
@@ -569,6 +632,7 @@ description: Result of parsing out_of_band_sketches.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -579,9 +643,11 @@ description: Result of parsing out_of_band_sketches.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "line",
                     "start": 0,
                     "type": "Identifier"
@@ -592,6 +658,7 @@ description: Result of parsing out_of_band_sketches.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -604,6 +671,7 @@ description: Result of parsing out_of_band_sketches.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
@@ -615,6 +683,7 @@ description: Result of parsing out_of_band_sketches.kcl
                           "argument": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "raw": "12.77",
                             "start": 0,
                             "type": "Literal",
@@ -626,6 +695,7 @@ description: Result of parsing out_of_band_sketches.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "operator": "-",
                           "start": 0,
                           "type": "UnaryExpression",
@@ -635,6 +705,7 @@ description: Result of parsing out_of_band_sketches.kcl
                           "argument": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "raw": "178.07",
                             "start": 0,
                             "type": "Literal",
@@ -646,6 +717,7 @@ description: Result of parsing out_of_band_sketches.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "operator": "-",
                           "start": 0,
                           "type": "UnaryExpression",
@@ -653,6 +725,7 @@ description: Result of parsing out_of_band_sketches.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -663,9 +736,11 @@ description: Result of parsing out_of_band_sketches.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "line",
                     "start": 0,
                     "type": "Identifier"
@@ -676,6 +751,7 @@ description: Result of parsing out_of_band_sketches.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -684,12 +760,14 @@ description: Result of parsing out_of_band_sketches.kcl
             ],
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "0": [
                   {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "start": 0,
                     "type": "NonCodeNode",
                     "value": {
@@ -703,6 +781,7 @@ description: Result of parsing out_of_band_sketches.kcl
                   {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "start": 0,
                     "type": "NonCodeNode",
                     "value": {
@@ -716,6 +795,7 @@ description: Result of parsing out_of_band_sketches.kcl
                   {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "start": 0,
                     "type": "NonCodeNode",
                     "value": {
@@ -732,11 +812,13 @@ description: Result of parsing out_of_band_sketches.kcl
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -749,6 +831,7 @@ description: Result of parsing out_of_band_sketches.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "profile001extended",
             "start": 0,
             "type": "Identifier"
@@ -759,9 +842,11 @@ description: Result of parsing out_of_band_sketches.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "profile001",
                   "start": 0,
                   "type": "Identifier"
@@ -778,6 +863,7 @@ description: Result of parsing out_of_band_sketches.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
@@ -789,6 +875,7 @@ description: Result of parsing out_of_band_sketches.kcl
                           "argument": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "raw": "455.38",
                             "start": 0,
                             "type": "Literal",
@@ -800,6 +887,7 @@ description: Result of parsing out_of_band_sketches.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "operator": "-",
                           "start": 0,
                           "type": "UnaryExpression",
@@ -808,6 +896,7 @@ description: Result of parsing out_of_band_sketches.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "0",
                           "start": 0,
                           "type": "Literal",
@@ -819,6 +908,7 @@ description: Result of parsing out_of_band_sketches.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -829,9 +919,11 @@ description: Result of parsing out_of_band_sketches.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "line",
                     "start": 0,
                     "type": "Identifier"
@@ -842,19 +934,23 @@ description: Result of parsing out_of_band_sketches.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               },
               {
+                "arguments": [],
                 "callee": {
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "close",
                     "start": 0,
                     "type": "Identifier"
@@ -865,6 +961,7 @@ description: Result of parsing out_of_band_sketches.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -873,12 +970,14 @@ description: Result of parsing out_of_band_sketches.kcl
             ],
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "1": [
                   {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "start": 0,
                     "type": "NonCodeNode",
                     "value": {
@@ -892,6 +991,7 @@ description: Result of parsing out_of_band_sketches.kcl
                   {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "start": 0,
                     "type": "NonCodeNode",
                     "value": {
@@ -908,11 +1008,13 @@ description: Result of parsing out_of_band_sketches.kcl
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -925,6 +1027,7 @@ description: Result of parsing out_of_band_sketches.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "profile002extended",
             "start": 0,
             "type": "Identifier"
@@ -935,9 +1038,11 @@ description: Result of parsing out_of_band_sketches.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "profile002",
                   "start": 0,
                   "type": "Identifier"
@@ -954,6 +1059,7 @@ description: Result of parsing out_of_band_sketches.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
@@ -965,6 +1071,7 @@ description: Result of parsing out_of_band_sketches.kcl
                           "argument": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "raw": "299.39",
                             "start": 0,
                             "type": "Literal",
@@ -976,6 +1083,7 @@ description: Result of parsing out_of_band_sketches.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "operator": "-",
                           "start": 0,
                           "type": "UnaryExpression",
@@ -984,6 +1092,7 @@ description: Result of parsing out_of_band_sketches.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "21.28",
                           "start": 0,
                           "type": "Literal",
@@ -995,6 +1104,7 @@ description: Result of parsing out_of_band_sketches.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -1005,9 +1115,11 @@ description: Result of parsing out_of_band_sketches.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "line",
                     "start": 0,
                     "type": "Identifier"
@@ -1018,19 +1130,23 @@ description: Result of parsing out_of_band_sketches.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               },
               {
+                "arguments": [],
                 "callee": {
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "close",
                     "start": 0,
                     "type": "Identifier"
@@ -1041,6 +1157,7 @@ description: Result of parsing out_of_band_sketches.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -1049,12 +1166,14 @@ description: Result of parsing out_of_band_sketches.kcl
             ],
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "1": [
                   {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "start": 0,
                     "type": "NonCodeNode",
                     "value": {
@@ -1068,6 +1187,7 @@ description: Result of parsing out_of_band_sketches.kcl
                   {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "start": 0,
                     "type": "NonCodeNode",
                     "value": {
@@ -1084,11 +1204,13 @@ description: Result of parsing out_of_band_sketches.kcl
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -1103,6 +1225,7 @@ description: Result of parsing out_of_band_sketches.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "length",
                 "start": 0,
                 "type": "Identifier"
@@ -1110,6 +1233,7 @@ description: Result of parsing out_of_band_sketches.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "10.14",
                 "start": 0,
                 "type": "Literal",
@@ -1125,9 +1249,11 @@ description: Result of parsing out_of_band_sketches.kcl
             "abs_path": false,
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "extrude",
               "start": 0,
               "type": "Identifier"
@@ -1138,6 +1264,7 @@ description: Result of parsing out_of_band_sketches.kcl
           },
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
@@ -1148,9 +1275,11 @@ description: Result of parsing out_of_band_sketches.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "profile001extended",
                   "start": 0,
                   "type": "Identifier"
@@ -1164,9 +1293,11 @@ description: Result of parsing out_of_band_sketches.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "profile002extended",
                   "start": 0,
                   "type": "Identifier"
@@ -1178,11 +1309,13 @@ description: Result of parsing out_of_band_sketches.kcl
               }
             ],
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "ArrayExpression",
             "type": "ArrayExpression"
           }
         },
+        "moduleId": 0,
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -1190,12 +1323,14 @@ description: Result of parsing out_of_band_sketches.kcl
     ],
     "commentStart": 0,
     "end": 0,
+    "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "1": [
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {
@@ -1207,6 +1342,7 @@ description: Result of parsing out_of_band_sketches.kcl
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {
@@ -1218,6 +1354,7 @@ description: Result of parsing out_of_band_sketches.kcl
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {
@@ -1229,6 +1366,7 @@ description: Result of parsing out_of_band_sketches.kcl
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {
@@ -1240,6 +1378,7 @@ description: Result of parsing out_of_band_sketches.kcl
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {

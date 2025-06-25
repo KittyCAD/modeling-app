@@ -643,7 +643,7 @@ export fn revolve(
   axis: Axis2d | Edge,
   /// Angle to revolve (in degrees). Default is 360.
   angle?: number(Angle),
-  /// Tolerance for the revolve operation.
+  /// Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters.
   tolerance?: number(Length),
   /// If true, the extrusion will happen symmetrically around the sketch. Otherwise, the extrusion will happen on only one side of the sketch.
   symmetric?: bool,
@@ -982,7 +982,7 @@ export fn sweep(
   path: Sketch | Helix,
   /// If true, the sweep will be broken up into sub-sweeps (extrusions, revolves, sweeps) based on the trajectory path components.
   sectional?: bool,
-  /// Tolerance for this operation.
+  /// Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters.
   tolerance?: number(Length),
   /// What is the sweep relative to? Can be either 'sketchPlane' or 'trajectoryCurve'.
   relativeTo?: string = 'trajectoryCurve',
@@ -1068,7 +1068,7 @@ export fn loft(
   bezApproximateRational?: bool = false,
   /// This can be set to override the automatically determined topological base curve, which is usually the first section encountered.
   baseCurveIndex?: number(Count),
-  /// Tolerance for the loft operation.
+  /// Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters.
   tolerance?: number(Length),
   /// A named tag for the face at the start of the loft, i.e. the original sketch.
   tagStart?: TagDecl,
@@ -1520,12 +1520,20 @@ export fn profileStartY(
 export fn involuteCircular(
   /// Which sketch should this path be added to?
   @sketch: Sketch,
-  /// The involute is described between two circles, start_radius is the radius of the inner circle.
-  startRadius: number(Length),
-  /// The involute is described between two circles, end_radius is the radius of the outer circle.
-  endRadius: number(Length),
   /// The angle to rotate the involute by. A value of zero will produce a curve with a tangent along the x-axis at the start point of the curve.
   angle: number(Angle),
+  /// The involute is described between two circles, startRadius is the radius of the inner circle.
+  /// Either `startRadius` or `startDiameter` must be given (but not both).
+  startRadius?: number(Length),
+  /// The involute is described between two circles, endRadius is the radius of the outer circle.
+  /// Either `endRadius` or `endDiameter` must be given (but not both).
+  endRadius?: number(Length),
+  /// The involute is described between two circles, startDiameter describes the inner circle.
+  /// Either `startRadius` or `startDiameter` must be given (but not both).
+  startDiameter?: number(Length),
+  /// The involute is described between two circles, endDiameter describes the outer circle.
+  /// Either `endRadius` or `endDiameter` must be given (but not both).
+  endDiameter?: number(Length),
   /// If reverse is true, the segment will start from the end of the involute, otherwise it will start from that start.
   reverse?: bool = false,
   /// Create a new tag which refers to this line.

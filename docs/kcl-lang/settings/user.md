@@ -85,6 +85,13 @@ Whether to show the debug panel, which lets you see various states of the app to
 
 **Default:** None
 
+##### fixed_size_grid
+
+If true, the grid cells will be fixed-size, where the width is your default length unit. If false, the grid will get larger as you zoom out, and smaller as you zoom in.
+
+
+**Default:** None
+
 
 #### modeling
 

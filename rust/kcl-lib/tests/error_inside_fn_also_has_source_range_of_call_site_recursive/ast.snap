@@ -13,6 +13,7 @@ description: Result of parsing error_inside_fn_also_has_source_range_of_call_sit
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "someFunction",
             "start": 0,
             "type": "Identifier"
@@ -28,6 +29,7 @@ description: Result of parsing error_inside_fn_also_has_source_range_of_call_sit
                     "id": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "someNestedFunction",
                       "start": 0,
                       "type": "Identifier"
@@ -39,13 +41,16 @@ description: Result of parsing error_inside_fn_also_has_source_range_of_call_sit
                             "commentStart": 0,
                             "end": 0,
                             "expression": {
+                              "arguments": [],
                               "callee": {
                                 "abs_path": false,
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": {
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "name": "startSketchOn",
                                   "start": 0,
                                   "type": "Identifier"
@@ -56,6 +61,7 @@ description: Result of parsing error_inside_fn_also_has_source_range_of_call_sit
                               },
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "start": 0,
                               "type": "CallExpressionKw",
                               "type": "CallExpressionKw",
@@ -63,9 +69,11 @@ description: Result of parsing error_inside_fn_also_has_source_range_of_call_sit
                                 "abs_path": false,
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": {
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "name": "something2",
                                   "start": 0,
                                   "type": "Identifier"
@@ -76,6 +84,7 @@ description: Result of parsing error_inside_fn_also_has_source_range_of_call_sit
                                 "type": "Name"
                               }
                             },
+                            "moduleId": 0,
                             "start": 0,
                             "type": "ExpressionStatement",
                             "type": "ExpressionStatement"
@@ -83,16 +92,19 @@ description: Result of parsing error_inside_fn_also_has_source_range_of_call_sit
                         ],
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "start": 0
                       },
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "params": [
                         {
                           "type": "Parameter",
                           "identifier": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "something2",
                             "start": 0,
                             "type": "Identifier"
@@ -104,11 +116,13 @@ description: Result of parsing error_inside_fn_also_has_source_range_of_call_sit
                       "type": "FunctionExpression",
                       "type": "FunctionExpression"
                     },
+                    "moduleId": 0,
                     "start": 0,
                     "type": "VariableDeclarator"
                   },
                   "end": 0,
                   "kind": "fn",
+                  "moduleId": 0,
                   "start": 0,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
@@ -117,13 +131,16 @@ description: Result of parsing error_inside_fn_also_has_source_range_of_call_sit
                   "commentStart": 0,
                   "end": 0,
                   "expression": {
+                    "arguments": [],
                     "callee": {
                       "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "someNestedFunction",
                         "start": 0,
                         "type": "Identifier"
@@ -134,6 +151,7 @@ description: Result of parsing error_inside_fn_also_has_source_range_of_call_sit
                     },
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "start": 0,
                     "type": "CallExpressionKw",
                     "type": "CallExpressionKw",
@@ -141,9 +159,11 @@ description: Result of parsing error_inside_fn_also_has_source_range_of_call_sit
                       "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "something",
                         "start": 0,
                         "type": "Identifier"
@@ -154,6 +174,7 @@ description: Result of parsing error_inside_fn_also_has_source_range_of_call_sit
                       "type": "Name"
                     }
                   },
+                  "moduleId": 0,
                   "start": 0,
                   "type": "ExpressionStatement",
                   "type": "ExpressionStatement"
@@ -161,12 +182,14 @@ description: Result of parsing error_inside_fn_also_has_source_range_of_call_sit
               ],
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "nonCodeMeta": {
                 "nonCodeNodes": {
                   "0": [
                     {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "NonCodeNode",
                       "value": {
@@ -181,12 +204,14 @@ description: Result of parsing error_inside_fn_also_has_source_range_of_call_sit
             },
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "something",
                   "start": 0,
                   "type": "Identifier"
@@ -198,11 +223,13 @@ description: Result of parsing error_inside_fn_also_has_source_range_of_call_sit
             "type": "FunctionExpression",
             "type": "FunctionExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "fn",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -211,13 +238,16 @@ description: Result of parsing error_inside_fn_also_has_source_range_of_call_sit
         "commentStart": 0,
         "end": 0,
         "expression": {
+          "arguments": [],
           "callee": {
             "abs_path": false,
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "someFunction",
               "start": 0,
               "type": "Identifier"
@@ -228,12 +258,14 @@ description: Result of parsing error_inside_fn_also_has_source_range_of_call_sit
           },
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
           "unlabeled": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "'INVALID'",
             "start": 0,
             "type": "Literal",
@@ -241,6 +273,7 @@ description: Result of parsing error_inside_fn_also_has_source_range_of_call_sit
             "value": "INVALID"
           }
         },
+        "moduleId": 0,
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -248,12 +281,14 @@ description: Result of parsing error_inside_fn_also_has_source_range_of_call_sit
     ],
     "commentStart": 0,
     "end": 0,
+    "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {
