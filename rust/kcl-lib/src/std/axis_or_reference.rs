@@ -58,4 +58,24 @@ impl Axis3dOrPoint3d {
             Axis3dOrPoint3d::Point(point) => point.clone(),
         }
     }
+
+    pub fn to_origin(&self) -> [TyF64; 3] {
+        match self {
+            Axis3dOrPoint3d::Axis { origin, .. } => origin.clone(),
+            Axis3dOrPoint3d::Point(..) => [
+                TyF64 {
+                    n: 0.0,
+                    ty: Default::default(),
+                },
+                TyF64 {
+                    n: 0.0,
+                    ty: Default::default(),
+                },
+                TyF64 {
+                    n: 0.0,
+                    ty: Default::default(),
+                },
+            ],
+        }
+    }
 }

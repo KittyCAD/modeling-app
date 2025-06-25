@@ -91,6 +91,7 @@ async fn inner_scale(
                         translate: None,
                         rotate_rpy: None,
                         rotate_angle_axis: None,
+                        origin: None,
                     }],
                 }),
             )
@@ -163,6 +164,7 @@ async fn inner_translate(
                         scale: None,
                         rotate_rpy: None,
                         rotate_angle_axis: None,
+                        origin: None,
                     }],
                 }),
             )
@@ -194,6 +196,7 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
         ]),
         exec_state,
     )?;
+    let origin = axis.clone().map(|a| a.to_origin());
     let axis = axis.map(|a| a.to_point3d());
     let angle: Option<TyF64> = args.get_kw_arg_opt("angle", &RuntimeType::degrees(), exec_state)?;
     let global = args.get_kw_arg_opt("global", &RuntimeType::bool(), exec_state)?;
@@ -287,6 +290,7 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
         // Don't adjust axis units since the axis must be normalized and only the direction
         // should be significant, not the magnitude.
         axis.map(|a| [a[0].n, a[1].n, a[2].n]),
+        origin.map(|a| [a[0].n, a[1].n, a[2].n]),
         angle.map(|t| t.n),
         global,
         exec_state,
@@ -303,6 +307,7 @@ async fn inner_rotate(
     pitch: Option<f64>,
     yaw: Option<f64>,
     axis: Option<[f64; 3]>,
+    origin: Option<[f64; 3]>,
     angle: Option<f64>,
     global: Option<bool>,
     exec_state: &mut ExecState,
@@ -313,6 +318,20 @@ async fn inner_rotate(
     if let SolidOrSketchOrImportedGeometry::SolidSet(solids) = &objects {
         exec_state.flush_batch_for_solids((&args).into(), solids).await?;
     }
+
+    let origin = if let Some(origin) = origin {
+        Some(shared::TransformBy::<Point3d<LengthUnit>> {
+            property: shared::Point3d {
+                x: LengthUnit(origin[0]),
+                y: LengthUnit(origin[1]),
+                z: LengthUnit(origin[2]),
+            },
+            set: false,
+            is_local: !global.unwrap_or(false),
+        })
+    } else {
+        None
+    };
 
     let mut objects = objects.clone();
     for object_id in objects.ids(&args.ctx).await? {
@@ -336,6 +355,7 @@ async fn inner_rotate(
                             scale: None,
                             rotate_rpy: None,
                             translate: None,
+                            origin: origin.clone(),
                         }],
                     }),
                 )
@@ -360,6 +380,7 @@ async fn inner_rotate(
                             scale: None,
                             rotate_angle_axis: None,
                             translate: None,
+                            origin: origin.clone(),
                         }],
                     }),
                 )
