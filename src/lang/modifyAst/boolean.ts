@@ -44,7 +44,6 @@ export async function applySubtractFromTargetOperatorSelections(
     dependencies.kclManager.artifactGraph
   )
   if (err(lastSolidsVars) || lastSolidsVars.length < 1) {
-    console.log(lastSolidsVars)
     return new Error('Not enough or invalid solids variables found')
   }
 
