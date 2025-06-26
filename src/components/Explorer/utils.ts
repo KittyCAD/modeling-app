@@ -84,11 +84,11 @@ const flattenProjectHelper = (
   list: FileExplorerEntry[], // accumulator list that is built up through recursion
   parentPath: string, // the parentPath for the given f:FileEntry passed in
   level: number, // the level within the tree for the given f:FileEntry, level starts at 0 goes to positive N
-  numberOfSibilings: number,
+  numberOfSiblings: number,
   iterationIndex: number
 ) => {
   const index = list.length
-  const setSize = numberOfSibilings - 2 // for fake folder and file!
+  const setSize = numberOfSiblings - 2 // for fake folder and file!
   const positionInSet = iterationIndex - 2
   // mark the parent and level of the FileEntry
   const content: FileExplorerEntry = {
