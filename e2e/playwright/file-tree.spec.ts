@@ -786,9 +786,7 @@ test.describe('Deleting items from the file pane', () => {
       // Constants and locators
       const projectCard = page.getByText('Test Project')
       const projectMenuButton = page.getByTestId('project-sidebar-toggle')
-      const folderToDelete = page.getByRole('button', {
-        name: 'folderToDelete',
-      })
+      const folderToDelete = u.locatorFolder('folderToDelete')
       const deleteMenuItem = page.getByRole('button', { name: 'Delete' })
       const deleteConfirmation = page.getByTestId('delete-confirmation')
 
