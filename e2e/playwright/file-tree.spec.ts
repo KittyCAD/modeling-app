@@ -293,7 +293,7 @@ test.describe('when using the file tree to', () => {
     {
       tag: '@desktop',
     },
-    async ({ page }, testInfo) => {
+    async ({ page, toolbar}, testInfo) => {
       const {
         panesOpen,
         pasteCodeInEditor,
@@ -319,19 +319,11 @@ test.describe('when using the file tree to', () => {
 
       // Create a large lego file
       await createNewFile('lego')
-      const legoFile = page.getByRole('listitem').filter({
-        has: page.getByRole('button', { name: 'lego.kcl' }),
-      })
-      await expect(legoFile).toBeVisible({ timeout: 60_000 })
-      await legoFile.click()
       const kclLego = await fsp.readFile(
         'rust/kcl-lib/e2e/executor/inputs/lego.kcl',
         'utf-8'
       )
       await pasteCodeInEditor(kclLego)
-      const mainFile = page.getByRole('listitem').filter({
-        has: page.getByRole('button', { name: 'main.kcl' }),
-      })
 
       // Open settings and enable the debug panel
       await page
@@ -345,12 +337,12 @@ test.describe('when using the file tree to', () => {
       await test.step('swap between small and large files', async () => {
         await openDebugPanel()
         // Previously created a file so we need to start back at main.kcl
-        await mainFile.click()
+        await toolbar.openFile('main.kcl')
         await expectCmdLog('[data-message-type="execution-done"]', 60_000)
         // Click the large file
-        await legoFile.click()
+        await toolbar.openFile('lego.kcl')
         // Once it is building, click back to the smaller file
-        await mainFile.click()
+        await toolbar.openFile('main.kcl')
         await expectCmdLog('[data-message-type="execution-done"]', 60_000)
         await closeDebugPanel()
       })
