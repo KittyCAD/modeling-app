@@ -130,7 +130,10 @@ export const ProjectExplorer = ({
       return
     }
 
-    const row =  rowsToRenderRef.current[activeIndexRef.current] || rowsToRenderRef.current[lastIndexBeforeNothing.current] || null
+    const row =
+      rowsToRenderRef.current[activeIndexRef.current] ||
+      rowsToRenderRef.current[lastIndexBeforeNothing.current] ||
+      null
     setFakeRow({ entry: row, isFile: true })
     if (row?.key) {
       // If the file tree had the folder opened make the new one open.
@@ -144,7 +147,10 @@ export const ProjectExplorer = ({
     if (createFolderPressed <= 0 || readOnly) {
       return
     }
-    const row = rowsToRenderRef.current[activeIndexRef.current] || rowsToRenderRef.current[lastIndexBeforeNothing.current] || null
+    const row =
+      rowsToRenderRef.current[activeIndexRef.current] ||
+      rowsToRenderRef.current[lastIndexBeforeNothing.current] ||
+      null
     setFakeRow({ entry: row, isFile: false })
     if (row?.key) {
       // If the file tree had the folder opened make the new one open.
@@ -203,7 +209,6 @@ export const ProjectExplorer = ({
       setContextMenuRow(null)
       setIsRenaming(false)
     }
-
 
     // gotcha: sync state
     openedRowsRef.current = openedRows

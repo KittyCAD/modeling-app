@@ -609,7 +609,9 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           }
         } catch (e) {
           if (e === 'ENOENT') {
-            console.warn(`checking if folder is created, ${input.requestedAbsolutePath}`)
+            console.warn(
+              `checking if folder is created, ${input.requestedAbsolutePath}`
+            )
             console.warn(e)
           } else {
             console.error(e)

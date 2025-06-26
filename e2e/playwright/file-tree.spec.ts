@@ -543,10 +543,8 @@ test.describe('Renaming in the file tree', () => {
       // Constants and locators
       const projectLink = page.getByText('Test Project')
       const projectMenuButton = page.getByTestId('project-sidebar-toggle')
-      const folderToRename = page.getByRole('button', {
-        name: 'folderToRename',
-      })
-      const renamedFolder = page.getByRole('button', { name: 'newFolderName' })
+      const folderToRename = u.locatorFolder('folderToRename')
+      const renamedFolder = u.locatorFolder('newFolderName')
       const renameMenuItem = page.getByRole('button', { name: 'Rename' })
       const originalFolderName = 'folderToRename'
       const renameInput = page.getByPlaceholder(originalFolderName)
