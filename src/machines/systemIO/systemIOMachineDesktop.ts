@@ -608,7 +608,12 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
             )
           }
         } catch (e) {
-          console.error(e)
+          if (e === 'ENOENT') {
+            console.warn(`checking if folder is created, ${input.requestedAbsolutePath}`)
+            console.warn(e)
+          } else {
+            console.error(e)
+          }
         }
         await window.electron.mkdir(input.requestedAbsolutePath, {
           recursive: true,
