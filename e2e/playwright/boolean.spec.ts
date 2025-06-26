@@ -103,7 +103,7 @@ test.describe('Point and click for boolean workflows', () => {
           await cmdBar.expectState({
             stage: 'review',
             headerArguments: {
-              Tool: '1 path',
+              Tools: '1 path',
               Target: '1 path',
             },
             commandName,

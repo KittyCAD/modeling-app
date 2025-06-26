@@ -3570,17 +3570,17 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const { target, tool } = input
+        const { target, tools } = input
         if (
           !target.graphSelections[0].artifact ||
-          !tool.graphSelections[0].artifact
+          !tools.graphSelections[0].artifact
         ) {
           return Promise.reject(new Error('No artifact in selections found'))
         }
 
         await applySubtractFromTargetOperatorSelections(
           target.graphSelections[0],
-          tool.graphSelections[0],
+          tools.graphSelections,
           {
             kclManager,
             codeManager,

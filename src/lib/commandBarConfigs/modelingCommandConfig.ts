@@ -205,7 +205,7 @@ export type ModelingCommandSchema = {
   }
   'Boolean Subtract': {
     target: Selections
-    tool: Selections
+    tools: Selections
   }
   'Boolean Union': {
     solids: Selections
@@ -604,14 +604,13 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         skip: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
-      tool: {
+      tools: {
         clearSelectionFirst: true,
         inputType: 'selection',
         selectionTypes: ['path'],
         selectionFilter: ['object'],
-        multiple: false,
+        multiple: true,
         required: true,
-        skip: false,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
     },

@@ -29,7 +29,7 @@ import { isArray } from '@src/lib/utils'
 
 export async function applySubtractFromTargetOperatorSelections(
   target: Selection,
-  tool: Selection,
+  tools: Selection[],
   dependencies: {
     kclManager: KclManager
     engineCommandManager: EngineCommandManager
@@ -38,28 +38,44 @@ export async function applySubtractFromTargetOperatorSelections(
   }
 ): Promise<Error | void> {
   const ast = dependencies.kclManager.ast
-  if (!target.artifact || !tool.artifact) {
-    return new Error('No artifact found')
+  if (!target.artifact) {
+    return new Error('No target artifact found')
   }
   const orderedChildrenTarget = findAllChildrenAndOrderByPlaceInCode(
     target.artifact,
     dependencies.kclManager.artifactGraph
   )
-  const orderedChildrenTool = findAllChildrenAndOrderByPlaceInCode(
-    tool.artifact,
-    dependencies.kclManager.artifactGraph
-  )
 
   const lastVarTarget = getLastVariable(orderedChildrenTarget, ast)
-  const lastVarTool = getLastVariable(orderedChildrenTool, ast)
-
-  if (!lastVarTarget || !lastVarTool) {
+  if (!lastVarTarget) {
     return new Error('No variable found')
   }
+
+  const toolsNodes: VariableDeclaration[] = []
+  for (const tool of tools) {
+    if (!tool.artifact) {
+      return new Error('No tool artifact found')
+    }
+
+    const orderedChildrenTool = findAllChildrenAndOrderByPlaceInCode(
+      tool.artifact,
+      dependencies.kclManager.artifactGraph
+    )
+    const lastVarTool = getLastVariable(orderedChildrenTool, ast)
+    if (!lastVarTool || !lastVarTool.variableDeclaration) {
+      return new Error('No variable found in tool artifact')
+    }
+    toolsNodes.push(lastVarTool.variableDeclaration.node)
+  }
+
+  if (toolsNodes.length === 0) {
+    return new Error('No tools found')
+  }
+
   const modifiedAst = booleanSubtractAstMod({
     ast,
     targets: [lastVarTarget?.variableDeclaration?.node],
-    tools: [lastVarTool?.variableDeclaration.node],
+    tools: toolsNodes,
   })
 
   await updateModelingState(modifiedAst, EXECUTION_TYPE_REAL, dependencies)
