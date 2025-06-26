@@ -275,10 +275,7 @@ async fn inner_circle_three_point(
         SketchOrSurface::Sketch(group) => group.on,
     };
 
-    let from = [
-        TyF64::new(center[0] + radius, ty),
-        TyF64::new(center[1], ty),
-    ];
+    let from = [TyF64::new(center[0] + radius, ty), TyF64::new(center[1], ty)];
     let sketch =
         crate::std::sketch::inner_start_profile(sketch_surface, from.clone(), None, exec_state, args.clone()).await?;
 
