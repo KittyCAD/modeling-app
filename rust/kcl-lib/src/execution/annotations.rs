@@ -2,13 +2,13 @@
 
 use std::str::FromStr;
 
-use kittycad_modeling_cmds::coord::{System, KITTYCAD, OPENGL, VULKAN};
+use kittycad_modeling_cmds::coord::{KITTYCAD, OPENGL, System, VULKAN};
 
 use crate::{
+    KclError, SourceRange,
     errors::KclErrorDetails,
     execution::types::{UnitAngle, UnitLen},
     parsing::ast::types::{Annotation, Expr, LiteralValue, Node, ObjectProperty},
-    KclError, SourceRange,
 };
 
 /// Annotations which should cause re-execution if they change.

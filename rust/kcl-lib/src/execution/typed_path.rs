@@ -220,9 +220,9 @@ impl schemars::JsonSchema for TypedPath {
         "TypedPath".to_owned()
     }
 
-    fn json_schema(gen: &mut schemars::gen::SchemaGenerator) -> schemars::schema::Schema {
+    fn json_schema(r#gen: &mut schemars::r#gen::SchemaGenerator) -> schemars::schema::Schema {
         // TODO: Actually generate a reasonable schema.
-        gen.subschema_for::<std::path::PathBuf>()
+        r#gen.subschema_for::<std::path::PathBuf>()
     }
 }
 

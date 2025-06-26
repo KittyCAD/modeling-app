@@ -2,7 +2,7 @@
 
 use anyhow::Result;
 
-use crate::{execution::typed_path::TypedPath, SourceRange};
+use crate::{SourceRange, execution::typed_path::TypedPath};
 
 #[cfg(not(target_arch = "wasm32"))]
 pub mod local;

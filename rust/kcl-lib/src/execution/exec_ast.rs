@@ -3,17 +3,17 @@ use std::collections::HashMap;
 use async_recursion::async_recursion;
 
 use crate::{
+    CompilationError, NodePath,
     errors::{KclError, KclErrorDetails},
     execution::{
-        annotations,
+        BodyType, EnvironmentRef, ExecState, ExecutorContext, KclValue, Metadata, ModelingCmdMeta, ModuleArtifactState,
+        Operation, PlaneType, StatementKind, TagIdentifier, annotations,
         cad_op::OpKclValue,
         fn_call::Args,
         kcl_value::{FunctionSource, TypeDef},
         memory,
         state::ModuleState,
         types::{NumericType, PrimitiveType, RuntimeType},
-        BodyType, EnvironmentRef, ExecState, ExecutorContext, KclValue, Metadata, ModelingCmdMeta, ModuleArtifactState,
-        Operation, PlaneType, StatementKind, TagIdentifier,
     },
     fmt,
     modules::{ModuleId, ModulePath, ModuleRepr},
@@ -28,7 +28,6 @@ use crate::{
     },
     source_range::SourceRange,
     std::args::TyF64,
-    CompilationError, NodePath,
 };
 
 impl<'a> StatementKind<'a> {
@@ -198,19 +197,23 @@ impl ExecutorContext {
                                 }
 
                                 if ty.is_ok() && !module_exports.contains(&ty_name) {
-                                    ty = Err(KclError::new_semantic(KclErrorDetails::new(format!(
-                                        "Cannot import \"{}\" from module because it is not exported. Add \"export\" before the definition to export it.",
-                                        import_item.name.name
-                                    ),
-                                    vec![SourceRange::from(&import_item.name)],)));
+                                    ty = Err(KclError::new_semantic(KclErrorDetails::new(
+                                        format!(
+                                            "Cannot import \"{}\" from module because it is not exported. Add \"export\" before the definition to export it.",
+                                            import_item.name.name
+                                        ),
+                                        vec![SourceRange::from(&import_item.name)],
+                                    )));
                                 }
 
                                 if mod_value.is_ok() && !module_exports.contains(&mod_name) {
-                                    mod_value = Err(KclError::new_semantic(KclErrorDetails::new(format!(
-                                        "Cannot import \"{}\" from module because it is not exported. Add \"export\" before the definition to export it.",
-                                        import_item.name.name
-                                    ),
-                                    vec![SourceRange::from(&import_item.name)],)));
+                                    mod_value = Err(KclError::new_semantic(KclErrorDetails::new(
+                                        format!(
+                                            "Cannot import \"{}\" from module because it is not exported. Add \"export\" before the definition to export it.",
+                                            import_item.name.name
+                                        ),
+                                        vec![SourceRange::from(&import_item.name)],
+                                    )));
                                 }
 
                                 if value.is_err() && ty.is_err() && mod_value.is_err() {
@@ -270,7 +273,7 @@ impl ExecutorContext {
                                     .get_from(name, env_ref, source_range, 0)
                                     .map_err(|_err| {
                                         KclError::new_internal(KclErrorDetails::new(
-                                            format!("{} is not defined in module (but was exported?)", name),
+                                            format!("{name} is not defined in module (but was exported?)"),
                                             vec![source_range],
                                         ))
                                     })?
@@ -431,7 +434,7 @@ impl ExecutorContext {
                                 return Err(KclError::new_semantic(KclErrorDetails::new(
                                     "User-defined types are not yet supported.".to_owned(),
                                     vec![metadata.source_range],
-                                )))
+                                )));
                             }
                         },
                     }
@@ -792,11 +795,12 @@ fn var_in_own_ref_err(e: KclError, being_declared: &Option<String>) -> KclError 
     // TODO after June 26th: replace this with a let-chain,
     // which will be available in Rust 1.88
     // https://rust-lang.github.io/rfcs/2497-if-let-chains.html
-    match (&being_declared, &name) {
-        (Some(name0), Some(name1)) if name0 == name1 => {
-            details.message = format!("You can't use `{name0}` because you're currently trying to define it. Use a different variable here instead.");
-        }
-        _ => {}
+    if let (Some(name0), Some(name1)) = (&being_declared, &name)
+        && name0 == name1
+    {
+        details.message = format!(
+            "You can't use `{name0}` because you're currently trying to define it. Use a different variable here instead."
+        );
     }
     KclError::UndefinedValue { details, name }
 }
@@ -1077,7 +1081,7 @@ impl Node<BinaryExpression> {
                 (&left_value, &right_value)
             {
                 return Ok(KclValue::String {
-                    value: format!("{}{}", left, right),
+                    value: format!("{left}{right}"),
                     meta,
                 });
             }
@@ -1237,7 +1241,9 @@ impl Node<BinaryExpression> {
             exec_state.clear_units_warnings(&sr);
             let mut err = CompilationError::err(
                 sr,
-                format!("{} numbers which have unknown or incompatible units.\nYou can probably fix this error by specifying the units using type ascription, e.g., `len: number(mm)` or `(a * b): number(deg)`.", verb),
+                format!(
+                    "{verb} numbers which have unknown or incompatible units.\nYou can probably fix this error by specifying the units using type ascription, e.g., `len: number(mm)` or `(a * b): number(deg)`."
+                ),
             );
             err.tag = crate::errors::Tag::UnknownNumericUnits;
             exec_state.warn(err);
@@ -1417,7 +1423,7 @@ async fn inner_execute_pipe_body(
     for expression in body {
         if let Expr::TagDeclarator(_) = expression {
             return Err(KclError::new_semantic(KclErrorDetails::new(
-                format!("This cannot be in a PipeExpression: {:?}", expression),
+                format!("This cannot be in a PipeExpression: {expression:?}"),
                 vec![expression.into()],
             )));
         }
@@ -1699,9 +1705,15 @@ fn jvalue_to_prop(value: &KclValue, property_sr: Vec<SourceRange>, name: &str) -
     let make_err =
         |message: String| Err::<Property, _>(KclError::new_semantic(KclErrorDetails::new(message, property_sr)));
     match value {
-        n @ KclValue::Number{value: num, ty, .. } => {
-            if !matches!(ty, NumericType::Known(crate::exec::UnitType::Count) | NumericType::Default { .. } | NumericType::Any ) {
-                return make_err(format!("arrays can only be indexed by non-dimensioned numbers, found {}", n.human_friendly_type()));
+        n @ KclValue::Number { value: num, ty, .. } => {
+            if !matches!(
+                ty,
+                NumericType::Known(crate::exec::UnitType::Count) | NumericType::Default { .. } | NumericType::Any
+            ) {
+                return make_err(format!(
+                    "arrays can only be indexed by non-dimensioned numbers, found {}",
+                    n.human_friendly_type()
+                ));
             }
             let num = *num;
             if num < 0.0 {
@@ -1711,13 +1723,15 @@ fn jvalue_to_prop(value: &KclValue, property_sr: Vec<SourceRange>, name: &str) -
             if let Some(nearest_int) = nearest_int {
                 Ok(Property::UInt(nearest_int))
             } else {
-                make_err(format!("'{num}' is not an integer, so you can't index an array with it"))
+                make_err(format!(
+                    "'{num}' is not an integer, so you can't index an array with it"
+                ))
             }
         }
-        KclValue::String{value: x, meta:_} => Ok(Property::String(x.to_owned())),
-        _ => {
-            make_err(format!("{name} is not a valid property/index, you can only use a string to get the property of an object, or an int (>= 0) to get an item in an array"))
-        }
+        KclValue::String { value: x, meta: _ } => Ok(Property::String(x.to_owned())),
+        _ => make_err(format!(
+            "{name} is not a valid property/index, you can only use a string to get the property of an object, or an int (>= 0) to get an item in an array"
+        )),
     }
 }
 
@@ -1745,9 +1759,9 @@ mod test {
 
     use super::*;
     use crate::{
-        exec::UnitType,
-        execution::{parse_execute, ContextType},
         ExecutorSettings, UnitLen,
+        exec::UnitType,
+        execution::{ContextType, parse_execute},
     };
 
     #[tokio::test(flavor = "multi_thread")]
@@ -1777,7 +1791,7 @@ arr1 = [42]: [number(cm)]
             .get_from("arr1", result.mem_env, SourceRange::default(), 0)
             .unwrap();
         if let KclValue::HomArray { value, ty } = arr1 {
-            assert_eq!(value.len(), 1, "Expected Vec with specific length: found {:?}", value);
+            assert_eq!(value.len(), 1, "Expected Vec with specific length: found {value:?}");
             assert_eq!(*ty, RuntimeType::known_length(UnitLen::Cm));
             // Compare, ignoring meta.
             if let KclValue::Number { value, ty, .. } = &value[0] {
@@ -1946,7 +1960,7 @@ d = b + c
                     .await
                     .map_err(|err| {
                         KclError::new_internal(KclErrorDetails::new(
-                            format!("Failed to create mock engine connection: {}", err),
+                            format!("Failed to create mock engine connection: {err}"),
                             vec![SourceRange::default()],
                         ))
                     })
