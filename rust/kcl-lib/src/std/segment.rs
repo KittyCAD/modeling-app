@@ -18,7 +18,7 @@ pub async fn segment_end(exec_state: &mut ExecState, args: Args) -> Result<KclVa
     let tag: TagIdentifier = args.get_unlabeled_kw_arg("tag", &RuntimeType::tagged_edge(), exec_state)?;
     let pt = inner_segment_end(&tag, exec_state, args.clone())?;
 
-    args.make_kcl_val_from_point([pt[0].n, pt[1].n], pt[0].ty.clone())
+    args.make_kcl_val_from_point([pt[0].n, pt[1].n], pt[0].ty)
 }
 
 fn inner_segment_end(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<[TyF64; 2], KclError> {
@@ -31,7 +31,7 @@ fn inner_segment_end(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args
     })?;
     let (p, ty) = path.end_point_components();
     // Docs generation isn't smart enough to handle ([f64; 2], NumericType).
-    let point = [TyF64::new(p[0], ty.clone()), TyF64::new(p[1], ty)];
+    let point = [TyF64::new(p[0], ty), TyF64::new(p[1], ty)];
 
     Ok(point)
 }
@@ -81,7 +81,7 @@ pub async fn segment_start(exec_state: &mut ExecState, args: Args) -> Result<Kcl
     let tag: TagIdentifier = args.get_unlabeled_kw_arg("tag", &RuntimeType::tagged_edge(), exec_state)?;
     let pt = inner_segment_start(&tag, exec_state, args.clone())?;
 
-    args.make_kcl_val_from_point([pt[0].n, pt[1].n], pt[0].ty.clone())
+    args.make_kcl_val_from_point([pt[0].n, pt[1].n], pt[0].ty)
 }
 
 fn inner_segment_start(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<[TyF64; 2], KclError> {
@@ -94,7 +94,7 @@ fn inner_segment_start(tag: &TagIdentifier, exec_state: &mut ExecState, args: Ar
     })?;
     let (p, ty) = path.start_point_components();
     // Docs generation isn't smart enough to handle ([f64; 2], NumericType).
-    let point = [TyF64::new(p[0], ty.clone()), TyF64::new(p[1], ty)];
+    let point = [TyF64::new(p[0], ty), TyF64::new(p[1], ty)];
 
     Ok(point)
 }

@@ -76,20 +76,20 @@ async fn inner_rectangle(
         (None, Some(corner)) => (corner[0].ty, [corner[0].n, corner[1].n]),
         (None, None) => {
             return Err(KclError::new_semantic(KclErrorDetails::new(
-                format!("You must supply either `corner` or `center` arguments, but not both"),
+                "You must supply either `corner` or `center` arguments, but not both".to_string(),
                 vec![args.source_range],
             )))
         }
         (Some(_), Some(_)) => {
             return Err(KclError::new_semantic(KclErrorDetails::new(
-                format!("You must supply either `corner` or `center` arguments, but not both"),
+                "You must supply either `corner` or `center` arguments, but not both".to_string(),
                 vec![args.source_range],
             )))
         }
     };
     let units = ty.expect_length();
     let id = exec_state.next_uuid();
-    let corner_t = [TyF64::new(corner[0], ty.clone()), TyF64::new(corner[1], ty)];
+    let corner_t = [TyF64::new(corner[0], ty), TyF64::new(corner[1], ty)];
     //
     // Start the sketch then draw the 4 lines.
     let sketch =
@@ -174,7 +174,7 @@ async fn inner_circle(
 
     let radius = get_radius(radius, diameter, args.source_range)?;
     let from = [center_u[0] + radius.to_length_units(units), center_u[1]];
-    let from_t = [TyF64::new(from[0], ty.clone()), TyF64::new(from[1], ty)];
+    let from_t = [TyF64::new(from[0], ty), TyF64::new(from[1], ty)];
 
     let sketch =
         crate::std::sketch::inner_start_profile(sketch_surface, from_t, None, exec_state, args.clone()).await?;
@@ -259,7 +259,7 @@ async fn inner_circle_three_point(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
-    let ty = p1[0].ty.clone();
+    let ty = p1[0].ty;
     let units = ty.expect_length();
 
     let p1 = point_to_len_unit(p1, units);
@@ -276,8 +276,8 @@ async fn inner_circle_three_point(
     };
 
     let from = [
-        TyF64::new(center[0] + radius, ty.clone()),
-        TyF64::new(center[1], ty.clone()),
+        TyF64::new(center[0] + radius, ty),
+        TyF64::new(center[1], ty),
     ];
     let sketch =
         crate::std::sketch::inner_start_profile(sketch_surface, from.clone(), None, exec_state, args.clone()).await?;

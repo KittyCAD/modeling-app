@@ -420,7 +420,7 @@ impl KclValue {
                 Self::Number {
                     value: p[0],
                     meta: meta.clone(),
-                    ty: ty.clone(),
+                    ty,
                 },
                 Self::Number {
                     value: p[1],
@@ -448,7 +448,7 @@ impl KclValue {
 
     pub fn as_int_with_ty(&self) -> Option<(i64, NumericType)> {
         match self {
-            KclValue::Number { value, ty, .. } => crate::try_f64_to_i64(*value).map(|i| (i, ty.clone())),
+            KclValue::Number { value, ty, .. } => crate::try_f64_to_i64(*value).map(|i| (i, *ty)),
             _ => None,
         }
     }
@@ -562,7 +562,7 @@ impl KclValue {
 
     pub fn as_ty_f64(&self) -> Option<TyF64> {
         match self {
-            KclValue::Number { value, ty, .. } => Some(TyF64::new(*value, ty.clone())),
+            KclValue::Number { value, ty, .. } => Some(TyF64::new(*value, *ty)),
             _ => None,
         }
     }

@@ -228,7 +228,7 @@ impl From<&KclValue> for OpKclValue {
             KclValue::Bool { value, .. } => Self::Bool { value: *value },
             KclValue::Number { value, ty, .. } => Self::Number {
                 value: *value,
-                ty: ty.clone(),
+                ty: *ty,
             },
             KclValue::String { value, .. } => Self::String { value: value.clone() },
             KclValue::Tuple { value, .. } | KclValue::HomArray { value, .. } => {

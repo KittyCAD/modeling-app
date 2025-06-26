@@ -1004,12 +1004,12 @@ pub struct BasePath {
 impl BasePath {
     pub fn get_to(&self) -> [TyF64; 2] {
         let ty: NumericType = self.units.into();
-        [TyF64::new(self.to[0], ty.clone()), TyF64::new(self.to[1], ty)]
+        [TyF64::new(self.to[0], ty), TyF64::new(self.to[1], ty)]
     }
 
     pub fn get_from(&self) -> [TyF64; 2] {
         let ty: NumericType = self.units.into();
-        [TyF64::new(self.from[0], ty.clone()), TyF64::new(self.from[1], ty)]
+        [TyF64::new(self.from[0], ty), TyF64::new(self.from[1], ty)]
     }
 }
 
@@ -1225,14 +1225,14 @@ impl Path {
     pub fn get_from(&self) -> [TyF64; 2] {
         let p = &self.get_base().from;
         let ty: NumericType = self.get_base().units.into();
-        [TyF64::new(p[0], ty.clone()), TyF64::new(p[1], ty)]
+        [TyF64::new(p[0], ty), TyF64::new(p[1], ty)]
     }
 
     /// Where does this path segment end?
     pub fn get_to(&self) -> [TyF64; 2] {
         let p = &self.get_base().to;
         let ty: NumericType = self.get_base().units.into();
-        [TyF64::new(p[0], ty.clone()), TyF64::new(p[1], ty)]
+        [TyF64::new(p[0], ty), TyF64::new(p[1], ty)]
     }
 
     /// The path segment start point and its type.
