@@ -3,6 +3,7 @@ import type { CustomIconName } from '@src/components/CustomIcon'
 import { sortFilesAndDirectories } from '@src/lib/desktopFS'
 import type { FileEntry } from '@src/lib/project'
 import { desktopSafePathJoin, joinOSPaths } from '@src/lib/paths'
+import type { SubmitByPressOrBlur } from '@src/lib/types'
 
 /**
  * Remap FileEntry data into another data structure for the Project Explorer
@@ -42,7 +43,7 @@ export interface FileExplorerRow extends FileExplorerEntry {
   onOpenInNewWindow: () => void
   onDelete: () => void
   onRenameStart: () => void
-  onRenameEnd: (e: React.KeyboardEvent<HTMLElement> | null) => void
+  onRenameEnd: SubmitByPressOrBlur
 }
 
 /**
