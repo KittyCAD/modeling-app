@@ -20,7 +20,10 @@ description: Artifact commands import_whole_transitive_import.kcl
                 "z": 1.0
               },
               "set": false,
-              "is_local": true
+              "is_local": true,
+              "origin": {
+                "type": "local"
+              }
             },
             "rotate_rpy": null,
             "rotate_angle_axis": null,

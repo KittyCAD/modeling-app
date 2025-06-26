@@ -393,7 +393,10 @@ description: Artifact commands union_cubes.kcl
                 "z": 1.0
               },
               "set": false,
-              "is_local": true
+              "is_local": true,
+              "origin": {
+                "type": "local"
+              }
             },
             "rotate_rpy": null,
             "rotate_angle_axis": null,
