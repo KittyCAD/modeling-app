@@ -82,7 +82,7 @@ export async function applyUnionFromTargetOperatorSelections(
     dependencies.kclManager.artifactGraph
   )
   if (err(lastVars) || lastVars.length < 2) {
-    return new Error('Not enough variables found')
+    return new Error('Not enough or invalid solids variables found')
   }
 
   const modifiedAst = booleanUnionAstMod({
@@ -108,7 +108,7 @@ export async function applyIntersectFromTargetOperatorSelections(
     dependencies.kclManager.artifactGraph
   )
   if (err(lastVars) || lastVars.length < 2) {
-    return new Error('Not enough variables found')
+    return new Error('Not enough or invalid solids variables found')
   }
 
   const modifiedAst = booleanIntersectAstMod({
