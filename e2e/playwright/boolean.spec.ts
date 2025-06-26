@@ -12,7 +12,7 @@ test.describe('Point and click for boolean workflows', () => {
     },
     {
       name: 'subtract',
-      code: 'subtract([extrude001], tools = [extrude006])',
+      code: 'subtract(extrude001, tools = extrude006)',
     },
     {
       name: 'intersect',

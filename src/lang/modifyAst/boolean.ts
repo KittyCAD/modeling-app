@@ -265,10 +265,12 @@ export function booleanSubtractAstMod({
 }): Node<Program> {
   const newAst = structuredClone(ast)
   const newVarName = findUniqueName(newAst, 'solid')
-  const createArrExpr = (varDecs: VariableDeclaration[]) =>
-    createArrayExpression(
-      varDecs.map((varDec) => createLocalName(varDec.declaration.id.name))
+  const createArrExpr = (varDecs: VariableDeclaration[]) => {
+    const names = varDecs.map((varDec) =>
+      createLocalName(varDec.declaration.id.name)
     )
+    return names.length === 1 ? names[0] : createArrayExpression(names)
+  }
   const solidsArrayExpression = createArrExpr(solids)
   const toolsArrayExpression = createArrExpr(tools)
 
