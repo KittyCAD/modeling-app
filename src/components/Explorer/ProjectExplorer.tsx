@@ -656,7 +656,7 @@ export const ProjectExplorer = ({
       ref={projectExplorerRef}
     >
       <div
-        className={`absolute w-full h-full ${activeIndex === -1 ? 'border-sky-500' : ''}`}
+        className={`overflow-auto absolute pb-12 inset-0 ${activeIndex === -1 ? 'border-sky-500' : ''}`}
         data-testid="file-pane-scroll-container"
         tabIndex={0}
         role="tree"

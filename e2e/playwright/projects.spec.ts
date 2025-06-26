@@ -1854,7 +1854,8 @@ test(
     })
 
     await test.step('check the last file is out of view initially, and can be scrolled to', async () => {
-      const element = page.getByText('tangential_arc.kcl')
+      const u = await getUtils(page)
+      const element = u.locatorFile('tangential_arc.kcl')
       const container = page.getByTestId('file-pane-scroll-container')
 
       await expect(await isOutOfViewInScrollContainer(element, container)).toBe(
