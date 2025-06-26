@@ -256,22 +256,27 @@ async function logout() {
   localStorage.removeItem(TOKEN_PERSIST_KEY)
   if (isDesktop()) {
     let token = await readTokenFile()
-    if (token) {
-      await fetch(withBaseUrl('/oauth2/token/revoke'), {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: new URLSearchParams({
-          token: token,
-          client_id: OAUTH2_DEVICE_CLIENT_ID,
-        }).toString(),
-      })
-    }
 
-    await writeTokenFile('')
-    return Promise.resolve(null)
+    if (token) {
+      try {
+        await fetch(withBaseUrl('/oauth2/token/revoke'), {
+          method: 'POST',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: new URLSearchParams({
+            token: token,
+            client_id: OAUTH2_DEVICE_CLIENT_ID,
+          }).toString(),
+        })
+      } catch (e) {
+        console.error('Error revoking token:', e)
+      }
+
+      await writeTokenFile('')
+      return Promise.resolve(null)
+    }
   }
 
   return fetch(withBaseUrl('/logout'), {
