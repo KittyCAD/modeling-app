@@ -815,8 +815,8 @@ impl EdgeCut {
 
     pub fn set_id(&mut self, id: uuid::Uuid) {
         match self {
-            EdgeCut::Fillet { id: ref mut i, .. } => *i = id,
-            EdgeCut::Chamfer { id: ref mut i, .. } => *i = id,
+            EdgeCut::Fillet { id: i, .. } => *i = id,
+            EdgeCut::Chamfer { id: i, .. } => *i = id,
         }
     }
 
@@ -829,8 +829,8 @@ impl EdgeCut {
 
     pub fn set_edge_id(&mut self, id: uuid::Uuid) {
         match self {
-            EdgeCut::Fillet { edge_id: ref mut i, .. } => *i = id,
-            EdgeCut::Chamfer { edge_id: ref mut i, .. } => *i = id,
+            EdgeCut::Fillet { edge_id: i, .. } => *i = id,
+            EdgeCut::Chamfer { edge_id: i, .. } => *i = id,
         }
     }
 

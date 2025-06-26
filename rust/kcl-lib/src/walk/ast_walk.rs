@@ -57,7 +57,7 @@ mod tests {
     use super::*;
 
     macro_rules! kcl {
-        ( $kcl:expr ) => {{
+        ( $kcl:expr_2021 ) => {{
             $crate::parsing::top_level_parse($kcl).unwrap()
         }};
     }

@@ -5263,7 +5263,7 @@ mod snapshot_math_tests {
     // The macro takes a KCL program, ensures it tokenizes and parses, then compares
     // its parsed AST to a snapshot (kept in this repo in a file under snapshots/ dir)
     macro_rules! snapshot_test {
-        ($func_name:ident, $test_kcl_program:expr) => {
+        ($func_name:ident, $test_kcl_program:expr_2021) => {
             #[test]
             fn $func_name() {
                 let module_id = crate::ModuleId::default();
@@ -5301,7 +5301,7 @@ mod snapshot_tests {
     // The macro takes a KCL program, ensures it tokenizes and parses, then compares
     // its parsed AST to a snapshot (kept in this repo in a file under snapshots/ dir)
     macro_rules! snapshot_test {
-        ($func_name:ident, $test_kcl_program:expr) => {
+        ($func_name:ident, $test_kcl_program:expr_2021) => {
             #[test]
             fn $func_name() {
                 let module_id = crate::ModuleId::default();

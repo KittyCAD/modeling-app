@@ -445,7 +445,7 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
                 }
             }
         }
-        KclValue::Solid { ref mut value } => {
+        KclValue::Solid { value } => {
             for v in &value.value {
                 if let Some(tag) = v.get_tag() {
                     // Get the past tag and update it.
@@ -721,7 +721,7 @@ fn assign_args_to_params_kw(
                 )?;
             }
             None => match default {
-                Some(ref default_val) => {
+                Some(default_val) => {
                     let value = KclValue::from_default_param(default_val.clone(), exec_state);
                     exec_state
                         .mut_stack()

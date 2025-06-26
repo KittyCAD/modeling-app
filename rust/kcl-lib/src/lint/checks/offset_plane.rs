@@ -68,16 +68,16 @@ fn get_xyz(point: &ObjectExpression) -> Option<(f64, f64, f64)> {
 
     for property in &point.properties {
         let Some(value) = (match &property.value {
-            Expr::UnaryExpression(ref value) => {
+            Expr::UnaryExpression(value) => {
                 if value.operator != UnaryOperator::Neg {
                     continue;
                 }
-                let BinaryPart::Literal(ref value) = &value.inner.argument else {
+                let BinaryPart::Literal(value) = &value.inner.argument else {
                     continue;
                 };
                 unlitafy(&value.inner.value).map(|v| -v)
             }
-            Expr::Literal(ref value) => unlitafy(&value.value),
+            Expr::Literal(value) => unlitafy(&value.value),
             _ => {
                 continue;
             }

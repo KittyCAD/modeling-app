@@ -291,7 +291,7 @@ impl Expr {
             Expr::BinaryExpression(bin_exp) => bin_exp.recast(options, indentation_level, ctxt),
             Expr::ArrayExpression(array_exp) => array_exp.recast(options, indentation_level, ctxt),
             Expr::ArrayRangeExpression(range_exp) => range_exp.recast(options, indentation_level, ctxt),
-            Expr::ObjectExpression(ref obj_exp) => obj_exp.recast(options, indentation_level, ctxt),
+            Expr::ObjectExpression(obj_exp) => obj_exp.recast(options, indentation_level, ctxt),
             Expr::MemberExpression(mem_exp) => mem_exp.recast(options, indentation_level, ctxt),
             Expr::Literal(literal) => literal.recast(),
             Expr::FunctionExpression(func_exp) => {

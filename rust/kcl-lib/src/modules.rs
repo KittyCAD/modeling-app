@@ -73,13 +73,13 @@ impl ModuleLoader {
     }
 
     pub(crate) fn enter_module(&mut self, path: &ModulePath) {
-        if let ModulePath::Local { value: ref path } = path {
+        if let ModulePath::Local { value: path } = path {
             self.import_stack.push(path.clone());
         }
     }
 
     pub(crate) fn leave_module(&mut self, path: &ModulePath) {
-        if let ModulePath::Local { value: ref path } = path {
+        if let ModulePath::Local { value: path } = path {
             let popped = self.import_stack.pop().unwrap();
             assert_eq!(path, &popped);
         }

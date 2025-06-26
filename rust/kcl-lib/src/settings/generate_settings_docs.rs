@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-use schemars::{gen::SchemaGenerator, JsonSchema};
+use schemars::{r#gen::SchemaGenerator, JsonSchema};
 use serde_json::{json, Value};
 
 use crate::settings::types::{project::ProjectConfiguration, Configuration};
@@ -122,7 +122,7 @@ pub fn generate_settings_docs() {
     let hbs = init_handlebars();
 
     // Generate project settings documentation
-    let mut settings = schemars::gen::SchemaSettings::default();
+    let mut settings = schemars::r#gen::SchemaSettings::default();
     settings.inline_subschemas = true;
     settings.meta_schema = None; // We don't need the meta schema for docs
     settings.option_nullable = false; // Important - makes Option fields show properly
