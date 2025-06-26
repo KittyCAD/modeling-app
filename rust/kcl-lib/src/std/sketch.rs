@@ -45,7 +45,7 @@ pub enum FaceTag {
 impl std::fmt::Display for FaceTag {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            FaceTag::Tag(t) => write!(f, "{}", t),
+            FaceTag::Tag(t) => write!(f, "{t}"),
             FaceTag::StartOrEnd(StartOrEnd::Start) => write!(f, "start"),
             FaceTag::StartOrEnd(StartOrEnd::End) => write!(f, "end"),
         }
@@ -737,7 +737,7 @@ pub async fn inner_angled_line_that_intersects(
     let intersect_path = args.get_tag_engine_info(exec_state, &intersect_tag)?;
     let path = intersect_path.path.clone().ok_or_else(|| {
         KclError::new_type(KclErrorDetails::new(
-            format!("Expected an intersect path with a path, found `{:?}`", intersect_path),
+            format!("Expected an intersect path with a path, found `{intersect_path:?}`"),
             vec![args.source_range],
         ))
     })?;

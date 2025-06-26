@@ -189,7 +189,7 @@ fn kcl_samples_inputs() -> Vec<Test> {
         let entry_point = if main_kcl_path.exists() {
             main_kcl_path
         } else {
-            panic!("No main.kcl found in {:?}", sub_dir);
+            panic!("No main.kcl found in {sub_dir:?}");
         };
         tests.push(test(&dir_name_str, entry_point));
     }

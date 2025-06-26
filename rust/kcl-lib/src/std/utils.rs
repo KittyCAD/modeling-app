@@ -174,8 +174,8 @@ pub(crate) fn arc_center_and_end(
     let end_angle = end_angle.to_radians();
 
     let center = [
-        -1.0 * (radius * libm::cos(start_angle) - from[0]),
-        -1.0 * (radius * libm::sin(start_angle) - from[1]),
+        -(radius * libm::cos(start_angle) - from[0]),
+        -(radius * libm::sin(start_angle) - from[1]),
     ];
 
     let end = [

@@ -39,13 +39,12 @@ pub fn lint_should_be_offset_plane(node: Node, _prog: &AstNode<Program>) -> Resu
     }
     let suggestion = Suggestion {
         title: "use offsetPlane instead".to_owned(),
-        insert: format!("offsetPlane({}, offset = {})", plane_name, offset),
+        insert: format!("offsetPlane({plane_name}, offset = {offset})"),
         source_range: call_source_range,
     };
     Ok(vec![Z0003.at(
         format!(
-            "custom plane in startSketchOn; offsetPlane from {} would work here",
-            plane_name
+            "custom plane in startSketchOn; offsetPlane from {plane_name} would work here"
         ),
         call_source_range,
         Some(suggestion),

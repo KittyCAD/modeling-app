@@ -278,7 +278,7 @@ async fn test_updating_kcl_lsp_files() {
     assert_eq!(
         server
             .code_map
-            .get(&format!("{}/util.rs", string_path))
+            .get(&format!("{string_path}/util.rs"))
             .unwrap()
             .clone(),
         include_str!("util.rs").as_bytes()
@@ -633,7 +633,7 @@ async fn test_kcl_lsp_create_zip() {
     }
 
     assert_eq!(files.len(), 12);
-    let util_path = format!("{}/util.rs", string_path).replace("file://", "");
+    let util_path = format!("{string_path}/util.rs").replace("file://", "");
     assert!(files.contains_key(&util_path));
     assert_eq!(files.get("/test.kcl"), Some(&4));
 }

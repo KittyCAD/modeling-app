@@ -60,7 +60,7 @@ fn init_handlebars() -> handlebars::Handlebars<'static> {
                         let pretty_options = array
                             .iter()
                             .filter_map(|v| v.as_str())
-                            .map(|s| format!("`{}`", s))
+                            .map(|s| format!("`{s}`"))
                             .collect::<Vec<_>>()
                             .join(", ");
                         out.write(&pretty_options)?;
@@ -89,17 +89,17 @@ fn init_handlebars() -> handlebars::Handlebars<'static> {
                         Value::Null => out.write("None")?,
                         Value::Bool(b) => out.write(&b.to_string())?,
                         Value::Number(n) => out.write(&n.to_string())?,
-                        Value::String(s) => out.write(&format!("`{}`", s))?,
+                        Value::String(s) => out.write(&format!("`{s}`"))?,
                         Value::Array(arr) => {
                             let formatted = arr
                                 .iter()
                                 .map(|v| match v {
-                                    Value::String(s) => format!("`{}`", s),
-                                    _ => format!("{}", v),
+                                    Value::String(s) => format!("`{s}`"),
+                                    _ => format!("{v}"),
                                 })
                                 .collect::<Vec<_>>()
                                 .join(", ");
-                            out.write(&format!("[{}]", formatted))?;
+                            out.write(&format!("[{formatted}]"))?;
                         }
                         Value::Object(_) => out.write("(complex default)")?,
                     }

@@ -587,7 +587,7 @@ impl KclValue {
         match self {
             KclValue::TagIdentifier(t) => Ok(*t.clone()),
             _ => Err(KclError::new_semantic(KclErrorDetails::new(
-                format!("Not a tag identifier: {:?}", self),
+                format!("Not a tag identifier: {self:?}"),
                 self.clone().into(),
             ))),
         }
@@ -598,7 +598,7 @@ impl KclValue {
         match self {
             KclValue::TagDeclarator(t) => Ok((**t).clone()),
             _ => Err(KclError::new_semantic(KclErrorDetails::new(
-                format!("Not a tag declarator: {:?}", self),
+                format!("Not a tag declarator: {self:?}"),
                 self.clone().into(),
             ))),
         }

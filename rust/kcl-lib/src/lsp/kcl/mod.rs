@@ -423,7 +423,7 @@ impl Backend {
                     self.client
                         .log_message(
                             MessageType::ERROR,
-                            format!("token type `{:?}` not accounted for", token_type),
+                            format!("token type `{token_type:?}` not accounted for"),
                         )
                         .await;
                     continue;
@@ -544,11 +544,11 @@ impl Backend {
                     };
                     token_type_index = t;
 
-                    let m = match modifier_index.lock() {
+                    
+                    match modifier_index.lock() {
                         Ok(guard) => *guard,
                         _ => 0,
-                    };
-                    m
+                    }
                 }
                 _ => 0,
             };
@@ -773,7 +773,7 @@ impl Backend {
         // Read hash digest and consume hasher
         let result = hasher.finalize();
         // Get the hash as a string.
-        let user_id_hash = format!("{:x}", result);
+        let user_id_hash = format!("{result:x}");
 
         // Get the workspace folders.
         // The key of the workspace folder is the project name.
@@ -871,7 +871,7 @@ impl Backend {
 impl LanguageServer for Backend {
     async fn initialize(&self, params: InitializeParams) -> RpcResult<InitializeResult> {
         self.client
-            .log_message(MessageType::INFO, format!("initialize: {:?}", params))
+            .log_message(MessageType::INFO, format!("initialize: {params:?}"))
             .await;
 
         Ok(InitializeResult {
@@ -1011,7 +1011,7 @@ impl LanguageServer for Backend {
         #[cfg(not(target_arch = "wasm32"))]
         if let Err(err) = self.send_telemetry().await {
             self.client
-                .log_message(MessageType::WARNING, format!("failed to send telemetry: {}", err))
+                .log_message(MessageType::WARNING, format!("failed to send telemetry: {err}"))
                 .await;
         }
     }
@@ -1095,7 +1095,7 @@ impl LanguageServer for Backend {
                 Ok(Some(LspHover {
                     contents: HoverContents::Markup(MarkupContent {
                         kind: MarkupKind::Markdown,
-                        value: format!("```\n{}{}\n```\n\n{}", name, sig, docs),
+                        value: format!("```\n{name}{sig}\n```\n\n{docs}"),
                     }),
                     range: Some(range),
                 }))
@@ -1123,7 +1123,7 @@ impl LanguageServer for Backend {
                 Ok(Some(LspHover {
                     contents: HoverContents::Markup(MarkupContent {
                         kind: MarkupKind::Markdown,
-                        value: format!("```\n{}\n```\n\n{}", name, docs),
+                        value: format!("```\n{name}\n```\n\n{docs}"),
                     }),
                     range: Some(range),
                 }))
@@ -1158,17 +1158,17 @@ impl LanguageServer for Backend {
             } => Ok(Some(LspHover {
                 contents: HoverContents::Markup(MarkupContent {
                     kind: MarkupKind::Markdown,
-                    value: format!("```\n{}: {}\n```", name, ty),
+                    value: format!("```\n{name}: {ty}\n```"),
                 }),
                 range: Some(range),
             })),
             Hover::Variable { name, ty: None, range } => Ok(with_cached_var(&name, |value| {
-                let mut text: String = format!("```\n{}", name);
+                let mut text: String = format!("```\n{name}");
                 if let Some(ty) = value.principal_type() {
                     text.push_str(&format!(": {}", ty.human_friendly_type()));
                 }
                 if let Some(v) = value.value_str() {
-                    text.push_str(&format!(" = {}", v));
+                    text.push_str(&format!(" = {v}"));
                 }
                 text.push_str("\n```");
 

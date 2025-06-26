@@ -38,12 +38,12 @@ fn lint_lower_camel_case_var(decl: &VariableDeclarator, prog: &AstNode<Program>)
         let recast = prog.recast(&Default::default(), 0);
 
         let suggestion = Suggestion {
-            title: format!("rename '{}' to '{}'", name, new_name),
+            title: format!("rename '{name}' to '{new_name}'"),
             insert: recast,
             source_range: prog.as_source_range(),
         };
         findings.push(Z0001.at(
-            format!("found '{}'", name),
+            format!("found '{name}'"),
             SourceRange::new(ident.start, ident.end, ident.module_id),
             Some(suggestion.clone()),
         ));
@@ -61,7 +61,7 @@ fn lint_lower_camel_case_property(decl: &ObjectProperty, _prog: &AstNode<Program
     if !name.is_case(convert_case::Case::Camel) {
         // We can't rename the properties yet.
         findings.push(Z0001.at(
-            format!("found '{}'", name),
+            format!("found '{name}'"),
             SourceRange::new(ident.start, ident.end, ident.module_id),
             None,
         ));

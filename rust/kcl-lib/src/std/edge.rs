@@ -55,7 +55,7 @@ async fn inner_get_opposite_edge(
     } = &resp
     else {
         return Err(KclError::new_engine(KclErrorDetails::new(
-            format!("mcmd::Solid3dGetOppositeEdge response was not as expected: {:?}", resp),
+            format!("mcmd::Solid3dGetOppositeEdge response was not as expected: {resp:?}"),
             vec![args.source_range],
         )));
     };
@@ -105,8 +105,7 @@ async fn inner_get_next_adjacent_edge(
     else {
         return Err(KclError::new_engine(KclErrorDetails::new(
             format!(
-                "mcmd::Solid3dGetNextAdjacentEdge response was not as expected: {:?}",
-                resp
+                "mcmd::Solid3dGetNextAdjacentEdge response was not as expected: {resp:?}"
             ),
             vec![args.source_range],
         )));
@@ -161,8 +160,7 @@ async fn inner_get_previous_adjacent_edge(
     else {
         return Err(KclError::new_engine(KclErrorDetails::new(
             format!(
-                "mcmd::Solid3dGetPrevAdjacentEdge response was not as expected: {:?}",
-                resp
+                "mcmd::Solid3dGetPrevAdjacentEdge response was not as expected: {resp:?}"
             ),
             vec![args.source_range],
         )));
@@ -259,7 +257,7 @@ async fn inner_get_common_edge(
     } = &resp
     else {
         return Err(KclError::new_engine(KclErrorDetails::new(
-            format!("mcmd::Solid3dGetCommonEdge response was not as expected: {:?}", resp),
+            format!("mcmd::Solid3dGetCommonEdge response was not as expected: {resp:?}"),
             vec![args.source_range],
         )));
     };

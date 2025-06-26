@@ -63,7 +63,7 @@ pub async fn appearance(exec_state: &mut ExecState, args: Args) -> Result<KclVal
     // Make sure the color if set is valid.
     if !HEX_REGEX.is_match(&color) {
         return Err(KclError::new_semantic(KclErrorDetails::new(
-            format!("Invalid hex color (`{}`), try something like `#fff000`", color),
+            format!("Invalid hex color (`{color}`), try something like `#fff000`"),
             vec![args.source_range],
         )));
     }

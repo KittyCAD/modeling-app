@@ -12,7 +12,7 @@ use crate::{
 async fn _assert(value: bool, message: &str, args: &Args) -> Result<(), KclError> {
     if !value {
         return Err(KclError::new_type(KclErrorDetails::new(
-            format!("assert failed: {}", message),
+            format!("assert failed: {message}"),
             vec![args.source_range],
         )));
     }

@@ -755,7 +755,7 @@ extrude(profile001, length = 100)"#
         .await;
 
         let CacheResult::CheckImportsOnly { reapply_settings, .. } = result else {
-            panic!("Expected CheckImportsOnly, got {:?}", result);
+            panic!("Expected CheckImportsOnly, got {result:?}");
         };
 
         assert_eq!(reapply_settings, false);
@@ -839,7 +839,7 @@ extrude(profile001, length = 100)
         .await;
 
         let CacheResult::CheckImportsOnly { reapply_settings, .. } = result else {
-            panic!("Expected CheckImportsOnly, got {:?}", result);
+            panic!("Expected CheckImportsOnly, got {result:?}");
         };
 
         assert_eq!(reapply_settings, false);

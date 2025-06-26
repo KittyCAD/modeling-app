@@ -176,7 +176,7 @@ async fn send_pattern_transform<T: GeometryTrait>(
         &mock_ids
     } else {
         return Err(KclError::new_engine(KclErrorDetails::new(
-            format!("EntityLinearPattern response was not as expected: {:?}", resp),
+            format!("EntityLinearPattern response was not as expected: {resp:?}"),
             vec![args.source_range],
         )));
     };
@@ -970,7 +970,7 @@ async fn pattern_circular(
         &mock_ids
     } else {
         return Err(KclError::new_engine(KclErrorDetails::new(
-            format!("EntityCircularPattern response was not as expected: {:?}", resp),
+            format!("EntityCircularPattern response was not as expected: {resp:?}"),
             vec![args.source_range],
         )));
     };

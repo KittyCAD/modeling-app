@@ -290,7 +290,7 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
                         eprintln!("This test case failed, but it previously passed. If this is intended, and the test should actually be failing now, please delete kcl-lib/{} and other associated passing artifacts", ok_path.to_string_lossy());
                         panic!("{report:?}");
                     }
-                    let report = format!("{:?}", report);
+                    let report = format!("{report:?}");
 
                     let err_result = catch_unwind(AssertUnwindSafe(|| {
                         assert_snapshot(test, "Error from executing", || {

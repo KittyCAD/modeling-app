@@ -33,13 +33,12 @@ pub fn lint_should_be_default_plane(node: Node, _prog: &AstNode<Program>) -> Res
     }
     let suggestion = Suggestion {
         title: "use defaultPlane instead".to_owned(),
-        insert: format!("{}", plane_name),
+        insert: format!("{plane_name}"),
         source_range: call_source_range,
     };
     Ok(vec![Z0002.at(
         format!(
-            "custom plane in startSketchOn; defaultPlane {} would work here",
-            plane_name
+            "custom plane in startSketchOn; defaultPlane {plane_name} would work here"
         ),
         call_source_range,
         Some(suggestion),

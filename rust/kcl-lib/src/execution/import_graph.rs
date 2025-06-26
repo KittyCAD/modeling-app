@@ -147,7 +147,7 @@ fn import_dependencies(
                     ret.lock()
                         .map_err(|err| {
                             KclError::new_internal(KclErrorDetails::new(
-                                format!("Failed to lock mutex: {}", err),
+                                format!("Failed to lock mutex: {err}"),
                                 Default::default(),
                             ))
                         })?
@@ -157,7 +157,7 @@ fn import_dependencies(
                     ret.lock()
                         .map_err(|err| {
                             KclError::new_internal(KclErrorDetails::new(
-                                format!("Failed to lock mutex: {}", err),
+                                format!("Failed to lock mutex: {err}"),
                                 Default::default(),
                             ))
                         })?
@@ -179,7 +179,7 @@ fn import_dependencies(
 
     let ret = ret.lock().map_err(|err| {
         KclError::new_internal(KclErrorDetails::new(
-            format!("Failed to lock mutex: {}", err),
+            format!("Failed to lock mutex: {err}"),
             Default::default(),
         ))
     })?;
@@ -224,7 +224,7 @@ pub(crate) async fn import_universe(
         let repr = {
             let Some(module_info) = exec_state.get_module(module_id) else {
                 return Err(KclError::new_internal(KclErrorDetails::new(
-                    format!("Module {} not found", module_id),
+                    format!("Module {module_id} not found"),
                     vec![import_stmt.into()],
                 )));
             };

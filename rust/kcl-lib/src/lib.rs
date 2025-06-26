@@ -160,7 +160,7 @@ lazy_static::lazy_static! {
         #[cfg(feature = "cli")]
         let named_extensions = kittycad::types::FileImportFormat::value_variants()
             .iter()
-            .map(|x| format!("{}", x))
+            .map(|x| format!("{x}"))
             .collect::<Vec<String>>();
         #[cfg(not(feature = "cli"))]
         let named_extensions = vec![]; // We don't really need this outside of the CLI.

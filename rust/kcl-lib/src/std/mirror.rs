@@ -91,7 +91,7 @@ async fn inner_mirror_2d(
                     })?;
             } else {
                 return Err(KclError::new_engine(KclErrorDetails::new(
-                    format!("EntityMirror response was not as expected: {:?}", resp),
+                    format!("EntityMirror response was not as expected: {resp:?}"),
                     vec![args.source_range],
                 )));
             };
@@ -134,7 +134,7 @@ async fn inner_mirror_2d(
                     })?;
             } else {
                 return Err(KclError::new_engine(KclErrorDetails::new(
-                    format!("EntityMirrorAcrossEdge response was not as expected: {:?}", resp),
+                    format!("EntityMirrorAcrossEdge response was not as expected: {resp:?}"),
                     vec![args.source_range],
                 )));
             };

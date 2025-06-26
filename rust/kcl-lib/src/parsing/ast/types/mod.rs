@@ -3290,7 +3290,7 @@ impl Type {
                 .map(|t| t.human_friendly_type())
                 .collect::<Vec<_>>()
                 .join(" or "),
-            Type::Object { .. } => format!("an object with fields `{}`", self),
+            Type::Object { .. } => format!("an object with fields `{self}`"),
         }
     }
 

@@ -210,7 +210,7 @@ impl RuntimeType {
         let ty_val = exec_state
             .stack()
             .get(&format!("{}{}", memory::TYPE_PREFIX, alias), source_range)
-            .map_err(|_| CompilationError::err(source_range, format!("Unknown type: {}", alias)))?;
+            .map_err(|_| CompilationError::err(source_range, format!("Unknown type: {alias}")))?;
 
         Ok(match ty_val {
             KclValue::Type { value, .. } => match value {
@@ -241,7 +241,7 @@ impl RuntimeType {
                 "a tuple with values of types ({})",
                 tys.iter().map(Self::human_friendly_type).collect::<Vec<_>>().join(", ")
             ),
-            RuntimeType::Object(_) => format!("an object with fields {}", self),
+            RuntimeType::Object(_) => format!("an object with fields {self}"),
         }
     }
 

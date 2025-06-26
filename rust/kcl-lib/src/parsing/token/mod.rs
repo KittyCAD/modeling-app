@@ -609,7 +609,7 @@ impl From<ParseError<Input<'_>, winnow::error::ContextError>> for KclError {
         // TODO: Add the Winnow parser context to the error.
         // See https://github.com/KittyCAD/modeling-app/issues/784
         KclError::new_lexical(crate::errors::KclErrorDetails::new(
-            format!("found unknown token '{}'", bad_token),
+            format!("found unknown token '{bad_token}'"),
             vec![SourceRange::new(offset, offset + 1, module_id)],
         ))
     }

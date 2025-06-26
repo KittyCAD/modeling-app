@@ -269,7 +269,7 @@ impl Node<CallExpressionKw> {
             };
             KclError::new_undefined_value(
                 KclErrorDetails::new(
-                    format!("Result of user-defined function {} is undefined", fn_name),
+                    format!("Result of user-defined function {fn_name} is undefined"),
                     source_ranges,
                 ),
                 None,
@@ -555,9 +555,9 @@ fn type_err_str(expected: &Type, found: &KclValue, source_range: &SourceRange, e
     let found_human = found.human_friendly_type();
     let found_ty = found.principal_type_string();
     let found_str = if found_human == found_ty || found_human == format!("a {}", strip_backticks(&found_ty)) {
-        format!("a value with type {}", found_ty)
+        format!("a value with type {found_ty}")
     } else {
-        format!("{found_human} (with type {})", found_ty)
+        format!("{found_human} (with type {found_ty})")
     };
 
     let mut result = format!("{expected_str}, but found {found_str}.");
@@ -626,7 +626,7 @@ fn type_check_params_kw(
                     format!(
                         "`{label}` is not an argument of {}",
                         fn_name
-                            .map(|n| format!("`{}`", n))
+                            .map(|n| format!("`{n}`"))
                             .unwrap_or_else(|| "this function".to_owned()),
                     ),
                 ));
@@ -676,7 +676,7 @@ fn type_check_params_kw(
                     format!(
                         "The input argument of {} requires {}",
                         fn_name
-                            .map(|n| format!("`{}`", n))
+                            .map(|n| format!("`{n}`"))
                             .unwrap_or_else(|| "this function".to_owned()),
                         type_err_str(ty, &arg.1.value, &arg.1.source_range, exec_state),
                     ),
@@ -691,7 +691,7 @@ fn type_check_params_kw(
                 format!(
                     "{} expects an unlabeled first argument (`@{name}`), but it is labelled in the call",
                     fn_name
-                        .map(|n| format!("The function `{}`", n))
+                        .map(|n| format!("The function `{n}`"))
                         .unwrap_or_else(|| "This function".to_owned()),
                 ),
             ));
@@ -730,8 +730,7 @@ fn assign_args_to_params_kw(
                 None => {
                     return Err(KclError::new_semantic(KclErrorDetails::new(
                         format!(
-                            "This function requires a parameter {}, but you haven't passed it one.",
-                            name
+                            "This function requires a parameter {name}, but you haven't passed it one."
                         ),
                         source_ranges,
                     )));

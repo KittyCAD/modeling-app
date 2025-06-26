@@ -270,7 +270,7 @@ impl ExecutorContext {
                                     .get_from(name, env_ref, source_range, 0)
                                     .map_err(|_err| {
                                         KclError::new_internal(KclErrorDetails::new(
-                                            format!("{} is not defined in module (but was exported?)", name),
+                                            format!("{name} is not defined in module (but was exported?)"),
                                             vec![source_range],
                                         ))
                                     })?
@@ -1076,7 +1076,7 @@ impl Node<BinaryExpression> {
                 (&left_value, &right_value)
             {
                 return Ok(KclValue::String {
-                    value: format!("{}{}", left, right),
+                    value: format!("{left}{right}"),
                     meta,
                 });
             }
@@ -1236,7 +1236,7 @@ impl Node<BinaryExpression> {
             exec_state.clear_units_warnings(&sr);
             let mut err = CompilationError::err(
                 sr,
-                format!("{} numbers which have unknown or incompatible units.\nYou can probably fix this error by specifying the units using type ascription, e.g., `len: number(mm)` or `(a * b): number(deg)`.", verb),
+                format!("{verb} numbers which have unknown or incompatible units.\nYou can probably fix this error by specifying the units using type ascription, e.g., `len: number(mm)` or `(a * b): number(deg)`."),
             );
             err.tag = crate::errors::Tag::UnknownNumericUnits;
             exec_state.warn(err);
@@ -1416,7 +1416,7 @@ async fn inner_execute_pipe_body(
     for expression in body {
         if let Expr::TagDeclarator(_) = expression {
             return Err(KclError::new_semantic(KclErrorDetails::new(
-                format!("This cannot be in a PipeExpression: {:?}", expression),
+                format!("This cannot be in a PipeExpression: {expression:?}"),
                 vec![expression.into()],
             )));
         }
@@ -1776,7 +1776,7 @@ arr1 = [42]: [number(cm)]
             .get_from("arr1", result.mem_env, SourceRange::default(), 0)
             .unwrap();
         if let KclValue::HomArray { value, ty } = arr1 {
-            assert_eq!(value.len(), 1, "Expected Vec with specific length: found {:?}", value);
+            assert_eq!(value.len(), 1, "Expected Vec with specific length: found {value:?}");
             assert_eq!(*ty, RuntimeType::known_length(UnitLen::Cm));
             // Compare, ignoring meta.
             if let KclValue::Number { value, ty, .. } = &value[0] {
@@ -1945,7 +1945,7 @@ d = b + c
                     .await
                     .map_err(|err| {
                         KclError::new_internal(KclErrorDetails::new(
-                            format!("Failed to create mock engine connection: {}", err),
+                            format!("Failed to create mock engine connection: {err}"),
                             vec![SourceRange::default()],
                         ))
                     })

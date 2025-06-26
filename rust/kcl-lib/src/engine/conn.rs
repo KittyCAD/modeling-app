@@ -427,7 +427,7 @@ impl EngineManager for EngineConnection {
                 request_sent: tx,
             })
             .await
-            .map_err(|e| KclError::new_engine(KclErrorDetails::new(format!("Failed to send debug: {}", e), vec![])))?;
+            .map_err(|e| KclError::new_engine(KclErrorDetails::new(format!("Failed to send debug: {e}"), vec![])))?;
 
         let _ = rx.await;
         Ok(())
@@ -463,7 +463,7 @@ impl EngineManager for EngineConnection {
             .await
             .map_err(|e| {
                 KclError::new_engine(KclErrorDetails::new(
-                    format!("Failed to send modeling command: {}", e),
+                    format!("Failed to send modeling command: {e}"),
                     vec![source_range],
                 ))
             })?;
@@ -533,7 +533,7 @@ impl EngineManager for EngineConnection {
         }
 
         Err(KclError::new_engine(KclErrorDetails::new(
-            format!("Modeling command timed out `{}`", id),
+            format!("Modeling command timed out `{id}`"),
             vec![source_range],
         )))
     }

@@ -42,7 +42,7 @@ impl Build {
             .to_string();
 
         if !stable {
-            version = format!("{}-nightly", version);
+            version = format!("{version}-nightly");
         }
 
         let release_tag = if stable {
@@ -60,8 +60,7 @@ impl Build {
             // bail early if the tag doesn't match the version
             // TODO: error here when we use the tags with kcl
             println!(
-                "Tag {} doesn't match version {}. Did you forget to update Cargo.toml?",
-                release_tag, version
+                "Tag {release_tag} doesn't match version {version}. Did you forget to update Cargo.toml?"
             );
         }
 

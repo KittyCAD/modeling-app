@@ -198,7 +198,7 @@ impl Backend {
             .map_err(|err| Error {
                 code: tower_lsp::jsonrpc::ErrorCode::from(69),
                 data: None,
-                message: Cow::from(format!("Failed to get completions from zoo api: {}", err)),
+                message: Cow::from(format!("Failed to get completions from zoo api: {err}")),
             })?;
         Ok(resp.completions)
     }
@@ -209,7 +209,7 @@ impl Backend {
         let mut lock = copy.write().map_err(|err| Error {
             code: tower_lsp::jsonrpc::ErrorCode::from(69),
             data: None,
-            message: Cow::from(format!("Failed lock: {}", err)),
+            message: Cow::from(format!("Failed lock: {err}")),
         })?;
         *lock = params;
         Ok(Success::new(true))
@@ -254,7 +254,7 @@ impl Backend {
             .map_err(|err| Error {
                 code: tower_lsp::jsonrpc::ErrorCode::from(69),
                 data: None,
-                message: Cow::from(format!("Failed to get completions: {}", err)),
+                message: Cow::from(format!("Failed to get completions: {err}")),
             })?;
         #[cfg(not(test))]
         let mut completion_list = vec![];
@@ -294,7 +294,7 @@ part001 = cube(pos = [0,0], scale = 20)
 
     pub async fn accept_completion(&self, params: CopilotAcceptCompletionParams) {
         self.client
-            .log_message(MessageType::INFO, format!("Accepted completions: {:?}", params))
+            .log_message(MessageType::INFO, format!("Accepted completions: {params:?}"))
             .await;
 
         // Get the original telemetry data.
@@ -303,7 +303,7 @@ part001 = cube(pos = [0,0], scale = 20)
         };
 
         self.client
-            .log_message(MessageType::INFO, format!("Original telemetry: {:?}", original))
+            .log_message(MessageType::INFO, format!("Original telemetry: {original:?}"))
             .await;
 
         // TODO: Send the telemetry data to the zoo api.
@@ -311,7 +311,7 @@ part001 = cube(pos = [0,0], scale = 20)
 
     pub async fn reject_completions(&self, params: CopilotRejectCompletionParams) {
         self.client
-            .log_message(MessageType::INFO, format!("Rejected completions: {:?}", params))
+            .log_message(MessageType::INFO, format!("Rejected completions: {params:?}"))
             .await;
 
         // Get the original telemetry data.
@@ -323,7 +323,7 @@ part001 = cube(pos = [0,0], scale = 20)
         }
 
         self.client
-            .log_message(MessageType::INFO, format!("Original telemetry: {:?}", originals))
+            .log_message(MessageType::INFO, format!("Original telemetry: {originals:?}"))
             .await;
 
         // TODO: Send the telemetry data to the zoo api.
