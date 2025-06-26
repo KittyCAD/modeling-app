@@ -104,6 +104,7 @@ export const ProjectExplorer = ({
   const [contextMenuRow, setContextMenuRow] =
     useState<FileExplorerEntry | null>(null)
   const [isRenaming, setIsRenaming] = useState<boolean>(false)
+  const lastIndexBeforeNothing = useRef<number>(-2)
 
   const fileExplorerContainer = useRef<HTMLDivElement | null>(null)
   const projectExplorerRef = useRef<HTMLDivElement | null>(null)
@@ -129,7 +130,7 @@ export const ProjectExplorer = ({
       return
     }
 
-    const row = rowsToRenderRef.current[activeIndexRef.current] || null
+    const row =  rowsToRenderRef.current[activeIndexRef.current] || rowsToRenderRef.current[lastIndexBeforeNothing.current] || null
     setFakeRow({ entry: row, isFile: true })
     if (row?.key) {
       // If the file tree had the folder opened make the new one open.
@@ -143,7 +144,7 @@ export const ProjectExplorer = ({
     if (createFolderPressed <= 0 || readOnly) {
       return
     }
-    const row = rowsToRenderRef.current[activeIndexRef.current] || null
+    const row = rowsToRenderRef.current[activeIndexRef.current] || rowsToRenderRef.current[lastIndexBeforeNothing.current] || null
     setFakeRow({ entry: row, isFile: false })
     if (row?.key) {
       // If the file tree had the folder opened make the new one open.
@@ -202,6 +203,7 @@ export const ProjectExplorer = ({
       setContextMenuRow(null)
       setIsRenaming(false)
     }
+
 
     // gotcha: sync state
     openedRowsRef.current = openedRows
@@ -545,6 +547,9 @@ export const ProjectExplorer = ({
         projectExplorerRef.current &&
         !path.includes(projectExplorerRef.current)
       ) {
+        if (activeIndexRef.current > 0) {
+          lastIndexBeforeNothing.current = activeIndexRef.current
+        }
         setActiveIndex(NOTHING_IS_SELECTED)
       }
     }
