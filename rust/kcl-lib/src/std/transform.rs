@@ -220,7 +220,7 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
         ]),
         exec_state,
     )?;
-    let origin = axis.clone().map(|a| a.to_origin());
+    let origin = axis.clone().map(|a| a.axis_origin()).unwrap_or_default();
     let axis = axis.map(|a| a.to_point3d());
     let angle: Option<TyF64> = args.get_kw_arg_opt("angle", &RuntimeType::degrees(), exec_state)?;
     let global = args.get_kw_arg_opt("global", &RuntimeType::bool(), exec_state)?;
@@ -351,12 +351,8 @@ async fn inner_rotate(
                 z: origin[2],
             },
         })
-    } else if let Some(global) = global {
-        if global {
+    } else if global.unwrap_or(false) {
             Some(OriginType::Global)
-        } else {
-            Some(OriginType::Local)
-        }
     } else {
         Some(OriginType::Local)
     };
