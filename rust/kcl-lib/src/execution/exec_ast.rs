@@ -792,11 +792,10 @@ fn var_in_own_ref_err(e: KclError, being_declared: &Option<String>) -> KclError 
     // TODO after June 26th: replace this with a let-chain,
     // which will be available in Rust 1.88
     // https://rust-lang.github.io/rfcs/2497-if-let-chains.html
-    match (&being_declared, &name) {
-        (Some(name0), Some(name1)) if name0 == name1 => {
-            details.message = format!("You can't use `{name0}` because you're currently trying to define it. Use a different variable here instead.");
-        }
-        _ => {}
+    if let (Some(name0), Some(name1)) = (&being_declared, &name)
+        && name0 == name1
+    {
+        details.message = format!("You can't use `{name0}` because you're currently trying to define it. Use a different variable here instead.");
     }
     KclError::UndefinedValue { details, name }
 }
