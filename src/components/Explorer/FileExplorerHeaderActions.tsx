@@ -50,7 +50,7 @@ export const FileExplorerHeaderActions = ({
 
       <ActionButton
         Element="button"
-        data-testid="create-folder-button"
+        data-testid="refresh-explorer"
         iconStart={{
           icon: 'subtract',
           iconClassName: '!text-current',
@@ -64,7 +64,7 @@ export const FileExplorerHeaderActions = ({
 
       <ActionButton
         Element="button"
-        data-testid="create-folder-button"
+        data-testid="collapse-all-folders-explorer"
         iconStart={{
           icon: 'collapse',
           iconClassName: '!text-current',
