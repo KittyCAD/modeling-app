@@ -22,7 +22,7 @@ import {
 } from '@src/components/ModelingSidebar/ModelingPanes/MemoryPane'
 import type { useKclContext } from '@src/lang/KclProvider'
 import { kclErrorsByFilename } from '@src/lang/errors'
-import { editorManager, systemIOActor, useSettings } from '@src/lib/singletons'
+import { commandBarActor, editorManager, systemIOActor, useSettings } from '@src/lib/singletons'
 import type { settingsMachine } from '@src/machines/settingsMachine'
 import { ProjectExplorer } from '@src/components/Explorer/ProjectExplorer'
 import { FileExplorerHeaderActions } from '@src/components/Explorer/FileExplorerHeaderActions'
@@ -34,7 +34,10 @@ import { addPlaceHoldersForNewFileAndFolder } from '@src/components/Explorer/uti
 import { useFolders } from '@src/machines/systemIO/hooks'
 import type { Project } from '@src/lib/project'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
-import { FILE_EXT } from '@src/lib/constants'
+import { FILE_EXT, INSERT_FOREIGN_TOAST_ID } from '@src/lib/constants'
+import { relevantFileExtensions } from '@src/lang/wasmUtils'
+import toast from 'react-hot-toast'
+import { ToastInsert } from '@src/components/ToastInsert'
 
 export type SidebarType =
   | 'code'
@@ -146,12 +149,12 @@ export const sidebarPanes: SidebarPane[] = [
     Content: (props: { id: SidebarType; onClose: () => void }) => {
       const projects = useFolders()
       const loaderData = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
-      const projectNameRef = useRef(loaderData.project?.name)
+      const projectRef = useRef(loaderData.project)
       const [theProject, setTheProject] = useState<Project | null>(null)
       const { project, file } = loaderData
       const settings = useSettings()
       useEffect(() => {
-        projectNameRef.current = loaderData?.project?.name
+        projectRef.current = loaderData?.project
 
         // Have no idea why the project loader data doesn't have the children from the ls on disk
         // That means it is a different object or cached incorrectly?
@@ -188,19 +191,45 @@ export const sidebarPanes: SidebarPane[] = [
           applicationProjectDirectory
         )
 
+        const RELEVANT_FILE_EXTENSIONS = relevantFileExtensions()
+        const isRelevantFile = (filename: string): boolean =>
+          RELEVANT_FILE_EXTENSIONS.some((ext) => filename.endsWith('.' + ext))
+
         // Only open the file if it is a kcl file.
         if (
-          projectNameRef.current &&
+          projectRef.current?.name &&
           entry.children == null &&
           entry.path.endsWith(FILE_EXT)
         ) {
           systemIOActor.send({
             type: SystemIOMachineEvents.navigateToFile,
             data: {
-              requestedProjectName: projectNameRef.current,
+              requestedProjectName: projectRef.current.name,
               requestedFileName: requestedFileName,
             },
           })
+        } else if (isRelevantFile(entry.path) && projectRef.current?.path) {
+          // Allow insert if it is a importable file
+          toast.custom(
+            ToastInsert({
+              onInsert: () => {
+                const relativeFilePath = entry.path.replace(
+                  projectRef.current?.path + window.electron.sep,
+                  ''
+                )
+                commandBarActor.send({
+                  type: 'Find and select command',
+                  data: {
+                    name: 'Insert',
+                    groupId: 'code',
+                    argDefaultValues: { path: relativeFilePath },
+                  },
+                })
+                toast.dismiss(INSERT_FOREIGN_TOAST_ID)
+              },
+            }),
+            { duration: 30000, id: INSERT_FOREIGN_TOAST_ID }
+          )
         }
       }
 
