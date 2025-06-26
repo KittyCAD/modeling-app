@@ -1485,9 +1485,8 @@ extrude001 = extrude(profile001, length = 100)
     // One dumb hardcoded screen pixel value
     const testPoint = { x: 620, y: 257 }
     const [clickOnWall] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
-    const expectedOutput = `helix001 = helix(  cylinder = extrude001,  revolutions = 1,  angleStart = 360,  ccw = false,)`
-    const expectedLine = `cylinder = extrude001,`
-    const expectedEditedOutput = `helix001 = helix(  cylinder = extrude001,  revolutions = 1,  angleStart = 360,  ccw = true,)`
+    const expectedOutput = `helix001 = helix(cylinder = extrude001, revolutions = 1, angleStart = 360)`
+    const expectedEditedOutput = `helix001 = helix(cylinder = extrude001, revolutions = 1, angleStart = 10)`
 
     await test.step(`Go through the command bar flow`, async () => {
       await toolbar.helixButton.click()
@@ -1500,7 +1499,6 @@ extrude001 = extrude(profile001, length = 100)
           AngleStart: '',
           Revolutions: '',
           Radius: '',
-          CounterClockWise: '',
         },
         highlightedHeaderArg: 'mode',
         commandName: 'Helix',
@@ -1515,7 +1513,6 @@ extrude001 = extrude(profile001, length = 100)
           Cylinder: '',
           AngleStart: '',
           Revolutions: '',
-          CounterClockWise: '',
         },
         highlightedHeaderArg: 'cylinder',
         commandName: 'Helix',
@@ -1531,18 +1528,17 @@ extrude001 = extrude(profile001, length = 100)
           Cylinder: '1 face',
           AngleStart: '360',
           Revolutions: '1',
-          CounterClockWise: '',
         },
         commandName: 'Helix',
       })
-      await cmdBar.progressCmdBar()
+      await cmdBar.submit()
     })
 
     await test.step(`Confirm code is added to the editor, scene has changed`, async () => {
       await editor.expectEditor.toContain(expectedOutput)
       await editor.expectState({
         diagnostics: [],
-        activeLines: [expectedLine],
+        activeLines: [expectedOutput],
         highlightedCode: '',
       })
     })
@@ -1554,22 +1550,21 @@ extrude001 = extrude(profile001, length = 100)
       await cmdBar.expectState({
         commandName: 'Helix',
         stage: 'arguments',
-        currentArgKey: 'CounterClockWise',
-        currentArgValue: '',
+        currentArgKey: 'angleStart',
+        currentArgValue: '360',
         headerArguments: {
           AngleStart: '360',
           Revolutions: '1',
-          CounterClockWise: '',
         },
-        highlightedHeaderArg: 'CounterClockWise',
+        highlightedHeaderArg: 'angleStart',
       })
-      await cmdBar.selectOption({ name: 'True' }).click()
+      await page.keyboard.insertText('10')
+      await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         stage: 'review',
         headerArguments: {
-          AngleStart: '360',
+          AngleStart: '10',
           Revolutions: '1',
-          CounterClockWise: 'true',
         },
         commandName: 'Helix',
       })
