@@ -3570,17 +3570,17 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const { target, tool } = input
+        const { solids, tools } = input
         if (
-          !target.graphSelections[0].artifact ||
-          !tool.graphSelections[0].artifact
+          !solids.graphSelections.some((selection) => selection.artifact) ||
+          !tools.graphSelections.some((selection) => selection.artifact)
         ) {
           return Promise.reject(new Error('No artifact in selections found'))
         }
 
-        await applySubtractFromTargetOperatorSelections(
-          target.graphSelections[0],
-          tool.graphSelections[0],
+        const result = await applySubtractFromTargetOperatorSelections(
+          solids,
+          tools,
           {
             kclManager,
             codeManager,
@@ -3588,6 +3588,9 @@ export const modelingMachine = setup({
             editorManager,
           }
         )
+        if (err(result)) {
+          return Promise.reject(result)
+        }
       }
     ),
     boolUnionAstMod: fromPromise(
@@ -3605,12 +3608,15 @@ export const modelingMachine = setup({
           return Promise.reject(new Error('No artifact in selections found'))
         }
 
-        await applyUnionFromTargetOperatorSelections(solids, {
+        const result = await applyUnionFromTargetOperatorSelections(solids, {
           kclManager,
           codeManager,
           engineCommandManager,
           editorManager,
         })
+        if (err(result)) {
+          return Promise.reject(result)
+        }
       }
     ),
     boolIntersectAstMod: fromPromise(
@@ -3628,12 +3634,18 @@ export const modelingMachine = setup({
           return Promise.reject(new Error('No artifact in selections found'))
         }
 
-        await applyIntersectFromTargetOperatorSelections(solids, {
-          kclManager,
-          codeManager,
-          engineCommandManager,
-          editorManager,
-        })
+        const result = await applyIntersectFromTargetOperatorSelections(
+          solids,
+          {
+            kclManager,
+            codeManager,
+            engineCommandManager,
+            editorManager,
+          }
+        )
+        if (err(result)) {
+          return Promise.reject(result)
+        }
       }
     ),
 

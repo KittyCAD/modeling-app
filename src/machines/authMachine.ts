@@ -7,7 +7,7 @@ import {
 } from '@src/env'
 import { assign, fromPromise, setup } from 'xstate'
 
-import { COOKIE_NAME } from '@src/lib/constants'
+import { COOKIE_NAME, OAUTH2_DEVICE_CLIENT_ID } from '@src/lib/constants'
 import {
   getUser as getUserDesktop,
   readTokenFile,
@@ -254,8 +254,32 @@ async function getAndSyncStoredToken(input: {
 async function logout() {
   localStorage.removeItem(TOKEN_PERSIST_KEY)
   if (isDesktop()) {
-    await writeTokenFile('')
-    return Promise.resolve(null)
+    try {
+      let token = await readTokenFile()
+
+      if (token) {
+        try {
+          await fetch(withBaseUrl('/oauth2/token/revoke'), {
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams({
+              token: token,
+              client_id: OAUTH2_DEVICE_CLIENT_ID,
+            }).toString(),
+          })
+        } catch (e) {
+          console.error('Error revoking token:', e)
+        }
+
+        await writeTokenFile('')
+        return Promise.resolve(null)
+      }
+    } catch (e) {
+      console.error('Error reading token during logout (ignoring):', e)
+    }
   }
 
   return fetch(withBaseUrl('/logout'), {
