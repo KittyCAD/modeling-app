@@ -659,7 +659,7 @@ const DefaultPlanes = () => {
           customSuffix={plane.customSuffix}
           icon={'plane'}
           name={plane.name}
-          selectable={sketchNoFace}
+          selectable={true}
           onClick={sketchNoFace ? () => onClickPlane(plane.id) : undefined}
           menuItems={[
             <ContextMenuItem
