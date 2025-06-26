@@ -78,13 +78,13 @@ async fn inner_rectangle(
             return Err(KclError::new_semantic(KclErrorDetails::new(
                 "You must supply either `corner` or `center` arguments, but not both".to_string(),
                 vec![args.source_range],
-            )))
+            )));
         }
         (Some(_), Some(_)) => {
             return Err(KclError::new_semantic(KclErrorDetails::new(
                 "You must supply either `corner` or `center` arguments, but not both".to_string(),
                 vec![args.source_range],
-            )))
+            )));
         }
     };
     let units = ty.expect_length();
