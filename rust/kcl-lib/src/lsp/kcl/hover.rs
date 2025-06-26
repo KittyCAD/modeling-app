@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
 use tower_lsp::lsp_types::Range as LspRange;
 
-use crate::{parsing::ast::types::*, SourceRange};
+use crate::{SourceRange, parsing::ast::types::*};
 
 /// Describes information about a hover.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]

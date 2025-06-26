@@ -1,12 +1,12 @@
 //! Standard library plane helpers.
 
-use kcmc::{each_cmd as mcmd, length_unit::LengthUnit, shared::Color, ModelingCmd};
+use kcmc::{ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit, shared::Color};
 use kittycad_modeling_cmds as kcmc;
 
 use super::{args::TyF64, sketch::PlaneData};
 use crate::{
     errors::KclError,
-    execution::{types::RuntimeType, ExecState, KclValue, ModelingCmdMeta, Plane, PlaneType},
+    execution::{ExecState, KclValue, ModelingCmdMeta, Plane, PlaneType, types::RuntimeType},
     std::Args,
 };
 

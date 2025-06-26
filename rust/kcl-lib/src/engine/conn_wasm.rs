@@ -11,10 +11,10 @@ use uuid::Uuid;
 use wasm_bindgen::prelude::*;
 
 use crate::{
+    SourceRange,
     engine::{AsyncTasks, EngineStats},
     errors::{KclError, KclErrorDetails},
     execution::{DefaultPlanes, IdGenerator},
-    SourceRange,
 };
 
 #[wasm_bindgen(module = "/../../src/lang/std/engineConnection.ts")]

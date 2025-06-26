@@ -1,15 +1,15 @@
 use anyhow::Result;
 
 use crate::{
-    engine::{PlaneName, DEFAULT_PLANE_INFO},
+    SourceRange,
+    engine::{DEFAULT_PLANE_INFO, PlaneName},
     errors::Suggestion,
-    execution::{types::UnitLen, PlaneInfo, Point3d},
-    lint::rule::{def_finding, Discovered, Finding},
+    execution::{PlaneInfo, Point3d, types::UnitLen},
+    lint::rule::{Discovered, Finding, def_finding},
     parsing::ast::types::{
         BinaryPart, CallExpressionKw, Expr, LiteralValue, Node as AstNode, ObjectExpression, Program, UnaryOperator,
     },
     walk::Node,
-    SourceRange,
 };
 
 def_finding!(
@@ -43,9 +43,7 @@ pub fn lint_should_be_offset_plane(node: Node, _prog: &AstNode<Program>) -> Resu
         source_range: call_source_range,
     };
     Ok(vec![Z0003.at(
-        format!(
-            "custom plane in startSketchOn; offsetPlane from {plane_name} would work here"
-        ),
+        format!("custom plane in startSketchOn; offsetPlane from {plane_name} would work here"),
         call_source_range,
         Some(suggestion),
     )])
@@ -270,7 +268,7 @@ fn normalize_plane_info(plane_info: &PlaneInfo) -> PlaneInfo {
 
 #[cfg(test)]
 mod tests {
-    use super::{lint_should_be_offset_plane, Z0003};
+    use super::{Z0003, lint_should_be_offset_plane};
     use crate::lint::rule::{test_finding, test_no_finding};
 
     test_finding!(

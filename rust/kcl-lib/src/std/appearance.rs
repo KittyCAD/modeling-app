@@ -1,7 +1,7 @@
 //! Standard library appearance.
 
 use anyhow::Result;
-use kcmc::{each_cmd as mcmd, ModelingCmd};
+use kcmc::{ModelingCmd, each_cmd as mcmd};
 use kittycad_modeling_cmds::{self as kcmc, shared::Color};
 use regex::Regex;
 use rgba_simple::Hex;
@@ -10,8 +10,8 @@ use super::args::TyF64;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        types::{ArrayLen, RuntimeType},
         ExecState, KclValue, SolidOrImportedGeometry,
+        types::{ArrayLen, RuntimeType},
     },
     std::Args,
 };

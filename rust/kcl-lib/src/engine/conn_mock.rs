@@ -12,16 +12,16 @@ use kcmc::{
         WebSocketResponse,
     },
 };
-use kittycad_modeling_cmds::{self as kcmc, websocket::ModelingCmdReq, ImportFiles, ModelingCmd};
+use kittycad_modeling_cmds::{self as kcmc, ImportFiles, ModelingCmd, websocket::ModelingCmdReq};
 use tokio::sync::RwLock;
 use uuid::Uuid;
 
 use crate::{
+    SourceRange,
     engine::{AsyncTasks, EngineStats},
     errors::KclError,
     exec::DefaultPlanes,
     execution::IdGenerator,
-    SourceRange,
 };
 
 #[derive(Debug, Clone)]

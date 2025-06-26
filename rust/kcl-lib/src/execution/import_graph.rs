@@ -6,12 +6,12 @@ use std::{
 use anyhow::Result;
 
 use crate::{
+    ExecState, ExecutorContext, KclError, ModuleId, SourceRange,
     errors::KclErrorDetails,
     execution::typed_path::TypedPath,
     modules::{ModulePath, ModuleRepr},
     parsing::ast::types::{ImportPath, ImportStatement, Node as AstNode},
     walk::{Node, Visitable},
-    ExecState, ExecutorContext, KclError, ModuleId, SourceRange,
 };
 
 /// Specific dependency between two modules. The 0th element of this info
@@ -244,9 +244,7 @@ mod tests {
     use crate::parsing::ast::types::{ImportSelector, Program};
 
     macro_rules! kcl {
-        ( $kcl:expr_2021 ) => {{
-            $crate::parsing::top_level_parse($kcl).unwrap()
-        }};
+        ( $kcl:expr_2021 ) => {{ $crate::parsing::top_level_parse($kcl).unwrap() }};
     }
 
     fn into_module_info(program: AstNode<Program>) -> DependencyInfo {

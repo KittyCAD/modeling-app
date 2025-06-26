@@ -16,10 +16,9 @@ pub(crate) use import::PreImportedGeometry;
 use indexmap::IndexMap;
 pub use kcl_value::{KclObjectFields, KclValue};
 use kcmc::{
-    each_cmd as mcmd,
-    ok_response::{output::TakeSnapshot, OkModelingCmdResponse},
+    ImageFormat, ModelingCmd, each_cmd as mcmd,
+    ok_response::{OkModelingCmdResponse, output::TakeSnapshot},
     websocket::{ModelingSessionData, OkWebSocketResponseData},
-    ImageFormat, ModelingCmd,
 };
 use kittycad_modeling_cmds::{self as kcmc, id::ModelingCmdId};
 pub use memory::EnvironmentRef;
@@ -31,6 +30,7 @@ pub use state::{ExecState, MetaSettings};
 use uuid::Uuid;
 
 use crate::{
+    CompilationError, ExecError, KclErrorWithOutputs,
     engine::{EngineManager, GridScaleBehavior},
     errors::{KclError, KclErrorDetails},
     execution::{
@@ -43,7 +43,6 @@ use crate::{
     modules::{ModuleId, ModulePath, ModuleRepr},
     parsing::ast::types::{Expr, ImportPath, NodeRef},
     source_range::SourceRange,
-    CompilationError, ExecError, KclErrorWithOutputs,
 };
 
 pub(crate) mod annotations;
@@ -1446,7 +1445,7 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     use super::*;
-    use crate::{errors::KclErrorDetails, execution::memory::Stack, ModuleId};
+    use crate::{ModuleId, errors::KclErrorDetails, execution::memory::Stack};
 
     /// Convenience function to get a JSON value from memory and unwrap.
     #[track_caller]

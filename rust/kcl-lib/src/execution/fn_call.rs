@@ -2,19 +2,19 @@ use async_recursion::async_recursion;
 use indexmap::IndexMap;
 
 use crate::{
+    CompilationError, NodePath,
     errors::{KclError, KclErrorDetails},
     execution::{
+        BodyType, EnvironmentRef, ExecState, ExecutorContext, KclValue, Metadata, StatementKind, TagEngineInfo,
+        TagIdentifier,
         cad_op::{Group, OpArg, OpKclValue, Operation},
         kcl_value::FunctionSource,
         memory,
         types::RuntimeType,
-        BodyType, EnvironmentRef, ExecState, ExecutorContext, KclValue, Metadata, StatementKind, TagEngineInfo,
-        TagIdentifier,
     },
     parsing::ast::types::{CallExpressionKw, DefaultParamVal, FunctionExpression, Node, Program, Type},
     source_range::SourceRange,
     std::StdFn,
-    CompilationError, NodePath,
 };
 
 #[derive(Debug, Clone)]
@@ -729,9 +729,7 @@ fn assign_args_to_params_kw(
                 }
                 None => {
                     return Err(KclError::new_semantic(KclErrorDetails::new(
-                        format!(
-                            "This function requires a parameter {name}, but you haven't passed it one."
-                        ),
+                        format!("This function requires a parameter {name}, but you haven't passed it one."),
                         source_ranges,
                     )));
                 }
@@ -745,7 +743,9 @@ fn assign_args_to_params_kw(
         let Some(unlabeled) = unlabelled else {
             return Err(if args.kw_args.labeled.contains_key(param_name) {
                 KclError::new_semantic(KclErrorDetails::new(
-                    format!("The function does declare a parameter named '{param_name}', but this parameter doesn't use a label. Try removing the `{param_name}:`"),
+                    format!(
+                        "The function does declare a parameter named '{param_name}', but this parameter doesn't use a label. Try removing the `{param_name}:`"
+                    ),
                     source_ranges,
                 ))
             } else {
@@ -798,7 +798,7 @@ mod test {
 
     use super::*;
     use crate::{
-        execution::{memory::Stack, parse_execute, types::NumericType, ContextType},
+        execution::{ContextType, memory::Stack, parse_execute, types::NumericType},
         parsing::ast::types::{DefaultParamVal, Identifier, Parameter},
     };
 

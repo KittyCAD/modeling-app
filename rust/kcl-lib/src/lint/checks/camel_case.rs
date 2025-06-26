@@ -2,11 +2,11 @@ use anyhow::Result;
 use convert_case::Casing;
 
 use crate::{
+    SourceRange,
     errors::Suggestion,
-    lint::rule::{def_finding, Discovered, Finding},
+    lint::rule::{Discovered, Finding, def_finding},
     parsing::ast::types::{Node as AstNode, ObjectProperty, Program, VariableDeclarator},
     walk::Node,
-    SourceRange,
 };
 
 def_finding!(
@@ -93,7 +93,7 @@ pub fn lint_object_properties(decl: Node, prog: &AstNode<Program>) -> Result<Vec
 
 #[cfg(test)]
 mod tests {
-    use super::{lint_object_properties, lint_variables, Z0001};
+    use super::{Z0001, lint_object_properties, lint_variables};
     use crate::lint::rule::{assert_finding, test_finding, test_no_finding};
 
     #[tokio::test]

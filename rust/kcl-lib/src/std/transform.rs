@@ -2,21 +2,20 @@
 
 use anyhow::Result;
 use kcmc::{
-    each_cmd as mcmd,
+    ModelingCmd, each_cmd as mcmd,
     length_unit::LengthUnit,
     shared,
     shared::{Point3d, Point4d},
-    ModelingCmd,
 };
 use kittycad_modeling_cmds as kcmc;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        types::{PrimitiveType, RuntimeType},
         ExecState, KclValue, SolidOrSketchOrImportedGeometry,
+        types::{PrimitiveType, RuntimeType},
     },
-    std::{args::TyF64, axis_or_reference::Axis3dOrPoint3d, Args},
+    std::{Args, args::TyF64, axis_or_reference::Axis3dOrPoint3d},
 };
 
 /// Scale a solid or a sketch.

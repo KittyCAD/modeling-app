@@ -2,8 +2,8 @@ pub(crate) mod digest;
 pub mod types;
 
 use crate::{
-    parsing::ast::types::{BinaryPart, BodyItem, Expr, LiteralIdentifier},
     ModuleId,
+    parsing::ast::types::{BinaryPart, BodyItem, Expr, LiteralIdentifier},
 };
 
 impl BodyItem {

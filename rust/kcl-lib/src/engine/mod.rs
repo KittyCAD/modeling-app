@@ -12,15 +12,15 @@ pub mod conn_wasm;
 use std::{
     collections::HashMap,
     sync::{
-        atomic::{AtomicUsize, Ordering},
         Arc,
+        atomic::{AtomicUsize, Ordering},
     },
 };
 
 pub use async_tasks::AsyncTasks;
 use indexmap::IndexMap;
 use kcmc::{
-    each_cmd as mcmd,
+    ModelingCmd, each_cmd as mcmd,
     length_unit::LengthUnit,
     ok_response::OkModelingCmdResponse,
     shared::Color,
@@ -28,7 +28,6 @@ use kcmc::{
         BatchResponse, ModelingBatch, ModelingCmdReq, ModelingSessionData, OkWebSocketResponseData, WebSocketRequest,
         WebSocketResponse,
     },
-    ModelingCmd,
 };
 use kittycad_modeling_cmds as kcmc;
 use parse_display::{Display, FromStr};
@@ -39,9 +38,9 @@ use uuid::Uuid;
 use web_time::Instant;
 
 use crate::{
-    errors::{KclError, KclErrorDetails},
-    execution::{types::UnitLen, DefaultPlanes, IdGenerator, PlaneInfo, Point3d},
     SourceRange,
+    errors::{KclError, KclErrorDetails},
+    execution::{DefaultPlanes, IdGenerator, PlaneInfo, Point3d, types::UnitLen},
 };
 
 lazy_static::lazy_static! {
@@ -291,7 +290,10 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         // the artifact graph won't care either if its gone since you can't select it
         // anymore anyways.
         if let Err(err) = self.async_tasks().join_all().await {
-            crate::log::logln!("Error waiting for async tasks (this is typically fine and just means that an edge became something else): {:?}", err);
+            crate::log::logln!(
+                "Error waiting for async tasks (this is typically fine and just means that an edge became something else): {:?}",
+                err
+            );
         }
 
         // Flush the batch to make sure nothing remains.

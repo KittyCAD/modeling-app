@@ -7,10 +7,10 @@ use super::utils::untype_point;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        types::{NumericType, PrimitiveType, RuntimeType},
         ExecState, KclValue, Sketch, TagIdentifier,
+        types::{NumericType, PrimitiveType, RuntimeType},
     },
-    std::{args::TyF64, utils::between, Args},
+    std::{Args, args::TyF64, utils::between},
 };
 
 /// Returns the point at the end of the given segment.

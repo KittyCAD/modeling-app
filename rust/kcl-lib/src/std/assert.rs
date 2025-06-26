@@ -5,7 +5,7 @@ use anyhow::Result;
 use super::args::TyF64;
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{types::RuntimeType, ExecState, KclValue},
+    execution::{ExecState, KclValue, types::RuntimeType},
     std::Args,
 };
 

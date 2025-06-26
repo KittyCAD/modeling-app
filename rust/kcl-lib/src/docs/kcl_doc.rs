@@ -8,6 +8,7 @@ use tower_lsp::lsp_types::{
 };
 
 use crate::{
+    ModuleId,
     execution::annotations,
     parsing::{
         ast::types::{
@@ -15,7 +16,6 @@ use crate::{
         },
         token::NumericSuffix,
     },
-    ModuleId,
 };
 
 pub fn walk_prelude() -> ModData {
@@ -1296,7 +1296,10 @@ mod test {
                         continue;
                     }
                     let name = format!("{}-{i}", f.qual_name.replace("::", "-"));
-                    assert!(TEST_NAMES.contains(&&*name), "Missing test for example \"{name}\", maybe need to update kcl-derive-docs/src/example_tests.rs?")
+                    assert!(
+                        TEST_NAMES.contains(&&*name),
+                        "Missing test for example \"{name}\", maybe need to update kcl-derive-docs/src/example_tests.rs?"
+                    )
                 }
             }
         }
@@ -1332,7 +1335,9 @@ mod test {
         };
 
         let Some(DocData::Fn(d)) = data.children.get(&format!("I:{qualname}")) else {
-            panic!("Could not find data for {NAME} (missing a child entry for {qualname}), maybe need to update kcl-derive-docs/src/example_tests.rs?");
+            panic!(
+                "Could not find data for {NAME} (missing a child entry for {qualname}), maybe need to update kcl-derive-docs/src/example_tests.rs?"
+            );
         };
 
         for (i, eg) in d.examples.iter().enumerate() {
@@ -1360,6 +1365,8 @@ mod test {
             return;
         }
 
-        panic!("Could not find data for {NAME} (no example {number}), maybe need to update kcl-derive-docs/src/example_tests.rs?");
+        panic!(
+            "Could not find data for {NAME} (no example {number}), maybe need to update kcl-derive-docs/src/example_tests.rs?"
+        );
     }
 }

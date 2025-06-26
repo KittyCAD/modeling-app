@@ -3,10 +3,10 @@
 use anyhow::Result;
 
 use crate::{
+    SourceRange,
     errors::{KclError, KclErrorDetails},
     execution::typed_path::TypedPath,
     fs::FileSystem,
-    SourceRange,
 };
 
 #[derive(Debug, Clone)]

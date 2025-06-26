@@ -16,10 +16,10 @@ use winnow::{
 };
 
 use crate::{
+    CompilationError, ModuleId,
     errors::KclError,
     parsing::ast::types::{ItemVisibility, VariableKind},
     source_range::SourceRange,
-    CompilationError, ModuleId,
 };
 
 mod tokeniser;

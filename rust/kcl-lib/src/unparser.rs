@@ -1,7 +1,9 @@
 use std::fmt::Write;
 
 use crate::{
+    KclError, ModuleId,
     parsing::{
+        DeprecationKind, PIPE_OPERATOR,
         ast::types::{
             Annotation, ArrayExpression, ArrayRangeExpression, AscribedExpression, Associativity, BinaryExpression,
             BinaryOperator, BinaryPart, BodyItem, CallExpressionKw, CommentStyle, DefaultParamVal, Expr, FormatOptions,
@@ -10,9 +12,8 @@ use crate::{
             Parameter, PipeExpression, Program, TagDeclarator, TypeDeclaration, UnaryExpression, VariableDeclaration,
             VariableKind,
         },
-        deprecation, DeprecationKind, PIPE_OPERATOR,
+        deprecation,
     },
-    KclError, ModuleId,
 };
 
 #[allow(dead_code)]
@@ -702,13 +703,7 @@ impl MemberExpression {
 
 impl BinaryExpression {
     fn recast(&self, options: &FormatOptions, _indentation_level: usize, ctxt: ExprContext) -> String {
-        let maybe_wrap_it = |a: String, doit: bool| -> String {
-            if doit {
-                format!("({a})")
-            } else {
-                a
-            }
-        };
+        let maybe_wrap_it = |a: String, doit: bool| -> String { if doit { format!("({a})") } else { a } };
 
         // It would be better to always preserve the user's parentheses but since we've dropped that
         // info from the AST, we bracket expressions as necessary.
@@ -977,7 +972,7 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     use super::*;
-    use crate::{parsing::ast::types::FormatOptions, ModuleId};
+    use crate::{ModuleId, parsing::ast::types::FormatOptions};
 
     #[test]
     fn test_recast_annotations_without_body_items() {

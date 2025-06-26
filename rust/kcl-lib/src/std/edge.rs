@@ -1,18 +1,18 @@
 //! Edge helper functions.
 
 use anyhow::Result;
-use kcmc::{each_cmd as mcmd, ok_response::OkModelingCmdResponse, websocket::OkWebSocketResponseData, ModelingCmd};
+use kcmc::{ModelingCmd, each_cmd as mcmd, ok_response::OkModelingCmdResponse, websocket::OkWebSocketResponseData};
 use kittycad_modeling_cmds as kcmc;
 use uuid::Uuid;
 
 use crate::{
+    SourceRange,
     errors::{KclError, KclErrorDetails},
     execution::{
-        types::{ArrayLen, RuntimeType},
         ExecState, ExtrudeSurface, KclValue, ModelingCmdMeta, TagIdentifier,
+        types::{ArrayLen, RuntimeType},
     },
-    std::{sketch::FaceTag, Args},
-    SourceRange,
+    std::{Args, sketch::FaceTag},
 };
 
 /// Get the opposite edge to the edge given.
@@ -104,9 +104,7 @@ async fn inner_get_next_adjacent_edge(
     } = &resp
     else {
         return Err(KclError::new_engine(KclErrorDetails::new(
-            format!(
-                "mcmd::Solid3dGetNextAdjacentEdge response was not as expected: {resp:?}"
-            ),
+            format!("mcmd::Solid3dGetNextAdjacentEdge response was not as expected: {resp:?}"),
             vec![args.source_range],
         )));
     };
@@ -159,9 +157,7 @@ async fn inner_get_previous_adjacent_edge(
     } = &resp
     else {
         return Err(KclError::new_engine(KclErrorDetails::new(
-            format!(
-                "mcmd::Solid3dGetPrevAdjacentEdge response was not as expected: {resp:?}"
-            ),
+            format!("mcmd::Solid3dGetPrevAdjacentEdge response was not as expected: {resp:?}"),
             vec![args.source_range],
         )));
     };

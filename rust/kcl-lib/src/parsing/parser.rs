@@ -14,14 +14,16 @@ use winnow::{
 };
 
 use super::{
+    DeprecationKind,
     ast::types::{AscribedExpression, ImportPath, LabelledExpression},
     token::{NumericSuffix, RESERVED_WORDS},
-    DeprecationKind,
 };
 use crate::{
+    IMPORT_FILE_EXTENSIONS, SourceRange, TypedPath,
     errors::{CompilationError, Severity, Tag},
     execution::types::ArrayLen,
     parsing::{
+        PIPE_OPERATOR, PIPE_SUBSTITUTION_OPERATOR,
         ast::types::{
             Annotation, ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem,
             BoxNode, CallExpressionKw, CommentStyle, DefaultParamVal, ElseIf, Expr, ExpressionStatement,
@@ -33,9 +35,7 @@ use crate::{
         },
         math::BinaryExpressionToken,
         token::{Token, TokenSlice, TokenType},
-        PIPE_OPERATOR, PIPE_SUBSTITUTION_OPERATOR,
     },
-    SourceRange, TypedPath, IMPORT_FILE_EXTENSIONS,
 };
 
 thread_local! {
@@ -602,7 +602,7 @@ fn binary_operator(i: &mut TokenSlice) -> ModalResult<BinaryOperator> {
                 return Err(CompilationError::fatal(
                     token.as_source_range(),
                     format!("{} is not a binary operator", token.value.as_str()),
-                ))
+                ));
             }
         };
         Ok(op)
@@ -1938,7 +1938,10 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
         if !IMPORT_FILE_EXTENSIONS.contains(&extn.to_string_lossy().to_string()) {
             ParseContext::warn(CompilationError::err(
                 path_range,
-                format!("unsupported import path format. KCL files can be imported from the current project, CAD files with the following formats are supported: {}", IMPORT_FILE_EXTENSIONS.join(", ")),
+                format!(
+                    "unsupported import path format. KCL files can be imported from the current project, CAD files with the following formats are supported: {}",
+                    IMPORT_FILE_EXTENSIONS.join(", ")
+                ),
             ))
         }
         ImportPath::Foreign {
@@ -3333,8 +3336,8 @@ mod tests {
 
     use super::*;
     use crate::{
-        parsing::ast::types::{BodyItem, Expr, VariableKind},
         ModuleId,
+        parsing::ast::types::{BodyItem, Expr, VariableKind},
     };
 
     fn assert_reserved(word: &str) {

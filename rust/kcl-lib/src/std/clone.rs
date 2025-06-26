@@ -4,10 +4,9 @@ use std::collections::HashMap;
 
 use anyhow::Result;
 use kcmc::{
-    each_cmd as mcmd,
-    ok_response::{output::EntityGetAllChildUuids, OkModelingCmdResponse},
+    ModelingCmd, each_cmd as mcmd,
+    ok_response::{OkModelingCmdResponse, output::EntityGetAllChildUuids},
     websocket::OkWebSocketResponseData,
-    ModelingCmd,
 };
 use kittycad_modeling_cmds::{self as kcmc};
 
@@ -15,11 +14,11 @@ use super::extrude::do_post_extrude;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        types::{NumericType, PrimitiveType, RuntimeType},
         ExecState, GeometryWithImportedGeometry, KclValue, ModelingCmdMeta, Sketch, Solid,
+        types::{NumericType, PrimitiveType, RuntimeType},
     },
     parsing::ast::types::TagNode,
-    std::{extrude::NamedCapTags, Args},
+    std::{Args, extrude::NamedCapTags},
 };
 
 /// Clone a sketch or solid.

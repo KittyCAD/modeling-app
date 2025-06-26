@@ -15,6 +15,7 @@ use dashmap::DashMap;
 use sha2::Digest;
 use tokio::sync::RwLock;
 use tower_lsp::{
+    Client, LanguageServer,
     jsonrpc::Result as RpcResult,
     lsp_types::{
         CodeAction, CodeActionKind, CodeActionOptions, CodeActionOrCommand, CodeActionParams,
@@ -37,10 +38,10 @@ use tower_lsp::{
         TextDocumentSyncCapability, TextDocumentSyncKind, TextDocumentSyncOptions, TextEdit, WorkDoneProgressOptions,
         WorkspaceEdit, WorkspaceFolder, WorkspaceFoldersServerCapabilities, WorkspaceServerCapabilities,
     },
-    Client, LanguageServer,
 };
 
 use crate::{
+    ModuleId, Program, SourceRange,
     docs::kcl_doc::ModData,
     errors::LspSuggestion,
     exec::KclValue,
@@ -51,11 +52,10 @@ use crate::{
         util::IntoDiagnostic,
     },
     parsing::{
+        PIPE_OPERATOR,
         ast::types::{Expr, VariableKind},
         token::TokenStream,
-        PIPE_OPERATOR,
     },
-    ModuleId, Program, SourceRange,
 };
 
 pub mod custom_notifications;
@@ -544,7 +544,6 @@ impl Backend {
                     };
                     token_type_index = t;
 
-                    
                     match modifier_index.lock() {
                         Ok(guard) => *guard,
                         _ => 0,

@@ -25,15 +25,14 @@ pub use crate::parsing::ast::types::{
     none::KclNone,
 };
 use crate::{
+    ModuleId, TypedPath,
     errors::KclError,
     execution::{
-        annotations,
+        KclValue, Metadata, TagIdentifier, annotations,
         types::{ArrayLen, UnitAngle, UnitLen},
-        KclValue, Metadata, TagIdentifier,
     },
-    parsing::{ast::digest::Digest, token::NumericSuffix, PIPE_OPERATOR},
+    parsing::{PIPE_OPERATOR, ast::digest::Digest, token::NumericSuffix},
     source_range::SourceRange,
-    ModuleId, TypedPath,
 };
 
 mod condition;
@@ -3447,7 +3446,11 @@ pub struct RequiredParamAfterOptionalParam(pub Box<Parameter>);
 
 impl std::fmt::Display for RequiredParamAfterOptionalParam {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "KCL functions must declare any optional parameters after all the required parameters. But your required parameter {} is _after_ an optional parameter. You must move it to before the optional parameters instead.", self.0.identifier.name)
+        write!(
+            f,
+            "KCL functions must declare any optional parameters after all the required parameters. But your required parameter {} is _after_ an optional parameter. You must move it to before the optional parameters instead.",
+            self.0.identifier.name
+        )
     }
 }
 

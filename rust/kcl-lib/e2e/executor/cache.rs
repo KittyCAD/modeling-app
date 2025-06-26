@@ -1,9 +1,9 @@
 //! Cache testing framework.
 
-use kcl_lib::{bust_cache, ExecError, ExecOutcome};
+use kcl_lib::{ExecError, ExecOutcome, bust_cache};
 #[cfg(feature = "artifact-graph")]
-use kcl_lib::{exec::Operation, NodePathStep};
-use kcmc::{each_cmd as mcmd, ModelingCmd};
+use kcl_lib::{NodePathStep, exec::Operation};
+use kcmc::{ModelingCmd, each_cmd as mcmd};
 use kittycad_modeling_cmds as kcmc;
 use pretty_assertions::assert_eq;
 

@@ -4,11 +4,11 @@ use serde::Serialize;
 use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity};
 
 use crate::{
+    SourceRange,
     errors::Suggestion,
     lsp::IntoDiagnostic,
     parsing::ast::types::{Node as AstNode, Program},
     walk::Node,
-    SourceRange,
 };
 
 /// Check the provided AST for any found rule violations.

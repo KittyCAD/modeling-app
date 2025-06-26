@@ -3,10 +3,10 @@
 use std::path::PathBuf;
 
 use crate::{
+    ConnectionError, ExecError, KclError, KclErrorWithOutputs, Program,
     engine::new_zoo_client,
     errors::ExecErrorWithState,
     execution::{EnvironmentRef, ExecState, ExecutorContext, ExecutorSettings},
-    ConnectionError, ExecError, KclError, KclErrorWithOutputs, Program,
 };
 
 #[derive(serde::Deserialize, serde::Serialize)]

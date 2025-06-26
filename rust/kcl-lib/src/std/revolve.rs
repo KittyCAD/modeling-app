@@ -2,22 +2,21 @@
 
 use anyhow::Result;
 use kcmc::{
-    each_cmd as mcmd,
+    ModelingCmd, each_cmd as mcmd,
     length_unit::LengthUnit,
     shared::{Angle, Opposite},
-    ModelingCmd,
 };
 use kittycad_modeling_cmds::{self as kcmc, shared::Point3d};
 
-use super::{args::TyF64, DEFAULT_TOLERANCE_MM};
+use super::{DEFAULT_TOLERANCE_MM, args::TyF64};
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        types::{NumericType, PrimitiveType, RuntimeType},
         ExecState, KclValue, ModelingCmdMeta, Sketch, Solid,
+        types::{NumericType, PrimitiveType, RuntimeType},
     },
     parsing::ast::types::TagNode,
-    std::{axis_or_reference::Axis2dOrEdgeReference, extrude::do_post_extrude, Args},
+    std::{Args, axis_or_reference::Axis2dOrEdgeReference, extrude::do_post_extrude},
 };
 
 extern crate nalgebra_glm as glm;
@@ -99,9 +98,7 @@ async fn inner_revolve(
             let ang = angle.signum() * bidirectional_angle + angle;
             if !(-360.0..=360.0).contains(&ang) {
                 return Err(KclError::new_semantic(KclErrorDetails::new(
-                    format!(
-                        "Combined angle and bidirectional must be between -360 and 360, found '{ang}'"
-                    ),
+                    format!("Combined angle and bidirectional must be between -360 and 360, found '{ang}'"),
                     vec![args.source_range],
                 )));
             }

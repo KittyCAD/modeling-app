@@ -1,10 +1,10 @@
 use indexmap::IndexMap;
 use serde::Serialize;
 
-use super::{types::NumericType, ArtifactId, KclValue};
+use super::{ArtifactId, KclValue, types::NumericType};
 #[cfg(feature = "artifact-graph")]
 use crate::parsing::ast::types::{Node, Program};
-use crate::{parsing::ast::types::ItemVisibility, ModuleId, NodePath, SourceRange};
+use crate::{ModuleId, NodePath, SourceRange, parsing::ast::types::ItemVisibility};
 
 /// A CAD modeling operation for display in the feature tree, AKA operations
 /// timeline.

@@ -719,10 +719,12 @@ enable_ssao = false
             panic!("Expected an error, but got success: {r:?}");
         }
         assert!(result.is_err());
-        assert!(result
-            .unwrap_err()
-            .to_string()
-            .contains("color: Validation error: color"));
+        assert!(
+            result
+                .unwrap_err()
+                .to_string()
+                .contains("color: Validation error: color")
+        );
 
         let appearance = AppearanceSettings {
             theme: AppTheme::System,
@@ -733,10 +735,12 @@ enable_ssao = false
             panic!("Expected an error, but got success: {r:?}");
         }
         assert!(result.is_err());
-        assert!(result
-            .unwrap_err()
-            .to_string()
-            .contains("color: Validation error: color"));
+        assert!(
+            result
+                .unwrap_err()
+                .to_string()
+                .contains("color: Validation error: color")
+        );
     }
 
     #[test]
@@ -750,9 +754,11 @@ color = 1567.4"#;
         }
         assert!(result.is_err());
 
-        assert!(result
-            .unwrap_err()
-            .to_string()
-            .contains("color: Validation error: color"));
+        assert!(
+            result
+                .unwrap_err()
+                .to_string()
+                .contains("color: Validation error: color")
+        );
     }
 }

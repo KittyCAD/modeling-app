@@ -13,6 +13,7 @@ use std::{
 use dashmap::DashMap;
 use serde::{Deserialize, Serialize};
 use tower_lsp::{
+    LanguageServer,
     jsonrpc::{Error, Result},
     lsp_types::{
         CreateFilesParams, DeleteFilesParams, Diagnostic, DidChangeConfigurationParams, DidChangeTextDocumentParams,
@@ -22,7 +23,6 @@ use tower_lsp::{
         TextDocumentSyncKind, TextDocumentSyncOptions, WorkspaceFolder, WorkspaceFoldersServerCapabilities,
         WorkspaceServerCapabilities,
     },
-    LanguageServer,
 };
 
 use crate::lsp::{

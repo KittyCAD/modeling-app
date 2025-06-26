@@ -1,9 +1,9 @@
 use std::path::PathBuf;
 
-use schemars::{r#gen::SchemaGenerator, JsonSchema};
-use serde_json::{json, Value};
+use schemars::{JsonSchema, r#gen::SchemaGenerator};
+use serde_json::{Value, json};
 
-use crate::settings::types::{project::ProjectConfiguration, Configuration};
+use crate::settings::types::{Configuration, project::ProjectConfiguration};
 
 // Project settings example in TOML format
 const PROJECT_SETTINGS_EXAMPLE: &str = r#"[settings.app]
