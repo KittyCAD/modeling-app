@@ -204,7 +204,7 @@ export type ModelingCommandSchema = {
     variableName: string
   }
   'Boolean Subtract': {
-    target: Selections
+    solids: Selections
     tools: Selections
   }
   'Boolean Union': {
@@ -595,13 +595,12 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     icon: 'booleanSubtract',
     needsReview: true,
     args: {
-      target: {
+      solids: {
         inputType: 'selection',
         selectionTypes: ['path'],
         selectionFilter: ['object'],
-        multiple: false,
+        multiple: true,
         required: true,
-        skip: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       tools: {

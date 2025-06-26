@@ -23,13 +23,13 @@ import type {
   VariableDeclaration,
 } from '@src/lang/wasm'
 import { EXECUTION_TYPE_REAL } from '@src/lib/constants'
-import type { Selection, Selections } from '@src/lib/selections'
+import type { Selections } from '@src/lib/selections'
 import { err } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
 
 export async function applySubtractFromTargetOperatorSelections(
-  target: Selection,
-  tools: Selection[],
+  solids: Selections,
+  tools: Selections,
   dependencies: {
     kclManager: KclManager
     engineCommandManager: EngineCommandManager
@@ -38,44 +38,29 @@ export async function applySubtractFromTargetOperatorSelections(
   }
 ): Promise<Error | void> {
   const ast = dependencies.kclManager.ast
-  if (!target.artifact) {
-    return new Error('No target artifact found')
-  }
-  const orderedChildrenTarget = findAllChildrenAndOrderByPlaceInCode(
-    target.artifact,
+  const lastSolidsVars = getLastVariableDeclarationsFromSelections(
+    solids,
+    ast,
     dependencies.kclManager.artifactGraph
   )
-
-  const lastVarTarget = getLastVariable(orderedChildrenTarget, ast)
-  if (!lastVarTarget) {
-    return new Error('No variable found')
+  if (err(lastSolidsVars) || lastSolidsVars.length < 1) {
+    console.log(lastSolidsVars)
+    return new Error('Not enough or invalid solids variables found')
   }
 
-  const toolsNodes: VariableDeclaration[] = []
-  for (const tool of tools) {
-    if (!tool.artifact) {
-      return new Error('No tool artifact found')
-    }
-
-    const orderedChildrenTool = findAllChildrenAndOrderByPlaceInCode(
-      tool.artifact,
-      dependencies.kclManager.artifactGraph
-    )
-    const lastVarTool = getLastVariable(orderedChildrenTool, ast)
-    if (!lastVarTool || !lastVarTool.variableDeclaration) {
-      return new Error('No variable found in tool artifact')
-    }
-    toolsNodes.push(lastVarTool.variableDeclaration.node)
-  }
-
-  if (toolsNodes.length === 0) {
-    return new Error('No tools found')
+  const lastToolsVars = getLastVariableDeclarationsFromSelections(
+    tools,
+    ast,
+    dependencies.kclManager.artifactGraph
+  )
+  if (err(lastToolsVars) || lastToolsVars.length < 1) {
+    return new Error('Not enough or invalid solids variables found')
   }
 
   const modifiedAst = booleanSubtractAstMod({
     ast,
-    targets: [lastVarTarget?.variableDeclaration?.node],
-    tools: toolsNodes,
+    solids: lastSolidsVars,
+    tools: lastToolsVars,
   })
 
   await updateModelingState(modifiedAst, EXECUTION_TYPE_REAL, dependencies)
@@ -91,33 +76,12 @@ export async function applyUnionFromTargetOperatorSelections(
   }
 ): Promise<Error | void> {
   const ast = dependencies.kclManager.ast
-
-  const artifacts: Artifact[] = []
-  for (const selection of solids.graphSelections) {
-    if (selection.artifact) {
-      artifacts.push(selection.artifact)
-    }
-  }
-
-  if (artifacts.length < 2) {
-    return new Error('Not enough artifacts selected')
-  }
-
-  const orderedChildrenEach = artifacts.map((artifact) =>
-    findAllChildrenAndOrderByPlaceInCode(
-      artifact,
-      dependencies.kclManager.artifactGraph
-    )
+  const lastVars = getLastVariableDeclarationsFromSelections(
+    solids,
+    ast,
+    dependencies.kclManager.artifactGraph
   )
-
-  const lastVars: VariableDeclaration[] = []
-  for (const orderedArtifactLeaves of orderedChildrenEach) {
-    const lastVar = getLastVariable(orderedArtifactLeaves, ast)
-    if (!lastVar) continue
-    lastVars.push(lastVar.variableDeclaration.node)
-  }
-
-  if (lastVars.length < 2) {
+  if (err(lastVars) || lastVars.length < 2) {
     return new Error('Not enough variables found')
   }
 
@@ -138,23 +102,36 @@ export async function applyIntersectFromTargetOperatorSelections(
   }
 ): Promise<Error | void> {
   const ast = dependencies.kclManager.ast
+  const lastVars = getLastVariableDeclarationsFromSelections(
+    solids,
+    ast,
+    dependencies.kclManager.artifactGraph
+  )
+  if (err(lastVars) || lastVars.length < 2) {
+    return new Error('Not enough variables found')
+  }
 
+  const modifiedAst = booleanIntersectAstMod({
+    ast,
+    solids: lastVars,
+  })
+  await updateModelingState(modifiedAst, EXECUTION_TYPE_REAL, dependencies)
+}
+
+function getLastVariableDeclarationsFromSelections(
+  selections: Selections,
+  ast: Node<Program>,
+  artifactGraph: ArtifactGraph
+): Error | VariableDeclaration[] {
   const artifacts: Artifact[] = []
-  for (const selection of solids.graphSelections) {
+  for (const selection of selections.graphSelections) {
     if (selection.artifact) {
       artifacts.push(selection.artifact)
     }
   }
 
-  if (artifacts.length < 2) {
-    return new Error('Not enough artifacts selected')
-  }
-
   const orderedChildrenEach = artifacts.map((artifact) =>
-    findAllChildrenAndOrderByPlaceInCode(
-      artifact,
-      dependencies.kclManager.artifactGraph
-    )
+    findAllChildrenAndOrderByPlaceInCode(artifact, artifactGraph)
   )
 
   const lastVars: VariableDeclaration[] = []
@@ -164,15 +141,7 @@ export async function applyIntersectFromTargetOperatorSelections(
     lastVars.push(lastVar.variableDeclaration.node)
   }
 
-  if (lastVars.length < 2) {
-    return new Error('Not enough variables found')
-  }
-
-  const modifiedAst = booleanIntersectAstMod({
-    ast,
-    solids: lastVars,
-  })
-  await updateModelingState(modifiedAst, EXECUTION_TYPE_REAL, dependencies)
+  return lastVars
 }
 
 /** returns all children of a given artifact, and sorts them DESC by start sourceRange
@@ -287,25 +256,26 @@ export function getLastVariable(
 
 export function booleanSubtractAstMod({
   ast,
-  targets,
+  solids,
   tools,
 }: {
   ast: Node<Program>
-  targets: VariableDeclaration[]
+  solids: VariableDeclaration[]
   tools: VariableDeclaration[]
 }): Node<Program> {
+  console.log('booleanSubtractAstMod', solids, tools)
   const newAst = structuredClone(ast)
   const newVarName = findUniqueName(newAst, 'solid')
   const createArrExpr = (varDecs: VariableDeclaration[]) =>
     createArrayExpression(
       varDecs.map((varDec) => createLocalName(varDec.declaration.id.name))
     )
-  const targetsArrayExpression = createArrExpr(targets)
+  const solidsArrayExpression = createArrExpr(solids)
   const toolsArrayExpression = createArrExpr(tools)
 
   const newVarDec = createVariableDeclaration(
     newVarName,
-    createCallExpressionStdLibKw('subtract', targetsArrayExpression, [
+    createCallExpressionStdLibKw('subtract', solidsArrayExpression, [
       createLabeledArg('tools', toolsArrayExpression),
     ])
   )
