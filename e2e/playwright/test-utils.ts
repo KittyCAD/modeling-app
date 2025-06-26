@@ -599,6 +599,14 @@ export async function getUtils(page: Page, test_?: typeof test) {
       })
     },
 
+    locatorFile: (name: string) => {
+      return page.locator('[data-testid="file-pane-scroll-container"] [role=treeitem]').filter({ hasText: name })
+    },
+    
+    locatorFolder: (name: string) => {
+      return page.locator('[data-testid="file-pane-scroll-container"] [role=treeitem]').filter({ hasText: name })
+    },
+
     /**
      * @deprecated Sorry I don't have time to fix this right now, but runs like
      * the one linked below show me that setting the open panes in this manner is not reliable.

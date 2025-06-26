@@ -293,7 +293,7 @@ test.describe('when using the file tree to', () => {
     {
       tag: '@desktop',
     },
-    async ({ page, toolbar}, testInfo) => {
+    async ({ page, toolbar }, testInfo) => {
       const {
         panesOpen,
         pasteCodeInEditor,
@@ -382,13 +382,8 @@ test.describe('Renaming in the file tree', () => {
         const filePath = join(dir, 'Test Project', `${newFileName}.kcl`)
         return fs.existsSync(filePath)
       }
-
-      const fileToRename = page
-        .getByRole('listitem')
-        .filter({ has: page.getByRole('button', { name: 'fileToRename.kcl' }) })
-      const renamedFile = page
-        .getByRole('listitem')
-        .filter({ has: page.getByRole('button', { name: 'newFileName.kcl' }) })
+      const fileToRename = u.locatorFile('fileToRename.kcl')
+      const renamedFile = u.locatorFile('newFileName.kcl')
       const renameMenuItem = page.getByRole('button', { name: 'Rename' })
       const renameInput = page.getByPlaceholder('fileToRename.kcl')
       const codeLocator = page.locator('.cm-content')
@@ -471,12 +466,8 @@ test.describe('Renaming in the file tree', () => {
       }
       const projectLink = page.getByText('Test Project')
       const projectMenuButton = page.getByTestId('project-sidebar-toggle')
-      const fileToRename = page
-        .getByRole('listitem')
-        .filter({ has: page.getByRole('button', { name: 'fileToRename.kcl' }) })
-      const renamedFile = page.getByRole('listitem').filter({
-        has: page.getByRole('button', { name: newFileName + FILE_EXT }),
-      })
+      const fileToRename = u.locatorFile('fileToRename.kcl')
+      const renamedFile = u.locatorFile(newFileName + FILE_EXT )
       const renameMenuItem = page.getByRole('button', { name: 'Rename' })
       const renameInput = page.getByPlaceholder('fileToRename.kcl')
       const codeLocator = page.locator('.cm-content')
@@ -634,13 +625,9 @@ test.describe('Renaming in the file tree', () => {
       // Constants and locators
       const projectLink = page.getByText('Test Project')
       const projectMenuButton = page.getByTestId('project-sidebar-toggle')
-      const folderToRename = page.getByRole('button', {
-        name: 'folderToRename',
-      })
-      const renamedFolder = page.getByRole('button', { name: 'newFolderName' })
-      const fileWithinFolder = page.getByRole('listitem').filter({
-        has: page.getByRole('button', { name: 'someFileWithin.kcl' }),
-      })
+      const folderToRename = u.locatorFolder('folderToRename')
+      const renamedFolder = u.locatorFolder('newFolderName')
+      const fileWithinFolder = u.locatorFile('someFileWithin.kcl')
       const renameMenuItem = page.getByRole('button', { name: 'Rename' })
       const originalFolderName = 'folderToRename'
       const renameInput = page.getByPlaceholder(originalFolderName)
@@ -734,9 +721,7 @@ test.describe('Deleting items from the file pane', () => {
       // Constants and locators
       const projectCard = page.getByText('testProject')
       const projectMenuButton = page.getByTestId('project-sidebar-toggle')
-      const fileToDelete = page
-        .getByRole('listitem')
-        .filter({ has: page.getByRole('button', { name: 'fileToDelete.kcl' }) })
+      const fileToDelete = u.locatorFile('fileToDelete.kcl')
       const deleteMenuItem = page.getByRole('button', { name: 'Delete' })
       const deleteConfirmation = page.getByTestId('delete-confirmation')
 
