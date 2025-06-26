@@ -162,7 +162,7 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ),
         ("sketch", "ellipse") => (
             |e, a| Box::pin(crate::std::shapes::ellipse(e, a)),
-            StdFnProps::default("std::sketch::ellipse"),
+            StdFnProps::default("std::sketch::ellipse").include_in_feature_tree(),
         ),
         ("prelude", "helix") => (
             |e, a| Box::pin(crate::std::helix::helix(e, a)),
@@ -262,11 +262,11 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ),
         ("sketch", "conic") => (
             |e, a| Box::pin(crate::std::sketch::conic(e, a)),
-            StdFnProps::default("std::sketch::conic"),
+            StdFnProps::default("std::sketch::conic").include_in_feature_tree(),
         ),
         ("sketch", "parabolic") => (
             |e, a| Box::pin(crate::std::sketch::parabolic(e, a)),
-            StdFnProps::default("std::sketch::parabolic"),
+            StdFnProps::default("std::sketch::parabolic").include_in_feature_tree(),
         ),
         ("sketch", "parabolicPoint") => (
             |e, a| Box::pin(crate::std::sketch::parabolic_point(e, a)),
@@ -274,7 +274,7 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ),
         ("sketch", "hyperbolic") => (
             |e, a| Box::pin(crate::std::sketch::hyperbolic(e, a)),
-            StdFnProps::default("std::sketch::hyperbolic"),
+            StdFnProps::default("std::sketch::hyperbolic").include_in_feature_tree(),
         ),
         ("sketch", "hyperbolicPoint") => (
             |e, a| Box::pin(crate::std::sketch::hyperbolic_point(e, a)),
@@ -282,7 +282,7 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ),
         ("sketch", "elliptic") => (
             |e, a| Box::pin(crate::std::sketch::elliptic(e, a)),
-            StdFnProps::default("std::sketch::elliptic"),
+            StdFnProps::default("std::sketch::elliptic").include_in_feature_tree(),
         ),
         ("sketch", "ellipticPoint") => (
             |e, a| Box::pin(crate::std::sketch::elliptic_point(e, a)),
