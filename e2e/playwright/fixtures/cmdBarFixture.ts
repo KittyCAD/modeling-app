@@ -118,15 +118,11 @@ export class CmdBarFixture {
       return
     }
 
-    const arrowButton = this.page.getByRole('button', {
-      name: 'arrow right Continue',
-    })
+    const arrowButton = this.page.getByTestId('command-bar-continue')
     if (await arrowButton.isVisible()) {
-      await arrowButton.click()
+      await this.continue()
     } else {
-      await this.page
-        .getByRole('button', { name: 'checkmark Submit command' })
-        .click()
+      await this.submit()
     }
   }
 
@@ -189,6 +185,13 @@ export class CmdBarFixture {
    */
   selectOption = (options: Parameters<typeof this.page.getByRole>[1]) => {
     return this.page.getByRole('option', options)
+  }
+
+  /**
+   * Select an optional argument from the command bar during review
+   */
+  clickOptionalArgument = async (argName: string) => {
+    await this.page.getByTestId(`cmd-bar-add-optional-arg-${argName}`).click()
   }
 
   /**

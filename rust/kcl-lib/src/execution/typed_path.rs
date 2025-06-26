@@ -188,6 +188,7 @@ impl<'de> serde::de::Deserialize<'de> for TypedPath {
 
 impl ts_rs::TS for TypedPath {
     type WithoutGenerics = Self;
+    type OptionInnerType = Self;
 
     fn name() -> String {
         "string".to_string()
@@ -209,7 +210,7 @@ impl ts_rs::TS for TypedPath {
         std::path::PathBuf::inline_flattened()
     }
 
-    fn output_path() -> Option<&'static std::path::Path> {
+    fn output_path() -> Option<std::path::PathBuf> {
         std::path::PathBuf::output_path()
     }
 }

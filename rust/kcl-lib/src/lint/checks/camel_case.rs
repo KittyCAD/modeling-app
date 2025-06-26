@@ -11,10 +11,10 @@ use crate::{
 
 def_finding!(
     Z0001,
-    "Identifiers must be lowerCamelCase",
+    "Identifiers should be lowerCamelCase",
     "\
 By convention, variable names are lowerCamelCase, not snake_case, kebab-case,
-nor CammelCase. 🐪
+nor upper CamelCase (aka PascalCase). 🐪
 
 For instance, a good identifier for the variable representing 'box height'
 would be 'boxHeight', not 'BOX_HEIGHT', 'box_height' nor 'BoxHeight'. For

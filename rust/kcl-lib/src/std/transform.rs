@@ -5,7 +5,7 @@ use kcmc::{
     each_cmd as mcmd,
     length_unit::LengthUnit,
     shared,
-    shared::{Point3d, Point4d},
+    shared::{OriginType, Point3d},
     ModelingCmd,
 };
 use kittycad_modeling_cmds as kcmc;
@@ -18,6 +18,16 @@ use crate::{
     },
     std::{args::TyF64, axis_or_reference::Axis3dOrPoint3d, Args},
 };
+
+    fn transform_by<T>(property: T, set: bool, origin: Option<OriginType>) -> shared::TransformBy<T> {
+        shared::TransformBy{
+            property,
+            set,
+            #[expect(deprecated)]
+            is_local: false,
+            origin,
+        }
+    }
 
 /// Scale a solid or a sketch.
 pub async fn scale(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
@@ -71,6 +81,9 @@ async fn inner_scale(
         exec_state.flush_batch_for_solids((&args).into(), solids).await?;
     }
 
+    let is_global = global.unwrap_or(false);
+    let origin = if is_global { Some(OriginType::Global) } else { Some(OriginType::Local) };
+
     let mut objects = objects.clone();
     for object_id in objects.ids(&args.ctx).await? {
         exec_state
@@ -79,19 +92,18 @@ async fn inner_scale(
                 ModelingCmd::from(mcmd::SetObjectTransform {
                     object_id,
                     transforms: vec![shared::ComponentTransform {
-                        scale: Some(shared::TransformBy::<Point3d<f64>> {
-                            property: Point3d {
+                        scale: Some(transform_by(
+                            Point3d {
                                 x: x.unwrap_or(1.0),
                                 y: y.unwrap_or(1.0),
                                 z: z.unwrap_or(1.0),
                             },
-                            set: false,
-                            is_local: !global.unwrap_or(false),
-                        }),
+                            false,
+                            origin,
+                        )),
                         translate: None,
                         rotate_rpy: None,
                         rotate_angle_axis: None,
-                        origin: None,
                     }],
                 }),
             )
@@ -144,6 +156,9 @@ async fn inner_translate(
         exec_state.flush_batch_for_solids((&args).into(), solids).await?;
     }
 
+    let is_global = global.unwrap_or(false);
+    let origin = if is_global { Some(OriginType::Global) } else { Some(OriginType::Local) };
+
     let mut objects = objects.clone();
     for object_id in objects.ids(&args.ctx).await? {
         exec_state
@@ -152,19 +167,18 @@ async fn inner_translate(
                 ModelingCmd::from(mcmd::SetObjectTransform {
                     object_id,
                     transforms: vec![shared::ComponentTransform {
-                        translate: Some(shared::TransformBy::<Point3d<LengthUnit>> {
-                            property: shared::Point3d {
+                        translate: Some(transform_by(
+                            shared::Point3d {
                                 x: LengthUnit(x.as_ref().map(|t| t.to_mm()).unwrap_or_default()),
                                 y: LengthUnit(y.as_ref().map(|t| t.to_mm()).unwrap_or_default()),
                                 z: LengthUnit(z.as_ref().map(|t| t.to_mm()).unwrap_or_default()),
                             },
-                            set: false,
-                            is_local: !global.unwrap_or(false),
-                        }),
+                            false,
+                            origin,
+                        )),
                         scale: None,
                         rotate_rpy: None,
                         rotate_angle_axis: None,
-                        origin: None,
                     }],
                 }),
             )
@@ -319,18 +333,21 @@ async fn inner_rotate(
         exec_state.flush_batch_for_solids((&args).into(), solids).await?;
     }
 
+
     let origin = if let Some(origin) = origin {
-        Some(shared::TransformBy::<Point3d<LengthUnit>> {
-            property: shared::Point3d {
-                x: LengthUnit(origin[0]),
-                y: LengthUnit(origin[1]),
-                z: LengthUnit(origin[2]),
-            },
-            set: false,
-            is_local: !global.unwrap_or(false),
-        })
+        Some(OriginType::Custom{origin: shared::Point3d {
+            x: origin[0],
+            y: origin[1],
+            z: origin[2],
+        }})
     } else {
-        None
+        if let Some(global) = global {
+            if global {
+                Some(OriginType::Global)
+            } else {
+                Some(OriginType::Local)
+            }
+        } else {Some(OriginType::Local)}
     };
 
     let mut objects = objects.clone();
@@ -342,20 +359,19 @@ async fn inner_rotate(
                     ModelingCmd::from(mcmd::SetObjectTransform {
                         object_id,
                         transforms: vec![shared::ComponentTransform {
-                            rotate_angle_axis: Some(shared::TransformBy::<Point4d<f64>> {
-                                property: shared::Point4d {
+                            rotate_angle_axis: Some(transform_by(
+                                shared::Point4d {
                                     x: axis[0],
                                     y: axis[1],
                                     z: axis[2],
                                     w: angle,
                                 },
-                                set: false,
-                                is_local: !global.unwrap_or(false),
-                            }),
+                                false,
+                                origin,
+                            )),
                             scale: None,
                             rotate_rpy: None,
                             translate: None,
-                            origin: origin.clone(),
                         }],
                     }),
                 )
@@ -368,19 +384,18 @@ async fn inner_rotate(
                     ModelingCmd::from(mcmd::SetObjectTransform {
                         object_id,
                         transforms: vec![shared::ComponentTransform {
-                            rotate_rpy: Some(shared::TransformBy::<Point3d<f64>> {
-                                property: shared::Point3d {
+                            rotate_rpy: Some(transform_by(
+                                shared::Point3d {
                                     x: roll.unwrap_or(0.0),
                                     y: pitch.unwrap_or(0.0),
                                     z: yaw.unwrap_or(0.0),
                                 },
-                                set: false,
-                                is_local: !global.unwrap_or(false),
-                            }),
+                                false,
+                                origin
+                            )),
                             scale: None,
                             rotate_angle_axis: None,
                             translate: None,
-                            origin: origin.clone(),
                         }],
                     }),
                 )

@@ -70,7 +70,7 @@ export fn fillet(
   radius: number(Length),
   /// The paths you want to fillet
   tags: [Edge; 1+],
-  /// The tolerance for this fillet
+  /// Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters.
   tolerance?: number(Length),
   /// Create a new tag which refers to this fillet
   tag?: TagDecl,
@@ -799,7 +799,7 @@ export fn patternCircular3d(
 export fn union(
   /// The solids to union.
   @solids: [Solid; 2+],
-  /// The tolerance to use for the union operation.
+  /// Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters.
   tolerance?: number(Length),
 ): [Solid; 1+] {}
 
@@ -857,7 +857,7 @@ export fn union(
 export fn intersect(
   /// The solids to intersect.
   @solids: [Solid; 2+],
-  /// The tolerance to use for the intersection operation.
+  /// Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters.
   tolerance?: number(Length),
 ): [Solid; 1+] {}
 
@@ -917,7 +917,7 @@ export fn subtract(
   @solids: [Solid; 1+],
   /// The solids to subtract.
   tools: [Solid],
-  /// The tolerance to use for the subtraction operation.
+  /// Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters.
   tolerance?: number(Length),
 ): [Solid; 1+] {}
 

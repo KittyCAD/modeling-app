@@ -4401,6 +4401,7 @@ description: Variables in memory after executing french-press.kcl
           "tag": {
             "commentStart": 375,
             "end": 396,
+            "moduleId": 0,
             "start": 375,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA001"
@@ -4414,6 +4415,7 @@ description: Variables in memory after executing french-press.kcl
           "tag": {
             "commentStart": 479,
             "end": 500,
+            "moduleId": 0,
             "start": 479,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB001"
@@ -4427,6 +4429,7 @@ description: Variables in memory after executing french-press.kcl
           "tag": {
             "commentStart": 602,
             "end": 623,
+            "moduleId": 0,
             "start": 602,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC001"
@@ -4457,6 +4460,7 @@ description: Variables in memory after executing french-press.kcl
             "tag": {
               "commentStart": 375,
               "end": 396,
+              "moduleId": 0,
               "start": 375,
               "type": "TagDeclarator",
               "value": "rectangleSegmentA001"
@@ -4482,6 +4486,7 @@ description: Variables in memory after executing french-press.kcl
             "tag": {
               "commentStart": 479,
               "end": 500,
+              "moduleId": 0,
               "start": 479,
               "type": "TagDeclarator",
               "value": "rectangleSegmentB001"
@@ -4507,6 +4512,7 @@ description: Variables in memory after executing french-press.kcl
             "tag": {
               "commentStart": 602,
               "end": 623,
+              "moduleId": 0,
               "start": 602,
               "type": "TagDeclarator",
               "value": "rectangleSegmentC001"
@@ -4660,6 +4666,7 @@ description: Variables in memory after executing french-press.kcl
               "tag": {
                 "commentStart": 1091,
                 "end": 1097,
+                "moduleId": 0,
                 "start": 1091,
                 "type": "TagDeclarator",
                 "value": "edge1"
@@ -4680,6 +4687,7 @@ description: Variables in memory after executing french-press.kcl
               "tag": {
                 "commentStart": 1205,
                 "end": 1211,
+                "moduleId": 0,
                 "start": 1205,
                 "type": "TagDeclarator",
                 "value": "edge2"
@@ -4700,6 +4708,7 @@ description: Variables in memory after executing french-press.kcl
               "tag": {
                 "commentStart": 1326,
                 "end": 1332,
+                "moduleId": 0,
                 "start": 1326,
                 "type": "TagDeclarator",
                 "value": "edge3"
@@ -4720,6 +4729,7 @@ description: Variables in memory after executing french-press.kcl
               "tag": {
                 "commentStart": 1425,
                 "end": 1433,
+                "moduleId": 0,
                 "start": 1425,
                 "type": "TagDeclarator",
                 "value": "edgeLen"
@@ -4740,6 +4750,7 @@ description: Variables in memory after executing french-press.kcl
               "tag": {
                 "commentStart": 1511,
                 "end": 1517,
+                "moduleId": 0,
                 "start": 1511,
                 "type": "TagDeclarator",
                 "value": "edge4"
@@ -4760,6 +4771,7 @@ description: Variables in memory after executing french-press.kcl
               "tag": {
                 "commentStart": 1642,
                 "end": 1648,
+                "moduleId": 0,
                 "start": 1642,
                 "type": "TagDeclarator",
                 "value": "edge5"
@@ -4780,6 +4792,7 @@ description: Variables in memory after executing french-press.kcl
               "tag": {
                 "commentStart": 1775,
                 "end": 1781,
+                "moduleId": 0,
                 "start": 1775,
                 "type": "TagDeclarator",
                 "value": "edge6"
@@ -4836,6 +4849,7 @@ description: Variables in memory after executing french-press.kcl
                 "tag": {
                   "commentStart": 1091,
                   "end": 1097,
+                  "moduleId": 0,
                   "start": 1091,
                   "type": "TagDeclarator",
                   "value": "edge1"
@@ -4886,6 +4900,7 @@ description: Variables in memory after executing french-press.kcl
                 "tag": {
                   "commentStart": 1205,
                   "end": 1211,
+                  "moduleId": 0,
                   "start": 1205,
                   "type": "TagDeclarator",
                   "value": "edge2"
@@ -4936,6 +4951,7 @@ description: Variables in memory after executing french-press.kcl
                 "tag": {
                   "commentStart": 1326,
                   "end": 1332,
+                  "moduleId": 0,
                   "start": 1326,
                   "type": "TagDeclarator",
                   "value": "edge3"
@@ -4986,6 +5002,7 @@ description: Variables in memory after executing french-press.kcl
                 "tag": {
                   "commentStart": 1425,
                   "end": 1433,
+                  "moduleId": 0,
                   "start": 1425,
                   "type": "TagDeclarator",
                   "value": "edgeLen"
@@ -5030,6 +5047,7 @@ description: Variables in memory after executing french-press.kcl
                 "tag": {
                   "commentStart": 1511,
                   "end": 1517,
+                  "moduleId": 0,
                   "start": 1511,
                   "type": "TagDeclarator",
                   "value": "edge4"
@@ -5080,6 +5098,7 @@ description: Variables in memory after executing french-press.kcl
                 "tag": {
                   "commentStart": 1642,
                   "end": 1648,
+                  "moduleId": 0,
                   "start": 1642,
                   "type": "TagDeclarator",
                   "value": "edge5"
@@ -5130,6 +5149,7 @@ description: Variables in memory after executing french-press.kcl
                 "tag": {
                   "commentStart": 1775,
                   "end": 1781,
+                  "moduleId": 0,
                   "start": 1775,
                   "type": "TagDeclarator",
                   "value": "edge6"
@@ -5321,6 +5341,7 @@ description: Variables in memory after executing french-press.kcl
               "tag": {
                 "commentStart": 1091,
                 "end": 1097,
+                "moduleId": 0,
                 "start": 1091,
                 "type": "TagDeclarator",
                 "value": "edge1"
@@ -5341,6 +5362,7 @@ description: Variables in memory after executing french-press.kcl
               "tag": {
                 "commentStart": 1205,
                 "end": 1211,
+                "moduleId": 0,
                 "start": 1205,
                 "type": "TagDeclarator",
                 "value": "edge2"
@@ -5361,6 +5383,7 @@ description: Variables in memory after executing french-press.kcl
               "tag": {
                 "commentStart": 1326,
                 "end": 1332,
+                "moduleId": 0,
                 "start": 1326,
                 "type": "TagDeclarator",
                 "value": "edge3"
@@ -5381,6 +5404,7 @@ description: Variables in memory after executing french-press.kcl
               "tag": {
                 "commentStart": 1425,
                 "end": 1433,
+                "moduleId": 0,
                 "start": 1425,
                 "type": "TagDeclarator",
                 "value": "edgeLen"
@@ -5401,6 +5425,7 @@ description: Variables in memory after executing french-press.kcl
               "tag": {
                 "commentStart": 1511,
                 "end": 1517,
+                "moduleId": 0,
                 "start": 1511,
                 "type": "TagDeclarator",
                 "value": "edge4"
@@ -5421,6 +5446,7 @@ description: Variables in memory after executing french-press.kcl
               "tag": {
                 "commentStart": 1642,
                 "end": 1648,
+                "moduleId": 0,
                 "start": 1642,
                 "type": "TagDeclarator",
                 "value": "edge5"
@@ -5441,6 +5467,7 @@ description: Variables in memory after executing french-press.kcl
               "tag": {
                 "commentStart": 1775,
                 "end": 1781,
+                "moduleId": 0,
                 "start": 1775,
                 "type": "TagDeclarator",
                 "value": "edge6"
@@ -5497,6 +5524,7 @@ description: Variables in memory after executing french-press.kcl
                 "tag": {
                   "commentStart": 1091,
                   "end": 1097,
+                  "moduleId": 0,
                   "start": 1091,
                   "type": "TagDeclarator",
                   "value": "edge1"
@@ -5547,6 +5575,7 @@ description: Variables in memory after executing french-press.kcl
                 "tag": {
                   "commentStart": 1205,
                   "end": 1211,
+                  "moduleId": 0,
                   "start": 1205,
                   "type": "TagDeclarator",
                   "value": "edge2"
@@ -5597,6 +5626,7 @@ description: Variables in memory after executing french-press.kcl
                 "tag": {
                   "commentStart": 1326,
                   "end": 1332,
+                  "moduleId": 0,
                   "start": 1326,
                   "type": "TagDeclarator",
                   "value": "edge3"
@@ -5647,6 +5677,7 @@ description: Variables in memory after executing french-press.kcl
                 "tag": {
                   "commentStart": 1425,
                   "end": 1433,
+                  "moduleId": 0,
                   "start": 1425,
                   "type": "TagDeclarator",
                   "value": "edgeLen"
@@ -5691,6 +5722,7 @@ description: Variables in memory after executing french-press.kcl
                 "tag": {
                   "commentStart": 1511,
                   "end": 1517,
+                  "moduleId": 0,
                   "start": 1511,
                   "type": "TagDeclarator",
                   "value": "edge4"
@@ -5741,6 +5773,7 @@ description: Variables in memory after executing french-press.kcl
                 "tag": {
                   "commentStart": 1642,
                   "end": 1648,
+                  "moduleId": 0,
                   "start": 1642,
                   "type": "TagDeclarator",
                   "value": "edge5"
@@ -5791,6 +5824,7 @@ description: Variables in memory after executing french-press.kcl
                 "tag": {
                   "commentStart": 1775,
                   "end": 1781,
+                  "moduleId": 0,
                   "start": 1775,
                   "type": "TagDeclarator",
                   "value": "edge6"
@@ -5982,6 +6016,7 @@ description: Variables in memory after executing french-press.kcl
               "tag": {
                 "commentStart": 1091,
                 "end": 1097,
+                "moduleId": 0,
                 "start": 1091,
                 "type": "TagDeclarator",
                 "value": "edge1"
@@ -6002,6 +6037,7 @@ description: Variables in memory after executing french-press.kcl
               "tag": {
                 "commentStart": 1205,
                 "end": 1211,
+                "moduleId": 0,
                 "start": 1205,
                 "type": "TagDeclarator",
                 "value": "edge2"
@@ -6022,6 +6058,7 @@ description: Variables in memory after executing french-press.kcl
               "tag": {
                 "commentStart": 1326,
                 "end": 1332,
+                "moduleId": 0,
                 "start": 1326,
                 "type": "TagDeclarator",
                 "value": "edge3"
@@ -6042,6 +6079,7 @@ description: Variables in memory after executing french-press.kcl
               "tag": {
                 "commentStart": 1425,
                 "end": 1433,
+                "moduleId": 0,
                 "start": 1425,
                 "type": "TagDeclarator",
                 "value": "edgeLen"
@@ -6062,6 +6100,7 @@ description: Variables in memory after executing french-press.kcl
               "tag": {
                 "commentStart": 1511,
                 "end": 1517,
+                "moduleId": 0,
                 "start": 1511,
                 "type": "TagDeclarator",
                 "value": "edge4"
@@ -6082,6 +6121,7 @@ description: Variables in memory after executing french-press.kcl
               "tag": {
                 "commentStart": 1642,
                 "end": 1648,
+                "moduleId": 0,
                 "start": 1642,
                 "type": "TagDeclarator",
                 "value": "edge5"
@@ -6102,6 +6142,7 @@ description: Variables in memory after executing french-press.kcl
               "tag": {
                 "commentStart": 1775,
                 "end": 1781,
+                "moduleId": 0,
                 "start": 1775,
                 "type": "TagDeclarator",
                 "value": "edge6"
@@ -6158,6 +6199,7 @@ description: Variables in memory after executing french-press.kcl
                 "tag": {
                   "commentStart": 1091,
                   "end": 1097,
+                  "moduleId": 0,
                   "start": 1091,
                   "type": "TagDeclarator",
                   "value": "edge1"
@@ -6208,6 +6250,7 @@ description: Variables in memory after executing french-press.kcl
                 "tag": {
                   "commentStart": 1205,
                   "end": 1211,
+                  "moduleId": 0,
                   "start": 1205,
                   "type": "TagDeclarator",
                   "value": "edge2"
@@ -6258,6 +6301,7 @@ description: Variables in memory after executing french-press.kcl
                 "tag": {
                   "commentStart": 1326,
                   "end": 1332,
+                  "moduleId": 0,
                   "start": 1326,
                   "type": "TagDeclarator",
                   "value": "edge3"
@@ -6308,6 +6352,7 @@ description: Variables in memory after executing french-press.kcl
                 "tag": {
                   "commentStart": 1425,
                   "end": 1433,
+                  "moduleId": 0,
                   "start": 1425,
                   "type": "TagDeclarator",
                   "value": "edgeLen"
@@ -6352,6 +6397,7 @@ description: Variables in memory after executing french-press.kcl
                 "tag": {
                   "commentStart": 1511,
                   "end": 1517,
+                  "moduleId": 0,
                   "start": 1511,
                   "type": "TagDeclarator",
                   "value": "edge4"
@@ -6402,6 +6448,7 @@ description: Variables in memory after executing french-press.kcl
                 "tag": {
                   "commentStart": 1642,
                   "end": 1648,
+                  "moduleId": 0,
                   "start": 1642,
                   "type": "TagDeclarator",
                   "value": "edge5"
@@ -6452,6 +6499,7 @@ description: Variables in memory after executing french-press.kcl
                 "tag": {
                   "commentStart": 1775,
                   "end": 1781,
+                  "moduleId": 0,
                   "start": 1775,
                   "type": "TagDeclarator",
                   "value": "edge6"
@@ -6643,6 +6691,7 @@ description: Variables in memory after executing french-press.kcl
               "tag": {
                 "commentStart": 1091,
                 "end": 1097,
+                "moduleId": 0,
                 "start": 1091,
                 "type": "TagDeclarator",
                 "value": "edge1"
@@ -6663,6 +6712,7 @@ description: Variables in memory after executing french-press.kcl
               "tag": {
                 "commentStart": 1205,
                 "end": 1211,
+                "moduleId": 0,
                 "start": 1205,
                 "type": "TagDeclarator",
                 "value": "edge2"
@@ -6683,6 +6733,7 @@ description: Variables in memory after executing french-press.kcl
               "tag": {
                 "commentStart": 1326,
                 "end": 1332,
+                "moduleId": 0,
                 "start": 1326,
                 "type": "TagDeclarator",
                 "value": "edge3"
@@ -6703,6 +6754,7 @@ description: Variables in memory after executing french-press.kcl
               "tag": {
                 "commentStart": 1425,
                 "end": 1433,
+                "moduleId": 0,
                 "start": 1425,
                 "type": "TagDeclarator",
                 "value": "edgeLen"
@@ -6723,6 +6775,7 @@ description: Variables in memory after executing french-press.kcl
               "tag": {
                 "commentStart": 1511,
                 "end": 1517,
+                "moduleId": 0,
                 "start": 1511,
                 "type": "TagDeclarator",
                 "value": "edge4"
@@ -6743,6 +6796,7 @@ description: Variables in memory after executing french-press.kcl
               "tag": {
                 "commentStart": 1642,
                 "end": 1648,
+                "moduleId": 0,
                 "start": 1642,
                 "type": "TagDeclarator",
                 "value": "edge5"
@@ -6763,6 +6817,7 @@ description: Variables in memory after executing french-press.kcl
               "tag": {
                 "commentStart": 1775,
                 "end": 1781,
+                "moduleId": 0,
                 "start": 1775,
                 "type": "TagDeclarator",
                 "value": "edge6"
@@ -6819,6 +6874,7 @@ description: Variables in memory after executing french-press.kcl
                 "tag": {
                   "commentStart": 1091,
                   "end": 1097,
+                  "moduleId": 0,
                   "start": 1091,
                   "type": "TagDeclarator",
                   "value": "edge1"
@@ -6869,6 +6925,7 @@ description: Variables in memory after executing french-press.kcl
                 "tag": {
                   "commentStart": 1205,
                   "end": 1211,
+                  "moduleId": 0,
                   "start": 1205,
                   "type": "TagDeclarator",
                   "value": "edge2"
@@ -6919,6 +6976,7 @@ description: Variables in memory after executing french-press.kcl
                 "tag": {
                   "commentStart": 1326,
                   "end": 1332,
+                  "moduleId": 0,
                   "start": 1326,
                   "type": "TagDeclarator",
                   "value": "edge3"
@@ -6969,6 +7027,7 @@ description: Variables in memory after executing french-press.kcl
                 "tag": {
                   "commentStart": 1425,
                   "end": 1433,
+                  "moduleId": 0,
                   "start": 1425,
                   "type": "TagDeclarator",
                   "value": "edgeLen"
@@ -7013,6 +7072,7 @@ description: Variables in memory after executing french-press.kcl
                 "tag": {
                   "commentStart": 1511,
                   "end": 1517,
+                  "moduleId": 0,
                   "start": 1511,
                   "type": "TagDeclarator",
                   "value": "edge4"
@@ -7063,6 +7123,7 @@ description: Variables in memory after executing french-press.kcl
                 "tag": {
                   "commentStart": 1642,
                   "end": 1648,
+                  "moduleId": 0,
                   "start": 1642,
                   "type": "TagDeclarator",
                   "value": "edge5"
@@ -7113,6 +7174,7 @@ description: Variables in memory after executing french-press.kcl
                 "tag": {
                   "commentStart": 1775,
                   "end": 1781,
+                  "moduleId": 0,
                   "start": 1775,
                   "type": "TagDeclarator",
                   "value": "edge6"
@@ -8130,6 +8192,7 @@ description: Variables in memory after executing french-press.kcl
           "tag": {
             "commentStart": 2929,
             "end": 2934,
+            "moduleId": 0,
             "start": 2929,
             "type": "TagDeclarator",
             "value": "seg1"
@@ -8200,6 +8263,7 @@ description: Variables in memory after executing french-press.kcl
             "tag": {
               "commentStart": 2929,
               "end": 2934,
+              "moduleId": 0,
               "start": 2929,
               "type": "TagDeclarator",
               "value": "seg1"

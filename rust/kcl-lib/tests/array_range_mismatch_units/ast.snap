@@ -13,6 +13,7 @@ description: Result of parsing array_range_mismatch_units.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "a",
             "start": 0,
             "type": "Identifier"
@@ -23,6 +24,7 @@ description: Result of parsing array_range_mismatch_units.kcl
             "endElement": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "raw": "3cm",
               "start": 0,
               "type": "Literal",
@@ -33,10 +35,12 @@ description: Result of parsing array_range_mismatch_units.kcl
               }
             },
             "endInclusive": true,
+            "moduleId": 0,
             "start": 0,
             "startElement": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "raw": "1mm",
               "start": 0,
               "type": "Literal",
@@ -49,11 +53,13 @@ description: Result of parsing array_range_mismatch_units.kcl
             "type": "ArrayRangeExpression",
             "type": "ArrayRangeExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -68,6 +74,7 @@ description: Result of parsing array_range_mismatch_units.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "error",
                 "start": 0,
                 "type": "Identifier"
@@ -75,6 +82,7 @@ description: Result of parsing array_range_mismatch_units.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "\"shouldn't make it here\"",
                 "start": 0,
                 "type": "Literal",
@@ -87,9 +95,11 @@ description: Result of parsing array_range_mismatch_units.kcl
             "abs_path": false,
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "assertIs",
               "start": 0,
               "type": "Identifier"
@@ -100,12 +110,14 @@ description: Result of parsing array_range_mismatch_units.kcl
           },
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
           "unlabeled": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "false",
             "start": 0,
             "type": "Literal",
@@ -113,6 +125,7 @@ description: Result of parsing array_range_mismatch_units.kcl
             "value": false
           }
         },
+        "moduleId": 0,
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -120,6 +133,7 @@ description: Result of parsing array_range_mismatch_units.kcl
     ],
     "commentStart": 0,
     "end": 0,
+    "moduleId": 0,
     "start": 0
   }
 }

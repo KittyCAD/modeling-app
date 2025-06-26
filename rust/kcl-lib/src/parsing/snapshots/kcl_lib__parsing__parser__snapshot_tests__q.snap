@@ -12,6 +12,7 @@ expression: actual
         "id": {
           "commentStart": 0,
           "end": 6,
+          "moduleId": 0,
           "name": "height",
           "start": 0,
           "type": "Identifier"
@@ -23,13 +24,16 @@ expression: actual
               "commentStart": 11,
               "computed": false,
               "end": 19,
+              "moduleId": 0,
               "object": {
                 "abs_path": false,
                 "commentStart": 11,
                 "end": 14,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 11,
                   "end": 14,
+                  "moduleId": 0,
                   "name": "obj",
                   "start": 11,
                   "type": "Identifier"
@@ -42,6 +46,7 @@ expression: actual
               "property": {
                 "commentStart": 15,
                 "end": 18,
+                "moduleId": 0,
                 "raw": "\"a\"",
                 "start": 15,
                 "type": "Literal",
@@ -55,6 +60,7 @@ expression: actual
             {
               "commentStart": 21,
               "end": 22,
+              "moduleId": 0,
               "raw": "0",
               "start": 21,
               "type": "Literal",
@@ -66,15 +72,18 @@ expression: actual
             }
           ],
           "end": 24,
+          "moduleId": 0,
           "start": 9,
           "type": "ArrayExpression",
           "type": "ArrayExpression"
         },
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclarator"
       },
       "end": 24,
       "kind": "const",
+      "moduleId": 0,
       "start": 0,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
@@ -82,5 +91,6 @@ expression: actual
   ],
   "commentStart": 0,
   "end": 24,
+  "moduleId": 0,
   "start": 0
 }

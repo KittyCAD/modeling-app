@@ -8,6 +8,7 @@ description: Result of parsing pillow-block-bearing.kcl
       {
         "commentStart": 0,
         "end": 0,
+        "moduleId": 0,
         "path": {
           "type": "Kcl",
           "filename": "parameters.kcl"
@@ -18,6 +19,7 @@ description: Result of parsing pillow-block-bearing.kcl
         "selector": {
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "Glob"
         },
@@ -28,6 +30,7 @@ description: Result of parsing pillow-block-bearing.kcl
       {
         "commentStart": 0,
         "end": 0,
+        "moduleId": 0,
         "path": {
           "type": "Kcl",
           "filename": "ball-bearing.kcl"
@@ -37,6 +40,7 @@ description: Result of parsing pillow-block-bearing.kcl
           "alias": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "ballBearing",
             "start": 0,
             "type": "Identifier"
@@ -49,6 +53,7 @@ description: Result of parsing pillow-block-bearing.kcl
       {
         "commentStart": 0,
         "end": 0,
+        "moduleId": 0,
         "path": {
           "type": "Kcl",
           "filename": "block.kcl"
@@ -58,6 +63,7 @@ description: Result of parsing pillow-block-bearing.kcl
           "alias": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "block",
             "start": 0,
             "type": "Identifier"
@@ -74,9 +80,11 @@ description: Result of parsing pillow-block-bearing.kcl
           "abs_path": false,
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "name": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "ballBearing",
             "start": 0,
             "type": "Identifier"
@@ -86,6 +94,7 @@ description: Result of parsing pillow-block-bearing.kcl
           "type": "Name",
           "type": "Name"
         },
+        "moduleId": 0,
         "preComments": [
           "",
           "",
@@ -102,9 +111,11 @@ description: Result of parsing pillow-block-bearing.kcl
           "abs_path": false,
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "name": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "block",
             "start": 0,
             "type": "Identifier"
@@ -114,6 +125,7 @@ description: Result of parsing pillow-block-bearing.kcl
           "type": "Name",
           "type": "Name"
         },
+        "moduleId": 0,
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -125,9 +137,11 @@ description: Result of parsing pillow-block-bearing.kcl
       {
         "commentStart": 0,
         "end": 0,
+        "moduleId": 0,
         "name": {
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "name": "settings",
           "start": 0,
           "type": "Identifier"
@@ -146,19 +160,23 @@ description: Result of parsing pillow-block-bearing.kcl
             "key": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "defaultLengthUnit",
               "start": 0,
               "type": "Identifier"
             },
+            "moduleId": 0,
             "start": 0,
             "type": "ObjectProperty",
             "value": {
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "in",
                 "start": 0,
                 "type": "Identifier"
@@ -174,12 +192,14 @@ description: Result of parsing pillow-block-bearing.kcl
         "type": "Annotation"
       }
     ],
+    "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {},
       "startNodes": [
         {
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "NonCodeNode",
           "value": {

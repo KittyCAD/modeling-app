@@ -12,6 +12,7 @@ expression: actual
         "id": {
           "commentStart": 0,
           "end": 4,
+          "moduleId": 0,
           "name": "prop",
           "start": 0,
           "type": "Identifier"
@@ -20,25 +21,31 @@ expression: actual
           "commentStart": 7,
           "computed": false,
           "end": 28,
+          "moduleId": 0,
           "object": {
             "commentStart": 7,
             "computed": false,
             "end": 23,
+            "moduleId": 0,
             "object": {
               "commentStart": 7,
               "computed": false,
               "end": 17,
+              "moduleId": 0,
               "object": {
                 "commentStart": 7,
                 "computed": false,
                 "end": 13,
+                "moduleId": 0,
                 "object": {
                   "abs_path": false,
                   "commentStart": 7,
                   "end": 9,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 7,
                     "end": 9,
+                    "moduleId": 0,
                     "name": "yo",
                     "start": 7,
                     "type": "Identifier"
@@ -51,6 +58,7 @@ expression: actual
                 "property": {
                   "commentStart": 10,
                   "end": 13,
+                  "moduleId": 0,
                   "name": "one",
                   "start": 10,
                   "type": "Identifier",
@@ -63,6 +71,7 @@ expression: actual
               "property": {
                 "commentStart": 14,
                 "end": 17,
+                "moduleId": 0,
                 "name": "two",
                 "start": 14,
                 "type": "Identifier",
@@ -75,6 +84,7 @@ expression: actual
             "property": {
               "commentStart": 18,
               "end": 23,
+              "moduleId": 0,
               "name": "three",
               "start": 18,
               "type": "Identifier",
@@ -87,6 +97,7 @@ expression: actual
           "property": {
             "commentStart": 24,
             "end": 28,
+            "moduleId": 0,
             "name": "four",
             "start": 24,
             "type": "Identifier",
@@ -96,11 +107,13 @@ expression: actual
           "type": "MemberExpression",
           "type": "MemberExpression"
         },
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclarator"
       },
       "end": 28,
       "kind": "const",
+      "moduleId": 0,
       "start": 0,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
@@ -108,5 +121,6 @@ expression: actual
   ],
   "commentStart": 0,
   "end": 28,
+  "moduleId": 0,
   "start": 0
 }

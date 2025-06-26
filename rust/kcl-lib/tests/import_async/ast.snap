@@ -8,10 +8,12 @@ description: Result of parsing import_async.kcl
       {
         "commentStart": 0,
         "end": 0,
+        "moduleId": 0,
         "outerAttrs": [
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": null,
             "properties": [
               {
@@ -20,19 +22,23 @@ description: Result of parsing import_async.kcl
                 "key": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "lengthUnit",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "moduleId": 0,
                 "start": 0,
                 "type": "ObjectProperty",
                 "value": {
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "m",
                     "start": 0,
                     "type": "Identifier"
@@ -57,6 +63,7 @@ description: Result of parsing import_async.kcl
           "alias": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "screw",
             "start": 0,
             "type": "Identifier"
@@ -74,6 +81,7 @@ description: Result of parsing import_async.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "myScrew",
             "start": 0,
             "type": "Identifier"
@@ -82,9 +90,11 @@ description: Result of parsing import_async.kcl
             "abs_path": false,
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "screw",
               "start": 0,
               "type": "Identifier"
@@ -94,11 +104,13 @@ description: Result of parsing import_async.kcl
             "type": "Name",
             "type": "Name"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -111,6 +123,7 @@ description: Result of parsing import_async.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "helicalGear",
             "start": 0,
             "type": "Identifier"
@@ -126,6 +139,7 @@ description: Result of parsing import_async.kcl
                     "id": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "pitchDiameter",
                       "start": 0,
                       "type": "Identifier"
@@ -137,9 +151,11 @@ description: Result of parsing import_async.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "module",
                           "start": 0,
                           "type": "Identifier"
@@ -149,14 +165,17 @@ description: Result of parsing import_async.kcl
                         "type": "Name",
                         "type": "Name"
                       },
+                      "moduleId": 0,
                       "operator": "*",
                       "right": {
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "nTeeth",
                           "start": 0,
                           "type": "Identifier"
@@ -170,11 +189,13 @@ description: Result of parsing import_async.kcl
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     },
+                    "moduleId": 0,
                     "start": 0,
                     "type": "VariableDeclarator"
                   },
                   "end": 0,
                   "kind": "const",
+                  "moduleId": 0,
                   "preComments": [
                     "// Calculate gear parameters"
                   ],
@@ -190,6 +211,7 @@ description: Result of parsing import_async.kcl
                     "id": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "addendum",
                       "start": 0,
                       "type": "Identifier"
@@ -198,9 +220,11 @@ description: Result of parsing import_async.kcl
                       "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "module",
                         "start": 0,
                         "type": "Identifier"
@@ -210,11 +234,13 @@ description: Result of parsing import_async.kcl
                       "type": "Name",
                       "type": "Name"
                     },
+                    "moduleId": 0,
                     "start": 0,
                     "type": "VariableDeclarator"
                   },
                   "end": 0,
                   "kind": "const",
+                  "moduleId": 0,
                   "start": 0,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
@@ -227,6 +253,7 @@ description: Result of parsing import_async.kcl
                     "id": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "deddendum",
                       "start": 0,
                       "type": "Identifier"
@@ -237,6 +264,7 @@ description: Result of parsing import_async.kcl
                       "left": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "1.25",
                         "start": 0,
                         "type": "Literal",
@@ -246,14 +274,17 @@ description: Result of parsing import_async.kcl
                           "suffix": "None"
                         }
                       },
+                      "moduleId": 0,
                       "operator": "*",
                       "right": {
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "module",
                           "start": 0,
                           "type": "Identifier"
@@ -267,11 +298,13 @@ description: Result of parsing import_async.kcl
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     },
+                    "moduleId": 0,
                     "start": 0,
                     "type": "VariableDeclarator"
                   },
                   "end": 0,
                   "kind": "const",
+                  "moduleId": 0,
                   "start": 0,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
@@ -284,6 +317,7 @@ description: Result of parsing import_async.kcl
                     "id": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "baseDiameter",
                       "start": 0,
                       "type": "Identifier"
@@ -295,9 +329,11 @@ description: Result of parsing import_async.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "pitchDiameter",
                           "start": 0,
                           "type": "Identifier"
@@ -307,15 +343,19 @@ description: Result of parsing import_async.kcl
                         "type": "Name",
                         "type": "Name"
                       },
+                      "moduleId": 0,
                       "operator": "*",
                       "right": {
+                        "arguments": [],
                         "callee": {
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "cos",
                             "start": 0,
                             "type": "Identifier"
@@ -326,6 +366,7 @@ description: Result of parsing import_async.kcl
                         },
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "start": 0,
                         "type": "CallExpressionKw",
                         "type": "CallExpressionKw",
@@ -333,9 +374,11 @@ description: Result of parsing import_async.kcl
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "pressureAngle",
                             "start": 0,
                             "type": "Identifier"
@@ -350,11 +393,13 @@ description: Result of parsing import_async.kcl
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     },
+                    "moduleId": 0,
                     "start": 0,
                     "type": "VariableDeclarator"
                   },
                   "end": 0,
                   "kind": "const",
+                  "moduleId": 0,
                   "start": 0,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
@@ -367,6 +412,7 @@ description: Result of parsing import_async.kcl
                     "id": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "tipDiameter",
                       "start": 0,
                       "type": "Identifier"
@@ -378,9 +424,11 @@ description: Result of parsing import_async.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "pitchDiameter",
                           "start": 0,
                           "type": "Identifier"
@@ -390,6 +438,7 @@ description: Result of parsing import_async.kcl
                         "type": "Name",
                         "type": "Name"
                       },
+                      "moduleId": 0,
                       "operator": "+",
                       "right": {
                         "commentStart": 0,
@@ -397,6 +446,7 @@ description: Result of parsing import_async.kcl
                         "left": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "2",
                           "start": 0,
                           "type": "Literal",
@@ -406,14 +456,17 @@ description: Result of parsing import_async.kcl
                             "suffix": "None"
                           }
                         },
+                        "moduleId": 0,
                         "operator": "*",
                         "right": {
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "module",
                             "start": 0,
                             "type": "Identifier"
@@ -431,11 +484,13 @@ description: Result of parsing import_async.kcl
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     },
+                    "moduleId": 0,
                     "start": 0,
                     "type": "VariableDeclarator"
                   },
                   "end": 0,
                   "kind": "const",
+                  "moduleId": 0,
                   "start": 0,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
@@ -448,6 +503,7 @@ description: Result of parsing import_async.kcl
                     "id": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "keywayWidth",
                       "start": 0,
                       "type": "Identifier"
@@ -455,6 +511,7 @@ description: Result of parsing import_async.kcl
                     "init": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "2",
                       "start": 0,
                       "type": "Literal",
@@ -464,11 +521,13 @@ description: Result of parsing import_async.kcl
                         "suffix": "None"
                       }
                     },
+                    "moduleId": 0,
                     "start": 0,
                     "type": "VariableDeclarator"
                   },
                   "end": 0,
                   "kind": "const",
+                  "moduleId": 0,
                   "preComments": [
                     "",
                     "",
@@ -486,6 +545,7 @@ description: Result of parsing import_async.kcl
                     "id": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "keywayDepth",
                       "start": 0,
                       "type": "Identifier"
@@ -497,9 +557,11 @@ description: Result of parsing import_async.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "keywayWidth",
                           "start": 0,
                           "type": "Identifier"
@@ -509,10 +571,12 @@ description: Result of parsing import_async.kcl
                         "type": "Name",
                         "type": "Name"
                       },
+                      "moduleId": 0,
                       "operator": "/",
                       "right": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "2",
                         "start": 0,
                         "type": "Literal",
@@ -526,11 +590,13 @@ description: Result of parsing import_async.kcl
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     },
+                    "moduleId": 0,
                     "start": 0,
                     "type": "VariableDeclarator"
                   },
                   "end": 0,
                   "kind": "const",
+                  "moduleId": 0,
                   "start": 0,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
@@ -543,6 +609,7 @@ description: Result of parsing import_async.kcl
                     "id": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "holeDiam",
                       "start": 0,
                       "type": "Identifier"
@@ -550,6 +617,7 @@ description: Result of parsing import_async.kcl
                     "init": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "7",
                       "start": 0,
                       "type": "Literal",
@@ -559,11 +627,13 @@ description: Result of parsing import_async.kcl
                         "suffix": "None"
                       }
                     },
+                    "moduleId": 0,
                     "start": 0,
                     "type": "VariableDeclarator"
                   },
                   "end": 0,
                   "kind": "const",
+                  "moduleId": 0,
                   "start": 0,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
@@ -576,6 +646,7 @@ description: Result of parsing import_async.kcl
                     "id": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "holeRadius",
                       "start": 0,
                       "type": "Identifier"
@@ -587,9 +658,11 @@ description: Result of parsing import_async.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "holeDiam",
                           "start": 0,
                           "type": "Identifier"
@@ -599,10 +672,12 @@ description: Result of parsing import_async.kcl
                         "type": "Name",
                         "type": "Name"
                       },
+                      "moduleId": 0,
                       "operator": "/",
                       "right": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "2",
                         "start": 0,
                         "type": "Literal",
@@ -616,11 +691,13 @@ description: Result of parsing import_async.kcl
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     },
+                    "moduleId": 0,
                     "start": 0,
                     "type": "VariableDeclarator"
                   },
                   "end": 0,
                   "kind": "const",
+                  "moduleId": 0,
                   "start": 0,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
@@ -633,18 +710,22 @@ description: Result of parsing import_async.kcl
                     "id": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "startAngle",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "init": {
+                      "arguments": [],
                       "callee": {
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "asin",
                           "start": 0,
                           "type": "Identifier"
@@ -655,6 +736,7 @@ description: Result of parsing import_async.kcl
                       },
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "CallExpressionKw",
                       "type": "CallExpressionKw",
@@ -668,9 +750,11 @@ description: Result of parsing import_async.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "keywayWidth",
                               "start": 0,
                               "type": "Identifier"
@@ -680,10 +764,12 @@ description: Result of parsing import_async.kcl
                             "type": "Name",
                             "type": "Name"
                           },
+                          "moduleId": 0,
                           "operator": "/",
                           "right": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "raw": "2",
                             "start": 0,
                             "type": "Literal",
@@ -697,14 +783,17 @@ description: Result of parsing import_async.kcl
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         },
+                        "moduleId": 0,
                         "operator": "/",
                         "right": {
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "holeRadius",
                             "start": 0,
                             "type": "Identifier"
@@ -719,11 +808,13 @@ description: Result of parsing import_async.kcl
                         "type": "BinaryExpression"
                       }
                     },
+                    "moduleId": 0,
                     "start": 0,
                     "type": "VariableDeclarator"
                   },
                   "end": 0,
                   "kind": "const",
+                  "moduleId": 0,
                   "start": 0,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
@@ -736,6 +827,7 @@ description: Result of parsing import_async.kcl
                     "id": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "holeWithKeyway",
                       "start": 0,
                       "type": "Identifier"
@@ -743,13 +835,16 @@ description: Result of parsing import_async.kcl
                     "init": {
                       "body": [
                         {
+                          "arguments": [],
                           "callee": {
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "startSketchOn",
                               "start": 0,
                               "type": "Identifier"
@@ -760,6 +855,7 @@ description: Result of parsing import_async.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
@@ -767,9 +863,11 @@ description: Result of parsing import_async.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "XY",
                               "start": 0,
                               "type": "Identifier"
@@ -787,6 +885,7 @@ description: Result of parsing import_async.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "at",
                                 "start": 0,
                                 "type": "Identifier"
@@ -801,9 +900,11 @@ description: Result of parsing import_async.kcl
                                       "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": "holeRadius",
                                         "start": 0,
                                         "type": "Identifier"
@@ -813,15 +914,19 @@ description: Result of parsing import_async.kcl
                                       "type": "Name",
                                       "type": "Name"
                                     },
+                                    "moduleId": 0,
                                     "operator": "*",
                                     "right": {
+                                      "arguments": [],
                                       "callee": {
                                         "abs_path": false,
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": "cos",
                                           "start": 0,
                                           "type": "Identifier"
@@ -832,6 +937,7 @@ description: Result of parsing import_async.kcl
                                       },
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "start": 0,
                                       "type": "CallExpressionKw",
                                       "type": "CallExpressionKw",
@@ -839,9 +945,11 @@ description: Result of parsing import_async.kcl
                                         "abs_path": false,
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": "startAngle",
                                           "start": 0,
                                           "type": "Identifier"
@@ -863,9 +971,11 @@ description: Result of parsing import_async.kcl
                                       "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": "holeRadius",
                                         "start": 0,
                                         "type": "Identifier"
@@ -875,15 +985,19 @@ description: Result of parsing import_async.kcl
                                       "type": "Name",
                                       "type": "Name"
                                     },
+                                    "moduleId": 0,
                                     "operator": "*",
                                     "right": {
+                                      "arguments": [],
                                       "callee": {
                                         "abs_path": false,
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": "sin",
                                           "start": 0,
                                           "type": "Identifier"
@@ -894,6 +1008,7 @@ description: Result of parsing import_async.kcl
                                       },
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "start": 0,
                                       "type": "CallExpressionKw",
                                       "type": "CallExpressionKw",
@@ -901,9 +1016,11 @@ description: Result of parsing import_async.kcl
                                         "abs_path": false,
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": "startAngle",
                                           "start": 0,
                                           "type": "Identifier"
@@ -920,6 +1037,7 @@ description: Result of parsing import_async.kcl
                                   }
                                 ],
                                 "end": 0,
+                                "moduleId": 0,
                                 "start": 0,
                                 "type": "ArrayExpression",
                                 "type": "ArrayExpression"
@@ -930,9 +1048,11 @@ description: Result of parsing import_async.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "startProfile",
                               "start": 0,
                               "type": "Identifier"
@@ -943,6 +1063,7 @@ description: Result of parsing import_async.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
@@ -955,6 +1076,7 @@ description: Result of parsing import_async.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "length",
                                 "start": 0,
                                 "type": "Identifier"
@@ -963,9 +1085,11 @@ description: Result of parsing import_async.kcl
                                 "abs_path": false,
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": {
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "name": "keywayDepth",
                                   "start": 0,
                                   "type": "Identifier"
@@ -981,9 +1105,11 @@ description: Result of parsing import_async.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "xLine",
                               "start": 0,
                               "type": "Identifier"
@@ -994,6 +1120,7 @@ description: Result of parsing import_async.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
@@ -1006,6 +1133,7 @@ description: Result of parsing import_async.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "length",
                                 "start": 0,
                                 "type": "Identifier"
@@ -1015,9 +1143,11 @@ description: Result of parsing import_async.kcl
                                   "abs_path": false,
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "name": {
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "name": "keywayWidth",
                                     "start": 0,
                                     "type": "Identifier"
@@ -1029,6 +1159,7 @@ description: Result of parsing import_async.kcl
                                 },
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "operator": "-",
                                 "start": 0,
                                 "type": "UnaryExpression",
@@ -1040,9 +1171,11 @@ description: Result of parsing import_async.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "yLine",
                               "start": 0,
                               "type": "Identifier"
@@ -1053,6 +1186,7 @@ description: Result of parsing import_async.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
@@ -1065,6 +1199,7 @@ description: Result of parsing import_async.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "length",
                                 "start": 0,
                                 "type": "Identifier"
@@ -1074,9 +1209,11 @@ description: Result of parsing import_async.kcl
                                   "abs_path": false,
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "name": {
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "name": "keywayDepth",
                                     "start": 0,
                                     "type": "Identifier"
@@ -1088,6 +1225,7 @@ description: Result of parsing import_async.kcl
                                 },
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "operator": "-",
                                 "start": 0,
                                 "type": "UnaryExpression",
@@ -1099,9 +1237,11 @@ description: Result of parsing import_async.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "xLine",
                               "start": 0,
                               "type": "Identifier"
@@ -1112,6 +1252,7 @@ description: Result of parsing import_async.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
@@ -1124,6 +1265,7 @@ description: Result of parsing import_async.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "angleStart",
                                 "start": 0,
                                 "type": "Identifier"
@@ -1138,6 +1280,7 @@ description: Result of parsing import_async.kcl
                                     "argument": {
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "raw": "1",
                                       "start": 0,
                                       "type": "Literal",
@@ -1149,19 +1292,23 @@ description: Result of parsing import_async.kcl
                                     },
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "operator": "-",
                                     "start": 0,
                                     "type": "UnaryExpression",
                                     "type": "UnaryExpression"
                                   },
+                                  "moduleId": 0,
                                   "operator": "*",
                                   "right": {
                                     "abs_path": false,
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "name": {
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": "startAngle",
                                       "start": 0,
                                       "type": "Identifier"
@@ -1175,10 +1322,12 @@ description: Result of parsing import_async.kcl
                                   "type": "BinaryExpression",
                                   "type": "BinaryExpression"
                                 },
+                                "moduleId": 0,
                                 "operator": "+",
                                 "right": {
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "raw": "360",
                                   "start": 0,
                                   "type": "Literal",
@@ -1198,6 +1347,7 @@ description: Result of parsing import_async.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "angleEnd",
                                 "start": 0,
                                 "type": "Identifier"
@@ -1205,6 +1355,7 @@ description: Result of parsing import_async.kcl
                               "arg": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "raw": "180",
                                 "start": 0,
                                 "type": "Literal",
@@ -1220,6 +1371,7 @@ description: Result of parsing import_async.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "radius",
                                 "start": 0,
                                 "type": "Identifier"
@@ -1228,9 +1380,11 @@ description: Result of parsing import_async.kcl
                                 "abs_path": false,
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": {
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "name": "holeRadius",
                                   "start": 0,
                                   "type": "Identifier"
@@ -1246,9 +1400,11 @@ description: Result of parsing import_async.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "arc",
                               "start": 0,
                               "type": "Identifier"
@@ -1259,6 +1415,7 @@ description: Result of parsing import_async.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
@@ -1271,6 +1428,7 @@ description: Result of parsing import_async.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "angleStart",
                                 "start": 0,
                                 "type": "Identifier"
@@ -1278,6 +1436,7 @@ description: Result of parsing import_async.kcl
                               "arg": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "raw": "180",
                                 "start": 0,
                                 "type": "Literal",
@@ -1293,6 +1452,7 @@ description: Result of parsing import_async.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "angleEnd",
                                 "start": 0,
                                 "type": "Identifier"
@@ -1301,9 +1461,11 @@ description: Result of parsing import_async.kcl
                                 "abs_path": false,
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": {
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "name": "startAngle",
                                   "start": 0,
                                   "type": "Identifier"
@@ -1319,6 +1481,7 @@ description: Result of parsing import_async.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "radius",
                                 "start": 0,
                                 "type": "Identifier"
@@ -1327,9 +1490,11 @@ description: Result of parsing import_async.kcl
                                 "abs_path": false,
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": {
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "name": "holeRadius",
                                   "start": 0,
                                   "type": "Identifier"
@@ -1345,9 +1510,11 @@ description: Result of parsing import_async.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "arc",
                               "start": 0,
                               "type": "Identifier"
@@ -1358,19 +1525,23 @@ description: Result of parsing import_async.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": null
                         },
                         {
+                          "arguments": [],
                           "callee": {
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "close",
                               "start": 0,
                               "type": "Identifier"
@@ -1381,6 +1552,7 @@ description: Result of parsing import_async.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
@@ -1389,12 +1561,14 @@ description: Result of parsing import_async.kcl
                       ],
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "nonCodeMeta": {
                         "nonCodeNodes": {
                           "7": [
                             {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "start": 0,
                               "type": "NonCodeNode",
                               "value": {
@@ -1411,11 +1585,13 @@ description: Result of parsing import_async.kcl
                       "type": "PipeExpression",
                       "type": "PipeExpression"
                     },
+                    "moduleId": 0,
                     "start": 0,
                     "type": "VariableDeclarator"
                   },
                   "end": 0,
                   "kind": "const",
+                  "moduleId": 0,
                   "preComments": [
                     "",
                     "",
@@ -1433,6 +1609,7 @@ description: Result of parsing import_async.kcl
                     "id": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "helicalGearSketch",
                       "start": 0,
                       "type": "Identifier"
@@ -1448,18 +1625,22 @@ description: Result of parsing import_async.kcl
                               "id": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "helixCalc",
                                 "start": 0,
                                 "type": "Identifier"
                               },
                               "init": {
+                                "arguments": [],
                                 "callee": {
                                   "abs_path": false,
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "name": {
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "name": "acos",
                                     "start": 0,
                                     "type": "Identifier"
@@ -1470,6 +1651,7 @@ description: Result of parsing import_async.kcl
                                 },
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "start": 0,
                                 "type": "CallExpressionKw",
                                 "type": "CallExpressionKw",
@@ -1483,9 +1665,11 @@ description: Result of parsing import_async.kcl
                                       "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": "offsetHeight",
                                         "start": 0,
                                         "type": "Identifier"
@@ -1495,15 +1679,19 @@ description: Result of parsing import_async.kcl
                                       "type": "Name",
                                       "type": "Name"
                                     },
+                                    "moduleId": 0,
                                     "operator": "*",
                                     "right": {
+                                      "arguments": [],
                                       "callee": {
                                         "abs_path": false,
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": "tan",
                                           "start": 0,
                                           "type": "Identifier"
@@ -1514,6 +1702,7 @@ description: Result of parsing import_async.kcl
                                       },
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "start": 0,
                                       "type": "CallExpressionKw",
                                       "type": "CallExpressionKw",
@@ -1521,9 +1710,11 @@ description: Result of parsing import_async.kcl
                                         "abs_path": false,
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": "helixAngle",
                                           "start": 0,
                                           "type": "Identifier"
@@ -1538,6 +1729,7 @@ description: Result of parsing import_async.kcl
                                     "type": "BinaryExpression",
                                     "type": "BinaryExpression"
                                   },
+                                  "moduleId": 0,
                                   "operator": "/",
                                   "right": {
                                     "commentStart": 0,
@@ -1546,9 +1738,11 @@ description: Result of parsing import_async.kcl
                                       "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": "tipDiameter",
                                         "start": 0,
                                         "type": "Identifier"
@@ -1558,10 +1752,12 @@ description: Result of parsing import_async.kcl
                                       "type": "Name",
                                       "type": "Name"
                                     },
+                                    "moduleId": 0,
                                     "operator": "/",
                                     "right": {
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "raw": "2",
                                       "start": 0,
                                       "type": "Literal",
@@ -1580,11 +1776,13 @@ description: Result of parsing import_async.kcl
                                   "type": "BinaryExpression"
                                 }
                               },
+                              "moduleId": 0,
                               "start": 0,
                               "type": "VariableDeclarator"
                             },
                             "end": 0,
                             "kind": "const",
+                            "moduleId": 0,
                             "preComments": [
                               "// Calculate the amount to rotate each planar sketch of the gear given the gear helix angle and total gear height"
                             ],
@@ -1600,6 +1798,7 @@ description: Result of parsing import_async.kcl
                               "id": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "helicalGearSketch",
                                 "start": 0,
                                 "type": "Identifier"
@@ -1607,13 +1806,16 @@ description: Result of parsing import_async.kcl
                               "init": {
                                 "body": [
                                   {
+                                    "arguments": [],
                                     "callee": {
                                       "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": "startSketchOn",
                                         "start": 0,
                                         "type": "Identifier"
@@ -1624,6 +1826,7 @@ description: Result of parsing import_async.kcl
                                     },
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "start": 0,
                                     "type": "CallExpressionKw",
                                     "type": "CallExpressionKw",
@@ -1634,6 +1837,7 @@ description: Result of parsing import_async.kcl
                                           "label": {
                                             "commentStart": 0,
                                             "end": 0,
+                                            "moduleId": 0,
                                             "name": "offset",
                                             "start": 0,
                                             "type": "Identifier"
@@ -1642,9 +1846,11 @@ description: Result of parsing import_async.kcl
                                             "abs_path": false,
                                             "commentStart": 0,
                                             "end": 0,
+                                            "moduleId": 0,
                                             "name": {
                                               "commentStart": 0,
                                               "end": 0,
+                                              "moduleId": 0,
                                               "name": "offsetHeight",
                                               "start": 0,
                                               "type": "Identifier"
@@ -1660,9 +1866,11 @@ description: Result of parsing import_async.kcl
                                         "abs_path": false,
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": "offsetPlane",
                                           "start": 0,
                                           "type": "Identifier"
@@ -1673,6 +1881,7 @@ description: Result of parsing import_async.kcl
                                       },
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "start": 0,
                                       "type": "CallExpressionKw",
                                       "type": "CallExpressionKw",
@@ -1680,9 +1889,11 @@ description: Result of parsing import_async.kcl
                                         "abs_path": false,
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": "XY",
                                           "start": 0,
                                           "type": "Identifier"
@@ -1701,6 +1912,7 @@ description: Result of parsing import_async.kcl
                                         "label": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": "at",
                                           "start": 0,
                                           "type": "Identifier"
@@ -1712,6 +1924,7 @@ description: Result of parsing import_async.kcl
                                               "label": {
                                                 "commentStart": 0,
                                                 "end": 0,
+                                                "moduleId": 0,
                                                 "name": "angle",
                                                 "start": 0,
                                                 "type": "Identifier"
@@ -1720,9 +1933,11 @@ description: Result of parsing import_async.kcl
                                                 "abs_path": false,
                                                 "commentStart": 0,
                                                 "end": 0,
+                                                "moduleId": 0,
                                                 "name": {
                                                   "commentStart": 0,
                                                   "end": 0,
+                                                  "moduleId": 0,
                                                   "name": "helixCalc",
                                                   "start": 0,
                                                   "type": "Identifier"
@@ -1738,6 +1953,7 @@ description: Result of parsing import_async.kcl
                                               "label": {
                                                 "commentStart": 0,
                                                 "end": 0,
+                                                "moduleId": 0,
                                                 "name": "length",
                                                 "start": 0,
                                                 "type": "Identifier"
@@ -1749,9 +1965,11 @@ description: Result of parsing import_async.kcl
                                                   "abs_path": false,
                                                   "commentStart": 0,
                                                   "end": 0,
+                                                  "moduleId": 0,
                                                   "name": {
                                                     "commentStart": 0,
                                                     "end": 0,
+                                                    "moduleId": 0,
                                                     "name": "baseDiameter",
                                                     "start": 0,
                                                     "type": "Identifier"
@@ -1761,10 +1979,12 @@ description: Result of parsing import_async.kcl
                                                   "type": "Name",
                                                   "type": "Name"
                                                 },
+                                                "moduleId": 0,
                                                 "operator": "/",
                                                 "right": {
                                                   "commentStart": 0,
                                                   "end": 0,
+                                                  "moduleId": 0,
                                                   "raw": "2",
                                                   "start": 0,
                                                   "type": "Literal",
@@ -1784,9 +2004,11 @@ description: Result of parsing import_async.kcl
                                             "abs_path": false,
                                             "commentStart": 0,
                                             "end": 0,
+                                            "moduleId": 0,
                                             "name": {
                                               "commentStart": 0,
                                               "end": 0,
+                                              "moduleId": 0,
                                               "name": "polar",
                                               "start": 0,
                                               "type": "Identifier"
@@ -1797,6 +2019,7 @@ description: Result of parsing import_async.kcl
                                           },
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "start": 0,
                                           "type": "CallExpressionKw",
                                           "type": "CallExpressionKw",
@@ -1808,9 +2031,11 @@ description: Result of parsing import_async.kcl
                                       "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": "startProfile",
                                         "start": 0,
                                         "type": "Identifier"
@@ -1821,6 +2046,7 @@ description: Result of parsing import_async.kcl
                                     },
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "start": 0,
                                     "type": "CallExpressionKw",
                                     "type": "CallExpressionKw",
@@ -1833,6 +2059,7 @@ description: Result of parsing import_async.kcl
                                         "label": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": "startRadius",
                                           "start": 0,
                                           "type": "Identifier"
@@ -1844,9 +2071,11 @@ description: Result of parsing import_async.kcl
                                             "abs_path": false,
                                             "commentStart": 0,
                                             "end": 0,
+                                            "moduleId": 0,
                                             "name": {
                                               "commentStart": 0,
                                               "end": 0,
+                                              "moduleId": 0,
                                               "name": "baseDiameter",
                                               "start": 0,
                                               "type": "Identifier"
@@ -1856,10 +2085,12 @@ description: Result of parsing import_async.kcl
                                             "type": "Name",
                                             "type": "Name"
                                           },
+                                          "moduleId": 0,
                                           "operator": "/",
                                           "right": {
                                             "commentStart": 0,
                                             "end": 0,
+                                            "moduleId": 0,
                                             "raw": "2",
                                             "start": 0,
                                             "type": "Literal",
@@ -1879,6 +2110,7 @@ description: Result of parsing import_async.kcl
                                         "label": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": "endRadius",
                                           "start": 0,
                                           "type": "Identifier"
@@ -1890,9 +2122,11 @@ description: Result of parsing import_async.kcl
                                             "abs_path": false,
                                             "commentStart": 0,
                                             "end": 0,
+                                            "moduleId": 0,
                                             "name": {
                                               "commentStart": 0,
                                               "end": 0,
+                                              "moduleId": 0,
                                               "name": "tipDiameter",
                                               "start": 0,
                                               "type": "Identifier"
@@ -1902,10 +2136,12 @@ description: Result of parsing import_async.kcl
                                             "type": "Name",
                                             "type": "Name"
                                           },
+                                          "moduleId": 0,
                                           "operator": "/",
                                           "right": {
                                             "commentStart": 0,
                                             "end": 0,
+                                            "moduleId": 0,
                                             "raw": "2",
                                             "start": 0,
                                             "type": "Literal",
@@ -1925,6 +2161,7 @@ description: Result of parsing import_async.kcl
                                         "label": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": "angle",
                                           "start": 0,
                                           "type": "Identifier"
@@ -1933,9 +2170,11 @@ description: Result of parsing import_async.kcl
                                           "abs_path": false,
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": {
                                             "commentStart": 0,
                                             "end": 0,
+                                            "moduleId": 0,
                                             "name": "helixCalc",
                                             "start": 0,
                                             "type": "Identifier"
@@ -1951,6 +2190,7 @@ description: Result of parsing import_async.kcl
                                         "label": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": "tag",
                                           "start": 0,
                                           "type": "Identifier"
@@ -1958,6 +2198,7 @@ description: Result of parsing import_async.kcl
                                         "arg": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "start": 0,
                                           "type": "TagDeclarator",
                                           "type": "TagDeclarator",
@@ -1969,9 +2210,11 @@ description: Result of parsing import_async.kcl
                                       "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": "involuteCircular",
                                         "start": 0,
                                         "type": "Identifier"
@@ -1982,6 +2225,7 @@ description: Result of parsing import_async.kcl
                                     },
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "start": 0,
                                     "type": "CallExpressionKw",
                                     "type": "CallExpressionKw",
@@ -1994,6 +2238,7 @@ description: Result of parsing import_async.kcl
                                         "label": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": "endAbsolute",
                                           "start": 0,
                                           "type": "Identifier"
@@ -2005,6 +2250,7 @@ description: Result of parsing import_async.kcl
                                               "label": {
                                                 "commentStart": 0,
                                                 "end": 0,
+                                                "moduleId": 0,
                                                 "name": "angle",
                                                 "start": 0,
                                                 "type": "Identifier"
@@ -2018,6 +2264,7 @@ description: Result of parsing import_async.kcl
                                                   "left": {
                                                     "commentStart": 0,
                                                     "end": 0,
+                                                    "moduleId": 0,
                                                     "raw": "160",
                                                     "start": 0,
                                                     "type": "Literal",
@@ -2027,14 +2274,17 @@ description: Result of parsing import_async.kcl
                                                       "suffix": "None"
                                                     }
                                                   },
+                                                  "moduleId": 0,
                                                   "operator": "/",
                                                   "right": {
                                                     "abs_path": false,
                                                     "commentStart": 0,
                                                     "end": 0,
+                                                    "moduleId": 0,
                                                     "name": {
                                                       "commentStart": 0,
                                                       "end": 0,
+                                                      "moduleId": 0,
                                                       "name": "nTeeth",
                                                       "start": 0,
                                                       "type": "Identifier"
@@ -2048,14 +2298,17 @@ description: Result of parsing import_async.kcl
                                                   "type": "BinaryExpression",
                                                   "type": "BinaryExpression"
                                                 },
+                                                "moduleId": 0,
                                                 "operator": "+",
                                                 "right": {
                                                   "abs_path": false,
                                                   "commentStart": 0,
                                                   "end": 0,
+                                                  "moduleId": 0,
                                                   "name": {
                                                     "commentStart": 0,
                                                     "end": 0,
+                                                    "moduleId": 0,
                                                     "name": "helixCalc",
                                                     "start": 0,
                                                     "type": "Identifier"
@@ -2075,6 +2328,7 @@ description: Result of parsing import_async.kcl
                                               "label": {
                                                 "commentStart": 0,
                                                 "end": 0,
+                                                "moduleId": 0,
                                                 "name": "length",
                                                 "start": 0,
                                                 "type": "Identifier"
@@ -2086,9 +2340,11 @@ description: Result of parsing import_async.kcl
                                                   "abs_path": false,
                                                   "commentStart": 0,
                                                   "end": 0,
+                                                  "moduleId": 0,
                                                   "name": {
                                                     "commentStart": 0,
                                                     "end": 0,
+                                                    "moduleId": 0,
                                                     "name": "tipDiameter",
                                                     "start": 0,
                                                     "type": "Identifier"
@@ -2098,10 +2354,12 @@ description: Result of parsing import_async.kcl
                                                   "type": "Name",
                                                   "type": "Name"
                                                 },
+                                                "moduleId": 0,
                                                 "operator": "/",
                                                 "right": {
                                                   "commentStart": 0,
                                                   "end": 0,
+                                                  "moduleId": 0,
                                                   "raw": "2",
                                                   "start": 0,
                                                   "type": "Literal",
@@ -2121,9 +2379,11 @@ description: Result of parsing import_async.kcl
                                             "abs_path": false,
                                             "commentStart": 0,
                                             "end": 0,
+                                            "moduleId": 0,
                                             "name": {
                                               "commentStart": 0,
                                               "end": 0,
+                                              "moduleId": 0,
                                               "name": "polar",
                                               "start": 0,
                                               "type": "Identifier"
@@ -2134,6 +2394,7 @@ description: Result of parsing import_async.kcl
                                           },
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "start": 0,
                                           "type": "CallExpressionKw",
                                           "type": "CallExpressionKw",
@@ -2145,9 +2406,11 @@ description: Result of parsing import_async.kcl
                                       "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": "line",
                                         "start": 0,
                                         "type": "Identifier"
@@ -2158,6 +2421,7 @@ description: Result of parsing import_async.kcl
                                     },
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "start": 0,
                                     "type": "CallExpressionKw",
                                     "type": "CallExpressionKw",
@@ -2170,6 +2434,7 @@ description: Result of parsing import_async.kcl
                                         "label": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": "startRadius",
                                           "start": 0,
                                           "type": "Identifier"
@@ -2181,9 +2446,11 @@ description: Result of parsing import_async.kcl
                                             "abs_path": false,
                                             "commentStart": 0,
                                             "end": 0,
+                                            "moduleId": 0,
                                             "name": {
                                               "commentStart": 0,
                                               "end": 0,
+                                              "moduleId": 0,
                                               "name": "baseDiameter",
                                               "start": 0,
                                               "type": "Identifier"
@@ -2193,10 +2460,12 @@ description: Result of parsing import_async.kcl
                                             "type": "Name",
                                             "type": "Name"
                                           },
+                                          "moduleId": 0,
                                           "operator": "/",
                                           "right": {
                                             "commentStart": 0,
                                             "end": 0,
+                                            "moduleId": 0,
                                             "raw": "2",
                                             "start": 0,
                                             "type": "Literal",
@@ -2216,6 +2485,7 @@ description: Result of parsing import_async.kcl
                                         "label": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": "endRadius",
                                           "start": 0,
                                           "type": "Identifier"
@@ -2227,9 +2497,11 @@ description: Result of parsing import_async.kcl
                                             "abs_path": false,
                                             "commentStart": 0,
                                             "end": 0,
+                                            "moduleId": 0,
                                             "name": {
                                               "commentStart": 0,
                                               "end": 0,
+                                              "moduleId": 0,
                                               "name": "tipDiameter",
                                               "start": 0,
                                               "type": "Identifier"
@@ -2239,10 +2511,12 @@ description: Result of parsing import_async.kcl
                                             "type": "Name",
                                             "type": "Name"
                                           },
+                                          "moduleId": 0,
                                           "operator": "/",
                                           "right": {
                                             "commentStart": 0,
                                             "end": 0,
+                                            "moduleId": 0,
                                             "raw": "2",
                                             "start": 0,
                                             "type": "Literal",
@@ -2262,6 +2536,7 @@ description: Result of parsing import_async.kcl
                                         "label": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": "angle",
                                           "start": 0,
                                           "type": "Identifier"
@@ -2276,6 +2551,7 @@ description: Result of parsing import_async.kcl
                                               "left": {
                                                 "commentStart": 0,
                                                 "end": 0,
+                                                "moduleId": 0,
                                                 "raw": "4",
                                                 "start": 0,
                                                 "type": "Literal",
@@ -2285,15 +2561,19 @@ description: Result of parsing import_async.kcl
                                                   "suffix": "None"
                                                 }
                                               },
+                                              "moduleId": 0,
                                               "operator": "*",
                                               "right": {
+                                                "arguments": [],
                                                 "callee": {
                                                   "abs_path": false,
                                                   "commentStart": 0,
                                                   "end": 0,
+                                                  "moduleId": 0,
                                                   "name": {
                                                     "commentStart": 0,
                                                     "end": 0,
+                                                    "moduleId": 0,
                                                     "name": "atan",
                                                     "start": 0,
                                                     "type": "Identifier"
@@ -2304,6 +2584,7 @@ description: Result of parsing import_async.kcl
                                                 },
                                                 "commentStart": 0,
                                                 "end": 0,
+                                                "moduleId": 0,
                                                 "start": 0,
                                                 "type": "CallExpressionKw",
                                                 "type": "CallExpressionKw",
@@ -2311,13 +2592,16 @@ description: Result of parsing import_async.kcl
                                                   "commentStart": 0,
                                                   "end": 0,
                                                   "left": {
+                                                    "arguments": [],
                                                     "callee": {
                                                       "abs_path": false,
                                                       "commentStart": 0,
                                                       "end": 0,
+                                                      "moduleId": 0,
                                                       "name": {
                                                         "commentStart": 0,
                                                         "end": 0,
+                                                        "moduleId": 0,
                                                         "name": "segEndY",
                                                         "start": 0,
                                                         "type": "Identifier"
@@ -2328,6 +2612,7 @@ description: Result of parsing import_async.kcl
                                                     },
                                                     "commentStart": 0,
                                                     "end": 0,
+                                                    "moduleId": 0,
                                                     "start": 0,
                                                     "type": "CallExpressionKw",
                                                     "type": "CallExpressionKw",
@@ -2335,9 +2620,11 @@ description: Result of parsing import_async.kcl
                                                       "abs_path": false,
                                                       "commentStart": 0,
                                                       "end": 0,
+                                                      "moduleId": 0,
                                                       "name": {
                                                         "commentStart": 0,
                                                         "end": 0,
+                                                        "moduleId": 0,
                                                         "name": "seg01",
                                                         "start": 0,
                                                         "type": "Identifier"
@@ -2348,15 +2635,19 @@ description: Result of parsing import_async.kcl
                                                       "type": "Name"
                                                     }
                                                   },
+                                                  "moduleId": 0,
                                                   "operator": "/",
                                                   "right": {
+                                                    "arguments": [],
                                                     "callee": {
                                                       "abs_path": false,
                                                       "commentStart": 0,
                                                       "end": 0,
+                                                      "moduleId": 0,
                                                       "name": {
                                                         "commentStart": 0,
                                                         "end": 0,
+                                                        "moduleId": 0,
                                                         "name": "segEndX",
                                                         "start": 0,
                                                         "type": "Identifier"
@@ -2367,6 +2658,7 @@ description: Result of parsing import_async.kcl
                                                     },
                                                     "commentStart": 0,
                                                     "end": 0,
+                                                    "moduleId": 0,
                                                     "start": 0,
                                                     "type": "CallExpressionKw",
                                                     "type": "CallExpressionKw",
@@ -2374,9 +2666,11 @@ description: Result of parsing import_async.kcl
                                                       "abs_path": false,
                                                       "commentStart": 0,
                                                       "end": 0,
+                                                      "moduleId": 0,
                                                       "name": {
                                                         "commentStart": 0,
                                                         "end": 0,
+                                                        "moduleId": 0,
                                                         "name": "seg01",
                                                         "start": 0,
                                                         "type": "Identifier"
@@ -2396,6 +2690,7 @@ description: Result of parsing import_async.kcl
                                               "type": "BinaryExpression",
                                               "type": "BinaryExpression"
                                             },
+                                            "moduleId": 0,
                                             "operator": "-",
                                             "right": {
                                               "commentStart": 0,
@@ -2403,6 +2698,7 @@ description: Result of parsing import_async.kcl
                                               "left": {
                                                 "commentStart": 0,
                                                 "end": 0,
+                                                "moduleId": 0,
                                                 "raw": "3",
                                                 "start": 0,
                                                 "type": "Literal",
@@ -2412,14 +2708,17 @@ description: Result of parsing import_async.kcl
                                                   "suffix": "None"
                                                 }
                                               },
+                                              "moduleId": 0,
                                               "operator": "*",
                                               "right": {
                                                 "abs_path": false,
                                                 "commentStart": 0,
                                                 "end": 0,
+                                                "moduleId": 0,
                                                 "name": {
                                                   "commentStart": 0,
                                                   "end": 0,
+                                                  "moduleId": 0,
                                                   "name": "helixCalc",
                                                   "start": 0,
                                                   "type": "Identifier"
@@ -2439,6 +2738,7 @@ description: Result of parsing import_async.kcl
                                           },
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "operator": "-",
                                           "start": 0,
                                           "type": "UnaryExpression",
@@ -2450,6 +2750,7 @@ description: Result of parsing import_async.kcl
                                         "label": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": "reverse",
                                           "start": 0,
                                           "type": "Identifier"
@@ -2457,6 +2758,7 @@ description: Result of parsing import_async.kcl
                                         "arg": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "raw": "true",
                                           "start": 0,
                                           "type": "Literal",
@@ -2469,9 +2771,11 @@ description: Result of parsing import_async.kcl
                                       "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": "involuteCircular",
                                         "start": 0,
                                         "type": "Identifier"
@@ -2482,6 +2786,7 @@ description: Result of parsing import_async.kcl
                                     },
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "start": 0,
                                     "type": "CallExpressionKw",
                                     "type": "CallExpressionKw",
@@ -2494,6 +2799,7 @@ description: Result of parsing import_async.kcl
                                         "label": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": "endAbsolute",
                                           "start": 0,
                                           "type": "Identifier"
@@ -2505,6 +2811,7 @@ description: Result of parsing import_async.kcl
                                               "label": {
                                                 "commentStart": 0,
                                                 "end": 0,
+                                                "moduleId": 0,
                                                 "name": "angle",
                                                 "start": 0,
                                                 "type": "Identifier"
@@ -2518,6 +2825,7 @@ description: Result of parsing import_async.kcl
                                                   "left": {
                                                     "commentStart": 0,
                                                     "end": 0,
+                                                    "moduleId": 0,
                                                     "raw": "360",
                                                     "start": 0,
                                                     "type": "Literal",
@@ -2527,14 +2835,17 @@ description: Result of parsing import_async.kcl
                                                       "suffix": "None"
                                                     }
                                                   },
+                                                  "moduleId": 0,
                                                   "operator": "/",
                                                   "right": {
                                                     "abs_path": false,
                                                     "commentStart": 0,
                                                     "end": 0,
+                                                    "moduleId": 0,
                                                     "name": {
                                                       "commentStart": 0,
                                                       "end": 0,
+                                                      "moduleId": 0,
                                                       "name": "nTeeth",
                                                       "start": 0,
                                                       "type": "Identifier"
@@ -2548,14 +2859,17 @@ description: Result of parsing import_async.kcl
                                                   "type": "BinaryExpression",
                                                   "type": "BinaryExpression"
                                                 },
+                                                "moduleId": 0,
                                                 "operator": "+",
                                                 "right": {
                                                   "abs_path": false,
                                                   "commentStart": 0,
                                                   "end": 0,
+                                                  "moduleId": 0,
                                                   "name": {
                                                     "commentStart": 0,
                                                     "end": 0,
+                                                    "moduleId": 0,
                                                     "name": "helixCalc",
                                                     "start": 0,
                                                     "type": "Identifier"
@@ -2575,6 +2889,7 @@ description: Result of parsing import_async.kcl
                                               "label": {
                                                 "commentStart": 0,
                                                 "end": 0,
+                                                "moduleId": 0,
                                                 "name": "length",
                                                 "start": 0,
                                                 "type": "Identifier"
@@ -2586,9 +2901,11 @@ description: Result of parsing import_async.kcl
                                                   "abs_path": false,
                                                   "commentStart": 0,
                                                   "end": 0,
+                                                  "moduleId": 0,
                                                   "name": {
                                                     "commentStart": 0,
                                                     "end": 0,
+                                                    "moduleId": 0,
                                                     "name": "baseDiameter",
                                                     "start": 0,
                                                     "type": "Identifier"
@@ -2598,10 +2915,12 @@ description: Result of parsing import_async.kcl
                                                   "type": "Name",
                                                   "type": "Name"
                                                 },
+                                                "moduleId": 0,
                                                 "operator": "/",
                                                 "right": {
                                                   "commentStart": 0,
                                                   "end": 0,
+                                                  "moduleId": 0,
                                                   "raw": "2",
                                                   "start": 0,
                                                   "type": "Literal",
@@ -2621,9 +2940,11 @@ description: Result of parsing import_async.kcl
                                             "abs_path": false,
                                             "commentStart": 0,
                                             "end": 0,
+                                            "moduleId": 0,
                                             "name": {
                                               "commentStart": 0,
                                               "end": 0,
+                                              "moduleId": 0,
                                               "name": "polar",
                                               "start": 0,
                                               "type": "Identifier"
@@ -2634,6 +2955,7 @@ description: Result of parsing import_async.kcl
                                           },
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "start": 0,
                                           "type": "CallExpressionKw",
                                           "type": "CallExpressionKw",
@@ -2645,9 +2967,11 @@ description: Result of parsing import_async.kcl
                                       "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": "line",
                                         "start": 0,
                                         "type": "Identifier"
@@ -2658,6 +2982,7 @@ description: Result of parsing import_async.kcl
                                     },
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "start": 0,
                                     "type": "CallExpressionKw",
                                     "type": "CallExpressionKw",
@@ -2670,6 +2995,7 @@ description: Result of parsing import_async.kcl
                                         "label": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": "instances",
                                           "start": 0,
                                           "type": "Identifier"
@@ -2678,9 +3004,11 @@ description: Result of parsing import_async.kcl
                                           "abs_path": false,
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": {
                                             "commentStart": 0,
                                             "end": 0,
+                                            "moduleId": 0,
                                             "name": "nTeeth",
                                             "start": 0,
                                             "type": "Identifier"
@@ -2696,6 +3024,7 @@ description: Result of parsing import_async.kcl
                                         "label": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": "center",
                                           "start": 0,
                                           "type": "Identifier"
@@ -2706,6 +3035,7 @@ description: Result of parsing import_async.kcl
                                             {
                                               "commentStart": 0,
                                               "end": 0,
+                                              "moduleId": 0,
                                               "raw": "0",
                                               "start": 0,
                                               "type": "Literal",
@@ -2718,6 +3048,7 @@ description: Result of parsing import_async.kcl
                                             {
                                               "commentStart": 0,
                                               "end": 0,
+                                              "moduleId": 0,
                                               "raw": "0",
                                               "start": 0,
                                               "type": "Literal",
@@ -2729,6 +3060,7 @@ description: Result of parsing import_async.kcl
                                             }
                                           ],
                                           "end": 0,
+                                          "moduleId": 0,
                                           "start": 0,
                                           "type": "ArrayExpression",
                                           "type": "ArrayExpression"
@@ -2739,6 +3071,7 @@ description: Result of parsing import_async.kcl
                                         "label": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": "arcDegrees",
                                           "start": 0,
                                           "type": "Identifier"
@@ -2746,6 +3079,7 @@ description: Result of parsing import_async.kcl
                                         "arg": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "raw": "360",
                                           "start": 0,
                                           "type": "Literal",
@@ -2761,6 +3095,7 @@ description: Result of parsing import_async.kcl
                                         "label": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": "rotateDuplicates",
                                           "start": 0,
                                           "type": "Identifier"
@@ -2768,6 +3103,7 @@ description: Result of parsing import_async.kcl
                                         "arg": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "raw": "true",
                                           "start": 0,
                                           "type": "Literal",
@@ -2780,9 +3116,11 @@ description: Result of parsing import_async.kcl
                                       "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": "patternCircular2d",
                                         "start": 0,
                                         "type": "Identifier"
@@ -2793,25 +3131,30 @@ description: Result of parsing import_async.kcl
                                     },
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "start": 0,
                                     "type": "CallExpressionKw",
                                     "type": "CallExpressionKw",
                                     "unlabeled": {
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "start": 0,
                                       "type": "PipeSubstitution",
                                       "type": "PipeSubstitution"
                                     }
                                   },
                                   {
+                                    "arguments": [],
                                     "callee": {
                                       "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": "close",
                                         "start": 0,
                                         "type": "Identifier"
@@ -2822,6 +3165,7 @@ description: Result of parsing import_async.kcl
                                     },
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "start": 0,
                                     "type": "CallExpressionKw",
                                     "type": "CallExpressionKw",
@@ -2834,6 +3178,7 @@ description: Result of parsing import_async.kcl
                                         "label": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": "tool",
                                           "start": 0,
                                           "type": "Identifier"
@@ -2842,9 +3187,11 @@ description: Result of parsing import_async.kcl
                                           "abs_path": false,
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": {
                                             "commentStart": 0,
                                             "end": 0,
+                                            "moduleId": 0,
                                             "name": "holeWithKeyway",
                                             "start": 0,
                                             "type": "Identifier"
@@ -2860,9 +3207,11 @@ description: Result of parsing import_async.kcl
                                       "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": "subtract2d",
                                         "start": 0,
                                         "type": "Identifier"
@@ -2873,6 +3222,7 @@ description: Result of parsing import_async.kcl
                                     },
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "start": 0,
                                     "type": "CallExpressionKw",
                                     "type": "CallExpressionKw",
@@ -2881,12 +3231,14 @@ description: Result of parsing import_async.kcl
                                 ],
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "nonCodeMeta": {
                                   "nonCodeNodes": {
                                     "4": [
                                       {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "start": 0,
                                         "type": "NonCodeNode",
                                         "value": {
@@ -2900,6 +3252,7 @@ description: Result of parsing import_async.kcl
                                       {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "start": 0,
                                         "type": "NonCodeNode",
                                         "value": {
@@ -2916,11 +3269,13 @@ description: Result of parsing import_async.kcl
                                 "type": "PipeExpression",
                                 "type": "PipeExpression"
                               },
+                              "moduleId": 0,
                               "start": 0,
                               "type": "VariableDeclarator"
                             },
                             "end": 0,
                             "kind": "const",
+                            "moduleId": 0,
                             "preComments": [
                               "",
                               "",
@@ -2935,9 +3290,11 @@ description: Result of parsing import_async.kcl
                               "abs_path": false,
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "helicalGearSketch",
                                 "start": 0,
                                 "type": "Identifier"
@@ -2949,6 +3306,7 @@ description: Result of parsing import_async.kcl
                             },
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "start": 0,
                             "type": "ReturnStatement",
                             "type": "ReturnStatement"
@@ -2956,16 +3314,19 @@ description: Result of parsing import_async.kcl
                         ],
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "start": 0
                       },
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "params": [
                         {
                           "type": "Parameter",
                           "identifier": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "offsetHeight",
                             "start": 0,
                             "type": "Identifier"
@@ -2976,11 +3337,13 @@ description: Result of parsing import_async.kcl
                       "type": "FunctionExpression",
                       "type": "FunctionExpression"
                     },
+                    "moduleId": 0,
                     "start": 0,
                     "type": "VariableDeclarator"
                   },
                   "end": 0,
                   "kind": "fn",
+                  "moduleId": 0,
                   "start": 0,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
@@ -2993,6 +3356,7 @@ description: Result of parsing import_async.kcl
                     "id": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "gearSketch001",
                       "start": 0,
                       "type": "Identifier"
@@ -3004,6 +3368,7 @@ description: Result of parsing import_async.kcl
                           "label": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "offsetHeight",
                             "start": 0,
                             "type": "Identifier"
@@ -3011,6 +3376,7 @@ description: Result of parsing import_async.kcl
                           "arg": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "raw": "0",
                             "start": 0,
                             "type": "Literal",
@@ -3026,9 +3392,11 @@ description: Result of parsing import_async.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "helicalGearSketch",
                           "start": 0,
                           "type": "Identifier"
@@ -3039,16 +3407,19 @@ description: Result of parsing import_async.kcl
                       },
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "CallExpressionKw",
                       "type": "CallExpressionKw",
                       "unlabeled": null
                     },
+                    "moduleId": 0,
                     "start": 0,
                     "type": "VariableDeclarator"
                   },
                   "end": 0,
                   "kind": "const",
+                  "moduleId": 0,
                   "preComments": [
                     "",
                     "",
@@ -3066,6 +3437,7 @@ description: Result of parsing import_async.kcl
                     "id": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "gearSketch002",
                       "start": 0,
                       "type": "Identifier"
@@ -3077,6 +3449,7 @@ description: Result of parsing import_async.kcl
                           "label": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "offsetHeight",
                             "start": 0,
                             "type": "Identifier"
@@ -3088,9 +3461,11 @@ description: Result of parsing import_async.kcl
                               "abs_path": false,
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "gearHeight",
                                 "start": 0,
                                 "type": "Identifier"
@@ -3100,10 +3475,12 @@ description: Result of parsing import_async.kcl
                               "type": "Name",
                               "type": "Name"
                             },
+                            "moduleId": 0,
                             "operator": "/",
                             "right": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "raw": "2",
                               "start": 0,
                               "type": "Literal",
@@ -3123,9 +3500,11 @@ description: Result of parsing import_async.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "helicalGearSketch",
                           "start": 0,
                           "type": "Identifier"
@@ -3136,16 +3515,19 @@ description: Result of parsing import_async.kcl
                       },
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "CallExpressionKw",
                       "type": "CallExpressionKw",
                       "unlabeled": null
                     },
+                    "moduleId": 0,
                     "start": 0,
                     "type": "VariableDeclarator"
                   },
                   "end": 0,
                   "kind": "const",
+                  "moduleId": 0,
                   "preComments": [
                     "",
                     "",
@@ -3163,6 +3545,7 @@ description: Result of parsing import_async.kcl
                     "id": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "gearSketch003",
                       "start": 0,
                       "type": "Identifier"
@@ -3174,6 +3557,7 @@ description: Result of parsing import_async.kcl
                           "label": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "offsetHeight",
                             "start": 0,
                             "type": "Identifier"
@@ -3182,9 +3566,11 @@ description: Result of parsing import_async.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "gearHeight",
                               "start": 0,
                               "type": "Identifier"
@@ -3200,9 +3586,11 @@ description: Result of parsing import_async.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "helicalGearSketch",
                           "start": 0,
                           "type": "Identifier"
@@ -3213,16 +3601,19 @@ description: Result of parsing import_async.kcl
                       },
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "CallExpressionKw",
                       "type": "CallExpressionKw",
                       "unlabeled": null
                     },
+                    "moduleId": 0,
                     "start": 0,
                     "type": "VariableDeclarator"
                   },
                   "end": 0,
                   "kind": "const",
+                  "moduleId": 0,
                   "preComments": [
                     "",
                     "",
@@ -3240,18 +3631,22 @@ description: Result of parsing import_async.kcl
                     "id": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "helicalGear",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "init": {
+                      "arguments": [],
                       "callee": {
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "loft",
                           "start": 0,
                           "type": "Identifier"
@@ -3262,6 +3657,7 @@ description: Result of parsing import_async.kcl
                       },
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "CallExpressionKw",
                       "type": "CallExpressionKw",
@@ -3272,9 +3668,11 @@ description: Result of parsing import_async.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "gearSketch001",
                               "start": 0,
                               "type": "Identifier"
@@ -3288,9 +3686,11 @@ description: Result of parsing import_async.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "gearSketch002",
                               "start": 0,
                               "type": "Identifier"
@@ -3304,9 +3704,11 @@ description: Result of parsing import_async.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "gearSketch003",
                               "start": 0,
                               "type": "Identifier"
@@ -3318,16 +3720,19 @@ description: Result of parsing import_async.kcl
                           }
                         ],
                         "end": 0,
+                        "moduleId": 0,
                         "start": 0,
                         "type": "ArrayExpression",
                         "type": "ArrayExpression"
                       }
                     },
+                    "moduleId": 0,
                     "start": 0,
                     "type": "VariableDeclarator"
                   },
                   "end": 0,
                   "kind": "const",
+                  "moduleId": 0,
                   "preComments": [
                     "",
                     "",
@@ -3342,9 +3747,11 @@ description: Result of parsing import_async.kcl
                     "abs_path": false,
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "helicalGear",
                       "start": 0,
                       "type": "Identifier"
@@ -3356,6 +3763,7 @@ description: Result of parsing import_async.kcl
                   },
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
@@ -3363,12 +3771,14 @@ description: Result of parsing import_async.kcl
               ],
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "nonCodeMeta": {
                 "nonCodeNodes": {
                   "15": [
                     {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "NonCodeNode",
                       "value": {
@@ -3383,12 +3793,14 @@ description: Result of parsing import_async.kcl
             },
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "nTeeth",
                   "start": 0,
                   "type": "Identifier"
@@ -3399,6 +3811,7 @@ description: Result of parsing import_async.kcl
                 "identifier": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "module",
                   "start": 0,
                   "type": "Identifier"
@@ -3409,6 +3822,7 @@ description: Result of parsing import_async.kcl
                 "identifier": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "pressureAngle",
                   "start": 0,
                   "type": "Identifier"
@@ -3419,6 +3833,7 @@ description: Result of parsing import_async.kcl
                 "identifier": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "helixAngle",
                   "start": 0,
                   "type": "Identifier"
@@ -3429,6 +3844,7 @@ description: Result of parsing import_async.kcl
                 "identifier": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "gearHeight",
                   "start": 0,
                   "type": "Identifier"
@@ -3439,11 +3855,13 @@ description: Result of parsing import_async.kcl
             "type": "FunctionExpression",
             "type": "FunctionExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "fn",
+        "moduleId": 0,
         "preComments": [
           "",
           "",
@@ -3463,6 +3881,7 @@ description: Result of parsing import_async.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "nTeeth",
                 "start": 0,
                 "type": "Identifier"
@@ -3470,6 +3889,7 @@ description: Result of parsing import_async.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "21",
                 "start": 0,
                 "type": "Literal",
@@ -3485,6 +3905,7 @@ description: Result of parsing import_async.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "module",
                 "start": 0,
                 "type": "Identifier"
@@ -3492,6 +3913,7 @@ description: Result of parsing import_async.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "2",
                 "start": 0,
                 "type": "Literal",
@@ -3507,6 +3929,7 @@ description: Result of parsing import_async.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "pressureAngle",
                 "start": 0,
                 "type": "Identifier"
@@ -3514,6 +3937,7 @@ description: Result of parsing import_async.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "20",
                 "start": 0,
                 "type": "Literal",
@@ -3529,6 +3953,7 @@ description: Result of parsing import_async.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "helixAngle",
                 "start": 0,
                 "type": "Identifier"
@@ -3536,6 +3961,7 @@ description: Result of parsing import_async.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "35",
                 "start": 0,
                 "type": "Literal",
@@ -3551,6 +3977,7 @@ description: Result of parsing import_async.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "gearHeight",
                 "start": 0,
                 "type": "Identifier"
@@ -3558,6 +3985,7 @@ description: Result of parsing import_async.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "7",
                 "start": 0,
                 "type": "Literal",
@@ -3573,9 +4001,11 @@ description: Result of parsing import_async.kcl
             "abs_path": false,
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "helicalGear",
               "start": 0,
               "type": "Identifier"
@@ -3586,11 +4016,13 @@ description: Result of parsing import_async.kcl
           },
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
           "unlabeled": null
         },
+        "moduleId": 0,
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -3604,9 +4036,11 @@ description: Result of parsing import_async.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "myScrew",
                 "start": 0,
                 "type": "Identifier"
@@ -3623,6 +4057,7 @@ description: Result of parsing import_async.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "y",
                     "start": 0,
                     "type": "Identifier"
@@ -3630,6 +4065,7 @@ description: Result of parsing import_async.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "10",
                     "start": 0,
                     "type": "Literal",
@@ -3645,9 +4081,11 @@ description: Result of parsing import_async.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "translate",
                   "start": 0,
                   "type": "Identifier"
@@ -3658,6 +4096,7 @@ description: Result of parsing import_async.kcl
               },
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
@@ -3666,10 +4105,12 @@ description: Result of parsing import_async.kcl
           ],
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "PipeExpression",
           "type": "PipeExpression"
         },
+        "moduleId": 0,
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -3681,9 +4122,11 @@ description: Result of parsing import_async.kcl
       {
         "commentStart": 0,
         "end": 0,
+        "moduleId": 0,
         "name": {
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "name": "settings",
           "start": 0,
           "type": "Identifier"
@@ -3695,19 +4138,23 @@ description: Result of parsing import_async.kcl
             "key": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "defaultLengthUnit",
               "start": 0,
               "type": "Identifier"
             },
+            "moduleId": 0,
             "start": 0,
             "type": "ObjectProperty",
             "value": {
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "mm",
                 "start": 0,
                 "type": "Identifier"
@@ -3723,12 +4170,14 @@ description: Result of parsing import_async.kcl
         "type": "Annotation"
       }
     ],
+    "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {
@@ -3740,6 +4189,7 @@ description: Result of parsing import_async.kcl
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {
@@ -3751,6 +4201,7 @@ description: Result of parsing import_async.kcl
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {
@@ -3763,6 +4214,7 @@ description: Result of parsing import_async.kcl
         {
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "NonCodeNode",
           "value": {

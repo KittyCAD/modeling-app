@@ -2819,6 +2819,7 @@ description: Variables in memory after executing engine-valve.kcl
           "tag": {
             "commentStart": 2483,
             "end": 2489,
+            "moduleId": 0,
             "start": 2483,
             "type": "TagDeclarator",
             "value": "seg02"
@@ -2832,6 +2833,7 @@ description: Variables in memory after executing engine-valve.kcl
           "tag": {
             "commentStart": 2548,
             "end": 2558,
+            "moduleId": 0,
             "start": 2548,
             "type": "TagDeclarator",
             "value": "capEnd001"
@@ -2861,6 +2863,7 @@ description: Variables in memory after executing engine-valve.kcl
             "tag": {
               "commentStart": 2483,
               "end": 2489,
+              "moduleId": 0,
               "start": 2483,
               "type": "TagDeclarator",
               "value": "seg02"
@@ -3722,6 +3725,7 @@ description: Variables in memory after executing engine-valve.kcl
           "tag": {
             "commentStart": 744,
             "end": 750,
+            "moduleId": 0,
             "start": 744,
             "type": "TagDeclarator",
             "value": "seg01"
@@ -3816,6 +3820,7 @@ description: Variables in memory after executing engine-valve.kcl
             "tag": {
               "commentStart": 744,
               "end": 750,
+              "moduleId": 0,
               "start": 744,
               "type": "TagDeclarator",
               "value": "seg01"
@@ -4117,6 +4122,7 @@ description: Variables in memory after executing engine-valve.kcl
           "tag": {
             "commentStart": 744,
             "end": 750,
+            "moduleId": 0,
             "start": 744,
             "type": "TagDeclarator",
             "value": "seg01"
