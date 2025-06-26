@@ -8,7 +8,8 @@ import {
   isRowFake,
 } from '@src/components/Explorer/utils'
 import { ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
-import { useRef } from 'react'
+import { Dispatch, useRef, useState } from 'react'
+import { DeleteConfirmationDialog } from '../ProjectCard/DeleteProjectDialog'
 
 export const StatusDot = () => {
   return <span className="text-primary hue-rotate-90">•</span>
@@ -182,6 +183,34 @@ function RenameForm({
   )
 }
 
+function DeleteFileTreeItemDialog({
+  row,
+  setIsOpen,
+}: {
+  row: FileExplorerRender
+  setIsOpen: Dispatch<React.SetStateAction<boolean>>
+}) {
+  return (
+    <DeleteConfirmationDialog
+      title={`Delete ${row.isFolder ? 'folder' : 'file'}`}
+      onDismiss={() => setIsOpen(false)}
+      onConfirm={() => {
+        row.onDelete()
+        setIsOpen(false)
+      }}
+    >
+      <p className="my-4">
+        This will permanently delete "{row.name || 'this file'}"
+        {row.children !== null ? ' and all of its contents. ' : '. '}
+      </p>
+      <p className="my-4">
+        Are you sure you want to delete "{row.name || 'this file'}
+        "? This action cannot be undone.
+      </p>
+    </DeleteConfirmationDialog>
+  )
+}
+
 /**
  * Making div soup!
  * A row is a folder or a file.
@@ -203,6 +232,7 @@ export const FileExplorerRowElement = ({
   const isIndexActive = row.domIndex === row.activeIndex
   const isContextMenuRow = contextMenuRow?.key === row.key
   const isMyRowRenaming = isContextMenuRow && isRenaming
+  const [isConfirmingDelete, setIsConfirmingDelete] = useState<boolean>(false)
 
   const outlineCSS =
     isIndexActive && !isMyRowRenaming
@@ -264,13 +294,19 @@ export const FileExplorerRowElement = ({
       )}
       <div className="ml-auto">{row.status}</div>
       <div style={{ width: '0.25rem' }}></div>
+      {isConfirmingDelete && (
+        <DeleteFileTreeItemDialog
+          row={row}
+          setIsOpen={setIsConfirmingDelete}
+        />
+      )}
       <FileExplorerRowContextMenu
         itemRef={rowElementRef}
         onRename={() => {
           row.onRenameStart()
         }}
         onDelete={() => {
-          row.onDelete()
+          setIsConfirmingDelete(true)
         }}
         onOpenInNewWindow={() => {
           row.onOpenInNewWindow()

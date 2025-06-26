@@ -600,11 +600,15 @@ export async function getUtils(page: Page, test_?: typeof test) {
     },
 
     locatorFile: (name: string) => {
-      return page.locator('[data-testid="file-pane-scroll-container"] [role=treeitem]').filter({ hasText: name })
+      return page
+        .locator('[data-testid="file-pane-scroll-container"] [role=treeitem]')
+        .filter({ hasText: name })
     },
-    
+
     locatorFolder: (name: string) => {
-      return page.locator('[data-testid="file-pane-scroll-container"] [role=treeitem]').filter({ hasText: name })
+      return page
+        .locator('[data-testid="file-pane-scroll-container"] [role=treeitem]')
+        .filter({ hasText: name })
     },
 
     /**
