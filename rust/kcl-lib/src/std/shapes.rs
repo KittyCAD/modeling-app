@@ -88,22 +88,27 @@ async fn inner_rectangle(
         }
     };
     let units = ty.expect_length();
-    let id = exec_state.next_uuid();
     let corner_t = [TyF64::new(corner[0], ty), TyF64::new(corner[1], ty)];
-    //
+
     // Start the sketch then draw the 4 lines.
     let sketch =
         crate::std::sketch::inner_start_profile(sketch_surface, corner_t, None, exec_state, args.clone()).await?;
-    let points = [[width.n, 0.0], [0.0, height.n], [-width.n, 0.0], [0.0, -height.n]];
-    for p in points {
-        let id = exec_state.next_uuid();
+    let sketch_id = sketch.id;
+    let deltas = [[width.n, 0.0], [0.0, height.n], [-width.n, 0.0], [0.0, -height.n]];
+    let ids = [
+        exec_state.next_uuid(),
+        exec_state.next_uuid(),
+        exec_state.next_uuid(),
+        exec_state.next_uuid(),
+    ];
+    for (id, delta) in ids.iter().copied().zip(deltas) {
         exec_state
             .batch_modeling_cmd(
                 ModelingCmdMeta::from_args_id(&args, id),
                 ModelingCmd::from(mcmd::ExtendPath {
                     path: sketch.id.into(),
                     segment: PathSegment::Line {
-                        end: KPoint2d::from(untyped_point_to_mm(p, units))
+                        end: KPoint2d::from(untyped_point_to_mm(delta, units))
                             .with_z(0.0)
                             .map(LengthUnit),
                         relative: true,
@@ -114,16 +119,21 @@ async fn inner_rectangle(
     }
     exec_state
         .batch_modeling_cmd(
-            ModelingCmdMeta::from_args_id(&args, id),
+            ModelingCmdMeta::from_args_id(&args, sketch_id),
             ModelingCmd::from(mcmd::ClosePath { path_id: sketch.id }),
         )
         .await?;
 
     // Update the sketch in KCL memory.
     let mut new_sketch = sketch.clone();
-    let mut from = corner;
-    for p in points {
-        let to = [from[0] + p[0], from[1] + p[1]];
+    fn add(a: [f64; 2], b: [f64; 2]) -> [f64; 2] {
+        [a[0] + b[0], a[1] + b[1]]
+    }
+    let a = (corner, add(corner, deltas[0]));
+    let b = (a.1, add(a.1, deltas[1]));
+    let c = (b.1, add(b.1, deltas[2]));
+    let d = (c.1, add(c.1, deltas[3]));
+    for (id, (from, to)) in ids.into_iter().zip([a, b, c, d]) {
         let current_path = Path::ToPoint {
             base: BasePath {
                 from,
@@ -136,11 +146,11 @@ async fn inner_rectangle(
                 },
             },
         };
-        from = to;
         new_sketch.paths.push(current_path);
     }
     Ok(new_sketch)
 }
+
 /// Sketch a circle.
 pub async fn circle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketch_or_surface =
