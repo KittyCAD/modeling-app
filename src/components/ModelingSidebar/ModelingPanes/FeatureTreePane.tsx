@@ -451,7 +451,7 @@ const OperationItem = (props: {
     if (isOffsetPlane(props.item)) {
       const artifact = findOperationArtifact(props.item)
       if (artifact?.id) {
-        // TODO make sure there is no selection, otherwise existing sketch will be
+        // TODO make sure there is no selection, otherwise existing sketch will be edited instead of a new one created
 
         sceneInfra.modelingSend({
           type: 'Enter sketch',
@@ -614,6 +614,15 @@ const DefaultPlanes = () => {
     sceneInfra.selectDefaultSketchPlane(planeId)
   }, [])
 
+  const startSketchOnDefaultPlane = useCallback((planeId: string) => {
+    sceneInfra.modelingSend({
+      type: 'Enter sketch',
+      data: { forceNewSketch: true },
+    })
+
+    sceneInfra.selectDefaultSketchPlane(planeId)
+  }, [])
+
   const defaultPlanes = rustContext.defaultPlanes
   if (!defaultPlanes) return null
 
@@ -652,6 +661,13 @@ const DefaultPlanes = () => {
           name={plane.name}
           selectable={sketchNoFace}
           onClick={sketchNoFace ? () => onClickPlane(plane.id) : undefined}
+          menuItems={[
+            <ContextMenuItem
+              onClick={() => startSketchOnDefaultPlane(plane.id)}
+            >
+              Start Sketch
+            </ContextMenuItem>,
+          ]}
           visibilityToggle={{
             visible: modelingState.context.defaultPlaneVisibility[plane.key],
             onVisibilityChange: () => {
