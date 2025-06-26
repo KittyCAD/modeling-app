@@ -3572,8 +3572,8 @@ export const modelingMachine = setup({
 
         const { solids, tools } = input
         if (
-          !solids.graphSelections[0].artifact ||
-          !tools.graphSelections[0].artifact
+          !solids.graphSelections.some((selection) => selection.artifact) ||
+          !tools.graphSelections.some((selection) => selection.artifact)
         ) {
           return Promise.reject(new Error('No artifact in selections found'))
         }
