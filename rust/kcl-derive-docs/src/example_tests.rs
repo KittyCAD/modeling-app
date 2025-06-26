@@ -99,6 +99,8 @@ pub const TEST_NAMES: &[&str] = &[
     "std-offsetPlane-4",
     "std-sketch-circle-0",
     "std-sketch-circle-1",
+    "std-sketch-rectangle-0",
+    "std-sketch-rectangle-1",
     "std-sketch-patternTransform2d-0",
     "std-sketch-revolve-0",
     "std-sketch-revolve-1",
