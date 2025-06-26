@@ -349,16 +349,14 @@ async fn inner_rotate(
                 z: origin[2],
             },
         })
-    } else {
-        if let Some(global) = global {
-            if global {
-                Some(OriginType::Global)
-            } else {
-                Some(OriginType::Local)
-            }
+    } else if let Some(global) = global {
+        if global {
+            Some(OriginType::Global)
         } else {
             Some(OriginType::Local)
         }
+    } else {
+        Some(OriginType::Local)
     };
 
     let mut objects = objects.clone();
