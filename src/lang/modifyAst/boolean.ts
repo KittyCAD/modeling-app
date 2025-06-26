@@ -263,7 +263,6 @@ export function booleanSubtractAstMod({
   solids: VariableDeclaration[]
   tools: VariableDeclaration[]
 }): Node<Program> {
-  console.log('booleanSubtractAstMod', solids, tools)
   const newAst = structuredClone(ast)
   const newVarName = findUniqueName(newAst, 'solid')
   const createArrExpr = (varDecs: VariableDeclaration[]) =>
