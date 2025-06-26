@@ -275,17 +275,12 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
         const configuration = await readAppSettingsFile()
 
         // Create the project around the file if newProject
-        try {
-          const result = await createNewProjectDirectory(
-            newProjectName,
-            requestedCode,
-            configuration,
-            newFileName
-          )
-          console.log(result)
-        } catch (e) {
-          console.error(e)
-        }
+        await createNewProjectDirectory(
+          newProjectName,
+          requestedCode,
+          configuration,
+          newFileName
+        )
 
         return {
           message: 'Successfully created file.',
