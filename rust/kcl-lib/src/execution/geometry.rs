@@ -1317,7 +1317,7 @@ impl Path {
                 // TODO: Call engine utils to figure this out.
                 Some(linear_distance(&self.get_base().from, &self.get_base().to))
             }
-            Self::Circle { radius, .. } => 2.0 * std::f64::consts::PI * radius,
+            Self::Circle { radius, .. } => Some(2.0 * std::f64::consts::PI * radius),
             Self::CircleThreePoint { .. } => {
                 let circle_center = crate::std::utils::calculate_circle_from_3_points([
                     self.get_base().from,
@@ -1347,7 +1347,7 @@ impl Path {
                 None
             }
         };
-        TyF64::new(n, self.get_base().units.into())
+        n.map(|n| TyF64::new(n, self.get_base().units.into()))
     }
 
     pub fn get_base_mut(&mut self) -> Option<&mut BasePath> {
