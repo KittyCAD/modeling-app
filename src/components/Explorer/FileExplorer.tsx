@@ -8,8 +8,9 @@ import {
   isRowFake,
 } from '@src/components/Explorer/utils'
 import { ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
-import { Dispatch, useRef, useState } from 'react'
-import { DeleteConfirmationDialog } from '../ProjectCard/DeleteProjectDialog'
+import type { Dispatch } from 'react'
+import { useRef, useState } from 'react'
+import { DeleteConfirmationDialog } from '@src/components/ProjectCard/DeleteProjectDialog'
 
 export const StatusDot = () => {
   return <span className="text-primary hue-rotate-90">•</span>
