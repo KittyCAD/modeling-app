@@ -207,8 +207,8 @@ use std::{
     fmt,
     pin::Pin,
     sync::{
-        atomic::{AtomicBool, AtomicUsize, Ordering},
         Arc,
+        atomic::{AtomicBool, AtomicUsize, Ordering},
     },
 };
 
@@ -489,7 +489,7 @@ impl ProgramMemory {
         }
 
         Err(KclError::new_undefined_value(
-            KclErrorDetails::new(format!("`{}` is not defined", var), vec![]),
+            KclErrorDetails::new(format!("`{var}` is not defined"), vec![]),
             Some(var.to_owned()),
         ))
     }
@@ -647,7 +647,7 @@ impl Stack {
         let env = self.memory.get_env(self.current_env.index());
         if env.contains_key(&key) {
             return Err(KclError::new_value_already_defined(KclErrorDetails::new(
-                format!("Cannot redefine `{}`", key),
+                format!("Cannot redefine `{key}`"),
                 vec![source_range],
             )));
         }
@@ -1047,7 +1047,7 @@ mod env {
         }
 
         /// Take all bindings from the environment.
-        pub(super) fn take_bindings(self: Pin<&mut Self>) -> impl Iterator<Item = (String, (usize, KclValue))> {
+        pub(super) fn take_bindings(self: Pin<&mut Self>) -> impl Iterator<Item = (String, (usize, KclValue))> + use<> {
             // SAFETY: caller must have unique access since self is mut. We're not moving or invalidating `self`.
             let bindings = std::mem::take(unsafe { self.bindings.get().as_mut().unwrap() });
             bindings.into_iter()

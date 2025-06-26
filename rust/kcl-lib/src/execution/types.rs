@@ -5,17 +5,17 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
+    CompilationError, SourceRange,
     execution::{
+        ExecState, Plane, PlaneInfo, Point3d,
         kcl_value::{KclValue, TypeDef},
         memory::{self},
-        ExecState, Plane, PlaneInfo, Point3d,
     },
     parsing::{
         ast::types::{PrimitiveType as AstPrimitiveType, Type},
         token::NumericSuffix,
     },
     std::args::{FromKclValue, TyF64},
-    CompilationError, SourceRange,
 };
 
 #[derive(Debug, Clone, PartialEq)]
@@ -210,7 +210,7 @@ impl RuntimeType {
         let ty_val = exec_state
             .stack()
             .get(&format!("{}{}", memory::TYPE_PREFIX, alias), source_range)
-            .map_err(|_| CompilationError::err(source_range, format!("Unknown type: {}", alias)))?;
+            .map_err(|_| CompilationError::err(source_range, format!("Unknown type: {alias}")))?;
 
         Ok(match ty_val {
             KclValue::Type { value, .. } => match value {
@@ -241,7 +241,7 @@ impl RuntimeType {
                 "a tuple with values of types ({})",
                 tys.iter().map(Self::human_friendly_type).collect::<Vec<_>>().join(", ")
             ),
-            RuntimeType::Object(_) => format!("an object with fields {}", self),
+            RuntimeType::Object(_) => format!("an object with fields {self}"),
         }
     }
 
@@ -1529,7 +1529,7 @@ impl KclValue {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::execution::{parse_execute, ExecTestResults};
+    use crate::execution::{ExecTestResults, parse_execute};
 
     fn values(exec_state: &mut ExecState) -> Vec<KclValue> {
         vec![
@@ -1975,14 +1975,16 @@ mod test {
                 ])
             )
         );
-        assert!(RuntimeType::Union(vec![
-            RuntimeType::Primitive(PrimitiveType::Number(NumericType::Any)),
-            RuntimeType::Primitive(PrimitiveType::Boolean)
-        ])
-        .subtype(&RuntimeType::Union(vec![
-            RuntimeType::Primitive(PrimitiveType::Number(NumericType::Any)),
-            RuntimeType::Primitive(PrimitiveType::Boolean)
-        ])));
+        assert!(
+            RuntimeType::Union(vec![
+                RuntimeType::Primitive(PrimitiveType::Number(NumericType::Any)),
+                RuntimeType::Primitive(PrimitiveType::Boolean)
+            ])
+            .subtype(&RuntimeType::Union(vec![
+                RuntimeType::Primitive(PrimitiveType::Number(NumericType::Any)),
+                RuntimeType::Primitive(PrimitiveType::Boolean)
+            ]))
+        );
 
         // Covariance
         let count = KclValue::Number {

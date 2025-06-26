@@ -1,7 +1,9 @@
 use std::fmt::Write;
 
 use crate::{
+    KclError, ModuleId,
     parsing::{
+        DeprecationKind, PIPE_OPERATOR,
         ast::types::{
             Annotation, ArrayExpression, ArrayRangeExpression, AscribedExpression, Associativity, BinaryExpression,
             BinaryOperator, BinaryPart, BodyItem, CallExpressionKw, CommentStyle, DefaultParamVal, Expr, FormatOptions,
@@ -10,9 +12,8 @@ use crate::{
             Parameter, PipeExpression, Program, TagDeclarator, TypeDeclaration, UnaryExpression, VariableDeclaration,
             VariableKind,
         },
-        deprecation, DeprecationKind, PIPE_OPERATOR,
+        deprecation,
     },
-    KclError, ModuleId,
 };
 
 #[allow(dead_code)]
@@ -110,7 +111,7 @@ impl Program {
                             let formatted = custom_white_space_or_comment.recast(options, indentation_level);
                             if i == 0 && !formatted.trim().is_empty() {
                                 if let NonCodeValue::BlockComment { .. } = custom_white_space_or_comment.value {
-                                    format!("\n{}", formatted)
+                                    format!("\n{formatted}")
                                 } else {
                                     formatted
                                 }
@@ -127,7 +128,7 @@ impl Program {
                     custom_white_space_or_comment
                 };
 
-                let _ = write!(output, "{}{}{}", start_string, recast_str, end_string);
+                let _ = write!(output, "{start_string}{recast_str}{end_string}");
                 output
             })
             .trim()
@@ -135,7 +136,7 @@ impl Program {
 
         // Insert a final new line if the user wants it.
         if options.insert_final_newline && !result.is_empty() {
-            format!("{}\n", result)
+            format!("{result}\n")
         } else {
             result
         }
@@ -158,16 +159,16 @@ impl Node<NonCodeNode> {
             NonCodeValue::InlineComment {
                 value,
                 style: CommentStyle::Line,
-            } => format!(" // {}\n", value),
+            } => format!(" // {value}\n"),
             NonCodeValue::InlineComment {
                 value,
                 style: CommentStyle::Block,
-            } => format!(" /* {} */", value),
+            } => format!(" /* {value} */"),
             NonCodeValue::BlockComment { value, style } => match style {
-                CommentStyle::Block => format!("{}/* {} */", indentation, value),
+                CommentStyle::Block => format!("{indentation}/* {value} */"),
                 CommentStyle::Line => {
                     if value.trim().is_empty() {
-                        format!("{}//\n", indentation)
+                        format!("{indentation}//\n")
                     } else {
                         format!("{}// {}\n", indentation, value.trim())
                     }
@@ -176,10 +177,10 @@ impl Node<NonCodeNode> {
             NonCodeValue::NewLineBlockComment { value, style } => {
                 let add_start_new_line = if self.start == 0 { "" } else { "\n\n" };
                 match style {
-                    CommentStyle::Block => format!("{}{}/* {} */\n", add_start_new_line, indentation, value),
+                    CommentStyle::Block => format!("{add_start_new_line}{indentation}/* {value} */\n"),
                     CommentStyle::Line => {
                         if value.trim().is_empty() {
-                            format!("{}{}//\n", add_start_new_line, indentation)
+                            format!("{add_start_new_line}{indentation}//\n")
                         } else {
                             format!("{}{}// {}\n", add_start_new_line, indentation, value.trim())
                         }
@@ -241,7 +242,7 @@ impl ImportStatement {
         } else {
             ""
         };
-        let mut string = format!("{}{}import ", vis, indentation);
+        let mut string = format!("{vis}{indentation}import ");
         match &self.selector {
             ImportSelector::List { items } => {
                 for (i, item) in items.iter().enumerate() {
@@ -291,7 +292,7 @@ impl Expr {
             Expr::BinaryExpression(bin_exp) => bin_exp.recast(options, indentation_level, ctxt),
             Expr::ArrayExpression(array_exp) => array_exp.recast(options, indentation_level, ctxt),
             Expr::ArrayRangeExpression(range_exp) => range_exp.recast(options, indentation_level, ctxt),
-            Expr::ObjectExpression(ref obj_exp) => obj_exp.recast(options, indentation_level, ctxt),
+            Expr::ObjectExpression(obj_exp) => obj_exp.recast(options, indentation_level, ctxt),
             Expr::MemberExpression(mem_exp) => mem_exp.recast(options, indentation_level, ctxt),
             Expr::Literal(literal) => literal.recast(),
             Expr::FunctionExpression(func_exp) => {
@@ -702,13 +703,7 @@ impl MemberExpression {
 
 impl BinaryExpression {
     fn recast(&self, options: &FormatOptions, _indentation_level: usize, ctxt: ExprContext) -> String {
-        let maybe_wrap_it = |a: String, doit: bool| -> String {
-            if doit {
-                format!("({})", a)
-            } else {
-                a
-            }
-        };
+        let maybe_wrap_it = |a: String, doit: bool| -> String { if doit { format!("({a})") } else { a } };
 
         // It would be better to always preserve the user's parentheses but since we've dropped that
         // info from the AST, we bracket expressions as necessary.
@@ -977,7 +972,7 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     use super::*;
-    use crate::{parsing::ast::types::FormatOptions, ModuleId};
+    use crate::{ModuleId, parsing::ast::types::FormatOptions};
 
     #[test]
     fn test_recast_annotations_without_body_items() {
