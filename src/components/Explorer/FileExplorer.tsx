@@ -295,10 +295,7 @@ export const FileExplorerRowElement = ({
       <div className="ml-auto">{row.status}</div>
       <div style={{ width: '0.25rem' }}></div>
       {isConfirmingDelete && (
-        <DeleteFileTreeItemDialog
-          row={row}
-          setIsOpen={setIsConfirmingDelete}
-        />
+        <DeleteFileTreeItemDialog row={row} setIsOpen={setIsConfirmingDelete} />
       )}
       <FileExplorerRowContextMenu
         itemRef={rowElementRef}

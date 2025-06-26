@@ -840,12 +840,8 @@ test.describe('Deleting items from the file pane', () => {
       // Constants and locators
       const projectCard = page.getByText('Test Project')
       const projectMenuButton = page.getByTestId('project-sidebar-toggle')
-      const folderToDelete = page.getByRole('button', {
-        name: 'folderToDelete',
-      })
-      const fileWithinFolder = page.getByRole('listitem').filter({
-        has: page.getByRole('button', { name: 'someFileWithin.kcl' }),
-      })
+      const folderToDelete = u.locatorFolder('folderToDelete')
+      const fileWithinFolder = u.locatorFile('someFileWithin.kcl')
       const deleteMenuItem = page.getByRole('button', { name: 'Delete' })
       const deleteConfirmation = page.getByTestId('delete-confirmation')
 
@@ -908,12 +904,8 @@ test.describe('Deleting items from the file pane', () => {
       // Constants and locators
       const projectCard = page.getByText(TEST_PROJECT_NAME)
       const projectMenuButton = page.getByTestId('project-sidebar-toggle')
-      const folderToDelete = page.getByRole('button', {
-        name: 'folderToDelete',
-      })
-      const fileWithinFolder = page.getByRole('listitem').filter({
-        has: page.getByRole('button', { name: 'someFileWithin.kcl' }),
-      })
+      const folderToDelete = u.locatorFolder('folderToDelete')
+      const fileWithinFolder = u.locatorFile('someFileWithin.kcl')
 
       await test.step('Open project and navigate into folderToDelete', async () => {
         await projectCard.click()
@@ -972,12 +964,8 @@ test.describe('Deleting items from the file pane', () => {
       // Constants and locators
       const projectCard = page.getByText(TEST_PROJECT_NAME)
       const projectMenuButton = page.getByTestId('project-sidebar-toggle')
-      const folderToDelete = page.getByRole('button', {
-        name: 'folderToDelete',
-      })
-      const fileWithinFolder = page.getByRole('listitem').filter({
-        has: page.getByRole('button', { name: 'someFileWithin.kcl' }),
-      })
+      const folderToDelete = u.locatorFolder('folderToDelete')
+      const fileWithinFolder = u.locatorFile('someFileWithin.kcl')
 
       await test.step('Open project and navigate into folderToDelete', async () => {
         await projectCard.click()
@@ -1042,9 +1030,7 @@ test.describe('Undo and redo do not keep history when navigating between files',
 
       // Constants and locators
       const projectCard = page.getByText('testProject')
-      const otherFile = page
-        .getByRole('listitem')
-        .filter({ has: page.getByRole('button', { name: 'other.kcl' }) })
+      const otherFile = u.locatorFile('other.kcl')
 
       await test.step('Open project and make a change to the file', async () => {
         await projectCard.click()
@@ -1109,9 +1095,7 @@ test.describe('Undo and redo do not keep history when navigating between files',
 
       // Constants and locators
       const projectCard = page.getByText('testProject')
-      const otherFile = page
-        .getByRole('listitem')
-        .filter({ has: page.getByRole('button', { name: 'other.kcl' }) })
+      const otherFile = u.locatorFile('other.kcl')
 
       const badContent = 'this shit'
       await test.step('Open project and make a change to the file', async () => {
