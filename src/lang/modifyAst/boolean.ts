@@ -54,7 +54,7 @@ export async function applySubtractFromTargetOperatorSelections(
     dependencies.kclManager.artifactGraph
   )
   if (err(lastToolsVars) || lastToolsVars.length < 1) {
-    return new Error('Not enough or invalid solids variables found')
+    return new Error('Not enough or invalid tools variables found')
   }
 
   const modifiedAst = booleanSubtractAstMod({
