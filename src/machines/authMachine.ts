@@ -7,10 +7,9 @@ import {
 } from '@src/env'
 import { assign, fromPromise, setup } from 'xstate'
 
-import { COOKIE_NAME } from '@src/lib/constants'
+import { COOKIE_NAME, OAUTH2_DEVICE_CLIENT_ID } from '@src/lib/constants'
 import {
   getUser as getUserDesktop,
-  OAUTH2_DEVICE_CLIENT_ID,
   readTokenFile,
   writeTokenFile,
 } from '@src/lib/desktop'

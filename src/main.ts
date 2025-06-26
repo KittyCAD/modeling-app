@@ -28,7 +28,10 @@ import {
   parseCLIArgs,
 } from '@src/commandLineArgs'
 import { initPromiseNode } from '@src/lang/wasmUtilsNode'
-import { ZOO_STUDIO_PROTOCOL } from '@src/lib/constants'
+import {
+  ZOO_STUDIO_PROTOCOL,
+  OAUTH2_DEVICE_CLIENT_ID,
+} from '@src/lib/constants'
 import getCurrentProjectFile from '@src/lib/getCurrentProjectFile'
 import { reportRejection } from '@src/lib/trap'
 import {
@@ -39,7 +42,6 @@ import {
   enableMenu,
 } from '@src/menu'
 import fs from 'fs'
-import { OAUTH2_DEVICE_CLIENT_ID } from '@src/lib/desktop'
 
 // If we're on Windows, pull the local system TLS CAs in
 require('win-ca')

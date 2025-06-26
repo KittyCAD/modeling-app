@@ -27,8 +27,6 @@ import type { DeepPartial } from '@src/lib/types'
 import { getInVariableCase } from '@src/lib/utils'
 import { IS_STAGING } from '@src/routes/utils'
 
-export const OAUTH2_DEVICE_CLIENT_ID = '2af127fb-e14e-400a-9c57-a9ed08d1a5b7'
-
 export async function renameProjectDirectory(
   projectPath: string,
   newName: string
