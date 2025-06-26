@@ -19,12 +19,12 @@ use crate::{
     std::{args::TyF64, axis_or_reference::Axis3dOrPoint3d, Args},
 };
 
-fn transform_by<T>(property: T, set: bool, origin: Option<OriginType>) -> shared::TransformBy<T> {
+fn transform_by<T>(property: T, set: bool, is_local: bool, origin: Option<OriginType>) -> shared::TransformBy<T> {
     shared::TransformBy {
         property,
         set,
         #[expect(deprecated)]
-        is_local: false,
+        is_local,
         origin,
     }
 }
@@ -103,6 +103,7 @@ async fn inner_scale(
                                 z: z.unwrap_or(1.0),
                             },
                             false,
+                            !is_global,
                             origin,
                         )),
                         translate: None,
@@ -182,6 +183,7 @@ async fn inner_translate(
                                 z: LengthUnit(z.as_ref().map(|t| t.to_mm()).unwrap_or_default()),
                             },
                             false,
+                            !is_global,
                             origin,
                         )),
                         scale: None,
@@ -376,6 +378,7 @@ async fn inner_rotate(
                                     w: angle,
                                 },
                                 false,
+                                !global.unwrap_or(false),
                                 origin,
                             )),
                             scale: None,
@@ -400,6 +403,7 @@ async fn inner_rotate(
                                     z: yaw.unwrap_or(0.0),
                                 },
                                 false,
+                                !global.unwrap_or(false),
                                 origin,
                             )),
                             scale: None,

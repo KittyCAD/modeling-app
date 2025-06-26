@@ -689,7 +689,10 @@ description: Artifact commands pdu-faceplate.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true
+              "is_local": true,
+              "origin": {
+                "type": "local"
+              }
             },
             "rotate_rpy": null,
             "rotate_angle_axis": null,
@@ -1088,7 +1091,10 @@ description: Artifact commands pdu-faceplate.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true
+              "is_local": true,
+              "origin": {
+                "type": "local"
+              }
             },
             "rotate_rpy": null,
             "rotate_angle_axis": null,
@@ -1344,7 +1350,10 @@ description: Artifact commands pdu-faceplate.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true
+              "is_local": true,
+              "origin": {
+                "type": "local"
+              }
             },
             "rotate_rpy": null,
             "rotate_angle_axis": null,
@@ -1589,7 +1598,10 @@ description: Artifact commands pdu-faceplate.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true
+              "is_local": true,
+              "origin": {
+                "type": "local"
+              }
             },
             "rotate_rpy": null,
             "rotate_angle_axis": null,
@@ -1817,7 +1829,10 @@ description: Artifact commands pdu-faceplate.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true
+              "is_local": true,
+              "origin": {
+                "type": "local"
+              }
             },
             "rotate_rpy": null,
             "rotate_angle_axis": null,
@@ -1913,7 +1928,10 @@ description: Artifact commands pdu-faceplate.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true
+              "is_local": true,
+              "origin": {
+                "type": "local"
+              }
             },
             "rotate_rpy": null,
             "rotate_angle_axis": null,
@@ -2065,7 +2083,10 @@ description: Artifact commands pdu-faceplate.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true
+              "is_local": true,
+              "origin": {
+                "type": "local"
+              }
             },
             "rotate_rpy": null,
             "rotate_angle_axis": null,
@@ -2873,7 +2894,10 @@ description: Artifact commands pdu-faceplate.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true
+              "is_local": true,
+              "origin": {
+                "type": "local"
+              }
             },
             "rotate_rpy": null,
             "rotate_angle_axis": null,
@@ -3012,7 +3036,10 @@ description: Artifact commands pdu-faceplate.kcl
                 "z": -13.335
               },
               "set": false,
-              "is_local": true
+              "is_local": true,
+              "origin": {
+                "type": "local"
+              }
             },
             "rotate_rpy": null,
             "rotate_angle_axis": null,
