@@ -53,5 +53,5 @@ wasm-bindgen-test = "0.3.50"
 typed-path = "0.11.0"
 
 # Local development only. Placeholder to speed up development cycle
-[package.metadata.wasm-pack.profile.release]
-wasm-opt = false
+#[package.metadata.wasm-pack.profile.release]
+#wasm-opt = false
