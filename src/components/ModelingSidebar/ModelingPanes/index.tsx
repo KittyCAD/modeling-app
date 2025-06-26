@@ -22,7 +22,12 @@ import {
 } from '@src/components/ModelingSidebar/ModelingPanes/MemoryPane'
 import type { useKclContext } from '@src/lang/KclProvider'
 import { kclErrorsByFilename } from '@src/lang/errors'
-import { commandBarActor, editorManager, systemIOActor, useSettings } from '@src/lib/singletons'
+import {
+  commandBarActor,
+  editorManager,
+  systemIOActor,
+  useSettings,
+} from '@src/lib/singletons'
 import type { settingsMachine } from '@src/machines/settingsMachine'
 import { ProjectExplorer } from '@src/components/Explorer/ProjectExplorer'
 import { FileExplorerHeaderActions } from '@src/components/Explorer/FileExplorerHeaderActions'
