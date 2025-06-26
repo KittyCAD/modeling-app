@@ -19,15 +19,15 @@ use crate::{
     std::{args::TyF64, axis_or_reference::Axis3dOrPoint3d, Args},
 };
 
-    fn transform_by<T>(property: T, set: bool, origin: Option<OriginType>) -> shared::TransformBy<T> {
-        shared::TransformBy{
-            property,
-            set,
-            #[expect(deprecated)]
-            is_local: false,
-            origin,
-        }
+fn transform_by<T>(property: T, set: bool, origin: Option<OriginType>) -> shared::TransformBy<T> {
+    shared::TransformBy {
+        property,
+        set,
+        #[expect(deprecated)]
+        is_local: false,
+        origin,
     }
+}
 
 /// Scale a solid or a sketch.
 pub async fn scale(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
@@ -82,7 +82,11 @@ async fn inner_scale(
     }
 
     let is_global = global.unwrap_or(false);
-    let origin = if is_global { Some(OriginType::Global) } else { Some(OriginType::Local) };
+    let origin = if is_global {
+        Some(OriginType::Global)
+    } else {
+        Some(OriginType::Local)
+    };
 
     let mut objects = objects.clone();
     for object_id in objects.ids(&args.ctx).await? {
@@ -157,7 +161,11 @@ async fn inner_translate(
     }
 
     let is_global = global.unwrap_or(false);
-    let origin = if is_global { Some(OriginType::Global) } else { Some(OriginType::Local) };
+    let origin = if is_global {
+        Some(OriginType::Global)
+    } else {
+        Some(OriginType::Local)
+    };
 
     let mut objects = objects.clone();
     for object_id in objects.ids(&args.ctx).await? {
@@ -333,13 +341,14 @@ async fn inner_rotate(
         exec_state.flush_batch_for_solids((&args).into(), solids).await?;
     }
 
-
     let origin = if let Some(origin) = origin {
-        Some(OriginType::Custom{origin: shared::Point3d {
-            x: origin[0],
-            y: origin[1],
-            z: origin[2],
-        }})
+        Some(OriginType::Custom {
+            origin: shared::Point3d {
+                x: origin[0],
+                y: origin[1],
+                z: origin[2],
+            },
+        })
     } else {
         if let Some(global) = global {
             if global {
@@ -347,7 +356,9 @@ async fn inner_rotate(
             } else {
                 Some(OriginType::Local)
             }
-        } else {Some(OriginType::Local)}
+        } else {
+            Some(OriginType::Local)
+        }
     };
 
     let mut objects = objects.clone();
@@ -391,7 +402,7 @@ async fn inner_rotate(
                                     z: yaw.unwrap_or(0.0),
                                 },
                                 false,
-                                origin
+                                origin,
                             )),
                             scale: None,
                             rotate_angle_axis: None,
