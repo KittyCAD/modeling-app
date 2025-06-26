@@ -352,7 +352,7 @@ async fn inner_rotate(
             },
         })
     } else if global.unwrap_or(false) {
-            Some(OriginType::Global)
+        Some(OriginType::Global)
     } else {
         Some(OriginType::Local)
     };
