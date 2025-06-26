@@ -561,12 +561,7 @@ description: Artifact commands subtract_with_pattern_cut_thru.kcl
               "set": false,
               "is_local": true,
               "origin": {
-                "type": "custom",
-                "origin": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 0.0
-                }
+                "type": "local"
               }
             },
             "scale": null
