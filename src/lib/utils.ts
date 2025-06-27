@@ -332,7 +332,9 @@ export function roundOffWithUnits(
   numWithUnits: string,
   precision: number = 2
 ): string {
-  const match = numWithUnits.match(/^([+-]?[\d.]+(?:[eE]-?\d+)?)([a-zA-Z_?]+)$/)
+  const match = numWithUnits.match(
+    /^([+-]?[\d.]+(?:[eE][+-]?\d+)?)([a-zA-Z_?]+)$/
+  )
   let num: string
   let suffix: string
   if (match) {
