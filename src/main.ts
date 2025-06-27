@@ -15,6 +15,7 @@ import {
   dialog,
   ipcMain,
   nativeTheme,
+  session,
   screen,
   shell,
   systemPreferences,
@@ -312,7 +313,21 @@ app.on('window-all-closed', () => {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', (event, data) => {
+app.on('ready', async (event, data) => {
+  try {
+    await session.defaultSession.cookies.set({
+      url: 'https://api.dev.zoo.dev',
+      name: 'preview-pr-2751',
+      value: 'always',
+      domain: '.dev.zoo.dev',
+      path: '/',
+      secure: true,
+      sameSite: 'no_restriction',
+    })
+    console.log('[preview] cookie seeded')
+  } catch (err) {
+    console.error('[preview] failed to set cookie', err)
+  }
   // Avoid potentially 2 ready fires
   if (mainWindow) return
 
