@@ -53,9 +53,12 @@ export const fileLoader: LoaderFunction = async (
 
     const urlObj = new URL(routerData.request.url)
 
+    const projectInfo = isDesktop() ? await getProjectInfo(projectPath) : null
+
+
     if (!urlObj.pathname.endsWith('/settings')) {
-      const fallbackFile = isDesktop()
-        ? (await getProjectInfo(projectPath)).default_file
+      const fallbackFile = projectInfo
+        ?  projectInfo.default_file
         : ''
       let fileExists = isDesktop()
       if (currentFilePath && fileExists) {
@@ -122,8 +125,8 @@ export const fileLoader: LoaderFunction = async (
       readWriteAccess: true,
     }
 
-    const maybeProjectInfo = isDesktop()
-      ? await getProjectInfo(projectPath)
+    const maybeProjectInfo = projectInfo
+      ? projectInfo
       : null
 
     const project = maybeProjectInfo ?? defaultProjectData

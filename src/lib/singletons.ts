@@ -241,6 +241,8 @@ export const useCommandBarState = () => {
   return useSelector(commandBarActor, cmdBarStateSelector)
 }
 
+window.dog = systemIOActor
+
 // Initialize global commands
 commandBarActor.send({
   type: 'Add commands',

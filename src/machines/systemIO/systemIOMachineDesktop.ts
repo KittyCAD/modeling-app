@@ -108,6 +108,7 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
         if (projectDirectoryPath === NO_PROJECT_DIRECTORY) {
           return []
         }
+        // NOTHING BELOW
         await mkdirOrNOOP(projectDirectoryPath)
         // Gotcha: readdir will list all folders at this project directory even if you do not have readwrite access on the directory path
         const entries = await window.electron.readdir(projectDirectoryPath)
@@ -615,6 +616,7 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
         await window.electron.mkdir(input.requestedAbsolutePath, {
           recursive: true,
         })
+        console.log(input.requestedAbsolutePath)
         return {
           message: `Folder ${folderName} written successfully`,
           requestedAbsolutePath: input.requestedAbsolutePath,

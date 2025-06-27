@@ -11,6 +11,8 @@ import { contextBridge, ipcRenderer } from 'electron'
 import type { Channel } from '@src/channels'
 import type { WebContentSendPayload } from '@src/menu/channels'
 
+import {glob} from 'glob'
+
 const typeSafeIpcRendererOn = (
   channel: Channel,
   listener: (event: IpcRendererEvent, ...args: any[]) => void
@@ -115,6 +117,19 @@ const readdir = (path: string) => fs.readdir(path, 'utf-8')
 const stat = (path: string) => {
   return fs.stat(path).catch((e) => Promise.reject(e.code))
 }
+
+const globDir = async (path: string) => {
+  const result = await glob(path, { stat: true, withFileTypes: true })
+  return result.map((result)=>{
+          return {
+            path: result.fullpath(),
+            name: result.name,
+            children: result.isDirectory() ? [] : null
+          }
+        }
+      )
+}
+
 
 // Electron has behavior where it doesn't clone the prototype chain over.
 // So we need to call stat.isDirectory on this side.
@@ -253,6 +268,7 @@ contextBridge.exposeInMainWorld('electron', {
   writeFile,
   exists,
   readdir,
+  globDir,
   rename,
   rm: fs.rm,
   path,

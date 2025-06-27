@@ -5,6 +5,8 @@ import path from 'path'
 import { dialog, shell } from 'electron'
 import type { WebContentSendPayload } from 'menu/channels'
 import { ZooLabel } from 'menu/roles'
+import { Path } from 'glob'
+import { FileEntry } from '@src/lib/project'
 
 // Extend the interface with additional custom properties
 declare module 'electron' {
@@ -49,6 +51,7 @@ export interface IElectronAPI {
     data: string | Uint8Array
   ) => ReturnType<fs.writeFile>
   readdir: (path: string) => ReturnType<fs.readdir>
+  globDir: (path:string) => Promise<FileEntry[]>
   exists: (path: string) => ReturnType<fs.exists>
   getPath: (name: string) => Promise<string>
   rm: typeof fs.rm

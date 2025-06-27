@@ -12,7 +12,6 @@ export interface FileExplorerEntry extends FileEntry {
   parentPath: string
   level: number
   index: number
-  key: string
   setSize: number
   positionInSet?: number
 }
@@ -96,10 +95,6 @@ const flattenProjectHelper = (
     parentPath,
     level,
     index,
-    key: constructPath({
-      parentPath,
-      name: f.name,
-    }),
     setSize,
     positionInSet,
   }
@@ -111,13 +106,14 @@ const flattenProjectHelper = (
     return
   }
 
+  const nextParentPath = parentPath + '/' + f.name
   const sortedChildren = sortFilesAndDirectories(f.children.slice())
   // keep recursing down the children
   for (let i = 0; i < sortedChildren.length; i++) {
     flattenProjectHelper(
       sortedChildren[i],
       list,
-      constructPath({ parentPath: parentPath, name: f.name }),
+      nextParentPath,
       level + 1,
       f.children.length,
       i + 1
@@ -133,16 +129,15 @@ const flattenProjectHelper = (
  */
 export const flattenProject = (
   projectChildren: FileEntry[],
-  projectName: string
+  projectPath: string
 ): FileExplorerEntry[] => {
   const flattenTreeInOrder: FileExplorerEntry[] = []
-
   // For all children of the project, start the recursion to flatten the tree data structure
   for (let index = 0; index < projectChildren.length; index++) {
     flattenProjectHelper(
       projectChildren[index],
       flattenTreeInOrder,
-      projectName, // first parent
+      projectPath, // first parent
       0,
       projectChildren.length,
       index + 1

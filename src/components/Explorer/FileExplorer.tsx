@@ -11,6 +11,8 @@ import { ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
 import type { Dispatch } from 'react'
 import { useRef, useState } from 'react'
 import { DeleteConfirmationDialog } from '@src/components/ProjectCard/DeleteProjectDialog'
+import { FixedSizeList as List} from 'react-window'
+import AutoSizer from "react-virtualized-auto-sizer"
 
 export const StatusDot = () => {
   return <span className="text-primary hue-rotate-90">•</span>
@@ -67,25 +69,33 @@ export const FileExplorer = ({
   contextMenuRow: FileExplorerEntry | null
   isRenaming: boolean
 }) => {
+  const data = rowsToRender.map((row, index, original) => {
+    const renderRow: FileExplorerRender = {
+      ...row,
+      domIndex: index,
+      domLength: original.length,
+      isRenaming: isRenaming,
+      selectedRow: selectedRow,
+      contextMenuRow: contextMenuRow,
+    }
+    return renderRow
+  })
+
   return (
-    <div role="presentation" className="relative">
-      {rowsToRender.map((row, index, original) => {
-        const key = row.key
-        const renderRow: FileExplorerRender = {
-          ...row,
-          domIndex: index,
-          domLength: original.length,
-        }
-        return (
-          <FileExplorerRowElement
-            key={key}
-            row={renderRow}
-            selectedRow={selectedRow}
-            contextMenuRow={contextMenuRow}
-            isRenaming={isRenaming}
-          ></FileExplorerRowElement>
-        )
-      })}
+    <div role="presentation" className="relative h-full w-full">
+    <AutoSizer>
+        {({ height, width }) => (
+        <List
+          height={height}
+          itemCount={data.length}
+          itemData={data}
+          width={width}
+          itemSize={20}
+        > 
+          {FileExplorerRowElement} 
+        </List>
+        )}
+      </AutoSizer>
     </div>
   )
 }
@@ -217,10 +227,9 @@ function DeleteFileTreeItemDialog({
  * A row is a folder or a file.
  */
 export const FileExplorerRowElement = ({
-  row,
-  selectedRow,
-  contextMenuRow,
-  isRenaming,
+  data,
+  index,
+  style
 }: {
   row: FileExplorerRender
   selectedRow: FileExplorerEntry | null
@@ -228,11 +237,12 @@ export const FileExplorerRowElement = ({
   isRenaming: boolean
 }) => {
   const rowElementRef = useRef(null)
+  const item = data[index]
   const isSelected =
-    row.name === selectedRow?.name && row.parentPath === selectedRow?.parentPath
-  const isIndexActive = row.domIndex === row.activeIndex
-  const isContextMenuRow = contextMenuRow?.key === row.key
-  const isMyRowRenaming = isContextMenuRow && isRenaming
+    item.name === item.selectedRow?.name && item.parentPath === item.selectedRow?.parentPath
+  const isIndexActive = item.domIndex === item.activeIndex
+  const isContextMenuRow = item.contextMenuRow?.key === item.key
+  const isMyRowRenaming = isContextMenuRow && item.isRenaming
   const [isConfirmingDelete, setIsConfirmingDelete] = useState<boolean>(false)
 
   const outlineCSS =
@@ -241,30 +251,32 @@ export const FileExplorerRowElement = ({
       : 'outline-0 outline-none'
   // Complaining about role="treeitem" focus but it is reimplemented aria labels
   /* eslint-disable */
+
   return (
     <div
+      style={style}
       ref={rowElementRef}
       role="treeitem"
       data-testid="file-tree-item"
       className={`h-5 flex flex-row items-center text-xs cursor-pointer -outline-offset-1 ${outlineCSS} hover:outline hover:outline-1 hover:bg-gray-300/50 hover:bg-gray-300/50 ${isSelected ? 'bg-primary/10' : ''}`}
-      data-index={row.domIndex}
-      data-last-element={row.domIndex === row.domLength - 1}
-      data-parity={row.domIndex % 2 === 0}
-      aria-setsize={row.setSize}
-      aria-posinset={row.positionInSet}
-      aria-label={row.name}
+      data-index={item.domIndex}
+      data-last-element={item.domIndex === item.domLength - 1}
+      data-parity={item.domIndex % 2 === 0}
+      aria-setsize={item.setSize}
+      aria-posinset={item.positionInSet}
+      aria-label={item.name}
       aria-selected={isSelected}
-      aria-level={row.level + 1}
-      aria-expanded={row.isFolder && row.isOpen}
+      aria-level={item.level + 1}
+      aria-expanded={item.isFolder && item.isOpen}
       onClick={() => {
-        row.onClick(row.domIndex)
+        item.onClick(item.domIndex)
       }}
       draggable="true"
       onDragOver={(event) => {
         // TODO
-        // if (!row.isOpen && row.isFolder) {
+        // if (!item.isOpen && item.isFolder) {
         //   // on drag over, open!
-        //   row.onOpen()
+        //   item.onOpen()
         // }
         // event.preventDefault()
       }}
@@ -276,41 +288,41 @@ export const FileExplorerRowElement = ({
       }}
     >
       <div style={{ width: '0.5rem' }}></div>
-      {Spacer(row.level)}
+      {Spacer(item.level)}
       <CustomIcon
-        name={row.icon}
+        name={item.icon}
         className="inline-block w-4 text-current mr-1"
       />
-      {!isMyRowRenaming && !row.isFake ? (
+      {!isMyRowRenaming && !item.isFake ? (
         <span className="overflow-hidden whitespace-nowrap text-ellipsis">
-          {row.name}
+          {item.name}
         </span>
       ) : (
         <RenameForm
-          row={row}
+          row={data}
           onSubmit={(event: React.KeyboardEvent<HTMLElement> | null) => {
-            row.onRenameEnd(event)
+            item.onRenameEnd(event)
           }}
         ></RenameForm>
       )}
-      <div className="ml-auto">{row.status}</div>
+      <div className="ml-auto">{item.status}</div>
       <div style={{ width: '0.25rem' }}></div>
       {isConfirmingDelete && (
-        <DeleteFileTreeItemDialog row={row} setIsOpen={setIsConfirmingDelete} />
+        <DeleteFileTreeItemDialog row={data} setIsOpen={setIsConfirmingDelete} />
       )}
       <FileExplorerRowContextMenu
         itemRef={rowElementRef}
         onRename={() => {
-          row.onRenameStart()
+          item.onRenameStart()
         }}
         onDelete={() => {
           setIsConfirmingDelete(true)
         }}
         onOpenInNewWindow={() => {
-          row.onOpenInNewWindow()
+          item.onOpenInNewWindow()
         }}
         callback={() => {
-          row.onContextMenuOpen(row.domIndex)
+          item.onContextMenuOpen(item.domIndex)
         }}
       />
     </div>
