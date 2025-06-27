@@ -40,7 +40,7 @@ import {
   systemIOActor,
   useSettings,
 } from '@src/lib/singletons'
-import { BillingTransition, Tier } from '@src/machines/billingMachine'
+import { BillingTransition } from '@src/machines/billingMachine'
 import {
   useCanReadWriteProjectDirectory,
   useFolders,
@@ -66,7 +66,6 @@ import {
   defaultLocalStatusBarItems,
   defaultGlobalStatusBarItems,
 } from '@src/components/StatusBar/defaultStatusBarItems'
-import { useSelector } from '@xstate/react'
 
 type ReadWriteProjectState = {
   value: boolean
@@ -82,8 +81,6 @@ const Home = () => {
   const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
   const apiToken = useToken()
   const networkMachineStatus = useNetworkMachineStatus()
-  const billingContext = useSelector(billingActor, ({ context }) => context)
-  const isBillingTierOrg = billingContext.tier === Tier.Organization
 
   // Only create the native file menus on desktop
   useEffect(() => {
@@ -357,13 +354,11 @@ const Home = () => {
             </li>
           </ul>
           <ul className="flex flex-col">
-            {!isBillingTierOrg && (
-              <li className="contents">
-                <div className="my-2">
-                  <BillingDialog billingActor={billingActor} />
-                </div>
-              </li>
-            )}
+            <li className="contents">
+              <div className="my-2">
+                <BillingDialog billingActor={billingActor} />
+              </div>
+            </li>
             <li className="contents">
               <ActionButton
                 Element="externalLink"
