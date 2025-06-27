@@ -6,7 +6,7 @@ import {
   BillingRemainingMode,
 } from '@src/components/BillingRemaining'
 
-import { Tier, type BillingActor } from '@src/machines/billingMachine'
+import { type BillingActor } from '@src/machines/billingMachine'
 
 export const BillingDialog = (props: { billingActor: BillingActor }) => {
   const billingContext = useSelector(
@@ -14,7 +14,6 @@ export const BillingDialog = (props: { billingActor: BillingActor }) => {
     ({ context }) => context
   )
   const hasUnlimited = billingContext.credits === Infinity
-  const canUpgrade = billingContext.tier !== Tier.Organization
 
   return (
     <div className="bg-ml-green fg-ml-black flex flex-row rounded-lg p-4 gap-2 text-xs">
@@ -40,7 +39,7 @@ export const BillingDialog = (props: { billingActor: BillingActor }) => {
           mode={BillingRemainingMode.ProgressBarStretch}
           billingActor={props.billingActor}
         />
-        {canUpgrade && (
+        {!hasUnlimited && (
           <a
             className="bg-ml-black text-ml-white rounded-lg text-center p-1 cursor-pointer"
             href="https://zoo.dev/design-studio-pricing"
