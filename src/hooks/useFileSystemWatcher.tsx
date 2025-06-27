@@ -16,6 +16,7 @@ export const useFileSystemWatcher = (
   callback: (eventType: string, path: Path) => Promise<void>,
   paths: Path[]
 ): void => {
+  return
   // Used to track this instance of useFileSystemWatcher.
   // Assign to ref so it doesn't change between renders.
   const key = useRef(Math.random().toString())
