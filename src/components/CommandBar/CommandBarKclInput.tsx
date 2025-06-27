@@ -27,7 +27,7 @@ import { kclManager } from '@src/lib/singletons'
 import { getSystemTheme } from '@src/lib/theme'
 import { err } from '@src/lib/trap'
 import { useCalculateKclExpression } from '@src/lib/useCalculateKclExpression'
-import { roundOff } from '@src/lib/utils'
+import { roundOff, roundOffWithUnits } from '@src/lib/utils'
 import { varMentions } from '@src/lib/varCompletionExtension'
 import { useSettings } from '@src/lib/singletons'
 import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
@@ -282,8 +282,7 @@ function CommandBarKclInput({
           ) : calcResult === 'NAN' ? (
             "Can't calculate"
           ) : (
-            // TODO: Don't strip units.
-            roundOff(parseFloat(calcResult), 4)
+            roundOffWithUnits(calcResult, 4)
           )}
         </span>
       </label>

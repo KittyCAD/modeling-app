@@ -328,6 +328,25 @@ export function roundOff(num: number, precision: number = 2): number {
   return Math.round(num * x) / x
 }
 
+export function roundOffWithUnits(
+  numWithUnits: string,
+  precision: number = 2
+): string {
+  const match = numWithUnits.match(/^([+-]?[\d.]+(?:[eE]-?\d+)?)([a-zA-Z_?]+)$/)
+  let num: string
+  let suffix: string
+  if (match) {
+    num = match[1]
+    suffix = match[2] ?? ''
+  } else {
+    // If no match, assume it's just a number with no units.
+    num = numWithUnits
+    suffix = ''
+  }
+  const roundedNum = roundOff(Number(num), precision)
+  return `${roundedNum}${suffix}`
+}
+
 /**
  * Determine if the number as a string has any precision in the decimal places
  * '1' -> 0
