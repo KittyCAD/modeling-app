@@ -257,6 +257,26 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           },
         ],
       },
+      {
+        id: 'hole',
+        onClick: () => {
+          commandBarActor.send({
+            type: 'Find and select command',
+            data: { name: 'Hole', groupId: 'modeling' },
+          })
+        },
+        icon: 'hole',
+        status: 'available',
+        title: 'Hole',
+        description: 'Create standard holes in a solid through a wizard.',
+        links: [
+          {
+            label: 'KCL docs',
+            // TODO: update this link to the new KCL docs
+            url: 'https://zoo.dev/docs/kcl-std/functions/std-solid-hole',
+          },
+        ],
+      },
       'break',
       {
         id: 'booleans',

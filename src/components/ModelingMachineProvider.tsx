@@ -1405,6 +1405,7 @@ export const ModelingMachineProvider = ({
         commandName: 'Shell',
         groupId: 'modeling',
       },
+      // TODO: add hole here
       {
         menuLabel: 'Design.Modify with Zoo Text-To-CAD',
         commandName: 'Prompt-to-edit',

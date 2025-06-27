@@ -115,6 +115,21 @@ export type ModelingCommandSchema = {
     selection: Selections
     thickness: KclCommandValue
   }
+  Hole: {
+    // Enables editing workflow
+    nodeToEdit?: PathToNode
+    // KCL stdlib arguments
+    face: Selections
+    pointX: KclCommandValue
+    pointY: KclCommandValue
+    length: KclCommandValue
+    diameter: KclCommandValue
+    countersinkDiameter?: KclCommandValue
+    countersinkAngle?: KclCommandValue
+    counterboreDiameter?: KclCommandValue
+    counterboreDepth?: KclCommandValue
+    bottomDrillAngle?: KclCommandValue
+  }
   Fillet: {
     // Enables editing workflow
     nodeToEdit?: PathToNode
@@ -587,6 +602,63 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_LENGTH,
         required: true,
+      },
+    },
+  },
+  Hole: {
+    description: 'Create standard holes in a solid through a wizard.',
+    icon: 'hole',
+    needsReview: true,
+    args: {
+      nodeToEdit: {
+        ...nodeToEditProps,
+      },
+      face: {
+        inputType: 'selection',
+        selectionTypes: ['cap', 'wall'],
+        multiple: true,
+        required: true,
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+      },
+      pointX: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_LENGTH,
+        required: true,
+      },
+      pointY: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_LENGTH,
+        required: true,
+      },
+      length: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_LENGTH,
+        required: true,
+      },
+      diameter: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_LENGTH,
+        required: true,
+      },
+      countersinkDiameter: {
+        inputType: 'kcl',
+        required: false,
+      },
+      countersinkAngle: {
+        inputType: 'kcl',
+        required: false,
+      },
+      counterboreDiameter: {
+        inputType: 'kcl',
+        required: false,
+      },
+      counterboreDepth: {
+        inputType: 'kcl',
+        required: false,
+      },
+      bottomDrillAngle: {
+        inputType: 'kcl',
+        required: false,
       },
     },
   },
