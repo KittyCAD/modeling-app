@@ -2,10 +2,9 @@
 
 use anyhow::Result;
 use kcmc::{
-    each_cmd as mcmd,
+    ModelingCmd, each_cmd as mcmd,
     length_unit::LengthUnit,
     shared::{Angle, Point2d as KPoint2d},
-    ModelingCmd,
 };
 use kittycad_modeling_cmds as kcmc;
 use kittycad_modeling_cmds::shared::PathSegment;
@@ -17,17 +16,17 @@ use super::{
     utils::{point_to_len_unit, point_to_mm, point_to_typed, untype_point, untyped_point_to_mm},
 };
 use crate::{
+    SourceRange,
     errors::{KclError, KclErrorDetails},
     execution::{
-        types::{RuntimeType, UnitLen},
         BasePath, ExecState, GeoMeta, KclValue, ModelingCmdMeta, Path, Sketch, SketchSurface,
+        types::{RuntimeType, UnitLen},
     },
     parsing::ast::types::TagNode,
     std::{
-        utils::{calculate_circle_center, distance},
         Args,
+        utils::{calculate_circle_center, distance},
     },
-    SourceRange,
 };
 
 /// A sketch surface or a sketch.

@@ -1,7 +1,7 @@
 //! Constructive Solid Geometry (CSG) operations.
 
 use anyhow::Result;
-use kcmc::{each_cmd as mcmd, length_unit::LengthUnit, ModelingCmd};
+use kcmc::{ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit};
 use kittycad_modeling_cmds::{
     self as kcmc,
     ok_response::OkModelingCmdResponse,
@@ -9,11 +9,11 @@ use kittycad_modeling_cmds::{
     websocket::OkWebSocketResponseData,
 };
 
-use super::{args::TyF64, DEFAULT_TOLERANCE_MM};
+use super::{DEFAULT_TOLERANCE_MM, args::TyF64};
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{types::RuntimeType, ExecState, KclValue, ModelingCmdMeta, Solid},
-    std::{patterns::GeometryTrait, Args},
+    execution::{ExecState, KclValue, ModelingCmdMeta, Solid, types::RuntimeType},
+    std::{Args, patterns::GeometryTrait},
 };
 
 /// Union two or more solids into a single solid.

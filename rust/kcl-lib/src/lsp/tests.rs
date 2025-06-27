@@ -2,18 +2,18 @@ use std::collections::{BTreeMap, HashMap};
 
 use pretty_assertions::assert_eq;
 use tower_lsp::{
+    LanguageServer,
     lsp_types::{
         CodeActionKind, CodeActionOrCommand, Diagnostic, PrepareRenameResponse, SemanticTokenModifier,
         SemanticTokenType, TextEdit, WorkspaceEdit,
     },
-    LanguageServer,
 };
 
 use crate::{
+    SourceRange,
     errors::{LspSuggestion, Suggestion},
     lsp::test_util::{copilot_lsp_server, kcl_lsp_server},
     parsing::ast::types::{Node, Program},
-    SourceRange,
 };
 
 #[track_caller]
@@ -276,11 +276,7 @@ async fn test_updating_kcl_lsp_files() {
     assert_eq!(server.code_map.len(), 11);
     // Just make sure that one of the current files read from disk is accurate.
     assert_eq!(
-        server
-            .code_map
-            .get(&format!("{}/util.rs", string_path))
-            .unwrap()
-            .clone(),
+        server.code_map.get(&format!("{string_path}/util.rs")).unwrap().clone(),
         include_str!("util.rs").as_bytes()
     );
 }
@@ -633,7 +629,7 @@ async fn test_kcl_lsp_create_zip() {
     }
 
     assert_eq!(files.len(), 12);
-    let util_path = format!("{}/util.rs", string_path).replace("file://", "");
+    let util_path = format!("{string_path}/util.rs").replace("file://", "");
     assert!(files.contains_key(&util_path));
     assert_eq!(files.get("/test.kcl"), Some(&4));
 }

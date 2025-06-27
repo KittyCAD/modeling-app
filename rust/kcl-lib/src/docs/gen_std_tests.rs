@@ -189,7 +189,7 @@ fn generate_example(index: usize, src: &str, props: &ExampleProperties, file_nam
             index
         );
         let image_data =
-            std::fs::read(&image_path).unwrap_or_else(|_| panic!("Failed to read image file: {}", image_path));
+            std::fs::read(&image_path).unwrap_or_else(|_| panic!("Failed to read image file: {image_path}"));
         base64::engine::general_purpose::STANDARD.encode(&image_data)
     };
 
@@ -225,7 +225,7 @@ fn generate_type_from_kcl(ty: &TyData, file_name: String, example_name: String, 
 
     let output = hbs.render("kclType", &data)?;
     let output = cleanup_types(&output, kcl_std);
-    expectorate::assert_contents(format!("../../docs/kcl-std/{}.md", file_name), &output);
+    expectorate::assert_contents(format!("../../docs/kcl-std/{file_name}.md"), &output);
 
     Ok(())
 }
@@ -267,7 +267,7 @@ fn generate_mod_from_kcl(m: &ModData, file_name: String) -> Result<()> {
     });
 
     let output = hbs.render("module", &data)?;
-    expectorate::assert_contents(format!("../../docs/kcl-std/{}.md", file_name), &output);
+    expectorate::assert_contents(format!("../../docs/kcl-std/{file_name}.md"), &output);
 
     Ok(())
 }
@@ -334,7 +334,7 @@ fn generate_function_from_kcl(
 
     let output = hbs.render("function", &data)?;
     let output = &cleanup_types(&output, kcl_std);
-    expectorate::assert_contents(format!("../../docs/kcl-std/{}.md", file_name), output);
+    expectorate::assert_contents(format!("../../docs/kcl-std/{file_name}.md"), output);
 
     Ok(())
 }
@@ -378,7 +378,7 @@ fn generate_const_from_kcl(cnst: &ConstData, file_name: String, example_name: St
 
     let output = hbs.render("const", &data)?;
     let output = cleanup_types(&output, kcl_std);
-    expectorate::assert_contents(format!("../../docs/kcl-std/{}.md", file_name), &output);
+    expectorate::assert_contents(format!("../../docs/kcl-std/{file_name}.md"), &output);
 
     Ok(())
 }

@@ -1,19 +1,19 @@
 use fnv::FnvHashMap;
 use lazy_static::lazy_static;
 use winnow::{
+    LocatingSlice, Stateful,
     ascii::{digit1, multispace1},
     combinator::{alt, opt, peek, preceded, repeat},
     error::{ContextError, ParseError},
     prelude::*,
     stream::{Location, Stream},
     token::{any, none_of, take_till, take_until, take_while},
-    LocatingSlice, Stateful,
 };
 
 use super::TokenStream;
 use crate::{
-    parsing::token::{Token, TokenType},
     ModuleId,
+    parsing::token::{Token, TokenType},
 };
 
 lazy_static! {

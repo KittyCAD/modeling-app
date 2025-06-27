@@ -7,12 +7,13 @@ use serde::Serialize;
 use super::fillet::EdgeReference;
 pub use crate::execution::fn_call::Args;
 use crate::{
+    ModuleId,
     errors::{KclError, KclErrorDetails},
     execution::{
-        kcl_value::FunctionSource,
-        types::{NumericType, PrimitiveType, RuntimeType, UnitAngle, UnitLen, UnitType},
         ExecState, ExtrudeSurface, Helix, KclObjectFields, KclValue, Metadata, PlaneInfo, Sketch, SketchSurface, Solid,
         TagIdentifier,
+        kcl_value::FunctionSource,
+        types::{NumericType, PrimitiveType, RuntimeType, UnitAngle, UnitLen, UnitType},
     },
     parsing::ast::types::TagNode,
     source_range::SourceRange,
@@ -21,7 +22,6 @@ use crate::{
         sketch::FaceTag,
         sweep::SweepPath,
     },
-    ModuleId,
 };
 
 const ERROR_STRING_SKETCH_TO_SOLID_HELPER: &str =
@@ -97,8 +97,8 @@ impl JsonSchema for TyF64 {
         "TyF64".to_string()
     }
 
-    fn json_schema(gen: &mut schemars::gen::SchemaGenerator) -> schemars::schema::Schema {
-        gen.subschema_for::<f64>()
+    fn json_schema(r#gen: &mut schemars::r#gen::SchemaGenerator) -> schemars::schema::Schema {
+        r#gen.subschema_for::<f64>()
     }
 }
 

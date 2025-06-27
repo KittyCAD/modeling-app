@@ -3,10 +3,10 @@
 use std::path::PathBuf;
 
 use crate::{
+    ConnectionError, ExecError, KclError, KclErrorWithOutputs, Program,
     engine::new_zoo_client,
     errors::ExecErrorWithState,
     execution::{EnvironmentRef, ExecState, ExecutorContext, ExecutorSettings},
-    ConnectionError, ExecError, KclError, KclErrorWithOutputs, Program,
 };
 
 #[derive(serde::Deserialize, serde::Serialize)]
@@ -64,7 +64,7 @@ pub async fn execute_and_snapshot_ast(
                 // Close the context to avoid any resource leaks.
                 ctx.close().await;
                 return Err(ExecErrorWithState::new(
-                    ExecError::BadExport(format!("Export failed: {:?}", err)),
+                    ExecError::BadExport(format!("Export failed: {err:?}")),
                     exec_state.clone(),
                 ));
             }
@@ -184,7 +184,7 @@ pub async fn execute_and_export_step(
         Ok(f) => f,
         Err(err) => {
             return Err(ExecErrorWithState::new(
-                ExecError::BadExport(format!("Export failed: {:?}", err)),
+                ExecError::BadExport(format!("Export failed: {err:?}")),
                 exec_state.clone(),
             ));
         }

@@ -31,7 +31,7 @@ pub use args::Args;
 
 use crate::{
     errors::KclError,
-    execution::{types::PrimitiveType, ExecState, KclValue},
+    execution::{ExecState, KclValue, types::PrimitiveType},
 };
 
 pub type StdFn = fn(
