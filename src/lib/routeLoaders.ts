@@ -55,11 +55,8 @@ export const fileLoader: LoaderFunction = async (
 
     const projectInfo = isDesktop() ? await getProjectInfo(projectPath) : null
 
-
     if (!urlObj.pathname.endsWith('/settings')) {
-      const fallbackFile = projectInfo
-        ?  projectInfo.default_file
-        : ''
+      const fallbackFile = projectInfo ? projectInfo.default_file : ''
       let fileExists = isDesktop()
       if (currentFilePath && fileExists) {
         try {
@@ -125,9 +122,7 @@ export const fileLoader: LoaderFunction = async (
       readWriteAccess: true,
     }
 
-    const maybeProjectInfo = projectInfo
-      ? projectInfo
-      : null
+    const maybeProjectInfo = projectInfo ? projectInfo : null
 
     const project = maybeProjectInfo ?? defaultProjectData
 

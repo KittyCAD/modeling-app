@@ -11,7 +11,7 @@ import { contextBridge, ipcRenderer } from 'electron'
 import type { Channel } from '@src/channels'
 import type { WebContentSendPayload } from '@src/menu/channels'
 
-import {glob} from 'glob'
+import { glob } from 'glob'
 
 const typeSafeIpcRendererOn = (
   channel: Channel,
@@ -120,16 +120,14 @@ const stat = (path: string) => {
 
 const globDir = async (path: string) => {
   const result = await glob(path, { stat: true, withFileTypes: true })
-  return result.map((result)=>{
-          return {
-            path: result.fullpath(),
-            name: result.name,
-            children: result.isDirectory() ? [] : null
-          }
-        }
-      )
+  return result.map((result) => {
+    return {
+      path: result.fullpath(),
+      name: result.name,
+      children: result.isDirectory() ? [] : null,
+    }
+  })
 }
-
 
 // Electron has behavior where it doesn't clone the prototype chain over.
 // So we need to call stat.isDirectory on this side.

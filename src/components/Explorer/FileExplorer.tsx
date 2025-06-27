@@ -11,8 +11,8 @@ import { ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
 import type { Dispatch } from 'react'
 import { useRef, useState } from 'react'
 import { DeleteConfirmationDialog } from '@src/components/ProjectCard/DeleteProjectDialog'
-import { FixedSizeList as List} from 'react-window'
-import AutoSizer from "react-virtualized-auto-sizer"
+import { FixedSizeList as List } from 'react-window'
+import AutoSizer from 'react-virtualized-auto-sizer'
 
 export const StatusDot = () => {
   return <span className="text-primary hue-rotate-90">•</span>
@@ -83,17 +83,17 @@ export const FileExplorer = ({
 
   return (
     <div role="presentation" className="relative h-full w-full">
-    <AutoSizer>
+      <AutoSizer>
         {({ height, width }) => (
-        <List
-          height={height}
-          itemCount={data.length}
-          itemData={data}
-          width={width}
-          itemSize={20}
-        > 
-          {FileExplorerRowElement} 
-        </List>
+          <List
+            height={height}
+            itemCount={data.length}
+            itemData={data}
+            width={width}
+            itemSize={20}
+          >
+            {FileExplorerRowElement}
+          </List>
         )}
       </AutoSizer>
     </div>
@@ -229,20 +229,18 @@ function DeleteFileTreeItemDialog({
 export const FileExplorerRowElement = ({
   data,
   index,
-  style
-}: {
-  row: FileExplorerRender
-  selectedRow: FileExplorerEntry | null
-  contextMenuRow: FileExplorerEntry | null
-  isRenaming: boolean
-}) => {
+  style,
+}: {}) => {
   const rowElementRef = useRef(null)
   const item = data[index]
   const isSelected =
-    item.name === item.selectedRow?.name && item.parentPath === item.selectedRow?.parentPath
+    item.name === item.selectedRow?.name &&
+    item.parentPath === item.selectedRow?.parentPath
   const isIndexActive = item.domIndex === item.activeIndex
-  const isContextMenuRow = item.contextMenuRow?.key === item.key
+  // TODO: key is undefined..
+  const isContextMenuRow = item.contextMenuRow?.path === item.path
   const isMyRowRenaming = isContextMenuRow && item.isRenaming
+
   const [isConfirmingDelete, setIsConfirmingDelete] = useState<boolean>(false)
 
   const outlineCSS =
@@ -299,7 +297,7 @@ export const FileExplorerRowElement = ({
         </span>
       ) : (
         <RenameForm
-          row={data}
+          row={item}
           onSubmit={(event: React.KeyboardEvent<HTMLElement> | null) => {
             item.onRenameEnd(event)
           }}
@@ -308,7 +306,10 @@ export const FileExplorerRowElement = ({
       <div className="ml-auto">{item.status}</div>
       <div style={{ width: '0.25rem' }}></div>
       {isConfirmingDelete && (
-        <DeleteFileTreeItemDialog row={data} setIsOpen={setIsConfirmingDelete} />
+        <DeleteFileTreeItemDialog
+          row={item}
+          setIsOpen={setIsConfirmingDelete}
+        />
       )}
       <FileExplorerRowContextMenu
         itemRef={rowElementRef}

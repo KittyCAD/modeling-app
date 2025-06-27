@@ -51,7 +51,7 @@ export interface IElectronAPI {
     data: string | Uint8Array
   ) => ReturnType<fs.writeFile>
   readdir: (path: string) => ReturnType<fs.readdir>
-  globDir: (path:string) => Promise<FileEntry[]>
+  globDir: (path: string) => Promise<FileEntry[]>
   exists: (path: string) => ReturnType<fs.exists>
   getPath: (name: string) => Promise<string>
   rm: typeof fs.rm

@@ -28,8 +28,7 @@ import { getInVariableCase } from '@src/lib/utils'
 import { IS_STAGING } from '@src/routes/utils'
 import { desktopSafePathJoin, desktopSafePathSplit, joinOSPaths } from './paths'
 
-
-let cacheRelevantFileExtension : string[] | null = null
+let cacheRelevantFileExtension: string[] | null = null
 const cachedRelevantFileExtensions = () => {
   if (cacheRelevantFileExtension === null) {
     cacheRelevantFileExtension = relevantFileExtensions()
@@ -332,7 +331,7 @@ export async function getDefaultKclFileForDir(
     projectDir,
     PROJECT_ENTRYPOINT
   )
-  try {    
+  try {
     await window.electron.stat(defaultFilePath)
   } catch (e) {
     if (e === 'ENOENT') {
@@ -392,126 +391,125 @@ const directoryCount = (file: FileEntry) => {
 }
 
 function buildFileTree2(fileEntries, baseDir = '') {
-  const root = [];
-  const pathMap = new Map();
+  const root = []
+  const pathMap = new Map()
 
   for (const entry of fileEntries) {
-    let relativePath = baseDir && entry.path.startsWith(baseDir)
-      ? entry.path.slice(baseDir.length)
-      : entry.path;
+    let relativePath =
+      baseDir && entry.path.startsWith(baseDir)
+        ? entry.path.slice(baseDir.length)
+        : entry.path
 
-    const parts = relativePath.split('/').filter(Boolean);
-    let currentLevel = root;
-    let currentPath = '';
-    let topLevelNode = null;
+    const parts = relativePath.split('/').filter(Boolean)
+    let currentLevel = root
+    let currentPath = ''
+    let topLevelNode = null
 
     for (let i = 0; i < parts.length; i++) {
-      const part = parts[i];
-      currentPath += '/' + part;
+      const part = parts[i]
+      currentPath += '/' + part
 
-      const isLeaf = i === parts.length - 1;
-      const isFile = isLeaf && entry.children === null;
-      const isKclFile = isFile && entry.name.endsWith('.kcl');
+      const isLeaf = i === parts.length - 1
+      const isFile = isLeaf && entry.children === null
+      const isKclFile = isFile && entry.name.endsWith('.kcl')
 
-      let node = pathMap.get(currentPath);
+      let node = pathMap.get(currentPath)
       if (!node) {
         node = {
           path: baseDir + currentPath,
           name: part,
           children: isFile ? null : [],
-        };
+        }
 
         // First-level node: initialize counts
         if (i === 0) {
-          node.kcl_file_count = 0;
-          node.directory_count = 0;
-          topLevelNode = node;
+          node.kcl_file_count = 0
+          node.directory_count = 0
+          topLevelNode = node
         }
 
-        currentLevel.push(node);
-        pathMap.set(currentPath, node);
+        currentLevel.push(node)
+        pathMap.set(currentPath, node)
 
         // If it's a directory (i.e., children is []), count it under the top-level
         if (!isFile && i > 0 && topLevelNode) {
-          topLevelNode.directory_count += 1;
+          topLevelNode.directory_count += 1
         }
       }
 
       if (i === 0) {
-        topLevelNode = node;
+        topLevelNode = node
       }
 
       // Count .kcl files under top-level node
       if (isKclFile && topLevelNode) {
-        topLevelNode.kcl_file_count += 1;
+        topLevelNode.kcl_file_count += 1
       }
 
       if (node.children !== null) {
-        currentLevel = node.children;
+        currentLevel = node.children
       }
     }
   }
 
-  return root;
+  return root
 }
-
 
 export async function getProjectInfo(projectPath: string): Promise<Project> {
-        const starMatchedPath = joinOSPaths(projectPath,'**','*')
-        let results = await window.electron.globDir(starMatchedPath)
-        const isRelevantFile = (filename: string): boolean =>
-          cachedRelevantFileExtensions().some((ext) => filename.endsWith('.' + ext))
-        results = results.filter((entry)=>{
-          return isRelevantFile(entry.path) || entry?.children?.length >= 0
-        })
-        const splitter = desktopSafePathSplit(projectPath)
-        splitter.pop()
-        const projectDirectoryPath = desktopSafePathJoin(splitter)
-        const project = buildFileTree2(results, projectDirectoryPath)[0]
-        console.log('PROJECT', project.name, project)
+  const starMatchedPath = joinOSPaths(projectPath, '**', '*')
+  let results = await window.electron.globDir(starMatchedPath)
+  const isRelevantFile = (filename: string): boolean =>
+    cachedRelevantFileExtensions().some((ext) => filename.endsWith('.' + ext))
+  results = results.filter((entry) => {
+    return isRelevantFile(entry.path) || entry?.children?.length >= 0
+  })
+  const splitter = desktopSafePathSplit(projectPath)
+  splitter.pop()
+  const projectDirectoryPath = desktopSafePathJoin(splitter)
+  const project = buildFileTree2(results, projectDirectoryPath)[0]
+  console.log('PROJECT', project.name, project)
 
-        project.children?.sort((a,b)=>{
-          if ( a.path < b.path ){
-            return -1
-          }
-          if ( a.path > b.path ){
-            return 1
-          }
-          return 0
-        })
-        project.metadata = null
-        project.default_file = await getDefaultKclFileForDir(projectPath, project)
-        project.readWriteAcces = true
+  project.children?.sort((a, b) => {
+    if (a.path < b.path) {
+      return -1
+    }
+    if (a.path > b.path) {
+      return 1
+    }
+    return 0
+  })
+  project.metadata = null
+  project.default_file = await getDefaultKclFileForDir(projectPath, project)
+  project.readWriteAcces = true
 
-          let metadata
-          try {
-            metadata = await window.electron.stat(projectPath)
-          } catch (e) {
-            if (e === 'ENOENT') {
-              return Promise.reject(
-                new Error(`Project directory does not exist: ${projectPath}`)
-              )
-            }
-          }
-          const { value: canReadWriteProjectPath } =
-            await window.electron.canReadWriteDirectory(projectPath)
+  let metadata
+  try {
+    metadata = await window.electron.stat(projectPath)
+  } catch (e) {
+    if (e === 'ENOENT') {
+      return Promise.reject(
+        new Error(`Project directory does not exist: ${projectPath}`)
+      )
+    }
+  }
+  const { value: canReadWriteProjectPath } =
+    await window.electron.canReadWriteDirectory(projectPath)
 
-          project.metadata =  {
-            modified: metadata.mtimeMs,
-            accessed: metadata.atimeMs,
-            created: metadata.ctimeMs,
-            // this is not used anywhere and we use statIsDirectory in other places
-            // that need to know if it's a file or directory.
-            type: null,
-            size: metadata.size,
-            permission: metadata.mode,
-          }
+  project.metadata = {
+    modified: metadata.mtimeMs,
+    accessed: metadata.atimeMs,
+    created: metadata.ctimeMs,
+    // this is not used anywhere and we use statIsDirectory in other places
+    // that need to know if it's a file or directory.
+    type: null,
+    size: metadata.size,
+    permission: metadata.mode,
+  }
 
-          project.readWriteAccess= canReadWriteProjectPath
+  project.readWriteAccess = canReadWriteProjectPath
 
-      return project
+  return project
 }
-
 
 export async function getProjectInfo2(projectPath: string): Promise<Project> {
   // Check the directory.

@@ -195,6 +195,7 @@ export const ProjectExplorer = ({
   }
 
   useEffect(() => {
+    console.log('IS RENAMING', isRenaming)
     /**
      * You are loading a new project, clear the internal state!
      */
@@ -239,15 +240,13 @@ export const ProjectExplorer = ({
          * If any parent is closed, keep the history of open children
          */
         let isAnyParentClosed = false
-        const pathIterator = child.parentPath.split("/")//desktopSafePathSplit(child.parentPath)
-        
+        const pathIterator = child.parentPath.split('/') //desktopSafePathSplit(child.parentPath)
 
         while (pathIterator.length > 0) {
-          const key = pathIterator.join("/")
+          const key = pathIterator.join('/')
           const isOpened = openedRows[key] || project.name === key
           isAnyParentClosed = isAnyParentClosed || !isOpened
-          if (isAnyParentClosed === true)
-            break
+          if (isAnyParentClosed === true) break
           pathIterator.pop()
         }
 
@@ -332,6 +331,7 @@ export const ProjectExplorer = ({
 
             setIsRenaming(true)
             isRenamingRef.current = true
+            console.log("something")
           },
           onRenameEnd: (event: React.KeyboardEvent<HTMLElement> | null) => {
             // TODO: Implement renameFolder and renameFile to navigate
@@ -409,7 +409,7 @@ export const ProjectExplorer = ({
                   if (openedRowsRef.current[child.path]) {
                     // If the file tree had the folder opened make the new one open.
                     const newOpenedRows = { ...openedRowsRef.current }
-                    const key = [child.parentPath,requestedName].join('/')
+                    const key = [child.parentPath, requestedName].join('/')
                     newOpenedRows[key] = true
                     setOpenedRows(newOpenedRows)
                   }
@@ -502,7 +502,7 @@ export const ProjectExplorer = ({
           row.name === FILE_PLACEHOLDER_NAME
         const fakeRowIsNullShowRootFile =
           fakeRow.entry === null &&
-          row.parentPath === project.name &&
+          row.parentPath === project.path &&
           row.name === FILE_PLACEHOLDER_NAME
         showPlaceHolder =
           showFileAtSameLevel ||
@@ -521,7 +521,7 @@ export const ProjectExplorer = ({
           row.name === FOLDER_PLACEHOLDER_NAME
         const fakeRowIsNullShowRootFolder =
           fakeRow.entry === null &&
-          row.parentPath === project.name &&
+          row.parentPath === project.path &&
           row.name === FOLDER_PLACEHOLDER_NAME
         showPlaceHolder =
           showFolderAtSameLevel ||

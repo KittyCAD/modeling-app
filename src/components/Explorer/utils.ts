@@ -50,6 +50,9 @@ export interface FileExplorerRow extends FileExplorerEntry {
 export interface FileExplorerRender extends FileExplorerRow {
   domIndex: number
   domLength: number
+  isRenaming: boolean
+  selectedRow: FileExplorerEntry | null
+  contextMenuRow: FileExplorerEntry | null
 }
 
 export interface FileExplorerRowContextMenuProps {
