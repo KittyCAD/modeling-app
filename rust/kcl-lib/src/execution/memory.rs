@@ -541,22 +541,6 @@ impl Stack {
         self.push_new_env_for_call(snapshot);
     }
 
-    /// Push a new stack frame on to the call stack for callees which should not read or write
-    /// from memory.
-    ///
-    /// This is suitable for calling standard library functions or other functions written in Rust
-    /// which will use 'Rust memory' rather than KCL's memory and cannot reach into the wider
-    /// environment.
-    ///
-    /// Trying to read or write from this environment will panic with an index out of bounds.
-    pub fn push_new_env_for_rust_call(&mut self) {
-        self.call_stack.push(self.current_env);
-        // Rust functions shouldn't try to set or access anything in their environment, so don't
-        // waste time and space on a new env. Using usize::MAX means we'll get an overflow if we
-        // try to access anything rather than a silent error.
-        self.current_env = EnvironmentRef(usize::MAX, 0);
-    }
-
     /// Push a new stack frame on to the call stack with no connection to a parent environment.
     ///
     /// Suitable for executing a separate module.
@@ -683,7 +667,7 @@ impl Stack {
         env.contains_key(var)
     }
 
-    /// Get a key from the first KCL (i.e., non-Rust) stack frame on the call stack.
+    /// Get a key from the first stack frame on the call stack.
     pub fn get_from_call_stack(&self, key: &str, source_range: SourceRange) -> Result<(usize, &KclValue), KclError> {
         if !self.current_env.skip_env() {
             return Ok((self.current_env.1, self.get(key, source_range)?));
@@ -695,7 +679,7 @@ impl Stack {
             }
         }
 
-        unreachable!("It can't be Rust frames all the way down");
+        unreachable!("No frames on the stack?");
     }
 
     /// Iterate over all keys in the current environment which satisfy the provided predicate.
@@ -1215,24 +1199,6 @@ mod test {
         // callee stack frame is preserved
         assert_get_from(mem, "b", 4, callee);
         assert_get_from(mem, "c", 5, callee);
-    }
-
-    #[test]
-    fn rust_env() {
-        let mem = &mut Stack::new_for_tests();
-        mem.add("a".to_owned(), val(1), sr()).unwrap();
-        mem.add("b".to_owned(), val(3), sr()).unwrap();
-        let sn = mem.snapshot();
-
-        mem.push_new_env_for_rust_call();
-        mem.push_new_env_for_call(sn);
-        assert_get(mem, "b", 3);
-        mem.add("b".to_owned(), val(4), sr()).unwrap();
-        assert_get(mem, "b", 4);
-
-        mem.pop_env();
-        mem.pop_env();
-        assert_get(mem, "b", 3);
     }
 
     #[test]
