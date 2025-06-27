@@ -75,6 +75,7 @@ newVar = myVar + 1`
         tag: {
           end: 103,
           start: 96,
+          moduleId: 0,
           commentStart: expect.any(Number),
           type: 'TagDeclarator',
           value: 'myPath',
@@ -103,6 +104,7 @@ newVar = myVar + 1`
         tag: {
           end: 184,
           start: 174,
+          moduleId: 0,
           commentStart: expect.any(Number),
           type: 'TagDeclarator',
           value: 'rightPath',
@@ -202,6 +204,7 @@ newVar = myVar + 1`
             tag: {
               end: 132,
               start: 125,
+              moduleId: 0,
               commentStart: expect.any(Number),
               type: 'TagDeclarator',
               value: 'myPath',
@@ -459,6 +462,7 @@ theExtrude = startSketchOn(XY)
         'undefined_value',
         '`myVarZ` is not defined',
         topLevelRange(115, 121),
+        expect.any(Object),
         expect.any(Object),
         expect.any(Object),
         expect.any(Object),

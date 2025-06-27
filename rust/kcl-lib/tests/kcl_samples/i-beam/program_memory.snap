@@ -135,7 +135,7 @@ description: Variables in memory after executing i-beam.kcl
             ],
             "tag": null,
             "to": [
-              0.0965,
+              0.09649999999999997,
               1.25
             ],
             "type": "TangentialArc",
@@ -149,12 +149,12 @@ description: Variables in memory after executing i-beam.kcl
               "sourceRange": []
             },
             "from": [
-              0.0965,
+              0.09649999999999997,
               1.25
             ],
             "tag": null,
             "to": [
-              0.0965,
+              0.09649999999999997,
               0.0
             ],
             "type": "ToPoint",

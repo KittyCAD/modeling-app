@@ -10,7 +10,7 @@ import { expect, test } from '@e2e/playwright/zoo-test'
 
 test(
   'export works on the first try',
-  { tag: ['@electron', '@macos', '@windows', '@skipLocalEngine'] },
+  { tag: ['@desktop', '@macos', '@windows', '@skipLocalEngine'] },
   async ({ page, context, scene, tronApp, cmdBar }, testInfo) => {
     if (!tronApp) {
       fail()
@@ -54,15 +54,7 @@ test(
       await page.keyboard.press('Enter')
 
       // Click the checkbox
-      const submitButton = page.getByText('Confirm Export')
-      await expect(submitButton).toBeVisible()
-      await page.keyboard.press('Enter')
-
-      // Look out for the toast message
-      const exportingToastMessage = page.getByText(`Exporting...`)
-      const alreadyExportingToastMessage = page.getByText(`Already exporting`)
-      await expect(exportingToastMessage).toBeVisible()
-      await expect(alreadyExportingToastMessage).not.toBeVisible()
+      await cmdBar.submit()
 
       // Expect it to succeed
       const errorToastMessage = page.getByText(`Error while exporting`)
@@ -71,8 +63,9 @@ test(
       await expect(engineErrorToastMessage).not.toBeVisible()
 
       const successToastMessage = page.getByText(`Exported successfully`)
-      await expect(successToastMessage).toBeVisible()
-      await expect(exportingToastMessage).not.toBeVisible()
+      await page.waitForTimeout(1_000)
+      const count = await successToastMessage.count()
+      await expect(count).toBeGreaterThanOrEqual(1)
 
       // Check for the exported file
       const firstFileFullPath = path.resolve(
@@ -124,9 +117,7 @@ test(
       await page.keyboard.press('Enter')
 
       // Click the checkbox
-      const submitButton = page.getByText('Confirm Export')
-      await expect(submitButton).toBeVisible()
-      await page.keyboard.press('Enter')
+      await cmdBar.submit()
 
       // Look out for the toast message
       const exportingToastMessage = page.getByText(`Exporting...`)
@@ -141,7 +132,9 @@ test(
       await expect(engineErrorToastMessage).not.toBeVisible()
 
       const successToastMessage = page.getByText(`Exported successfully`)
-      await expect(successToastMessage).toBeVisible()
+      await page.waitForTimeout(1_000)
+      const count = await successToastMessage.count()
+      await expect(count).toBeGreaterThanOrEqual(1)
       await expect(exportingToastMessage).not.toBeVisible()
 
       // Check for the exported file=

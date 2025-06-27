@@ -1,0 +1,7 @@
+// A donut shape.
+startSketchOn(XY)
+    |> circle( center = [15, 0], radius = 5 )
+    |> revolve(
+        angle = 360,
+        axis = Y,
+    )

@@ -50,6 +50,7 @@ description: Variables in memory after executing flush_batch_on_end.kcl
           "tag": {
             "commentStart": 515,
             "end": 522,
+            "moduleId": 0,
             "start": 515,
             "type": "TagDeclarator",
             "value": "arc001"
@@ -140,7 +141,7 @@ description: Variables in memory after executing flush_batch_on_end.kcl
   },
   "outerDiameter": {
     "type": "Number",
-    "value": 0.5469,
+    "value": 0.546875,
     "ty": {
       "type": "Default",
       "len": {
@@ -168,19 +169,20 @@ description: Variables in memory after executing flush_batch_on_end.kcl
             0.0
           ],
           "from": [
-            0.2734,
+            0.2734375,
             0.0
           ],
           "radius": 0.2734375,
           "tag": {
             "commentStart": 360,
             "end": 367,
+            "moduleId": 0,
             "start": 360,
             "type": "TagDeclarator",
             "value": "arc000"
           },
           "to": [
-            0.2734,
+            0.2734375,
             0.0
           ],
           "type": "Circle",
@@ -221,11 +223,11 @@ description: Variables in memory after executing flush_batch_on_end.kcl
       },
       "start": {
         "from": [
-          0.2734,
+          0.2734375,
           0.0
         ],
         "to": [
-          0.2734,
+          0.2734375,
           0.0
         ],
         "units": {
@@ -264,6 +266,7 @@ description: Variables in memory after executing flush_batch_on_end.kcl
           "tag": {
             "commentStart": 360,
             "end": 367,
+            "moduleId": 0,
             "start": 360,
             "type": "TagDeclarator",
             "value": "arc000"
@@ -286,19 +289,20 @@ description: Variables in memory after executing flush_batch_on_end.kcl
               0.0
             ],
             "from": [
-              0.2734,
+              0.2734375,
               0.0
             ],
             "radius": 0.2734375,
             "tag": {
               "commentStart": 360,
               "end": 367,
+              "moduleId": 0,
               "start": 360,
               "type": "TagDeclarator",
               "value": "arc000"
             },
             "to": [
-              0.2734,
+              0.2734375,
               0.0
             ],
             "type": "Circle",
@@ -339,11 +343,11 @@ description: Variables in memory after executing flush_batch_on_end.kcl
         },
         "start": {
           "from": [
-            0.2734,
+            0.2734375,
             0.0
           ],
           "to": [
-            0.2734,
+            0.2734375,
             0.0
           ],
           "units": {
@@ -393,19 +397,20 @@ description: Variables in memory after executing flush_batch_on_end.kcl
             0.0
           ],
           "from": [
-            0.2734,
+            0.2734375,
             0.0
           ],
           "radius": 0.2734375,
           "tag": {
             "commentStart": 360,
             "end": 367,
+            "moduleId": 0,
             "start": 360,
             "type": "TagDeclarator",
             "value": "arc000"
           },
           "to": [
-            0.2734,
+            0.2734375,
             0.0
           ],
           "type": "Circle",
@@ -446,11 +451,11 @@ description: Variables in memory after executing flush_batch_on_end.kcl
       },
       "start": {
         "from": [
-          0.2734,
+          0.2734375,
           0.0
         ],
         "to": [
-          0.2734,
+          0.2734375,
           0.0
         ],
         "units": {

@@ -8,6 +8,7 @@ description: Result of parsing multiple-foreign-imports-all-render.kcl
       {
         "commentStart": 0,
         "end": 0,
+        "moduleId": 0,
         "path": {
           "type": "Foreign",
           "path": "../inputs/cube.step"
@@ -17,6 +18,7 @@ description: Result of parsing multiple-foreign-imports-all-render.kcl
           "alias": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "cube",
             "start": 0,
             "type": "Identifier"
@@ -29,6 +31,7 @@ description: Result of parsing multiple-foreign-imports-all-render.kcl
       {
         "commentStart": 0,
         "end": 0,
+        "moduleId": 0,
         "path": {
           "type": "Kcl",
           "filename": "othercube.kcl"
@@ -38,6 +41,7 @@ description: Result of parsing multiple-foreign-imports-all-render.kcl
           "alias": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "othercube",
             "start": 0,
             "type": "Identifier"
@@ -50,6 +54,7 @@ description: Result of parsing multiple-foreign-imports-all-render.kcl
       {
         "commentStart": 0,
         "end": 0,
+        "moduleId": 0,
         "path": {
           "type": "Kcl",
           "filename": "anothercube.kcl"
@@ -59,6 +64,7 @@ description: Result of parsing multiple-foreign-imports-all-render.kcl
           "alias": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "anothercube",
             "start": 0,
             "type": "Identifier"
@@ -76,6 +82,7 @@ description: Result of parsing multiple-foreign-imports-all-render.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "model",
             "start": 0,
             "type": "Identifier"
@@ -84,9 +91,11 @@ description: Result of parsing multiple-foreign-imports-all-render.kcl
             "abs_path": false,
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "cube",
               "start": 0,
               "type": "Identifier"
@@ -96,11 +105,13 @@ description: Result of parsing multiple-foreign-imports-all-render.kcl
             "type": "Name",
             "type": "Name"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -114,9 +125,11 @@ description: Result of parsing multiple-foreign-imports-all-render.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "othercube",
                 "start": 0,
                 "type": "Identifier"
@@ -133,6 +146,7 @@ description: Result of parsing multiple-foreign-imports-all-render.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "x",
                     "start": 0,
                     "type": "Identifier"
@@ -140,6 +154,7 @@ description: Result of parsing multiple-foreign-imports-all-render.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "1020",
                     "start": 0,
                     "type": "Literal",
@@ -155,9 +170,11 @@ description: Result of parsing multiple-foreign-imports-all-render.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "translate",
                   "start": 0,
                   "type": "Identifier"
@@ -168,6 +185,7 @@ description: Result of parsing multiple-foreign-imports-all-render.kcl
               },
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
@@ -180,6 +198,7 @@ description: Result of parsing multiple-foreign-imports-all-render.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "color",
                     "start": 0,
                     "type": "Identifier"
@@ -187,6 +206,7 @@ description: Result of parsing multiple-foreign-imports-all-render.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "\"#ff001f\"",
                     "start": 0,
                     "type": "Literal",
@@ -199,6 +219,7 @@ description: Result of parsing multiple-foreign-imports-all-render.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "metalness",
                     "start": 0,
                     "type": "Identifier"
@@ -206,6 +227,7 @@ description: Result of parsing multiple-foreign-imports-all-render.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "50",
                     "start": 0,
                     "type": "Literal",
@@ -221,6 +243,7 @@ description: Result of parsing multiple-foreign-imports-all-render.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "roughness",
                     "start": 0,
                     "type": "Identifier"
@@ -228,6 +251,7 @@ description: Result of parsing multiple-foreign-imports-all-render.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "50",
                     "start": 0,
                     "type": "Literal",
@@ -243,9 +267,11 @@ description: Result of parsing multiple-foreign-imports-all-render.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "appearance",
                   "start": 0,
                   "type": "Identifier"
@@ -256,6 +282,7 @@ description: Result of parsing multiple-foreign-imports-all-render.kcl
               },
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
@@ -264,10 +291,12 @@ description: Result of parsing multiple-foreign-imports-all-render.kcl
           ],
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "PipeExpression",
           "type": "PipeExpression"
         },
+        "moduleId": 0,
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -281,9 +310,11 @@ description: Result of parsing multiple-foreign-imports-all-render.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "anothercube",
                 "start": 0,
                 "type": "Identifier"
@@ -300,6 +331,7 @@ description: Result of parsing multiple-foreign-imports-all-render.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "x",
                     "start": 0,
                     "type": "Identifier"
@@ -308,6 +340,7 @@ description: Result of parsing multiple-foreign-imports-all-render.kcl
                     "argument": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "1020",
                       "start": 0,
                       "type": "Literal",
@@ -319,6 +352,7 @@ description: Result of parsing multiple-foreign-imports-all-render.kcl
                     },
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "operator": "-",
                     "start": 0,
                     "type": "UnaryExpression",
@@ -330,9 +364,11 @@ description: Result of parsing multiple-foreign-imports-all-render.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "translate",
                   "start": 0,
                   "type": "Identifier"
@@ -343,6 +379,7 @@ description: Result of parsing multiple-foreign-imports-all-render.kcl
               },
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
@@ -355,6 +392,7 @@ description: Result of parsing multiple-foreign-imports-all-render.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "color",
                     "start": 0,
                     "type": "Identifier"
@@ -362,6 +400,7 @@ description: Result of parsing multiple-foreign-imports-all-render.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "\"#ff0000\"",
                     "start": 0,
                     "type": "Literal",
@@ -374,6 +413,7 @@ description: Result of parsing multiple-foreign-imports-all-render.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "metalness",
                     "start": 0,
                     "type": "Identifier"
@@ -381,6 +421,7 @@ description: Result of parsing multiple-foreign-imports-all-render.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "50",
                     "start": 0,
                     "type": "Literal",
@@ -396,6 +437,7 @@ description: Result of parsing multiple-foreign-imports-all-render.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "roughness",
                     "start": 0,
                     "type": "Identifier"
@@ -403,6 +445,7 @@ description: Result of parsing multiple-foreign-imports-all-render.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "50",
                     "start": 0,
                     "type": "Literal",
@@ -418,9 +461,11 @@ description: Result of parsing multiple-foreign-imports-all-render.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "appearance",
                   "start": 0,
                   "type": "Identifier"
@@ -431,6 +476,7 @@ description: Result of parsing multiple-foreign-imports-all-render.kcl
               },
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
@@ -439,10 +485,12 @@ description: Result of parsing multiple-foreign-imports-all-render.kcl
           ],
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "PipeExpression",
           "type": "PipeExpression"
         },
+        "moduleId": 0,
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -450,12 +498,14 @@ description: Result of parsing multiple-foreign-imports-all-render.kcl
     ],
     "commentStart": 0,
     "end": 0,
+    "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "2": [
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {
@@ -467,6 +517,7 @@ description: Result of parsing multiple-foreign-imports-all-render.kcl
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {
@@ -478,6 +529,7 @@ description: Result of parsing multiple-foreign-imports-all-render.kcl
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {
@@ -489,6 +541,7 @@ description: Result of parsing multiple-foreign-imports-all-render.kcl
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {

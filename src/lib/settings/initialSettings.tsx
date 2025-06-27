@@ -24,6 +24,7 @@ import { Themes } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
 import { isEnumMember } from '@src/lib/types'
 import { capitaliseFC, isArray, toSync } from '@src/lib/utils'
+import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 
 /**
  * A setting that can be set at the user or project level
@@ -207,11 +208,21 @@ export function createSettings() {
           inputType: 'boolean',
         },
       }),
+      fixedSizeGrid: new Setting<boolean>({
+        defaultValue: true,
+        hideOnLevel: 'project',
+        description:
+          'When enabled, the grid will use a fixed size based on your selected units rather than automatically scaling with zoom level.',
+        validate: (v) => typeof v === 'boolean',
+        commandConfig: {
+          inputType: 'boolean',
+        },
+      }),
       /**
        * Stream resource saving behavior toggle
        */
       streamIdleMode: new Setting<number | undefined>({
-        defaultValue: 5 * MS_IN_MINUTE,
+        defaultValue: IS_STAGING_OR_DEBUG ? 30 * 1000 : 5 * MS_IN_MINUTE,
         hideOnLevel: 'project',
         hideOnPlatform: 'both',
         description: 'Save bandwidth & battery',
@@ -272,7 +283,7 @@ export function createSettings() {
         hideOnPlatform: 'desktop',
       }),
       projectDirectory: new Setting<string>({
-        defaultValue: '',
+        defaultValue: '', // gets set async in settingsUtils.ts
         description: 'The directory to save and load projects from',
         hideOnLevel: 'project',
         hideOnPlatform: 'web',

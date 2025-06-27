@@ -14,6 +14,7 @@ interface AppHeaderProps extends React.PropsWithChildren {
   className?: string
   enableMenu?: boolean
   style?: React.CSSProperties
+  nativeFileMenuCreated: boolean
 }
 
 export const AppHeader = ({
@@ -23,12 +24,14 @@ export const AppHeader = ({
   className = '',
   style,
   enableMenu = false,
+  nativeFileMenuCreated,
 }: AppHeaderProps) => {
   const user = useUser()
 
   return (
     <header
       id="app-header"
+      data-testid="app-header"
       className={
         'w-full grid ' +
         styles.header +
@@ -37,6 +40,7 @@ export const AppHeader = ({
         }overlaid-panes sticky top-0 z-20 px-2 items-start ` +
         className
       }
+      data-native-file-menu={nativeFileMenuCreated}
       style={style}
     >
       <ProjectSidebarMenu
@@ -45,8 +49,10 @@ export const AppHeader = ({
         file={project?.file}
       />
       {/* Toolbar if the context deems it */}
-      <div className="flex-grow flex justify-center max-w-lg md:max-w-xl lg:max-w-2xl xl:max-w-4xl 2xl:max-w-5xl">
-        {showToolbar && <Toolbar />}
+      <div className="flex flex-col items-center gap-2">
+        <div className="flex-grow flex justify-center max-w-lg md:max-w-xl lg:max-w-2xl xl:max-w-4xl 2xl:max-w-5xl">
+          {showToolbar && <Toolbar />}
+        </div>
       </div>
       <div className="flex items-center gap-2 py-1 ml-auto">
         {/* If there are children, show them, otherwise show User menu */}

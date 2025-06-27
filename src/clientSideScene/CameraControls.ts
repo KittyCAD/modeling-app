@@ -1,3 +1,4 @@
+import Hammer from 'hammerjs'
 import type {
   CameraDragInteractionType_type,
   CameraViewState_type,
@@ -43,6 +44,8 @@ import {
   uuidv4,
 } from '@src/lib/utils'
 import { deg2Rad } from '@src/lib/utils2d'
+import type { SettingsType } from '@src/lib/settings/initialSettings'
+import { degToRad } from 'three/src/math/MathUtils'
 
 const ORTHOGRAPHIC_CAMERA_SIZE = 20
 const FRAMES_TO_ANIMATE_IN = 30
@@ -117,13 +120,15 @@ export class CameraControls {
   enableZoom = true
   moveSender: CameraRateLimiter = new CameraRateLimiter()
   zoomSender: CameraRateLimiter = new CameraRateLimiter()
-  lastPerspectiveFov: number = 45
+  lastPerspectiveFov = 45
   pendingZoom: number | null = null
   pendingRotation: Vector2 | null = null
   pendingPan: Vector2 | null = null
   interactionGuards: MouseGuard = cameraMouseDragGuards.Zoo
   isFovAnimationInProgress = false
   perspectiveFovBeforeOrtho = 45
+  // TODO: proper dependency injection
+  getSettings: (() => SettingsType) | null = null
 
   // NOTE: Duplicated state across Provider and singleton. Mapped from settingsMachine
   _setting_allowOrbitInSketchMode = false
@@ -210,7 +215,10 @@ export class CameraControls {
     }
   }
 
-  doMove = (interaction: any, coordinates: any) => {
+  doMove = (
+    interaction: CameraDragInteractionType_type,
+    coordinates: [number, number]
+  ) => {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this.engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_req',
@@ -241,9 +249,9 @@ export class CameraControls {
   }
 
   constructor(
-    isOrtho = false,
     domElement: HTMLCanvasElement,
-    engineCommandManager: EngineCommandManager
+    engineCommandManager: EngineCommandManager,
+    isOrtho = false
   ) {
     this.engineCommandManager = engineCommandManager
     this.camera = isOrtho ? new OrthographicCamera() : new PerspectiveCamera()
@@ -260,6 +268,7 @@ export class CameraControls {
     this.domElement.addEventListener('pointermove', this.onMouseMove)
     this.domElement.addEventListener('pointerup', this.onMouseUp)
     this.domElement.addEventListener('wheel', this.onMouseWheel)
+    this.setUpMultiTouch(this.domElement)
 
     window.addEventListener('resize', this.onWindowResize)
     this.onWindowResize()
@@ -419,6 +428,10 @@ export class CameraControls {
   }
 
   onMouseMove = (event: PointerEvent) => {
+    if (event.pointerType === 'touch') {
+      return
+    }
+
     if (this.isDragging) {
       this.mouseNewPosition.set(event.clientX, event.clientY)
       const deltaMove = this.mouseNewPosition
@@ -426,8 +439,10 @@ export class CameraControls {
         .sub(this.mouseDownPosition)
       this.mouseDownPosition.copy(this.mouseNewPosition)
 
-      let interaction = this.getInteractionType(event)
-      if (interaction === 'none') return
+      const interaction = this.getInteractionType(event)
+      if (interaction === 'none') {
+        return
+      }
 
       // If there's a valid interaction and the mouse is moving,
       // our past (and current) interaction was a drag.
@@ -497,6 +512,14 @@ export class CameraControls {
   }
 
   onMouseUp = (event: PointerEvent) => {
+    if (event.pointerType === 'touch') {
+      // We support momentum flick gestures so we have to do these things after that completes
+      return
+    }
+    this.onMouseUpInner(event)
+  }
+
+  onMouseUpInner = (event: PointerEvent) => {
     this.domElement.releasePointerCapture(event.pointerId)
     this.isDragging = false
     this.handleEnd()
@@ -964,8 +987,50 @@ export class CameraControls {
     })
   }
 
+  /**
+   * A helper function that will override this.oldCameraState
+   * with the current setting's camera projection. If these are desynced
+   * that is okay but when the camera restores we want the user to be in the correct
+   * camera projection which is the settings value. Not this old state.
+   *
+   * Gotcha: This is not to be confused with Named Views, those have correct state.
+   */
+  overrideOldCameraStateToPreventDesync() {
+    if (!this.getSettings) {
+      return
+    }
+
+    // Engine idle disconnection happened, we saved off the camera state
+    // If the settings camera projection is different from the saved camera state we need to override it.
+    const settings = this.getSettings()
+    const cameraProjection = settings.modeling.cameraProjection.current
+    const isOrtho = cameraProjection === 'orthographic' ? true : false
+
+    if (this.oldCameraState) {
+      // Leave a log to know when this desyncs
+      console.log(`restoring camera projection setting:${cameraProjection}`)
+      console.log(
+        `oldCameraState projection:${isOrtho ? 'orthographic' : 'perspective'}, ortho_scaled_enabled:${this.oldCameraState.ortho_scale_enabled}`
+      )
+
+      if (this.oldCameraState.is_ortho !== isOrtho) {
+        console.log(
+          'oldCameraState is_ortho desynced',
+          this.oldCameraState.is_ortho,
+          isOrtho
+        )
+      }
+
+      this.oldCameraState.is_ortho = isOrtho
+      // Always keep this enabled!
+      this.oldCameraState.ortho_scale_enabled = true
+    }
+  }
+
   async restoreRemoteCameraStateAndTriggerSync() {
     if (this.oldCameraState) {
+      // Always write settings.modeling.cameraProjection to the restored camera view
+      this.overrideOldCameraStateToPreventDesync()
       await this.engineCommandManager.sendSceneCommand({
         type: 'modeling_cmd_req',
         cmd_id: uuidv4(),
@@ -975,7 +1040,6 @@ export class CameraControls {
         },
       })
     }
-
     await this.engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_req',
       cmd_id: uuidv4(),
@@ -985,23 +1049,35 @@ export class CameraControls {
     })
   }
 
-  async saveRemoteCameraState() {
-    const cameraViewStateResponse =
-      await this.engineCommandManager.sendSceneCommand({
-        type: 'modeling_cmd_req',
-        cmd_id: uuidv4(),
-        cmd: { type: 'default_camera_get_view' },
-      })
-    if (!cameraViewStateResponse) return
-    if (
-      'resp' in cameraViewStateResponse &&
-      'modeling_response' in cameraViewStateResponse.resp.data &&
-      'data' in cameraViewStateResponse.resp.data.modeling_response &&
-      'view' in cameraViewStateResponse.resp.data.modeling_response.data
-    ) {
-      this.oldCameraState =
-        cameraViewStateResponse.resp.data.modeling_response.data.view
-    }
+  saveRemoteCameraState(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      // It's possible we've hit a disconnection, but the browser or nothing
+      // indicates this, other than the amount of time between our request
+      // and its response. Typically round-trip time is < 30ms. It seems safe
+      // then to wait 1 magnitude of time before calling this request toasted.
+      const timeoutId = setTimeout(reject, 300)
+      ;(async () => {
+        const cameraViewStateResponse =
+          await this.engineCommandManager.sendSceneCommand({
+            type: 'modeling_cmd_req',
+            cmd_id: uuidv4(),
+            cmd: { type: 'default_camera_get_view' },
+          })
+        if (!cameraViewStateResponse) return
+        if (
+          'resp' in cameraViewStateResponse &&
+          'modeling_response' in cameraViewStateResponse.resp.data &&
+          'data' in cameraViewStateResponse.resp.data.modeling_response &&
+          'view' in cameraViewStateResponse.resp.data.modeling_response.data
+        ) {
+          this.oldCameraState =
+            cameraViewStateResponse.resp.data.modeling_response.data.view
+        }
+
+        clearTimeout(timeoutId)
+        resolve()
+      })().catch(reject)
+    })
   }
 
   async tweenCameraToQuaternion(
@@ -1260,22 +1336,192 @@ export class CameraControls {
     Object.values(this._camChangeCallbacks).forEach((cb) => cb())
   }
   getInteractionType = (
-    event: MouseEvent
+    event: PointerEvent | WheelEvent | MouseEvent
   ): CameraDragInteractionType_type | 'none' => {
-    const initialInteractionType = _getInteractionType(
-      this.interactionGuards,
-      event,
-      this.enablePan,
-      this.enableRotate,
-      this.enableZoom
-    )
+    // We just need to send any start value to the engine for touch.
+    // I chose "rotate" because it's the 1-finger gesture
+    const initialInteractionType =
+      'pointerType' in event && event.pointerType === 'touch'
+        ? 'rotate'
+        : _getInteractionType(
+            this.interactionGuards,
+            event,
+            this.enablePan,
+            this.enableRotate,
+            this.enableZoom
+          )
     if (
       initialInteractionType === 'rotate' &&
-      this.engineCommandManager.settings.cameraOrbit === 'trackball'
+      this.getSettings?.().modeling.cameraOrbit.current === 'trackball'
     ) {
       return 'rotatetrackball'
     }
     return initialInteractionType
+  }
+
+  /**
+   * Set up HammerJS, a small library for multi-touch listeners,
+   * and use it for the camera controls if touch is available.
+   *
+   * Note: users cannot change touch controls; this implementation
+   * treats them as distinct from the mouse control scheme. This is because
+   * a device may both have mouse controls and touch available.
+   *
+   * TODO: Add support for sketch mode touch camera movements
+   */
+  setUpMultiTouch = (domElement: HTMLCanvasElement) => {
+    /** Amount in px needed to pan before recognizer runs */
+    const panDistanceThreshold = 3
+    /** Amount in scale delta needed to pinch before recognizer runs */
+    const zoomScaleThreshold = 0.01
+    /**
+     * Max speed a pinch can be moving (not the pinch but its XY drift) before it's considered a pan.
+     * The closer to this value, the more we reduce the calculated zoom transformation to reduce jitter.
+     */
+    const velocityLimit = 0.5
+    /** Amount of pixel delta of calculated zoom transform needed before we send to the engine */
+    const normalizedScaleThreshold = 5
+    const velocityFlickDecay = 0.03
+    /** Refresh rate for flick orbit decay timer */
+    const decayRefreshRate = 16
+    const decayIntervals: ReturnType<typeof setInterval>[] = []
+    const clearIntervals = () => {
+      for (let i = decayIntervals.length - 1; i >= 0; i--) {
+        clearInterval(decayIntervals[i])
+        decayIntervals.pop()
+      }
+    }
+
+    const hammertime = new Hammer(domElement, {
+      recognizers: [
+        [Hammer.Pan, { pointers: 1, direction: Hammer.DIRECTION_ALL }],
+        [
+          Hammer.Pan,
+          {
+            event: 'doublepan',
+            pointers: 2,
+            direction: Hammer.DIRECTION_ALL,
+            threshold: panDistanceThreshold,
+          },
+        ],
+        [Hammer.Pinch, { enable: true, threshold: zoomScaleThreshold }],
+      ],
+    })
+
+    // TODO: get the engine to coalesce simultaneous zoom/pan/orbit events,
+    // then we won't have to worry about jitter at all.
+    // https://github.com/KittyCAD/engine/issues/3528
+    hammertime.get('pinch').recognizeWith(hammertime.get('doublepan'))
+
+    // Clear decay intervals on any interaction start
+    hammertime.on('panstart doublepanstart pinchstart', () => {
+      clearIntervals()
+    })
+
+    // Orbit gesture is a 1-finger "pan"
+    hammertime.on('pan', (ev) => {
+      if (this.syncDirection === 'engineToClient' && ev.maxPointers === 1) {
+        if (this.enableRotate) {
+          const orbitMode =
+            this.getSettings?.().modeling.cameraOrbit.current !== 'spherical'
+              ? 'rotatetrackball'
+              : 'rotate'
+          this.moveSender.send(() => {
+            this.doMove(orbitMode, [ev.center.x, ev.center.y])
+          })
+        }
+      }
+    })
+    // Fake flicking by sending decaying orbit events in the last direction of orbit
+    hammertime.on('panend', (ev) => {
+      /** HammerJS's `event.velocity` gives you `Math.max(ev.velocityX, ev.velocityY`)`, not the actual velocity. */
+      let velocity = Math.sqrt(ev.velocityY ** 2 + ev.velocityX ** 2)
+      const center = ev.center
+      const direction = ev.angle
+
+      if (
+        this.syncDirection === 'engineToClient' &&
+        ev.maxPointers === 1 &&
+        this.enableRotate &&
+        velocity > 0
+      ) {
+        const orbitMode =
+          this.getSettings?.().modeling.cameraOrbit.current !== 'spherical'
+            ? 'rotatetrackball'
+            : 'rotate'
+
+        const decayInterval = setInterval(() => {
+          const decayedVelocity = velocity - velocityFlickDecay
+          if (decayedVelocity <= 0) {
+            if (ev.srcEvent instanceof PointerEvent) {
+              this.onMouseUpInner(ev.srcEvent)
+            }
+            clearInterval(decayInterval)
+          } else {
+            velocity = decayedVelocity
+          }
+
+          // We have to multiply by the refresh rate, because `velocity` is in px/ms
+          // but we only call every `decayRefreshRate` ms.
+          center.x =
+            center.x +
+            Math.cos(degToRad(direction)) * velocity * decayRefreshRate
+          center.y =
+            center.y +
+            Math.sin(degToRad(direction)) * velocity * decayRefreshRate
+
+          this.moveSender.send(() => {
+            this.doMove(orbitMode, [center.x, center.y])
+          })
+        }, decayRefreshRate)
+        decayIntervals.push(decayInterval)
+      }
+    })
+
+    // Pan gesture is a 2-finger gesture I named "doublepan"
+    hammertime.on('doublepan', (ev) => {
+      if (this.syncDirection === 'engineToClient' && this.enablePan) {
+        this.moveSender.send(() => {
+          this.doMove('pan', [ev.center.x, ev.center.y])
+        })
+      }
+    })
+
+    // Zoom is a pinch, which is very similar to a 2-finger pan
+    // and must therefore be heuristically determined. My heuristics is:
+    // A zoom should only occur if the gesture velocity is low and the scale delta is high
+    let lastScale = 1
+    hammertime.on('pinchmove', (ev) => {
+      const scaleDelta = lastScale - ev.scale
+      const isUnderVelocityLimit = ev.velocity < velocityLimit
+      // The faster you move the less you zoom
+      const velocityFactor =
+        Math.abs(
+          velocityLimit - Math.min(velocityLimit, Math.abs(ev.velocity))
+        ) * 0.5
+      const normalizedScale = Math.ceil(scaleDelta * 2000 * velocityFactor)
+      const isOverNormalizedScaleLimit =
+        Math.abs(normalizedScale) > normalizedScaleThreshold
+
+      if (
+        this.syncDirection === 'engineToClient' &&
+        this.enableZoom &&
+        isUnderVelocityLimit &&
+        isOverNormalizedScaleLimit
+      ) {
+        this.zoomSender.send(() => {
+          this.doZoom(normalizedScale)
+        })
+        lastScale = ev.scale
+      }
+    })
+    hammertime.on('pinchend pinchcancel', () => {
+      lastScale = 1
+    })
+
+    hammertime.on('pinchend pinchcancel doublepanend', (event) => {
+      this.onMouseUpInner(event.srcEvent as PointerEvent)
+    })
   }
 }
 

@@ -11,7 +11,7 @@ Compute the length of the given leg.
 legLen(
   hypotenuse: number(Length),
   leg: number(Length),
-): number(deg)
+): number(Length)
 ```
 
 
@@ -25,13 +25,14 @@ legLen(
 
 ### Returns
 
-[`number(deg)`](/docs/kcl-std/types/std-types-number) - A number.
+[`number(Length)`](/docs/kcl-std/types/std-types-number) - A number.
 
 
 ### Examples
 
 ```kcl
 legLen(hypotenuse = 5, leg = 3)
+
 ```
 
 

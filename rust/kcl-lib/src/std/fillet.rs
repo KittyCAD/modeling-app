@@ -6,11 +6,12 @@ use kcmc::{each_cmd as mcmd, length_unit::LengthUnit, shared::CutType, ModelingC
 use kittycad_modeling_cmds as kcmc;
 use serde::{Deserialize, Serialize};
 
-use super::{args::TyF64, DEFAULT_TOLERANCE};
+use super::{args::TyF64, DEFAULT_TOLERANCE_MM};
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        types::RuntimeType, EdgeCut, ExecState, ExtrudeSurface, FilletSurface, GeoMeta, KclValue, Solid, TagIdentifier,
+        types::RuntimeType, EdgeCut, ExecState, ExtrudeSurface, FilletSurface, GeoMeta, KclValue, ModelingCmdMeta,
+        Solid, TagIdentifier,
     },
     parsing::ast::types::TagNode,
     std::Args,
@@ -49,21 +50,22 @@ pub(super) fn validate_unique<T: Eq + std::hash::Hash>(tags: &[(T, SourceRange)]
         }
     }
     if !duplicate_tags_source.is_empty() {
-        return Err(KclError::Type(KclErrorDetails {
-            message: "The same edge ID is being referenced multiple times, which is not allowed. Please select a different edge".to_string(),
-            source_ranges: duplicate_tags_source,
-        }));
+        return Err(KclError::new_type(KclErrorDetails::new(
+            "The same edge ID is being referenced multiple times, which is not allowed. Please select a different edge"
+                .to_string(),
+            duplicate_tags_source,
+        )));
     }
     Ok(())
 }
 
 /// Create fillets on tagged paths.
 pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let solid = args.get_unlabeled_kw_arg_typed("solid", &RuntimeType::solid(), exec_state)?;
-    let radius: TyF64 = args.get_kw_arg_typed("radius", &RuntimeType::length(), exec_state)?;
-    let tolerance: Option<TyF64> = args.get_kw_arg_opt_typed("tolerance", &RuntimeType::length(), exec_state)?;
-    let tags = args.kw_arg_array_and_source::<EdgeReference>("tags")?;
-    let tag = args.get_kw_arg_opt("tag")?;
+    let solid = args.get_unlabeled_kw_arg("solid", &RuntimeType::solid(), exec_state)?;
+    let radius: TyF64 = args.get_kw_arg("radius", &RuntimeType::length(), exec_state)?;
+    let tolerance: Option<TyF64> = args.get_kw_arg_opt("tolerance", &RuntimeType::length(), exec_state)?;
+    let tags = args.kw_arg_edge_array_and_source("tags")?;
+    let tag = args.get_kw_arg_opt("tag", &RuntimeType::tag_decl(), exec_state)?;
 
     // Run the function.
     validate_unique(&tags)?;
@@ -81,43 +83,68 @@ async fn inner_fillet(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Box<Solid>, KclError> {
-    let mut solid = solid.clone();
-    for edge_tag in tags {
-        let edge_id = edge_tag.get_engine_id(exec_state, &args)?;
+    // If you try and tag multiple edges with a tagged fillet, we want to return an
+    // error to the user that they can only tag one edge at a time.
+    if tag.is_some() && tags.len() > 1 {
+        return Err(KclError::new_type(KclErrorDetails {
+            message: "You can only tag one edge at a time with a tagged fillet. Either delete the tag for the fillet fn if you don't need it OR separate into individual fillet functions for each tag.".to_string(),
+            source_ranges: vec![args.source_range],
+            backtrace: Default::default(),
+        }));
+    }
+    if tags.is_empty() {
+        return Err(KclError::new_semantic(KclErrorDetails {
+            source_ranges: vec![args.source_range],
+            message: "You must fillet at least one tag".to_owned(),
+            backtrace: Default::default(),
+        }));
+    }
 
-        let id = exec_state.next_uuid();
-        args.batch_end_cmd(
-            id,
+    let mut solid = solid.clone();
+    let edge_ids = tags
+        .into_iter()
+        .map(|edge_tag| edge_tag.get_engine_id(exec_state, &args))
+        .collect::<Result<Vec<_>, _>>()?;
+
+    let id = exec_state.next_uuid();
+    let mut extra_face_ids = Vec::new();
+    let num_extra_ids = edge_ids.len() - 1;
+    for _ in 0..num_extra_ids {
+        extra_face_ids.push(exec_state.next_uuid());
+    }
+    exec_state
+        .batch_end_cmd(
+            ModelingCmdMeta::from_args_id(&args, id),
             ModelingCmd::from(mcmd::Solid3dFilletEdge {
                 edge_id: None,
-                edge_ids: vec![edge_id],
-                extra_face_ids: vec![],
+                edge_ids: edge_ids.clone(),
+                extra_face_ids,
                 strategy: Default::default(),
                 object_id: solid.id,
                 radius: LengthUnit(radius.to_mm()),
-                tolerance: LengthUnit(tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE)),
+                tolerance: LengthUnit(tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM)),
                 cut_type: CutType::Fillet,
             }),
         )
         .await?;
 
-        solid.edge_cuts.push(EdgeCut::Fillet {
-            id,
-            edge_id,
-            radius: radius.clone(),
-            tag: Box::new(tag.clone()),
-        });
+    let new_edge_cuts = edge_ids.into_iter().map(|edge_id| EdgeCut::Fillet {
+        id,
+        edge_id,
+        radius: radius.clone(),
+        tag: Box::new(tag.clone()),
+    });
+    solid.edge_cuts.extend(new_edge_cuts);
 
-        if let Some(ref tag) = tag {
-            solid.value.push(ExtrudeSurface::Fillet(FilletSurface {
-                face_id: id,
-                tag: Some(tag.clone()),
-                geo_meta: GeoMeta {
-                    id,
-                    metadata: args.source_range.into(),
-                },
-            }));
-        }
+    if let Some(ref tag) = tag {
+        solid.value.push(ExtrudeSurface::Fillet(FilletSurface {
+            face_id: id,
+            tag: Some(tag.clone()),
+            geo_meta: GeoMeta {
+                id,
+                metadata: args.source_range.into(),
+            },
+        }));
     }
 
     Ok(solid)

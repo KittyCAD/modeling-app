@@ -1,5 +1,5 @@
 import type { FormEvent, HTMLProps } from 'react'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { toast } from 'react-hot-toast'
 import { useHotkeys } from 'react-hotkeys-hook'
 import {
@@ -12,14 +12,13 @@ import {
 import { ActionButton } from '@src/components/ActionButton'
 import { AppHeader } from '@src/components/AppHeader'
 import Loading from '@src/components/Loading'
-import { LowerRightControls } from '@src/components/LowerRightControls'
 import ProjectCard from '@src/components/ProjectCard/ProjectCard'
 import {
   ProjectSearchBar,
   useProjectSearch,
 } from '@src/components/ProjectSearchBar'
 import { BillingDialog } from '@src/components/BillingDialog'
-import { useCreateFileLinkQuery } from '@src/hooks/useCreateFileLinkQueryWatcher'
+import { useQueryParamEffects } from '@src/hooks/useQueryParamEffects'
 import { useMenuListener } from '@src/hooks/useMenu'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
@@ -61,6 +60,12 @@ import {
 import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
 import { ML_EXPERIMENTAL_MESSAGE } from '@src/lib/constants'
+import { StatusBar } from '@src/components/StatusBar/StatusBar'
+import { useNetworkMachineStatus } from '@src/components/NetworkMachineIndicator'
+import {
+  defaultLocalStatusBarItems,
+  defaultGlobalStatusBarItems,
+} from '@src/components/StatusBar/defaultStatusBarItems'
 
 type ReadWriteProjectState = {
   value: boolean
@@ -70,31 +75,27 @@ type ReadWriteProjectState = {
 // This route only opens in the desktop context for now,
 // as defined in Router.tsx, so we can use the desktop APIs and types.
 const Home = () => {
+  useQueryParamEffects()
+  const navigate = useNavigate()
   const readWriteProjectDir = useCanReadWriteProjectDirectory()
+  const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
   const apiToken = useToken()
+  const networkMachineStatus = useNetworkMachineStatus()
 
   // Only create the native file menus on desktop
   useEffect(() => {
     if (isDesktop()) {
-      window.electron.createHomePageMenu().catch(reportRejection)
+      window.electron
+        .createHomePageMenu()
+        .then(() => {
+          setNativeFileMenuCreated(true)
+        })
+        .catch(reportRejection)
     }
     billingActor.send({ type: BillingTransition.Update, apiToken })
   }, [])
 
-  // Keep a lookout for a URL query string that invokes the 'import file from URL' command
-  useCreateFileLinkQuery((argDefaultValues) => {
-    commandBarActor.send({
-      type: 'Find and select command',
-      data: {
-        groupId: 'projects',
-        name: 'Import file from URL',
-        argDefaultValues,
-      },
-    })
-  })
-
   const location = useLocation()
-  const navigate = useNavigate()
   const settings = useSettings()
   const onboardingStatus = settings.app.onboardingStatus.current
 
@@ -217,8 +218,11 @@ const Home = () => {
 
   return (
     <div className="relative flex flex-col items-stretch h-screen w-screen overflow-hidden">
-      <AppHeader showToolbar={false} />
-      <div className="overflow-hidden self-stretch w-full flex-1 home-layout max-w-4xl lg:max-w-5xl xl:max-w-7xl mb-12 px-4 mx-auto mt-8 lg:mt-24 lg:px-0">
+      <AppHeader
+        nativeFileMenuCreated={nativeFileMenuCreated}
+        showToolbar={false}
+      />
+      <div className="overflow-hidden self-stretch w-full flex-1 home-layout max-w-4xl lg:max-w-5xl xl:max-w-7xl px-4 mx-auto mt-8 lg:mt-24 lg:px-0">
         <HomeHeader
           setQuery={setQuery}
           sort={sort}
@@ -227,7 +231,7 @@ const Home = () => {
           readWriteProjectDir={readWriteProjectDir}
           className="col-start-2 -col-end-1"
         />
-        <aside className="lg:row-start-1 -row-end-1 grid sm:grid-cols-2 lg:flex flex-col justify-between">
+        <aside className="lg:row-start-1 -row-end-1 grid sm:grid-cols-2 md:mb-12 lg:flex flex-col justify-between">
           <ul className="flex flex-col">
             {needsToOnboard(location, onboardingStatus) && (
               <li className="flex group">
@@ -396,8 +400,14 @@ const Home = () => {
           sort={sort}
           className="flex-1 col-start-2 -col-end-1 overflow-y-auto pr-2 pb-24"
         />
-        <LowerRightControls navigate={navigate} />
       </div>
+      <StatusBar
+        globalItems={[
+          ...(isDesktop() ? [networkMachineStatus] : []),
+          ...defaultGlobalStatusBarItems({ location, filePath: undefined }),
+        ]}
+        localItems={defaultLocalStatusBarItems}
+      />
     </div>
   )
 }
@@ -523,7 +533,7 @@ function ProjectGrid({
   return (
     <section data-testid="home-section" {...rest}>
       {state.matches(SystemIOMachineStates.readingFolders) ? (
-        <Loading>Loading your Projects...</Loading>
+        <Loading isDummy={true}>Loading your Projects...</Loading>
       ) : (
         <>
           {searchResults.length > 0 ? (

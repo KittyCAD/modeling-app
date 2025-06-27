@@ -3,6 +3,26 @@ source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing mounting-plate.kcl
 ---
 {
+  "basePlateEdge1": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "basePlateEdge1"
+  },
+  "basePlateEdge2": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "basePlateEdge2"
+  },
+  "basePlateEdge3": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "basePlateEdge3"
+  },
+  "basePlateEdge4": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "basePlateEdge4"
+  },
   "centerHoleDiameter": {
     "type": "Number",
     "value": 2.0,
@@ -15,26 +35,6 @@ description: Variables in memory after executing mounting-plate.kcl
         "type": "Degrees"
       }
     }
-  },
-  "edge1": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "edge1"
-  },
-  "edge2": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "edge2"
-  },
-  "edge3": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "edge3"
-  },
-  "edge4": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "edge4"
   },
   "filletRadius": {
     "type": "Number",
@@ -87,11 +87,12 @@ description: Variables in memory after executing mounting-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 708,
-            "end": 714,
-            "start": 708,
+            "commentStart": 625,
+            "end": 640,
+            "moduleId": 0,
+            "start": 625,
             "type": "TagDeclarator",
-            "value": "edge1"
+            "value": "basePlateEdge1"
           },
           "type": "extrudePlane"
         },
@@ -100,11 +101,12 @@ description: Variables in memory after executing mounting-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 782,
-            "end": 788,
-            "start": 782,
+            "commentStart": 723,
+            "end": 738,
+            "moduleId": 0,
+            "start": 723,
             "type": "TagDeclarator",
-            "value": "edge2"
+            "value": "basePlateEdge2"
           },
           "type": "extrudePlane"
         },
@@ -113,11 +115,12 @@ description: Variables in memory after executing mounting-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 858,
-            "end": 864,
-            "start": 858,
+            "commentStart": 828,
+            "end": 843,
+            "moduleId": 0,
+            "start": 828,
             "type": "TagDeclarator",
-            "value": "edge3"
+            "value": "basePlateEdge3"
           },
           "type": "extrudePlane"
         },
@@ -126,11 +129,12 @@ description: Variables in memory after executing mounting-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 885,
-            "end": 891,
-            "start": 885,
+            "commentStart": 913,
+            "end": 928,
+            "moduleId": 0,
+            "start": 913,
             "type": "TagDeclarator",
-            "value": "edge4"
+            "value": "basePlateEdge4"
           },
           "type": "extrudePlane"
         }
@@ -146,39 +150,15 @@ description: Variables in memory after executing mounting-plate.kcl
             },
             "from": [
               -3.0,
-              -5.0
+              5.0
             ],
             "tag": {
-              "commentStart": 708,
-              "end": 714,
-              "start": 708,
+              "commentStart": 625,
+              "end": 640,
+              "moduleId": 0,
+              "start": 625,
               "type": "TagDeclarator",
-              "value": "edge1"
-            },
-            "to": [
-              3.0,
-              -5.0
-            ],
-            "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              3.0,
-              -5.0
-            ],
-            "tag": {
-              "commentStart": 782,
-              "end": 788,
-              "start": 782,
-              "type": "TagDeclarator",
-              "value": "edge2"
+              "value": "basePlateEdge1"
             },
             "to": [
               3.0,
@@ -199,11 +179,64 @@ description: Variables in memory after executing mounting-plate.kcl
               5.0
             ],
             "tag": {
-              "commentStart": 858,
-              "end": 864,
-              "start": 858,
+              "commentStart": 723,
+              "end": 738,
+              "moduleId": 0,
+              "start": 723,
               "type": "TagDeclarator",
-              "value": "edge3"
+              "value": "basePlateEdge2"
+            },
+            "to": [
+              3.0000000000000004,
+              -5.0
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Inches"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              3.0000000000000004,
+              -5.0
+            ],
+            "tag": {
+              "commentStart": 828,
+              "end": 843,
+              "moduleId": 0,
+              "start": 828,
+              "type": "TagDeclarator",
+              "value": "basePlateEdge3"
+            },
+            "to": [
+              -2.9999999999999996,
+              -5.0
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Inches"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -2.9999999999999996,
+              -5.0
+            ],
+            "tag": {
+              "commentStart": 913,
+              "end": 928,
+              "moduleId": 0,
+              "start": 913,
+              "type": "TagDeclarator",
+              "value": "basePlateEdge4"
             },
             "to": [
               -3.0,
@@ -223,16 +256,10 @@ description: Variables in memory after executing mounting-plate.kcl
               -3.0,
               5.0
             ],
-            "tag": {
-              "commentStart": 885,
-              "end": 891,
-              "start": 885,
-              "type": "TagDeclarator",
-              "value": "edge4"
-            },
+            "tag": null,
             "to": [
               -3.0,
-              -5.0
+              5.0
             ],
             "type": "ToPoint",
             "units": {
@@ -273,11 +300,11 @@ description: Variables in memory after executing mounting-plate.kcl
         "start": {
           "from": [
             -3.0,
-            -5.0
+            5.0
           ],
           "to": [
             -3.0,
-            -5.0
+            5.0
           ],
           "units": {
             "type": "Inches"
@@ -289,21 +316,21 @@ description: Variables in memory after executing mounting-plate.kcl
           }
         },
         "tags": {
-          "edge1": {
+          "basePlateEdge1": {
             "type": "TagIdentifier",
-            "value": "edge1"
+            "value": "basePlateEdge1"
           },
-          "edge2": {
+          "basePlateEdge2": {
             "type": "TagIdentifier",
-            "value": "edge2"
+            "value": "basePlateEdge2"
           },
-          "edge3": {
+          "basePlateEdge3": {
             "type": "TagIdentifier",
-            "value": "edge3"
+            "value": "basePlateEdge3"
           },
-          "edge4": {
+          "basePlateEdge4": {
             "type": "TagIdentifier",
-            "value": "edge4"
+            "value": "basePlateEdge4"
           }
         },
         "artifactId": "[uuid]",
@@ -435,10 +462,6 @@ description: Variables in memory after executing mounting-plate.kcl
     }
   },
   "rectShape": {
-    "type": "Function",
-    "value": null
-  },
-  "rs": {
     "type": "Sketch",
     "value": {
       "type": "Sketch",
@@ -451,39 +474,15 @@ description: Variables in memory after executing mounting-plate.kcl
           },
           "from": [
             -3.0,
-            -5.0
+            5.0
           ],
           "tag": {
-            "commentStart": 708,
-            "end": 714,
-            "start": 708,
+            "commentStart": 625,
+            "end": 640,
+            "moduleId": 0,
+            "start": 625,
             "type": "TagDeclarator",
-            "value": "edge1"
-          },
-          "to": [
-            3.0,
-            -5.0
-          ],
-          "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            3.0,
-            -5.0
-          ],
-          "tag": {
-            "commentStart": 782,
-            "end": 788,
-            "start": 782,
-            "type": "TagDeclarator",
-            "value": "edge2"
+            "value": "basePlateEdge1"
           },
           "to": [
             3.0,
@@ -504,11 +503,64 @@ description: Variables in memory after executing mounting-plate.kcl
             5.0
           ],
           "tag": {
-            "commentStart": 858,
-            "end": 864,
-            "start": 858,
+            "commentStart": 723,
+            "end": 738,
+            "moduleId": 0,
+            "start": 723,
             "type": "TagDeclarator",
-            "value": "edge3"
+            "value": "basePlateEdge2"
+          },
+          "to": [
+            3.0000000000000004,
+            -5.0
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Inches"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            3.0000000000000004,
+            -5.0
+          ],
+          "tag": {
+            "commentStart": 828,
+            "end": 843,
+            "moduleId": 0,
+            "start": 828,
+            "type": "TagDeclarator",
+            "value": "basePlateEdge3"
+          },
+          "to": [
+            -2.9999999999999996,
+            -5.0
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Inches"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -2.9999999999999996,
+            -5.0
+          ],
+          "tag": {
+            "commentStart": 913,
+            "end": 928,
+            "moduleId": 0,
+            "start": 913,
+            "type": "TagDeclarator",
+            "value": "basePlateEdge4"
           },
           "to": [
             -3.0,
@@ -528,16 +580,10 @@ description: Variables in memory after executing mounting-plate.kcl
             -3.0,
             5.0
           ],
-          "tag": {
-            "commentStart": 885,
-            "end": 891,
-            "start": 885,
-            "type": "TagDeclarator",
-            "value": "edge4"
-          },
+          "tag": null,
           "to": [
             -3.0,
-            -5.0
+            5.0
           ],
           "type": "ToPoint",
           "units": {
@@ -578,11 +624,11 @@ description: Variables in memory after executing mounting-plate.kcl
       "start": {
         "from": [
           -3.0,
-          -5.0
+          5.0
         ],
         "to": [
           -3.0,
-          -5.0
+          5.0
         ],
         "units": {
           "type": "Inches"
@@ -594,27 +640,59 @@ description: Variables in memory after executing mounting-plate.kcl
         }
       },
       "tags": {
-        "edge1": {
+        "basePlateEdge1": {
           "type": "TagIdentifier",
-          "value": "edge1"
+          "value": "basePlateEdge1"
         },
-        "edge2": {
+        "basePlateEdge2": {
           "type": "TagIdentifier",
-          "value": "edge2"
+          "value": "basePlateEdge2"
         },
-        "edge3": {
+        "basePlateEdge3": {
           "type": "TagIdentifier",
-          "value": "edge3"
+          "value": "basePlateEdge3"
         },
-        "edge4": {
+        "basePlateEdge4": {
           "type": "TagIdentifier",
-          "value": "edge4"
+          "value": "basePlateEdge4"
         }
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": {
         "type": "Inches"
+      }
+    }
+  },
+  "sketch001": {
+    "type": "Plane",
+    "value": {
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
+      "origin": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": {
+          "type": "Mm"
+        }
+      },
+      "value": "XY",
+      "xAxis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": {
+          "type": "Unknown"
+        }
+      },
+      "yAxis": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0,
+        "units": {
+          "type": "Unknown"
+        }
       }
     }
   }

@@ -13,6 +13,7 @@ description: Result of parsing invalid_member_object_prop.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "b",
             "start": 0,
             "type": "Identifier"
@@ -20,17 +21,20 @@ description: Result of parsing invalid_member_object_prop.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "true",
             "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": true
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -43,6 +47,7 @@ description: Result of parsing invalid_member_object_prop.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "x",
             "start": 0,
             "type": "Identifier"
@@ -51,17 +56,29 @@ description: Result of parsing invalid_member_object_prop.kcl
             "commentStart": 0,
             "computed": false,
             "end": 0,
+            "moduleId": 0,
             "object": {
+              "abs_path": false,
               "commentStart": 0,
               "end": 0,
-              "name": "b",
+              "moduleId": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "b",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             "property": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "raw": "\"property\"",
               "start": 0,
               "type": "Literal",
@@ -72,11 +89,13 @@ description: Result of parsing invalid_member_object_prop.kcl
             "type": "MemberExpression",
             "type": "MemberExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -84,6 +103,7 @@ description: Result of parsing invalid_member_object_prop.kcl
     ],
     "commentStart": 0,
     "end": 0,
+    "moduleId": 0,
     "start": 0
   }
 }

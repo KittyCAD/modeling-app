@@ -93,10 +93,6 @@ impl crate::docs::StdLibFn for LineTo {
         vec![]
     }
 
-    fn keyword_arguments(&self) -> bool {
-        false
-    }
-
     fn args(&self, inline_subschemas: bool) -> Vec<crate::docs::StdLibFnArg> {
         let mut settings = schemars::gen::SchemaSettings::openapi3();
         settings.inline_subschemas = inline_subschemas;
@@ -108,8 +104,10 @@ impl crate::docs::StdLibFn for LineTo {
                 schema: generator.root_schema_for::<LineToData>(),
                 required: true,
                 label_required: true,
-                description: String::new().to_string(),
+                description: "the sketch you're adding the line to".to_string(),
                 include_in_snippet: true,
+                snippet_value: None,
+                snippet_value_array: None,
             },
             crate::docs::StdLibFnArg {
                 name: "sketch".to_string(),
@@ -119,6 +117,8 @@ impl crate::docs::StdLibFn for LineTo {
                 label_required: true,
                 description: "the sketch you're adding the line to".to_string(),
                 include_in_snippet: true,
+                snippet_value: None,
+                snippet_value_array: None,
             },
         ]
     }
@@ -136,6 +136,8 @@ impl crate::docs::StdLibFn for LineTo {
             label_required: true,
             description: String::new(),
             include_in_snippet: true,
+            snippet_value: None,
+            snippet_value_array: None,
         })
     }
 

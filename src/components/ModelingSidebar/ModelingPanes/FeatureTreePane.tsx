@@ -4,7 +4,7 @@ import type { ComponentProps } from 'react'
 import { useCallback, useEffect, useMemo, useRef } from 'react'
 import type { Actor, Prop } from 'xstate'
 
-import type { Operation } from '@rust/kcl-lib/bindings/Operation'
+import type { Operation, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
 
 import { ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
 import type { CustomIconName } from '@src/components/CustomIcon'
@@ -16,11 +16,12 @@ import {
   codeRefFromRange,
   getArtifactFromRange,
 } from '@src/lang/std/artifactGraph'
-import { sourceRangeFromRust } from '@src/lang/wasm'
+import { sourceRangeFromRust } from '@src/lang/sourceRange'
 import {
   filterOperations,
   getOperationIcon,
   getOperationLabel,
+  getOperationVariableName,
   stdLibMap,
 } from '@src/lib/operations'
 import { editorManager, kclManager, rustContext } from '@src/lib/singletons'
@@ -44,7 +45,7 @@ export const FeatureTreePane = () => {
       guards: {
         codePaneIsOpen: () =>
           modelingState.context.store.openPanes.includes('code') &&
-          editorManager.editorView !== null,
+          editorManager.getEditorView() !== null,
       },
       actions: {
         openCodePane: () => {
@@ -154,7 +155,9 @@ export const FeatureTreePane = () => {
         className="absolute inset-0 p-1 box-border overflow-auto"
       >
         {kclManager.isExecuting ? (
-          <Loading className="h-full">Building feature tree...</Loading>
+          <Loading className="h-full" isDummy={true}>
+            Building feature tree...
+          </Loading>
         ) : (
           <>
             {!modelingState.matches('Sketch') && <DefaultPlanes />}
@@ -236,7 +239,9 @@ const VisibilityToggle = (props: VisibilityToggleProps) => {
 const OperationItemWrapper = ({
   icon,
   name,
+  variableName,
   visibilityToggle,
+  valueDetail,
   menuItems,
   errors,
   customSuffix,
@@ -246,7 +251,9 @@ const OperationItemWrapper = ({
 }: React.HTMLAttributes<HTMLButtonElement> & {
   icon: CustomIconName
   name: string
+  variableName?: string
   visibilityToggle?: VisibilityToggleProps
+  valueDetail?: { calculated: OpKclValue; display: string }
   customSuffix?: JSX.Element
   menuItems?: ComponentProps<typeof ContextMenu>['items']
   errors?: Diagnostic[]
@@ -261,12 +268,24 @@ const OperationItemWrapper = ({
     >
       <button
         {...props}
-        className={`reset flex-1 flex items-center gap-2 text-left text-base ${selectable ? 'border-transparent dark:border-transparent' : 'border-none cursor-default'} ${className}`}
+        className={`reset !py-0.5 !px-1 flex-1 flex items-center gap-2 text-left text-base ${selectable ? 'border-transparent dark:border-transparent' : 'border-none cursor-default'} ${className}`}
       >
         <CustomIcon name={icon} className="w-5 h-5 block" />
-        <div className="flex items-baseline">
-          <div className="mr-2">{name}</div>
-          {customSuffix && customSuffix}
+        <div className="flex flex-1 items-baseline align-baseline">
+          <div className="flex-1 inline-flex items-baseline flex-wrap gap-x-2">
+            {name}
+            {variableName && (
+              <span className="text-chalkboard-70 dark:text-chalkboard-40 text-xs">
+                {variableName}
+              </span>
+            )}
+            {customSuffix && customSuffix}
+          </div>
+          {valueDetail && (
+            <code className="px-1 text-right text-chalkboard-70 dark:text-chalkboard-40 text-xs">
+              {valueDetail.display}
+            </code>
+          )}
         </div>
       </button>
       {errors && errors.length > 0 && (
@@ -290,6 +309,24 @@ const OperationItem = (props: {
 }) => {
   const kclContext = useKclContext()
   const name = getOperationLabel(props.item)
+  const valueDetail = useMemo(
+    () =>
+      props.item.type === 'VariableDeclaration'
+        ? {
+            display: kclContext.code.slice(
+              props.item.sourceRange[0],
+              props.item.sourceRange[1]
+            ),
+            calculated: props.item.value,
+          }
+        : undefined,
+    [props.item, kclContext.code]
+  )
+
+  const variableName = useMemo(() => {
+    return getOperationVariableName(props.item, kclContext.ast)
+  }, [props.item, kclContext.ast])
+
   const errors = useMemo(() => {
     return kclContext.diagnostics.filter(
       (diag) =>
@@ -319,7 +356,7 @@ const OperationItem = (props: {
   function enterEditFlow() {
     if (
       props.item.type === 'StdLibCall' ||
-      props.item.type === 'KclStdLibCall'
+      props.item.type === 'VariableDeclaration'
     ) {
       props.send({
         type: 'enterEditFlow',
@@ -332,10 +369,7 @@ const OperationItem = (props: {
   }
 
   function enterAppearanceFlow() {
-    if (
-      props.item.type === 'StdLibCall' ||
-      props.item.type === 'KclStdLibCall'
-    ) {
+    if (props.item.type === 'StdLibCall') {
       props.send({
         type: 'enterAppearanceFlow',
         data: {
@@ -347,11 +381,7 @@ const OperationItem = (props: {
   }
 
   function enterTranslateFlow() {
-    if (
-      props.item.type === 'StdLibCall' ||
-      props.item.type === 'KclStdLibCall' ||
-      props.item.type === 'GroupBegin'
-    ) {
+    if (props.item.type === 'StdLibCall' || props.item.type === 'GroupBegin') {
       props.send({
         type: 'enterTranslateFlow',
         data: {
@@ -363,11 +393,7 @@ const OperationItem = (props: {
   }
 
   function enterRotateFlow() {
-    if (
-      props.item.type === 'StdLibCall' ||
-      props.item.type === 'KclStdLibCall' ||
-      props.item.type === 'GroupBegin'
-    ) {
+    if (props.item.type === 'StdLibCall' || props.item.type === 'GroupBegin') {
       props.send({
         type: 'enterRotateFlow',
         data: {
@@ -379,11 +405,7 @@ const OperationItem = (props: {
   }
 
   function enterCloneFlow() {
-    if (
-      props.item.type === 'StdLibCall' ||
-      props.item.type === 'KclStdLibCall' ||
-      props.item.type === 'GroupBegin'
-    ) {
+    if (props.item.type === 'StdLibCall' || props.item.type === 'GroupBegin') {
       props.send({
         type: 'enterCloneFlow',
         data: {
@@ -395,11 +417,7 @@ const OperationItem = (props: {
   }
 
   function deleteOperation() {
-    if (
-      props.item.type === 'StdLibCall' ||
-      props.item.type === 'GroupBegin' ||
-      props.item.type === 'KclStdLibCall'
-    ) {
+    if (props.item.type === 'StdLibCall' || props.item.type === 'GroupBegin') {
       props.send({
         type: 'deleteOperation',
         data: {
@@ -455,15 +473,24 @@ const OperationItem = (props: {
           ]
         : []),
       ...(props.item.type === 'StdLibCall' ||
-      props.item.type === 'KclStdLibCall'
+      props.item.type === 'VariableDeclaration'
         ? [
             <ContextMenuItem
-              disabled={!stdLibMap[props.item.name]?.prepareToEdit}
+              disabled={
+                !(
+                  stdLibMap[props.item.name]?.prepareToEdit ||
+                  props.item.type === 'VariableDeclaration'
+                )
+              }
               onClick={enterEditFlow}
               hotkey="Double click"
             >
               Edit
             </ContextMenuItem>,
+          ]
+        : []),
+      ...(props.item.type === 'StdLibCall'
+        ? [
             <ContextMenuItem
               disabled={!stdLibMap[props.item.name]?.supportsAppearance}
               onClick={enterAppearanceFlow}
@@ -473,9 +500,7 @@ const OperationItem = (props: {
             </ContextMenuItem>,
           ]
         : []),
-      ...(props.item.type === 'StdLibCall' ||
-      props.item.type === 'KclStdLibCall' ||
-      props.item.type === 'GroupBegin'
+      ...(props.item.type === 'StdLibCall' || props.item.type === 'GroupBegin'
         ? [
             <ContextMenuItem
               onClick={enterTranslateFlow}
@@ -524,6 +549,8 @@ const OperationItem = (props: {
     <OperationItemWrapper
       icon={getOperationIcon(props.item)}
       name={name}
+      variableName={variableName}
+      valueDetail={valueDetail}
       menuItems={menuItems}
       onClick={selectOperation}
       onDoubleClick={enterEditFlow}

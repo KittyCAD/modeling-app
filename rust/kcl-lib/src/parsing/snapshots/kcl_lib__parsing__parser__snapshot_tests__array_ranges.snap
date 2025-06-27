@@ -1,0 +1,130 @@
+---
+source: kcl-lib/src/parsing/parser.rs
+expression: actual
+---
+{
+  "body": [
+    {
+      "commentStart": 0,
+      "declaration": {
+        "commentStart": 0,
+        "end": 14,
+        "id": {
+          "commentStart": 0,
+          "end": 4,
+          "moduleId": 0,
+          "name": "incl",
+          "start": 0,
+          "type": "Identifier"
+        },
+        "init": {
+          "commentStart": 7,
+          "end": 14,
+          "endElement": {
+            "commentStart": 11,
+            "end": 13,
+            "moduleId": 0,
+            "raw": "10",
+            "start": 11,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 10.0,
+              "suffix": "None"
+            }
+          },
+          "endInclusive": true,
+          "moduleId": 0,
+          "start": 7,
+          "startElement": {
+            "commentStart": 8,
+            "end": 9,
+            "moduleId": 0,
+            "raw": "1",
+            "start": 8,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 1.0,
+              "suffix": "None"
+            }
+          },
+          "type": "ArrayRangeExpression",
+          "type": "ArrayRangeExpression"
+        },
+        "moduleId": 0,
+        "start": 0,
+        "type": "VariableDeclarator"
+      },
+      "end": 14,
+      "kind": "const",
+      "moduleId": 0,
+      "start": 0,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
+    },
+    {
+      "commentStart": 23,
+      "declaration": {
+        "commentStart": 23,
+        "end": 38,
+        "id": {
+          "commentStart": 23,
+          "end": 27,
+          "moduleId": 0,
+          "name": "excl",
+          "start": 23,
+          "type": "Identifier"
+        },
+        "init": {
+          "commentStart": 30,
+          "end": 38,
+          "endElement": {
+            "commentStart": 35,
+            "end": 37,
+            "moduleId": 0,
+            "raw": "10",
+            "start": 35,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 10.0,
+              "suffix": "None"
+            }
+          },
+          "endInclusive": false,
+          "moduleId": 0,
+          "start": 30,
+          "startElement": {
+            "commentStart": 31,
+            "end": 32,
+            "moduleId": 0,
+            "raw": "0",
+            "start": 31,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 0.0,
+              "suffix": "None"
+            }
+          },
+          "type": "ArrayRangeExpression",
+          "type": "ArrayRangeExpression"
+        },
+        "moduleId": 0,
+        "start": 23,
+        "type": "VariableDeclarator"
+      },
+      "end": 38,
+      "kind": "const",
+      "moduleId": 0,
+      "start": 23,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
+    }
+  ],
+  "commentStart": 0,
+  "end": 38,
+  "moduleId": 0,
+  "start": 0
+}

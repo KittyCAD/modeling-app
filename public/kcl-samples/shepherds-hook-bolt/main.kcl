@@ -1,0 +1,89 @@
+// Shepherd’s Hook Bolt
+// A bent bolt with a curved hook, typically used for hanging or anchoring loads. The threaded end allows secure attachment to surfaces or materials, while the curved hook resists pull-out under tension.
+
+// Set units in millimeters (mm)
+@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+
+// Define bolt geometry parameters
+boltDiameter = 5
+hookRadius = 12
+shankLength = 5
+threadedEndLength = 30
+nutDistance = 20
+hookStartAngle = 290
+hookEndAngle = 150
+
+approximatePitch = boltDiameter * 0.15
+threadDepth = 0.6134 * approximatePitch
+innerRadius = boltDiameter / 2 - threadDepth
+boltNumberOfRevolutions = threadedEndLength / approximatePitch
+
+// Helper values for computing geometry transitions between straight shaft and hook arc
+hypotenuse = hookRadius / cos(hookStartAngle - 270)
+side = sqrt(pow(hypotenuse, exp = 2) - pow(hookRadius, exp = 2))
+shankOffset = hypotenuse + side
+
+// Converts polar coordinates to cartesian points for drawing arcs
+fn polarToCartesian(radius, angle) {
+  x = radius * cos(angle)
+  y = radius * sin(angle)
+  return [x, y]
+}
+
+// Create the hook and shank profile path
+// Includes straight segment and two connected arcs forming the hook
+hookProfilePlane = startSketchOn(XZ)
+hookProfileShape = startProfile(hookProfilePlane, at = [0, -shankOffset - shankLength])
+  |> line(endAbsolute = [0, -shankOffset])
+  |> tangentialArc(endAbsolute = polarToCartesian(radius = hookRadius, angle = hookStartAngle))
+  |> tangentialArc(endAbsolute = polarToCartesian(radius = hookRadius, angle = hookEndAngle), tag = $hook)
+
+// Create the circular cross-section used for sweeping along the hook path
+hookSectionPlane = offsetPlane(XY, offset = -shankOffset - shankLength)
+hookSectionShape = circle(hookSectionPlane, center = [0, 0], radius = boltDiameter / 2)
+
+// Sweep the section along the hook profile to form the main body of the hook bolt
+hookBody = sweep(hookSectionShape, path = hookProfileShape, sectional = true)
+
+// Add a cylindrical tip at the hook end
+tipPlane = startSketchOn(hookBody, face = END)
+tipShape = circle(
+  tipPlane,
+  center = [hookRadius, 0],
+  radius = boltDiameter / 2,
+  tag = $seg01,
+)
+tipBody = extrude(
+       tipShape,
+       length = hookRadius * 0.5,
+       tagStart = $startTag,
+       tagEnd = $capEnd001,
+     )
+  |> fillet(
+       radius = boltDiameter / 4,
+       tags = [
+         getCommonEdge(faces = [seg01, capEnd001])
+       ],
+     )
+
+  // Create the threaded end of the bolt
+
+// Construct the triangular profile for thread cutting
+boltThreadSectionPlane = startSketchOn(XZ)
+boltThreadSectionShapeForRevolve = startProfile(
+       boltThreadSectionPlane,
+       at = [
+         innerRadius,
+         -shankOffset - shankLength - threadedEndLength
+       ],
+     )
+  |> line(end = [threadDepth, approximatePitch / 2])
+  |> line(end = [-threadDepth, approximatePitch / 2])
+  |> patternLinear2d(axis = [0, 1], instances = boltNumberOfRevolutions, distance = approximatePitch)
+  |> xLine(length = -innerRadius * 0.9)
+  |> yLine(length = -threadedEndLength)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+
+// Create a revolved solid representing the thread geometry by repeating and revolving the profile around the shaft
+boltThreadRevolve = revolve(boltThreadSectionShapeForRevolve, angle = 360, axis = Y)

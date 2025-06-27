@@ -247,17 +247,6 @@ impl ObjectProperty {
     }
 }
 
-impl MemberObject {
-    fn get_hover_value_for_position(&self, pos: usize, code: &str, opts: &HoverOpts) -> Option<Hover> {
-        match self {
-            MemberObject::MemberExpression(member_expression) => {
-                member_expression.get_hover_value_for_position(pos, code, opts)
-            }
-            MemberObject::Identifier(_identifier) => None,
-        }
-    }
-}
-
 impl MemberExpression {
     fn get_hover_value_for_position(&self, pos: usize, code: &str, opts: &HoverOpts) -> Option<Hover> {
         let object_source_range: SourceRange = self.object.clone().into();

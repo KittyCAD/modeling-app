@@ -13,6 +13,7 @@ description: Result of parsing array_push_item_wrong_type.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "arr",
             "start": 0,
             "type": "Identifier"
@@ -26,6 +27,7 @@ description: Result of parsing array_push_item_wrong_type.kcl
                 {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "raw": "1",
                   "start": 0,
                   "type": "Literal",
@@ -38,6 +40,7 @@ description: Result of parsing array_push_item_wrong_type.kcl
                 {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "raw": "2",
                   "start": 0,
                   "type": "Literal",
@@ -49,15 +52,18 @@ description: Result of parsing array_push_item_wrong_type.kcl
                 }
               ],
               "end": 0,
+              "moduleId": 0,
               "start": 0,
               "type": "ArrayExpression",
               "type": "ArrayExpression"
             },
+            "moduleId": 0,
             "start": 0,
             "ty": {
               "commentStart": 0,
               "end": 0,
               "len": "None",
+              "moduleId": 0,
               "start": 0,
               "ty": {
                 "Count": null,
@@ -69,11 +75,13 @@ description: Result of parsing array_push_item_wrong_type.kcl
             "type": "AscribedExpression",
             "type": "AscribedExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -86,6 +94,7 @@ description: Result of parsing array_push_item_wrong_type.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "arrPrime",
             "start": 0,
             "type": "Identifier"
@@ -97,6 +106,7 @@ description: Result of parsing array_push_item_wrong_type.kcl
                 "label": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "item",
                   "start": 0,
                   "type": "Identifier"
@@ -104,6 +114,7 @@ description: Result of parsing array_push_item_wrong_type.kcl
                 "arg": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "raw": "4mm",
                   "start": 0,
                   "type": "Literal",
@@ -119,9 +130,11 @@ description: Result of parsing array_push_item_wrong_type.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "push",
                 "start": 0,
                 "type": "Identifier"
@@ -132,6 +145,7 @@ description: Result of parsing array_push_item_wrong_type.kcl
             },
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
@@ -139,9 +153,11 @@ description: Result of parsing array_push_item_wrong_type.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "arr",
                 "start": 0,
                 "type": "Identifier"
@@ -152,11 +168,13 @@ description: Result of parsing array_push_item_wrong_type.kcl
               "type": "Name"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -171,6 +189,7 @@ description: Result of parsing array_push_item_wrong_type.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "isEqualTo",
                 "start": 0,
                 "type": "Identifier"
@@ -178,6 +197,7 @@ description: Result of parsing array_push_item_wrong_type.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "4mm",
                 "start": 0,
                 "type": "Literal",
@@ -193,6 +213,7 @@ description: Result of parsing array_push_item_wrong_type.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "error",
                 "start": 0,
                 "type": "Identifier"
@@ -200,6 +221,7 @@ description: Result of parsing array_push_item_wrong_type.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "\"should have been added to the end of the array\"",
                 "start": 0,
                 "type": "Literal",
@@ -212,9 +234,11 @@ description: Result of parsing array_push_item_wrong_type.kcl
             "abs_path": false,
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "assert",
               "start": 0,
               "type": "Identifier"
@@ -225,6 +249,7 @@ description: Result of parsing array_push_item_wrong_type.kcl
           },
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
@@ -232,17 +257,29 @@ description: Result of parsing array_push_item_wrong_type.kcl
             "commentStart": 0,
             "computed": false,
             "end": 0,
+            "moduleId": 0,
             "object": {
+              "abs_path": false,
               "commentStart": 0,
               "end": 0,
-              "name": "arrPrime",
+              "moduleId": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "arrPrime",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             "property": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "raw": "2",
               "start": 0,
               "type": "Literal",
@@ -257,6 +294,7 @@ description: Result of parsing array_push_item_wrong_type.kcl
             "type": "MemberExpression"
           }
         },
+        "moduleId": 0,
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -264,6 +302,7 @@ description: Result of parsing array_push_item_wrong_type.kcl
     ],
     "commentStart": 0,
     "end": 0,
+    "moduleId": 0,
     "start": 0
   }
 }

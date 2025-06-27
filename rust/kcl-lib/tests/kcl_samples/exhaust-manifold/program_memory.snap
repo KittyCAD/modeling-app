@@ -30,6 +30,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "tag": {
             "commentStart": 2009,
             "end": 2015,
+            "moduleId": 0,
             "start": 2009,
             "type": "TagDeclarator",
             "value": "seg01"
@@ -64,6 +65,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "tag": {
             "commentStart": 2183,
             "end": 2189,
+            "moduleId": 0,
             "start": 2183,
             "type": "TagDeclarator",
             "value": "seg03"
@@ -77,6 +79,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "tag": {
             "commentStart": 2232,
             "end": 2238,
+            "moduleId": 0,
             "start": 2232,
             "type": "TagDeclarator",
             "value": "seg04"
@@ -90,6 +93,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "tag": {
             "commentStart": 2271,
             "end": 2277,
+            "moduleId": 0,
             "start": 2271,
             "type": "TagDeclarator",
             "value": "seg05"
@@ -124,6 +128,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "tag": {
             "commentStart": 2455,
             "end": 2461,
+            "moduleId": 0,
             "start": 2455,
             "type": "TagDeclarator",
             "value": "seg07"
@@ -137,6 +142,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "tag": {
             "commentStart": 2512,
             "end": 2518,
+            "moduleId": 0,
             "start": 2512,
             "type": "TagDeclarator",
             "value": "seg08"
@@ -150,6 +156,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "tag": {
             "commentStart": 2562,
             "end": 2568,
+            "moduleId": 0,
             "start": 2562,
             "type": "TagDeclarator",
             "value": "seg09"
@@ -194,12 +201,13 @@ description: Variables in memory after executing exhaust-manifold.kcl
             "tag": {
               "commentStart": 2009,
               "end": 2015,
+              "moduleId": 0,
               "start": 2009,
               "type": "TagDeclarator",
               "value": "seg01"
             },
             "to": [
-              1.7,
+              1.6999999999999997,
               -1.25
             ],
             "type": "ToPoint",
@@ -214,17 +222,17 @@ description: Variables in memory after executing exhaust-manifold.kcl
             },
             "ccw": false,
             "center": [
-              1.7,
+              1.6999999999999997,
               -0.95
             ],
             "from": [
-              1.7,
+              1.6999999999999997,
               -1.25
             ],
             "tag": null,
             "to": [
-              1.5072,
-              -1.1798
+              1.507163717094038,
+              -1.1798133329356932
             ],
             "type": "TangentialArc",
             "units": {
@@ -238,17 +246,17 @@ description: Variables in memory after executing exhaust-manifold.kcl
             },
             "ccw": true,
             "center": [
-              0.9287,
-              -1.8693
+              0.9286548683761525,
+              -1.8692533317427733
             ],
             "from": [
-              1.5072,
-              -1.1798
+              1.507163717094038,
+              -1.1798133329356932
             ],
             "tag": null,
             "to": [
-              0.3501,
-              -1.1798
+              0.3501460196582671,
+              -1.179813332935693
             ],
             "type": "TangentialArc",
             "units": {
@@ -262,17 +270,17 @@ description: Variables in memory after executing exhaust-manifold.kcl
             },
             "ccw": false,
             "center": [
-              0.1573,
-              -0.95
+              0.15730973675230542,
+              -0.9499999999999995
             ],
             "from": [
-              0.3501,
-              -1.1798
+              0.3501460196582671,
+              -1.179813332935693
             ],
             "tag": null,
             "to": [
-              0.1573,
-              -1.25
+              0.1573097367523053,
+              -1.2499999999999996
             ],
             "type": "TangentialArc",
             "units": {
@@ -285,19 +293,20 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "sourceRange": []
             },
             "from": [
-              0.1573,
-              -1.25
+              0.1573097367523053,
+              -1.2499999999999996
             ],
             "tag": {
               "commentStart": 2183,
               "end": 2189,
+              "moduleId": 0,
               "start": 2183,
               "type": "TagDeclarator",
               "value": "seg03"
             },
             "to": [
-              -1.2427,
-              -1.25
+              -1.2426902632476946,
+              -1.2499999999999996
             ],
             "type": "ToPoint",
             "units": {
@@ -310,19 +319,20 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "sourceRange": []
             },
             "from": [
-              -1.2427,
-              -1.25
+              -1.2426902632476946,
+              -1.2499999999999996
             ],
             "tag": {
               "commentStart": 2232,
               "end": 2238,
+              "moduleId": 0,
               "start": 2232,
               "type": "TagDeclarator",
               "value": "seg04"
             },
             "to": [
-              -1.2427,
-              1.35
+              -1.2426902632476946,
+              1.3500000000000005
             ],
             "type": "ToPoint",
             "units": {
@@ -335,19 +345,20 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "sourceRange": []
             },
             "from": [
-              -1.2427,
-              1.35
+              -1.2426902632476946,
+              1.3500000000000005
             ],
             "tag": {
               "commentStart": 2271,
               "end": 2277,
+              "moduleId": 0,
               "start": 2271,
               "type": "TagDeclarator",
               "value": "seg05"
             },
             "to": [
-              1.8573,
-              1.35
+              1.8573097367523055,
+              1.3500000000000005
             ],
             "type": "ToPoint",
             "units": {
@@ -361,17 +372,17 @@ description: Variables in memory after executing exhaust-manifold.kcl
             },
             "ccw": false,
             "center": [
-              1.8573,
-              1.05
+              1.8573097367523055,
+              1.0500000000000005
             ],
             "from": [
-              1.8573,
-              1.35
+              1.8573097367523055,
+              1.3500000000000005
             ],
             "tag": null,
             "to": [
-              2.0501,
-              1.2798
+              2.0501460196582673,
+              1.279813332935694
             ],
             "type": "TangentialArc",
             "units": {
@@ -385,17 +396,17 @@ description: Variables in memory after executing exhaust-manifold.kcl
             },
             "ccw": true,
             "center": [
-              3.0143,
-              2.4289
+              3.0143274341880764,
+              2.4288799976141613
             ],
             "from": [
-              2.0501,
-              1.2798
+              2.0501460196582673,
+              1.279813332935694
             ],
             "tag": null,
             "to": [
-              3.9785,
-              1.2798
+              3.9785088487178855,
+              1.2798133329356942
             ],
             "type": "TangentialArc",
             "units": {
@@ -409,17 +420,17 @@ description: Variables in memory after executing exhaust-manifold.kcl
             },
             "ccw": false,
             "center": [
-              4.1713,
-              1.05
+              4.1713451316238475,
+              1.0500000000000007
             ],
             "from": [
-              3.9785,
-              1.2798
+              3.9785088487178855,
+              1.2798133329356942
             ],
             "tag": null,
             "to": [
-              4.1713,
-              1.35
+              4.1713451316238475,
+              1.3500000000000008
             ],
             "type": "TangentialArc",
             "units": {
@@ -432,19 +443,20 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "sourceRange": []
             },
             "from": [
-              4.1713,
-              1.35
+              4.1713451316238475,
+              1.3500000000000008
             ],
             "tag": {
               "commentStart": 2455,
               "end": 2461,
+              "moduleId": 0,
               "start": 2455,
               "type": "TagDeclarator",
               "value": "seg07"
             },
             "to": [
-              7.2713,
-              1.35
+              7.271345131623848,
+              1.3500000000000008
             ],
             "type": "ToPoint",
             "units": {
@@ -457,18 +469,19 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "sourceRange": []
             },
             "from": [
-              7.2713,
-              1.35
+              7.271345131623848,
+              1.3500000000000008
             ],
             "tag": {
               "commentStart": 2512,
               "end": 2518,
+              "moduleId": 0,
               "start": 2512,
               "type": "TagDeclarator",
               "value": "seg08"
             },
             "to": [
-              7.2713,
+              7.271345131623848,
               -1.25
             ],
             "type": "ToPoint",
@@ -482,18 +495,19 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "sourceRange": []
             },
             "from": [
-              7.2713,
+              7.271345131623848,
               -1.25
             ],
             "tag": {
               "commentStart": 2562,
               "end": 2568,
+              "moduleId": 0,
               "start": 2562,
               "type": "TagDeclarator",
               "value": "seg09"
             },
             "to": [
-              5.8713,
+              5.871345131623848,
               -1.25
             ],
             "type": "ToPoint",
@@ -508,17 +522,17 @@ description: Variables in memory after executing exhaust-manifold.kcl
             },
             "ccw": false,
             "center": [
-              5.8713,
+              5.871345131623848,
               -0.95
             ],
             "from": [
-              5.8713,
+              5.871345131623848,
               -1.25
             ],
             "tag": null,
             "to": [
-              5.6785,
-              -1.1798
+              5.678508848717886,
+              -1.1798133329356932
             ],
             "type": "TangentialArc",
             "units": {
@@ -532,17 +546,17 @@ description: Variables in memory after executing exhaust-manifold.kcl
             },
             "ccw": true,
             "center": [
-              5.1,
-              -1.8693
+              5.100000000000001,
+              -1.8692533317427742
             ],
             "from": [
-              5.6785,
-              -1.1798
+              5.678508848717886,
+              -1.1798133329356932
             ],
             "tag": null,
             "to": [
-              4.5215,
-              -1.1798
+              4.521491151282115,
+              -1.1798133329356943
             ],
             "type": "TangentialArc",
             "units": {
@@ -556,12 +570,12 @@ description: Variables in memory after executing exhaust-manifold.kcl
             },
             "ccw": false,
             "center": [
-              4.3257,
-              -0.9465
+              4.32567653803991,
+              -0.9464505641218501
             ],
             "from": [
-              4.5215,
-              -1.1798
+              4.521491151282115,
+              -1.1798133329356943
             ],
             "tag": null,
             "to": [

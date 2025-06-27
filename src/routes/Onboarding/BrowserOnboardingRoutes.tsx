@@ -17,6 +17,7 @@ import {
   ONBOARDING_DATA_ATTRIBUTE,
   BROWSER_PROJECT_NAME,
   PROJECT_ENTRYPOINT,
+  APP_DOWNLOAD_PATH,
 } from '@src/lib/constants'
 import { PATHS, joinRouterPaths } from '@src/lib/paths'
 import type { Selections } from '@src/lib/selections'
@@ -460,6 +461,7 @@ function PromptToEditResult() {
 function OnboardingConclusion() {
   // Close the panes on mount, close on unmount
   useOnboardingPanes()
+  const downloadLink = `${VITE_KC_SITE_BASE_URL}/${APP_DOWNLOAD_PATH}`
 
   return (
     <div className="cursor-not-allowed fixed inset-0 z-50 p-16 grid justify-center items-center">
@@ -468,10 +470,8 @@ function OnboardingConclusion() {
         <p className="my-4">
           We highly encourage you to{' '}
           <a
-            onClick={openExternalBrowserIfDesktop(
-              `${VITE_KC_SITE_BASE_URL}/modeling-app/download/nightly`
-            )}
-            href="https://zoo.dev/modeling-app/download/nightly"
+            onClick={openExternalBrowserIfDesktop(downloadLink)}
+            href={downloadLink}
             target="_blank"
             rel="noopener noreferrer"
           >

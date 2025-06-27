@@ -8,6 +8,7 @@ description: Result of parsing import_whole_transitive_import.kcl
       {
         "commentStart": 0,
         "end": 0,
+        "moduleId": 0,
         "path": {
           "type": "Kcl",
           "filename": "part.kcl"
@@ -28,6 +29,7 @@ description: Result of parsing import_whole_transitive_import.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "bar",
             "start": 0,
             "type": "Identifier"
@@ -38,9 +40,11 @@ description: Result of parsing import_whole_transitive_import.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "part",
                   "start": 0,
                   "type": "Identifier"
@@ -57,6 +61,7 @@ description: Result of parsing import_whole_transitive_import.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "z",
                       "start": 0,
                       "type": "Identifier"
@@ -64,6 +69,7 @@ description: Result of parsing import_whole_transitive_import.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "1",
                       "start": 0,
                       "type": "Literal",
@@ -79,9 +85,11 @@ description: Result of parsing import_whole_transitive_import.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "translate",
                     "start": 0,
                     "type": "Identifier"
@@ -92,6 +100,7 @@ description: Result of parsing import_whole_transitive_import.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -100,15 +109,18 @@ description: Result of parsing import_whole_transitive_import.kcl
             ],
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -120,9 +132,11 @@ description: Result of parsing import_whole_transitive_import.kcl
       {
         "commentStart": 0,
         "end": 0,
+        "moduleId": 0,
         "name": {
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "name": "settings",
           "start": 0,
           "type": "Identifier"
@@ -134,19 +148,23 @@ description: Result of parsing import_whole_transitive_import.kcl
             "key": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "defaultLengthUnit",
               "start": 0,
               "type": "Identifier"
             },
+            "moduleId": 0,
             "start": 0,
             "type": "ObjectProperty",
             "value": {
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "mm",
                 "start": 0,
                 "type": "Identifier"
@@ -162,12 +180,14 @@ description: Result of parsing import_whole_transitive_import.kcl
         "type": "Annotation"
       }
     ],
+    "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {
@@ -180,6 +200,7 @@ description: Result of parsing import_whole_transitive_import.kcl
         {
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "NonCodeNode",
           "value": {

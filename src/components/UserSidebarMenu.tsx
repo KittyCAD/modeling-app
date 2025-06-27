@@ -12,6 +12,7 @@ import usePlatform from '@src/hooks/usePlatform'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
 import { authActor } from '@src/lib/singletons'
+import { reportRejection } from '@src/lib/trap'
 
 type User = Models['User_type']
 
@@ -128,6 +129,15 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
               />
             </>
           ),
+        },
+        {
+          id: 'check-for-updates',
+          Element: 'button',
+          hide: !isDesktop(),
+          onClick: () => {
+            window.electron.appCheckForUpdates().catch(reportRejection)
+          },
+          children: <span className="flex-1">Check for updates</span>,
         },
         'break',
         {

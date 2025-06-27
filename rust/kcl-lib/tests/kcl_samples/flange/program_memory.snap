@@ -1307,7 +1307,7 @@ description: Variables in memory after executing flange.kcl
   },
   "topTotalThickness": {
     "type": "Number",
-    "value": 0.128,
+    "value": 0.1279999999999999,
     "ty": {
       "type": "Default",
       "len": {

@@ -6,7 +6,6 @@ import {
   findPipesWithImportAlias,
   getSketchSelectionsFromOperation,
 } from '@src/lang/queryAst'
-import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type { Artifact } from '@src/lang/std/artifactGraph'
 import {
   getArtifactOfTypes,
@@ -15,12 +14,18 @@ import {
   getSweepEdgeCodeRef,
   getWallCodeRef,
 } from '@src/lang/std/artifactGraph'
-import { type PipeExpression, sourceRangeFromRust } from '@src/lang/wasm'
+import {
+  type CallExpressionKw,
+  type PipeExpression,
+  type Program,
+  pathToNodeFromRustNodePath,
+  type VariableDeclaration,
+} from '@src/lang/wasm'
 import type {
   HelixModes,
   ModelingCommandSchema,
 } from '@src/lib/commandBarConfigs/modelingCommandConfig'
-import type { KclExpression } from '@src/lib/commandTypes'
+import type { KclCommandValue, KclExpression } from '@src/lib/commandTypes'
 import {
   stringToKclExpression,
   retrieveArgFromPipedCallExpression,
@@ -58,6 +63,45 @@ interface StdLibCallInfo {
 }
 
 /**
+ * Gather up the a Parameter operation's data
+ * to be used in the command bar edit flow.
+ */
+const prepareToEditParameter: PrepareToEditCallback = async ({ operation }) => {
+  if (operation.type !== 'VariableDeclaration') {
+    return { reason: 'Called on something not a variable declaration' }
+  }
+
+  const baseCommand = {
+    name: 'event.parameter.edit',
+    groupId: 'modeling',
+  }
+
+  // 1. Convert from the parameter's Operation to a KCL-type arg value
+  const value = await stringToKclExpression(
+    codeManager.code.slice(operation.sourceRange[0], operation.sourceRange[1])
+  )
+  if (err(value) || 'errors' in value) {
+    return { reason: "Couldn't retrieve length argument" }
+  }
+
+  // 2. The nodeToEdit is much simpler to transform.
+  // We need the VariableDeclarator PathToNode though, so we slice it
+  const nodeToEdit = pathToNodeFromRustNodePath(operation.nodePath).slice(0, -1)
+
+  // 3. Assemble the default argument values for the command,
+  // with `nodeToEdit` set, which will let the actor know
+  // to edit the node that corresponds to the StdLibCall.
+  const argDefaultValues: ModelingCommandSchema['event.parameter.edit'] = {
+    value,
+    nodeToEdit,
+  }
+  return {
+    ...baseCommand,
+    argDefaultValues,
+  }
+}
+
+/**
  * Gather up the argument values for the Extrude command
  * to be used in the command bar edit flow.
  */
@@ -66,7 +110,7 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({ operation }) => {
     name: 'Extrude',
     groupId: 'modeling',
   }
-  if (operation.type !== 'StdLibCall' && operation.type !== 'KclStdLibCall') {
+  if (operation.type !== 'StdLibCall') {
     return { reason: 'Wrong operation type' }
   }
 
@@ -90,16 +134,117 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({ operation }) => {
     return { reason: "Couldn't retrieve length argument" }
   }
 
+  // symmetric argument from a string to boolean
+  let symmetric: boolean | undefined
+  if ('symmetric' in operation.labeledArgs && operation.labeledArgs.symmetric) {
+    symmetric =
+      codeManager.code.slice(
+        operation.labeledArgs.symmetric.sourceRange[0],
+        operation.labeledArgs.symmetric.sourceRange[1]
+      ) === 'true'
+  }
+
+  // bidirectionalLength argument from a string to a KCL expression
+  let bidirectionalLength: KclCommandValue | undefined
+  if (
+    'bidirectionalLength' in operation.labeledArgs &&
+    operation.labeledArgs.bidirectionalLength
+  ) {
+    const result = await stringToKclExpression(
+      codeManager.code.slice(
+        operation.labeledArgs.bidirectionalLength.sourceRange[0],
+        operation.labeledArgs.bidirectionalLength.sourceRange[1]
+      )
+    )
+    if (err(result) || 'errors' in result) {
+      return { reason: "Couldn't retrieve bidirectionalLength argument" }
+    }
+
+    bidirectionalLength = result
+  }
+
+  // twistAngle argument from a string to a KCL expression
+  let twistAngle: KclCommandValue | undefined
+  if (
+    'twistAngle' in operation.labeledArgs &&
+    operation.labeledArgs.twistAngle
+  ) {
+    const result = await stringToKclExpression(
+      codeManager.code.slice(
+        operation.labeledArgs.twistAngle.sourceRange[0],
+        operation.labeledArgs.twistAngle.sourceRange[1]
+      )
+    )
+    if (err(result) || 'errors' in result) {
+      return { reason: "Couldn't retrieve twistAngle argument" }
+    }
+
+    twistAngle = result
+  }
+
   // 3. Assemble the default argument values for the command,
   // with `nodeToEdit` set, which will let the actor know
   // to edit the node that corresponds to the StdLibCall.
   const argDefaultValues: ModelingCommandSchema['Extrude'] = {
     sketches,
     length,
-    nodeToEdit: getNodePathFromSourceRange(
-      kclManager.ast,
-      sourceRangeFromRust(operation.sourceRange)
-    ),
+    symmetric,
+    bidirectionalLength,
+    twistAngle,
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
+  }
+  return {
+    ...baseCommand,
+    argDefaultValues,
+  }
+}
+
+/**
+ * Gather up the argument values for the Loft command
+ * to be used in the command bar edit flow.
+ */
+const prepareToEditLoft: PrepareToEditCallback = async ({ operation }) => {
+  const baseCommand = {
+    name: 'Loft',
+    groupId: 'modeling',
+  }
+  if (operation.type !== 'StdLibCall') {
+    return { reason: 'Wrong operation type' }
+  }
+
+  // 1. Map the unlabeled arguments to solid2d selections
+  const sketches = getSketchSelectionsFromOperation(
+    operation,
+    kclManager.artifactGraph
+  )
+  if (err(sketches)) {
+    return { reason: "Couldn't retrieve sketches" }
+  }
+
+  // 2.
+  // vDegree argument from a string to a KCL expression
+  let vDegree: KclCommandValue | undefined
+  if ('vDegree' in operation.labeledArgs && operation.labeledArgs.vDegree) {
+    const result = await stringToKclExpression(
+      codeManager.code.slice(
+        operation.labeledArgs.vDegree.sourceRange[0],
+        operation.labeledArgs.vDegree.sourceRange[1]
+      )
+    )
+    if (err(result) || 'errors' in result) {
+      return { reason: "Couldn't retrieve vDegree argument" }
+    }
+
+    vDegree = result
+  }
+
+  // 3. Assemble the default argument values for the command,
+  // with `nodeToEdit` set, which will let the actor know
+  // to edit the node that corresponds to the StdLibCall.
+  const argDefaultValues: ModelingCommandSchema['Loft'] = {
+    sketches,
+    vDegree,
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
   return {
     ...baseCommand,
@@ -123,7 +268,7 @@ const prepareToEditEdgeTreatment: PrepareToEditCallback = async ({
     groupId: 'modeling',
   }
   if (
-    (operation.type !== 'StdLibCall' && operation.type !== 'KclStdLibCall') ||
+    operation.type !== 'StdLibCall' ||
     !operation.labeledArgs ||
     (!isChamfer && !isFillet)
   ) {
@@ -162,10 +307,7 @@ const prepareToEditEdgeTreatment: PrepareToEditCallback = async ({
   // Assemble the default argument values for the Fillet command,
   // with `nodeToEdit` set, which will let the Fillet actor know
   // to edit the node that corresponds to the StdLibCall.
-  const nodeToEdit = getNodePathFromSourceRange(
-    kclManager.ast,
-    sourceRangeFromRust(operation.sourceRange)
-  )
+  const nodeToEdit = pathToNodeFromRustNodePath(operation.nodePath)
 
   let argDefaultValues:
     | ModelingCommandSchema['Chamfer']
@@ -225,7 +367,7 @@ const prepareToEditShell: PrepareToEditCallback =
     }
 
     if (
-      (operation.type !== 'StdLibCall' && operation.type !== 'KclStdLibCall') ||
+      operation.type !== 'StdLibCall' ||
       !operation.labeledArgs ||
       !operation.unlabeledArg ||
       !('thickness' in operation.labeledArgs) ||
@@ -327,10 +469,7 @@ const prepareToEditShell: PrepareToEditCallback =
         graphSelections,
         otherSelections: [],
       },
-      nodeToEdit: getNodePathFromSourceRange(
-        kclManager.ast,
-        sourceRangeFromRust(operation.sourceRange)
-      ),
+      nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
     }
     return {
       ...baseCommand,
@@ -346,7 +485,7 @@ const prepareToEditOffsetPlane: PrepareToEditCallback = async ({
     groupId: 'modeling',
   }
   if (
-    (operation.type !== 'StdLibCall' && operation.type !== 'KclStdLibCall') ||
+    operation.type !== 'StdLibCall' ||
     !operation.labeledArgs ||
     !operation.unlabeledArg ||
     !('offset' in operation.labeledArgs) ||
@@ -399,10 +538,7 @@ const prepareToEditOffsetPlane: PrepareToEditCallback = async ({
   const argDefaultValues: ModelingCommandSchema['Offset plane'] = {
     distance: distanceResult,
     plane,
-    nodeToEdit: getNodePathFromSourceRange(
-      kclManager.ast,
-      sourceRangeFromRust(operation.sourceRange)
-    ),
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
 
   return {
@@ -412,7 +548,7 @@ const prepareToEditOffsetPlane: PrepareToEditCallback = async ({
 }
 
 /**
- * Gather up the argument values for the Revolve command
+ * Gather up the argument values for the sweep command
  * to be used in the command bar edit flow.
  */
 const prepareToEditSweep: PrepareToEditCallback = async ({ operation }) => {
@@ -420,7 +556,7 @@ const prepareToEditSweep: PrepareToEditCallback = async ({ operation }) => {
     name: 'Sweep',
     groupId: 'modeling',
   }
-  if (operation.type !== 'StdLibCall' && operation.type !== 'KclStdLibCall') {
+  if (operation.type !== 'StdLibCall') {
     return { reason: 'Wrong operation type' }
   }
 
@@ -435,32 +571,45 @@ const prepareToEditSweep: PrepareToEditCallback = async ({ operation }) => {
 
   // 2. Prepare labeled arguments
   // Same roundabout but twice for 'path' aka trajectory: sketch -> path -> segment
-  if (operation.labeledArgs.path?.value.type !== 'Sketch') {
-    return { reason: "Couldn't retrieve trajectory argument" }
+  if (
+    operation.labeledArgs.path?.value.type !== 'Sketch' &&
+    operation.labeledArgs.path?.value.type !== 'Helix'
+  ) {
+    return { reason: "Couldn't retrieve path argument" }
   }
 
   const trajectoryPathArtifact = getArtifactOfTypes(
     {
       key: operation.labeledArgs.path.value.value.artifactId,
-      types: ['path'],
+      types: ['path', 'helix'],
     },
     kclManager.artifactGraph
   )
 
-  if (err(trajectoryPathArtifact) || trajectoryPathArtifact.type !== 'path') {
+  if (
+    err(trajectoryPathArtifact) ||
+    (trajectoryPathArtifact.type !== 'path' &&
+      trajectoryPathArtifact.type !== 'helix')
+  ) {
     return { reason: "Couldn't retrieve trajectory path artifact" }
   }
 
-  const trajectoryArtifact = getArtifactOfTypes(
-    {
-      key: trajectoryPathArtifact.segIds[0],
-      types: ['segment'],
-    },
-    kclManager.artifactGraph
-  )
+  const trajectoryArtifact =
+    trajectoryPathArtifact.type === 'path'
+      ? getArtifactOfTypes(
+          {
+            key: trajectoryPathArtifact.segIds[0],
+            types: ['segment'],
+          },
+          kclManager.artifactGraph
+        )
+      : trajectoryPathArtifact
 
-  if (err(trajectoryArtifact) || trajectoryArtifact.type !== 'segment') {
-    console.log(trajectoryArtifact)
+  if (
+    err(trajectoryArtifact) ||
+    (trajectoryArtifact.type !== 'segment' &&
+      trajectoryArtifact.type !== 'helix')
+  ) {
     return { reason: "Couldn't retrieve trajectory artifact" }
   }
 
@@ -474,7 +623,7 @@ const prepareToEditSweep: PrepareToEditCallback = async ({ operation }) => {
     otherSelections: [],
   }
 
-  // sectional argument from a string to a KCL expression
+  // optional arguments
   let sectional: boolean | undefined
   if ('sectional' in operation.labeledArgs && operation.labeledArgs.sectional) {
     sectional =
@@ -484,6 +633,17 @@ const prepareToEditSweep: PrepareToEditCallback = async ({ operation }) => {
       ) === 'true'
   }
 
+  let relativeTo: string | undefined
+  if (
+    'relativeTo' in operation.labeledArgs &&
+    operation.labeledArgs.relativeTo
+  ) {
+    relativeTo = codeManager.code.slice(
+      operation.labeledArgs.relativeTo.sourceRange[0],
+      operation.labeledArgs.relativeTo.sourceRange[1]
+    )
+  }
+
   // 3. Assemble the default argument values for the command,
   // with `nodeToEdit` set, which will let the actor know
   // to edit the node that corresponds to the StdLibCall.
@@ -491,10 +651,8 @@ const prepareToEditSweep: PrepareToEditCallback = async ({ operation }) => {
     sketches,
     path,
     sectional,
-    nodeToEdit: getNodePathFromSourceRange(
-      kclManager.ast,
-      sourceRangeFromRust(operation.sourceRange)
-    ),
+    relativeTo,
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
   return {
     ...baseCommand,
@@ -515,7 +673,7 @@ const prepareToEditHelix: PrepareToEditCallback = async ({ operation }) => {
     name: 'Helix',
     groupId: 'modeling',
   }
-  if (operation.type !== 'KclStdLibCall' || !operation.labeledArgs) {
+  if (operation.type !== 'StdLibCall' || !operation.labeledArgs) {
     return { reason: 'Wrong operation type or arguments' }
   }
 
@@ -744,10 +902,7 @@ const prepareToEditHelix: PrepareToEditCallback = async ({ operation }) => {
     radius,
     length,
     ccw,
-    nodeToEdit: getNodePathFromSourceRange(
-      kclManager.ast,
-      sourceRangeFromRust(operation.sourceRange)
-    ),
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
 
   return {
@@ -768,11 +923,7 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
     name: 'Revolve',
     groupId: 'modeling',
   }
-  if (
-    !artifact ||
-    operation.type !== 'KclStdLibCall' ||
-    !operation.labeledArgs
-  ) {
+  if (!artifact || operation.type !== 'StdLibCall' || !operation.labeledArgs) {
     return { reason: 'Wrong operation type or artifact' }
   }
 
@@ -865,17 +1016,46 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
   }
 
   // angle kcl arg
-  if (!('angle' in operation.labeledArgs) || !operation.labeledArgs.angle) {
-    return { reason: "Couldn't find angle argument" }
-  }
+  // Default to '360' if not present
   const angle = await stringToKclExpression(
-    codeManager.code.slice(
-      operation.labeledArgs.angle.sourceRange[0],
-      operation.labeledArgs.angle.sourceRange[1]
-    )
+    'angle' in operation.labeledArgs && operation.labeledArgs.angle
+      ? codeManager.code.slice(
+          operation.labeledArgs.angle.sourceRange[0],
+          operation.labeledArgs.angle.sourceRange[1]
+        )
+      : '360deg'
   )
   if (err(angle) || 'errors' in angle) {
     return { reason: 'Error in angle argument retrieval' }
+  }
+
+  // symmetric argument from a string to boolean
+  let symmetric: boolean | undefined
+  if ('symmetric' in operation.labeledArgs && operation.labeledArgs.symmetric) {
+    symmetric =
+      codeManager.code.slice(
+        operation.labeledArgs.symmetric.sourceRange[0],
+        operation.labeledArgs.symmetric.sourceRange[1]
+      ) === 'true'
+  }
+
+  // bidirectionalLength argument from a string to a KCL expression
+  let bidirectionalAngle: KclCommandValue | undefined
+  if (
+    'bidirectionalAngle' in operation.labeledArgs &&
+    operation.labeledArgs.bidirectionalAngle
+  ) {
+    const result = await stringToKclExpression(
+      codeManager.code.slice(
+        operation.labeledArgs.bidirectionalAngle.sourceRange[0],
+        operation.labeledArgs.bidirectionalAngle.sourceRange[1]
+      )
+    )
+    if (err(result) || 'errors' in result) {
+      return { reason: "Couldn't retrieve bidirectionalAngle argument" }
+    }
+
+    bidirectionalAngle = result
   }
 
   // 3. Assemble the default argument values for the command,
@@ -887,10 +1067,9 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
     axis,
     edge,
     angle,
-    nodeToEdit: getNodePathFromSourceRange(
-      kclManager.ast,
-      sourceRangeFromRust(operation.sourceRange)
-    ),
+    symmetric,
+    bidirectionalAngle,
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
   return {
     ...baseCommand,
@@ -951,6 +1130,7 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   loft: {
     label: 'Loft',
     icon: 'loft',
+    prepareToEdit: prepareToEditLoft,
     supportsAppearance: true,
     supportsTransform: true,
   },
@@ -979,12 +1159,26 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     supportsAppearance: true,
     supportsTransform: true,
   },
+  mirror2d: {
+    label: 'Mirror 2D',
+    icon: 'mirror',
+  },
   revolve: {
     label: 'Revolve',
     icon: 'revolve',
     prepareToEdit: prepareToEditRevolve,
     supportsAppearance: true,
     supportsTransform: true,
+  },
+  rotate: {
+    label: 'Rotate',
+    icon: 'rotate',
+    prepareToEdit: prepareToEditRotate,
+    supportsTransform: true,
+  },
+  scale: {
+    label: 'Scale',
+    icon: 'scale',
   },
   shell: {
     label: 'Shell',
@@ -1022,6 +1216,12 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     prepareToEdit: prepareToEditSweep,
     supportsAppearance: true,
   },
+  translate: {
+    label: 'Translate',
+    icon: 'move',
+    prepareToEdit: prepareToEditTranslate,
+    supportsTransform: true,
+  },
   union: {
     label: 'Union',
     icon: 'booleanUnion',
@@ -1041,8 +1241,8 @@ export function getOperationLabel(op: Operation): string {
   switch (op.type) {
     case 'StdLibCall':
       return stdLibMap[op.name]?.label ?? op.name
-    case 'KclStdLibCall':
-      return stdLibMap[op.name]?.label ?? op.name
+    case 'VariableDeclaration':
+      return 'Parameter'
     case 'GroupBegin':
       if (op.group.type === 'FunctionCall') {
         return op.group.name ?? 'anonymous'
@@ -1067,8 +1267,8 @@ export function getOperationIcon(op: Operation): CustomIconName {
   switch (op.type) {
     case 'StdLibCall':
       return stdLibMap[op.name]?.icon ?? 'questionMark'
-    case 'KclStdLibCall':
-      return stdLibMap[op.name]?.icon ?? 'questionMark'
+    case 'VariableDeclaration':
+      return 'make-variable'
     case 'GroupBegin':
       if (op.group.type === 'ModuleInstance') {
         return 'import' // TODO: Use insert icon.
@@ -1080,6 +1280,73 @@ export function getOperationIcon(op: Operation): CustomIconName {
       const _exhaustiveCheck: never = op
       return 'questionMark' // unreachable
   }
+}
+
+/**
+ * If the result of the operation is assigned to a variable, returns the
+ * variable name.
+ */
+export function getOperationVariableName(
+  op: Operation,
+  program: Program
+): string | undefined {
+  if (op.type === 'VariableDeclaration') {
+    return op.name
+  }
+  if (
+    op.type !== 'StdLibCall' &&
+    !(op.type === 'GroupBegin' && op.group.type === 'FunctionCall')
+  ) {
+    return undefined
+  }
+  // Find the AST node.
+  const pathToNode = pathToNodeFromRustNodePath(op.nodePath)
+  if (pathToNode.length === 0) {
+    return undefined
+  }
+  const call = getNodeFromPath<CallExpressionKw>(
+    program,
+    pathToNode,
+    'CallExpressionKw'
+  )
+  if (err(call) || call.node.type !== 'CallExpressionKw') {
+    return undefined
+  }
+  // Find the var name from the variable declaration.
+  const varDec = getNodeFromPath<VariableDeclaration>(
+    program,
+    pathToNode,
+    'VariableDeclaration'
+  )
+  if (err(varDec)) {
+    return undefined
+  }
+  if (varDec.node.type !== 'VariableDeclaration') {
+    // There's no variable declaration for this call.
+    return undefined
+  }
+  const varName = varDec.node.declaration.id.name
+  // If the operation is a simple assignment, we can use the variable name.
+  if (varDec.node.declaration.init === call.node) {
+    return varName
+  }
+  // If the AST node is in a pipe expression, we can only use the variable
+  // name if it's the last operation in the pipe.
+  const pipe = getNodeFromPath<PipeExpression>(
+    program,
+    pathToNode,
+    'PipeExpression'
+  )
+  if (err(pipe)) {
+    return undefined
+  }
+  if (
+    pipe.node.type === 'PipeExpression' &&
+    pipe.node.body[pipe.node.body.length - 1] === call.node
+  ) {
+    return varName
+  }
+  return undefined
 }
 
 /**
@@ -1173,7 +1440,24 @@ export async function enterEditFlow({
   operation,
   artifact,
 }: EnterEditFlowProps): Promise<Error | CommandBarMachineEvent> {
-  if (operation.type !== 'StdLibCall' && operation.type !== 'KclStdLibCall') {
+  // Operate on VariableDeclarations differently from StdLibCall's
+  if (operation.type === 'VariableDeclaration') {
+    const eventPayload = await prepareToEditParameter({
+      operation,
+    })
+
+    if ('reason' in eventPayload) {
+      return new Error(eventPayload.reason)
+    }
+
+    return {
+      type: 'Find and select command',
+      data: eventPayload,
+    }
+  }
+
+  // Begin StdLibCall processing
+  if (operation.type !== 'StdLibCall') {
     return new Error(
       'Feature tree editing not yet supported for user-defined functions or modules. Please edit in the code editor.'
     )
@@ -1211,7 +1495,7 @@ export async function enterEditFlow({
 export async function enterAppearanceFlow({
   operation,
 }: EnterEditFlowProps): Promise<Error | CommandBarMachineEvent> {
-  if (operation.type !== 'StdLibCall' && operation.type !== 'KclStdLibCall') {
+  if (operation.type !== 'StdLibCall') {
     return new Error(
       'Appearance setting not yet supported for user-defined functions or modules. Please edit in the code editor.'
     )
@@ -1220,10 +1504,7 @@ export async function enterAppearanceFlow({
 
   if (stdLibInfo && stdLibInfo.supportsAppearance) {
     const argDefaultValues = {
-      nodeToEdit: getNodePathFromSourceRange(
-        kclManager.ast,
-        sourceRangeFromRust(operation.sourceRange)
-      ),
+      nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
     }
     return {
       type: 'Find and select command',
@@ -1240,23 +1521,22 @@ export async function enterAppearanceFlow({
   )
 }
 
-export async function enterTranslateFlow({
-  operation,
-}: EnterEditFlowProps): Promise<Error | CommandBarMachineEvent> {
+async function prepareToEditTranslate({ operation }: EnterEditFlowProps) {
+  const baseCommand = {
+    name: 'Translate',
+    groupId: 'modeling',
+  }
   const isModuleImport = operation.type === 'GroupBegin'
   const isSupportedStdLibCall =
-    (operation.type === 'KclStdLibCall' || operation.type === 'StdLibCall') &&
+    operation.type === 'StdLibCall' &&
     stdLibMap[operation.name]?.supportsTransform
   if (!isModuleImport && !isSupportedStdLibCall) {
-    return new Error(
-      'Unsupported operation type. Please edit in the code editor.'
-    )
+    return {
+      reason: 'Unsupported operation type. Please edit in the code editor.',
+    }
   }
 
-  const nodeToEdit = getNodePathFromSourceRange(
-    kclManager.ast,
-    sourceRangeFromRust(operation.sourceRange)
-  )
+  const nodeToEdit = pathToNodeFromRustNodePath(operation.nodePath)
   let x: KclExpression | undefined = undefined
   let y: KclExpression | undefined = undefined
   let z: KclExpression | undefined = undefined
@@ -1293,32 +1573,41 @@ export async function enterTranslateFlow({
   const selection: Selections = { graphSelections: [], otherSelections: [] }
   const argDefaultValues = { nodeToEdit, selection, x, y, z }
   return {
-    type: 'Find and select command',
-    data: {
-      name: 'Translate',
-      groupId: 'modeling',
-      argDefaultValues,
-    },
+    ...baseCommand,
+    argDefaultValues,
   }
 }
 
-export async function enterRotateFlow({
+export async function enterTranslateFlow({
   operation,
 }: EnterEditFlowProps): Promise<Error | CommandBarMachineEvent> {
-  const isModuleImport = operation.type === 'GroupBegin'
-  const isSupportedStdLibCall =
-    (operation.type === 'KclStdLibCall' || operation.type === 'StdLibCall') &&
-    stdLibMap[operation.name]?.supportsTransform
-  if (!isModuleImport && !isSupportedStdLibCall) {
-    return new Error(
-      'Unsupported operation type. Please edit in the code editor.'
-    )
+  const data = await prepareToEditTranslate({ operation })
+  if ('reason' in data) {
+    return new Error(data.reason)
   }
 
-  const nodeToEdit = getNodePathFromSourceRange(
-    kclManager.ast,
-    sourceRangeFromRust(operation.sourceRange)
-  )
+  return {
+    type: 'Find and select command',
+    data,
+  }
+}
+
+async function prepareToEditRotate({ operation }: EnterEditFlowProps) {
+  const baseCommand = {
+    name: 'Rotate',
+    groupId: 'modeling',
+  }
+  const isModuleImport = operation.type === 'GroupBegin'
+  const isSupportedStdLibCall =
+    operation.type === 'StdLibCall' &&
+    stdLibMap[operation.name]?.supportsTransform
+  if (!isModuleImport && !isSupportedStdLibCall) {
+    return {
+      reason: 'Unsupported operation type. Please edit in the code editor.',
+    }
+  }
+
+  const nodeToEdit = pathToNodeFromRustNodePath(operation.nodePath)
   let roll: KclExpression | undefined = undefined
   let pitch: KclExpression | undefined = undefined
   let yaw: KclExpression | undefined = undefined
@@ -1355,12 +1644,22 @@ export async function enterRotateFlow({
   const selection: Selections = { graphSelections: [], otherSelections: [] }
   const argDefaultValues = { nodeToEdit, selection, roll, pitch, yaw }
   return {
+    ...baseCommand,
+    argDefaultValues,
+  }
+}
+
+export async function enterRotateFlow({
+  operation,
+}: EnterEditFlowProps): Promise<Error | CommandBarMachineEvent> {
+  const data = await prepareToEditRotate({ operation })
+  if ('reason' in data) {
+    return new Error(data.reason)
+  }
+
+  return {
     type: 'Find and select command',
-    data: {
-      name: 'Rotate',
-      groupId: 'modeling',
-      argDefaultValues,
-    },
+    data,
   }
 }
 
@@ -1369,7 +1668,7 @@ export async function enterCloneFlow({
 }: EnterEditFlowProps): Promise<Error | CommandBarMachineEvent> {
   const isModuleImport = operation.type === 'GroupBegin'
   const isSupportedStdLibCall =
-    (operation.type === 'KclStdLibCall' || operation.type === 'StdLibCall') &&
+    operation.type === 'StdLibCall' &&
     stdLibMap[operation.name]?.supportsTransform
   if (!isModuleImport && !isSupportedStdLibCall) {
     return new Error(
@@ -1377,10 +1676,7 @@ export async function enterCloneFlow({
     )
   }
 
-  const nodeToEdit = getNodePathFromSourceRange(
-    kclManager.ast,
-    sourceRangeFromRust(operation.sourceRange)
-  )
+  const nodeToEdit = pathToNodeFromRustNodePath(operation.nodePath)
 
   // Won't be used since we provide nodeToEdit
   const selection: Selections = { graphSelections: [], otherSelections: [] }

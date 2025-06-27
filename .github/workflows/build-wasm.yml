@@ -1,0 +1,56 @@
+name: Build WASM
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  npm-build-wasm:
+    runs-on: runs-on=${{ github.run_id }}/family=i7ie.2xlarge/image=ubuntu22-full-x64
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Use correct Rust toolchain
+        shell: bash
+        run: |
+          [ -e rust-toolchain.toml ] || cp rust/rust-toolchain.toml ./
+
+      - name: Install rust
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          cache: false # configured below
+
+      - uses: taiki-e/install-action@d4635f2de61c8b8104d59cd4aede2060638378cc
+        with:
+          tool: wasm-pack
+
+      - name: Use Rust cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: './rust'
+
+      - name: Build Wasm
+        shell: bash
+        run: npm run build:wasm
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: prepared-wasm
+          path: |
+            rust/kcl-wasm-lib/pkg/kcl_wasm_lib*
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: prepared-ts-rs-bindings
+          path: |
+            rust/kcl-lib/bindings/*

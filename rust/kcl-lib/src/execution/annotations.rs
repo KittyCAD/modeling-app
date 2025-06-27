@@ -32,6 +32,8 @@ pub(crate) const IMPL_KCL: &str = "kcl";
 pub(crate) const IMPL_PRIMITIVE: &str = "primitive";
 pub(super) const IMPL_VALUES: [&str; 3] = [IMPL_RUST, IMPL_KCL, IMPL_PRIMITIVE];
 
+pub(crate) const DEPRECATED: &str = "deprecated";
+
 #[derive(Clone, Copy, Eq, PartialEq, Debug, Default)]
 pub enum Impl {
     #[default]
@@ -70,10 +72,10 @@ pub(super) fn expect_properties<'a>(
 ) -> Result<&'a [Node<ObjectProperty>], KclError> {
     assert_eq!(annotation.name().unwrap(), for_key);
     Ok(&**annotation.properties.as_ref().ok_or_else(|| {
-        KclError::Semantic(KclErrorDetails {
-            message: format!("Empty `{for_key}` annotation"),
-            source_ranges: vec![annotation.as_source_range()],
-        })
+        KclError::new_semantic(KclErrorDetails::new(
+            format!("Empty `{for_key}` annotation"),
+            vec![annotation.as_source_range()],
+        ))
     })?)
 }
 
@@ -84,10 +86,10 @@ pub(super) fn expect_ident(expr: &Expr) -> Result<&str, KclError> {
         }
     }
 
-    Err(KclError::Semantic(KclErrorDetails {
-        message: "Unexpected settings value, expected a simple name, e.g., `mm`".to_owned(),
-        source_ranges: vec![expr.into()],
-    }))
+    Err(KclError::new_semantic(KclErrorDetails::new(
+        "Unexpected settings value, expected a simple name, e.g., `mm`".to_owned(),
+        vec![expr.into()],
+    )))
 }
 
 // Returns the unparsed number literal.
@@ -98,10 +100,10 @@ pub(super) fn expect_number(expr: &Expr) -> Result<String, KclError> {
         }
     }
 
-    Err(KclError::Semantic(KclErrorDetails {
-        message: "Unexpected settings value, expected a number, e.g., `1.0`".to_owned(),
-        source_ranges: vec![expr.into()],
-    }))
+    Err(KclError::new_semantic(KclErrorDetails::new(
+        "Unexpected settings value, expected a number, e.g., `1.0`".to_owned(),
+        vec![expr.into()],
+    )))
 }
 
 pub(super) fn get_impl(annotations: &[Node<Annotation>], source_range: SourceRange) -> Result<Option<Impl>, KclError> {
@@ -113,14 +115,14 @@ pub(super) fn get_impl(annotations: &[Node<Annotation>], source_range: SourceRan
             if &*p.key.name == IMPL {
                 if let Some(s) = p.value.ident_name() {
                     return Impl::from_str(s).map(Some).map_err(|_| {
-                        KclError::Semantic(KclErrorDetails {
-                            message: format!(
+                        KclError::new_semantic(KclErrorDetails::new(
+                            format!(
                                 "Invalid value for {} attribute, expected one of: {}",
                                 IMPL,
                                 IMPL_VALUES.join(", ")
                             ),
-                            source_ranges: vec![source_range],
-                        })
+                            vec![source_range],
+                        ))
                     });
                 }
             }
@@ -139,12 +141,12 @@ impl UnitLen {
             "inch" | "in" => Ok(UnitLen::Inches),
             "ft" => Ok(UnitLen::Feet),
             "yd" => Ok(UnitLen::Yards),
-            value => Err(KclError::Semantic(KclErrorDetails {
-                message: format!(
+            value => Err(KclError::new_semantic(KclErrorDetails::new(
+                format!(
                     "Unexpected value for length units: `{value}`; expected one of `mm`, `cm`, `m`, `in`, `ft`, `yd`"
                 ),
-                source_ranges: vec![source_range],
-            })),
+                vec![source_range],
+            ))),
         }
     }
 }
@@ -154,10 +156,10 @@ impl UnitAngle {
         match s {
             "deg" => Ok(UnitAngle::Degrees),
             "rad" => Ok(UnitAngle::Radians),
-            value => Err(KclError::Semantic(KclErrorDetails {
-                message: format!("Unexpected value for angle units: `{value}`; expected one of `deg`, `rad`"),
-                source_ranges: vec![source_range],
-            })),
+            value => Err(KclError::new_semantic(KclErrorDetails::new(
+                format!("Unexpected value for angle units: `{value}`; expected one of `deg`, `rad`"),
+                vec![source_range],
+            ))),
         }
     }
 }

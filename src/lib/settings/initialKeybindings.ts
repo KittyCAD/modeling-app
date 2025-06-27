@@ -146,11 +146,18 @@ export const interactionMap: Record<
         'Available while modeling with either a face selected or an empty selection, when not typing in the code editor.',
     },
     {
-      name: 'center-on-selection',
+      name: 'camera-center-on-selection',
       sequence: `${PRIMARY}+Alt+C`,
       title: 'Center on selection',
       description:
         'Centers the view on the selected geometry, or everything if nothing is selected.',
+    },
+    {
+      name: 'camera-reset-position',
+      sequence: `${PRIMARY}+Alt+X`,
+      title: 'Reset camera position',
+      description:
+        'Reset the camera to its default position and orientation, which is an isometric view.',
     },
   ],
   'Code Editor': [

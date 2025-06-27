@@ -46,6 +46,7 @@ export class SceneFixture {
   public networkToggleConnected!: Locator
   public engineConnectionsSpinner!: Locator
   public startEditSketchBtn!: Locator
+  public appHeader!: Locator
 
   constructor(page: Page) {
     this.page = page
@@ -57,6 +58,7 @@ export class SceneFixture {
     this.startEditSketchBtn = page
       .getByRole('button', { name: 'Start Sketch' })
       .or(page.getByRole('button', { name: 'Edit Sketch' }))
+    this.appHeader = this.page.getByTestId('app-header')
   }
   private _serialiseScene = async (): Promise<SceneSerialised> => {
     const camera = await this.getCameraInfo()
@@ -279,6 +281,13 @@ export class SceneFixture {
     })
     await expect(buttonToTest).toBeVisible()
     await buttonToTest.click()
+  }
+
+  isNativeFileMenuCreated = async () => {
+    await expect(this.appHeader).toHaveAttribute(
+      'data-native-file-menu',
+      'true'
+    )
   }
 }
 

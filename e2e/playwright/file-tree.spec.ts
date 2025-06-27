@@ -13,7 +13,7 @@ import { expect, test } from '@e2e/playwright/zoo-test'
 test.describe('integrations tests', () => {
   test(
     'Creating a new file or switching file while in sketchMode should exit sketchMode',
-    { tag: '@electron' },
+    { tag: '@desktop' },
     async ({ page, context, homePage, scene, editor, toolbar, cmdBar }) => {
       await context.folderSetupFn(async (dir) => {
         const bracketDir = join(dir, 'test-sample')
@@ -100,7 +100,7 @@ test.describe('when using the file tree to', () => {
 
   test(
     `rename ${fromFile} to ${toFile}, and doesn't crash on reload and settings load`,
-    { tag: '@electron' },
+    { tag: '@desktop' },
     async ({ page }, testInfo) => {
       const { panesOpen, pasteCodeInEditor, renameFile, editorTextMatches } =
         await getUtils(page, test)
@@ -142,7 +142,7 @@ test.describe('when using the file tree to', () => {
 
   test(
     `create many new files of the same name, incrementing their names`,
-    { tag: '@electron' },
+    { tag: '@desktop' },
     async ({ page }, testInfo) => {
       const { panesOpen, createNewFile } = await getUtils(page, test)
 
@@ -174,7 +174,7 @@ test.describe('when using the file tree to', () => {
 
   test(
     'create a new file with the same name as an existing file cancels the operation',
-    { tag: '@electron' },
+    { tag: '@desktop' },
     async ({ context, page, homePage, scene, editor, toolbar }, testInfo) => {
       const projectName = 'cube'
       const mainFile = 'main.kcl'
@@ -239,8 +239,28 @@ test.describe('when using the file tree to', () => {
   )
 
   test(
+    `create new folders and that doesn't trigger a navigation`,
+    { tag: ['@desktop', '@macos', '@windows'] },
+    async ({ page, homePage, scene, toolbar, cmdBar }) => {
+      await homePage.goToModelingScene()
+      await scene.settled(cmdBar)
+      await toolbar.openPane('files')
+      const { createNewFolder } = await getUtils(page, test)
+
+      await createNewFolder('folder')
+
+      await createNewFolder('folder.kcl')
+
+      await test.step(`Postcondition: folders are created and we didn't navigate`, async () => {
+        await toolbar.expectFileTreeState(['folder', 'folder.kcl', 'main.kcl'])
+        await expect(toolbar.fileName).toHaveText('main.kcl')
+      })
+    }
+  )
+
+  test(
     'deleting all files recreates a default main.kcl with no code',
-    { tag: '@electron' },
+    { tag: '@desktop' },
     async ({ page }, testInfo) => {
       const { panesOpen, pasteCodeInEditor, deleteFile, editorTextMatches } =
         await getUtils(page, test)
@@ -271,7 +291,7 @@ test.describe('when using the file tree to', () => {
   test(
     'loading small file, then large, then back to small',
     {
-      tag: '@electron',
+      tag: '@desktop',
     },
     async ({ page }, testInfo) => {
       const {
@@ -341,7 +361,7 @@ test.describe('when using the file tree to', () => {
 test.describe('Renaming in the file tree', () => {
   test(
     'A file you have open',
-    { tag: '@electron' },
+    { tag: '@desktop' },
     async ({ context, page }, testInfo) => {
       const { dir } = await context.folderSetupFn(async (dir) => {
         await fsp.mkdir(join(dir, 'Test Project'), { recursive: true })
@@ -430,7 +450,7 @@ test.describe('Renaming in the file tree', () => {
 
   test(
     'A file you do not have open',
-    { tag: '@electron' },
+    { tag: '@desktop' },
     async ({ context, page }, testInfo) => {
       const { dir } = await context.folderSetupFn(async (dir) => {
         await fsp.mkdir(join(dir, 'Test Project'), { recursive: true })
@@ -516,7 +536,7 @@ test.describe('Renaming in the file tree', () => {
 
   test(
     `A folder you're not inside`,
-    { tag: '@electron' },
+    { tag: '@desktop' },
     async ({ context, page }, testInfo) => {
       const { dir } = await context.folderSetupFn(async (dir) => {
         await fsp.mkdir(join(dir, 'Test Project'), { recursive: true })
@@ -598,7 +618,7 @@ test.describe('Renaming in the file tree', () => {
 
   test(
     `A folder you are inside`,
-    { tag: '@electron' },
+    { tag: '@desktop' },
     async ({ page, context }, testInfo) => {
       const { dir } = await context.folderSetupFn(async (dir) => {
         await fsp.mkdir(join(dir, 'Test Project'), { recursive: true })
@@ -701,7 +721,7 @@ test.describe('Renaming in the file tree', () => {
 test.describe('Deleting items from the file pane', () => {
   test(
     `delete file when main.kcl exists, navigate to main.kcl`,
-    { tag: '@electron' },
+    { tag: '@desktop' },
     async ({ page, context }, testInfo) => {
       await context.folderSetupFn(async (dir) => {
         const testDir = join(dir, 'testProject')
@@ -766,7 +786,7 @@ test.describe('Deleting items from the file pane', () => {
 
   test(
     `Delete folder we are not in, don't navigate`,
-    { tag: '@electron' },
+    { tag: '@desktop' },
     async ({ context, page }, testInfo) => {
       await context.folderSetupFn(async (dir) => {
         await fsp.mkdir(join(dir, 'Test Project'), { recursive: true })
@@ -820,7 +840,7 @@ test.describe('Deleting items from the file pane', () => {
 
   test(
     `Delete folder we are in, navigate to main.kcl`,
-    { tag: '@electron' },
+    { tag: '@desktop' },
     async ({ context, page }, testInfo) => {
       await context.folderSetupFn(async (dir) => {
         await fsp.mkdir(join(dir, 'Test Project'), { recursive: true })
@@ -886,7 +906,7 @@ test.describe('Deleting items from the file pane', () => {
   // Copied from tests above.
   test(
     `external deletion of project navigates back home`,
-    { tag: '@electron' },
+    { tag: '@desktop' },
     async ({ context, page }, testInfo) => {
       const TEST_PROJECT_NAME = 'Test Project'
       const { dir: projectsDirName } = await context.folderSetupFn(
@@ -950,7 +970,7 @@ test.describe('Deleting items from the file pane', () => {
   // Similar to the above
   test(
     `external deletion of file in sub-directory updates the file tree and recreates it on code editor typing`,
-    { tag: '@electron' },
+    { tag: '@desktop' },
     async ({ context, page }, testInfo) => {
       const TEST_PROJECT_NAME = 'Test Project'
       const { dir: projectsDirName } = await context.folderSetupFn(
@@ -1025,7 +1045,7 @@ test.describe('Deleting items from the file pane', () => {
 test.describe('Undo and redo do not keep history when navigating between files', () => {
   test(
     `open a file, change something, open a different file, hitting undo should do nothing`,
-    { tag: '@electron' },
+    { tag: '@desktop' },
     async ({ context, page }, testInfo) => {
       await context.folderSetupFn(async (dir) => {
         const testDir = join(dir, 'testProject')
@@ -1092,7 +1112,7 @@ test.describe('Undo and redo do not keep history when navigating between files',
 
   test(
     `open a file, change something, undo it, open a different file, hitting redo should do nothing`,
-    { tag: '@electron' },
+    { tag: '@desktop' },
     async ({ context, page }, testInfo) => {
       await context.folderSetupFn(async (dir) => {
         const testDir = join(dir, 'testProject')
@@ -1192,7 +1212,7 @@ test.describe('Undo and redo do not keep history when navigating between files',
 
   test(
     `cloned file has an incremented name and same contents`,
-    { tag: '@electron' },
+    { tag: '@desktop' },
     async ({ page, context, homePage }, testInfo) => {
       const { panesOpen, cloneFile } = await getUtils(page, test)
 

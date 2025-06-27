@@ -30,6 +30,7 @@ description: Variables in memory after executing router-template-slate.kcl
           "tag": {
             "commentStart": 638,
             "end": 644,
+            "moduleId": 0,
             "start": 638,
             "type": "TagDeclarator",
             "value": "seg01"
@@ -50,6 +51,7 @@ description: Variables in memory after executing router-template-slate.kcl
           "tag": {
             "commentStart": 791,
             "end": 797,
+            "moduleId": 0,
             "start": 791,
             "type": "TagDeclarator",
             "value": "seg05"
@@ -63,6 +65,7 @@ description: Variables in memory after executing router-template-slate.kcl
           "tag": {
             "commentStart": 866,
             "end": 872,
+            "moduleId": 0,
             "start": 866,
             "type": "TagDeclarator",
             "value": "seg04"
@@ -76,6 +79,7 @@ description: Variables in memory after executing router-template-slate.kcl
           "tag": {
             "commentStart": 912,
             "end": 918,
+            "moduleId": 0,
             "start": 912,
             "type": "TagDeclarator",
             "value": "seg03"
@@ -136,22 +140,23 @@ description: Variables in memory after executing router-template-slate.kcl
             },
             "from": [
               0.0,
-              1.107
+              28.118750000000002
             ],
             "tag": {
               "commentStart": 638,
               "end": 644,
+              "moduleId": 0,
               "start": 638,
               "type": "TagDeclarator",
               "value": "seg01"
             },
             "to": [
-              0.4232,
-              1.107
+              10.75,
+              28.118750000000002
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Inches"
+              "type": "Mm"
             }
           },
           {
@@ -161,22 +166,22 @@ description: Variables in memory after executing router-template-slate.kcl
             },
             "ccw": false,
             "center": [
-              0.4232,
-              0.7874
+              10.75,
+              20.0
             ],
             "from": [
-              0.4232,
-              1.107
+              10.75,
+              28.118750000000002
             ],
-            "radius": 0.3196358267716536,
+            "radius": 8.11875,
             "tag": null,
             "to": [
-              0.7429,
-              0.7874
+              18.86875,
+              20.0
             ],
             "type": "Arc",
             "units": {
-              "type": "Inches"
+              "type": "Mm"
             }
           },
           {
@@ -185,23 +190,24 @@ description: Variables in memory after executing router-template-slate.kcl
               "sourceRange": []
             },
             "from": [
-              0.7429,
-              0.7874
+              18.86875,
+              20.0
             ],
             "tag": {
               "commentStart": 791,
               "end": 797,
+              "moduleId": 0,
               "start": 791,
               "type": "TagDeclarator",
               "value": "seg05"
             },
             "to": [
-              0.7429,
-              -0.4919
+              18.86875,
+              -12.49375
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Inches"
+              "type": "Mm"
             }
           },
           {
@@ -210,23 +216,24 @@ description: Variables in memory after executing router-template-slate.kcl
               "sourceRange": []
             },
             "from": [
-              0.7429,
-              -0.4919
+              18.86875,
+              -12.49375
             ],
             "tag": {
               "commentStart": 866,
               "end": 872,
+              "moduleId": 0,
               "start": 866,
               "type": "TagDeclarator",
               "value": "seg04"
             },
             "to": [
-              1.2106,
-              -0.4919
+              30.75,
+              -12.49375
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Inches"
+              "type": "Mm"
             }
           },
           {
@@ -235,23 +242,24 @@ description: Variables in memory after executing router-template-slate.kcl
               "sourceRange": []
             },
             "from": [
-              1.2106,
-              -0.4919
+              30.75,
+              -12.49375
             ],
             "tag": {
               "commentStart": 912,
               "end": 918,
+              "moduleId": 0,
               "start": 912,
               "type": "TagDeclarator",
               "value": "seg03"
             },
             "to": [
-              1.2106,
-              -4.8226
+              30.75,
+              -122.49375
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Inches"
+              "type": "Mm"
             }
           },
           {
@@ -260,23 +268,24 @@ description: Variables in memory after executing router-template-slate.kcl
               "sourceRange": []
             },
             "from": [
-              1.2106,
-              -4.8226
+              30.75,
+              -122.49375
             ],
             "tag": {
               "commentStart": 954,
               "end": 960,
+              "moduleId": 0,
               "start": 954,
               "type": "TagDeclarator",
               "value": "seg02"
             },
             "to": [
               0.0,
-              -4.8226
+              -122.49375
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Inches"
+              "type": "Mm"
             }
           },
           {
@@ -286,16 +295,16 @@ description: Variables in memory after executing router-template-slate.kcl
             },
             "from": [
               0.0,
-              -4.8226
+              -122.49375
             ],
             "tag": null,
             "to": [
-              -1.2106,
-              -4.8226
+              -30.75,
+              -122.49375
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Inches"
+              "type": "Mm"
             }
           },
           {
@@ -304,17 +313,17 @@ description: Variables in memory after executing router-template-slate.kcl
               "sourceRange": []
             },
             "from": [
-              -1.2106,
-              -4.8226
+              -30.75,
+              -122.49375
             ],
             "tag": null,
             "to": [
-              -1.2106,
-              -0.4919
+              -30.75,
+              -12.493750000000006
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Inches"
+              "type": "Mm"
             }
           },
           {
@@ -323,17 +332,17 @@ description: Variables in memory after executing router-template-slate.kcl
               "sourceRange": []
             },
             "from": [
-              -1.2106,
-              -0.4919
+              -30.75,
+              -12.493750000000006
             ],
             "tag": null,
             "to": [
-              -0.7429,
-              -0.4919
+              -18.86875,
+              -12.493750000000006
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Inches"
+              "type": "Mm"
             }
           },
           {
@@ -342,17 +351,17 @@ description: Variables in memory after executing router-template-slate.kcl
               "sourceRange": []
             },
             "from": [
-              -0.7429,
-              -0.4919
+              -18.86875,
+              -12.493750000000006
             ],
             "tag": null,
             "to": [
-              -0.7429,
-              0.7874
+              -18.86875,
+              19.999999999999993
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Inches"
+              "type": "Mm"
             }
           },
           {
@@ -362,22 +371,22 @@ description: Variables in memory after executing router-template-slate.kcl
             },
             "ccw": false,
             "center": [
-              -0.4232,
-              0.7874
+              -10.749999999999998,
+              19.999999999999993
             ],
             "from": [
-              -0.7429,
-              0.7874
+              -18.86875,
+              19.999999999999993
             ],
-            "radius": 0.3196358267716536,
+            "radius": 8.11875,
             "tag": null,
             "to": [
-              -0.4232,
-              1.107
+              -10.749999999999998,
+              28.11874999999999
             ],
             "type": "Arc",
             "units": {
-              "type": "Inches"
+              "type": "Mm"
             }
           },
           {
@@ -386,17 +395,17 @@ description: Variables in memory after executing router-template-slate.kcl
               "sourceRange": []
             },
             "from": [
-              -0.4232,
-              1.107
+              -10.749999999999998,
+              28.11874999999999
             ],
             "tag": null,
             "to": [
               0.0,
-              1.107
+              28.118750000000002
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Inches"
+              "type": "Mm"
             }
           },
           {
@@ -406,16 +415,16 @@ description: Variables in memory after executing router-template-slate.kcl
             },
             "from": [
               0.0,
-              1.107
+              28.118750000000002
             ],
             "tag": null,
             "to": [
               0.0,
-              1.107
+              28.118750000000002
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Inches"
+              "type": "Mm"
             }
           }
         ],
@@ -452,14 +461,14 @@ description: Variables in memory after executing router-template-slate.kcl
         "start": {
           "from": [
             0.0,
-            1.107
+            28.118750000000002
           ],
           "to": [
             0.0,
-            1.107
+            28.118750000000002
           ],
           "units": {
-            "type": "Inches"
+            "type": "Mm"
           },
           "tag": null,
           "__geoMeta": {
@@ -492,14 +501,14 @@ description: Variables in memory after executing router-template-slate.kcl
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
-          "type": "Inches"
+          "type": "Mm"
         }
       },
-      "height": 0.1968503937007874,
+      "height": 5.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
-        "type": "Inches"
+        "type": "Mm"
       },
       "sectional": false
     }
@@ -518,6 +527,7 @@ description: Variables in memory after executing router-template-slate.kcl
           "tag": {
             "commentStart": 1575,
             "end": 1596,
+            "moduleId": 0,
             "start": 1575,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA001"
@@ -531,6 +541,7 @@ description: Variables in memory after executing router-template-slate.kcl
           "tag": {
             "commentStart": 1693,
             "end": 1714,
+            "moduleId": 0,
             "start": 1693,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB001"
@@ -544,6 +555,7 @@ description: Variables in memory after executing router-template-slate.kcl
           "tag": {
             "commentStart": 1816,
             "end": 1837,
+            "moduleId": 0,
             "start": 1816,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC001"
@@ -568,23 +580,24 @@ description: Variables in memory after executing router-template-slate.kcl
               "sourceRange": []
             },
             "from": [
-              -0.8169,
-              -0.4919
+              -20.75,
+              -12.49375
             ],
             "tag": {
               "commentStart": 1575,
               "end": 1596,
+              "moduleId": 0,
               "start": 1575,
               "type": "TagDeclarator",
               "value": "rectangleSegmentA001"
             },
             "to": [
-              -1.0925,
-              -0.4919
+              -27.75,
+              -12.49375
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Inches"
+              "type": "Mm"
             }
           },
           {
@@ -593,23 +606,24 @@ description: Variables in memory after executing router-template-slate.kcl
               "sourceRange": []
             },
             "from": [
-              -1.0925,
-              -0.4919
+              -27.75,
+              -12.49375
             ],
             "tag": {
               "commentStart": 1693,
               "end": 1714,
+              "moduleId": 0,
               "start": 1693,
               "type": "TagDeclarator",
               "value": "rectangleSegmentB001"
             },
             "to": [
-              -1.0925,
-              -3.6415
+              -27.750000000000014,
+              -92.49375
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Inches"
+              "type": "Mm"
             }
           },
           {
@@ -618,23 +632,24 @@ description: Variables in memory after executing router-template-slate.kcl
               "sourceRange": []
             },
             "from": [
-              -1.0925,
-              -3.6415
+              -27.750000000000014,
+              -92.49375
             ],
             "tag": {
               "commentStart": 1816,
               "end": 1837,
+              "moduleId": 0,
               "start": 1816,
               "type": "TagDeclarator",
               "value": "rectangleSegmentC001"
             },
             "to": [
-              -0.8169,
-              -3.6415
+              -20.750000000000014,
+              -92.49375
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Inches"
+              "type": "Mm"
             }
           },
           {
@@ -643,17 +658,17 @@ description: Variables in memory after executing router-template-slate.kcl
               "sourceRange": []
             },
             "from": [
-              -0.8169,
-              -3.6415
+              -20.750000000000014,
+              -92.49375
             ],
             "tag": null,
             "to": [
-              -0.8169,
-              -0.4919
+              -20.75,
+              -12.49375
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Inches"
+              "type": "Mm"
             }
           },
           {
@@ -662,17 +677,17 @@ description: Variables in memory after executing router-template-slate.kcl
               "sourceRange": []
             },
             "from": [
-              -0.8169,
-              -0.4919
+              -20.75,
+              -12.49375
             ],
             "tag": null,
             "to": [
-              -0.8169,
-              -0.4919
+              -20.75,
+              -12.49375
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Inches"
+              "type": "Mm"
             }
           }
         ],
@@ -709,6 +724,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 "tag": {
                   "commentStart": 638,
                   "end": 644,
+                  "moduleId": 0,
                   "start": 638,
                   "type": "TagDeclarator",
                   "value": "seg01"
@@ -729,6 +745,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 "tag": {
                   "commentStart": 791,
                   "end": 797,
+                  "moduleId": 0,
                   "start": 791,
                   "type": "TagDeclarator",
                   "value": "seg05"
@@ -742,6 +759,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 "tag": {
                   "commentStart": 866,
                   "end": 872,
+                  "moduleId": 0,
                   "start": 866,
                   "type": "TagDeclarator",
                   "value": "seg04"
@@ -755,6 +773,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 "tag": {
                   "commentStart": 912,
                   "end": 918,
+                  "moduleId": 0,
                   "start": 912,
                   "type": "TagDeclarator",
                   "value": "seg03"
@@ -815,22 +834,23 @@ description: Variables in memory after executing router-template-slate.kcl
                   },
                   "from": [
                     0.0,
-                    1.107
+                    28.118750000000002
                   ],
                   "tag": {
                     "commentStart": 638,
                     "end": 644,
+                    "moduleId": 0,
                     "start": 638,
                     "type": "TagDeclarator",
                     "value": "seg01"
                   },
                   "to": [
-                    0.4232,
-                    1.107
+                    10.75,
+                    28.118750000000002
                   ],
                   "type": "ToPoint",
                   "units": {
-                    "type": "Inches"
+                    "type": "Mm"
                   }
                 },
                 {
@@ -840,22 +860,22 @@ description: Variables in memory after executing router-template-slate.kcl
                   },
                   "ccw": false,
                   "center": [
-                    0.4232,
-                    0.7874
+                    10.75,
+                    20.0
                   ],
                   "from": [
-                    0.4232,
-                    1.107
+                    10.75,
+                    28.118750000000002
                   ],
-                  "radius": 0.3196358267716536,
+                  "radius": 8.11875,
                   "tag": null,
                   "to": [
-                    0.7429,
-                    0.7874
+                    18.86875,
+                    20.0
                   ],
                   "type": "Arc",
                   "units": {
-                    "type": "Inches"
+                    "type": "Mm"
                   }
                 },
                 {
@@ -864,23 +884,24 @@ description: Variables in memory after executing router-template-slate.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    0.7429,
-                    0.7874
+                    18.86875,
+                    20.0
                   ],
                   "tag": {
                     "commentStart": 791,
                     "end": 797,
+                    "moduleId": 0,
                     "start": 791,
                     "type": "TagDeclarator",
                     "value": "seg05"
                   },
                   "to": [
-                    0.7429,
-                    -0.4919
+                    18.86875,
+                    -12.49375
                   ],
                   "type": "ToPoint",
                   "units": {
-                    "type": "Inches"
+                    "type": "Mm"
                   }
                 },
                 {
@@ -889,23 +910,24 @@ description: Variables in memory after executing router-template-slate.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    0.7429,
-                    -0.4919
+                    18.86875,
+                    -12.49375
                   ],
                   "tag": {
                     "commentStart": 866,
                     "end": 872,
+                    "moduleId": 0,
                     "start": 866,
                     "type": "TagDeclarator",
                     "value": "seg04"
                   },
                   "to": [
-                    1.2106,
-                    -0.4919
+                    30.75,
+                    -12.49375
                   ],
                   "type": "ToPoint",
                   "units": {
-                    "type": "Inches"
+                    "type": "Mm"
                   }
                 },
                 {
@@ -914,23 +936,24 @@ description: Variables in memory after executing router-template-slate.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    1.2106,
-                    -0.4919
+                    30.75,
+                    -12.49375
                   ],
                   "tag": {
                     "commentStart": 912,
                     "end": 918,
+                    "moduleId": 0,
                     "start": 912,
                     "type": "TagDeclarator",
                     "value": "seg03"
                   },
                   "to": [
-                    1.2106,
-                    -4.8226
+                    30.75,
+                    -122.49375
                   ],
                   "type": "ToPoint",
                   "units": {
-                    "type": "Inches"
+                    "type": "Mm"
                   }
                 },
                 {
@@ -939,23 +962,24 @@ description: Variables in memory after executing router-template-slate.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    1.2106,
-                    -4.8226
+                    30.75,
+                    -122.49375
                   ],
                   "tag": {
                     "commentStart": 954,
                     "end": 960,
+                    "moduleId": 0,
                     "start": 954,
                     "type": "TagDeclarator",
                     "value": "seg02"
                   },
                   "to": [
                     0.0,
-                    -4.8226
+                    -122.49375
                   ],
                   "type": "ToPoint",
                   "units": {
-                    "type": "Inches"
+                    "type": "Mm"
                   }
                 },
                 {
@@ -965,16 +989,16 @@ description: Variables in memory after executing router-template-slate.kcl
                   },
                   "from": [
                     0.0,
-                    -4.8226
+                    -122.49375
                   ],
                   "tag": null,
                   "to": [
-                    -1.2106,
-                    -4.8226
+                    -30.75,
+                    -122.49375
                   ],
                   "type": "ToPoint",
                   "units": {
-                    "type": "Inches"
+                    "type": "Mm"
                   }
                 },
                 {
@@ -983,17 +1007,17 @@ description: Variables in memory after executing router-template-slate.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -1.2106,
-                    -4.8226
+                    -30.75,
+                    -122.49375
                   ],
                   "tag": null,
                   "to": [
-                    -1.2106,
-                    -0.4919
+                    -30.75,
+                    -12.493750000000006
                   ],
                   "type": "ToPoint",
                   "units": {
-                    "type": "Inches"
+                    "type": "Mm"
                   }
                 },
                 {
@@ -1002,17 +1026,17 @@ description: Variables in memory after executing router-template-slate.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -1.2106,
-                    -0.4919
+                    -30.75,
+                    -12.493750000000006
                   ],
                   "tag": null,
                   "to": [
-                    -0.7429,
-                    -0.4919
+                    -18.86875,
+                    -12.493750000000006
                   ],
                   "type": "ToPoint",
                   "units": {
-                    "type": "Inches"
+                    "type": "Mm"
                   }
                 },
                 {
@@ -1021,17 +1045,17 @@ description: Variables in memory after executing router-template-slate.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.7429,
-                    -0.4919
+                    -18.86875,
+                    -12.493750000000006
                   ],
                   "tag": null,
                   "to": [
-                    -0.7429,
-                    0.7874
+                    -18.86875,
+                    19.999999999999993
                   ],
                   "type": "ToPoint",
                   "units": {
-                    "type": "Inches"
+                    "type": "Mm"
                   }
                 },
                 {
@@ -1041,22 +1065,22 @@ description: Variables in memory after executing router-template-slate.kcl
                   },
                   "ccw": false,
                   "center": [
-                    -0.4232,
-                    0.7874
+                    -10.749999999999998,
+                    19.999999999999993
                   ],
                   "from": [
-                    -0.7429,
-                    0.7874
+                    -18.86875,
+                    19.999999999999993
                   ],
-                  "radius": 0.3196358267716536,
+                  "radius": 8.11875,
                   "tag": null,
                   "to": [
-                    -0.4232,
-                    1.107
+                    -10.749999999999998,
+                    28.11874999999999
                   ],
                   "type": "Arc",
                   "units": {
-                    "type": "Inches"
+                    "type": "Mm"
                   }
                 },
                 {
@@ -1065,17 +1089,17 @@ description: Variables in memory after executing router-template-slate.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.4232,
-                    1.107
+                    -10.749999999999998,
+                    28.11874999999999
                   ],
                   "tag": null,
                   "to": [
                     0.0,
-                    1.107
+                    28.118750000000002
                   ],
                   "type": "ToPoint",
                   "units": {
-                    "type": "Inches"
+                    "type": "Mm"
                   }
                 },
                 {
@@ -1085,16 +1109,16 @@ description: Variables in memory after executing router-template-slate.kcl
                   },
                   "from": [
                     0.0,
-                    1.107
+                    28.118750000000002
                   ],
                   "tag": null,
                   "to": [
                     0.0,
-                    1.107
+                    28.118750000000002
                   ],
                   "type": "ToPoint",
                   "units": {
-                    "type": "Inches"
+                    "type": "Mm"
                   }
                 }
               ],
@@ -1131,14 +1155,14 @@ description: Variables in memory after executing router-template-slate.kcl
               "start": {
                 "from": [
                   0.0,
-                  1.107
+                  28.118750000000002
                 ],
                 "to": [
                   0.0,
-                  1.107
+                  28.118750000000002
                 ],
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 },
                 "tag": null,
                 "__geoMeta": {
@@ -1171,32 +1195,32 @@ description: Variables in memory after executing router-template-slate.kcl
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
               "units": {
-                "type": "Inches"
+                "type": "Mm"
               }
             },
-            "height": 0.1968503937007874,
+            "height": 5.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": {
-              "type": "Inches"
+              "type": "Mm"
             },
             "sectional": false
           },
           "units": {
-            "type": "Inches"
+            "type": "Mm"
           }
         },
         "start": {
           "from": [
-            -0.8169,
-            -0.4919
+            -20.75,
+            -12.49375
           ],
           "to": [
-            -0.8169,
-            -0.4919
+            -20.75,
+            -12.49375
           ],
           "units": {
-            "type": "Inches"
+            "type": "Mm"
           },
           "tag": null,
           "__geoMeta": {
@@ -1221,14 +1245,14 @@ description: Variables in memory after executing router-template-slate.kcl
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
-          "type": "Inches"
+          "type": "Mm"
         }
       },
-      "height": 0.29527559055118113,
+      "height": 7.5,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
-        "type": "Inches"
+        "type": "Mm"
       },
       "sectional": false
     }
@@ -1247,6 +1271,7 @@ description: Variables in memory after executing router-template-slate.kcl
           "tag": {
             "commentStart": 2204,
             "end": 2225,
+            "moduleId": 0,
             "start": 2204,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA002"
@@ -1285,23 +1310,24 @@ description: Variables in memory after executing router-template-slate.kcl
               "sourceRange": []
             },
             "from": [
-              0.8169,
-              -0.4919
+              20.75,
+              -12.49375
             ],
             "tag": {
               "commentStart": 2204,
               "end": 2225,
+              "moduleId": 0,
               "start": 2204,
               "type": "TagDeclarator",
               "value": "rectangleSegmentA002"
             },
             "to": [
-              1.0925,
-              -0.4919
+              27.75,
+              -12.49375
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Inches"
+              "type": "Mm"
             }
           },
           {
@@ -1310,17 +1336,17 @@ description: Variables in memory after executing router-template-slate.kcl
               "sourceRange": []
             },
             "from": [
-              1.0925,
-              -0.4919
+              27.75,
+              -12.49375
             ],
             "tag": null,
             "to": [
-              1.0925,
-              -3.6415
+              27.750000000000004,
+              -92.49375
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Inches"
+              "type": "Mm"
             }
           },
           {
@@ -1329,17 +1355,17 @@ description: Variables in memory after executing router-template-slate.kcl
               "sourceRange": []
             },
             "from": [
-              1.0925,
-              -3.6415
+              27.750000000000004,
+              -92.49375
             ],
             "tag": null,
             "to": [
-              0.8169,
-              -3.6415
+              20.750000000000004,
+              -92.49375
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Inches"
+              "type": "Mm"
             }
           },
           {
@@ -1348,17 +1374,17 @@ description: Variables in memory after executing router-template-slate.kcl
               "sourceRange": []
             },
             "from": [
-              0.8169,
-              -3.6415
+              20.750000000000004,
+              -92.49375
             ],
             "tag": null,
             "to": [
-              0.8169,
-              -0.4919
+              20.75,
+              -12.49375
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Inches"
+              "type": "Mm"
             }
           },
           {
@@ -1367,17 +1393,17 @@ description: Variables in memory after executing router-template-slate.kcl
               "sourceRange": []
             },
             "from": [
-              0.8169,
-              -0.4919
+              20.75,
+              -12.49375
             ],
             "tag": null,
             "to": [
-              0.8169,
-              -0.4919
+              20.75,
+              -12.49375
             ],
             "type": "ToPoint",
             "units": {
-              "type": "Inches"
+              "type": "Mm"
             }
           }
         ],
@@ -1414,6 +1440,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 "tag": {
                   "commentStart": 638,
                   "end": 644,
+                  "moduleId": 0,
                   "start": 638,
                   "type": "TagDeclarator",
                   "value": "seg01"
@@ -1434,6 +1461,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 "tag": {
                   "commentStart": 791,
                   "end": 797,
+                  "moduleId": 0,
                   "start": 791,
                   "type": "TagDeclarator",
                   "value": "seg05"
@@ -1447,6 +1475,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 "tag": {
                   "commentStart": 866,
                   "end": 872,
+                  "moduleId": 0,
                   "start": 866,
                   "type": "TagDeclarator",
                   "value": "seg04"
@@ -1460,6 +1489,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 "tag": {
                   "commentStart": 912,
                   "end": 918,
+                  "moduleId": 0,
                   "start": 912,
                   "type": "TagDeclarator",
                   "value": "seg03"
@@ -1520,22 +1550,23 @@ description: Variables in memory after executing router-template-slate.kcl
                   },
                   "from": [
                     0.0,
-                    1.107
+                    28.118750000000002
                   ],
                   "tag": {
                     "commentStart": 638,
                     "end": 644,
+                    "moduleId": 0,
                     "start": 638,
                     "type": "TagDeclarator",
                     "value": "seg01"
                   },
                   "to": [
-                    0.4232,
-                    1.107
+                    10.75,
+                    28.118750000000002
                   ],
                   "type": "ToPoint",
                   "units": {
-                    "type": "Inches"
+                    "type": "Mm"
                   }
                 },
                 {
@@ -1545,22 +1576,22 @@ description: Variables in memory after executing router-template-slate.kcl
                   },
                   "ccw": false,
                   "center": [
-                    0.4232,
-                    0.7874
+                    10.75,
+                    20.0
                   ],
                   "from": [
-                    0.4232,
-                    1.107
+                    10.75,
+                    28.118750000000002
                   ],
-                  "radius": 0.3196358267716536,
+                  "radius": 8.11875,
                   "tag": null,
                   "to": [
-                    0.7429,
-                    0.7874
+                    18.86875,
+                    20.0
                   ],
                   "type": "Arc",
                   "units": {
-                    "type": "Inches"
+                    "type": "Mm"
                   }
                 },
                 {
@@ -1569,23 +1600,24 @@ description: Variables in memory after executing router-template-slate.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    0.7429,
-                    0.7874
+                    18.86875,
+                    20.0
                   ],
                   "tag": {
                     "commentStart": 791,
                     "end": 797,
+                    "moduleId": 0,
                     "start": 791,
                     "type": "TagDeclarator",
                     "value": "seg05"
                   },
                   "to": [
-                    0.7429,
-                    -0.4919
+                    18.86875,
+                    -12.49375
                   ],
                   "type": "ToPoint",
                   "units": {
-                    "type": "Inches"
+                    "type": "Mm"
                   }
                 },
                 {
@@ -1594,23 +1626,24 @@ description: Variables in memory after executing router-template-slate.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    0.7429,
-                    -0.4919
+                    18.86875,
+                    -12.49375
                   ],
                   "tag": {
                     "commentStart": 866,
                     "end": 872,
+                    "moduleId": 0,
                     "start": 866,
                     "type": "TagDeclarator",
                     "value": "seg04"
                   },
                   "to": [
-                    1.2106,
-                    -0.4919
+                    30.75,
+                    -12.49375
                   ],
                   "type": "ToPoint",
                   "units": {
-                    "type": "Inches"
+                    "type": "Mm"
                   }
                 },
                 {
@@ -1619,23 +1652,24 @@ description: Variables in memory after executing router-template-slate.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    1.2106,
-                    -0.4919
+                    30.75,
+                    -12.49375
                   ],
                   "tag": {
                     "commentStart": 912,
                     "end": 918,
+                    "moduleId": 0,
                     "start": 912,
                     "type": "TagDeclarator",
                     "value": "seg03"
                   },
                   "to": [
-                    1.2106,
-                    -4.8226
+                    30.75,
+                    -122.49375
                   ],
                   "type": "ToPoint",
                   "units": {
-                    "type": "Inches"
+                    "type": "Mm"
                   }
                 },
                 {
@@ -1644,23 +1678,24 @@ description: Variables in memory after executing router-template-slate.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    1.2106,
-                    -4.8226
+                    30.75,
+                    -122.49375
                   ],
                   "tag": {
                     "commentStart": 954,
                     "end": 960,
+                    "moduleId": 0,
                     "start": 954,
                     "type": "TagDeclarator",
                     "value": "seg02"
                   },
                   "to": [
                     0.0,
-                    -4.8226
+                    -122.49375
                   ],
                   "type": "ToPoint",
                   "units": {
-                    "type": "Inches"
+                    "type": "Mm"
                   }
                 },
                 {
@@ -1670,16 +1705,16 @@ description: Variables in memory after executing router-template-slate.kcl
                   },
                   "from": [
                     0.0,
-                    -4.8226
+                    -122.49375
                   ],
                   "tag": null,
                   "to": [
-                    -1.2106,
-                    -4.8226
+                    -30.75,
+                    -122.49375
                   ],
                   "type": "ToPoint",
                   "units": {
-                    "type": "Inches"
+                    "type": "Mm"
                   }
                 },
                 {
@@ -1688,17 +1723,17 @@ description: Variables in memory after executing router-template-slate.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -1.2106,
-                    -4.8226
+                    -30.75,
+                    -122.49375
                   ],
                   "tag": null,
                   "to": [
-                    -1.2106,
-                    -0.4919
+                    -30.75,
+                    -12.493750000000006
                   ],
                   "type": "ToPoint",
                   "units": {
-                    "type": "Inches"
+                    "type": "Mm"
                   }
                 },
                 {
@@ -1707,17 +1742,17 @@ description: Variables in memory after executing router-template-slate.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -1.2106,
-                    -0.4919
+                    -30.75,
+                    -12.493750000000006
                   ],
                   "tag": null,
                   "to": [
-                    -0.7429,
-                    -0.4919
+                    -18.86875,
+                    -12.493750000000006
                   ],
                   "type": "ToPoint",
                   "units": {
-                    "type": "Inches"
+                    "type": "Mm"
                   }
                 },
                 {
@@ -1726,17 +1761,17 @@ description: Variables in memory after executing router-template-slate.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.7429,
-                    -0.4919
+                    -18.86875,
+                    -12.493750000000006
                   ],
                   "tag": null,
                   "to": [
-                    -0.7429,
-                    0.7874
+                    -18.86875,
+                    19.999999999999993
                   ],
                   "type": "ToPoint",
                   "units": {
-                    "type": "Inches"
+                    "type": "Mm"
                   }
                 },
                 {
@@ -1746,22 +1781,22 @@ description: Variables in memory after executing router-template-slate.kcl
                   },
                   "ccw": false,
                   "center": [
-                    -0.4232,
-                    0.7874
+                    -10.749999999999998,
+                    19.999999999999993
                   ],
                   "from": [
-                    -0.7429,
-                    0.7874
+                    -18.86875,
+                    19.999999999999993
                   ],
-                  "radius": 0.3196358267716536,
+                  "radius": 8.11875,
                   "tag": null,
                   "to": [
-                    -0.4232,
-                    1.107
+                    -10.749999999999998,
+                    28.11874999999999
                   ],
                   "type": "Arc",
                   "units": {
-                    "type": "Inches"
+                    "type": "Mm"
                   }
                 },
                 {
@@ -1770,17 +1805,17 @@ description: Variables in memory after executing router-template-slate.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.4232,
-                    1.107
+                    -10.749999999999998,
+                    28.11874999999999
                   ],
                   "tag": null,
                   "to": [
                     0.0,
-                    1.107
+                    28.118750000000002
                   ],
                   "type": "ToPoint",
                   "units": {
-                    "type": "Inches"
+                    "type": "Mm"
                   }
                 },
                 {
@@ -1790,16 +1825,16 @@ description: Variables in memory after executing router-template-slate.kcl
                   },
                   "from": [
                     0.0,
-                    1.107
+                    28.118750000000002
                   ],
                   "tag": null,
                   "to": [
                     0.0,
-                    1.107
+                    28.118750000000002
                   ],
                   "type": "ToPoint",
                   "units": {
-                    "type": "Inches"
+                    "type": "Mm"
                   }
                 }
               ],
@@ -1836,14 +1871,14 @@ description: Variables in memory after executing router-template-slate.kcl
               "start": {
                 "from": [
                   0.0,
-                  1.107
+                  28.118750000000002
                 ],
                 "to": [
                   0.0,
-                  1.107
+                  28.118750000000002
                 ],
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 },
                 "tag": null,
                 "__geoMeta": {
@@ -1876,32 +1911,32 @@ description: Variables in memory after executing router-template-slate.kcl
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
               "units": {
-                "type": "Inches"
+                "type": "Mm"
               }
             },
-            "height": 0.1968503937007874,
+            "height": 5.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": {
-              "type": "Inches"
+              "type": "Mm"
             },
             "sectional": false
           },
           "units": {
-            "type": "Inches"
+            "type": "Mm"
           }
         },
         "start": {
           "from": [
-            0.8169,
-            -0.4919
+            20.75,
+            -12.49375
           ],
           "to": [
-            0.8169,
-            -0.4919
+            20.75,
+            -12.49375
           ],
           "units": {
-            "type": "Inches"
+            "type": "Mm"
           },
           "tag": null,
           "__geoMeta": {
@@ -1918,14 +1953,14 @@ description: Variables in memory after executing router-template-slate.kcl
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
-          "type": "Inches"
+          "type": "Mm"
         }
       },
-      "height": 0.29527559055118113,
+      "height": 7.5,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
-        "type": "Inches"
+        "type": "Mm"
       },
       "sectional": false
     }
@@ -2053,22 +2088,23 @@ description: Variables in memory after executing router-template-slate.kcl
           },
           "from": [
             0.0,
-            1.107
+            28.118750000000002
           ],
           "tag": {
             "commentStart": 638,
             "end": 644,
+            "moduleId": 0,
             "start": 638,
             "type": "TagDeclarator",
             "value": "seg01"
           },
           "to": [
-            0.4232,
-            1.107
+            10.75,
+            28.118750000000002
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Inches"
+            "type": "Mm"
           }
         },
         {
@@ -2078,22 +2114,22 @@ description: Variables in memory after executing router-template-slate.kcl
           },
           "ccw": false,
           "center": [
-            0.4232,
-            0.7874
+            10.75,
+            20.0
           ],
           "from": [
-            0.4232,
-            1.107
+            10.75,
+            28.118750000000002
           ],
-          "radius": 0.3196358267716536,
+          "radius": 8.11875,
           "tag": null,
           "to": [
-            0.7429,
-            0.7874
+            18.86875,
+            20.0
           ],
           "type": "Arc",
           "units": {
-            "type": "Inches"
+            "type": "Mm"
           }
         },
         {
@@ -2102,23 +2138,24 @@ description: Variables in memory after executing router-template-slate.kcl
             "sourceRange": []
           },
           "from": [
-            0.7429,
-            0.7874
+            18.86875,
+            20.0
           ],
           "tag": {
             "commentStart": 791,
             "end": 797,
+            "moduleId": 0,
             "start": 791,
             "type": "TagDeclarator",
             "value": "seg05"
           },
           "to": [
-            0.7429,
-            -0.4919
+            18.86875,
+            -12.49375
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Inches"
+            "type": "Mm"
           }
         },
         {
@@ -2127,23 +2164,24 @@ description: Variables in memory after executing router-template-slate.kcl
             "sourceRange": []
           },
           "from": [
-            0.7429,
-            -0.4919
+            18.86875,
+            -12.49375
           ],
           "tag": {
             "commentStart": 866,
             "end": 872,
+            "moduleId": 0,
             "start": 866,
             "type": "TagDeclarator",
             "value": "seg04"
           },
           "to": [
-            1.2106,
-            -0.4919
+            30.75,
+            -12.49375
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Inches"
+            "type": "Mm"
           }
         },
         {
@@ -2152,23 +2190,24 @@ description: Variables in memory after executing router-template-slate.kcl
             "sourceRange": []
           },
           "from": [
-            1.2106,
-            -0.4919
+            30.75,
+            -12.49375
           ],
           "tag": {
             "commentStart": 912,
             "end": 918,
+            "moduleId": 0,
             "start": 912,
             "type": "TagDeclarator",
             "value": "seg03"
           },
           "to": [
-            1.2106,
-            -4.8226
+            30.75,
+            -122.49375
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Inches"
+            "type": "Mm"
           }
         },
         {
@@ -2177,23 +2216,24 @@ description: Variables in memory after executing router-template-slate.kcl
             "sourceRange": []
           },
           "from": [
-            1.2106,
-            -4.8226
+            30.75,
+            -122.49375
           ],
           "tag": {
             "commentStart": 954,
             "end": 960,
+            "moduleId": 0,
             "start": 954,
             "type": "TagDeclarator",
             "value": "seg02"
           },
           "to": [
             0.0,
-            -4.8226
+            -122.49375
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Inches"
+            "type": "Mm"
           }
         },
         {
@@ -2203,16 +2243,16 @@ description: Variables in memory after executing router-template-slate.kcl
           },
           "from": [
             0.0,
-            -4.8226
+            -122.49375
           ],
           "tag": null,
           "to": [
-            -1.2106,
-            -4.8226
+            -30.75,
+            -122.49375
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Inches"
+            "type": "Mm"
           }
         },
         {
@@ -2221,17 +2261,17 @@ description: Variables in memory after executing router-template-slate.kcl
             "sourceRange": []
           },
           "from": [
-            -1.2106,
-            -4.8226
+            -30.75,
+            -122.49375
           ],
           "tag": null,
           "to": [
-            -1.2106,
-            -0.4919
+            -30.75,
+            -12.493750000000006
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Inches"
+            "type": "Mm"
           }
         },
         {
@@ -2240,17 +2280,17 @@ description: Variables in memory after executing router-template-slate.kcl
             "sourceRange": []
           },
           "from": [
-            -1.2106,
-            -0.4919
+            -30.75,
+            -12.493750000000006
           ],
           "tag": null,
           "to": [
-            -0.7429,
-            -0.4919
+            -18.86875,
+            -12.493750000000006
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Inches"
+            "type": "Mm"
           }
         },
         {
@@ -2259,17 +2299,17 @@ description: Variables in memory after executing router-template-slate.kcl
             "sourceRange": []
           },
           "from": [
-            -0.7429,
-            -0.4919
+            -18.86875,
+            -12.493750000000006
           ],
           "tag": null,
           "to": [
-            -0.7429,
-            0.7874
+            -18.86875,
+            19.999999999999993
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Inches"
+            "type": "Mm"
           }
         },
         {
@@ -2279,22 +2319,22 @@ description: Variables in memory after executing router-template-slate.kcl
           },
           "ccw": false,
           "center": [
-            -0.4232,
-            0.7874
+            -10.749999999999998,
+            19.999999999999993
           ],
           "from": [
-            -0.7429,
-            0.7874
+            -18.86875,
+            19.999999999999993
           ],
-          "radius": 0.3196358267716536,
+          "radius": 8.11875,
           "tag": null,
           "to": [
-            -0.4232,
-            1.107
+            -10.749999999999998,
+            28.11874999999999
           ],
           "type": "Arc",
           "units": {
-            "type": "Inches"
+            "type": "Mm"
           }
         },
         {
@@ -2303,17 +2343,17 @@ description: Variables in memory after executing router-template-slate.kcl
             "sourceRange": []
           },
           "from": [
-            -0.4232,
-            1.107
+            -10.749999999999998,
+            28.11874999999999
           ],
           "tag": null,
           "to": [
             0.0,
-            1.107
+            28.118750000000002
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Inches"
+            "type": "Mm"
           }
         },
         {
@@ -2323,16 +2363,16 @@ description: Variables in memory after executing router-template-slate.kcl
           },
           "from": [
             0.0,
-            1.107
+            28.118750000000002
           ],
           "tag": null,
           "to": [
             0.0,
-            1.107
+            28.118750000000002
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Inches"
+            "type": "Mm"
           }
         }
       ],
@@ -2369,14 +2409,14 @@ description: Variables in memory after executing router-template-slate.kcl
       "start": {
         "from": [
           0.0,
-          1.107
+          28.118750000000002
         ],
         "to": [
           0.0,
-          1.107
+          28.118750000000002
         ],
         "units": {
-          "type": "Inches"
+          "type": "Mm"
         },
         "tag": null,
         "__geoMeta": {
@@ -2409,7 +2449,7 @@ description: Variables in memory after executing router-template-slate.kcl
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": {
-        "type": "Inches"
+        "type": "Mm"
       }
     }
   },
@@ -2425,23 +2465,24 @@ description: Variables in memory after executing router-template-slate.kcl
             "sourceRange": []
           },
           "from": [
-            -0.8169,
-            -0.4919
+            -20.75,
+            -12.49375
           ],
           "tag": {
             "commentStart": 1575,
             "end": 1596,
+            "moduleId": 0,
             "start": 1575,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA001"
           },
           "to": [
-            -1.0925,
-            -0.4919
+            -27.75,
+            -12.49375
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Inches"
+            "type": "Mm"
           }
         },
         {
@@ -2450,23 +2491,24 @@ description: Variables in memory after executing router-template-slate.kcl
             "sourceRange": []
           },
           "from": [
-            -1.0925,
-            -0.4919
+            -27.75,
+            -12.49375
           ],
           "tag": {
             "commentStart": 1693,
             "end": 1714,
+            "moduleId": 0,
             "start": 1693,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB001"
           },
           "to": [
-            -1.0925,
-            -3.6415
+            -27.750000000000014,
+            -92.49375
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Inches"
+            "type": "Mm"
           }
         },
         {
@@ -2475,23 +2517,24 @@ description: Variables in memory after executing router-template-slate.kcl
             "sourceRange": []
           },
           "from": [
-            -1.0925,
-            -3.6415
+            -27.750000000000014,
+            -92.49375
           ],
           "tag": {
             "commentStart": 1816,
             "end": 1837,
+            "moduleId": 0,
             "start": 1816,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC001"
           },
           "to": [
-            -0.8169,
-            -3.6415
+            -20.750000000000014,
+            -92.49375
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Inches"
+            "type": "Mm"
           }
         },
         {
@@ -2500,17 +2543,17 @@ description: Variables in memory after executing router-template-slate.kcl
             "sourceRange": []
           },
           "from": [
-            -0.8169,
-            -3.6415
+            -20.750000000000014,
+            -92.49375
           ],
           "tag": null,
           "to": [
-            -0.8169,
-            -0.4919
+            -20.75,
+            -12.49375
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Inches"
+            "type": "Mm"
           }
         },
         {
@@ -2519,17 +2562,17 @@ description: Variables in memory after executing router-template-slate.kcl
             "sourceRange": []
           },
           "from": [
-            -0.8169,
-            -0.4919
+            -20.75,
+            -12.49375
           ],
           "tag": null,
           "to": [
-            -0.8169,
-            -0.4919
+            -20.75,
+            -12.49375
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Inches"
+            "type": "Mm"
           }
         }
       ],
@@ -2566,6 +2609,7 @@ description: Variables in memory after executing router-template-slate.kcl
               "tag": {
                 "commentStart": 638,
                 "end": 644,
+                "moduleId": 0,
                 "start": 638,
                 "type": "TagDeclarator",
                 "value": "seg01"
@@ -2586,6 +2630,7 @@ description: Variables in memory after executing router-template-slate.kcl
               "tag": {
                 "commentStart": 791,
                 "end": 797,
+                "moduleId": 0,
                 "start": 791,
                 "type": "TagDeclarator",
                 "value": "seg05"
@@ -2599,6 +2644,7 @@ description: Variables in memory after executing router-template-slate.kcl
               "tag": {
                 "commentStart": 866,
                 "end": 872,
+                "moduleId": 0,
                 "start": 866,
                 "type": "TagDeclarator",
                 "value": "seg04"
@@ -2612,6 +2658,7 @@ description: Variables in memory after executing router-template-slate.kcl
               "tag": {
                 "commentStart": 912,
                 "end": 918,
+                "moduleId": 0,
                 "start": 912,
                 "type": "TagDeclarator",
                 "value": "seg03"
@@ -2672,22 +2719,23 @@ description: Variables in memory after executing router-template-slate.kcl
                 },
                 "from": [
                   0.0,
-                  1.107
+                  28.118750000000002
                 ],
                 "tag": {
                   "commentStart": 638,
                   "end": 644,
+                  "moduleId": 0,
                   "start": 638,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
                 "to": [
-                  0.4232,
-                  1.107
+                  10.75,
+                  28.118750000000002
                 ],
                 "type": "ToPoint",
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 }
               },
               {
@@ -2697,22 +2745,22 @@ description: Variables in memory after executing router-template-slate.kcl
                 },
                 "ccw": false,
                 "center": [
-                  0.4232,
-                  0.7874
+                  10.75,
+                  20.0
                 ],
                 "from": [
-                  0.4232,
-                  1.107
+                  10.75,
+                  28.118750000000002
                 ],
-                "radius": 0.3196358267716536,
+                "radius": 8.11875,
                 "tag": null,
                 "to": [
-                  0.7429,
-                  0.7874
+                  18.86875,
+                  20.0
                 ],
                 "type": "Arc",
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 }
               },
               {
@@ -2721,23 +2769,24 @@ description: Variables in memory after executing router-template-slate.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.7429,
-                  0.7874
+                  18.86875,
+                  20.0
                 ],
                 "tag": {
                   "commentStart": 791,
                   "end": 797,
+                  "moduleId": 0,
                   "start": 791,
                   "type": "TagDeclarator",
                   "value": "seg05"
                 },
                 "to": [
-                  0.7429,
-                  -0.4919
+                  18.86875,
+                  -12.49375
                 ],
                 "type": "ToPoint",
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 }
               },
               {
@@ -2746,23 +2795,24 @@ description: Variables in memory after executing router-template-slate.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.7429,
-                  -0.4919
+                  18.86875,
+                  -12.49375
                 ],
                 "tag": {
                   "commentStart": 866,
                   "end": 872,
+                  "moduleId": 0,
                   "start": 866,
                   "type": "TagDeclarator",
                   "value": "seg04"
                 },
                 "to": [
-                  1.2106,
-                  -0.4919
+                  30.75,
+                  -12.49375
                 ],
                 "type": "ToPoint",
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 }
               },
               {
@@ -2771,23 +2821,24 @@ description: Variables in memory after executing router-template-slate.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  1.2106,
-                  -0.4919
+                  30.75,
+                  -12.49375
                 ],
                 "tag": {
                   "commentStart": 912,
                   "end": 918,
+                  "moduleId": 0,
                   "start": 912,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
                 "to": [
-                  1.2106,
-                  -4.8226
+                  30.75,
+                  -122.49375
                 ],
                 "type": "ToPoint",
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 }
               },
               {
@@ -2796,23 +2847,24 @@ description: Variables in memory after executing router-template-slate.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  1.2106,
-                  -4.8226
+                  30.75,
+                  -122.49375
                 ],
                 "tag": {
                   "commentStart": 954,
                   "end": 960,
+                  "moduleId": 0,
                   "start": 954,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
                 "to": [
                   0.0,
-                  -4.8226
+                  -122.49375
                 ],
                 "type": "ToPoint",
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 }
               },
               {
@@ -2822,16 +2874,16 @@ description: Variables in memory after executing router-template-slate.kcl
                 },
                 "from": [
                   0.0,
-                  -4.8226
+                  -122.49375
                 ],
                 "tag": null,
                 "to": [
-                  -1.2106,
-                  -4.8226
+                  -30.75,
+                  -122.49375
                 ],
                 "type": "ToPoint",
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 }
               },
               {
@@ -2840,17 +2892,17 @@ description: Variables in memory after executing router-template-slate.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -1.2106,
-                  -4.8226
+                  -30.75,
+                  -122.49375
                 ],
                 "tag": null,
                 "to": [
-                  -1.2106,
-                  -0.4919
+                  -30.75,
+                  -12.493750000000006
                 ],
                 "type": "ToPoint",
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 }
               },
               {
@@ -2859,17 +2911,17 @@ description: Variables in memory after executing router-template-slate.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -1.2106,
-                  -0.4919
+                  -30.75,
+                  -12.493750000000006
                 ],
                 "tag": null,
                 "to": [
-                  -0.7429,
-                  -0.4919
+                  -18.86875,
+                  -12.493750000000006
                 ],
                 "type": "ToPoint",
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 }
               },
               {
@@ -2878,17 +2930,17 @@ description: Variables in memory after executing router-template-slate.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.7429,
-                  -0.4919
+                  -18.86875,
+                  -12.493750000000006
                 ],
                 "tag": null,
                 "to": [
-                  -0.7429,
-                  0.7874
+                  -18.86875,
+                  19.999999999999993
                 ],
                 "type": "ToPoint",
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 }
               },
               {
@@ -2898,22 +2950,22 @@ description: Variables in memory after executing router-template-slate.kcl
                 },
                 "ccw": false,
                 "center": [
-                  -0.4232,
-                  0.7874
+                  -10.749999999999998,
+                  19.999999999999993
                 ],
                 "from": [
-                  -0.7429,
-                  0.7874
+                  -18.86875,
+                  19.999999999999993
                 ],
-                "radius": 0.3196358267716536,
+                "radius": 8.11875,
                 "tag": null,
                 "to": [
-                  -0.4232,
-                  1.107
+                  -10.749999999999998,
+                  28.11874999999999
                 ],
                 "type": "Arc",
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 }
               },
               {
@@ -2922,17 +2974,17 @@ description: Variables in memory after executing router-template-slate.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.4232,
-                  1.107
+                  -10.749999999999998,
+                  28.11874999999999
                 ],
                 "tag": null,
                 "to": [
                   0.0,
-                  1.107
+                  28.118750000000002
                 ],
                 "type": "ToPoint",
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 }
               },
               {
@@ -2942,16 +2994,16 @@ description: Variables in memory after executing router-template-slate.kcl
                 },
                 "from": [
                   0.0,
-                  1.107
+                  28.118750000000002
                 ],
                 "tag": null,
                 "to": [
                   0.0,
-                  1.107
+                  28.118750000000002
                 ],
                 "type": "ToPoint",
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 }
               }
             ],
@@ -2988,14 +3040,14 @@ description: Variables in memory after executing router-template-slate.kcl
             "start": {
               "from": [
                 0.0,
-                1.107
+                28.118750000000002
               ],
               "to": [
                 0.0,
-                1.107
+                28.118750000000002
               ],
               "units": {
-                "type": "Inches"
+                "type": "Mm"
               },
               "tag": null,
               "__geoMeta": {
@@ -3028,32 +3080,32 @@ description: Variables in memory after executing router-template-slate.kcl
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
             "units": {
-              "type": "Inches"
+              "type": "Mm"
             }
           },
-          "height": 0.1968503937007874,
+          "height": 5.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": {
-            "type": "Inches"
+            "type": "Mm"
           },
           "sectional": false
         },
         "units": {
-          "type": "Inches"
+          "type": "Mm"
         }
       },
       "start": {
         "from": [
-          -0.8169,
-          -0.4919
+          -20.75,
+          -12.49375
         ],
         "to": [
-          -0.8169,
-          -0.4919
+          -20.75,
+          -12.49375
         ],
         "units": {
-          "type": "Inches"
+          "type": "Mm"
         },
         "tag": null,
         "__geoMeta": {
@@ -3078,7 +3130,7 @@ description: Variables in memory after executing router-template-slate.kcl
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": {
-        "type": "Inches"
+        "type": "Mm"
       }
     }
   },
@@ -3094,23 +3146,24 @@ description: Variables in memory after executing router-template-slate.kcl
             "sourceRange": []
           },
           "from": [
-            0.8169,
-            -0.4919
+            20.75,
+            -12.49375
           ],
           "tag": {
             "commentStart": 2204,
             "end": 2225,
+            "moduleId": 0,
             "start": 2204,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA002"
           },
           "to": [
-            1.0925,
-            -0.4919
+            27.75,
+            -12.49375
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Inches"
+            "type": "Mm"
           }
         },
         {
@@ -3119,17 +3172,17 @@ description: Variables in memory after executing router-template-slate.kcl
             "sourceRange": []
           },
           "from": [
-            1.0925,
-            -0.4919
+            27.75,
+            -12.49375
           ],
           "tag": null,
           "to": [
-            1.0925,
-            -3.6415
+            27.750000000000004,
+            -92.49375
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Inches"
+            "type": "Mm"
           }
         },
         {
@@ -3138,17 +3191,17 @@ description: Variables in memory after executing router-template-slate.kcl
             "sourceRange": []
           },
           "from": [
-            1.0925,
-            -3.6415
+            27.750000000000004,
+            -92.49375
           ],
           "tag": null,
           "to": [
-            0.8169,
-            -3.6415
+            20.750000000000004,
+            -92.49375
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Inches"
+            "type": "Mm"
           }
         },
         {
@@ -3157,17 +3210,17 @@ description: Variables in memory after executing router-template-slate.kcl
             "sourceRange": []
           },
           "from": [
-            0.8169,
-            -3.6415
+            20.750000000000004,
+            -92.49375
           ],
           "tag": null,
           "to": [
-            0.8169,
-            -0.4919
+            20.75,
+            -12.49375
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Inches"
+            "type": "Mm"
           }
         },
         {
@@ -3176,17 +3229,17 @@ description: Variables in memory after executing router-template-slate.kcl
             "sourceRange": []
           },
           "from": [
-            0.8169,
-            -0.4919
+            20.75,
+            -12.49375
           ],
           "tag": null,
           "to": [
-            0.8169,
-            -0.4919
+            20.75,
+            -12.49375
           ],
           "type": "ToPoint",
           "units": {
-            "type": "Inches"
+            "type": "Mm"
           }
         }
       ],
@@ -3223,6 +3276,7 @@ description: Variables in memory after executing router-template-slate.kcl
               "tag": {
                 "commentStart": 638,
                 "end": 644,
+                "moduleId": 0,
                 "start": 638,
                 "type": "TagDeclarator",
                 "value": "seg01"
@@ -3243,6 +3297,7 @@ description: Variables in memory after executing router-template-slate.kcl
               "tag": {
                 "commentStart": 791,
                 "end": 797,
+                "moduleId": 0,
                 "start": 791,
                 "type": "TagDeclarator",
                 "value": "seg05"
@@ -3256,6 +3311,7 @@ description: Variables in memory after executing router-template-slate.kcl
               "tag": {
                 "commentStart": 866,
                 "end": 872,
+                "moduleId": 0,
                 "start": 866,
                 "type": "TagDeclarator",
                 "value": "seg04"
@@ -3269,6 +3325,7 @@ description: Variables in memory after executing router-template-slate.kcl
               "tag": {
                 "commentStart": 912,
                 "end": 918,
+                "moduleId": 0,
                 "start": 912,
                 "type": "TagDeclarator",
                 "value": "seg03"
@@ -3329,22 +3386,23 @@ description: Variables in memory after executing router-template-slate.kcl
                 },
                 "from": [
                   0.0,
-                  1.107
+                  28.118750000000002
                 ],
                 "tag": {
                   "commentStart": 638,
                   "end": 644,
+                  "moduleId": 0,
                   "start": 638,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
                 "to": [
-                  0.4232,
-                  1.107
+                  10.75,
+                  28.118750000000002
                 ],
                 "type": "ToPoint",
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 }
               },
               {
@@ -3354,22 +3412,22 @@ description: Variables in memory after executing router-template-slate.kcl
                 },
                 "ccw": false,
                 "center": [
-                  0.4232,
-                  0.7874
+                  10.75,
+                  20.0
                 ],
                 "from": [
-                  0.4232,
-                  1.107
+                  10.75,
+                  28.118750000000002
                 ],
-                "radius": 0.3196358267716536,
+                "radius": 8.11875,
                 "tag": null,
                 "to": [
-                  0.7429,
-                  0.7874
+                  18.86875,
+                  20.0
                 ],
                 "type": "Arc",
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 }
               },
               {
@@ -3378,23 +3436,24 @@ description: Variables in memory after executing router-template-slate.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.7429,
-                  0.7874
+                  18.86875,
+                  20.0
                 ],
                 "tag": {
                   "commentStart": 791,
                   "end": 797,
+                  "moduleId": 0,
                   "start": 791,
                   "type": "TagDeclarator",
                   "value": "seg05"
                 },
                 "to": [
-                  0.7429,
-                  -0.4919
+                  18.86875,
+                  -12.49375
                 ],
                 "type": "ToPoint",
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 }
               },
               {
@@ -3403,23 +3462,24 @@ description: Variables in memory after executing router-template-slate.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.7429,
-                  -0.4919
+                  18.86875,
+                  -12.49375
                 ],
                 "tag": {
                   "commentStart": 866,
                   "end": 872,
+                  "moduleId": 0,
                   "start": 866,
                   "type": "TagDeclarator",
                   "value": "seg04"
                 },
                 "to": [
-                  1.2106,
-                  -0.4919
+                  30.75,
+                  -12.49375
                 ],
                 "type": "ToPoint",
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 }
               },
               {
@@ -3428,23 +3488,24 @@ description: Variables in memory after executing router-template-slate.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  1.2106,
-                  -0.4919
+                  30.75,
+                  -12.49375
                 ],
                 "tag": {
                   "commentStart": 912,
                   "end": 918,
+                  "moduleId": 0,
                   "start": 912,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
                 "to": [
-                  1.2106,
-                  -4.8226
+                  30.75,
+                  -122.49375
                 ],
                 "type": "ToPoint",
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 }
               },
               {
@@ -3453,23 +3514,24 @@ description: Variables in memory after executing router-template-slate.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  1.2106,
-                  -4.8226
+                  30.75,
+                  -122.49375
                 ],
                 "tag": {
                   "commentStart": 954,
                   "end": 960,
+                  "moduleId": 0,
                   "start": 954,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
                 "to": [
                   0.0,
-                  -4.8226
+                  -122.49375
                 ],
                 "type": "ToPoint",
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 }
               },
               {
@@ -3479,16 +3541,16 @@ description: Variables in memory after executing router-template-slate.kcl
                 },
                 "from": [
                   0.0,
-                  -4.8226
+                  -122.49375
                 ],
                 "tag": null,
                 "to": [
-                  -1.2106,
-                  -4.8226
+                  -30.75,
+                  -122.49375
                 ],
                 "type": "ToPoint",
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 }
               },
               {
@@ -3497,17 +3559,17 @@ description: Variables in memory after executing router-template-slate.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -1.2106,
-                  -4.8226
+                  -30.75,
+                  -122.49375
                 ],
                 "tag": null,
                 "to": [
-                  -1.2106,
-                  -0.4919
+                  -30.75,
+                  -12.493750000000006
                 ],
                 "type": "ToPoint",
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 }
               },
               {
@@ -3516,17 +3578,17 @@ description: Variables in memory after executing router-template-slate.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -1.2106,
-                  -0.4919
+                  -30.75,
+                  -12.493750000000006
                 ],
                 "tag": null,
                 "to": [
-                  -0.7429,
-                  -0.4919
+                  -18.86875,
+                  -12.493750000000006
                 ],
                 "type": "ToPoint",
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 }
               },
               {
@@ -3535,17 +3597,17 @@ description: Variables in memory after executing router-template-slate.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.7429,
-                  -0.4919
+                  -18.86875,
+                  -12.493750000000006
                 ],
                 "tag": null,
                 "to": [
-                  -0.7429,
-                  0.7874
+                  -18.86875,
+                  19.999999999999993
                 ],
                 "type": "ToPoint",
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 }
               },
               {
@@ -3555,22 +3617,22 @@ description: Variables in memory after executing router-template-slate.kcl
                 },
                 "ccw": false,
                 "center": [
-                  -0.4232,
-                  0.7874
+                  -10.749999999999998,
+                  19.999999999999993
                 ],
                 "from": [
-                  -0.7429,
-                  0.7874
+                  -18.86875,
+                  19.999999999999993
                 ],
-                "radius": 0.3196358267716536,
+                "radius": 8.11875,
                 "tag": null,
                 "to": [
-                  -0.4232,
-                  1.107
+                  -10.749999999999998,
+                  28.11874999999999
                 ],
                 "type": "Arc",
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 }
               },
               {
@@ -3579,17 +3641,17 @@ description: Variables in memory after executing router-template-slate.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.4232,
-                  1.107
+                  -10.749999999999998,
+                  28.11874999999999
                 ],
                 "tag": null,
                 "to": [
                   0.0,
-                  1.107
+                  28.118750000000002
                 ],
                 "type": "ToPoint",
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 }
               },
               {
@@ -3599,16 +3661,16 @@ description: Variables in memory after executing router-template-slate.kcl
                 },
                 "from": [
                   0.0,
-                  1.107
+                  28.118750000000002
                 ],
                 "tag": null,
                 "to": [
                   0.0,
-                  1.107
+                  28.118750000000002
                 ],
                 "type": "ToPoint",
                 "units": {
-                  "type": "Inches"
+                  "type": "Mm"
                 }
               }
             ],
@@ -3645,14 +3707,14 @@ description: Variables in memory after executing router-template-slate.kcl
             "start": {
               "from": [
                 0.0,
-                1.107
+                28.118750000000002
               ],
               "to": [
                 0.0,
-                1.107
+                28.118750000000002
               ],
               "units": {
-                "type": "Inches"
+                "type": "Mm"
               },
               "tag": null,
               "__geoMeta": {
@@ -3685,32 +3747,32 @@ description: Variables in memory after executing router-template-slate.kcl
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
             "units": {
-              "type": "Inches"
+              "type": "Mm"
             }
           },
-          "height": 0.1968503937007874,
+          "height": 5.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": {
-            "type": "Inches"
+            "type": "Mm"
           },
           "sectional": false
         },
         "units": {
-          "type": "Inches"
+          "type": "Mm"
         }
       },
       "start": {
         "from": [
-          0.8169,
-          -0.4919
+          20.75,
+          -12.49375
         ],
         "to": [
-          0.8169,
-          -0.4919
+          20.75,
+          -12.49375
         ],
         "units": {
-          "type": "Inches"
+          "type": "Mm"
         },
         "tag": null,
         "__geoMeta": {
@@ -3727,7 +3789,7 @@ description: Variables in memory after executing router-template-slate.kcl
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": {
-        "type": "Inches"
+        "type": "Mm"
       }
     }
   },
@@ -3755,7 +3817,7 @@ description: Variables in memory after executing router-template-slate.kcl
   },
   "templateGap": {
     "type": "Number",
-    "value": 0.0741,
+    "value": 0.07406496062992127,
     "ty": {
       "type": "Known",
       "type": "Length",

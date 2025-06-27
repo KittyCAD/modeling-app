@@ -16,7 +16,7 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
         types::{NumericType, PrimitiveType, RuntimeType},
-        ExecState, GeometryWithImportedGeometry, KclValue, Sketch, Solid,
+        ExecState, GeometryWithImportedGeometry, KclValue, ModelingCmdMeta, Sketch, Solid,
     },
     parsing::ast::types::TagNode,
     std::{extrude::NamedCapTags, Args},
@@ -26,7 +26,7 @@ use crate::{
 ///
 /// This works essentially like a copy-paste operation.
 pub async fn clone(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let geometry = args.get_unlabeled_kw_arg_typed(
+    let geometry = args.get_unlabeled_kw_arg(
         "geometry",
         &RuntimeType::Union(vec![
             RuntimeType::Primitive(PrimitiveType::Sketch),
@@ -59,23 +59,19 @@ async fn inner_clone(
             let mut new_sketch = sketch.clone();
             new_sketch.id = new_id;
             new_sketch.original_id = new_id;
-            #[cfg(feature = "artifact-graph")]
-            {
-                new_sketch.artifact_id = new_id.into();
-            }
+            new_sketch.artifact_id = new_id.into();
             GeometryWithImportedGeometry::Sketch(new_sketch)
         }
         GeometryWithImportedGeometry::Solid(solid) => {
             // We flush before the clone so all the shit exists.
-            args.flush_batch_for_solids(exec_state, &[solid.clone()]).await?;
+            exec_state
+                .flush_batch_for_solids((&args).into(), &[solid.clone()])
+                .await?;
 
             let mut new_solid = solid.clone();
             new_solid.id = new_id;
             new_solid.sketch.original_id = new_id;
-            #[cfg(feature = "artifact-graph")]
-            {
-                new_solid.artifact_id = new_id.into();
-            }
+            new_solid.artifact_id = new_id.into();
             GeometryWithImportedGeometry::Solid(new_solid)
         }
     };
@@ -89,16 +85,20 @@ async fn inner_clone(
     }
     println!("just did the flush thing");
 
-    args.batch_modeling_cmd(new_id, ModelingCmd::from(mcmd::EntityClone { entity_id: old_id }))
+    exec_state
+        .batch_modeling_cmd(
+            ModelingCmdMeta::from_args_id(&args, new_id),
+            ModelingCmd::from(mcmd::EntityClone { entity_id: old_id }),
+        )
         .await?;
 
     fix_tags_and_references(&mut new_geometry, old_id, exec_state, &args)
         .await
         .map_err(|e| {
-            KclError::Internal(KclErrorDetails {
-                message: format!("failed to fix tags and references: {:?}", e),
-                source_ranges: vec![args.source_range],
-            })
+            KclError::new_internal(KclErrorDetails::new(
+                format!("failed to fix tags and references: {:?}", e),
+                vec![args.source_range],
+            ))
         })?;
 
     Ok(new_geometry)
@@ -123,10 +123,7 @@ async fn fix_tags_and_references(
             // Make the sketch id the new geometry id.
             solid.sketch.id = new_geometry_id;
             solid.sketch.original_id = new_geometry_id;
-            #[cfg(feature = "artifact-graph")]
-            {
-                solid.sketch.artifact_id = new_geometry_id.into();
-            }
+            solid.sketch.artifact_id = new_geometry_id.into();
 
             fix_sketch_tags_and_references(&mut solid.sketch, &entity_id_map, exec_state).await?;
 
@@ -153,7 +150,6 @@ async fn fix_tags_and_references(
             // information.
             let new_solid = do_post_extrude(
                 &solid.sketch,
-                #[cfg(feature = "artifact-graph")]
                 new_geometry_id.into(),
                 crate::std::args::TyF64::new(
                     solid.height,
@@ -166,6 +162,7 @@ async fn fix_tags_and_references(
                 },
                 exec_state,
                 args,
+                None,
             )
             .await?;
 
@@ -182,29 +179,10 @@ async fn get_old_new_child_map(
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<HashMap<uuid::Uuid, uuid::Uuid>> {
-    // Get the new geometries entity ids.
-    let response = args
-        .send_modeling_cmd(
-            exec_state.next_uuid(),
-            ModelingCmd::from(mcmd::EntityGetAllChildUuids {
-                entity_id: new_geometry_id,
-            }),
-        )
-        .await?;
-    let OkWebSocketResponseData::Modeling {
-        modeling_response:
-            OkModelingCmdResponse::EntityGetAllChildUuids(EntityGetAllChildUuids {
-                entity_ids: new_entity_ids,
-            }),
-    } = response
-    else {
-        anyhow::bail!("Expected EntityGetAllChildUuids response, got: {:?}", response);
-    };
-
     // Get the old geometries entity ids.
-    let response = args
+    let response = exec_state
         .send_modeling_cmd(
-            exec_state.next_uuid(),
+            args.into(),
             ModelingCmd::from(mcmd::EntityGetAllChildUuids {
                 entity_id: old_geometry_id,
             }),
@@ -214,6 +192,25 @@ async fn get_old_new_child_map(
         modeling_response:
             OkModelingCmdResponse::EntityGetAllChildUuids(EntityGetAllChildUuids {
                 entity_ids: old_entity_ids,
+            }),
+    } = response
+    else {
+        anyhow::bail!("Expected EntityGetAllChildUuids response, got: {:?}", response);
+    };
+
+    // Get the new geometries entity ids.
+    let response = exec_state
+        .send_modeling_cmd(
+            args.into(),
+            ModelingCmd::from(mcmd::EntityGetAllChildUuids {
+                entity_id: new_geometry_id,
+            }),
+        )
+        .await?;
+    let OkWebSocketResponseData::Modeling {
+        modeling_response:
+            OkModelingCmdResponse::EntityGetAllChildUuids(EntityGetAllChildUuids {
+                entity_ids: new_entity_ids,
             }),
     } = response
     else {
@@ -336,10 +333,8 @@ clonedCube = clone(cube)
 
         assert_ne!(cube.id, cloned_cube.id);
         assert_ne!(cube.original_id, cloned_cube.original_id);
-        #[cfg(feature = "artifact-graph")]
         assert_ne!(cube.artifact_id, cloned_cube.artifact_id);
 
-        #[cfg(feature = "artifact-graph")]
         assert_eq!(cloned_cube.artifact_id, cloned_cube.id.into());
         assert_eq!(cloned_cube.original_id, cloned_cube.id);
 
@@ -388,12 +383,9 @@ clonedCube = clone(cube)
         assert_ne!(cube.id, cloned_cube.id);
         assert_ne!(cube.sketch.id, cloned_cube.sketch.id);
         assert_ne!(cube.sketch.original_id, cloned_cube.sketch.original_id);
-        #[cfg(feature = "artifact-graph")]
         assert_ne!(cube.artifact_id, cloned_cube.artifact_id);
-        #[cfg(feature = "artifact-graph")]
         assert_ne!(cube.sketch.artifact_id, cloned_cube.sketch.artifact_id);
 
-        #[cfg(feature = "artifact-graph")]
         assert_eq!(cloned_cube.artifact_id, cloned_cube.id.into());
 
         for (path, cloned_path) in cube.sketch.paths.iter().zip(cloned_cube.sketch.paths.iter()) {
@@ -505,12 +497,9 @@ clonedCube = clone(cube)
         assert_ne!(cube.id, cloned_cube.id);
         assert_ne!(cube.sketch.id, cloned_cube.sketch.id);
         assert_ne!(cube.sketch.original_id, cloned_cube.sketch.original_id);
-        #[cfg(feature = "artifact-graph")]
         assert_ne!(cube.artifact_id, cloned_cube.artifact_id);
-        #[cfg(feature = "artifact-graph")]
         assert_ne!(cube.sketch.artifact_id, cloned_cube.sketch.artifact_id);
 
-        #[cfg(feature = "artifact-graph")]
         assert_eq!(cloned_cube.artifact_id, cloned_cube.id.into());
 
         for (path, cloned_path) in cube.sketch.paths.iter().zip(cloned_cube.sketch.paths.iter()) {
@@ -580,12 +569,9 @@ clonedCube = clone(cube)
         assert_ne!(cube.id, cloned_cube.id);
         assert_ne!(cube.sketch.id, cloned_cube.sketch.id);
         assert_ne!(cube.sketch.original_id, cloned_cube.sketch.original_id);
-        #[cfg(feature = "artifact-graph")]
         assert_ne!(cube.artifact_id, cloned_cube.artifact_id);
-        #[cfg(feature = "artifact-graph")]
         assert_ne!(cube.sketch.artifact_id, cloned_cube.sketch.artifact_id);
 
-        #[cfg(feature = "artifact-graph")]
         assert_eq!(cloned_cube.artifact_id, cloned_cube.id.into());
 
         for (path, cloned_path) in cube.sketch.paths.iter().zip(cloned_cube.sketch.paths.iter()) {
@@ -683,12 +669,9 @@ clonedCube = clone(cube)
         assert_ne!(cube.id, cloned_cube.id);
         assert_ne!(cube.sketch.id, cloned_cube.sketch.id);
         assert_ne!(cube.sketch.original_id, cloned_cube.sketch.original_id);
-        #[cfg(feature = "artifact-graph")]
         assert_ne!(cube.artifact_id, cloned_cube.artifact_id);
-        #[cfg(feature = "artifact-graph")]
         assert_ne!(cube.sketch.artifact_id, cloned_cube.sketch.artifact_id);
 
-        #[cfg(feature = "artifact-graph")]
         assert_eq!(cloned_cube.artifact_id, cloned_cube.id.into());
 
         for (value, cloned_value) in cube.value.iter().zip(cloned_cube.value.iter()) {

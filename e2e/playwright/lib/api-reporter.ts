@@ -5,7 +5,7 @@ import type {
   FullResult,
 } from '@playwright/test/reporter'
 
-class MyAPIReporter implements Reporter {
+class APIReporter implements Reporter {
   private pendingRequests: Promise<void>[] = []
   private allResults: Record<string, any>[] = []
   private blockingResults: Record<string, any>[] = []
@@ -32,7 +32,7 @@ class MyAPIReporter implements Reporter {
           'X-API-Key': process.env.TAB_API_KEY || '',
         }),
         body: JSON.stringify({
-          project: 'https://github.com/KittyCAD/modeling-app',
+          project: `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}`,
           branch:
             process.env.GITHUB_HEAD_REF || process.env.GITHUB_REF_NAME || '',
           commit: process.env.CI_COMMIT_SHA || process.env.GITHUB_SHA || '',
@@ -60,7 +60,8 @@ class MyAPIReporter implements Reporter {
 
     const payload = {
       // Required information
-      project: 'https://github.com/KittyCAD/modeling-app',
+      project: `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}`,
+      suite: process.env.CI_SUITE || 'e2e',
       branch: process.env.GITHUB_HEAD_REF || process.env.GITHUB_REF_NAME || '',
       commit: process.env.CI_COMMIT_SHA || process.env.GITHUB_SHA || '',
       test: test.titlePath().slice(2).join(' › '),
@@ -123,4 +124,4 @@ class MyAPIReporter implements Reporter {
   }
 }
 
-export default MyAPIReporter
+export default APIReporter

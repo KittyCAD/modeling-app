@@ -41,7 +41,7 @@ export const BillingDialog = (props: { billingActor: BillingActor }) => {
         />
         <a
           className="bg-ml-black text-ml-white rounded-lg text-center p-1 cursor-pointer"
-          href="https://zoo.dev/api-pricing"
+          href="https://zoo.dev/design-studio-pricing"
           target="_blank"
           rel="noopener noreferrer"
           onClick={openExternalBrowserIfDesktop()}

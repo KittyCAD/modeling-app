@@ -36,7 +36,16 @@ pub async fn execute_and_snapshot_ast(
     ast: Program,
     current_file: Option<PathBuf>,
     with_export_step: bool,
-) -> Result<(ExecState, EnvironmentRef, image::DynamicImage, Option<Vec<u8>>), ExecErrorWithState> {
+) -> Result<
+    (
+        ExecState,
+        ExecutorContext,
+        EnvironmentRef,
+        image::DynamicImage,
+        Option<Vec<u8>>,
+    ),
+    ExecErrorWithState,
+> {
     let ctx = new_context(true, current_file).await?;
     let (exec_state, env, img) = match do_execute_and_snapshot(&ctx, ast).await {
         Ok((exec_state, env_ref, img)) => (exec_state, env_ref, img),
@@ -64,7 +73,7 @@ pub async fn execute_and_snapshot_ast(
         step = files.into_iter().next().map(|f| f.contents);
     }
     ctx.close().await;
-    Ok((exec_state, env, img, step))
+    Ok((exec_state, ctx, env, img, step))
 }
 
 pub async fn execute_and_snapshot_no_auth(
@@ -93,7 +102,7 @@ async fn do_execute_and_snapshot(
     for e in exec_state.errors() {
         if e.severity.is_err() {
             return Err(ExecErrorWithState::new(
-                KclErrorWithOutputs::no_outputs(KclError::Semantic(e.clone().into())).into(),
+                KclErrorWithOutputs::no_outputs(KclError::new_semantic(e.clone().into())).into(),
                 exec_state.clone(),
             ));
         }
@@ -132,6 +141,7 @@ pub async fn new_context(with_auth: bool, current_file: Option<PathBuf>) -> Resu
         replay: None,
         project_directory: None,
         current_file: None,
+        fixed_size_grid: true,
     };
     if let Some(current_file) = current_file {
         settings.with_current_file(crate::TypedPath(current_file));
@@ -164,7 +174,7 @@ pub async fn execute_and_export_step(
     for e in exec_state.errors() {
         if e.severity.is_err() {
             return Err(ExecErrorWithState::new(
-                KclErrorWithOutputs::no_outputs(KclError::Semantic(e.clone().into())).into(),
+                KclErrorWithOutputs::no_outputs(KclError::new_semantic(e.clone().into())).into(),
                 exec_state.clone(),
             ));
         }

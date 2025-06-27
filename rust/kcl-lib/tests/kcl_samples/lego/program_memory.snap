@@ -237,7 +237,7 @@ description: Variables in memory after executing lego.kcl
   },
   "lSegments": {
     "type": "Number",
-    "value": 7.9333,
+    "value": 7.933333333333334,
     "ty": {
       "type": "Default",
       "len": {

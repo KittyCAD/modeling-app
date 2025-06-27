@@ -1,4 +1,3 @@
-import { KCL_DEFAULT_LENGTH } from '@src/lib/constants'
 import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
 import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 import { TEST_SETTINGS, TEST_SETTINGS_KEY } from '@e2e/playwright/storageStates'
@@ -9,6 +8,7 @@ import {
   settingsToToml,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
+import { KCL_DEFAULT_LENGTH } from '@src/lib/constants'
 
 test.beforeEach(async ({ page, context }) => {
   // Make the user avatar image always 404
@@ -375,22 +375,22 @@ test.describe(
       await expect(u.codeLocator).toHaveText(code)
 
       await toolbar.selectTangentialArc()
-      await page.waitForTimeout(100)
+      await page.waitForTimeout(200)
 
       // click to continue profile
       await page.mouse.click(813, 392)
-      await page.waitForTimeout(100)
+      await page.waitForTimeout(300)
 
       await page.mouse.click(startXPx + PUR * 30, 500 - PUR * 20)
 
       code += `
-  |> tangentialArc(endAbsolute = [551.2, -62.01])`
+  |> tangentialArc(end = [184.31, 184.31])`
       await expect(u.codeLocator).toHaveText(code)
 
       // click tangential arc tool again to unequip it
       // it will be available directly in the toolbar since it was last equipped
       await toolbar.tangentialArcBtn.click()
-      await page.waitForTimeout(100)
+      await page.waitForTimeout(1000)
 
       // screen shot should show the sketch
       await expect(page).toHaveScreenshot({
@@ -472,20 +472,20 @@ test.describe(
       await expect(u.codeLocator).toHaveText(code)
 
       await toolbar.selectTangentialArc()
-      await page.waitForTimeout(100)
+      await page.waitForTimeout(200)
 
       // click to continue profile
       await page.mouse.click(813, 392)
-      await page.waitForTimeout(100)
+      await page.waitForTimeout(300)
 
       await page.mouse.click(startXPx + PUR * 30, 500 - PUR * 20)
 
       code += `
-  |> tangentialArc(endAbsolute = [551.2, -62.01])`
+  |> tangentialArc(end = [184.31, 184.31])`
       await expect(u.codeLocator).toHaveText(code)
 
       await toolbar.tangentialArcBtn.click()
-      await page.waitForTimeout(100)
+      await page.waitForTimeout(1000)
 
       // screen shot should show the sketch
       await expect(page).toHaveScreenshot({
@@ -766,7 +766,7 @@ test.describe('Grid visibility', { tag: '@snapshot' }, () => {
   })
 })
 
-test('theme persists', async ({ page, context }) => {
+test('theme persists', async ({ page, context, homePage }) => {
   const u = await getUtils(page)
   await context.addInitScript(async () => {
     localStorage.setItem(
@@ -784,7 +784,7 @@ test('theme persists', async ({ page, context }) => {
 
   await page.setViewportSize({ width: 1200, height: 500 })
 
-  await u.waitForAuthSkipAppStart()
+  await homePage.goToModelingScene()
   await page.waitForTimeout(500)
 
   // await page.getByRole('link', { name: 'Settings Settings (tooltip)' }).click()
@@ -798,7 +798,7 @@ test('theme persists', async ({ page, context }) => {
 
   await page.getByTestId('settings-close-button').click()
 
-  const networkToggle = page.getByTestId('network-toggle')
+  const networkToggle = page.getByTestId(/network-toggle/)
 
   // simulate network down
   await u.emulateNetworkConditions({
@@ -812,7 +812,7 @@ test('theme persists', async ({ page, context }) => {
   // Disconnect and reconnect to check the theme persists through a reload
 
   // Expect the network to be down
-  await expect(networkToggle).toContainText('Offline')
+  await expect(networkToggle).toContainText('Problem')
 
   // simulate network up
   await u.emulateNetworkConditions({
@@ -823,7 +823,7 @@ test('theme persists', async ({ page, context }) => {
     uploadThroughput: -1,
   })
 
-  await expect(networkToggle).toContainText('Connected')
+  await expect(networkToggle).toContainText('Network health (Strong)')
 
   await expect(page.getByText('building scene')).not.toBeVisible()
 
@@ -856,6 +856,50 @@ sweepSketch = startSketchOn(XY)
   |> sweep(path = sweepPath)
   |> appearance(
        color = "#bb00ff",
+       metalness = 90,
+       roughness = 90
+     )
+`
+      )
+    })
+
+    await page.setViewportSize({ width: 1200, height: 1000 })
+    await u.waitForAuthSkipAppStart()
+
+    await scene.settled(cmdBar)
+
+    await expect(page, 'expect small color widget').toHaveScreenshot({
+      maxDiffPixels: 100,
+      mask: lowerRightMasks(page),
+    })
+  })
+  test('code color goober works with single quotes', async ({
+    page,
+    context,
+    scene,
+    cmdBar,
+  }) => {
+    const u = await getUtils(page)
+    await context.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `// Create a pipe using a sweep.
+
+// Create a path for the sweep.
+sweepPath = startSketchOn(XZ)
+  |> startProfile(at = [0.05, 0.05])
+  |> line(end = [0, 7])
+  |> tangentialArc(angle = 90, radius = 5)
+  |> line(end = [-3, 0])
+  |> tangentialArc(angle = -90, radius = 5)
+  |> line(end = [0, 7])
+
+sweepSketch = startSketchOn(XY)
+  |> startProfile(at = [2, 0])
+  |> arc(angleStart = 0, angleEnd = 360, radius = 2)
+  |> sweep(path = sweepPath)
+  |> appearance(
+       color = '#bb00ff',
        metalness = 90,
        roughness = 90
      )

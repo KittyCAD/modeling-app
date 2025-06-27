@@ -42,15 +42,15 @@ fn helicalGear(nTeeth, module, pressureAngle, helixAngle, gearHeight) {
     helicalGearSketch = startSketchOn(offsetPlane(XY, offset = offsetHeight))
       |> startProfile(at = polar(angle = helixCalc, length = baseDiameter / 2))
       |> involuteCircular(
-           startRadius = baseDiameter / 2,
-           endRadius = tipDiameter / 2,
+           startDiameter = baseDiameter,
+           endDiameter = tipDiameter,
            angle = helixCalc,
            tag = $seg01,
          )
       |> line(endAbsolute = polar(angle = 160 / nTeeth + helixCalc, length = tipDiameter / 2))
       |> involuteCircular(
-           startRadius = baseDiameter / 2,
-           endRadius = tipDiameter / 2,
+           startDiameter = baseDiameter,
+           endDiameter = tipDiameter,
            angle = -(4 * atan(segEndY(seg01) / segEndX(seg01)) - (3 * helixCalc)),
            reverse = true,
          )

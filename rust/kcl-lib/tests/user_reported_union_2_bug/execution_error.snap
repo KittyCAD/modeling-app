@@ -1,0 +1,26 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Error from executing user_reported_union_2_bug.kcl
+---
+KCL Engine error
+
+  × engine: The Zoo engine cannot handle this 3D union yet.  Please report
+  │ this as an issue
+    ╭─[44:22]
+ 43 │ 
+ 44 │ intermediateUnion1 = union([roundedTriangle, cube1])
+    ·                      ───────────────┬───────────────┬
+    ·                                     ╰── tests/user_reported_union_2_bug/input.kcl
+    ·                                     ╰── tests/user_reported_union_2_bug/input.kcl
+    ╰────
+  ╰─▶ KCL Engine error
+      
+        × engine: The Zoo engine cannot handle this 3D union yet.  Please
+        │ report this as an issue
+          ╭─[44:22]
+       43 │
+       44 │ intermediateUnion1 = union([roundedTriangle, cube1])
+          ·                      ───────────────┬───────────────
+          ·                                     ╰── tests/
+      user_reported_union_2_bug/input.kcl
+          ╰────

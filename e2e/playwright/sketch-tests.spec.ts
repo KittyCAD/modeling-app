@@ -749,7 +749,7 @@ sketch001 = startSketchOn(XZ)
     // expect the code to have changed
     await editor.expectEditor.toContain(
       `sketch001 = startSketchOn(XZ)
-  |> startProfile(at = [8.41, -9.97]) 
+  |> startProfile(at = [8.41, -9.97])
   |> line(end = [12.73, -0.09])
   |> line(end = [1.99, 2.06])
   |> tangentialArc(endAbsolute = [24.95, -5.38])
@@ -995,8 +995,8 @@ profile001 = startProfile(sketch001, at = [${roundOff(scale * 69.6)}, ${roundOff
     await u.expectCmdLog('[data-message-type="execution-done"]')
     await u.closeDebugPanel()
 
-    // click "line(end = [1.32, 0.38])"
-    await page.getByText(`line(end = [1.32, 0.38])`).click()
+    // click profile in code
+    await page.getByText(`startProfile(at = [-0.45, 0.87])`).click()
     await page.waitForTimeout(100)
     await expect(page.getByRole('button', { name: 'Edit Sketch' })).toBeEnabled(
       { timeout: 10_000 }
@@ -1014,14 +1014,14 @@ profile001 = startProfile(sketch001, at = [${roundOff(scale * 69.6)}, ${roundOff
     // click extrude
     await toolbar.extrudeButton.click()
 
-    // sketch selection should already have been made. "Sketches: 1 face" only show up when the selection has been made already
+    // sketch selection should already have been made.
     // otherwise the cmdbar would be waiting for a selection.
     await cmdBar.progressCmdBar()
     await cmdBar.expectState({
       stage: 'arguments',
       currentArgKey: 'length',
       currentArgValue: '5',
-      headerArguments: { Sketches: '1 segment', Length: '' },
+      headerArguments: { Profiles: '1 profile', Length: '' },
       highlightedHeaderArg: 'length',
       commandName: 'Extrude',
     })
@@ -1365,18 +1365,18 @@ solid001 = subtract([extrude001], tools = [extrude002])
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `fn in2mm = (inches) => {
+        `fn in2mm(@inches) {
     return inches * 25.4
   }
 
-  const railTop = in2mm(.748)
-  const railSide = in2mm(.024)
-  const railBaseWidth = in2mm(.612)
-  const railWideWidth = in2mm(.835)
-  const railBaseLength = in2mm(.200)
-  const railClampable = in2mm(.200)
+  railTop = in2mm(.748)
+  railSide = in2mm(.024)
+  railBaseWidth = in2mm(.612)
+  railWideWidth = in2mm(.835)
+  railBaseLength = in2mm(.200)
+  railClampable = in2mm(.200)
 
-  const rail = startSketchOn(XZ)
+  rail = startSketchOn(XZ)
     |> startProfile(at = [-railTop / 2, railClampable + railBaseLength])
     |> line(endAbsolute = [
      railTop / 2,
@@ -1443,6 +1443,103 @@ solid001 = subtract([extrude001], tools = [extrude002])
     await u.openDebugPanel()
     await u.expectCmdLog('[data-message-type="execution-done"]')
     await u.closeDebugPanel()
+  })
+
+  test('Can edit a tangentialArc defined by angle and radius', async ({
+    page,
+    homePage,
+    editor,
+    toolbar,
+    scene,
+    cmdBar,
+  }) => {
+    const viewportSize = { width: 1500, height: 750 }
+    await page.setBodyDimensions(viewportSize)
+
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `@settings(defaultLengthUnit=in)
+sketch001 = startSketchOn(XZ)
+  |> startProfile(at = [-10, -10])
+  |> line(end = [20.0, 10.0])
+  |> tangentialArc(angle = 60deg, radius=10.0)`
+      )
+    })
+
+    await homePage.goToModelingScene()
+    await toolbar.waitForFeatureTreeToBeBuilt()
+    await scene.settled(cmdBar)
+
+    await (await toolbar.getFeatureTreeOperation('Sketch', 0)).dblclick()
+
+    await page.waitForTimeout(1000)
+
+    await page.mouse.move(1200, 139)
+    await page.mouse.down()
+    await page.mouse.move(870, 250)
+    await page.mouse.up()
+
+    await page.waitForTimeout(200)
+
+    await editor.expectEditor.toContain(
+      `tangentialArc(angle = 234.01deg, radius = 4.08)`,
+      { shouldNormalise: true }
+    )
+  })
+
+  test('Can undo with closed code pane', async ({
+    page,
+    homePage,
+    editor,
+    toolbar,
+    scene,
+    cmdBar,
+  }) => {
+    const u = await getUtils(page)
+
+    const viewportSize = { width: 1500, height: 750 }
+    await page.setBodyDimensions(viewportSize)
+
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `@settings(defaultLengthUnit=in)
+sketch001 = startSketchOn(XZ)
+  |> startProfile(at = [-10, -10])
+  |> line(end = [20.0, 10.0])
+  |> tangentialArc(end = [5.49, 8.37])`
+      )
+    })
+
+    await homePage.goToModelingScene()
+    await toolbar.waitForFeatureTreeToBeBuilt()
+    await scene.settled(cmdBar)
+
+    await (await toolbar.getFeatureTreeOperation('Sketch', 0)).dblclick()
+
+    await page.waitForTimeout(1000)
+
+    await page.mouse.move(1200, 139)
+    await page.mouse.down()
+    await page.mouse.move(870, 250)
+    await page.mouse.up()
+
+    await editor.expectEditor.toContain(`tangentialArc(end=[-5.85,4.32])`, {
+      shouldNormalise: true,
+    })
+
+    await u.closeKclCodePanel()
+
+    // Undo the last change
+    await page.keyboard.down('Control')
+    await page.keyboard.press('KeyZ')
+    await page.keyboard.up('Control')
+
+    await u.openKclCodePanel()
+    await editor.expectEditor.toContain(`tangentialArc(end = [5.49, 8.37])`, {
+      shouldNormalise: true,
+    })
   })
 
   test('Can delete a single segment line with keyboard', async ({
@@ -1733,7 +1830,7 @@ profile003 = startProfile(sketch001, at = [206.63, -56.73])
       await page.waitForTimeout(600)
     })
 
-    const codeFromTangentialArc = `  |> tangentialArc(endAbsolute = [39.49, 88.22])`
+    const codeFromTangentialArc = `  |> tangentialArc(end = [-10.82, 144.95])`
     await test.step('check that tangential tool does not snap to other profile starts', async () => {
       await toolbar.selectTangentialArc()
       await page.waitForTimeout(1000)
@@ -1755,7 +1852,7 @@ profile003 = startProfile(sketch001, at = [206.63, -56.73])
       // check pixel is now gray at tanArcLocation to verify code has executed
       await scene.expectPixelColor([26, 26, 26], tanArcLocation, 15)
       await editor.expectEditor.not.toContain(
-        `tangentialArc(endAbsolute = [39.49, 88.22])`
+        `tangentialArc(end = [-10.82, 144.95])`
       )
     })
 
@@ -1955,7 +2052,7 @@ profile003 = startProfile(sketch001, at = [206.63, -56.73])
 
       await endArcStartLine()
       await editor.expectEditor.toContain(
-        `|> tangentialArc(endAbsolute = [16.61, 4.14])`
+        `|> tangentialArc(end = [2.98, -7.52])`
       )
 
       // Add a three-point arc segment
@@ -2329,16 +2426,18 @@ profile004 = circleThreePoint(sketch001, p1 = [13.44, -6.8], p2 = [13.39, -2.07]
       await page.mouse.down()
       await rectDragTo()
       await page.mouse.up()
+      await page.waitForTimeout(200)
       await editor.expectEditor.toContain(
         `angledLine(angle = -7, length = 10.27, tag = $rectangleSegmentA001)`
       )
     })
 
-    await test.step('edit existing circl', async () => {
+    await test.step('edit existing circle', async () => {
       await circleEdge()
       await page.mouse.down()
       await dragCircleTo()
       await page.mouse.up()
+      await page.waitForTimeout(200)
       await editor.expectEditor.toContain(
         `profile003 = circle(sketch001, center = [6.92, -4.2], radius = 4.81)`
       )
@@ -2349,6 +2448,7 @@ profile004 = circleThreePoint(sketch001, p1 = [13.44, -6.8], p2 = [13.39, -2.07]
       await page.mouse.down()
       await circ3PEnd()
       await page.mouse.up()
+      await page.waitForTimeout(200)
       await editor.expectEditor.toContain(
         `profile004 = circleThreePoint(
   sketch001,
@@ -2362,7 +2462,7 @@ profile004 = circleThreePoint(sketch001, p1 = [13.44, -6.8], p2 = [13.39, -2.07]
 
     await test.step('add new profile', async () => {
       await toolbar.rectangleBtn.click()
-      await page.waitForTimeout(100)
+      await page.waitForTimeout(200)
       await rectStart()
       await editor.expectEditor.toContain(
         `profile005 = startProfile(sketch001, at = [15.68, -3.84])`
@@ -3181,7 +3281,7 @@ test.describe('Redirecting to home page and back to the original file should cle
 sketch001 = startSketchOn(XZ)
 profile001 = startProfile(sketch001, at = [0, 0])
   |> line(end = [191.39, 191.39])
-  |> tangentialArc(endAbsolute = [287.08, 95.69], tag = $seg01)
+  |> tangentialArc(end = [95.69, -95.7], tag = $seg01)
   |> angledLine(angle = tangentToEnd(seg01), length = 135.34)
   |> arc(interiorAbsolute = [191.39, -95.69], endAbsolute = [287.08, -95.69], tag = $seg02)
   |> angledLine(angle = tangentToEnd(seg02) + turns::HALF_TURN, length = 270.67)
@@ -3430,6 +3530,71 @@ profile003 = startProfile(sketch002, at = [-201.08, 254.17])
       ).toBeVisible()
     })
   })
+  test('Will exit out of sketch mode when all code is nuked', async ({
+    page,
+    context,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+  }) => {
+    const initialCode = `myVar1 = 5
+    myVar2 = 6
+
+    sketch001 = startSketchOn(XZ)
+    profile001 = startProfile(sketch001, at = [106.68, 89.77])
+      |> line(end = [132.34, 157.8])
+      |> line(end = [67.65, -460.55], tag = $seg01)
+      |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+      |> close()
+    extrude001 = extrude(profile001, length = 500)
+    sketch002 = startSketchOn(extrude001, face = seg01)
+    profile002 = startProfile(sketch002, at = [83.39, 329.15])
+      |> angledLine(angle = 0, length = 119.61, tag = $rectangleSegmentA001)
+      |> angledLine(length = 156.54, angle = -28)
+      |> angledLine(
+           angle = -151,
+           length = 116.27,
+         )
+      |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+      |> close()
+    profile003 = startProfile(sketch002, at = [-201.08, 254.17])
+      |> line(end = [103.55, 33.32])
+      |> line(end = [48.8, -153.54])`
+
+    await context.addInitScript((initialCode) => {
+      localStorage.setItem('persistCode', initialCode)
+    }, initialCode)
+
+    await homePage.goToModelingScene()
+    await scene.connectionEstablished()
+    await scene.settled(cmdBar)
+    const expectSketchOriginToBeDrawn = async () => {
+      await scene.expectPixelColor(TEST_COLORS.WHITE, { x: 672, y: 193 }, 15)
+    }
+
+    await test.step('Open feature tree and edit second sketch', async () => {
+      await toolbar.openFeatureTreePane()
+      const sketchButton = await toolbar.getFeatureTreeOperation('Sketch', 1)
+      await sketchButton.dblclick()
+      await page.waitForTimeout(700) // Wait for engine animation
+      await expectSketchOriginToBeDrawn()
+    })
+
+    await test.step('clear editor content while in sketch mode', async () => {
+      await editor.replaceCode('', '')
+      await page.waitForTimeout(100)
+      await expect(
+        page.getByText('Unable to maintain sketch mode')
+      ).toBeVisible()
+      await scene.expectPixelColorNotToBe(
+        TEST_COLORS.WHITE,
+        { x: 672, y: 193 },
+        15
+      )
+    })
+  })
   test('empty draft sketch is cleaned up properly', async ({
     scene,
     toolbar,
@@ -3494,6 +3659,69 @@ profile001 = startProfile(sketch001, at = [-102.72, 237.44])
     await expect(
       page.getByRole('button', { name: 'Exit Sketch' })
     ).toBeVisible()
+  })
+
+  // Ensure feature tree is not showing previous file's content when switching to a file with KCL errors.
+  test('Feature tree shows correct sketch count per file', async ({
+    context,
+    homePage,
+    scene,
+    toolbar,
+    cmdBar,
+    page,
+  }) => {
+    const u = await getUtils(page)
+
+    // Setup project with files.
+    const GOOD_KCL = `sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [220.81, 253.8])
+  |> line(end = [132.84, -151.31])
+  |> line(end = [25.51, 167.15])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+sketch002 = startSketchOn(XZ)
+profile002 = startProfile(sketch002, at = [158.35, -70.82])
+  |> line(end = [73.9, -152.19])
+  |> line(end = [85.33, 135.48])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()`
+
+    const ERROR_KCL = `sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [127.56, 179.02])
+  |> line(end = [132.84, -112.6])
+  |> line(end = [85.33, 234.01])
+  |> line(enfd = [-137.23, -54.55])`
+
+    await context.folderSetupFn(async (dir) => {
+      const projectDir = path.join(dir, 'multi-file-sketch-test')
+      await fs.mkdir(projectDir, { recursive: true })
+      await Promise.all([
+        fs.writeFile(path.join(projectDir, 'good.kcl'), GOOD_KCL, 'utf-8'),
+        fs.writeFile(path.join(projectDir, 'error.kcl'), ERROR_KCL, 'utf-8'),
+      ])
+    })
+
+    await page.setBodyDimensions({ width: 1000, height: 800 })
+
+    await homePage.openProject('multi-file-sketch-test')
+    await scene.connectionEstablished()
+
+    await u.closeDebugPanel()
+
+    await toolbar.openFeatureTreePane()
+    await toolbar.openPane('files')
+
+    await toolbar.openFile('good.kcl')
+
+    await expect(
+      toolbar.featureTreePane.getByRole('button', { name: 'Sketch' })
+    ).toHaveCount(2)
+
+    await toolbar.openFile('error.kcl')
+
+    await expect(
+      toolbar.featureTreePane.getByRole('button', { name: 'Sketch' })
+    ).toHaveCount(0)
   })
 
   test('adding a syntax error, recovers after fixing', async ({

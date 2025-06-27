@@ -13,6 +13,7 @@ description: Result of parsing basic_revolve_circle.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "sketch001",
             "start": 0,
             "type": "Identifier"
@@ -20,13 +21,16 @@ description: Result of parsing basic_revolve_circle.kcl
           "init": {
             "body": [
               {
+                "arguments": [],
                 "callee": {
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "startSketchOn",
                     "start": 0,
                     "type": "Identifier"
@@ -37,6 +41,7 @@ description: Result of parsing basic_revolve_circle.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -44,9 +49,11 @@ description: Result of parsing basic_revolve_circle.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "XY",
                     "start": 0,
                     "type": "Identifier"
@@ -64,6 +71,7 @@ description: Result of parsing basic_revolve_circle.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "center",
                       "start": 0,
                       "type": "Identifier"
@@ -74,6 +82,7 @@ description: Result of parsing basic_revolve_circle.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "15",
                           "start": 0,
                           "type": "Literal",
@@ -86,6 +95,7 @@ description: Result of parsing basic_revolve_circle.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "0",
                           "start": 0,
                           "type": "Literal",
@@ -97,6 +107,7 @@ description: Result of parsing basic_revolve_circle.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -107,6 +118,7 @@ description: Result of parsing basic_revolve_circle.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "radius",
                       "start": 0,
                       "type": "Identifier"
@@ -114,6 +126,7 @@ description: Result of parsing basic_revolve_circle.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "5",
                       "start": 0,
                       "type": "Literal",
@@ -129,9 +142,11 @@ description: Result of parsing basic_revolve_circle.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "circle",
                     "start": 0,
                     "type": "Identifier"
@@ -142,6 +157,7 @@ description: Result of parsing basic_revolve_circle.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -154,6 +170,7 @@ description: Result of parsing basic_revolve_circle.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "angle",
                       "start": 0,
                       "type": "Identifier"
@@ -161,6 +178,7 @@ description: Result of parsing basic_revolve_circle.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "360",
                       "start": 0,
                       "type": "Literal",
@@ -176,6 +194,7 @@ description: Result of parsing basic_revolve_circle.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "axis",
                       "start": 0,
                       "type": "Identifier"
@@ -184,9 +203,11 @@ description: Result of parsing basic_revolve_circle.kcl
                       "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "Y",
                         "start": 0,
                         "type": "Identifier"
@@ -202,9 +223,11 @@ description: Result of parsing basic_revolve_circle.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "revolve",
                     "start": 0,
                     "type": "Identifier"
@@ -215,6 +238,7 @@ description: Result of parsing basic_revolve_circle.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -223,15 +247,18 @@ description: Result of parsing basic_revolve_circle.kcl
             ],
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -239,6 +266,7 @@ description: Result of parsing basic_revolve_circle.kcl
     ],
     "commentStart": 0,
     "end": 0,
+    "moduleId": 0,
     "start": 0
   }
 }

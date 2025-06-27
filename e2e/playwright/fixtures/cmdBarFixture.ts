@@ -105,23 +105,24 @@ export class CmdBarFixture {
   expectState = async (expected: CmdBarSerialised) => {
     return expect.poll(() => this._serialiseCmdBar()).toEqual(expected)
   }
-  /** The method will use buttons OR press enter randomly to progress the cmdbar,
-   * this could have unexpected results depending on what's focused
-   *
-   * TODO: This method assumes the user has a valid input to the current stage,
+  /**
+   * This method is used to progress the command bar to the next step, defaulting to clicking the next button.
+   * Optionally, with the `shouldUseKeyboard` parameter, it will hit `Enter` to progress.
+   * * TODO: This method assumes the user has a valid input to the current stage,
    * and assumes we are past the `pickCommand` step.
    */
-  progressCmdBar = async (shouldFuzzProgressMethod = true) => {
+  progressCmdBar = async (shouldUseKeyboard = false) => {
     await this.page.waitForTimeout(2000)
-    const arrowButton = this.page.getByRole('button', {
-      name: 'arrow right Continue',
-    })
+    if (shouldUseKeyboard) {
+      await this.page.keyboard.press('Enter')
+      return
+    }
+
+    const arrowButton = this.page.getByTestId('command-bar-continue')
     if (await arrowButton.isVisible()) {
-      await arrowButton.click()
+      await this.continue()
     } else {
-      await this.page
-        .getByRole('button', { name: 'checkmark Submit command' })
-        .click()
+      await this.submit()
     }
   }
 
@@ -146,13 +147,17 @@ export class CmdBarFixture {
     await this.cmdBarOpenBtn.click()
     await expect(this.page.getByPlaceholder('Search commands')).toBeVisible()
     if (selectCmd === 'promptToEdit') {
-      const promptEditCommand = this.page.getByText(
-        'Use Zoo AI to edit your parts and code.'
-      )
+      const promptEditCommand = this.selectOption({ name: 'Text-to-CAD Edit' })
       await expect(promptEditCommand.first()).toBeVisible()
       await promptEditCommand.first().scrollIntoViewIfNeeded()
       await promptEditCommand.first().click()
     }
+  }
+
+  closeCmdBar = async () => {
+    const cmdBarCloseBtn = this.page.getByTestId('command-bar-close-button')
+    await cmdBarCloseBtn.click()
+    await expect(this.cmdBarElement).not.toBeVisible()
   }
 
   get cmdSearchInput() {
@@ -161,6 +166,10 @@ export class CmdBarFixture {
 
   get argumentInput() {
     return this.page.getByTestId('cmd-bar-arg-value')
+  }
+
+  get variableCheckbox() {
+    return this.page.getByTestId('cmd-bar-variable-checkbox')
   }
 
   get cmdOptions() {
@@ -179,10 +188,17 @@ export class CmdBarFixture {
   }
 
   /**
+   * Select an optional argument from the command bar during review
+   */
+  clickOptionalArgument = async (argName: string) => {
+    await this.page.getByTestId(`cmd-bar-add-optional-arg-${argName}`).click()
+  }
+
+  /**
    * Clicks the Create new variable button for kcl input
    */
   createNewVariable = async () => {
-    await this.page.getByRole('button', { name: 'Create new variable' }).click()
+    await this.variableCheckbox.click()
   }
 
   /**
@@ -297,5 +313,33 @@ export class CmdBarFixture {
     console.log(
       `Monitoring text-to-cad API requests. Output will be saved to: ${outputPath}`
     )
+  }
+
+  async toBeOpened() {
+    // Check that the command bar is opened
+    await expect(this.cmdBarElement).toBeVisible({ timeout: 10_000 })
+  }
+
+  async toBeClosed() {
+    // Check that the command bar is closed
+    await expect(this.cmdBarElement).not.toBeVisible({ timeout: 10_000 })
+  }
+
+  async expectArgValue(value: string) {
+    // Check the placeholder project name exists
+    const actualArgument = await this.cmdBarElement
+      .getByTestId('cmd-bar-arg-value')
+      .inputValue()
+    const expectedArgument = value
+    expect(actualArgument).toBe(expectedArgument)
+  }
+
+  async expectCommandName(value: string) {
+    // Check the placeholder project name exists
+    const actual = await this.cmdBarElement
+      .getByTestId('command-name')
+      .textContent()
+    const expected = value
+    expect(actual).toBe(expected)
   }
 }

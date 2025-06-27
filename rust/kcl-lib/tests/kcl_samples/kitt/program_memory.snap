@@ -244,6 +244,7 @@ description: Variables in memory after executing kitt.kcl
                 "tag": {
                   "commentStart": 766,
                   "end": 772,
+                  "moduleId": 0,
                   "start": 766,
                   "type": "TagDeclarator",
                   "value": "seg01"
@@ -257,6 +258,7 @@ description: Variables in memory after executing kitt.kcl
                 "tag": {
                   "commentStart": 817,
                   "end": 823,
+                  "moduleId": 0,
                   "start": 817,
                   "type": "TagDeclarator",
                   "value": "seg02"
@@ -306,6 +308,7 @@ description: Variables in memory after executing kitt.kcl
                   "tag": {
                     "commentStart": 766,
                     "end": 772,
+                    "moduleId": 0,
                     "start": 766,
                     "type": "TagDeclarator",
                     "value": "seg01"
@@ -331,6 +334,7 @@ description: Variables in memory after executing kitt.kcl
                   "tag": {
                     "commentStart": 817,
                     "end": 823,
+                    "moduleId": 0,
                     "start": 817,
                     "type": "TagDeclarator",
                     "value": "seg02"
@@ -668,6 +672,7 @@ description: Variables in memory after executing kitt.kcl
                 "tag": {
                   "commentStart": 766,
                   "end": 772,
+                  "moduleId": 0,
                   "start": 766,
                   "type": "TagDeclarator",
                   "value": "seg01"
@@ -681,6 +686,7 @@ description: Variables in memory after executing kitt.kcl
                 "tag": {
                   "commentStart": 817,
                   "end": 823,
+                  "moduleId": 0,
                   "start": 817,
                   "type": "TagDeclarator",
                   "value": "seg02"
@@ -730,6 +736,7 @@ description: Variables in memory after executing kitt.kcl
                   "tag": {
                     "commentStart": 766,
                     "end": 772,
+                    "moduleId": 0,
                     "start": 766,
                     "type": "TagDeclarator",
                     "value": "seg01"
@@ -755,6 +762,7 @@ description: Variables in memory after executing kitt.kcl
                   "tag": {
                     "commentStart": 817,
                     "end": 823,
+                    "moduleId": 0,
                     "start": 817,
                     "type": "TagDeclarator",
                     "value": "seg02"
@@ -1092,6 +1100,7 @@ description: Variables in memory after executing kitt.kcl
                 "tag": {
                   "commentStart": 766,
                   "end": 772,
+                  "moduleId": 0,
                   "start": 766,
                   "type": "TagDeclarator",
                   "value": "seg01"
@@ -1105,6 +1114,7 @@ description: Variables in memory after executing kitt.kcl
                 "tag": {
                   "commentStart": 817,
                   "end": 823,
+                  "moduleId": 0,
                   "start": 817,
                   "type": "TagDeclarator",
                   "value": "seg02"
@@ -1154,6 +1164,7 @@ description: Variables in memory after executing kitt.kcl
                   "tag": {
                     "commentStart": 766,
                     "end": 772,
+                    "moduleId": 0,
                     "start": 766,
                     "type": "TagDeclarator",
                     "value": "seg01"
@@ -1179,6 +1190,7 @@ description: Variables in memory after executing kitt.kcl
                   "tag": {
                     "commentStart": 817,
                     "end": 823,
+                    "moduleId": 0,
                     "start": 817,
                     "type": "TagDeclarator",
                     "value": "seg02"
@@ -1516,6 +1528,7 @@ description: Variables in memory after executing kitt.kcl
                 "tag": {
                   "commentStart": 766,
                   "end": 772,
+                  "moduleId": 0,
                   "start": 766,
                   "type": "TagDeclarator",
                   "value": "seg01"
@@ -1529,6 +1542,7 @@ description: Variables in memory after executing kitt.kcl
                 "tag": {
                   "commentStart": 817,
                   "end": 823,
+                  "moduleId": 0,
                   "start": 817,
                   "type": "TagDeclarator",
                   "value": "seg02"
@@ -1578,6 +1592,7 @@ description: Variables in memory after executing kitt.kcl
                   "tag": {
                     "commentStart": 766,
                     "end": 772,
+                    "moduleId": 0,
                     "start": 766,
                     "type": "TagDeclarator",
                     "value": "seg01"
@@ -1603,6 +1618,7 @@ description: Variables in memory after executing kitt.kcl
                   "tag": {
                     "commentStart": 817,
                     "end": 823,
+                    "moduleId": 0,
                     "start": 817,
                     "type": "TagDeclarator",
                     "value": "seg02"
@@ -1940,6 +1956,7 @@ description: Variables in memory after executing kitt.kcl
                 "tag": {
                   "commentStart": 766,
                   "end": 772,
+                  "moduleId": 0,
                   "start": 766,
                   "type": "TagDeclarator",
                   "value": "seg01"
@@ -1953,6 +1970,7 @@ description: Variables in memory after executing kitt.kcl
                 "tag": {
                   "commentStart": 817,
                   "end": 823,
+                  "moduleId": 0,
                   "start": 817,
                   "type": "TagDeclarator",
                   "value": "seg02"
@@ -2002,6 +2020,7 @@ description: Variables in memory after executing kitt.kcl
                   "tag": {
                     "commentStart": 766,
                     "end": 772,
+                    "moduleId": 0,
                     "start": 766,
                     "type": "TagDeclarator",
                     "value": "seg01"
@@ -2027,6 +2046,7 @@ description: Variables in memory after executing kitt.kcl
                   "tag": {
                     "commentStart": 817,
                     "end": 823,
+                    "moduleId": 0,
                     "start": 817,
                     "type": "TagDeclarator",
                     "value": "seg02"
@@ -2364,6 +2384,7 @@ description: Variables in memory after executing kitt.kcl
                 "tag": {
                   "commentStart": 766,
                   "end": 772,
+                  "moduleId": 0,
                   "start": 766,
                   "type": "TagDeclarator",
                   "value": "seg01"
@@ -2377,6 +2398,7 @@ description: Variables in memory after executing kitt.kcl
                 "tag": {
                   "commentStart": 817,
                   "end": 823,
+                  "moduleId": 0,
                   "start": 817,
                   "type": "TagDeclarator",
                   "value": "seg02"
@@ -2426,6 +2448,7 @@ description: Variables in memory after executing kitt.kcl
                   "tag": {
                     "commentStart": 766,
                     "end": 772,
+                    "moduleId": 0,
                     "start": 766,
                     "type": "TagDeclarator",
                     "value": "seg01"
@@ -2451,6 +2474,7 @@ description: Variables in memory after executing kitt.kcl
                   "tag": {
                     "commentStart": 817,
                     "end": 823,
+                    "moduleId": 0,
                     "start": 817,
                     "type": "TagDeclarator",
                     "value": "seg02"
@@ -2788,6 +2812,7 @@ description: Variables in memory after executing kitt.kcl
                 "tag": {
                   "commentStart": 766,
                   "end": 772,
+                  "moduleId": 0,
                   "start": 766,
                   "type": "TagDeclarator",
                   "value": "seg01"
@@ -2801,6 +2826,7 @@ description: Variables in memory after executing kitt.kcl
                 "tag": {
                   "commentStart": 817,
                   "end": 823,
+                  "moduleId": 0,
                   "start": 817,
                   "type": "TagDeclarator",
                   "value": "seg02"
@@ -2850,6 +2876,7 @@ description: Variables in memory after executing kitt.kcl
                   "tag": {
                     "commentStart": 766,
                     "end": 772,
+                    "moduleId": 0,
                     "start": 766,
                     "type": "TagDeclarator",
                     "value": "seg01"
@@ -2875,6 +2902,7 @@ description: Variables in memory after executing kitt.kcl
                   "tag": {
                     "commentStart": 817,
                     "end": 823,
+                    "moduleId": 0,
                     "start": 817,
                     "type": "TagDeclarator",
                     "value": "seg02"
@@ -3290,6 +3318,7 @@ description: Variables in memory after executing kitt.kcl
                 "tag": {
                   "commentStart": 766,
                   "end": 772,
+                  "moduleId": 0,
                   "start": 766,
                   "type": "TagDeclarator",
                   "value": "seg01"
@@ -3303,6 +3332,7 @@ description: Variables in memory after executing kitt.kcl
                 "tag": {
                   "commentStart": 817,
                   "end": 823,
+                  "moduleId": 0,
                   "start": 817,
                   "type": "TagDeclarator",
                   "value": "seg02"
@@ -3352,6 +3382,7 @@ description: Variables in memory after executing kitt.kcl
                   "tag": {
                     "commentStart": 766,
                     "end": 772,
+                    "moduleId": 0,
                     "start": 766,
                     "type": "TagDeclarator",
                     "value": "seg01"
@@ -3377,6 +3408,7 @@ description: Variables in memory after executing kitt.kcl
                   "tag": {
                     "commentStart": 817,
                     "end": 823,
+                    "moduleId": 0,
                     "start": 817,
                     "type": "TagDeclarator",
                     "value": "seg02"
@@ -3714,6 +3746,7 @@ description: Variables in memory after executing kitt.kcl
                 "tag": {
                   "commentStart": 766,
                   "end": 772,
+                  "moduleId": 0,
                   "start": 766,
                   "type": "TagDeclarator",
                   "value": "seg01"
@@ -3727,6 +3760,7 @@ description: Variables in memory after executing kitt.kcl
                 "tag": {
                   "commentStart": 817,
                   "end": 823,
+                  "moduleId": 0,
                   "start": 817,
                   "type": "TagDeclarator",
                   "value": "seg02"
@@ -3776,6 +3810,7 @@ description: Variables in memory after executing kitt.kcl
                   "tag": {
                     "commentStart": 766,
                     "end": 772,
+                    "moduleId": 0,
                     "start": 766,
                     "type": "TagDeclarator",
                     "value": "seg01"
@@ -3801,6 +3836,7 @@ description: Variables in memory after executing kitt.kcl
                   "tag": {
                     "commentStart": 817,
                     "end": 823,
+                    "moduleId": 0,
                     "start": 817,
                     "type": "TagDeclarator",
                     "value": "seg02"
@@ -4100,6 +4136,7 @@ description: Variables in memory after executing kitt.kcl
           "tag": {
             "commentStart": 766,
             "end": 772,
+            "moduleId": 0,
             "start": 766,
             "type": "TagDeclarator",
             "value": "seg01"
@@ -4113,6 +4150,7 @@ description: Variables in memory after executing kitt.kcl
           "tag": {
             "commentStart": 817,
             "end": 823,
+            "moduleId": 0,
             "start": 817,
             "type": "TagDeclarator",
             "value": "seg02"
@@ -4162,6 +4200,7 @@ description: Variables in memory after executing kitt.kcl
             "tag": {
               "commentStart": 766,
               "end": 772,
+              "moduleId": 0,
               "start": 766,
               "type": "TagDeclarator",
               "value": "seg01"
@@ -4187,6 +4226,7 @@ description: Variables in memory after executing kitt.kcl
             "tag": {
               "commentStart": 817,
               "end": 823,
+              "moduleId": 0,
               "start": 817,
               "type": "TagDeclarator",
               "value": "seg02"
@@ -4695,6 +4735,7 @@ description: Variables in memory after executing kitt.kcl
                       "tag": {
                         "commentStart": 766,
                         "end": 772,
+                        "moduleId": 0,
                         "start": 766,
                         "type": "TagDeclarator",
                         "value": "seg01"
@@ -4708,6 +4749,7 @@ description: Variables in memory after executing kitt.kcl
                       "tag": {
                         "commentStart": 817,
                         "end": 823,
+                        "moduleId": 0,
                         "start": 817,
                         "type": "TagDeclarator",
                         "value": "seg02"
@@ -4757,6 +4799,7 @@ description: Variables in memory after executing kitt.kcl
                         "tag": {
                           "commentStart": 766,
                           "end": 772,
+                          "moduleId": 0,
                           "start": 766,
                           "type": "TagDeclarator",
                           "value": "seg01"
@@ -4782,6 +4825,7 @@ description: Variables in memory after executing kitt.kcl
                         "tag": {
                           "commentStart": 817,
                           "end": 823,
+                          "moduleId": 0,
                           "start": 817,
                           "type": "TagDeclarator",
                           "value": "seg02"
@@ -5310,6 +5354,7 @@ description: Variables in memory after executing kitt.kcl
                       "tag": {
                         "commentStart": 766,
                         "end": 772,
+                        "moduleId": 0,
                         "start": 766,
                         "type": "TagDeclarator",
                         "value": "seg01"
@@ -5323,6 +5368,7 @@ description: Variables in memory after executing kitt.kcl
                       "tag": {
                         "commentStart": 817,
                         "end": 823,
+                        "moduleId": 0,
                         "start": 817,
                         "type": "TagDeclarator",
                         "value": "seg02"
@@ -5372,6 +5418,7 @@ description: Variables in memory after executing kitt.kcl
                         "tag": {
                           "commentStart": 766,
                           "end": 772,
+                          "moduleId": 0,
                           "start": 766,
                           "type": "TagDeclarator",
                           "value": "seg01"
@@ -5397,6 +5444,7 @@ description: Variables in memory after executing kitt.kcl
                         "tag": {
                           "commentStart": 817,
                           "end": 823,
+                          "moduleId": 0,
                           "start": 817,
                           "type": "TagDeclarator",
                           "value": "seg02"
@@ -5925,6 +5973,7 @@ description: Variables in memory after executing kitt.kcl
                       "tag": {
                         "commentStart": 766,
                         "end": 772,
+                        "moduleId": 0,
                         "start": 766,
                         "type": "TagDeclarator",
                         "value": "seg01"
@@ -5938,6 +5987,7 @@ description: Variables in memory after executing kitt.kcl
                       "tag": {
                         "commentStart": 817,
                         "end": 823,
+                        "moduleId": 0,
                         "start": 817,
                         "type": "TagDeclarator",
                         "value": "seg02"
@@ -5987,6 +6037,7 @@ description: Variables in memory after executing kitt.kcl
                         "tag": {
                           "commentStart": 766,
                           "end": 772,
+                          "moduleId": 0,
                           "start": 766,
                           "type": "TagDeclarator",
                           "value": "seg01"
@@ -6012,6 +6063,7 @@ description: Variables in memory after executing kitt.kcl
                         "tag": {
                           "commentStart": 817,
                           "end": 823,
+                          "moduleId": 0,
                           "start": 817,
                           "type": "TagDeclarator",
                           "value": "seg02"
@@ -6908,6 +6960,7 @@ description: Variables in memory after executing kitt.kcl
                       "tag": {
                         "commentStart": 766,
                         "end": 772,
+                        "moduleId": 0,
                         "start": 766,
                         "type": "TagDeclarator",
                         "value": "seg01"
@@ -6921,6 +6974,7 @@ description: Variables in memory after executing kitt.kcl
                       "tag": {
                         "commentStart": 817,
                         "end": 823,
+                        "moduleId": 0,
                         "start": 817,
                         "type": "TagDeclarator",
                         "value": "seg02"
@@ -6970,6 +7024,7 @@ description: Variables in memory after executing kitt.kcl
                         "tag": {
                           "commentStart": 766,
                           "end": 772,
+                          "moduleId": 0,
                           "start": 766,
                           "type": "TagDeclarator",
                           "value": "seg01"
@@ -6995,6 +7050,7 @@ description: Variables in memory after executing kitt.kcl
                         "tag": {
                           "commentStart": 817,
                           "end": 823,
+                          "moduleId": 0,
                           "start": 817,
                           "type": "TagDeclarator",
                           "value": "seg02"
@@ -7575,6 +7631,7 @@ description: Variables in memory after executing kitt.kcl
                       "tag": {
                         "commentStart": 766,
                         "end": 772,
+                        "moduleId": 0,
                         "start": 766,
                         "type": "TagDeclarator",
                         "value": "seg01"
@@ -7588,6 +7645,7 @@ description: Variables in memory after executing kitt.kcl
                       "tag": {
                         "commentStart": 817,
                         "end": 823,
+                        "moduleId": 0,
                         "start": 817,
                         "type": "TagDeclarator",
                         "value": "seg02"
@@ -7637,6 +7695,7 @@ description: Variables in memory after executing kitt.kcl
                         "tag": {
                           "commentStart": 766,
                           "end": 772,
+                          "moduleId": 0,
                           "start": 766,
                           "type": "TagDeclarator",
                           "value": "seg01"
@@ -7662,6 +7721,7 @@ description: Variables in memory after executing kitt.kcl
                         "tag": {
                           "commentStart": 817,
                           "end": 823,
+                          "moduleId": 0,
                           "start": 817,
                           "type": "TagDeclarator",
                           "value": "seg02"
@@ -8190,6 +8250,7 @@ description: Variables in memory after executing kitt.kcl
                       "tag": {
                         "commentStart": 766,
                         "end": 772,
+                        "moduleId": 0,
                         "start": 766,
                         "type": "TagDeclarator",
                         "value": "seg01"
@@ -8203,6 +8264,7 @@ description: Variables in memory after executing kitt.kcl
                       "tag": {
                         "commentStart": 817,
                         "end": 823,
+                        "moduleId": 0,
                         "start": 817,
                         "type": "TagDeclarator",
                         "value": "seg02"
@@ -8252,6 +8314,7 @@ description: Variables in memory after executing kitt.kcl
                         "tag": {
                           "commentStart": 766,
                           "end": 772,
+                          "moduleId": 0,
                           "start": 766,
                           "type": "TagDeclarator",
                           "value": "seg01"
@@ -8277,6 +8340,7 @@ description: Variables in memory after executing kitt.kcl
                         "tag": {
                           "commentStart": 817,
                           "end": 823,
+                          "moduleId": 0,
                           "start": 817,
                           "type": "TagDeclarator",
                           "value": "seg02"
@@ -8805,6 +8869,7 @@ description: Variables in memory after executing kitt.kcl
                       "tag": {
                         "commentStart": 766,
                         "end": 772,
+                        "moduleId": 0,
                         "start": 766,
                         "type": "TagDeclarator",
                         "value": "seg01"
@@ -8818,6 +8883,7 @@ description: Variables in memory after executing kitt.kcl
                       "tag": {
                         "commentStart": 817,
                         "end": 823,
+                        "moduleId": 0,
                         "start": 817,
                         "type": "TagDeclarator",
                         "value": "seg02"
@@ -8867,6 +8933,7 @@ description: Variables in memory after executing kitt.kcl
                         "tag": {
                           "commentStart": 766,
                           "end": 772,
+                          "moduleId": 0,
                           "start": 766,
                           "type": "TagDeclarator",
                           "value": "seg01"
@@ -8892,6 +8959,7 @@ description: Variables in memory after executing kitt.kcl
                         "tag": {
                           "commentStart": 817,
                           "end": 823,
+                          "moduleId": 0,
                           "start": 817,
                           "type": "TagDeclarator",
                           "value": "seg02"
@@ -9330,6 +9398,7 @@ description: Variables in memory after executing kitt.kcl
                 "tag": {
                   "commentStart": 766,
                   "end": 772,
+                  "moduleId": 0,
                   "start": 766,
                   "type": "TagDeclarator",
                   "value": "seg01"
@@ -9343,6 +9412,7 @@ description: Variables in memory after executing kitt.kcl
                 "tag": {
                   "commentStart": 817,
                   "end": 823,
+                  "moduleId": 0,
                   "start": 817,
                   "type": "TagDeclarator",
                   "value": "seg02"
@@ -9392,6 +9462,7 @@ description: Variables in memory after executing kitt.kcl
                   "tag": {
                     "commentStart": 766,
                     "end": 772,
+                    "moduleId": 0,
                     "start": 766,
                     "type": "TagDeclarator",
                     "value": "seg01"
@@ -9417,6 +9488,7 @@ description: Variables in memory after executing kitt.kcl
                   "tag": {
                     "commentStart": 817,
                     "end": 823,
+                    "moduleId": 0,
                     "start": 817,
                     "type": "TagDeclarator",
                     "value": "seg02"
@@ -9819,6 +9891,7 @@ description: Variables in memory after executing kitt.kcl
                 "tag": {
                   "commentStart": 766,
                   "end": 772,
+                  "moduleId": 0,
                   "start": 766,
                   "type": "TagDeclarator",
                   "value": "seg01"
@@ -9832,6 +9905,7 @@ description: Variables in memory after executing kitt.kcl
                 "tag": {
                   "commentStart": 817,
                   "end": 823,
+                  "moduleId": 0,
                   "start": 817,
                   "type": "TagDeclarator",
                   "value": "seg02"
@@ -9881,6 +9955,7 @@ description: Variables in memory after executing kitt.kcl
                   "tag": {
                     "commentStart": 766,
                     "end": 772,
+                    "moduleId": 0,
                     "start": 766,
                     "type": "TagDeclarator",
                     "value": "seg01"
@@ -9906,6 +9981,7 @@ description: Variables in memory after executing kitt.kcl
                   "tag": {
                     "commentStart": 817,
                     "end": 823,
+                    "moduleId": 0,
                     "start": 817,
                     "type": "TagDeclarator",
                     "value": "seg02"
@@ -10761,6 +10837,7 @@ description: Variables in memory after executing kitt.kcl
                             "tag": {
                               "commentStart": 766,
                               "end": 772,
+                              "moduleId": 0,
                               "start": 766,
                               "type": "TagDeclarator",
                               "value": "seg01"
@@ -10774,6 +10851,7 @@ description: Variables in memory after executing kitt.kcl
                             "tag": {
                               "commentStart": 817,
                               "end": 823,
+                              "moduleId": 0,
                               "start": 817,
                               "type": "TagDeclarator",
                               "value": "seg02"
@@ -10823,6 +10901,7 @@ description: Variables in memory after executing kitt.kcl
                               "tag": {
                                 "commentStart": 766,
                                 "end": 772,
+                                "moduleId": 0,
                                 "start": 766,
                                 "type": "TagDeclarator",
                                 "value": "seg01"
@@ -10848,6 +10927,7 @@ description: Variables in memory after executing kitt.kcl
                               "tag": {
                                 "commentStart": 817,
                                 "end": 823,
+                                "moduleId": 0,
                                 "start": 817,
                                 "type": "TagDeclarator",
                                 "value": "seg02"
@@ -11775,6 +11855,7 @@ description: Variables in memory after executing kitt.kcl
                             "tag": {
                               "commentStart": 766,
                               "end": 772,
+                              "moduleId": 0,
                               "start": 766,
                               "type": "TagDeclarator",
                               "value": "seg01"
@@ -11788,6 +11869,7 @@ description: Variables in memory after executing kitt.kcl
                             "tag": {
                               "commentStart": 817,
                               "end": 823,
+                              "moduleId": 0,
                               "start": 817,
                               "type": "TagDeclarator",
                               "value": "seg02"
@@ -11837,6 +11919,7 @@ description: Variables in memory after executing kitt.kcl
                               "tag": {
                                 "commentStart": 766,
                                 "end": 772,
+                                "moduleId": 0,
                                 "start": 766,
                                 "type": "TagDeclarator",
                                 "value": "seg01"
@@ -11862,6 +11945,7 @@ description: Variables in memory after executing kitt.kcl
                               "tag": {
                                 "commentStart": 817,
                                 "end": 823,
+                                "moduleId": 0,
                                 "start": 817,
                                 "type": "TagDeclarator",
                                 "value": "seg02"
@@ -12789,6 +12873,7 @@ description: Variables in memory after executing kitt.kcl
                             "tag": {
                               "commentStart": 766,
                               "end": 772,
+                              "moduleId": 0,
                               "start": 766,
                               "type": "TagDeclarator",
                               "value": "seg01"
@@ -12802,6 +12887,7 @@ description: Variables in memory after executing kitt.kcl
                             "tag": {
                               "commentStart": 817,
                               "end": 823,
+                              "moduleId": 0,
                               "start": 817,
                               "type": "TagDeclarator",
                               "value": "seg02"
@@ -12851,6 +12937,7 @@ description: Variables in memory after executing kitt.kcl
                               "tag": {
                                 "commentStart": 766,
                                 "end": 772,
+                                "moduleId": 0,
                                 "start": 766,
                                 "type": "TagDeclarator",
                                 "value": "seg01"
@@ -12876,6 +12963,7 @@ description: Variables in memory after executing kitt.kcl
                               "tag": {
                                 "commentStart": 817,
                                 "end": 823,
+                                "moduleId": 0,
                                 "start": 817,
                                 "type": "TagDeclarator",
                                 "value": "seg02"
@@ -14019,6 +14107,7 @@ description: Variables in memory after executing kitt.kcl
                             "tag": {
                               "commentStart": 766,
                               "end": 772,
+                              "moduleId": 0,
                               "start": 766,
                               "type": "TagDeclarator",
                               "value": "seg01"
@@ -14032,6 +14121,7 @@ description: Variables in memory after executing kitt.kcl
                             "tag": {
                               "commentStart": 817,
                               "end": 823,
+                              "moduleId": 0,
                               "start": 817,
                               "type": "TagDeclarator",
                               "value": "seg02"
@@ -14081,6 +14171,7 @@ description: Variables in memory after executing kitt.kcl
                               "tag": {
                                 "commentStart": 766,
                                 "end": 772,
+                                "moduleId": 0,
                                 "start": 766,
                                 "type": "TagDeclarator",
                                 "value": "seg01"
@@ -14106,6 +14197,7 @@ description: Variables in memory after executing kitt.kcl
                               "tag": {
                                 "commentStart": 817,
                                 "end": 823,
+                                "moduleId": 0,
                                 "start": 817,
                                 "type": "TagDeclarator",
                                 "value": "seg02"
@@ -15033,6 +15125,7 @@ description: Variables in memory after executing kitt.kcl
                             "tag": {
                               "commentStart": 766,
                               "end": 772,
+                              "moduleId": 0,
                               "start": 766,
                               "type": "TagDeclarator",
                               "value": "seg01"
@@ -15046,6 +15139,7 @@ description: Variables in memory after executing kitt.kcl
                             "tag": {
                               "commentStart": 817,
                               "end": 823,
+                              "moduleId": 0,
                               "start": 817,
                               "type": "TagDeclarator",
                               "value": "seg02"
@@ -15095,6 +15189,7 @@ description: Variables in memory after executing kitt.kcl
                               "tag": {
                                 "commentStart": 766,
                                 "end": 772,
+                                "moduleId": 0,
                                 "start": 766,
                                 "type": "TagDeclarator",
                                 "value": "seg01"
@@ -15120,6 +15215,7 @@ description: Variables in memory after executing kitt.kcl
                               "tag": {
                                 "commentStart": 817,
                                 "end": 823,
+                                "moduleId": 0,
                                 "start": 817,
                                 "type": "TagDeclarator",
                                 "value": "seg02"
@@ -16073,6 +16169,7 @@ description: Variables in memory after executing kitt.kcl
                             "tag": {
                               "commentStart": 766,
                               "end": 772,
+                              "moduleId": 0,
                               "start": 766,
                               "type": "TagDeclarator",
                               "value": "seg01"
@@ -16086,6 +16183,7 @@ description: Variables in memory after executing kitt.kcl
                             "tag": {
                               "commentStart": 817,
                               "end": 823,
+                              "moduleId": 0,
                               "start": 817,
                               "type": "TagDeclarator",
                               "value": "seg02"
@@ -16135,6 +16233,7 @@ description: Variables in memory after executing kitt.kcl
                               "tag": {
                                 "commentStart": 766,
                                 "end": 772,
+                                "moduleId": 0,
                                 "start": 766,
                                 "type": "TagDeclarator",
                                 "value": "seg01"
@@ -16160,6 +16259,7 @@ description: Variables in memory after executing kitt.kcl
                               "tag": {
                                 "commentStart": 817,
                                 "end": 823,
+                                "moduleId": 0,
                                 "start": 817,
                                 "type": "TagDeclarator",
                                 "value": "seg02"
@@ -17087,6 +17187,7 @@ description: Variables in memory after executing kitt.kcl
                             "tag": {
                               "commentStart": 766,
                               "end": 772,
+                              "moduleId": 0,
                               "start": 766,
                               "type": "TagDeclarator",
                               "value": "seg01"
@@ -17100,6 +17201,7 @@ description: Variables in memory after executing kitt.kcl
                             "tag": {
                               "commentStart": 817,
                               "end": 823,
+                              "moduleId": 0,
                               "start": 817,
                               "type": "TagDeclarator",
                               "value": "seg02"
@@ -17149,6 +17251,7 @@ description: Variables in memory after executing kitt.kcl
                               "tag": {
                                 "commentStart": 766,
                                 "end": 772,
+                                "moduleId": 0,
                                 "start": 766,
                                 "type": "TagDeclarator",
                                 "value": "seg01"
@@ -17174,6 +17277,7 @@ description: Variables in memory after executing kitt.kcl
                               "tag": {
                                 "commentStart": 817,
                                 "end": 823,
+                                "moduleId": 0,
                                 "start": 817,
                                 "type": "TagDeclarator",
                                 "value": "seg02"
@@ -18309,6 +18413,7 @@ description: Variables in memory after executing kitt.kcl
                             "tag": {
                               "commentStart": 766,
                               "end": 772,
+                              "moduleId": 0,
                               "start": 766,
                               "type": "TagDeclarator",
                               "value": "seg01"
@@ -18322,6 +18427,7 @@ description: Variables in memory after executing kitt.kcl
                             "tag": {
                               "commentStart": 817,
                               "end": 823,
+                              "moduleId": 0,
                               "start": 817,
                               "type": "TagDeclarator",
                               "value": "seg02"
@@ -18371,6 +18477,7 @@ description: Variables in memory after executing kitt.kcl
                               "tag": {
                                 "commentStart": 766,
                                 "end": 772,
+                                "moduleId": 0,
                                 "start": 766,
                                 "type": "TagDeclarator",
                                 "value": "seg01"
@@ -18396,6 +18503,7 @@ description: Variables in memory after executing kitt.kcl
                               "tag": {
                                 "commentStart": 817,
                                 "end": 823,
+                                "moduleId": 0,
                                 "start": 817,
                                 "type": "TagDeclarator",
                                 "value": "seg02"
@@ -18818,6 +18926,7 @@ description: Variables in memory after executing kitt.kcl
                 "tag": {
                   "commentStart": 766,
                   "end": 772,
+                  "moduleId": 0,
                   "start": 766,
                   "type": "TagDeclarator",
                   "value": "seg01"
@@ -18831,6 +18940,7 @@ description: Variables in memory after executing kitt.kcl
                 "tag": {
                   "commentStart": 817,
                   "end": 823,
+                  "moduleId": 0,
                   "start": 817,
                   "type": "TagDeclarator",
                   "value": "seg02"
@@ -18880,6 +18990,7 @@ description: Variables in memory after executing kitt.kcl
                   "tag": {
                     "commentStart": 766,
                     "end": 772,
+                    "moduleId": 0,
                     "start": 766,
                     "type": "TagDeclarator",
                     "value": "seg01"
@@ -18905,6 +19016,7 @@ description: Variables in memory after executing kitt.kcl
                   "tag": {
                     "commentStart": 817,
                     "end": 823,
+                    "moduleId": 0,
                     "start": 817,
                     "type": "TagDeclarator",
                     "value": "seg02"
@@ -19760,6 +19872,7 @@ description: Variables in memory after executing kitt.kcl
                             "tag": {
                               "commentStart": 766,
                               "end": 772,
+                              "moduleId": 0,
                               "start": 766,
                               "type": "TagDeclarator",
                               "value": "seg01"
@@ -19773,6 +19886,7 @@ description: Variables in memory after executing kitt.kcl
                             "tag": {
                               "commentStart": 817,
                               "end": 823,
+                              "moduleId": 0,
                               "start": 817,
                               "type": "TagDeclarator",
                               "value": "seg02"
@@ -19822,6 +19936,7 @@ description: Variables in memory after executing kitt.kcl
                               "tag": {
                                 "commentStart": 766,
                                 "end": 772,
+                                "moduleId": 0,
                                 "start": 766,
                                 "type": "TagDeclarator",
                                 "value": "seg01"
@@ -19847,6 +19962,7 @@ description: Variables in memory after executing kitt.kcl
                               "tag": {
                                 "commentStart": 817,
                                 "end": 823,
+                                "moduleId": 0,
                                 "start": 817,
                                 "type": "TagDeclarator",
                                 "value": "seg02"
@@ -20649,6 +20765,7 @@ description: Variables in memory after executing kitt.kcl
                       "tag": {
                         "commentStart": 766,
                         "end": 772,
+                        "moduleId": 0,
                         "start": 766,
                         "type": "TagDeclarator",
                         "value": "seg01"
@@ -20662,6 +20779,7 @@ description: Variables in memory after executing kitt.kcl
                       "tag": {
                         "commentStart": 817,
                         "end": 823,
+                        "moduleId": 0,
                         "start": 817,
                         "type": "TagDeclarator",
                         "value": "seg02"
@@ -20711,6 +20829,7 @@ description: Variables in memory after executing kitt.kcl
                         "tag": {
                           "commentStart": 766,
                           "end": 772,
+                          "moduleId": 0,
                           "start": 766,
                           "type": "TagDeclarator",
                           "value": "seg01"
@@ -20736,6 +20855,7 @@ description: Variables in memory after executing kitt.kcl
                         "tag": {
                           "commentStart": 817,
                           "end": 823,
+                          "moduleId": 0,
                           "start": 817,
                           "type": "TagDeclarator",
                           "value": "seg02"
@@ -21161,6 +21281,7 @@ description: Variables in memory after executing kitt.kcl
                 "tag": {
                   "commentStart": 766,
                   "end": 772,
+                  "moduleId": 0,
                   "start": 766,
                   "type": "TagDeclarator",
                   "value": "seg01"
@@ -21174,6 +21295,7 @@ description: Variables in memory after executing kitt.kcl
                 "tag": {
                   "commentStart": 817,
                   "end": 823,
+                  "moduleId": 0,
                   "start": 817,
                   "type": "TagDeclarator",
                   "value": "seg02"
@@ -21223,6 +21345,7 @@ description: Variables in memory after executing kitt.kcl
                   "tag": {
                     "commentStart": 766,
                     "end": 772,
+                    "moduleId": 0,
                     "start": 766,
                     "type": "TagDeclarator",
                     "value": "seg01"
@@ -21248,6 +21371,7 @@ description: Variables in memory after executing kitt.kcl
                   "tag": {
                     "commentStart": 817,
                     "end": 823,
+                    "moduleId": 0,
                     "start": 817,
                     "type": "TagDeclarator",
                     "value": "seg02"
@@ -21585,6 +21709,7 @@ description: Variables in memory after executing kitt.kcl
                 "tag": {
                   "commentStart": 766,
                   "end": 772,
+                  "moduleId": 0,
                   "start": 766,
                   "type": "TagDeclarator",
                   "value": "seg01"
@@ -21598,6 +21723,7 @@ description: Variables in memory after executing kitt.kcl
                 "tag": {
                   "commentStart": 817,
                   "end": 823,
+                  "moduleId": 0,
                   "start": 817,
                   "type": "TagDeclarator",
                   "value": "seg02"
@@ -21647,6 +21773,7 @@ description: Variables in memory after executing kitt.kcl
                   "tag": {
                     "commentStart": 766,
                     "end": 772,
+                    "moduleId": 0,
                     "start": 766,
                     "type": "TagDeclarator",
                     "value": "seg01"
@@ -21672,6 +21799,7 @@ description: Variables in memory after executing kitt.kcl
                   "tag": {
                     "commentStart": 817,
                     "end": 823,
+                    "moduleId": 0,
                     "start": 817,
                     "type": "TagDeclarator",
                     "value": "seg02"
@@ -22009,6 +22137,7 @@ description: Variables in memory after executing kitt.kcl
                 "tag": {
                   "commentStart": 766,
                   "end": 772,
+                  "moduleId": 0,
                   "start": 766,
                   "type": "TagDeclarator",
                   "value": "seg01"
@@ -22022,6 +22151,7 @@ description: Variables in memory after executing kitt.kcl
                 "tag": {
                   "commentStart": 817,
                   "end": 823,
+                  "moduleId": 0,
                   "start": 817,
                   "type": "TagDeclarator",
                   "value": "seg02"
@@ -22071,6 +22201,7 @@ description: Variables in memory after executing kitt.kcl
                   "tag": {
                     "commentStart": 766,
                     "end": 772,
+                    "moduleId": 0,
                     "start": 766,
                     "type": "TagDeclarator",
                     "value": "seg01"
@@ -22096,6 +22227,7 @@ description: Variables in memory after executing kitt.kcl
                   "tag": {
                     "commentStart": 817,
                     "end": 823,
+                    "moduleId": 0,
                     "start": 817,
                     "type": "TagDeclarator",
                     "value": "seg02"

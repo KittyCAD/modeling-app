@@ -12,6 +12,7 @@ expression: actual
         "id": {
           "commentStart": 0,
           "end": 5,
+          "moduleId": 0,
           "name": "props",
           "start": 0,
           "type": "Identifier"
@@ -19,12 +20,14 @@ expression: actual
         "init": {
           "commentStart": 8,
           "end": 75,
+          "moduleId": 0,
           "nonCodeMeta": {
             "nonCodeNodes": {
               "1": [
                 {
                   "commentStart": 40,
                   "end": 48,
+                  "moduleId": 0,
                   "start": 40,
                   "type": "NonCodeNode",
                   "value": {
@@ -44,15 +47,18 @@ expression: actual
               "key": {
                 "commentStart": 22,
                 "end": 23,
+                "moduleId": 0,
                 "name": "a",
                 "start": 22,
                 "type": "Identifier"
               },
+              "moduleId": 0,
               "start": 22,
               "type": "ObjectProperty",
               "value": {
                 "commentStart": 25,
                 "end": 26,
+                "moduleId": 0,
                 "raw": "1",
                 "start": 25,
                 "type": "Literal",
@@ -69,15 +75,18 @@ expression: actual
               "key": {
                 "commentStart": 61,
                 "end": 62,
+                "moduleId": 0,
                 "name": "c",
                 "start": 61,
                 "type": "Identifier"
               },
+              "moduleId": 0,
               "start": 61,
               "type": "ObjectProperty",
               "value": {
                 "commentStart": 64,
                 "end": 65,
+                "moduleId": 0,
                 "raw": "3",
                 "start": 64,
                 "type": "Literal",
@@ -93,11 +102,13 @@ expression: actual
           "type": "ObjectExpression",
           "type": "ObjectExpression"
         },
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclarator"
       },
       "end": 75,
       "kind": "const",
+      "moduleId": 0,
       "start": 0,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
@@ -105,5 +116,6 @@ expression: actual
   ],
   "commentStart": 0,
   "end": 75,
+  "moduleId": 0,
   "start": 0
 }

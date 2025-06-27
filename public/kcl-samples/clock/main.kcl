@@ -1,0 +1,441 @@
+// Clock
+// A clock with roman numerals
+
+// Define parameters
+clockDiameter = 500
+clockThickness = 50
+minuteHandLength = 100
+nubDiameter = 30
+numHeight = 10
+minuteHandWidth = 25
+hourHandWidth = 25
+hourHandLargeDiameter = 230
+minuteHandLargeDiameter = 310
+filletRadius = 5
+ridgeThickness = 10
+numberThickness = 10
+
+// Calculated parameters
+ridgeDiameter = clockDiameter - 50
+hourHandArmLength = clockDiameter / 2 * .25
+minuteHandArmLength = clockDiameter / 2 * .40
+
+// Add assert for clockDiameter
+assert(clockDiameter, isGreaterThan = 450, error = "clock diameter needs to be greater than 400")
+
+// What time is it?
+hour = 9
+minute = 29
+
+// Calculate hand angles
+hourHandAngle = 90 - (hour * 30)
+minuteHandAngle = 90 - (minute * 6)
+
+// Create the clock body
+clockBodySketch = startSketchOn(XY)
+profile001 = circle(
+  clockBodySketch,
+  center = [0, 0],
+  diameter = clockDiameter,
+  tag = $seg02,
+)
+
+clockBody = extrude(profile001, length = clockThickness, tagStart = $capStart001)
+  |> fillet(
+       radius = filletRadius,
+       tags = [
+         getCommonEdge(faces = [seg02, capStart001])
+       ],
+     )
+
+// Create the ridge on the top face of the body
+clockRidgeSketch = startSketchOn(clockBody, face = END)
+profile002 = circle(
+  clockRidgeSketch,
+  center = [0, 0],
+  diameter = clockDiameter,
+  tag = $seg01,
+)
+profile003 = circle(clockRidgeSketch, center = [0, 0], diameter = ridgeDiameter)
+subtract2d(profile002, tool = profile003)
+clockRidge = extrude(profile002, length = ridgeThickness, tagEnd = $capEnd001)
+  |> fillet(
+       radius = filletRadius,
+       tags = [
+         getCommonEdge(faces = [seg01, capEnd001])
+       ],
+     )
+  |> appearance(%, color = "#ab4321")
+
+// Create an object that has all of the x and y starting positions of every number
+numberObject = {
+  // one = { i = [90, 160] },
+  one = {
+    i = [
+      clockDiameter / 2 * 3 / 4 * cos(60),
+      clockDiameter / 2 * 3 / 4 * sin(60)
+    ]
+  },
+  two = {
+    i = [
+      clockDiameter / 2 * 3 / 4 * cos(30) - 10,
+      clockDiameter / 2 * 3 / 4 * sin(30)
+    ],
+    i2 = [
+      clockDiameter / 2 * 3 / 4 * cos(30) + 5,
+      clockDiameter / 2 * 3 / 4 * sin(30)
+    ]
+  },
+  three = {
+    i = [
+      clockDiameter / 2 * 3 / 4 * cos(0) - 15,
+      clockDiameter / 2 * 3 / 4 * sin(0)
+    ],
+    i2 = [
+      clockDiameter / 2 * 3 / 4 * cos(0),
+      clockDiameter / 2 * 3 / 4 * sin(0)
+    ],
+    i3 = [
+      clockDiameter / 2 * 3 / 4 * cos(0) + 15,
+      clockDiameter / 2 * 3 / 4 * sin(0)
+    ]
+  },
+  four = {
+    i = [
+      clockDiameter / 2 * 3 / 4 * cos(-30) - 10,
+      clockDiameter / 2 * 3 / 4 * sin(-30)
+    ],
+    v = [
+      clockDiameter / 2 * 3 / 4 * cos(-30) + 13,
+      clockDiameter / 2 * 3 / 4 * sin(-30)
+    ]
+  },
+  five = {
+    v = [
+      clockDiameter / 2 * 3 / 4 * cos(-60),
+      clockDiameter / 2 * 3 / 4 * sin(-60)
+    ]
+  },
+  six = {
+    v = [
+      clockDiameter / 2 * 3 / 4 * cos(-90) - 10,
+      clockDiameter / 2 * 3 / 4 * sin(-90)
+    ],
+    i = [
+      clockDiameter / 2 * 3 / 4 * cos(-90) + 12,
+      clockDiameter / 2 * 3 / 4 * sin(-90)
+    ]
+  },
+  seven = {
+    v = [
+      clockDiameter / 2 * 3 / 4 * cos(-120) - 15,
+      clockDiameter / 2 * 3 / 4 * sin(-120)
+    ],
+    i = [
+      clockDiameter / 2 * 3 / 4 * cos(-120) + 5,
+      clockDiameter / 2 * 3 / 4 * sin(-120)
+    ],
+    i2 = [
+      clockDiameter / 2 * 3 / 4 * cos(-120) + 20,
+      clockDiameter / 2 * 3 / 4 * sin(-120)
+    ]
+  },
+  eight = {
+    v = [
+      clockDiameter / 2 * 3 / 4 * cos(-150) - 10,
+      clockDiameter / 2 * 3 / 4 * sin(-150)
+    ],
+    i = [
+      clockDiameter / 2 * 3 / 4 * cos(-150) + 10,
+      clockDiameter / 2 * 3 / 4 * sin(-150)
+    ],
+    i2 = [
+      clockDiameter / 2 * 3 / 4 * cos(-150) + 25,
+      clockDiameter / 2 * 3 / 4 * sin(-150)
+    ],
+    i3 = [
+      clockDiameter / 2 * 3 / 4 * cos(-150) + 40,
+      clockDiameter / 2 * 3 / 4 * sin(-150)
+    ]
+  },
+  nine = {
+    i = [
+      clockDiameter / 2 * 3 / 4 * cos(180) - 15,
+      clockDiameter / 2 * 3 / 4 * sin(180)
+    ],
+    x = [
+      clockDiameter / 2 * 3 / 4 * cos(180) + 15,
+      clockDiameter / 2 * 3 / 4 * sin(180)
+    ]
+  },
+  ten = {
+    x = [
+      clockDiameter / 2 * 3 / 4 * cos(150) + 5,
+      clockDiameter / 2 * 3 / 4 * sin(150)
+    ]
+  },
+  eleven = {
+    x = [
+      clockDiameter / 2 * 3 / 4 * cos(120),
+      clockDiameter / 2 * 3 / 4 * sin(120)
+    ],
+    i = [
+      clockDiameter / 2 * 3 / 4 * cos(120) + 10,
+      clockDiameter / 2 * 3 / 4 * sin(120)
+    ]
+  },
+  twelve = {
+    x = [
+      clockDiameter / 2 * 3 / 4 * cos(90) - 10,
+      clockDiameter / 2 * 3 / 4 * sin(90)
+    ],
+    i = [
+      clockDiameter / 2 * 3 / 4 * cos(90) + 5,
+      clockDiameter / 2 * 3 / 4 * sin(90)
+    ],
+    i2 = [
+      clockDiameter / 2 * 3 / 4 * cos(90) + 20,
+      clockDiameter / 2 * 3 / 4 * sin(90)
+    ]
+  }
+}
+
+// Function for the letter I
+fn letterI(startX, startY) {
+  iWidth = 8
+  iLength = 40
+  return startSketchOn(offsetPlane(XY, offset = 50))
+    |> startProfile(
+         %,
+         at = [
+           startX - (iWidth / 2),
+           startY + iLength / 2
+         ],
+       )
+    |> xLine(%, length = iWidth)
+    |> yLine(%, length = -iLength)
+    |> xLine(%, length = -iWidth)
+    |> close(%)
+    |> extrude(%, length = numberThickness)
+    |> appearance(%, color = "#140f0f")
+}
+
+// Function for the letter X
+fn letterX(startX, startY) {
+  xWidth = 40
+  xLength = 40
+
+  return startSketchOn(offsetPlane(XY, offset = 50))
+    |> startProfile(
+         %,
+         at = [
+           startX - (xWidth / 2),
+           startY + xLength / 2
+         ],
+       )
+    |> xLine(%, length = xWidth / 6)
+    |> angledLine(%, angle = -70, lengthY = xLength * 1 / 3)
+    |> angledLine(%, angle = 70, lengthY = xLength * 1 / 3)
+    |> xLine(%, length = xWidth / 6)
+    |> angledLine(%, angle = 70 + 180, lengthY = xLength * 1 / 2)
+    |> angledLine(%, angle = -70, lengthY = xLength * 1 / 2)
+    |> xLine(%, length = -xWidth / 6)
+    |> angledLine(%, angle = -70 - 180, lengthY = xLength * 1 / 3)
+    |> angledLine(%, angle = 70 + 180, lengthY = xLength * 1 / 3)
+    |> xLine(%, length = -xWidth / 6)
+    |> angledLine(%, angle = 70, lengthY = xLength * 1 / 2)
+    |> close(%)
+    |> extrude(%, length = numberThickness)
+    |> appearance(%, color = "#140f0f")
+}
+
+// Function for the letter V
+fn letterV(startX, startY) {
+  vWidth = 25
+  vLength = 40
+  return startSketchOn(offsetPlane(XY, offset = 50))
+    |> startProfile(
+         %,
+         at = [
+           startX - (vWidth / 2),
+           startY + vLength / 2
+         ],
+       )
+    |> xLine(%, length = vWidth * 1 / 3)
+    |> line(%, end = [vWidth / 6, -vLength / 2])
+    |> line(%, end = [vWidth / 6, vLength / 2])
+    |> xLine(%, length = vWidth * 1 / 3)
+    |> line(%, end = [-vWidth * 1 / 2, -vLength])
+    |> close(%)
+    |> extrude(%, length = numberThickness)
+    |> appearance(%, color = "#140f0f")
+}
+
+// Create the numbers on the face of the clock
+
+// 1 //
+letterI(startX = numberObject.one.i[0], startY = numberObject.one.i[1])
+
+// 2 //
+letterI(startX = numberObject.two.i[0], startY = numberObject.two.i[1])
+letterI(startX = numberObject.two.i2[0], startY = numberObject.two.i2[1])
+
+// 3 //
+letterI(startX = numberObject.three.i[0], startY = numberObject.three.i[1])
+letterI(startX = numberObject.three.i2[0], startY = numberObject.three.i2[1])
+letterI(startX = numberObject.three.i3[0], startY = numberObject.three.i3[1])
+
+// 4 //
+letterI(startX = numberObject.four.i[0], startY = numberObject.four.i[1])
+letterV(startX = numberObject.four.v[0], startY = numberObject.four.v[1])
+
+// 5 //
+letterV(startX = numberObject.five.v[0], startY = numberObject.five.v[1])
+
+// 6 //
+letterV(startX = numberObject.six.v[0], startY = numberObject.six.v[1])
+letterI(startX = numberObject.six.i[0], startY = numberObject.six.i[1])
+
+// 7 //
+letterV(startX = numberObject.seven.v[0], startY = numberObject.seven.v[1])
+letterI(startX = numberObject.seven.i[0], startY = numberObject.seven.i[1])
+letterI(startX = numberObject.seven.i2[0], startY = numberObject.seven.i2[1])
+
+// 8 //
+letterV(startX = numberObject.eight.v[0], startY = numberObject.eight.v[1])
+letterI(startX = numberObject.eight.i[0], startY = numberObject.eight.i[1])
+letterI(startX = numberObject.eight.i2[0], startY = numberObject.eight.i2[1])
+letterI(startX = numberObject.eight.i3[0], startY = numberObject.eight.i3[1])
+
+// 9 //
+letterI(startX = numberObject.nine.i[0], startY = numberObject.nine.i[1])
+letterX(startX = numberObject.nine.x[0], startY = numberObject.nine.x[1])
+
+// 10 //
+letterX(startX = numberObject.ten.x[0], startY = numberObject.ten.x[1])
+
+// 11 //
+letterX(startX = numberObject.eleven.x[0], startY = numberObject.eleven.x[1])
+letterI(startX = numberObject.eleven.i[0], startY = numberObject.eleven.i[1])
+
+// 12 //
+letterX(startX = numberObject.twelve.x[0], startY = numberObject.twelve.x[1])
+letterI(startX = numberObject.twelve.i[0], startY = numberObject.twelve.i[1])
+letterI(startX = numberObject.twelve.i2[0], startY = numberObject.twelve.i2[1])
+
+// Create nub for the minute and hour hands
+startSketchOn(clockBody, face = END)
+  |> circle(center = [0, 0], diameter = nubDiameter)
+  |> extrude(%, length = numHeight)
+
+// Create the hour hand
+sketch005 = startSketchOn(offsetPlane(XY, offset = 55))
+profile007 = startProfile(
+       sketch005,
+       at = [
+         nubDiameter / 2 * 1.375 * cos(hourHandAngle + 20),
+         nubDiameter / 2 * 1.375 * sin(hourHandAngle + 20)
+       ],
+     )
+  |> arc(
+       %,
+       interiorAbsolute = [
+         nubDiameter / 2 * 1.375 * cos(hourHandAngle + 180),
+         nubDiameter / 2 * 1.375 * sin(hourHandAngle + 180)
+       ],
+       endAbsolute = [
+         nubDiameter / 2 * 1.375 * cos(hourHandAngle + 340),
+         nubDiameter / 2 * 1.375 * sin(hourHandAngle + 340)
+       ],
+     )
+  |> angledLine(%, angle = hourHandAngle, length = hourHandArmLength)
+  |> angledLine(
+       %,
+       angle = hourHandAngle - 90,
+       length = hourHandWidth / 2,
+       tag = $seg004,
+     )
+  |> line(
+       %,
+       endAbsolute = [
+         hourHandLargeDiameter / 2 * cos(hourHandAngle),
+         hourHandLargeDiameter / 2 * sin(hourHandAngle)
+       ],
+       tag = $seg002,
+     )
+  |> angledLine(%, angle = segAng(seg002) + 120, length = segLen(seg002))
+  // |> angledLineThatIntersects(%, angle = segAng(seg002) + hourHandAngle - 90, intersectTag = seg004)
+  |> angledLine(%, angle = hourHandAngle - 90, length = segLen(seg004))
+  |> line(%, endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close(%)
+profile008 = circle(sketch005, center = [0, 0], diameter = nubDiameter)
+subtract2d(profile007, tool = profile008)
+  |> extrude(%, length = 5)
+  |> appearance(%, color = "#404040")
+
+// create the minute hand
+sketch006 = startSketchOn(offsetPlane(XY, offset = 50))
+profile009 = startProfile(
+       sketch006,
+       at = [
+         nubDiameter / 2 * 1.375 * cos(minuteHandAngle + 20),
+         nubDiameter / 2 * 1.375 * sin(minuteHandAngle + 20)
+       ],
+     )
+  |> arc(
+       %,
+       interiorAbsolute = [
+         nubDiameter / 2 * 1.375 * cos(minuteHandAngle + 180),
+         nubDiameter / 2 * 1.375 * sin(minuteHandAngle + 180)
+       ],
+       endAbsolute = [
+         nubDiameter / 2 * 1.375 * cos(minuteHandAngle + 340),
+         nubDiameter / 2 * 1.375 * sin(minuteHandAngle + 340)
+       ],
+     )
+  |> angledLine(%, angle = minuteHandAngle, length = minuteHandArmLength)
+  |> angledLine(
+       %,
+       angle = minuteHandAngle - 90,
+       length = minuteHandWidth / 2,
+       tag = $seg003,
+     )
+  |> line(
+       %,
+       endAbsolute = [
+         minuteHandLargeDiameter / 2 * cos(minuteHandAngle),
+         minuteHandLargeDiameter / 2 * sin(minuteHandAngle)
+       ],
+       tag = $seg005,
+     )
+  |> angledLine(%, angle = segAng(seg005) + 120, length = segLen(seg005))
+  |> angledLine(%, angle = minuteHandAngle - 90, length = segLen(seg003))
+  |> line(%, endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close(%)
+profile010 = circle(sketch006, center = [0, 0], diameter = 30)
+subtract2d(profile009, tool = profile010)
+  |> extrude(%, length = 5)
+  |> appearance(%, color = "#404040")
+
+// Define parameters of the screw slot for hanging the clock
+screwHeadDiameter = 9.53
+screwTolerance = .5
+slotWidth = (screwHeadDiameter + screwTolerance) / 2
+slotLength = 40
+
+// Create the screw slot
+sketch003 = startSketchOn(clockBody, face = START)
+profile004 = startProfile(sketch003, at = [-slotWidth / 2, 200])
+  |> yLine(length = -slotLength)
+  |> arc(
+       %,
+       radius = screwHeadDiameter / 2 + screwTolerance,
+       angleStart = 120,
+       angleEnd = 420,
+     )
+  |> yLine(%, length = slotLength)
+  |> tangentialArc(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> extrude(%, length = -20)
+
+// todo: create cavity for the screw to slide into (need csg update)

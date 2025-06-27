@@ -21,6 +21,8 @@ export const token = process.env.token || ''
 
 import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
 
+import type { ElectronZoo } from '@e2e/playwright/fixtures/fixtureSetup'
+import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
 import { isErrorWhitelisted } from '@e2e/playwright/lib/console-error-whitelist'
 import { TEST_SETTINGS, TEST_SETTINGS_KEY } from '@e2e/playwright/storageStates'
 import { test } from '@e2e/playwright/zoo-test'
@@ -36,13 +38,15 @@ export const headerMasks = (page: Page) => [
 ]
 
 export const lowerRightMasks = (page: Page) => [
-  page.getByTestId('network-toggle'),
+  page.getByTestId(/network-toggle/),
   page.getByTestId('billing-remaining-bar'),
 ]
 
 export type TestColor = [number, number, number]
 export const TEST_COLORS: { [key: string]: TestColor } = {
   WHITE: [249, 249, 249],
+  OFFWHITE: [237, 237, 237],
+  GREY: [142, 142, 142],
   YELLOW: [255, 255, 0],
   BLUE: [0, 0, 255],
   DARK_MODE_BKGD: [27, 27, 27],
@@ -74,20 +78,6 @@ export function runningOnMac() {
 
 export function runningOnWindows() {
   return process.platform === 'win32'
-}
-
-async function waitForPageLoadWithRetry(page: Page) {
-  await expect(async () => {
-    await page.goto('/')
-    const errorMessage = 'App failed to load - 🔃 Retrying ...'
-
-    await expect(
-      page.getByRole('button', { name: 'sketch Start Sketch' }),
-      errorMessage
-    ).toBeEnabled({
-      timeout: 20_000,
-    })
-  }).toPass({ timeout: 70_000, intervals: [1_000] })
 }
 
 // lee: This needs to be replaced by scene.settled() eventually.
@@ -169,10 +159,10 @@ async function openKclCodePanel(page: Page) {
   await page.evaluate(() => {
     // editorManager is available on the window object.
     //@ts-ignore this is in an entirely different context that tsc can't see.
-    editorManager._editorView.dispatch({
+    editorManager.getEditorView().dispatch({
       selection: {
         //@ts-ignore this is in an entirely different context that tsc can't see.
-        anchor: editorManager._editorView.docView.length,
+        anchor: editorManager.getEditorView().docView.length,
       },
       scrollIntoView: true,
     })
@@ -351,13 +341,8 @@ async function waitForAuthAndLsp(page: Page) {
     },
     timeout: 45_000,
   })
-  if (process.env.CI) {
-    await waitForPageLoadWithRetry(page)
-  } else {
-    await page.goto('/')
-    await waitForPageLoad(page)
-  }
-
+  await page.goto('/')
+  await waitForPageLoad(page)
   return waitForLspPromise
 }
 
@@ -380,15 +365,9 @@ export async function getUtils(page: Page, test_?: typeof test) {
     )
   }
 
-  // Chrome devtools protocol session only works in Chromium
-  const browserType = page.context().browser()?.browserType().name()
-  const cdpSession =
-    browserType !== 'chromium' ? null : await page.context().newCDPSession(page)
-
   const util = {
     waitForAuthSkipAppStart: () => waitForAuthAndLsp(page),
     waitForPageLoad: () => waitForPageLoad(page),
-    waitForPageLoadWithRetry: () => waitForPageLoadWithRetry(page),
     removeCurrentCode: () => removeCurrentCode(page),
     sendCustomCmd: (cmd: EngineCommand) => sendCustomCmd(page, cmd),
     updateCamPosition: async (xyz: [number, number, number]) => {
@@ -506,15 +485,9 @@ export async function getUtils(page: Page, test_?: typeof test) {
     emulateNetworkConditions: async (
       networkOptions: Protocol.Network.emulateNetworkConditionsParameters
     ) => {
-      if (cdpSession === null) {
-        // Use a fail safe if we can't simulate disconnect (on Safari)
-        return page.evaluate('window.engineCommandManager.tearDown()')
-      }
-
-      return cdpSession?.send(
-        'Network.emulateNetworkConditions',
-        networkOptions
-      )
+      return networkOptions.offline
+        ? page.evaluate('window.engineCommandManager.offline()')
+        : page.evaluate('window.engineCommandManager.online()')
     },
 
     toNormalizedCode(text: string) {
@@ -548,12 +521,15 @@ export async function getUtils(page: Page, test_?: typeof test) {
 
     createNewFile: async (name: string) => {
       return test?.step(`Create a file named ${name}`, async () => {
-        // If the application is in the middle of connecting a stream
-        // then creating a new file won't work in the end.
-        await expect(
-          page.getByRole('button', { name: 'Start Sketch' })
-        ).not.toBeDisabled()
         await page.getByTestId('create-file-button').click()
+        await page.getByTestId('tree-input-field').fill(name)
+        await page.keyboard.press('Enter')
+      })
+    },
+
+    createNewFolder: async (name: string) => {
+      return test?.step(`Create a folder named ${name}`, async () => {
+        await page.getByTestId('create-folder-button').click()
         await page.getByTestId('tree-input-field').fill(name)
         await page.keyboard.press('Enter')
       })
@@ -762,6 +738,7 @@ export const doExport = async (
   output: Models['OutputFormat3d_type'],
   rootDir: string,
   page: Page,
+  cmdBar: CmdBarFixture,
   exportFrom: 'dropdown' | 'sidebarButton' | 'commandBar' = 'dropdown'
 ): Promise<Paths> => {
   if (exportFrom === 'dropdown') {
@@ -805,9 +782,7 @@ export const doExport = async (
       .click()
     await page.locator('#arg-form').waitFor({ state: 'detached' })
   }
-  await expect(page.getByText('Confirm Export')).toBeVisible()
-
-  await page.getByRole('button', { name: 'Submit command' }).click()
+  await cmdBar.submit()
 
   await expect(page.getByText('Exported successfully')).toBeVisible()
 
@@ -905,6 +880,10 @@ export async function setup(
             },
             ...TEST_SETTINGS.project,
             onboarding_status: 'dismissed',
+            // Tests were written before this setting existed.
+            // It's true by default because it's a good user experience, but
+            // these tests require it to be false.
+            fixed_size_grid: false,
           },
           project: {
             ...TEST_SETTINGS.project,
@@ -1148,4 +1127,249 @@ export function perProjectSettingsToToml(
 ) {
   // eslint-disable-next-line no-restricted-syntax
   return TOML.stringify(settings as any)
+}
+
+export async function clickElectronNativeMenuById(
+  tronApp: ElectronZoo,
+  menuId: string
+) {
+  const clickWasTriggered = await tronApp.electron.evaluate(
+    async ({ app }, menuId) => {
+      if (!app || !app.applicationMenu) {
+        return false
+      }
+      const menu = app.applicationMenu.getMenuItemById(menuId)
+      if (!menu) return false
+      menu.click()
+      return true
+    },
+    menuId
+  )
+  expect(clickWasTriggered).toBe(true)
+}
+
+export async function findElectronNativeMenuById(
+  tronApp: ElectronZoo,
+  menuId: string
+) {
+  const found = await tronApp.electron.evaluate(async ({ app }, menuId) => {
+    if (!app || !app.applicationMenu) {
+      return false
+    }
+    const menu = app.applicationMenu.getMenuItemById(menuId)
+    if (!menu) return false
+    return true
+  }, menuId)
+  expect(found).toBe(true)
+}
+
+export async function openSettingsExpectText(page: Page, text: string) {
+  const settings = page.getByTestId('settings-dialog-panel')
+  await expect(settings).toBeVisible()
+  // You are viewing the user tab
+  const actualText = settings.getByText(text)
+  await expect(actualText).toBeVisible()
+}
+
+export async function openSettingsExpectLocator(page: Page, selector: string) {
+  const settings = page.getByTestId('settings-dialog-panel')
+  await expect(settings).toBeVisible()
+  // You are viewing the keybindings tab
+  const settingsLocator = settings.locator(selector)
+  await expect(settingsLocator).toBeVisible()
+}
+
+/**
+ * A developer helper function to make playwright send all the console logs to stdout
+ * Call this within your E2E test and pass in the page or the tronApp to get as many
+ * logs piped to stdout for debugging
+ */
+export async function enableConsoleLogEverything({
+  page,
+  tronApp,
+}: { page?: Page; tronApp?: ElectronZoo }) {
+  page?.on('console', (msg) => {
+    console.log(`[Page-log]: ${msg.text()}`)
+  })
+
+  tronApp?.electron.on('window', async (electronPage) => {
+    electronPage.on('console', (msg) => {
+      console.log(`[Renderer] ${msg.type()}: ${msg.text()}`)
+    })
+  })
+
+  tronApp?.electron.on('console', (msg) => {
+    console.log(`[Main] ${msg.type()}: ${msg.text()}`)
+  })
+}
+
+/**
+ * Simulate a pan touch gesture from the center of an element.
+ *
+ * Adapted from Playwright docs: https://playwright.dev/docs/touch-events
+ */
+export async function panFromCenter(
+  locator: Locator,
+  deltaX = 0,
+  deltaY = 0,
+  steps = 5
+) {
+  const { centerX, centerY } = await locator.evaluate((target: HTMLElement) => {
+    const bounds = target.getBoundingClientRect()
+    const centerX = bounds.left + bounds.width / 2
+    const centerY = bounds.top + bounds.height / 2
+    return { centerX, centerY }
+  })
+
+  // Providing only clientX and clientY as the app only cares about those.
+  const touches = [
+    {
+      identifier: 0,
+      clientX: centerX,
+      clientY: centerY,
+    },
+  ]
+  await locator.dispatchEvent('touchstart', {
+    touches,
+    changedTouches: touches,
+    targetTouches: touches,
+  })
+
+  for (let j = 1; j <= steps; j++) {
+    const touches = [
+      {
+        identifier: 0,
+        clientX: centerX + (deltaX * j) / steps,
+        clientY: centerY + (deltaY * j) / steps,
+      },
+    ]
+    await locator.dispatchEvent('touchmove', {
+      touches,
+      changedTouches: touches,
+      targetTouches: touches,
+    })
+  }
+
+  await locator.dispatchEvent('touchend')
+}
+
+/**
+ * Simulate a 2-finger pan touch gesture from the center of an element.
+ * with {touchSpacing} pixels between.
+ *
+ * Adapted from Playwright docs: https://playwright.dev/docs/touch-events
+ */
+export async function panTwoFingerFromCenter(
+  locator: Locator,
+  deltaX = 0,
+  deltaY = 0,
+  steps = 5,
+  spacingX = 20
+) {
+  const { centerX, centerY } = await locator.evaluate((target: HTMLElement) => {
+    const bounds = target.getBoundingClientRect()
+    const centerX = bounds.left + bounds.width / 2
+    const centerY = bounds.top + bounds.height / 2
+    return { centerX, centerY }
+  })
+
+  // Providing only clientX and clientY as the app only cares about those.
+  const touches = [
+    {
+      identifier: 0,
+      clientX: centerX,
+      clientY: centerY,
+    },
+    {
+      identifier: 1,
+      clientX: centerX + spacingX,
+      clientY: centerY,
+    },
+  ]
+  await locator.dispatchEvent('touchstart', {
+    touches,
+    changedTouches: touches,
+    targetTouches: touches,
+  })
+
+  for (let j = 1; j <= steps; j++) {
+    const touches = [
+      {
+        identifier: 0,
+        clientX: centerX + (deltaX * j) / steps,
+        clientY: centerY + (deltaY * j) / steps,
+      },
+      {
+        identifier: 1,
+        clientX: centerX + spacingX + (deltaX * j) / steps,
+        clientY: centerY + (deltaY * j) / steps,
+      },
+    ]
+    await locator.dispatchEvent('touchmove', {
+      touches,
+      changedTouches: touches,
+      targetTouches: touches,
+    })
+  }
+
+  await locator.dispatchEvent('touchend')
+}
+
+/**
+ * Simulate a pinch touch gesture from the center of an element.
+ * Touch points are set horizontally from each other, separated by {startDistance} pixels.
+ */
+export async function pinchFromCenter(
+  locator: Locator,
+  startDistance = 100,
+  delta = 0,
+  steps = 5
+) {
+  const { centerX, centerY } = await locator.evaluate((target: HTMLElement) => {
+    const bounds = target.getBoundingClientRect()
+    const centerX = bounds.left + bounds.width / 2
+    const centerY = bounds.top + bounds.height / 2
+    return { centerX, centerY }
+  })
+
+  // Providing only clientX and clientY as the app only cares about those.
+  const touches = [
+    {
+      identifier: 0,
+      clientX: centerX - startDistance / 2,
+      clientY: centerY,
+    },
+    {
+      identifier: 1,
+      clientX: centerX + startDistance / 2,
+      clientY: centerY,
+    },
+  ]
+  await locator.dispatchEvent('touchstart', {
+    touches,
+    changedTouches: touches,
+    targetTouches: touches,
+  })
+
+  for (let i = 1; i <= steps; i++) {
+    const touches = [
+      {
+        identifier: 0,
+        clientX: centerX - startDistance / 2 + (delta * i) / steps,
+        clientY: centerY,
+      },
+      {
+        identifier: 1,
+        clientX: centerX + startDistance / 2 + (delta * i) / steps,
+        clientY: centerY,
+      },
+    ]
+    await locator.dispatchEvent('touchmove', {
+      touches,
+      changedTouches: touches,
+      targetTouches: touches,
+    })
+  }
+
+  await locator.dispatchEvent('touchend')
 }

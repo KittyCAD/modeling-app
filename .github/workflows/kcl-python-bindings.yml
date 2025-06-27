@@ -4,7 +4,6 @@
 #    maturin generate-ci github
 #
 name: kcl-python-bindings
-
 on:
   push:
     branches:
@@ -27,16 +26,14 @@ on:
       - '**.rs'
       - .github/workflows/kcl-python-bindings.yml
   workflow_dispatch:
-
 permissions:
   contents: read
-
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
-
 jobs:
   linux-x86_64:
+    name: kcl-python-bindings (linux-x86_64)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -58,8 +55,8 @@ jobs:
         with:
           name: wheels-linux-x86_64
           path: rust/kcl-python-bindings/dist
-
   windows:
+    name: kcl-python-bindings (windows)
     runs-on: windows-16-cores
     strategy:
       matrix:
@@ -84,8 +81,8 @@ jobs:
         with:
           name: wheels-windows-${{ matrix.target }}
           path: rust/kcl-python-bindings/dist
-
   macos:
+    name: kcl-python-bindings (macos)
     runs-on: macos-latest
     strategy:
       matrix:
@@ -110,8 +107,8 @@ jobs:
         with:
           name: wheels-macos-${{ matrix.target }}
           path: rust/kcl-python-bindings/dist
-
   test:
+    name: kcl-python-bindings (test)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -127,8 +124,8 @@ jobs:
         env:
           KITTYCAD_API_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
           ZOO_HOST: https://api.dev.zoo.dev
-
   sdist:
+    name: kcl-python-bindings (sdist)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -136,10 +133,10 @@ jobs:
         uses: astral-sh/setup-uv@v5
       - name: Install codespell
         run: |
-            uv venv .venv
-            echo "VIRTUAL_ENV=.venv" >> $GITHUB_ENV
-            echo "$PWD/.venv/bin" >> $GITHUB_PATH
-            uv pip install pip --upgrade
+          uv venv .venv
+          echo "VIRTUAL_ENV=.venv" >> $GITHUB_ENV
+          echo "$PWD/.venv/bin" >> $GITHUB_PATH
+          uv pip install pip --upgrade
       - name: Build sdist
         uses: PyO3/maturin-action@v1
         with:
@@ -151,7 +148,6 @@ jobs:
         with:
           name: wheels-sdist
           path: rust/kcl-python-bindings/dist
-
   release:
     name: Release
     runs-on: ubuntu-latest
@@ -168,11 +164,11 @@ jobs:
         uses: astral-sh/setup-uv@v5
       - name: do uv things
         run: |
-            cd rust/kcl-python-bindings
-            uv venv .venv
-            echo "VIRTUAL_ENV=.venv" >> $GITHUB_ENV
-            echo "$PWD/.venv/bin" >> $GITHUB_PATH
-            uv pip install pip --upgrade
+          cd rust/kcl-python-bindings
+          uv venv .venv
+          echo "VIRTUAL_ENV=.venv" >> $GITHUB_ENV
+          echo "$PWD/.venv/bin" >> $GITHUB_PATH
+          uv pip install pip --upgrade
       - name: Publish to PyPI
         uses: PyO3/maturin-action@v1
         env:

@@ -15,15 +15,9 @@ import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import usePlatform from '@src/hooks/usePlatform'
 import { APP_NAME } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
-import { copyFileShareLink } from '@src/lib/links'
 import { PATHS } from '@src/lib/paths'
-import {
-  codeManager,
-  engineCommandManager,
-  kclManager,
-} from '@src/lib/singletons'
+import { engineCommandManager, kclManager } from '@src/lib/singletons'
 import { type IndexLoaderData } from '@src/lib/types'
-import { useToken } from '@src/lib/singletons'
 import { commandBarActor } from '@src/lib/singletons'
 
 const ProjectSidebarMenu = ({
@@ -108,7 +102,6 @@ function ProjectMenuPopover({
   const location = useLocation()
   const navigate = useNavigate()
   const filePath = useAbsoluteFilePath()
-  const token = useToken()
   const machineManager = useContext(MachineManagerContext)
   const commands = useSelector(commandBarActor, commandsSelector)
 
@@ -116,7 +109,6 @@ function ProjectMenuPopover({
   const insertCommandInfo = { name: 'Insert', groupId: 'code' }
   const exportCommandInfo = { name: 'Export', groupId: 'modeling' }
   const makeCommandInfo = { name: 'Make', groupId: 'modeling' }
-  const shareCommandInfo = { name: 'share-file-link', groupId: 'code' }
   const findCommand = (obj: { name: string; groupId: string }) =>
     Boolean(
       commands.find((c) => c.name === obj.name && c.groupId === obj.groupId)
@@ -214,19 +206,6 @@ function ProjectMenuPopover({
             commandBarActor.send({
               type: 'Find and select command',
               data: makeCommandInfo,
-            })
-          },
-        },
-        {
-          id: 'share-link',
-          Element: 'button',
-          children: 'Share part via Zoo link',
-          disabled: !findCommand(shareCommandInfo),
-          onClick: async () => {
-            await copyFileShareLink({
-              token: token ?? '',
-              code: codeManager.code,
-              name: project?.name || '',
             })
           },
         },

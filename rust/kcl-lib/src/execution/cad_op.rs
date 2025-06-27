@@ -1,38 +1,26 @@
 use indexmap::IndexMap;
-use schemars::JsonSchema;
 use serde::Serialize;
 
 use super::{types::NumericType, ArtifactId, KclValue};
-use crate::{docs::StdLibFn, ModuleId, SourceRange};
+#[cfg(feature = "artifact-graph")]
+use crate::parsing::ast::types::{Node, Program};
+use crate::{parsing::ast::types::ItemVisibility, ModuleId, NodePath, SourceRange};
 
 /// A CAD modeling operation for display in the feature tree, AKA operations
 /// timeline.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Operation.ts")]
 #[serde(tag = "type")]
 pub enum Operation {
     #[serde(rename_all = "camelCase")]
     StdLibCall {
-        /// The standard library function being called.
-        #[serde(flatten)]
-        std_lib_fn: StdLibFnRef,
-        /// The unlabeled argument to the function.
-        unlabeled_arg: Option<OpArg>,
-        /// The labeled keyword arguments to the function.
-        labeled_args: IndexMap<String, OpArg>,
-        /// The source range of the operation in the source code.
-        source_range: SourceRange,
-        /// True if the operation resulted in an error.
-        #[serde(default, skip_serializing_if = "is_false")]
-        is_error: bool,
-    },
-    #[serde(rename_all = "camelCase")]
-    KclStdLibCall {
         name: String,
         /// The unlabeled argument to the function.
         unlabeled_arg: Option<OpArg>,
         /// The labeled keyword arguments to the function.
         labeled_args: IndexMap<String, OpArg>,
+        /// The node path of the operation in the source code.
+        node_path: NodePath,
         /// The source range of the operation in the source code.
         source_range: SourceRange,
         /// True if the operation resulted in an error.
@@ -40,40 +28,29 @@ pub enum Operation {
         is_error: bool,
     },
     #[serde(rename_all = "camelCase")]
+    VariableDeclaration {
+        /// The variable name.
+        name: String,
+        /// The value of the variable.
+        value: OpKclValue,
+        /// The visibility modifier of the variable, e.g. `export`.  `Default`
+        /// means there is no visibility modifier.
+        visibility: ItemVisibility,
+        /// The node path of the operation in the source code.
+        node_path: NodePath,
+        /// The source range of the operation in the source code.
+        source_range: SourceRange,
+    },
+    #[serde(rename_all = "camelCase")]
     GroupBegin {
         /// The details of the group.
         group: Group,
+        /// The node path of the operation in the source code.
+        node_path: NodePath,
         /// The source range of the operation in the source code.
         source_range: SourceRange,
     },
     GroupEnd,
-}
-
-/// A way for sorting the operations in the timeline.  This is used to sort
-/// operations in the timeline and to determine the order of operations.
-/// We use this for the multi-threaded snapshotting, so that we can have deterministic
-/// output.
-impl PartialOrd for Operation {
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        Some(match (self, other) {
-            (Self::StdLibCall { source_range: a, .. }, Self::StdLibCall { source_range: b, .. }) => a.cmp(b),
-            (Self::StdLibCall { source_range: a, .. }, Self::KclStdLibCall { source_range: b, .. }) => a.cmp(b),
-            (Self::StdLibCall { source_range: a, .. }, Self::GroupBegin { source_range: b, .. }) => a.cmp(b),
-            (Self::StdLibCall { .. }, Self::GroupEnd) => std::cmp::Ordering::Less,
-            (Self::KclStdLibCall { source_range: a, .. }, Self::KclStdLibCall { source_range: b, .. }) => a.cmp(b),
-            (Self::KclStdLibCall { source_range: a, .. }, Self::StdLibCall { source_range: b, .. }) => a.cmp(b),
-            (Self::KclStdLibCall { source_range: a, .. }, Self::GroupBegin { source_range: b, .. }) => a.cmp(b),
-            (Self::KclStdLibCall { .. }, Self::GroupEnd) => std::cmp::Ordering::Less,
-            (Self::GroupBegin { source_range: a, .. }, Self::GroupBegin { source_range: b, .. }) => a.cmp(b),
-            (Self::GroupBegin { source_range: a, .. }, Self::StdLibCall { source_range: b, .. }) => a.cmp(b),
-            (Self::GroupBegin { source_range: a, .. }, Self::KclStdLibCall { source_range: b, .. }) => a.cmp(b),
-            (Self::GroupBegin { .. }, Self::GroupEnd) => std::cmp::Ordering::Less,
-            (Self::GroupEnd, Self::StdLibCall { .. }) => std::cmp::Ordering::Greater,
-            (Self::GroupEnd, Self::KclStdLibCall { .. }) => std::cmp::Ordering::Greater,
-            (Self::GroupEnd, Self::GroupBegin { .. }) => std::cmp::Ordering::Greater,
-            (Self::GroupEnd, Self::GroupEnd) => std::cmp::Ordering::Equal,
-        })
-    }
 }
 
 impl Operation {
@@ -81,13 +58,36 @@ impl Operation {
     pub(crate) fn set_std_lib_call_is_error(&mut self, is_err: bool) {
         match self {
             Self::StdLibCall { ref mut is_error, .. } => *is_error = is_err,
-            Self::KclStdLibCall { ref mut is_error, .. } => *is_error = is_err,
-            Self::GroupBegin { .. } | Self::GroupEnd => {}
+            Self::VariableDeclaration { .. } | Self::GroupBegin { .. } | Self::GroupEnd => {}
+        }
+    }
+
+    #[cfg(feature = "artifact-graph")]
+    pub(crate) fn fill_node_paths(&mut self, program: &Node<Program>, cached_body_items: usize) {
+        match self {
+            Operation::StdLibCall {
+                node_path,
+                source_range,
+                ..
+            }
+            | Operation::VariableDeclaration {
+                node_path,
+                source_range,
+                ..
+            }
+            | Operation::GroupBegin {
+                node_path,
+                source_range,
+                ..
+            } => {
+                node_path.fill_placeholder(program, cached_body_items, *source_range);
+            }
+            Operation::GroupEnd => {}
         }
     }
 }
 
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Operation.ts")]
 #[serde(tag = "type")]
 #[expect(clippy::large_enum_variant)]
@@ -107,6 +107,7 @@ pub enum Group {
         labeled_args: IndexMap<String, OpArg>,
     },
     /// A whole-module import use.
+    #[allow(dead_code)]
     #[serde(rename_all = "camelCase")]
     ModuleInstance {
         /// The name of the module being used.
@@ -117,7 +118,7 @@ pub enum Group {
 }
 
 /// An argument to a CAD modeling operation.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Operation.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct OpArg {
@@ -135,61 +136,13 @@ impl OpArg {
     }
 }
 
-/// A reference to a standard library function.  This exists to implement
-/// `PartialEq` and `Eq` for `Operation`.
-#[derive(Debug, Clone, Serialize, ts_rs::TS, JsonSchema)]
-#[ts(export_to = "Operation.ts")]
-#[serde(rename_all = "camelCase")]
-pub struct StdLibFnRef {
-    // The following doc comment gets inlined into Operation, overriding what's
-    // there, in the generated TS.  We serialize to its name.  Renaming the
-    // field to "name" allows it to match the other variant.
-    /// The standard library function being called.
-    #[serde(
-        rename = "name",
-        serialize_with = "std_lib_fn_name",
-        deserialize_with = "std_lib_fn_from_name"
-    )]
-    #[ts(type = "string", rename = "name")]
-    pub std_lib_fn: Box<dyn StdLibFn>,
-}
-
-impl StdLibFnRef {
-    pub(crate) fn new(std_lib_fn: Box<dyn StdLibFn>) -> Self {
-        Self { std_lib_fn }
-    }
-}
-
-impl From<&Box<dyn StdLibFn>> for StdLibFnRef {
-    fn from(std_lib_fn: &Box<dyn StdLibFn>) -> Self {
-        Self::new(std_lib_fn.clone())
-    }
-}
-
-impl PartialEq for StdLibFnRef {
-    fn eq(&self, other: &Self) -> bool {
-        self.std_lib_fn.name() == other.std_lib_fn.name()
-    }
-}
-
-impl Eq for StdLibFnRef {}
-
-#[expect(clippy::borrowed_box, reason = "Explicit Box is needed for serde")]
-fn std_lib_fn_name<S>(std_lib_fn: &Box<dyn StdLibFn>, serializer: S) -> Result<S::Ok, S::Error>
-where
-    S: serde::Serializer,
-{
-    let name = std_lib_fn.name();
-    serializer.serialize_str(&name)
-}
-
 fn is_false(b: &bool) -> bool {
     !*b
 }
 
 /// A KCL value used in Operations.  `ArtifactId`s are used to refer to the
 /// actual scene objects.  Any data not needed in the UI may be omitted.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Operation.ts")]
 #[serde(tag = "type")]
 pub enum OpKclValue {
@@ -247,21 +200,21 @@ pub enum OpKclValue {
 
 pub type OpKclObjectFields = IndexMap<String, OpKclValue>;
 
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Operation.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct OpSketch {
     artifact_id: ArtifactId,
 }
 
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Operation.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct OpSolid {
     artifact_id: ArtifactId,
 }
 
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Operation.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct OpHelix {

@@ -286,64 +286,66 @@ function CommandBarKclInput({
           )}
         </span>
       </label>
-      {createNewVariable ? (
-        <div className="flex items-baseline gap-4 mx-4 border-solid border-0 border-b border-chalkboard-50">
-          <label
-            htmlFor="variable-name"
-            className="text-base text-chalkboard-80 dark:text-chalkboard-20"
-          >
-            Variable name
-          </label>
+      {arg.createVariable !== 'disallow' && (
+        <div className="flex items-baseline gap-4 mx-4">
           <input
-            type="text"
-            id="variable-name"
-            name="variable-name"
-            className="flex-1 border-none bg-transparent focus:outline-none"
-            placeholder="Variable name"
-            value={newVariableName}
-            autoCapitalize="off"
-            autoCorrect="off"
-            autoComplete="off"
-            spellCheck="false"
-            autoFocus
-            onChange={(e) => setNewVariableName(e.target.value)}
-            onKeyDown={(e) => {
-              if (
-                e.currentTarget.value === '' &&
-                e.key === 'Backspace' &&
-                arg.createVariable !== 'force'
-              ) {
-                setCreateNewVariable(false)
-              }
+            type="checkbox"
+            id="variable-checkbox"
+            data-testid="cmd-bar-variable-checkbox"
+            checked={createNewVariable}
+            onChange={(e) => {
+              setCreateNewVariable(e.target.checked)
             }}
-            onKeyUp={(e) => {
-              if (e.key === 'Enter' && canSubmit) {
-                handleSubmit()
-              }
-            }}
+            className="bg-chalkboard-10 dark:bg-chalkboard-80"
           />
-          <span
-            className={
-              isNewVariableNameUnique
-                ? 'text-succeed-60 dark:text-succeed-40'
-                : 'text-destroy-60 dark:text-destroy-40'
-            }
+          <label
+            htmlFor="variable-checkbox"
+            className="text-blue border-none bg-transparent font-sm flex gap-1 items-center pl-0 pr-1"
           >
-            {isNewVariableNameUnique ? 'Available' : 'Unavailable'}
-          </span>
+            Create new variable
+          </label>
+          {createNewVariable && (
+            <>
+              <input
+                type="text"
+                id="variable-name"
+                name="variable-name"
+                className="flex-1  border-solid border-0 border-b border-chalkboard-50 bg-transparent focus:outline-none"
+                placeholder="Variable name"
+                value={newVariableName}
+                autoCapitalize="off"
+                autoCorrect="off"
+                autoComplete="off"
+                spellCheck="false"
+                autoFocus
+                onChange={(e) => setNewVariableName(e.target.value)}
+                onKeyDown={(e) => {
+                  if (
+                    e.currentTarget.value === '' &&
+                    e.key === 'Backspace' &&
+                    arg.createVariable !== 'force'
+                  ) {
+                    setCreateNewVariable(false)
+                  }
+                }}
+                onKeyUp={(e) => {
+                  if (e.key === 'Enter' && canSubmit) {
+                    handleSubmit()
+                  }
+                }}
+              />
+              <span
+                className={
+                  isNewVariableNameUnique
+                    ? 'text-succeed-60 dark:text-succeed-40'
+                    : 'text-destroy-60 dark:text-destroy-40'
+                }
+              >
+                {isNewVariableNameUnique ? 'Available' : 'Unavailable'}
+              </span>
+            </>
+          )}
         </div>
-      ) : (
-        arg.createVariable !== 'disallow' && (
-          <div className="flex justify-between gap-2 px-4">
-            <button
-              onClick={() => setCreateNewVariable(true)}
-              className="text-blue border-none bg-transparent font-sm flex gap-1 items-center pl-0 pr-1"
-            >
-              <CustomIcon name="plus" className="w-5 h-5" />
-              Create new variable
-            </button>
-          </div>
-        )
       )}
     </form>
   )

@@ -4,12 +4,26 @@ description: Error from executing panic_repro_cube.kcl
 ---
 KCL Semantic error
 
-  × semantic: This function expected the input argument to be tag identifier
-  │ but it's actually of type Unique ID (uuid)
-    ╭─[43:25]
+  × semantic: The input argument of `getNextAdjacentEdge` requires a value
+  │ with type `TaggedEdge`, but found a unique ID (uuid) (with type `Edge`).
+    ╭─[43:5]
  42 │     // these double wrapped functions are the point of this test
  43 │     getNextAdjacentEdge(getNextAdjacentEdge(seg01)),
-    ·                         ─────────────┬────────────
-    ·                                      ╰── tests/panic_repro_cube/input.kcl
+    ·     ───────────────────────┬───────────────────────┬
+    ·                            │                       ╰── tests/panic_repro_cube/input.kcl
+    ·                            ╰── tests/panic_repro_cube/input.kcl
  44 │     getNextAdjacentEdge(getNextAdjacentEdge(seg02))
     ╰────
+  ╰─▶ KCL Semantic error
+      
+        × semantic: The input argument of `getNextAdjacentEdge` requires a
+        │ value with type `TaggedEdge`, but found a unique ID (uuid) (with
+        │ type `Edge`).
+          ╭─[43:25]
+       42 │     // these double wrapped functions are the point of this test
+       43 │     getNextAdjacentEdge(getNextAdjacentEdge(seg01)),
+          ·                         ─────────────┬────────────
+          ·                                      ╰── tests/panic_repro_cube/
+      input.kcl
+       44 │     getNextAdjacentEdge(getNextAdjacentEdge(seg02))
+          ╰────

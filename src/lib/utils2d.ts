@@ -18,24 +18,46 @@ export function getTangentPointFromPreviousArc(
   ]
 }
 
+export function subVec(a: Coords2d, b: Coords2d): Coords2d {
+  return [a[0] - b[0], a[1] - b[1]]
+}
+
+export function normalizeVec(v: Coords2d): Coords2d {
+  const magnitude = Math.sqrt(v[0] * v[0] + v[1] * v[1])
+  if (magnitude === 0) {
+    return [0, 0]
+  }
+  return [v[0] / magnitude, v[1] / magnitude]
+}
+
+export function cross2d(a: Coords2d, b: Coords2d): number {
+  return a[0] * b[1] - a[1] * b[0]
+}
+
+export function distance2d(a: Coords2d, b: Coords2d): number {
+  const dx = a[0] - b[0]
+  const dy = a[1] - b[1]
+  return Math.sqrt(dx * dx + dy * dy)
+}
+
+export function isValidNumber(value: number): boolean {
+  return typeof value === 'number' && !Number.isNaN(value) && isFinite(value)
+}
+
+export function rotateVec(v: Coords2d, rad: number): Coords2d {
+  const cos = Math.cos(rad)
+  const sin = Math.sin(rad)
+  return [v[0] * cos - v[1] * sin, v[0] * sin + v[1] * cos]
+}
+
 export function closestPointOnRay(
   rayOrigin: Coords2d,
   rayDirection: Coords2d,
   pointToCheck: Coords2d,
   allowNegative = false
 ) {
-  const dirMagnitude = Math.sqrt(
-    rayDirection[0] * rayDirection[0] + rayDirection[1] * rayDirection[1]
-  )
-  const normalizedDir: Coords2d = [
-    rayDirection[0] / dirMagnitude,
-    rayDirection[1] / dirMagnitude,
-  ]
-
-  const originToPoint: Coords2d = [
-    pointToCheck[0] - rayOrigin[0],
-    pointToCheck[1] - rayOrigin[1],
-  ]
+  const normalizedDir = normalizeVec(rayDirection)
+  const originToPoint = subVec(pointToCheck, rayOrigin)
 
   let t =
     originToPoint[0] * normalizedDir[0] + originToPoint[1] * normalizedDir[1]

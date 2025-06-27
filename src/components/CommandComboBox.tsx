@@ -136,8 +136,9 @@ function optionIsDisabled(option: Command): boolean {
     option.disabled ||
     ('machineActor' in option &&
       option.machineActor !== undefined &&
-      !getActorNextEvents(option.machineActor.getSnapshot()).includes(
+      (!getActorNextEvents(option.machineActor.getSnapshot()).includes(
         option.name
-      ))
+      ) ||
+        !option.machineActor?.getSnapshot().can({ type: option.name })))
   )
 }

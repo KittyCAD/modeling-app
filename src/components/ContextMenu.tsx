@@ -6,6 +6,8 @@ import { useHotkeys } from 'react-hotkeys-hook'
 
 import type { ActionIconProps } from '@src/components/ActionIcon'
 import { ActionIcon } from '@src/components/ActionIcon'
+import { hotkeyDisplay } from '@src/lib/hotkeyWrapper'
+import usePlatform from '@src/hooks/usePlatform'
 
 export interface ContextMenuProps
   extends Omit<React.HTMLAttributes<HTMLUListElement>, 'children'> {
@@ -116,7 +118,7 @@ export function ContextMenu({
         <Dialog.Backdrop className="fixed z-10 inset-0" />
         <Dialog.Panel
           ref={dialogRef}
-          className={`w-48 fixed bg-chalkboard-10 dark:bg-chalkboard-90
+          className={`w-52 fixed bg-chalkboard-10 dark:bg-chalkboard-90
           border border-solid border-chalkboard-10 dark:border-chalkboard-90 rounded
           shadow-lg backdrop:fixed backdrop:inset-0 backdrop:bg-primary ${className}`}
           style={{
@@ -152,6 +154,7 @@ interface ContextMenuItemProps {
 
 export function ContextMenuItem(props: ContextMenuItemProps) {
   const { children, icon, onClick, hotkey, disabled } = props
+  const platform = usePlatform()
 
   return (
     <button
@@ -162,7 +165,9 @@ export function ContextMenuItem(props: ContextMenuItemProps) {
     >
       {icon && <ActionIcon icon={icon} bgClassName="!bg-transparent" />}
       <div className="flex-1">{children}</div>
-      {hotkey && <kbd className="hotkey">{hotkey}</kbd>}
+      {hotkey && (
+        <kbd className="hotkey">{hotkeyDisplay(hotkey, platform)}</kbd>
+      )}
     </button>
   )
 }
@@ -172,6 +177,7 @@ export function ContextMenuItemRefresh() {
     <ContextMenuItem
       icon="arrowRotateRight"
       onClick={() => globalThis?.window?.location.reload()}
+      hotkey="mod+r"
     >
       Refresh
     </ContextMenuItem>

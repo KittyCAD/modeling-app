@@ -27,7 +27,10 @@ import {
 } from '@src/lib/desktop'
 import { isDesktop } from '@src/lib/isDesktop'
 import type { Setting } from '@src/lib/settings/initialSettings'
-import { createSettings, settings } from '@src/lib/settings/initialSettings'
+import {
+  createSettings,
+  type settings,
+} from '@src/lib/settings/initialSettings'
 import type {
   SaveSettingsPayload,
   SettingsLevel,
@@ -63,6 +66,7 @@ export function configurationToSettingsPayload(
         configuration?.settings?.app?.allow_orbit_in_sketch_mode,
       projectDirectory: configuration?.settings?.project?.directory,
       showDebugPanel: configuration?.settings?.app?.show_debug_panel,
+      fixedSizeGrid: configuration?.settings?.app?.fixed_size_grid,
     },
     modeling: {
       defaultUnit: configuration?.settings?.modeling?.base_unit,
@@ -106,6 +110,7 @@ export function settingsPayloadToConfiguration(
         stream_idle_mode: configuration?.app?.streamIdleMode,
         allow_orbit_in_sketch_mode: configuration?.app?.allowOrbitInSketchMode,
         show_debug_panel: configuration?.app?.showDebugPanel,
+        fixed_size_grid: configuration?.app?.fixedSizeGrid,
       },
       modeling: {
         base_unit: configuration?.modeling?.defaultUnit,
@@ -321,7 +326,7 @@ export async function loadAndValidateSettings(
 
   // Because getting the default directory is async, we need to set it after
   if (onDesktop) {
-    settings.app.projectDirectory.default = await getInitialDefaultDir()
+    settingsNext.app.projectDirectory.default = await getInitialDefaultDir()
   }
 
   settingsNext = setSettingsAtLevel(

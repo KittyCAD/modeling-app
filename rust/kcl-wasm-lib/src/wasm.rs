@@ -28,7 +28,7 @@ pub async fn node_path_from_range(program_ast_json: &str, range_json: &str) -> R
 
     let program: Program = serde_json::from_str(program_ast_json).map_err(|e| e.to_string())?;
     let range: SourceRange = serde_json::from_str(range_json).map_err(|e| e.to_string())?;
-    let node_path = program.node_path_from_range(range);
+    let node_path = program.node_path_from_range(0, range);
 
     JsValue::from_serde(&node_path).map_err(|e| e.to_string())
 }

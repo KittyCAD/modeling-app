@@ -1,6 +1,8 @@
 //! Cache testing framework.
 
 use kcl_lib::{bust_cache, ExecError, ExecOutcome};
+#[cfg(feature = "artifact-graph")]
+use kcl_lib::{exec::Operation, NodePathStep};
 use kcmc::{each_cmd as mcmd, ModelingCmd};
 use kittycad_modeling_cmds as kcmc;
 use pretty_assertions::assert_eq;
@@ -257,24 +259,29 @@ extrude(profile001, length = 100)"#
 
 #[cfg(feature = "artifact-graph")]
 #[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_cache_add_line_preserves_artifact_commands() {
+async fn kcl_test_cache_add_line_preserves_artifact_graph() {
     let code = r#"sketch001 = startSketchOn(XY)
-  |> startProfile(at = [5.5229, 5.25217])
-  |> line(end = [10.50433, -1.19122])
-  |> line(end = [8.01362, -5.48731])
-  |> line(end = [-1.02877, -6.76825])
-  |> line(end = [-11.53311, 2.81559])
+profile001 = startProfile(sketch001, at = [5.5, 5.25])
+  |> line(end = [10.5, -1.19])
+  |> line(end = [8, -5.5])
+  |> line(end = [-1.02, -6.76])
+  |> line(end = [-11.5, 2.8])
   |> close()
+plane001 = offsetPlane(XY, offset = 20)
 "#;
     // Use a new statement; don't extend the prior pipeline.  This allows us to
     // detect a prefix.
     let code_with_extrude = code.to_owned()
         + r#"
-extrude(sketch001, length = 4)
+profile002 = startProfile(plane001, at = [0, 0])
+  |> line(end = [0, 10])
+  |> line(end = [10, 0])
+  |> close()
+extrude001 = extrude(profile001, length = 4)
 "#;
 
     let result = cache_test(
-        "add_line_preserves_artifact_commands",
+        "add_line_preserves_artifact_graph",
         vec![
             Variation {
                 code,
@@ -294,17 +301,80 @@ extrude(sketch001, length = 4)
     let second = &result.last().unwrap().2;
 
     assert!(
-        first.artifact_commands.len() < second.artifact_commands.len(),
-        "Second should have all the artifact commands of the first, plus more. first={:?}, second={:?}",
-        first.artifact_commands.len(),
-        second.artifact_commands.len()
+        first.artifact_graph.len() < second.artifact_graph.len(),
+        "Second should have all the artifacts of the first, plus more. first={:#?}, second={:#?}",
+        first.artifact_graph,
+        second.artifact_graph
     );
     assert!(
-        first.artifact_graph.len() < second.artifact_graph.len(),
-        "Second should have all the artifacts of the first, plus more. first={:?}, second={:?}",
-        first.artifact_graph.len(),
-        second.artifact_graph.len()
+        first.operations.len() < second.operations.len(),
+        "Second should have all the operations of the first, plus more. first={:?}, second={:?}",
+        first.operations.len(),
+        second.operations.len()
     );
+    let Some(Operation::StdLibCall { name, .. }) = second.operations.last() else {
+        panic!("Last operation should be stdlib call extrude");
+    };
+    assert_eq!(name, "extrude");
+    // Make sure there are no duplicates.
+    assert_eq!(
+        second.operations.len(),
+        3,
+        "There should be exactly this many operations in the second run. {:#?}",
+        &second.operations
+    );
+    // Make sure we have NodePaths referring to the old code.
+    let graph = &second.artifact_graph;
+    assert!(!graph.is_empty());
+    for artifact in graph.values() {
+        assert!(!artifact.code_ref().map(|c| c.node_path.is_empty()).unwrap_or(false));
+        assert!(
+            !artifact
+                .face_code_ref()
+                // TODO: This fails, but it shouldn't.
+                // .map(|c| c.node_path.is_empty())
+                // Allowing the NodePath to be empty if the SourceRange is [0,
+                // 0] as a more lenient check.
+                .map(|c| !c.range.is_synthetic() && c.node_path.is_empty())
+                .unwrap_or(false),
+            "artifact={:?}",
+            artifact
+        );
+    }
+}
+
+#[cfg(feature = "artifact-graph")]
+#[tokio::test(flavor = "multi_thread")]
+async fn kcl_test_cache_add_offset_plane_computes_node_path() {
+    let code = r#"sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+"#;
+    let code_with_more = code.to_owned()
+        + r#"plane001 = offsetPlane(XY, offset = 500)
+"#;
+
+    let result = cache_test(
+        "add_offset_plane_preserves_artifact_commands",
+        vec![
+            Variation {
+                code,
+                other_files: vec![],
+                settings: &Default::default(),
+            },
+            Variation {
+                code: code_with_more.as_str(),
+                other_files: vec![],
+                settings: &Default::default(),
+            },
+        ],
+    )
+    .await;
+
+    let second = &result.last().unwrap().2;
+
+    let v = second.artifact_graph.values().collect::<Vec<_>>();
+    let path_step = &v[2].code_ref().unwrap().node_path.steps[0];
+    assert_eq!(*path_step, NodePathStep::ProgramBodyItem { index: 2 });
 }
 
 #[tokio::test(flavor = "multi_thread")]

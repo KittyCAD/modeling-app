@@ -4,7 +4,7 @@ use crate::parsing::ast::types::{
     Annotation, ArrayExpression, ArrayRangeExpression, AscribedExpression, BinaryExpression, BinaryPart, BodyItem,
     CallExpressionKw, DefaultParamVal, ElseIf, Expr, ExpressionStatement, FunctionExpression, FunctionType, Identifier,
     IfExpression, ImportItem, ImportSelector, ImportStatement, ItemVisibility, KclNone, LabelledExpression, Literal,
-    LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, Name, ObjectExpression, ObjectProperty, Parameter,
+    LiteralIdentifier, LiteralValue, MemberExpression, Name, ObjectExpression, ObjectProperty, Parameter,
     PipeExpression, PipeSubstitution, PrimitiveType, Program, ReturnStatement, TagDeclarator, Type, TypeDeclaration,
     UnaryExpression, VariableDeclaration, VariableDeclarator, VariableKind,
 };
@@ -167,15 +167,6 @@ impl BinaryPart {
     }
 }
 
-impl MemberObject {
-    pub fn compute_digest(&mut self) -> Digest {
-        match self {
-            MemberObject::MemberExpression(me) => me.compute_digest(),
-            MemberObject::Identifier(id) => id.compute_digest(),
-        }
-    }
-}
-
 impl LiteralIdentifier {
     pub fn compute_digest(&mut self) -> Digest {
         match self {
@@ -198,7 +189,7 @@ impl Type {
                 hasher.update(ty.compute_digest());
                 match len {
                     crate::execution::types::ArrayLen::None => {}
-                    crate::execution::types::ArrayLen::NonEmpty => hasher.update(usize::MAX.to_ne_bytes()),
+                    crate::execution::types::ArrayLen::Minimum(n) => hasher.update((-(*n as isize)).to_ne_bytes()),
                     crate::execution::types::ArrayLen::Known(n) => hasher.update(n.to_ne_bytes()),
                 }
             }
@@ -212,8 +203,9 @@ impl Type {
             Type::Object { properties } => {
                 hasher.update(b"FnArgType::Object");
                 hasher.update(properties.len().to_ne_bytes());
-                for prop in properties.iter_mut() {
-                    hasher.update(prop.compute_digest());
+                for (id, ty) in properties.iter_mut() {
+                    hasher.update(id.compute_digest());
+                    hasher.update(ty.compute_digest());
                 }
             }
         }
@@ -227,11 +219,11 @@ impl PrimitiveType {
         let mut hasher = Sha256::new();
         match self {
             PrimitiveType::Any => hasher.update(b"any"),
-            PrimitiveType::Named(id) => hasher.update(id.compute_digest()),
+            PrimitiveType::Named { id } => hasher.update(id.compute_digest()),
             PrimitiveType::String => hasher.update(b"string"),
             PrimitiveType::Number(suffix) => hasher.update(suffix.digestable_id()),
             PrimitiveType::Boolean => hasher.update(b"bool"),
-            PrimitiveType::Tag => hasher.update(b"tag"),
+            PrimitiveType::TagDecl => hasher.update(b"TagDecl"),
             PrimitiveType::ImportedGeometry => hasher.update(b"ImportedGeometry"),
             PrimitiveType::Function(f) => hasher.update(f.compute_digest()),
         }

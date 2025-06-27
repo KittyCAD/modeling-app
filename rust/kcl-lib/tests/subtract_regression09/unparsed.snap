@@ -1,0 +1,38 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing subtract_regression09.kcl
+---
+@settings(defaultLengthUnit = mm)
+
+sketch001 = startSketchOn(YZ)
+
+sketch001Profile000 = startProfile(sketch001, at = [5, 3])
+  |> yLine(length = -6)
+  |> xLine(length = 24.972)
+  |> yLine(length = 6)
+  |> xLine(length = -24.972)
+  |> close()
+
+revolve000 = revolve(sketch001Profile000, axis = Y, angle = 360)
+
+sketch003 = startSketchOn(XY)
+
+sketch003Profile000 = startProfile(sketch003, at = [1.188246, 27.497102])
+  |> line(end = [-0.177089, 0.740791])
+  |> arc(angleStart = 13.444444, angleEnd = 38.628165, radius = 5.283446)
+  |> arc(angleStart = 145.295512, angleEnd = 14.704488, radius = 5.793095)
+  |> arc(angleStart = 121.371835, angleEnd = 146.555556, radius = 5.283446)
+  |> line(end = [-0.419774, -0.635548])
+  |> arc(angleStart = 326.170267, angleEnd = 311.293981, radius = 8.272375)
+  |> arc(angleStart = 311.666667, angleEnd = 208.333333, radius = 3.178087)
+  |> tangentialArc(endAbsolute = [1.188246, 27.497102])
+  // |> arc(
+  // angleStart = 208.706019,
+  // angleEnd = 193.829733,
+  // radius = 8.272375,
+  // )
+  |> close()
+
+cut000Extrude = extrude([sketch003Profile000], length = 10, bidirectionalLength = 10)
+
+subtract(revolve000, tools = cut000Extrude)

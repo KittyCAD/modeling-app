@@ -12,6 +12,7 @@ expression: actual
         "id": {
           "commentStart": 0,
           "end": 4,
+          "moduleId": 0,
           "name": "five",
           "start": 0,
           "type": "Identifier"
@@ -25,6 +26,7 @@ expression: actual
             "left": {
               "commentStart": 7,
               "end": 8,
+              "moduleId": 0,
               "raw": "3",
               "start": 7,
               "type": "Literal",
@@ -34,10 +36,12 @@ expression: actual
                 "suffix": "None"
               }
             },
+            "moduleId": 0,
             "operator": "*",
             "right": {
               "commentStart": 11,
               "end": 12,
+              "moduleId": 0,
               "raw": "1",
               "start": 11,
               "type": "Literal",
@@ -51,10 +55,12 @@ expression: actual
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
+          "moduleId": 0,
           "operator": "+",
           "right": {
             "commentStart": 15,
             "end": 16,
+            "moduleId": 0,
             "raw": "2",
             "start": 15,
             "type": "Literal",
@@ -68,11 +74,13 @@ expression: actual
           "type": "BinaryExpression",
           "type": "BinaryExpression"
         },
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclarator"
       },
       "end": 16,
       "kind": "const",
+      "moduleId": 0,
       "start": 0,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
@@ -80,5 +88,6 @@ expression: actual
   ],
   "commentStart": 0,
   "end": 16,
+  "moduleId": 0,
   "start": 0
 }
