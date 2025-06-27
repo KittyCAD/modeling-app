@@ -190,6 +190,7 @@ export type ModelingCommandSchema = {
     x: KclCommandValue
     y: KclCommandValue
     z: KclCommandValue
+    global?: boolean
   }
   Rotate: {
     nodeToEdit?: PathToNode
@@ -197,6 +198,15 @@ export type ModelingCommandSchema = {
     roll: KclCommandValue
     pitch: KclCommandValue
     yaw: KclCommandValue
+    global?: boolean
+  }
+  Scale: {
+    nodeToEdit?: PathToNode
+    selection: Selections
+    x: KclCommandValue
+    y: KclCommandValue
+    z: KclCommandValue
+    global?: boolean
   }
   Clone: {
     nodeToEdit?: PathToNode
@@ -750,14 +760,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         required: false,
         displayName: 'CounterClockWise',
         options: [
-          {
-            name: 'False',
-            value: false,
-          },
-          {
-            name: 'True',
-            value: true,
-          },
+          { name: 'False', value: false },
+          { name: 'True', value: true },
         ],
       },
     },
@@ -1104,6 +1108,14 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         defaultValue: KCL_DEFAULT_TRANSFORM,
         required: true,
       },
+      global: {
+        inputType: 'options',
+        required: false,
+        options: [
+          { name: 'False', value: false },
+          { name: 'True', value: true },
+        ],
+      },
     },
   },
   Rotate: {
@@ -1138,6 +1150,57 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_TRANSFORM,
         required: true,
+      },
+      global: {
+        inputType: 'options',
+        required: false,
+        options: [
+          { name: 'False', value: false },
+          { name: 'True', value: true },
+        ],
+      },
+    },
+  },
+  Scale: {
+    description: 'Set scale on solid or sketch.',
+    icon: 'scale',
+    needsReview: true,
+    args: {
+      nodeToEdit: {
+        ...nodeToEditProps,
+      },
+      selection: {
+        // selectionMixed allows for feature tree selection of module imports
+        inputType: 'selectionMixed',
+        multiple: false,
+        required: true,
+        skip: true,
+        selectionTypes: ['path'],
+        selectionFilter: ['object'],
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+      },
+      x: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_TRANSFORM,
+        required: true,
+      },
+      y: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_TRANSFORM,
+        required: true,
+      },
+      z: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_TRANSFORM,
+        required: true,
+      },
+      global: {
+        inputType: 'options',
+        required: false,
+        options: [
+          { name: 'False', value: false },
+          { name: 'True', value: true },
+        ],
       },
     },
   },

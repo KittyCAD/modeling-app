@@ -409,6 +409,18 @@ const OperationItem = (props: {
     }
   }
 
+  function enterScaleFlow() {
+    if (props.item.type === 'StdLibCall' || props.item.type === 'GroupBegin') {
+      props.send({
+        type: 'enterScaleFlow',
+        data: {
+          targetSourceRange: sourceRangeFromRust(props.item.sourceRange),
+          currentOperation: props.item,
+        },
+      })
+    }
+  }
+
   function enterCloneFlow() {
     if (props.item.type === 'StdLibCall' || props.item.type === 'GroupBegin') {
       props.send({
@@ -526,6 +538,16 @@ const OperationItem = (props: {
               }
             >
               Set rotate
+            </ContextMenuItem>,
+            <ContextMenuItem
+              onClick={enterScaleFlow}
+              data-testid="context-menu-set-scale"
+              disabled={
+                props.item.type !== 'GroupBegin' &&
+                !stdLibMap[props.item.name]?.supportsTransform
+              }
+            >
+              Set scale
             </ContextMenuItem>,
             <ContextMenuItem
               onClick={enterCloneFlow}

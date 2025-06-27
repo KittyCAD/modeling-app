@@ -1179,6 +1179,8 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   scale: {
     label: 'Scale',
     icon: 'scale',
+    prepareToEdit: prepareToEditScale,
+    supportsTransform: true,
   },
   shell: {
     label: 'Shell',
@@ -1540,6 +1542,7 @@ async function prepareToEditTranslate({ operation }: EnterEditFlowProps) {
   let x: KclExpression | undefined = undefined
   let y: KclExpression | undefined = undefined
   let z: KclExpression | undefined = undefined
+  let global: boolean | undefined
   const pipeLookupFromOperation = getNodeFromPath<PipeExpression>(
     kclManager.ast,
     nodeToEdit,
@@ -1566,12 +1569,21 @@ async function prepareToEditTranslate({ operation }: EnterEditFlowProps) {
       x = await retrieveArgFromPipedCallExpression(translate, 'x')
       y = await retrieveArgFromPipedCallExpression(translate, 'y')
       z = await retrieveArgFromPipedCallExpression(translate, 'z')
+
+      // optional global argument
+      const result = await retrieveArgFromPipedCallExpression(
+        translate,
+        'global'
+      )
+      if (result) {
+        global = result.valueText === 'true'
+      }
     }
   }
 
   // Won't be used since we provide nodeToEdit
   const selection: Selections = { graphSelections: [], otherSelections: [] }
-  const argDefaultValues = { nodeToEdit, selection, x, y, z }
+  const argDefaultValues = { nodeToEdit, selection, x, y, z, global }
   return {
     ...baseCommand,
     argDefaultValues,
@@ -1582,6 +1594,84 @@ export async function enterTranslateFlow({
   operation,
 }: EnterEditFlowProps): Promise<Error | CommandBarMachineEvent> {
   const data = await prepareToEditTranslate({ operation })
+  if ('reason' in data) {
+    return new Error(data.reason)
+  }
+
+  return {
+    type: 'Find and select command',
+    data,
+  }
+}
+
+async function prepareToEditScale({ operation }: EnterEditFlowProps) {
+  const baseCommand = {
+    name: 'Scale',
+    groupId: 'modeling',
+  }
+  const isModuleImport = operation.type === 'GroupBegin'
+  const isSupportedStdLibCall =
+    operation.type === 'StdLibCall' &&
+    stdLibMap[operation.name]?.supportsTransform
+  if (!isModuleImport && !isSupportedStdLibCall) {
+    return {
+      reason: 'Unsupported operation type. Please edit in the code editor.',
+    }
+  }
+
+  const nodeToEdit = pathToNodeFromRustNodePath(operation.nodePath)
+  let x: KclExpression | undefined = undefined
+  let y: KclExpression | undefined = undefined
+  let z: KclExpression | undefined = undefined
+  let global: boolean | undefined
+  const pipeLookupFromOperation = getNodeFromPath<PipeExpression>(
+    kclManager.ast,
+    nodeToEdit,
+    'PipeExpression'
+  )
+  let pipe: PipeExpression | undefined
+  const ast = kclManager.ast
+  if (
+    err(pipeLookupFromOperation) ||
+    pipeLookupFromOperation.node.type !== 'PipeExpression'
+  ) {
+    // Look for the last pipe with the import alias and a call to scale
+    const pipes = findPipesWithImportAlias(ast, nodeToEdit, 'scale')
+    pipe = pipes.at(-1)?.expression
+  } else {
+    pipe = pipeLookupFromOperation.node
+  }
+
+  if (pipe) {
+    const scale = pipe.body.find(
+      (n) => n.type === 'CallExpressionKw' && n.callee.name.name === 'scale'
+    )
+    if (scale?.type === 'CallExpressionKw') {
+      x = await retrieveArgFromPipedCallExpression(scale, 'x')
+      y = await retrieveArgFromPipedCallExpression(scale, 'y')
+      z = await retrieveArgFromPipedCallExpression(scale, 'z')
+
+      // optional global argument
+      const result = await retrieveArgFromPipedCallExpression(scale, 'global')
+      if (result) {
+        global = result.valueText === 'true'
+      }
+    }
+  }
+
+  // Won't be used since we provide nodeToEdit
+  const selection: Selections = { graphSelections: [], otherSelections: [] }
+  const argDefaultValues = { nodeToEdit, selection, x, y, z, global }
+  return {
+    ...baseCommand,
+    argDefaultValues,
+  }
+}
+
+export async function enterScaleFlow({
+  operation,
+}: EnterEditFlowProps): Promise<Error | CommandBarMachineEvent> {
+  const data = await prepareToEditScale({ operation })
   if ('reason' in data) {
     return new Error(data.reason)
   }
