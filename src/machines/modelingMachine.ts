@@ -280,6 +280,7 @@ export type OffsetPlane = {
   pathToNode: PathToNode
   zAxis: [number, number, number]
   yAxis: [number, number, number]
+  negated: boolean
 }
 
 export type SegmentOverlayPayload =
