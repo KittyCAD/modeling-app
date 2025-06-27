@@ -1056,6 +1056,12 @@ impl Node<MemberExpression> {
                     .map(|(k, tag)| (k.to_owned(), KclValue::TagIdentifier(Box::new(tag.to_owned()))))
                     .collect(),
             }),
+            (geometry @ (KclValue::Sketch { .. } | KclValue::Solid { .. }), Property::String(property), false) => {
+                Err(KclError::new_semantic(KclErrorDetails::new(
+                    format!("Property `{property}` not found on {}", geometry.human_friendly_type()),
+                    vec![self.clone().into()],
+                )))
+            }
             (being_indexed, _, _) => Err(KclError::new_semantic(KclErrorDetails::new(
                 format!(
                     "Only arrays can be indexed, but you're trying to index {}",
