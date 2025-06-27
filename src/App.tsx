@@ -33,7 +33,12 @@ import {
 } from '@src/lib/singletons'
 import { maybeWriteToDisk } from '@src/lib/telemetry'
 import type { IndexLoaderData } from '@src/lib/types'
-import { engineStreamActor, useSettings, useToken } from '@src/lib/singletons'
+import {
+  engineStreamActor,
+  useSettings,
+  useToken,
+  useAuthState,
+} from '@src/lib/singletons'
 import { EngineStreamTransition } from '@src/machines/engineStreamMachine'
 import { BillingTransition } from '@src/machines/billingMachine'
 import { CommandBarOpenButton } from '@src/components/CommandBarOpenButton'
@@ -104,6 +109,7 @@ export function App() {
 
   const settings = useSettings()
   const authToken = useToken()
+  const authState = useAuthState()
 
   useHotkeys('backspace', (e) => {
     e.preventDefault()
@@ -157,6 +163,7 @@ export function App() {
       settings.app.onboardingStatus.default
     const needsOnboarded =
       !isDesktop() &&
+      authState.matches('loggedIn') &&
       searchParams.size === 0 &&
       needsToOnboard(location, onboardingStatus)
 
@@ -176,12 +183,13 @@ export function App() {
         }
       )
     }
-  }, [settings.app.onboardingStatus])
+  }, [settings.app.onboardingStatus, authState])
 
   useEffect(() => {
     const needsDownloadAppToast =
       !isDesktop() &&
       !isPlaywright() &&
+      authState.matches('loggedIn') &&
       searchParams.size === 0 &&
       !settings.app.dismissWebBanner.current
     if (needsDownloadAppToast) {
@@ -210,7 +218,7 @@ export function App() {
         }
       )
     }
-  }, [])
+  }, [authState])
 
   useEffect(() => {
     const needsWasmInitFailedToast = !isDesktop() && kclManager.wasmInitFailed
