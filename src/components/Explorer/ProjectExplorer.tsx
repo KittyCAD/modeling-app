@@ -31,6 +31,7 @@ import {
 } from '@src/lib/paths'
 import { kclErrorsByFilename } from '@src/lang/errors'
 import { useKclContext } from '@src/lang/KclProvider'
+import type { MaybePressOrBlur } from '@src/lib/types'
 
 const isFileExplorerEntryOpened = (
   rows: { [key: string]: boolean },
@@ -331,9 +332,9 @@ export const ProjectExplorer = ({
 
             setIsRenaming(true)
             isRenamingRef.current = true
-            console.log("something")
+            console.log('something')
           },
-          onRenameEnd: (event: React.KeyboardEvent<HTMLElement> | null) => {
+          onRenameEnd: (event: MaybePressOrBlur) => {
             // TODO: Implement renameFolder and renameFile to navigate
             setIsRenaming(false)
             isRenamingRef.current = false
@@ -343,7 +344,12 @@ export const ProjectExplorer = ({
               return
             }
 
-            const requestedName = String(event?.target?.value || '')
+            const requestedName = String(
+              (event?.target &&
+                'value' in event.target &&
+                event.target.value) ||
+                ''
+            )
             if (!requestedName) {
               // user pressed esc
               return

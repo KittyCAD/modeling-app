@@ -13,6 +13,7 @@ import { useRef, useState } from 'react'
 import { DeleteConfirmationDialog } from '@src/components/ProjectCard/DeleteProjectDialog'
 import { FixedSizeList as List } from 'react-window'
 import AutoSizer from 'react-virtualized-auto-sizer'
+import type { MaybePressOrBlur, SubmitByPressOrBlur } from '@src/lib/types'
 
 export const StatusDot = () => {
   return <span className="text-primary hue-rotate-90">•</span>
@@ -141,12 +142,12 @@ function RenameForm({
   onSubmit,
 }: {
   row: FileExplorerRender
-  onSubmit: (e: React.KeyboardEvent<HTMLElement> | null) => void
+  onSubmit: SubmitByPressOrBlur
 }) {
   const inputRef = useRef<HTMLInputElement>(null)
 
-  function handleRenameSubmit(e: React.KeyboardEvent<HTMLElement>) {
-    if (e.key !== 'Enter') {
+  function handleRenameSubmit(e: NonNullable<MaybePressOrBlur>) {
+    if ('key' in e && e.key !== 'Enter') {
       return
     }
     // To get out of the renaming state, without this the current file is still in renaming mode
@@ -226,11 +227,7 @@ function DeleteFileTreeItemDialog({
  * Making div soup!
  * A row is a folder or a file.
  */
-export const FileExplorerRowElement = ({
-  data,
-  index,
-  style,
-}: {}) => {
+export const FileExplorerRowElement = ({ data, index, style }: {}) => {
   const rowElementRef = useRef(null)
   const item = data[index]
   const isSelected =
@@ -298,7 +295,7 @@ export const FileExplorerRowElement = ({
       ) : (
         <RenameForm
           row={item}
-          onSubmit={(event: React.KeyboardEvent<HTMLElement> | null) => {
+          onSubmit={(event: MaybePressOrBlur) => {
             item.onRenameEnd(event)
           }}
         ></RenameForm>
