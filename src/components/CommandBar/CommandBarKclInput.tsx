@@ -282,7 +282,8 @@ function CommandBarKclInput({
           ) : calcResult === 'NAN' ? (
             "Can't calculate"
           ) : (
-            roundOff(Number(calcResult), 4)
+            // TODO: Don't strip units.
+            roundOff(parseFloat(calcResult), 4)
           )}
         </span>
       </label>
