@@ -24,7 +24,12 @@ import {
   getOperationVariableName,
   stdLibMap,
 } from '@src/lib/operations'
-import { editorManager, kclManager, rustContext } from '@src/lib/singletons'
+import {
+  editorManager,
+  kclManager,
+  rustContext,
+  sceneInfra,
+} from '@src/lib/singletons'
 import {
   featureTreeMachine,
   featureTreeMachineDefaultContext,
@@ -34,11 +39,15 @@ import {
   kclEditorActor,
   selectionEventSelector,
 } from '@src/machines/kclEditorMachine'
+import type { Plane } from '@rust/kcl-lib/bindings/Artifact'
 
 export const FeatureTreePane = () => {
   const isEditorMounted = useSelector(kclEditorActor, editorIsMountedSelector)
   const lastSelectionEvent = useSelector(kclEditorActor, selectionEventSelector)
   const { send: modelingSend, state: modelingState } = useModelingContext()
+
+  const sketchNoFace = modelingState.matches('Sketch no face')
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_featureTreeState, featureTreeSend] = useMachine(
     featureTreeMachine.provide({
@@ -195,6 +204,7 @@ export const FeatureTreePane = () => {
                   key={key}
                   item={operation}
                   send={featureTreeSend}
+                  sketchNoFace={sketchNoFace}
                 />
               )
             })}
@@ -247,6 +257,7 @@ const OperationItemWrapper = ({
   customSuffix,
   className,
   selectable = true,
+  greyedOut = false,
   ...props
 }: React.HTMLAttributes<HTMLButtonElement> & {
   icon: CustomIconName
@@ -258,17 +269,18 @@ const OperationItemWrapper = ({
   menuItems?: ComponentProps<typeof ContextMenu>['items']
   errors?: Diagnostic[]
   selectable?: boolean
+  greyedOut?: boolean
 }) => {
   const menuRef = useRef<HTMLDivElement>(null)
 
   return (
     <div
       ref={menuRef}
-      className={`flex select-none items-center group/item my-0 py-0.5 px-1 ${selectable ? 'focus-within:bg-primary/10 hover:bg-primary/5' : ''}`}
+      className={`flex select-none items-center group/item my-0 py-0.5 px-1 ${selectable ? 'focus-within:bg-primary/10 hover:bg-primary/5' : ''} ${greyedOut ? 'opacity-50 cursor-not-allowed' : ''}`}
     >
       <button
         {...props}
-        className={`reset !py-0.5 !px-1 flex-1 flex items-center gap-2 text-left text-base ${selectable ? 'border-transparent dark:border-transparent' : 'border-none cursor-default'} ${className}`}
+        className={`reset !py-0.5 !px-1 flex-1 flex items-center gap-2 text-left text-base ${selectable ? 'border-transparent dark:border-transparent' : '!border-transparent cursor-default'} ${className}`}
       >
         <CustomIcon name={icon} className="w-5 h-5 block" />
         <div className="flex flex-1 items-baseline align-baseline">
@@ -306,6 +318,7 @@ const OperationItemWrapper = ({
 const OperationItem = (props: {
   item: Operation
   send: Prop<Actor<typeof featureTreeMachine>, 'send'>
+  sketchNoFace: boolean
 }) => {
   const kclContext = useKclContext()
   const name = getOperationLabel(props.item)
@@ -338,15 +351,22 @@ const OperationItem = (props: {
   }, [kclContext.diagnostics.length])
 
   function selectOperation() {
-    if (props.item.type === 'GroupEnd') {
-      return
+    if (props.sketchNoFace) {
+      if (isOffsetPlane(props.item)) {
+        const artifact = findOperationArtifact(props.item)
+        void sceneInfra.selectOffsetSketchPlane(artifact)
+      }
+    } else {
+      if (props.item.type === 'GroupEnd') {
+        return
+      }
+      props.send({
+        type: 'selectOperation',
+        data: {
+          targetSourceRange: sourceRangeFromRust(props.item.sourceRange),
+        },
+      })
     }
-    props.send({
-      type: 'selectOperation',
-      data: {
-        targetSourceRange: sourceRangeFromRust(props.item.sourceRange),
-      },
-    })
   }
 
   /**
@@ -427,6 +447,22 @@ const OperationItem = (props: {
     }
   }
 
+  function startSketchOnPlane() {
+    if (isOffsetPlane(props.item)) {
+      const artifact = findOperationArtifact(props.item)
+      if (artifact?.id) {
+        // TODO make sure there is no selection, otherwise existing sketch will be edited instead of a new one created
+
+        sceneInfra.modelingSend({
+          type: 'Enter sketch',
+          data: { forceNewSketch: true },
+        })
+
+        void sceneInfra.selectOffsetSketchPlane(artifact)
+      }
+    }
+  }
+
   const menuItems = useMemo(
     () => [
       <ContextMenuItem
@@ -469,6 +505,13 @@ const OperationItem = (props: {
               }}
             >
               View function definition
+            </ContextMenuItem>,
+          ]
+        : []),
+      ...(isOffsetPlane(props.item)
+        ? [
+            <ContextMenuItem onClick={startSketchOnPlane}>
+              Start Sketch
             </ContextMenuItem>,
           ]
         : []),
@@ -545,22 +588,40 @@ const OperationItem = (props: {
     [props.item, props.send]
   )
 
+  const enabled = !props.sketchNoFace || isOffsetPlane(props.item)
+
   return (
     <OperationItemWrapper
+      selectable={enabled}
       icon={getOperationIcon(props.item)}
       name={name}
       variableName={variableName}
       valueDetail={valueDetail}
       menuItems={menuItems}
       onClick={selectOperation}
-      onDoubleClick={enterEditFlow}
+      onDoubleClick={props.sketchNoFace ? undefined : enterEditFlow} // no double click in "Sketch no face" mode
       errors={errors}
+      greyedOut={!enabled}
     />
   )
 }
 
 const DefaultPlanes = () => {
   const { state: modelingState, send } = useModelingContext()
+  const sketchNoFace = modelingState.matches('Sketch no face')
+
+  const onClickPlane = useCallback((planeId: string) => {
+    sceneInfra.selectDefaultSketchPlane(planeId)
+  }, [])
+
+  const startSketchOnDefaultPlane = useCallback((planeId: string) => {
+    sceneInfra.modelingSend({
+      type: 'Enter sketch',
+      data: { forceNewSketch: true },
+    })
+
+    sceneInfra.selectDefaultSketchPlane(planeId)
+  }, [])
 
   const defaultPlanes = rustContext.defaultPlanes
   if (!defaultPlanes) return null
@@ -598,7 +659,15 @@ const DefaultPlanes = () => {
           customSuffix={plane.customSuffix}
           icon={'plane'}
           name={plane.name}
-          selectable={false}
+          selectable={true}
+          onClick={sketchNoFace ? () => onClickPlane(plane.id) : undefined}
+          menuItems={[
+            <ContextMenuItem
+              onClick={() => startSketchOnDefaultPlane(plane.id)}
+            >
+              Start Sketch
+            </ContextMenuItem>,
+          ]}
           visibilityToggle={{
             visible: modelingState.context.defaultPlaneVisibility[plane.key],
             onVisibilityChange: () => {
@@ -614,4 +683,18 @@ const DefaultPlanes = () => {
       <div className="h-px bg-chalkboard-50/20 my-2" />
     </div>
   )
+}
+
+type StdLibCallOp = Extract<Operation, { type: 'StdLibCall' }>
+
+const isOffsetPlane = (item: Operation): item is StdLibCallOp => {
+  return item.type === 'StdLibCall' && item.name === 'offsetPlane'
+}
+
+const findOperationArtifact = (item: StdLibCallOp) => {
+  const nodePath = JSON.stringify(item.nodePath)
+  const artifact = [...kclManager.artifactGraph.values()].find(
+    (a) => JSON.stringify((a as Plane).codeRef?.nodePath) === nodePath
+  )
+  return artifact
 }

@@ -48,6 +48,9 @@ import type {
   SegmentOverlayPayload,
 } from '@src/machines/modelingMachine'
 import { PROFILE_START } from '@src/clientSideScene/sceneConstants'
+import { rustContext, sceneEntitiesManager } from '@src/lib/singletons'
+import type { DefaultPlaneStr } from '@src/lib/planes'
+import type { Artifact } from '@src/lang/wasm'
 
 type SendType = ReturnType<typeof useModelingContext>['send']
 
@@ -710,6 +713,124 @@ export class SceneInfra {
 
   resumeRendering() {
     this.isRenderingPaused = false
+  }
+
+  selectDefaultSketchPlane(defaultPlaneId: string) {
+    const defaultPlanes = rustContext.defaultPlanes
+    if (!defaultPlanes) {
+      console.warn('No default planes defined in rustContext')
+      return false
+    }
+
+    if (
+      ![
+        defaultPlanes.xy,
+        defaultPlanes.xz,
+        defaultPlanes.yz,
+        defaultPlanes.negXy,
+        defaultPlanes.negXz,
+        defaultPlanes.negYz,
+      ].includes(defaultPlaneId)
+    ) {
+      // Supplied defaultPlaneId is not a valid default plane id
+      return false
+    }
+
+    const camVector = this.camControls.camera.position
+      .clone()
+      .sub(this.camControls.target)
+
+    // TODO can we get this information from rust land when it creates the default planes?
+    // maybe returned from make_default_planes (src/wasm-lib/src/wasm.rs)
+    let zAxis: [number, number, number] = [0, 0, 1]
+    let yAxis: [number, number, number] = [0, 1, 0]
+
+    if (defaultPlanes?.xy === defaultPlaneId) {
+      zAxis = [0, 0, 1]
+      yAxis = [0, 1, 0]
+      if (camVector.z < 0) {
+        zAxis = [0, 0, -1]
+        defaultPlaneId = defaultPlanes?.negXy || ''
+      }
+    } else if (defaultPlanes?.yz === defaultPlaneId) {
+      zAxis = [1, 0, 0]
+      yAxis = [0, 0, 1]
+      if (camVector.x < 0) {
+        zAxis = [-1, 0, 0]
+        defaultPlaneId = defaultPlanes?.negYz || ''
+      }
+    } else if (defaultPlanes?.xz === defaultPlaneId) {
+      zAxis = [0, 1, 0]
+      yAxis = [0, 0, 1]
+      defaultPlaneId = defaultPlanes?.negXz || ''
+      if (camVector.y < 0) {
+        zAxis = [0, -1, 0]
+        defaultPlaneId = defaultPlanes?.xz || ''
+      }
+    }
+
+    const defaultPlaneStrMap: Record<string, DefaultPlaneStr> = {
+      [defaultPlanes.xy]: 'XY',
+      [defaultPlanes.xz]: 'XZ',
+      [defaultPlanes.yz]: 'YZ',
+      [defaultPlanes.negXy]: '-XY',
+      [defaultPlanes.negXz]: '-XZ',
+      [defaultPlanes.negYz]: '-YZ',
+    }
+
+    this.modelingSend({
+      type: 'Select sketch plane',
+      data: {
+        type: 'defaultPlane',
+        planeId: defaultPlaneId,
+        plane: defaultPlaneStrMap[defaultPlaneId],
+        zAxis,
+        yAxis,
+      },
+    })
+
+    return true
+  }
+
+  async selectOffsetSketchPlane(artifact: Artifact | undefined) {
+    return new Promise((resolve) => {
+      if (artifact?.type === 'plane') {
+        const planeId = artifact.id
+        void sceneEntitiesManager.getFaceDetails(planeId).then((planeInfo) => {
+          this.modelingSend({
+            type: 'Select sketch plane',
+            data: {
+              type: 'offsetPlane',
+              zAxis: [
+                planeInfo.z_axis.x,
+                planeInfo.z_axis.y,
+                planeInfo.z_axis.z,
+              ],
+              yAxis: [
+                planeInfo.y_axis.x,
+                planeInfo.y_axis.y,
+                planeInfo.y_axis.z,
+              ],
+              position: [
+                planeInfo.origin.x,
+                planeInfo.origin.y,
+                planeInfo.origin.z,
+              ].map((num) => num / this._baseUnitMultiplier) as [
+                number,
+                number,
+                number,
+              ],
+              planeId,
+              pathToNode: artifact.codeRef.pathToNode,
+            },
+          })
+          resolve(true)
+        })
+      } else {
+        // selectOffsetSketchPlane called with an invalid artifact type',
+        resolve(false)
+      }
+    })
   }
 }
 
