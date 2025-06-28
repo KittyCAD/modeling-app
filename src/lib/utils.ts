@@ -345,7 +345,7 @@ export function roundOffWithUnits(
     num = numWithUnits
     suffix = ''
   }
-  const roundedNum = roundOff(Number(num), precision)
+  const roundedNum = roundOff(parseFloat(num), precision)
   return `${roundedNum}${suffix}`
 }
 
