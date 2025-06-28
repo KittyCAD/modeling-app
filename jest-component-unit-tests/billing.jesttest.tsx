@@ -125,18 +125,57 @@ test('Shows a loading spinner when uninitialized credit count', async () => {
   await expect(queryByTestId('spinner')).toBeVisible()
 })
 
-test('Shows the total credits for Unknown subscription', async () => {
-  const data = {
-    balance: {
-      monthlyApiCreditsRemaining: 10,
-      stableApiCreditsRemaining: 25,
-    },
-    subscriptions: {
-      monthlyPayAsYouGoApiCreditsTotal: 20,
-      name: "unknown",
-    }
+const unKnownTierData = {
+  balance: {
+    monthlyApiCreditsRemaining: 10,
+    stableApiCreditsRemaining: 25,
+  },
+  subscriptions: {
+    monthlyPayAsYouGoApiCreditsTotal: 20,
+    name: "unknown",
   }
+}
 
+const freeTierData = {
+  balance: {
+    monthlyApiCreditsRemaining: 10,
+    stableApiCreditsRemaining: 0,
+  },
+  subscriptions: {
+    monthlyPayAsYouGoApiCreditsTotal: 20,
+    name: "free",
+  }
+}
+
+const proTierData = {
+  // These are all ignored
+  balance: {
+    monthlyApiCreditsRemaining: 10,
+    stableApiCreditsRemaining: 0,
+  },
+  subscriptions: {
+    // This should be ignored because it's Pro tier.
+    monthlyPayAsYouGoApiCreditsTotal: 20,
+    name: "pro",
+  }
+}
+
+const enterpriseTierData = {
+  // These are all ignored, user is part of an org.
+  balance: {
+    monthlyApiCreditsRemaining: 10,
+    stableApiCreditsRemaining: 0,
+  },
+  subscriptions: {
+    // This should be ignored because it's Pro tier.
+    monthlyPayAsYouGoApiCreditsTotal: 20,
+    // This should be ignored because the user is part of an Org.
+    name: "free",
+  }
+}
+
+test('Shows the total credits for Unknown subscription', async () => {
+  const data = unKnownTierData
   server.use(
     http.get('*/user/payment/balance', (req, res, ctx) => {
       return HttpResponse.json(createUserPaymentBalanceResponse(data.balance))
@@ -166,17 +205,7 @@ test('Shows the total credits for Unknown subscription', async () => {
 })
 
 test('Progress bar reflects ratio left of Free subscription', async () => {
-  const data = {
-    balance: {
-      monthlyApiCreditsRemaining: 10,
-      stableApiCreditsRemaining: 0,
-    },
-    subscriptions: {
-      monthlyPayAsYouGoApiCreditsTotal: 20,
-      name: "free",
-    }
-  }
-
+  const data = freeTierData
   server.use(
     http.get('*/user/payment/balance', (req, res, ctx) => {
       return HttpResponse.json(createUserPaymentBalanceResponse(data.balance))
@@ -212,19 +241,7 @@ test('Progress bar reflects ratio left of Free subscription', async () => {
   })
 })
 test('Shows infinite credits for Pro subscription', async () => {
-  const data = {
-    // These are all ignored
-    balance: {
-      monthlyApiCreditsRemaining: 10,
-      stableApiCreditsRemaining: 0,
-    },
-    subscriptions: {
-      // This should be ignored because it's Pro tier.
-      monthlyPayAsYouGoApiCreditsTotal: 20,
-      name: "pro",
-    }
-  }
-
+  const data = proTierData
   server.use(
     http.get('*/user/payment/balance', (req, res, ctx) => {
       return HttpResponse.json(createUserPaymentBalanceResponse(data.balance))
@@ -255,19 +272,7 @@ test('Shows infinite credits for Pro subscription', async () => {
   await expect(queryByTestId('billing-remaining-progress-bar-inline')).toBe(null)
 })
 test('Shows infinite credits for Enterprise subscription', async () => {
-  const data = {
-    // These are all ignored, user is part of an org.
-    balance: {
-      monthlyApiCreditsRemaining: 10,
-      stableApiCreditsRemaining: 0,
-    },
-    subscriptions: {
-      // This should be ignored because it's Pro tier.
-      monthlyPayAsYouGoApiCreditsTotal: 20,
-      // This should be ignored because the user is part of an Org.
-      name: "free",
-    }
-  }
+  const data = enterpriseTierData
 
   server.use(
     http.get('*/user/payment/balance', (req, res, ctx) => {
@@ -299,17 +304,7 @@ test('Shows infinite credits for Enterprise subscription', async () => {
 })
 
 test('Show upgrade button if credits are not infinite', async () => {
-  const data = {
-    balance: {
-      monthlyApiCreditsRemaining: 10,
-      stableApiCreditsRemaining: 25,
-    },
-    subscriptions: {
-      monthlyPayAsYouGoApiCreditsTotal: 20,
-      name: "unknown",
-    }
-  }
-
+  const data = freeTierData
   server.use(
     http.get('*/user/payment/balance', (req, res, ctx) => {
       return HttpResponse.json(createUserPaymentBalanceResponse(data.balance))
@@ -336,20 +331,7 @@ test('Show upgrade button if credits are not infinite', async () => {
 })
 
 test('Hide upgrade button if credits are infinite', async () => {
-  const data = {
-    // These are all ignored, user is part of an org.
-    balance: {
-      monthlyApiCreditsRemaining: 10,
-      stableApiCreditsRemaining: 0,
-    },
-    subscriptions: {
-      // This should be ignored because it's Pro tier.
-      monthlyPayAsYouGoApiCreditsTotal: 20,
-      // This should be ignored because the user is part of an Org.
-      name: "free",
-    }
-  }
-
+  const data = enterpriseTierData
   server.use(
     http.get('*/user/payment/balance', (req, res, ctx) => {
       return HttpResponse.json(createUserPaymentBalanceResponse(data.balance))
