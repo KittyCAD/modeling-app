@@ -297,3 +297,81 @@ test('Shows infinite credits for Enterprise subscription', async () => {
   await expect(queryByTestId('infinity')).toBeVisible()
   await expect(queryByTestId('billing-remaining-progress-bar-inline')).toBe(null)
 })
+
+test('Show upgrade button if credits are not infinite', async () => {
+  const data = {
+    balance: {
+      monthlyApiCreditsRemaining: 10,
+      stableApiCreditsRemaining: 25,
+    },
+    subscriptions: {
+      monthlyPayAsYouGoApiCreditsTotal: 20,
+      name: "unknown",
+    }
+  }
+
+  server.use(
+    http.get('*/user/payment/balance', (req, res, ctx) => {
+      return HttpResponse.json(createUserPaymentBalanceResponse(data.balance))
+    }),
+    http.get('*/user/payment/subscriptions', (req, res, ctx) => {
+      return HttpResponse.json(createUserPaymentSubscriptionsResponse(data.subscriptions))
+    }),
+    http.get('*/org', (req, res, ctx) => {
+      return new HttpResponse(403)
+    }),
+  )
+
+  const billingActor = createActor(billingMachine, { input: BILLING_CONTEXT_DEFAULTS }).start()
+
+  const { queryByTestId } = render(<BillingDialog
+    billingActor={billingActor}
+  />)
+
+  await act(() => {
+    billingActor.send({ type: BillingTransition.Update, apiToken: "it doesn't matter wtf this is :)" })
+  })
+
+  await expect(queryByTestId('billing-upgrade-button')).toBeVisible()
+})
+
+test('Hide upgrade button if credits are infinite', async () => {
+  const data = {
+    // These are all ignored, user is part of an org.
+    balance: {
+      monthlyApiCreditsRemaining: 10,
+      stableApiCreditsRemaining: 0,
+    },
+    subscriptions: {
+      // This should be ignored because it's Pro tier.
+      monthlyPayAsYouGoApiCreditsTotal: 20,
+      // This should be ignored because the user is part of an Org.
+      name: "free",
+    }
+  }
+
+  server.use(
+    http.get('*/user/payment/balance', (req, res, ctx) => {
+      return HttpResponse.json(createUserPaymentBalanceResponse(data.balance))
+    }),
+    http.get('*/user/payment/subscriptions', (req, res, ctx) => {
+      return HttpResponse.json(createUserPaymentSubscriptionsResponse(data.subscriptions))
+    }),
+    // Ok finally the first use of an org lol
+    http.get('*/org', (req, res, ctx) => {
+      return HttpResponse.json(createOrgResponse())
+    }),
+  )
+
+  const billingActor = createActor(billingMachine, { input: BILLING_CONTEXT_DEFAULTS }).start()
+
+  const { queryByTestId } = render(<BillingDialog
+    billingActor={billingActor}
+  />)
+
+  await act(() => {
+    billingActor.send({ type: BillingTransition.Update, apiToken: "it doesn't matter wtf this is :)" })
+  })
+
+  await expect(queryByTestId('billing-upgrade-button')).toBe(null)
+})

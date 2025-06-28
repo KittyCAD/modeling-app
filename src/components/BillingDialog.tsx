@@ -45,6 +45,7 @@ export const BillingDialog = (props: { billingActor: BillingActor }) => {
             href="https://zoo.dev/design-studio-pricing"
             target="_blank"
             rel="noopener noreferrer"
+            data-testid="billing-upgrade-button"
             onClick={openExternalBrowserIfDesktop()}
           >
             Upgrade
