@@ -292,7 +292,6 @@ contextBridge.exposeInMainWorld('electron', {
         'VITE_KC_API_BASE_URL',
         'VITE_KC_SITE_BASE_URL',
         'VITE_KC_SITE_APP_URL',
-        'VITE_KC_SKIP_AUTH',
         'VITE_KC_CONNECTION_TIMEOUT_MS',
         'VITE_KC_DEV_TOKEN',
 
