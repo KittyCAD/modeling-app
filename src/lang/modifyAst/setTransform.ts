@@ -4,6 +4,7 @@ import {
   createCallExpressionStdLibKw,
   createExpressionStatement,
   createLabeledArg,
+  createLiteral,
   createLocalName,
   createPipeExpression,
 } from '@src/lang/create'
@@ -31,18 +32,25 @@ export function setTranslate({
   x,
   y,
   z,
+  global,
 }: {
   modifiedAst: Node<Program>
   pathToNode: PathToNode
   x: Expr
   y: Expr
   z: Expr
+  global?: boolean
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
+  // Extra labeled args expression
+  const globalExpr = global
+    ? [createLabeledArg('global', createLiteral(global))]
+    : []
   const noPercentSign = null
   const call = createCallExpressionStdLibKw('translate', noPercentSign, [
     createLabeledArg('x', x),
     createLabeledArg('y', y),
     createLabeledArg('z', z),
+    ...globalExpr,
   ])
 
   const potentialPipe = getNodeFromPath<PipeExpression>(
@@ -71,18 +79,72 @@ export function setRotate({
   roll,
   pitch,
   yaw,
+  global,
 }: {
   modifiedAst: Node<Program>
   pathToNode: PathToNode
   roll: Expr
   pitch: Expr
   yaw: Expr
+  global?: boolean
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
+  // Extra labeled args expression
+  const globalExpr = global
+    ? [createLabeledArg('global', createLiteral(global))]
+    : []
   const noPercentSign = null
   const call = createCallExpressionStdLibKw('rotate', noPercentSign, [
     createLabeledArg('roll', roll),
     createLabeledArg('pitch', pitch),
     createLabeledArg('yaw', yaw),
+    ...globalExpr,
+  ])
+
+  const potentialPipe = getNodeFromPath<PipeExpression>(
+    modifiedAst,
+    pathToNode,
+    ['PipeExpression']
+  )
+  if (!err(potentialPipe) && potentialPipe.node.type === 'PipeExpression') {
+    setTransformInPipe(potentialPipe.node, call)
+  } else {
+    const error = createPipeWithTransform(modifiedAst, pathToNode, call)
+    if (err(error)) {
+      return error
+    }
+  }
+
+  return {
+    modifiedAst,
+    pathToNode,
+  }
+}
+
+export function setScale({
+  modifiedAst,
+  pathToNode,
+  x,
+  y,
+  z,
+  global,
+}: {
+  modifiedAst: Node<Program>
+  pathToNode: PathToNode
+  x: Expr
+  y: Expr
+  z: Expr
+  global?: boolean
+}): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
+  // Extra labeled args expression
+  const globalExpr = global
+    ? [createLabeledArg('global', createLiteral(global))]
+    : []
+  const noPercentSign = null
+  const call = createCallExpressionStdLibKw('scale', noPercentSign, [
+    createLabeledArg('x', x),
+    createLabeledArg('y', y),
+    createLabeledArg('z', z),
+    ...globalExpr,
   ])
 
   const potentialPipe = getNodeFromPath<PipeExpression>(

@@ -88,6 +88,7 @@ import {
   setRotate,
   insertExpressionNode,
   retrievePathToNodeFromTransformSelection,
+  setScale,
 } from '@src/lang/modifyAst/setTransform'
 import {
   getNodeFromPath,
@@ -403,6 +404,7 @@ export type ModelingMachineEvent =
   | { type: 'Appearance'; data: ModelingCommandSchema['Appearance'] }
   | { type: 'Translate'; data: ModelingCommandSchema['Translate'] }
   | { type: 'Rotate'; data: ModelingCommandSchema['Rotate'] }
+  | { type: 'Scale'; data: ModelingCommandSchema['Scale'] }
   | { type: 'Clone'; data: ModelingCommandSchema['Clone'] }
   | {
       type:
@@ -3318,7 +3320,7 @@ export const modelingMachine = setup({
 
         const ast = kclManager.ast
         const modifiedAst = structuredClone(ast)
-        const { x, y, z, nodeToEdit, selection } = input
+        const { x, y, z, global, nodeToEdit, selection } = input
         let pathToNode = nodeToEdit
         if (!(pathToNode && typeof pathToNode[1][0] === 'number')) {
           const result = retrievePathToNodeFromTransformSelection(
@@ -3368,6 +3370,7 @@ export const modelingMachine = setup({
           x: valueOrVariable(x),
           y: valueOrVariable(y),
           z: valueOrVariable(z),
+          global,
         })
         if (err(result)) {
           return Promise.reject(result)
@@ -3399,7 +3402,7 @@ export const modelingMachine = setup({
 
         const ast = kclManager.ast
         const modifiedAst = structuredClone(ast)
-        const { roll, pitch, yaw, nodeToEdit, selection } = input
+        const { roll, pitch, yaw, global, nodeToEdit, selection } = input
         let pathToNode = nodeToEdit
         if (!(pathToNode && typeof pathToNode[1][0] === 'number')) {
           const result = retrievePathToNodeFromTransformSelection(
@@ -3449,6 +3452,89 @@ export const modelingMachine = setup({
           roll: valueOrVariable(roll),
           pitch: valueOrVariable(pitch),
           yaw: valueOrVariable(yaw),
+          global,
+        })
+        if (err(result)) {
+          return Promise.reject(result)
+        }
+
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          {
+            kclManager,
+            editorManager,
+            codeManager,
+          },
+          {
+            focusPath: [result.pathToNode],
+          }
+        )
+      }
+    ),
+    scaleAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input: ModelingCommandSchema['Scale'] | undefined
+      }) => {
+        if (!input) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        const ast = kclManager.ast
+        const modifiedAst = structuredClone(ast)
+        const { x, y, z, global, nodeToEdit, selection } = input
+        let pathToNode = nodeToEdit
+        if (!(pathToNode && typeof pathToNode[1][0] === 'number')) {
+          const result = retrievePathToNodeFromTransformSelection(
+            selection,
+            kclManager.artifactGraph,
+            ast
+          )
+          if (err(result)) {
+            return Promise.reject(result)
+          }
+
+          pathToNode = result
+        }
+
+        // Look for the last pipe with the import alias and a call to translate, with a fallback to rotate.
+        // Otherwise create one
+        const importNodeAndAlias = findImportNodeAndAlias(ast, pathToNode)
+        if (importNodeAndAlias) {
+          const pipes = findPipesWithImportAlias(ast, pathToNode, 'translate')
+          const lastPipe = pipes.at(-1)
+          if (lastPipe && lastPipe.pathToNode) {
+            pathToNode = lastPipe.pathToNode
+          } else {
+            const otherRelevantPipes = findPipesWithImportAlias(
+              ast,
+              pathToNode,
+              'rotate'
+            )
+            const lastRelevantPipe = otherRelevantPipes.at(-1)
+            if (lastRelevantPipe && lastRelevantPipe.pathToNode) {
+              pathToNode = lastRelevantPipe.pathToNode
+            } else {
+              pathToNode = insertExpressionNode(
+                modifiedAst,
+                importNodeAndAlias.alias
+              )
+            }
+          }
+        }
+
+        insertVariableAndOffsetPathToNode(x, modifiedAst, pathToNode)
+        insertVariableAndOffsetPathToNode(y, modifiedAst, pathToNode)
+        insertVariableAndOffsetPathToNode(z, modifiedAst, pathToNode)
+        const result = setScale({
+          pathToNode,
+          modifiedAst,
+          x: valueOrVariable(x),
+          y: valueOrVariable(y),
+          z: valueOrVariable(z),
+          global,
         })
         if (err(result)) {
           return Promise.reject(result)
@@ -3859,6 +3945,12 @@ export const modelingMachine = setup({
 
         Rotate: {
           target: 'Applying rotate',
+          reenter: true,
+          guard: 'no kcl errors',
+        },
+
+        Scale: {
+          target: 'Applying scale',
           reenter: true,
           guard: 'no kcl errors',
         },
@@ -5335,6 +5427,22 @@ export const modelingMachine = setup({
         id: 'rotateAstMod',
         input: ({ event }) => {
           if (event.type !== 'Rotate') return undefined
+          return event.data
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Applying scale': {
+      invoke: {
+        src: 'scaleAstMod',
+        id: 'scaleAstMod',
+        input: ({ event }) => {
+          if (event.type !== 'Scale') return undefined
           return event.data
         },
         onDone: ['idle'],
