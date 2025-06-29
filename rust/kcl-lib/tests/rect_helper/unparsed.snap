@@ -1,0 +1,6 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing rect_helper.kcl
+---
+x = startSketchOn(XY)
+  |> rectangle(width = 3, height = 2, corner = [-2, -1])

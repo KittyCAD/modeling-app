@@ -256,6 +256,10 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::shapes::circle(e, a)),
             StdFnProps::default("std::sketch::circle"),
         ),
+        ("sketch", "rectangle") => (
+            |e, a| Box::pin(crate::std::shapes::rectangle(e, a)),
+            StdFnProps::default("std::sketch::rectangle"),
+        ),
         ("sketch", "extrude") => (
             |e, a| Box::pin(crate::std::extrude::extrude(e, a)),
             StdFnProps::default("std::sketch::extrude").include_in_feature_tree(),
