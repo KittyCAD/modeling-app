@@ -2072,8 +2072,7 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds"
 version = "0.2.125"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cfd09d95f8bbeb090d4d1137c9bf421eb75763f7a30e4a9e8eefa249ddf20bd3"
+source = "git+https://github.com/KittyCAD/modeling-api.git?branch=ben/conics#b8b8566dc5241746a30005e955b8b209b6f7bcf3"
 dependencies = [
  "anyhow",
  "chrono",
@@ -2098,8 +2097,7 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds-macros"
 version = "0.1.12"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fb9bb1a594541b878adc1c8dcb821328774bf7aa09b65b104a206b1291a5235c"
+source = "git+https://github.com/KittyCAD/modeling-api.git?branch=ben/conics#b8b8566dc5241746a30005e955b8b209b6f7bcf3"
 dependencies = [
  "kittycad-modeling-cmds-macros-impl",
  "proc-macro2",
@@ -2110,8 +2108,7 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds-macros-impl"
 version = "0.1.13"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fdb4ee23cc996aa2dca7584d410e8826e08161e1ac4335bb646d5ede33f37cb3"
+source = "git+https://github.com/KittyCAD/modeling-api.git?branch=ben/conics#b8b8566dc5241746a30005e955b8b209b6f7bcf3"
 dependencies = [
  "proc-macro2",
  "quote",

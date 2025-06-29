@@ -663,8 +663,21 @@ impl SketchSurface {
 #[derive(Debug, Clone)]
 pub(crate) enum GetTangentialInfoFromPathsResult {
     PreviousPoint([f64; 2]),
-    Arc { center: [f64; 2], ccw: bool },
-    Circle { center: [f64; 2], ccw: bool, radius: f64 },
+    Arc {
+        center: [f64; 2],
+        ccw: bool,
+    },
+    Circle {
+        center: [f64; 2],
+        ccw: bool,
+        radius: f64,
+    },
+    Ellipse {
+        center: [f64; 2],
+        ccw: bool,
+        major_radius: f64,
+        _minor_radius: f64,
+    },
 }
 
 impl GetTangentialInfoFromPathsResult {
@@ -679,6 +692,12 @@ impl GetTangentialInfoFromPathsResult {
             GetTangentialInfoFromPathsResult::Circle {
                 center, radius, ccw, ..
             } => [center[0] + radius, center[1] + if *ccw { -1.0 } else { 1.0 }],
+            GetTangentialInfoFromPathsResult::Ellipse {
+                center,
+                major_radius,
+                ccw,
+                ..
+            } => [center[0] + major_radius, center[1] + if *ccw { -1.0 } else { 1.0 }],
         }
     }
 }
@@ -1127,6 +1146,19 @@ pub enum Path {
         /// True if the arc is counterclockwise.
         ccw: bool,
     },
+    Ellipse {
+        #[serde(flatten)]
+        base: BasePath,
+        center: [f64; 2],
+        major_radius: f64,
+        minor_radius: f64,
+        ccw: bool,
+    },
+    //TODO: (bc) figure this out
+    Conic {
+        #[serde(flatten)]
+        base: BasePath,
+    },
 }
 
 /// What kind of path is this?
@@ -1141,6 +1173,8 @@ enum PathType {
     Horizontal,
     AngledLineTo,
     Arc,
+    Ellipse,
+    Conic,
 }
 
 impl From<&Path> for PathType {
@@ -1156,6 +1190,8 @@ impl From<&Path> for PathType {
             Path::Base { .. } => Self::Base,
             Path::Arc { .. } => Self::Arc,
             Path::ArcThreePoint { .. } => Self::Arc,
+            Path::Ellipse { .. } => Self::Ellipse,
+            Path::Conic { .. } => Self::Conic,
         }
     }
 }
@@ -1173,6 +1209,8 @@ impl Path {
             Path::CircleThreePoint { base, .. } => base.geo_meta.id,
             Path::Arc { base, .. } => base.geo_meta.id,
             Path::ArcThreePoint { base, .. } => base.geo_meta.id,
+            Path::Ellipse { base, .. } => base.geo_meta.id,
+            Path::Conic { base, .. } => base.geo_meta.id,
         }
     }
 
@@ -1188,6 +1226,8 @@ impl Path {
             Path::CircleThreePoint { base, .. } => base.geo_meta.id = id,
             Path::Arc { base, .. } => base.geo_meta.id = id,
             Path::ArcThreePoint { base, .. } => base.geo_meta.id = id,
+            Path::Ellipse { base, .. } => base.geo_meta.id = id,
+            Path::Conic { base, .. } => base.geo_meta.id = id,
         }
     }
 
@@ -1203,6 +1243,8 @@ impl Path {
             Path::CircleThreePoint { base, .. } => base.tag.clone(),
             Path::Arc { base, .. } => base.tag.clone(),
             Path::ArcThreePoint { base, .. } => base.tag.clone(),
+            Path::Ellipse { base, .. } => base.tag.clone(),
+            Path::Conic { base, .. } => base.tag.clone(),
         }
     }
 
@@ -1218,6 +1260,8 @@ impl Path {
             Path::CircleThreePoint { base, .. } => base,
             Path::Arc { base, .. } => base,
             Path::ArcThreePoint { base, .. } => base,
+            Path::Ellipse { base, .. } => base,
+            Path::Conic { base, .. } => base,
         }
     }
 
@@ -1249,11 +1293,12 @@ impl Path {
         (*p, ty)
     }
 
-    /// Length of this path segment, in cartesian plane.
-    pub fn length(&self) -> TyF64 {
+    /// Length of this path segment, in cartesian plane. Not all segment types
+    /// are supported.
+    pub fn length(&self) -> Option<TyF64> {
         let n = match self {
             Self::ToPoint { .. } | Self::Base { .. } | Self::Horizontal { .. } | Self::AngledLineTo { .. } => {
-                linear_distance(&self.get_base().from, &self.get_base().to)
+                Some(linear_distance(&self.get_base().from, &self.get_base().to))
             }
             Self::TangentialArc {
                 base: _,
@@ -1270,9 +1315,9 @@ impl Path {
                 let radius = linear_distance(&self.get_base().from, center);
                 debug_assert_eq!(radius, linear_distance(&self.get_base().to, center));
                 // TODO: Call engine utils to figure this out.
-                linear_distance(&self.get_base().from, &self.get_base().to)
+                Some(linear_distance(&self.get_base().from, &self.get_base().to))
             }
-            Self::Circle { radius, .. } => 2.0 * std::f64::consts::PI * radius,
+            Self::Circle { radius, .. } => Some(2.0 * std::f64::consts::PI * radius),
             Self::CircleThreePoint { .. } => {
                 let circle_center = crate::std::utils::calculate_circle_from_3_points([
                     self.get_base().from,
@@ -1283,18 +1328,26 @@ impl Path {
                     &[circle_center.center[0], circle_center.center[1]],
                     &self.get_base().from,
                 );
-                2.0 * std::f64::consts::PI * radius
+                Some(2.0 * std::f64::consts::PI * radius)
             }
             Self::Arc { .. } => {
                 // TODO: Call engine utils to figure this out.
-                linear_distance(&self.get_base().from, &self.get_base().to)
+                Some(linear_distance(&self.get_base().from, &self.get_base().to))
             }
             Self::ArcThreePoint { .. } => {
                 // TODO: Call engine utils to figure this out.
-                linear_distance(&self.get_base().from, &self.get_base().to)
+                Some(linear_distance(&self.get_base().from, &self.get_base().to))
+            }
+            Self::Ellipse { .. } => {
+                // Not supported.
+                None
+            }
+            Self::Conic { .. } => {
+                // Not supported.
+                None
             }
         };
-        TyF64::new(n, self.get_base().units.into())
+        n.map(|n| TyF64::new(n, self.get_base().units.into()))
     }
 
     pub fn get_base_mut(&mut self) -> Option<&mut BasePath> {
@@ -1309,6 +1362,8 @@ impl Path {
             Path::CircleThreePoint { base, .. } => Some(base),
             Path::Arc { base, .. } => Some(base),
             Path::ArcThreePoint { base, .. } => Some(base),
+            Path::Ellipse { base, .. } => Some(base),
+            Path::Conic { base, .. } => Some(base),
         }
     }
 
@@ -1344,7 +1399,24 @@ impl Path {
                     radius: circle.radius,
                 }
             }
-            Path::ToPoint { .. } | Path::Horizontal { .. } | Path::AngledLineTo { .. } | Path::Base { .. } => {
+            // TODO: (bc) fix me
+            Path::Ellipse {
+                center,
+                major_radius,
+                minor_radius,
+                ccw,
+                ..
+            } => GetTangentialInfoFromPathsResult::Ellipse {
+                center: *center,
+                major_radius: *major_radius,
+                _minor_radius: *minor_radius,
+                ccw: *ccw,
+            },
+            Path::Conic { .. }
+            | Path::ToPoint { .. }
+            | Path::Horizontal { .. }
+            | Path::AngledLineTo { .. }
+            | Path::Base { .. } => {
                 let base = self.get_base();
                 GetTangentialInfoFromPathsResult::PreviousPoint(base.from)
             }
