@@ -1,0 +1,17 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing property_access_not_found_on_solid.kcl
+---
+fn myFunction() {
+  return startSketchOn(XY)
+    |> startProfile(at = [0, 0])
+    |> line(end = [10, 10], tag = $seg01)
+    |> line(end = [-20, 0])
+    |> line(end = [10, -10])
+    |> close()
+    |> extrude(length = 5, tagEnd = $end01)
+}
+
+myShape = myFunction()
+
+sketch001 = startSketchOn(myShape, face = myShape.tags.seg01)

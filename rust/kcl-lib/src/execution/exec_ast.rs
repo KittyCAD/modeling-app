@@ -1046,6 +1046,16 @@ impl Node<MemberExpression> {
             (KclValue::Solid { value }, Property::String(prop), false) if prop == "sketch" => Ok(KclValue::Sketch {
                 value: Box::new(value.sketch),
             }),
+            (geometry @ KclValue::Solid { .. }, Property::String(prop), false) if prop == "tags" => {
+                // This is a common mistake.
+                Err(KclError::new_semantic(KclErrorDetails::new(
+                    format!(
+                        "Property `{prop}` not found on {}. You can get a solid's tags through its sketch, as in, `exampleSolid.sketch.tags`.",
+                        geometry.human_friendly_type()
+                    ),
+                    vec![self.clone().into()],
+                )))
+            }
             (KclValue::Sketch { value: sk }, Property::String(prop), false) if prop == "tags" => Ok(KclValue::Object {
                 meta: vec![Metadata {
                     source_range: SourceRange::from(self.clone()),
@@ -1056,6 +1066,12 @@ impl Node<MemberExpression> {
                     .map(|(k, tag)| (k.to_owned(), KclValue::TagIdentifier(Box::new(tag.to_owned()))))
                     .collect(),
             }),
+            (geometry @ (KclValue::Sketch { .. } | KclValue::Solid { .. }), Property::String(property), false) => {
+                Err(KclError::new_semantic(KclErrorDetails::new(
+                    format!("Property `{property}` not found on {}", geometry.human_friendly_type()),
+                    vec![self.clone().into()],
+                )))
+            }
             (being_indexed, _, _) => Err(KclError::new_semantic(KclErrorDetails::new(
                 format!(
                     "Only arrays can be indexed, but you're trying to index {}",
