@@ -96,6 +96,34 @@ export default class RustContext {
     }
   }
 
+  /** Execute an additional program using the cache. */
+  async executeAdditional(
+    node: Node<Program>,
+    settings: DeepPartial<Configuration>,
+    path?: string
+  ): Promise<ExecState> {
+    const instance = await this._checkInstance()
+
+    try {
+      const result = await instance.executeAdditional(
+        JSON.stringify(node),
+        path,
+        JSON.stringify(settings)
+      )
+      // Set the default planes, safe to call after execute.
+      const outcome = execStateFromRust(result)
+
+      this._defaultPlanes = outcome.defaultPlanes
+
+      // Return the result.
+      return outcome
+    } catch (e: any) {
+      const err = errFromErrWithOutputs(e)
+      this._defaultPlanes = err.defaultPlanes
+      return Promise.reject(err)
+    }
+  }
+
   /** Execute a program with in mock mode. */
   async executeMock(
     node: Node<Program>,

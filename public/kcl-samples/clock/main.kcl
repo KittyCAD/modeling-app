@@ -369,7 +369,7 @@ profile007 = startProfile(
   |> line(%, endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close(%)
 profile008 = circle(sketch005, center = [0, 0], diameter = nubDiameter)
-subtract2d(profile007, tool = profile008)
+hourHand = subtract2d(profile007, tool = profile008)
   |> extrude(%, length = 5)
   |> appearance(%, color = "#404040")
 
@@ -413,7 +413,7 @@ profile009 = startProfile(
   |> line(%, endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close(%)
 profile010 = circle(sketch006, center = [0, 0], diameter = 30)
-subtract2d(profile009, tool = profile010)
+minuteHand = subtract2d(profile009, tool = profile010)
   |> extrude(%, length = 5)
   |> appearance(%, color = "#404040")
 
@@ -439,3 +439,8 @@ profile004 = startProfile(sketch003, at = [-slotWidth / 2, 200])
   |> extrude(%, length = -20)
 
 // todo: create cavity for the screw to slide into (need csg update)
+
+fn animate(step: number(_)) {
+  rotate(hourHand, yaw = -0.1deg)
+  return rotate(minuteHand, yaw = -0.6deg)
+}
