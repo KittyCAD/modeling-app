@@ -46,7 +46,7 @@ jobs:
       - name: Download Wasm cache
         id: download-wasm
         if: ${{ github.event_name != 'schedule' && steps.filter.outputs.rust == 'false' }}
-        uses: dawidd6/action-download-artifact@v7
+        uses: dawidd6/action-download-artifact@v11
         continue-on-error: true
         with:
           github_token: ${{secrets.GITHUB_TOKEN}}
@@ -110,7 +110,7 @@ jobs:
 
     steps:
 
-      - uses: actions/create-github-app-token@v1
+      - uses: actions/create-github-app-token@v2
         id: app-token
         with:
           app-id: ${{ secrets.MODELING_APP_GH_APP_ID }}
@@ -230,7 +230,7 @@ jobs:
 
     steps:
 
-      - uses: actions/create-github-app-token@v1
+      - uses: actions/create-github-app-token@v2
         id: app-token
         with:
           app-id: ${{ secrets.MODELING_APP_GH_APP_ID }}
