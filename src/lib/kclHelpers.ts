@@ -1,5 +1,10 @@
 import { executeAstMock } from '@src/lang/langHelpers'
-import { type CallExpressionKw, parse, resultIsOk } from '@src/lang/wasm'
+import {
+  type CallExpressionKw,
+  formatNumberValue,
+  parse,
+  resultIsOk,
+} from '@src/lang/wasm'
 import type { KclCommandValue, KclExpression } from '@src/lib/commandTypes'
 import { rustContext } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
@@ -32,12 +37,27 @@ export async function getCalculatedKclExpressionValue(value: string) {
   const variableDeclaratorAstNode =
     resultDeclaration?.type === 'VariableDeclaration' &&
     resultDeclaration?.declaration.init
-  const resultRawValue = execState.variables[DUMMY_VARIABLE_NAME]?.value
+  const varValue = execState.variables[DUMMY_VARIABLE_NAME]
+  // If the value is a number, attempt to format it with units.
+  const resultValueWithUnits = (() => {
+    if (!varValue || varValue.type !== 'Number') {
+      return undefined
+    }
+    const formatted = formatNumberValue(varValue.value, varValue.ty)
+    if (err(formatted)) return undefined
+    return formatted
+  })()
+  // Prefer the formatted value with units.  Fallback to the raw value.
+  const resultRawValue = varValue?.value
+  const valueAsString = resultValueWithUnits
+    ? resultValueWithUnits
+    : typeof resultRawValue === 'number'
+      ? String(resultRawValue)
+      : 'NAN'
 
   return {
     astNode: variableDeclaratorAstNode,
-    valueAsString:
-      typeof resultRawValue === 'number' ? String(resultRawValue) : 'NAN',
+    valueAsString,
   }
 }
 

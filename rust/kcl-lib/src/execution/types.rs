@@ -840,6 +840,18 @@ pub enum UnitType {
     Angle(UnitAngle),
 }
 
+impl UnitType {
+    pub(crate) fn to_suffix(self) -> Option<String> {
+        match self {
+            UnitType::Count => Some("_".to_owned()),
+            UnitType::Length(UnitLen::Unknown) => None,
+            UnitType::Angle(UnitAngle::Unknown) => None,
+            UnitType::Length(l) => Some(l.to_string()),
+            UnitType::Angle(a) => Some(a.to_string()),
+        }
+    }
+}
+
 impl std::fmt::Display for UnitType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {

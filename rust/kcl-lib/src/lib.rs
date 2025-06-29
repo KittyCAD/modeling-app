@@ -140,7 +140,7 @@ pub mod std_utils {
 
 pub mod pretty {
     pub use crate::{
-        fmt::{format_number_literal, human_display_number},
+        fmt::{format_number_literal, format_number_value, human_display_number},
         parsing::token::NumericSuffix,
     };
 }
