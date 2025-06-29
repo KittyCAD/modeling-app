@@ -390,6 +390,7 @@ export type ModelingMachineEvent =
   | { type: 'Sweep'; data?: ModelingCommandSchema['Sweep'] }
   | { type: 'Loft'; data?: ModelingCommandSchema['Loft'] }
   | { type: 'Shell'; data?: ModelingCommandSchema['Shell'] }
+  | { type: 'Hole'; data?: ModelingCommandSchema['Hole'] }
   | { type: 'Revolve'; data?: ModelingCommandSchema['Revolve'] }
   | { type: 'Fillet'; data?: ModelingCommandSchema['Fillet'] }
   | { type: 'Chamfer'; data?: ModelingCommandSchema['Chamfer'] }
@@ -2991,6 +2992,19 @@ export const modelingMachine = setup({
         )
       }
     ),
+    holeAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input: ModelingCommandSchema['Shell'] | undefined
+      }) => {
+        if (!input) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        return Promise.reject(new Error(`Hole isn't implemented yet`))
+      }
+    ),
     filletAstMod: fromPromise(
       async ({
         input,
@@ -3795,6 +3809,12 @@ export const modelingMachine = setup({
 
         Shell: {
           target: 'Applying shell',
+          reenter: true,
+          guard: 'no kcl errors',
+        },
+
+        Hole: {
+          target: 'Applying hole',
           reenter: true,
           guard: 'no kcl errors',
         },
@@ -5182,6 +5202,22 @@ export const modelingMachine = setup({
         id: 'shellAstMod',
         input: ({ event }) => {
           if (event.type !== 'Shell') return undefined
+          return event.data
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Applying hole': {
+      invoke: {
+        src: 'holeAstMod',
+        id: 'holeAstMod',
+        input: ({ event }) => {
+          if (event.type !== 'Hole') return undefined
           return event.data
         },
         onDone: ['idle'],
