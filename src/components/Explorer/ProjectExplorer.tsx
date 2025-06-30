@@ -32,7 +32,7 @@ import { useKclContext } from '@src/lang/KclProvider'
 import type { MaybePressOrBlur } from '@src/lib/types'
 
 const isFileExplorerEntryOpened = (
-  rows: Map<string,boolean>,
+  rows: Map<string, boolean>,
   entry: FileExplorerEntry
 ): boolean => {
   return rows.get(entry.path) || false
@@ -80,17 +80,26 @@ export const ProjectExplorer = ({
    * If there is no file passed in take the default_file from the project type
    */
   const defaultFileKey = file?.path || project.default_file
-  const defaultOpenedRows : Map<string, boolean> = new Map()
-  const pathIterator = desktopSafePathSplit(defaultFileKey)
+  const defaultOpenedRows: Map<string, boolean> = new Map()
+  let pathIterator = desktopSafePathSplit(defaultFileKey)
   while (pathIterator.length > 0) {
     const key = desktopSafePathJoin(pathIterator)
     defaultOpenedRows.set(key, true)
     pathIterator.pop()
   }
 
+  const collapseAllDefaultOpenedRows: Map<string,boolean> = new Map()
+  pathIterator = desktopSafePathSplit(joinOSPaths(applicationProjectDirectory, project.name))
+  while (pathIterator.length > 0) {
+    const key = desktopSafePathJoin(pathIterator)
+    collapseAllDefaultOpenedRows.set(key, true)
+    pathIterator.pop()
+  }
+
   // cache the state of opened rows to allow nested rows to be opened if a parent one is closed
   // when the parent opens the children will already be opened
-  const [openedRows, setOpenedRows] = useState<Map<string, boolean>>(defaultOpenedRows)
+  const [openedRows, setOpenedRows] =
+    useState<Map<string, boolean>>(defaultOpenedRows)
   const [selectedRow, setSelectedRow] = useState<FileExplorerEntry | null>(null)
   // -1 is the parent container, -2 is nothing is selected
   const [activeIndex, setActiveIndex] = useState<number>(NOTHING_IS_SELECTED)
@@ -169,7 +178,7 @@ export const ProjectExplorer = ({
     if (collapsePressed <= 0) {
       return
     }
-    setOpenedRows(defaultOpenedRows)
+    setOpenedRows(collapseAllDefaultOpenedRows)
   }, [collapsePressed])
 
   const setSelectedRowWrapper = (row: FileExplorerEntry | null) => {
@@ -231,25 +240,29 @@ export const ProjectExplorer = ({
       flattenedData.map((child) => {
         const isFile = child.children === null
         const isKCLFile = isFile && child.name?.endsWith(FILE_EXT)
+        
+        const isOpen =project.name === child.path || openedRows.get(child.path)
 
         /**
          * If any parent is closed, keep the history of open children
          */
         let isAnyParentClosed = false
-        const pathIterator = child.parentPath.split('/') //desktopSafePathSplit(child.parentPath)
-
-        while (pathIterator.length > 0) {
-          const key = pathIterator.join('/')
-          const isOpened = openedRows.get(key) || project.name === key
-          isAnyParentClosed = isAnyParentClosed || !isOpened
-          if (isAnyParentClosed === true) break
-          pathIterator.pop()
+        if (isOpen) {
+          const pathIterator = child.parentPath.split('/') //desktopSafePathSplit(child.parentPath)
+          while (pathIterator.length > 0) {
+            const key = pathIterator.join('/')
+            const isOpened = openedRows.get(key) || project.name === key
+            isAnyParentClosed = isAnyParentClosed || !isOpened
+            if (isAnyParentClosed === true) break
+            pathIterator.pop()
+          }
         }
 
-        const isOpen = openedRows.get(child.path) || false
+
         const render =
-          (openedRows.get(child.parentPath) || project.name === child.parentPath) &&
-          !isAnyParentClosed
+          !isAnyParentClosed && (project.path === child.parentPath || openedRows.get(child.parentPath))
+        console.log(project.path, child.parentPath)
+
 
         let icon: CustomIconName = 'file'
         if (isKCLFile) {
