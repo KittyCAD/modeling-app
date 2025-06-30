@@ -32,10 +32,10 @@ import { useKclContext } from '@src/lang/KclProvider'
 import type { MaybePressOrBlur } from '@src/lib/types'
 
 const isFileExplorerEntryOpened = (
-  rows: { [key: string]: boolean },
+  rows: Map<string,boolean>,
   entry: FileExplorerEntry
 ): boolean => {
-  return rows[entry.path]
+  return rows.get(entry.path) || false
 }
 
 /**
@@ -80,19 +80,17 @@ export const ProjectExplorer = ({
    * If there is no file passed in take the default_file from the project type
    */
   const defaultFileKey = file?.path || project.default_file
-  const defaultOpenedRows: { [key: string]: boolean } = {}
+  const defaultOpenedRows : Map<string, boolean> = new Map()
   const pathIterator = desktopSafePathSplit(defaultFileKey)
   while (pathIterator.length > 0) {
     const key = desktopSafePathJoin(pathIterator)
-    defaultOpenedRows[key] = true
+    defaultOpenedRows.set(key, true)
     pathIterator.pop()
   }
 
   // cache the state of opened rows to allow nested rows to be opened if a parent one is closed
   // when the parent opens the children will already be opened
-  const [openedRows, setOpenedRows] = useState<{ [key: string]: boolean }>(
-    defaultOpenedRows
-  )
+  const [openedRows, setOpenedRows] = useState<Map<string, boolean>>(defaultOpenedRows)
   const [selectedRow, setSelectedRow] = useState<FileExplorerEntry | null>(null)
   // -1 is the parent container, -2 is nothing is selected
   const [activeIndex, setActiveIndex] = useState<number>(NOTHING_IS_SELECTED)
@@ -133,8 +131,8 @@ export const ProjectExplorer = ({
     setFakeRow({ entry: row, isFile: true })
     if (row?.path) {
       // If the file tree had the folder opened make the new one open.
-      const newOpenedRows = { ...openedRowsRef.current }
-      newOpenedRows[row?.path] = true
+      const newOpenedRows = new Map(openedRowsRef.current)
+      newOpenedRows.set(row.path, true)
       setOpenedRows(newOpenedRows)
     }
   }, [createFilePressed])
@@ -150,8 +148,8 @@ export const ProjectExplorer = ({
     setFakeRow({ entry: row, isFile: false })
     if (row?.path) {
       // If the file tree had the folder opened make the new one open.
-      const newOpenedRows = { ...openedRowsRef.current }
-      newOpenedRows[row?.path] = true
+      const newOpenedRows = new Map(openedRowsRef.current)
+      newOpenedRows.set(row.path, true)
       setOpenedRows(newOpenedRows)
     }
   }, [createFolderPressed])
@@ -184,10 +182,10 @@ export const ProjectExplorer = ({
    * Needs a reference to openedRows since it is a callback
    */
   const onRowClickCallback = (file: FileExplorerEntry, domIndex: number) => {
-    const newOpenedRows = { ...openedRowsRef.current }
+    const newOpenedRows = new Map(openedRowsRef.current)
     const key = file.path
-    const value = openedRowsRef.current[key]
-    newOpenedRows[key] = !value
+    const value = newOpenedRows.get(key)
+    newOpenedRows.set(key, !value)
     setOpenedRows(newOpenedRows)
     setSelectedRowWrapper(file)
     setActiveIndex(domIndex)
@@ -198,7 +196,7 @@ export const ProjectExplorer = ({
      * You are loading a new project, clear the internal state!
      */
     if (previousProject.current.name !== project.name) {
-      setOpenedRows({})
+      setOpenedRows(defaultOpenedRows)
       setSelectedRow(null)
       setActiveIndex(NOTHING_IS_SELECTED)
       setRowsToRender([])
@@ -242,15 +240,15 @@ export const ProjectExplorer = ({
 
         while (pathIterator.length > 0) {
           const key = pathIterator.join('/')
-          const isOpened = openedRows[key] || project.name === key
+          const isOpened = openedRows.get(key) || project.name === key
           isAnyParentClosed = isAnyParentClosed || !isOpened
           if (isAnyParentClosed === true) break
           pathIterator.pop()
         }
 
-        const isOpen = openedRows[child.path]
+        const isOpen = openedRows.get(child.path) || false
         const render =
-          (openedRows[child.parentPath] || project.name === child.parentPath) &&
+          (openedRows.get(child.parentPath) || project.name === child.parentPath) &&
           !isAnyParentClosed
 
         let icon: CustomIconName = 'file'
@@ -283,9 +281,9 @@ export const ProjectExplorer = ({
             onRowClicked(child, domIndex)
           },
           onOpen: () => {
-            const newOpenedRows = { ...openedRowsRef.current }
+            const newOpenedRows = new Map(openedRowsRef.current)
             const key = child.path
-            newOpenedRows[key] = true
+            newOpenedRows.set(key, true)
             setOpenedRows(newOpenedRows)
           },
           onContextMenuOpen: (domIndex: number) => {
@@ -409,11 +407,11 @@ export const ProjectExplorer = ({
                   }
 
                   // TODO: Gotcha... Set new string open even if it fails?
-                  if (openedRowsRef.current[child.path]) {
+                  if (openedRowsRef.current.get(child.path)) {
                     // If the file tree had the folder opened make the new one open.
-                    const newOpenedRows = { ...openedRowsRef.current }
+                    const newOpenedRows = new Map(openedRowsRef.current)
                     const key = [child.parentPath, requestedName].join('/')
-                    newOpenedRows[key] = true
+                    newOpenedRows.set(key, true)
                     setOpenedRows(newOpenedRows)
                   }
                 }
@@ -582,10 +580,10 @@ export const ProjectExplorer = ({
             // NO OP
           } else if (shouldCheckOpened && isEntryOpened) {
             // close
-            const newOpenedRows = { ...openedRowsRef.current }
+            const newOpenedRows = new Map(openedRowsRef.current)
             const key = focusedEntry.path
-            const value = openedRowsRef.current[key]
-            newOpenedRows[key] = !value
+            const value = openedRowsRef.current.get(key)
+            newOpenedRows.set(key, !value)
             setOpenedRows(newOpenedRows)
           }
           break
@@ -594,10 +592,10 @@ export const ProjectExplorer = ({
             // NO OP
           } else if (shouldCheckOpened && !isEntryOpened) {
             // open!
-            const newOpenedRows = { ...openedRowsRef.current }
+            const newOpenedRows = new Map(openedRowsRef.current)
             const key = focusedEntry.path
-            const value = openedRowsRef.current[key]
-            newOpenedRows[key] = !value
+            const value = openedRowsRef.current.get(key)
+            newOpenedRows.set(key, !value)
             setOpenedRows(newOpenedRows)
           }
           break
@@ -624,10 +622,10 @@ export const ProjectExplorer = ({
         case 'Enter':
           if (activeIndexRef.current >= STARTING_INDEX_TO_SELECT) {
             // open close folder
-            const newOpenedRows = { ...openedRowsRef.current }
+            const newOpenedRows = new Map(openedRowsRef.current)
             const key = focusedEntry.path
-            const value = openedRowsRef.current[path]
-            newOpenedRows[key] = !value
+            const value = openedRowsRef.current.get(key)
+            newOpenedRows.set(key, !value)
             setOpenedRows(newOpenedRows)
             onRowEnter(focusedEntry, activeIndexRef.current)
           }
