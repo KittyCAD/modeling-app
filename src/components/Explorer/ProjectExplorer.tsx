@@ -88,8 +88,10 @@ export const ProjectExplorer = ({
     pathIterator.pop()
   }
 
-  const collapseAllDefaultOpenedRows: Map<string,boolean> = new Map()
-  pathIterator = desktopSafePathSplit(joinOSPaths(applicationProjectDirectory, project.name))
+  const collapseAllDefaultOpenedRows: Map<string, boolean> = new Map()
+  pathIterator = desktopSafePathSplit(
+    joinOSPaths(applicationProjectDirectory, project.name)
+  )
   while (pathIterator.length > 0) {
     const key = desktopSafePathJoin(pathIterator)
     collapseAllDefaultOpenedRows.set(key, true)
@@ -240,8 +242,8 @@ export const ProjectExplorer = ({
       flattenedData.map((child) => {
         const isFile = child.children === null
         const isKCLFile = isFile && child.name?.endsWith(FILE_EXT)
-        
-        const isOpen =project.name === child.path || openedRows.get(child.path)
+
+        const isOpen = project.name === child.path || openedRows.get(child.path)
 
         /**
          * If any parent is closed, keep the history of open children
@@ -258,11 +260,11 @@ export const ProjectExplorer = ({
           }
         }
 
-
         const render =
-          !isAnyParentClosed && (project.path === child.parentPath || openedRows.get(child.parentPath))
+          !isAnyParentClosed &&
+          (project.path === child.parentPath ||
+            openedRows.get(child.parentPath))
         console.log(project.path, child.parentPath)
-
 
         let icon: CustomIconName = 'file'
         if (isKCLFile) {

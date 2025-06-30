@@ -263,7 +263,7 @@ export function SystemIOMachineLogicListenerDesktop() {
   useGlobalFileNavigation()
   useApplicationProjectDirectory()
   useDefaultProjectName()
-  // useWatchingApplicationProjectDirectory()
+  useWatchingApplicationProjectDirectory()
 
   return null
 }
