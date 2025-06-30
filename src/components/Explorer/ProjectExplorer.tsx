@@ -264,7 +264,6 @@ export const ProjectExplorer = ({
           !isAnyParentClosed &&
           (project.path === child.parentPath ||
             openedRows.get(child.parentPath))
-        console.log(project.path, child.parentPath)
 
         let icon: CustomIconName = 'file'
         if (isKCLFile) {
