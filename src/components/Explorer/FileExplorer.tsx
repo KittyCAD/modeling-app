@@ -92,6 +92,7 @@ export const FileExplorer = ({
             itemData={data}
             width={width}
             itemSize={20}
+            className="pb-12"
           >
             {FileExplorerRowElement}
           </List>

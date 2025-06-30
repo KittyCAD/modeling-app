@@ -3,7 +3,6 @@ import type { CustomIconName } from '@src/components/CustomIcon'
 import { FILE_EXT } from '@src/lib/constants'
 import { FileExplorer, StatusDot } from '@src/components/Explorer/FileExplorer'
 import {
-  constructPath,
   flattenProject,
   NOTHING_IS_SELECTED,
   CONTAINER_IS_SELECTED,
@@ -26,7 +25,6 @@ import {
   getEXTWithPeriod,
   getParentAbsolutePath,
   joinOSPaths,
-  parentPathRelativeToApplicationDirectory,
   parentPathRelativeToProject,
 } from '@src/lib/paths'
 import { kclErrorsByFilename } from '@src/lang/errors'
@@ -173,7 +171,7 @@ export const ProjectExplorer = ({
     if (collapsePressed <= 0) {
       return
     }
-    setOpenedRows({})
+    setOpenedRows(defaultOpenedRows)
   }, [collapsePressed])
 
   const setSelectedRowWrapper = (row: FileExplorerEntry | null) => {
@@ -196,7 +194,6 @@ export const ProjectExplorer = ({
   }
 
   useEffect(() => {
-    console.log('IS RENAMING', isRenaming)
     /**
      * You are loading a new project, clear the internal state!
      */
@@ -671,7 +668,7 @@ export const ProjectExplorer = ({
       ref={projectExplorerRef}
     >
       <div
-        className={`overflow-auto absolute pb-12 inset-0 ${activeIndex === -1 ? 'border-sky-500' : ''}`}
+        className={`overflow-auto absolute inset-0 ${activeIndex === -1 ? 'border-sky-500' : ''}`}
         data-testid="file-pane-scroll-container"
         tabIndex={0}
         role="tree"
