@@ -34,6 +34,7 @@ const mockElectron = {
   getPath: vi.fn(),
   kittycad: vi.fn(),
   canReadWriteDirectory: vi.fn(),
+  globDir: vi.fn()
 }
 
 vi.stubGlobal('window', { electron: mockElectron })

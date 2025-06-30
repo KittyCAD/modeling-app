@@ -95,12 +95,12 @@ describe('Explorer utils.ts', () => {
         const parentPath = 'test-project'
         const expectedList = [
           {
-            path: `/${parentPath}/.zoo-placeholder-folder`,
+            path: `${parentPath}/.zoo-placeholder-folder`,
             name: '.zoo-placeholder-folder',
             children: [],
           },
           {
-            path: `/${parentPath}/.zoo-placeholder-file.kcl`,
+            path: `${parentPath}/.zoo-placeholder-file.kcl`,
             name: '.zoo-placeholder-file.kcl',
             children: null,
           },
@@ -114,48 +114,48 @@ describe('Explorer utils.ts', () => {
     describe('when children has a file and folder', () => {
       it('should place four placeholder files', () => {
         const expectedResult = undefined
-        const parentPath = 'test-project'
+        const parentPath = '/test-project'
         const expectedList = [
           {
-            path: `/${parentPath}/.zoo-placeholder-folder`,
+            path: `${parentPath}/.zoo-placeholder-folder`,
             name: '.zoo-placeholder-folder',
             children: [],
           },
           {
-            path: `/${parentPath}/part001`,
+            path: `${parentPath}/part001`,
             name: 'part001',
             children: [
               {
-                path: `/${parentPath}/part001/.zoo-placeholder-folder`,
+                path: `${parentPath}/part001/.zoo-placeholder-folder`,
                 name: '.zoo-placeholder-folder',
                 children: [],
               },
               {
-                path: `/${parentPath}/part001/.zoo-placeholder-file.kcl`,
+                path: `${parentPath}/part001/.zoo-placeholder-file.kcl`,
                 name: '.zoo-placeholder-file.kcl',
                 children: null,
               },
             ],
           },
           {
-            path: `/${parentPath}/main.kcl`,
+            path: `${parentPath}/main.kcl`,
             name: 'main.kcl',
             children: null,
           },
           {
-            path: `/${parentPath}/.zoo-placeholder-file.kcl`,
+            path: `${parentPath}/.zoo-placeholder-file.kcl`,
             name: '.zoo-placeholder-file.kcl',
             children: null,
           },
         ]
         const children: FileEntry[] = [
           {
-            path: `/${parentPath}/part001`,
+            path: `${parentPath}/part001`,
             name: 'part001',
             children: [],
           },
           {
-            path: `/${parentPath}/main.kcl`,
+            path: `${parentPath}/main.kcl`,
             name: 'main.kcl',
             children: null,
           },
