@@ -2424,6 +2424,7 @@ profile004 = circleThreePoint(sketch001, p1 = [13.44, -6.8], p2 = [13.39, -2.07]
     await test.step('edit existing rect', async () => {
       await rectHandle()
       await page.mouse.down()
+      await page.waitForTimeout(200)
       await rectDragTo()
       await page.mouse.up()
       await page.waitForTimeout(200)
