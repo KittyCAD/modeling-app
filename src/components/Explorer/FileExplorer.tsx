@@ -106,8 +106,12 @@ function FileList({
       const isMyRowCreating = item.isFake
       return isMyRowCreating
     })
+    const activeIndex = (data.length > 0 && data[0].activeIndex) || -1
     if (scrollToCreatingPlaceHolderIndex >= 0) {
       renderingList.current?.scrollToItem(scrollToCreatingPlaceHolderIndex)
+    }
+    if (activeIndex) {
+      renderingList.current?.scrollToItem(activeIndex)
     }
   }, [data])
 
@@ -119,7 +123,7 @@ function FileList({
       itemData={data}
       width={width}
       itemSize={20}
-      className="pb-12"
+      className="pb-12 fixed-size-list-render"
     >
       {FileExplorerRowElement}
     </FixedSizeList>

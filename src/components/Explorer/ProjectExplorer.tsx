@@ -344,7 +344,6 @@ export const ProjectExplorer = ({
 
             setIsRenaming(true)
             isRenamingRef.current = true
-            console.log('something')
           },
           onRenameEnd: (event: MaybePressOrBlur) => {
             // TODO: Implement renameFolder and renameFile to navigate
@@ -627,8 +626,7 @@ export const ProjectExplorer = ({
           break
         case 'ArrowDown':
           if (fileExplorerContainer.current) {
-            const numberOfDOMRows =
-              fileExplorerContainer.current.children[0].children.length - 1
+            const numberOfDOMRows = rowsToRenderRef.current.length - 1
             setActiveIndex((previous) => {
               if (previous === NOTHING_IS_SELECTED) {
                 return STARTING_INDEX_TO_SELECT
