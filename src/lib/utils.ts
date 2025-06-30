@@ -345,7 +345,12 @@ export function roundOffWithUnits(
     num = numWithUnits
     suffix = ''
   }
-  const roundedNum = roundOff(parseFloat(num), precision)
+  const parsedNum = parseFloat(num)
+  if (Number.isNaN(parsedNum)) {
+    // If parsing fails, return the original string.
+    return numWithUnits
+  }
+  const roundedNum = roundOff(parsedNum, precision)
   return `${roundedNum}${suffix}`
 }
 

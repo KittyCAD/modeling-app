@@ -81,6 +81,9 @@ describe('roundOffWithUnits', () => {
     expect(roundOffWithUnits('1.23456789_?', 3)).toBe('1.235_?')
     expect(roundOffWithUnits('-1.23456789_?', 3)).toBe('-1.235_?')
   })
+  it('returns the original string when used with something not parsable as a number', () => {
+    expect(roundOffWithUnits('foo', 3)).toBe('foo')
+  })
 })
 
 describe('testing hasLeadingZero', () => {
