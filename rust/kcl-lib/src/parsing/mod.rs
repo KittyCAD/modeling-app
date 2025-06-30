@@ -1,11 +1,11 @@
 use crate::{
+    ModuleId,
     errors::{CompilationError, KclError, KclErrorDetails},
     parsing::{
         ast::types::{Node, Program},
         token::TokenStream,
     },
     source_range::SourceRange,
-    ModuleId,
 };
 
 pub(crate) mod ast;
@@ -18,7 +18,7 @@ pub const PIPE_OPERATOR: &str = "|>";
 
 // `?` like behavior for `Result`s to return a ParseResult if there is an error.
 macro_rules! pr_try {
-    ($e: expr) => {
+    ($e: expr_2021) => {
         match $e {
             Ok(a) => a,
             Err(e) => return e.into(),
@@ -187,7 +187,7 @@ pub fn deprecation(s: &str, kind: DeprecationKind) -> Option<&'static str> {
 #[cfg(test)]
 mod tests {
     macro_rules! parse_and_lex {
-        ($func_name:ident, $test_kcl_program:expr) => {
+        ($func_name:ident, $test_kcl_program:expr_2021) => {
             #[test]
             fn $func_name() {
                 let _ = crate::parsing::top_level_parse($test_kcl_program);

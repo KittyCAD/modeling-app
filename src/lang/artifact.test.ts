@@ -191,6 +191,7 @@ sk2 = startSketchOn(XY)
               tag: {
                 end: 132,
                 start: 130,
+                moduleId: expect.any(Number),
                 commentStart: expect.any(Number),
                 type: 'TagDeclarator',
                 value: 'p',
@@ -242,6 +243,7 @@ sk2 = startSketchOn(XY)
                 tag: {
                   end: expect.any(Number),
                   start: expect.any(Number),
+                  moduleId: expect.any(Number),
                   commentStart: expect.any(Number),
                   type: 'TagDeclarator',
                   value: 'p',
@@ -293,6 +295,7 @@ sk2 = startSketchOn(XY)
               tag: {
                 end: expect.any(Number),
                 start: expect.any(Number),
+                moduleId: expect.any(Number),
                 commentStart: expect.any(Number),
                 type: 'TagDeclarator',
                 value: 'o',
@@ -344,6 +347,7 @@ sk2 = startSketchOn(XY)
                 tag: {
                   end: expect.any(Number),
                   start: expect.any(Number),
+                  moduleId: expect.any(Number),
                   commentStart: expect.any(Number),
                   type: 'TagDeclarator',
                   value: 'o',

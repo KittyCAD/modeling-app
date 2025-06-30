@@ -206,6 +206,7 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
           "tag": {
             "commentStart": 359,
             "end": 368,
+            "moduleId": 0,
             "start": 359,
             "type": "TagDeclarator",
             "value": "myCircle"
@@ -235,6 +236,7 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
             "tag": {
               "commentStart": 359,
               "end": 368,
+              "moduleId": 0,
               "start": 359,
               "type": "TagDeclarator",
               "value": "myCircle"

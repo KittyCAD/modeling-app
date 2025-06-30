@@ -17,6 +17,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "tag": {
             "commentStart": 123,
             "end": 129,
+            "moduleId": 0,
             "start": 123,
             "type": "TagDeclarator",
             "value": "seg02"
@@ -30,6 +31,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "tag": {
             "commentStart": 168,
             "end": 174,
+            "moduleId": 0,
             "start": 168,
             "type": "TagDeclarator",
             "value": "seg01"
@@ -60,6 +62,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             "tag": {
               "commentStart": 123,
               "end": 129,
+              "moduleId": 0,
               "start": 123,
               "type": "TagDeclarator",
               "value": "seg02"
@@ -85,6 +88,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             "tag": {
               "commentStart": 168,
               "end": 174,
+              "moduleId": 0,
               "start": 168,
               "type": "TagDeclarator",
               "value": "seg01"
@@ -353,6 +357,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                 "tag": {
                   "commentStart": 123,
                   "end": 129,
+                  "moduleId": 0,
                   "start": 123,
                   "type": "TagDeclarator",
                   "value": "seg02"
@@ -366,6 +371,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                 "tag": {
                   "commentStart": 168,
                   "end": 174,
+                  "moduleId": 0,
                   "start": 168,
                   "type": "TagDeclarator",
                   "value": "seg01"
@@ -396,6 +402,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                   "tag": {
                     "commentStart": 123,
                     "end": 129,
+                    "moduleId": 0,
                     "start": 123,
                     "type": "TagDeclarator",
                     "value": "seg02"
@@ -421,6 +428,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                   "tag": {
                     "commentStart": 168,
                     "end": 174,
+                    "moduleId": 0,
                     "start": 168,
                     "type": "TagDeclarator",
                     "value": "seg01"
@@ -596,6 +604,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "tag": {
             "commentStart": 2117,
             "end": 2138,
+            "moduleId": 0,
             "start": 2117,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA002"
@@ -640,6 +649,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             "tag": {
               "commentStart": 2117,
               "end": 2138,
+              "moduleId": 0,
               "start": 2117,
               "type": "TagDeclarator",
               "value": "rectangleSegmentA002"
@@ -817,6 +827,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "tag": {
             "commentStart": 123,
             "end": 129,
+            "moduleId": 0,
             "start": 123,
             "type": "TagDeclarator",
             "value": "seg02"
@@ -842,6 +853,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "tag": {
             "commentStart": 168,
             "end": 174,
+            "moduleId": 0,
             "start": 168,
             "type": "TagDeclarator",
             "value": "seg01"
@@ -1037,6 +1049,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               "tag": {
                 "commentStart": 123,
                 "end": 129,
+                "moduleId": 0,
                 "start": 123,
                 "type": "TagDeclarator",
                 "value": "seg02"
@@ -1050,6 +1063,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               "tag": {
                 "commentStart": 168,
                 "end": 174,
+                "moduleId": 0,
                 "start": 168,
                 "type": "TagDeclarator",
                 "value": "seg01"
@@ -1080,6 +1094,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                 "tag": {
                   "commentStart": 123,
                   "end": 129,
+                  "moduleId": 0,
                   "start": 123,
                   "type": "TagDeclarator",
                   "value": "seg02"
@@ -1105,6 +1120,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                 "tag": {
                   "commentStart": 168,
                   "end": 174,
+                  "moduleId": 0,
                   "start": 168,
                   "type": "TagDeclarator",
                   "value": "seg01"
@@ -1276,6 +1292,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "tag": {
             "commentStart": 571,
             "end": 592,
+            "moduleId": 0,
             "start": 571,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA001"
@@ -1399,6 +1416,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               "tag": {
                 "commentStart": 123,
                 "end": 129,
+                "moduleId": 0,
                 "start": 123,
                 "type": "TagDeclarator",
                 "value": "seg02"
@@ -1412,6 +1430,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               "tag": {
                 "commentStart": 168,
                 "end": 174,
+                "moduleId": 0,
                 "start": 168,
                 "type": "TagDeclarator",
                 "value": "seg01"
@@ -1442,6 +1461,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                 "tag": {
                   "commentStart": 123,
                   "end": 129,
+                  "moduleId": 0,
                   "start": 123,
                   "type": "TagDeclarator",
                   "value": "seg02"
@@ -1467,6 +1487,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                 "tag": {
                   "commentStart": 168,
                   "end": 174,
+                  "moduleId": 0,
                   "start": 168,
                   "type": "TagDeclarator",
                   "value": "seg01"
@@ -1742,6 +1763,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               "tag": {
                 "commentStart": 123,
                 "end": 129,
+                "moduleId": 0,
                 "start": 123,
                 "type": "TagDeclarator",
                 "value": "seg02"
@@ -1755,6 +1777,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               "tag": {
                 "commentStart": 168,
                 "end": 174,
+                "moduleId": 0,
                 "start": 168,
                 "type": "TagDeclarator",
                 "value": "seg01"
@@ -1785,6 +1808,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                 "tag": {
                   "commentStart": 123,
                   "end": 129,
+                  "moduleId": 0,
                   "start": 123,
                   "type": "TagDeclarator",
                   "value": "seg02"
@@ -1810,6 +1834,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                 "tag": {
                   "commentStart": 168,
                   "end": 174,
+                  "moduleId": 0,
                   "start": 168,
                   "type": "TagDeclarator",
                   "value": "seg01"
@@ -2028,6 +2053,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               "tag": {
                 "commentStart": 123,
                 "end": 129,
+                "moduleId": 0,
                 "start": 123,
                 "type": "TagDeclarator",
                 "value": "seg02"
@@ -2041,6 +2067,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               "tag": {
                 "commentStart": 168,
                 "end": 174,
+                "moduleId": 0,
                 "start": 168,
                 "type": "TagDeclarator",
                 "value": "seg01"
@@ -2071,6 +2098,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                 "tag": {
                   "commentStart": 123,
                   "end": 129,
+                  "moduleId": 0,
                   "start": 123,
                   "type": "TagDeclarator",
                   "value": "seg02"
@@ -2096,6 +2124,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                 "tag": {
                   "commentStart": 168,
                   "end": 174,
+                  "moduleId": 0,
                   "start": 168,
                   "type": "TagDeclarator",
                   "value": "seg01"
@@ -2365,6 +2394,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               "tag": {
                 "commentStart": 123,
                 "end": 129,
+                "moduleId": 0,
                 "start": 123,
                 "type": "TagDeclarator",
                 "value": "seg02"
@@ -2378,6 +2408,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               "tag": {
                 "commentStart": 168,
                 "end": 174,
+                "moduleId": 0,
                 "start": 168,
                 "type": "TagDeclarator",
                 "value": "seg01"
@@ -2408,6 +2439,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                 "tag": {
                   "commentStart": 123,
                   "end": 129,
+                  "moduleId": 0,
                   "start": 123,
                   "type": "TagDeclarator",
                   "value": "seg02"
@@ -2433,6 +2465,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                 "tag": {
                   "commentStart": 168,
                   "end": 174,
+                  "moduleId": 0,
                   "start": 168,
                   "type": "TagDeclarator",
                   "value": "seg01"
@@ -3067,6 +3100,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "tag": {
             "commentStart": 2117,
             "end": 2138,
+            "moduleId": 0,
             "start": 2117,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA002"
@@ -3349,6 +3383,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                 "tag": {
                   "commentStart": 123,
                   "end": 129,
+                  "moduleId": 0,
                   "start": 123,
                   "type": "TagDeclarator",
                   "value": "seg02"
@@ -3362,6 +3397,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                 "tag": {
                   "commentStart": 168,
                   "end": 174,
+                  "moduleId": 0,
                   "start": 168,
                   "type": "TagDeclarator",
                   "value": "seg01"
@@ -3392,6 +3428,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                   "tag": {
                     "commentStart": 123,
                     "end": 129,
+                    "moduleId": 0,
                     "start": 123,
                     "type": "TagDeclarator",
                     "value": "seg02"
@@ -3417,6 +3454,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                   "tag": {
                     "commentStart": 168,
                     "end": 174,
+                    "moduleId": 0,
                     "start": 168,
                     "type": "TagDeclarator",
                     "value": "seg01"
@@ -3827,6 +3865,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             "tag": {
               "commentStart": 123,
               "end": 129,
+              "moduleId": 0,
               "start": 123,
               "type": "TagDeclarator",
               "value": "seg02"
@@ -3840,6 +3879,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             "tag": {
               "commentStart": 168,
               "end": 174,
+              "moduleId": 0,
               "start": 168,
               "type": "TagDeclarator",
               "value": "seg01"
@@ -3870,6 +3910,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               "tag": {
                 "commentStart": 123,
                 "end": 129,
+                "moduleId": 0,
                 "start": 123,
                 "type": "TagDeclarator",
                 "value": "seg02"
@@ -3895,6 +3936,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               "tag": {
                 "commentStart": 168,
                 "end": 174,
+                "moduleId": 0,
                 "start": 168,
                 "type": "TagDeclarator",
                 "value": "seg01"

@@ -25,15 +25,14 @@ pub use crate::parsing::ast::types::{
     none::KclNone,
 };
 use crate::{
+    ModuleId, TypedPath,
     errors::KclError,
     execution::{
-        annotations,
+        KclValue, Metadata, TagIdentifier, annotations,
         types::{ArrayLen, UnitAngle, UnitLen},
-        KclValue, Metadata, TagIdentifier,
     },
-    parsing::{ast::digest::Digest, token::NumericSuffix, PIPE_OPERATOR},
+    parsing::{PIPE_OPERATOR, ast::digest::Digest, token::NumericSuffix},
     source_range::SourceRange,
-    ModuleId, TypedPath,
 };
 
 mod condition;
@@ -56,7 +55,6 @@ pub struct Node<T> {
     pub inner: T,
     pub start: usize,
     pub end: usize,
-    #[serde(default, skip_serializing_if = "ModuleId::is_top_level")]
     pub module_id: ModuleId,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub outer_attrs: NodeList<Annotation>,
@@ -73,18 +71,18 @@ impl<T: JsonSchema> schemars::JsonSchema for Node<T> {
         T::schema_name()
     }
 
-    fn json_schema(gen: &mut schemars::gen::SchemaGenerator) -> schemars::schema::Schema {
-        let mut child = T::json_schema(gen).into_object();
+    fn json_schema(r#gen: &mut schemars::r#gen::SchemaGenerator) -> schemars::schema::Schema {
+        let mut child = T::json_schema(r#gen).into_object();
         // We want to add the start and end fields to the schema.
         // Ideally we would add _any_ extra fields from the Node type automatically
         // but this is a bit hard since this isn't a macro.
-        let Some(ref mut object) = &mut child.object else {
+        let Some(object) = &mut child.object else {
             // This should never happen. But it will panic at compile time of docs if it does.
             // Which is better than runtime.
             panic!("Expected object schema for {}", T::schema_name());
         };
-        object.properties.insert("start".to_string(), usize::json_schema(gen));
-        object.properties.insert("end".to_string(), usize::json_schema(gen));
+        object.properties.insert("start".to_string(), usize::json_schema(r#gen));
+        object.properties.insert("end".to_string(), usize::json_schema(r#gen));
 
         schemars::schema::Schema::Object(child.clone())
     }
@@ -682,7 +680,7 @@ impl Program {
                         break;
                     }
                 }
-                BodyItem::VariableDeclaration(ref mut variable_declaration) => {
+                BodyItem::VariableDeclaration(variable_declaration) => {
                     if let Some(var_old_name) = variable_declaration.rename_symbol(new_name, pos) {
                         old_name = Some(var_old_name);
                         break;
@@ -706,18 +704,16 @@ impl Program {
             // Recurse over the item.
             let mut value = match item {
                 BodyItem::ImportStatement(_) => None, // TODO
-                BodyItem::ExpressionStatement(ref mut expression_statement) => {
-                    Some(&mut expression_statement.expression)
-                }
-                BodyItem::VariableDeclaration(ref mut variable_declaration) => {
+                BodyItem::ExpressionStatement(expression_statement) => Some(&mut expression_statement.expression),
+                BodyItem::VariableDeclaration(variable_declaration) => {
                     variable_declaration.get_mut_expr_for_position(pos)
                 }
                 BodyItem::TypeDeclaration(_) => None,
-                BodyItem::ReturnStatement(ref mut return_statement) => Some(&mut return_statement.argument),
+                BodyItem::ReturnStatement(return_statement) => Some(&mut return_statement.argument),
             };
 
             // Check if we have a function expression.
-            if let Some(Expr::FunctionExpression(ref mut function_expression)) = &mut value {
+            if let Some(Expr::FunctionExpression(function_expression)) = &mut value {
                 // Check if the params to the function expression contain the position.
                 for param in &mut function_expression.params {
                     let param_source_range: SourceRange = (&param.identifier).into();
@@ -765,7 +761,7 @@ impl Program {
                 BodyItem::ExpressionStatement(_) => {
                     continue;
                 }
-                BodyItem::VariableDeclaration(ref mut variable_declaration) => {
+                BodyItem::VariableDeclaration(variable_declaration) => {
                     if variable_declaration.declaration.id.name == name {
                         variable_declaration.declaration = declarator;
                         return;
@@ -784,14 +780,14 @@ impl Program {
         for item in &mut self.body {
             match item {
                 BodyItem::ImportStatement(_) => {} // TODO
-                BodyItem::ExpressionStatement(ref mut expression_statement) => expression_statement
+                BodyItem::ExpressionStatement(expression_statement) => expression_statement
                     .expression
                     .replace_value(source_range, new_value.clone()),
-                BodyItem::VariableDeclaration(ref mut variable_declaration) => {
+                BodyItem::VariableDeclaration(variable_declaration) => {
                     variable_declaration.replace_value(source_range, new_value.clone())
                 }
                 BodyItem::TypeDeclaration(_) => {}
-                BodyItem::ReturnStatement(ref mut return_statement) => {
+                BodyItem::ReturnStatement(return_statement) => {
                     return_statement.argument.replace_value(source_range, new_value.clone())
                 }
             }
@@ -1041,18 +1037,18 @@ impl Expr {
         }
 
         match self {
-            Expr::BinaryExpression(ref mut bin_exp) => bin_exp.replace_value(source_range, new_value),
-            Expr::ArrayExpression(ref mut array_exp) => array_exp.replace_value(source_range, new_value),
-            Expr::ArrayRangeExpression(ref mut array_range) => array_range.replace_value(source_range, new_value),
-            Expr::ObjectExpression(ref mut obj_exp) => obj_exp.replace_value(source_range, new_value),
+            Expr::BinaryExpression(bin_exp) => bin_exp.replace_value(source_range, new_value),
+            Expr::ArrayExpression(array_exp) => array_exp.replace_value(source_range, new_value),
+            Expr::ArrayRangeExpression(array_range) => array_range.replace_value(source_range, new_value),
+            Expr::ObjectExpression(obj_exp) => obj_exp.replace_value(source_range, new_value),
             Expr::MemberExpression(_) => {}
             Expr::Literal(_) => {}
-            Expr::FunctionExpression(ref mut func_exp) => func_exp.replace_value(source_range, new_value),
-            Expr::CallExpressionKw(ref mut call_exp) => call_exp.replace_value(source_range, new_value),
+            Expr::FunctionExpression(func_exp) => func_exp.replace_value(source_range, new_value),
+            Expr::CallExpressionKw(call_exp) => call_exp.replace_value(source_range, new_value),
             Expr::Name(_) => {}
             Expr::TagDeclarator(_) => {}
-            Expr::PipeExpression(ref mut pipe_exp) => pipe_exp.replace_value(source_range, new_value),
-            Expr::UnaryExpression(ref mut unary_exp) => unary_exp.replace_value(source_range, new_value),
+            Expr::PipeExpression(pipe_exp) => pipe_exp.replace_value(source_range, new_value),
+            Expr::UnaryExpression(unary_exp) => unary_exp.replace_value(source_range, new_value),
             Expr::IfExpression(_) => {}
             Expr::PipeSubstitution(_) => {}
             Expr::LabelledExpression(expr) => expr.expr.replace_value(source_range, new_value),
@@ -1114,25 +1110,19 @@ impl Expr {
     fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
         match self {
             Expr::Literal(_literal) => {}
-            Expr::Name(ref mut identifier) => identifier.rename(old_name, new_name),
-            Expr::TagDeclarator(ref mut tag) => tag.rename(old_name, new_name),
-            Expr::BinaryExpression(ref mut binary_expression) => {
-                binary_expression.rename_identifiers(old_name, new_name)
-            }
+            Expr::Name(identifier) => identifier.rename(old_name, new_name),
+            Expr::TagDeclarator(tag) => tag.rename(old_name, new_name),
+            Expr::BinaryExpression(binary_expression) => binary_expression.rename_identifiers(old_name, new_name),
             Expr::FunctionExpression(_function_identifier) => {}
-            Expr::CallExpressionKw(ref mut call_expression) => call_expression.rename_identifiers(old_name, new_name),
-            Expr::PipeExpression(ref mut pipe_expression) => pipe_expression.rename_identifiers(old_name, new_name),
+            Expr::CallExpressionKw(call_expression) => call_expression.rename_identifiers(old_name, new_name),
+            Expr::PipeExpression(pipe_expression) => pipe_expression.rename_identifiers(old_name, new_name),
             Expr::PipeSubstitution(_) => {}
-            Expr::ArrayExpression(ref mut array_expression) => array_expression.rename_identifiers(old_name, new_name),
-            Expr::ArrayRangeExpression(ref mut array_range) => array_range.rename_identifiers(old_name, new_name),
-            Expr::ObjectExpression(ref mut object_expression) => {
-                object_expression.rename_identifiers(old_name, new_name)
-            }
-            Expr::MemberExpression(ref mut member_expression) => {
-                member_expression.rename_identifiers(old_name, new_name)
-            }
-            Expr::UnaryExpression(ref mut unary_expression) => unary_expression.rename_identifiers(old_name, new_name),
-            Expr::IfExpression(ref mut expr) => expr.rename_identifiers(old_name, new_name),
+            Expr::ArrayExpression(array_expression) => array_expression.rename_identifiers(old_name, new_name),
+            Expr::ArrayRangeExpression(array_range) => array_range.rename_identifiers(old_name, new_name),
+            Expr::ObjectExpression(object_expression) => object_expression.rename_identifiers(old_name, new_name),
+            Expr::MemberExpression(member_expression) => member_expression.rename_identifiers(old_name, new_name),
+            Expr::UnaryExpression(unary_expression) => unary_expression.rename_identifiers(old_name, new_name),
+            Expr::IfExpression(expr) => expr.rename_identifiers(old_name, new_name),
             Expr::LabelledExpression(expr) => expr.expr.rename_identifiers(old_name, new_name),
             Expr::AscribedExpression(expr) => expr.expr.rename_identifiers(old_name, new_name),
             Expr::None(_) => {}
@@ -1326,15 +1316,9 @@ impl BinaryPart {
         match self {
             BinaryPart::Literal(_) => {}
             BinaryPart::Name(_) => {}
-            BinaryPart::BinaryExpression(ref mut binary_expression) => {
-                binary_expression.replace_value(source_range, new_value)
-            }
-            BinaryPart::CallExpressionKw(ref mut call_expression) => {
-                call_expression.replace_value(source_range, new_value)
-            }
-            BinaryPart::UnaryExpression(ref mut unary_expression) => {
-                unary_expression.replace_value(source_range, new_value)
-            }
+            BinaryPart::BinaryExpression(binary_expression) => binary_expression.replace_value(source_range, new_value),
+            BinaryPart::CallExpressionKw(call_expression) => call_expression.replace_value(source_range, new_value),
+            BinaryPart::UnaryExpression(unary_expression) => unary_expression.replace_value(source_range, new_value),
             BinaryPart::MemberExpression(_) => {}
             BinaryPart::IfExpression(e) => e.replace_value(source_range, new_value),
             BinaryPart::AscribedExpression(e) => e.expr.replace_value(source_range, new_value),
@@ -1371,21 +1355,13 @@ impl BinaryPart {
     fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
         match self {
             BinaryPart::Literal(_literal) => {}
-            BinaryPart::Name(ref mut identifier) => identifier.rename(old_name, new_name),
-            BinaryPart::BinaryExpression(ref mut binary_expression) => {
-                binary_expression.rename_identifiers(old_name, new_name)
-            }
-            BinaryPart::CallExpressionKw(ref mut call_expression) => {
-                call_expression.rename_identifiers(old_name, new_name)
-            }
-            BinaryPart::UnaryExpression(ref mut unary_expression) => {
-                unary_expression.rename_identifiers(old_name, new_name)
-            }
-            BinaryPart::MemberExpression(ref mut member_expression) => {
-                member_expression.rename_identifiers(old_name, new_name)
-            }
-            BinaryPart::IfExpression(ref mut if_expression) => if_expression.rename_identifiers(old_name, new_name),
-            BinaryPart::AscribedExpression(ref mut e) => e.expr.rename_identifiers(old_name, new_name),
+            BinaryPart::Name(identifier) => identifier.rename(old_name, new_name),
+            BinaryPart::BinaryExpression(binary_expression) => binary_expression.rename_identifiers(old_name, new_name),
+            BinaryPart::CallExpressionKw(call_expression) => call_expression.rename_identifiers(old_name, new_name),
+            BinaryPart::UnaryExpression(unary_expression) => unary_expression.rename_identifiers(old_name, new_name),
+            BinaryPart::MemberExpression(member_expression) => member_expression.rename_identifiers(old_name, new_name),
+            BinaryPart::IfExpression(if_expression) => if_expression.rename_identifiers(old_name, new_name),
+            BinaryPart::AscribedExpression(e) => e.expr.rename_identifiers(old_name, new_name),
         }
     }
 }
@@ -1885,7 +1861,6 @@ pub struct ExpressionStatement {
 pub struct CallExpressionKw {
     pub callee: Node<Name>,
     pub unlabeled: Option<Expr>,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub arguments: Vec<LabeledArg>,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -2826,7 +2801,7 @@ impl MemberExpression {
         self.object.rename_identifiers(old_name, new_name);
 
         match &mut self.property {
-            LiteralIdentifier::Identifier(ref mut identifier) => identifier.rename(old_name, new_name),
+            LiteralIdentifier::Identifier(identifier) => identifier.rename(old_name, new_name),
             LiteralIdentifier::Literal(_) => {}
         }
     }
@@ -3314,7 +3289,7 @@ impl Type {
                 .map(|t| t.human_friendly_type())
                 .collect::<Vec<_>>()
                 .join(" or "),
-            Type::Object { .. } => format!("an object with fields `{}`", self),
+            Type::Object { .. } => format!("an object with fields `{self}`"),
         }
     }
 
@@ -3471,7 +3446,11 @@ pub struct RequiredParamAfterOptionalParam(pub Box<Parameter>);
 
 impl std::fmt::Display for RequiredParamAfterOptionalParam {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "KCL functions must declare any optional parameters after all the required parameters. But your required parameter {} is _after_ an optional parameter. You must move it to before the optional parameters instead.", self.0.identifier.name)
+        write!(
+            f,
+            "KCL functions must declare any optional parameters after all the required parameters. But your required parameter {} is _after_ an optional parameter. You must move it to before the optional parameters instead.",
+            self.0.identifier.name
+        )
     }
 }
 

@@ -24,6 +24,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
           "tag": {
             "commentStart": 122,
             "end": 128,
+            "moduleId": 0,
             "start": 122,
             "type": "TagDeclarator",
             "value": "seg01"
@@ -37,6 +38,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
           "tag": {
             "commentStart": 162,
             "end": 168,
+            "moduleId": 0,
             "start": 162,
             "type": "TagDeclarator",
             "value": "seg02"
@@ -86,6 +88,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
             "tag": {
               "commentStart": 122,
               "end": 128,
+              "moduleId": 0,
               "start": 122,
               "type": "TagDeclarator",
               "value": "seg01"
@@ -111,6 +114,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
             "tag": {
               "commentStart": 162,
               "end": 168,
+              "moduleId": 0,
               "start": 162,
               "type": "TagDeclarator",
               "value": "seg02"
@@ -406,6 +410,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                 "tag": {
                   "commentStart": 122,
                   "end": 128,
+                  "moduleId": 0,
                   "start": 122,
                   "type": "TagDeclarator",
                   "value": "seg01"
@@ -419,6 +424,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                 "tag": {
                   "commentStart": 162,
                   "end": 168,
+                  "moduleId": 0,
                   "start": 162,
                   "type": "TagDeclarator",
                   "value": "seg02"
@@ -468,6 +474,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                   "tag": {
                     "commentStart": 122,
                     "end": 128,
+                    "moduleId": 0,
                     "start": 122,
                     "type": "TagDeclarator",
                     "value": "seg01"
@@ -493,6 +500,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                   "tag": {
                     "commentStart": 162,
                     "end": 168,
+                    "moduleId": 0,
                     "start": 162,
                     "type": "TagDeclarator",
                     "value": "seg02"
@@ -721,6 +729,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
           "tag": {
             "commentStart": 122,
             "end": 128,
+            "moduleId": 0,
             "start": 122,
             "type": "TagDeclarator",
             "value": "seg01"
@@ -746,6 +755,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
           "tag": {
             "commentStart": 162,
             "end": 168,
+            "moduleId": 0,
             "start": 162,
             "type": "TagDeclarator",
             "value": "seg02"
@@ -986,6 +996,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
               "tag": {
                 "commentStart": 122,
                 "end": 128,
+                "moduleId": 0,
                 "start": 122,
                 "type": "TagDeclarator",
                 "value": "seg01"
@@ -999,6 +1010,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
               "tag": {
                 "commentStart": 162,
                 "end": 168,
+                "moduleId": 0,
                 "start": 162,
                 "type": "TagDeclarator",
                 "value": "seg02"
@@ -1048,6 +1060,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                 "tag": {
                   "commentStart": 122,
                   "end": 128,
+                  "moduleId": 0,
                   "start": 122,
                   "type": "TagDeclarator",
                   "value": "seg01"
@@ -1073,6 +1086,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                 "tag": {
                   "commentStart": 162,
                   "end": 168,
+                  "moduleId": 0,
                   "start": 162,
                   "type": "TagDeclarator",
                   "value": "seg02"

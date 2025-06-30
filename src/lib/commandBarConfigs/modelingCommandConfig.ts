@@ -75,6 +75,9 @@ export type ModelingCommandSchema = {
     // KCL stdlib arguments
     sketches: Selections
     length: KclCommandValue
+    symmetric?: boolean
+    bidirectionalLength?: KclCommandValue
+    twistAngle?: KclCommandValue
   }
   Sweep: {
     // Enables editing workflow
@@ -83,9 +86,14 @@ export type ModelingCommandSchema = {
     sketches: Selections
     path: Selections
     sectional?: boolean
+    relativeTo?: string
   }
   Loft: {
+    // Enables editing workflow
+    nodeToEdit?: PathToNode
+    // KCL stdlib arguments
     sketches: Selections
+    vDegree?: KclCommandValue
   }
   Revolve: {
     // Enables editing workflow
@@ -97,6 +105,8 @@ export type ModelingCommandSchema = {
     angle: KclCommandValue
     axis: string | undefined
     edge: Selections | undefined
+    symmetric?: boolean
+    bidirectionalAngle?: KclCommandValue
   }
   Shell: {
     // Enables editing workflow
@@ -195,8 +205,8 @@ export type ModelingCommandSchema = {
     variableName: string
   }
   'Boolean Subtract': {
-    target: Selections
-    tool: Selections
+    solids: Selections
+    tools: Selections
   }
   'Boolean Union': {
     solids: Selections
@@ -409,6 +419,22 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         defaultValue: KCL_DEFAULT_LENGTH,
         required: true,
       },
+      symmetric: {
+        inputType: 'options',
+        required: false,
+        options: [
+          { name: 'False', value: false },
+          { name: 'True', value: true },
+        ],
+      },
+      bidirectionalLength: {
+        inputType: 'kcl',
+        required: false,
+      },
+      twistAngle: {
+        inputType: 'kcl',
+        required: false,
+      },
     },
   },
   Sweep: {
@@ -437,13 +463,19 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       sectional: {
         inputType: 'options',
-        skip: true,
         required: false,
         options: [
           { name: 'False', value: false },
           { name: 'True', value: true },
         ],
-        // No validation possible here until we have rollback
+      },
+      relativeTo: {
+        inputType: 'options',
+        required: false,
+        options: [
+          { name: 'sketchPlane', value: 'sketchPlane' },
+          { name: 'trajectoryCurve', value: 'trajectoryCurve' },
+        ],
       },
     },
   },
@@ -452,12 +484,20 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     icon: 'loft',
     needsReview: true,
     args: {
+      nodeToEdit: {
+        ...nodeToEditProps,
+      },
       sketches: {
         inputType: 'selection',
         displayName: 'Profiles',
         selectionTypes: ['solid2d'],
         multiple: true,
         required: true,
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+      },
+      vDegree: {
+        inputType: 'kcl',
+        required: false,
       },
     },
   },
@@ -515,6 +555,18 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         defaultValue: KCL_DEFAULT_DEGREE,
         required: true,
       },
+      symmetric: {
+        inputType: 'options',
+        required: false,
+        options: [
+          { name: 'False', value: false },
+          { name: 'True', value: true },
+        ],
+      },
+      bidirectionalAngle: {
+        inputType: 'kcl',
+        required: false,
+      },
     },
   },
   Shell: {
@@ -544,23 +596,23 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     icon: 'booleanSubtract',
     needsReview: true,
     args: {
-      target: {
+      solids: {
         inputType: 'selection',
         selectionTypes: ['path'],
         selectionFilter: ['object'],
+        // TODO: turn back to true once engine supports it, the codemod and KCL are ready
+        // Issue link: https://github.com/KittyCAD/engine/issues/3435
         multiple: false,
         required: true,
-        skip: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
-      tool: {
+      tools: {
         clearSelectionFirst: true,
         inputType: 'selection',
         selectionTypes: ['path'],
         selectionFilter: ['object'],
-        multiple: false,
+        multiple: true,
         required: true,
-        skip: false,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
     },
@@ -639,32 +691,35 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       axis: {
         inputType: 'options',
-        required: (commandContext) =>
-          ['Axis'].includes(commandContext.argumentsToSubmit.mode as string),
         options: [
           { name: 'X Axis', value: 'X' },
           { name: 'Y Axis', value: 'Y' },
           { name: 'Z Axis', value: 'Z' },
         ],
-        hidden: false, // for consistency here, we can actually edit here since it's not a selection
+        required: (context) =>
+          ['Axis'].includes(context.argumentsToSubmit.mode as string),
+        hidden: (context) =>
+          !['Axis'].includes(context.argumentsToSubmit.mode as string),
       },
       edge: {
-        required: (commandContext) =>
-          ['Edge'].includes(commandContext.argumentsToSubmit.mode as string),
         inputType: 'selection',
         selectionTypes: ['segment', 'sweepEdge'],
         multiple: false,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+        required: (context) =>
+          ['Edge'].includes(context.argumentsToSubmit.mode as string),
+        hidden: (context) =>
+          Boolean(context.argumentsToSubmit.nodeToEdit) ||
+          !['Edge'].includes(context.argumentsToSubmit.mode as string),
       },
       cylinder: {
-        required: (commandContext) =>
-          ['Cylinder'].includes(
-            commandContext.argumentsToSubmit.mode as string
-          ),
         inputType: 'selection',
         selectionTypes: ['wall'],
         multiple: false,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+        required: (context) =>
+          ['Cylinder'].includes(context.argumentsToSubmit.mode as string),
+        hidden: (context) =>
+          Boolean(context.argumentsToSubmit.nodeToEdit) ||
+          !['Cylinder'].includes(context.argumentsToSubmit.mode as string),
       },
       revolutions: {
         inputType: 'kcl',
@@ -679,34 +734,30 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       radius: {
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_LENGTH,
-        required: (commandContext) =>
-          !['Cylinder'].includes(
-            commandContext.argumentsToSubmit.mode as string
-          ),
+        required: (context) =>
+          !['Cylinder'].includes(context.argumentsToSubmit.mode as string),
+        hidden: (context) =>
+          ['Cylinder'].includes(context.argumentsToSubmit.mode as string),
       },
       length: {
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_LENGTH,
         required: (commandContext) =>
           ['Axis'].includes(commandContext.argumentsToSubmit.mode as string),
+        // No need for hidden here, as it works with all modes
       },
       ccw: {
         inputType: 'options',
-        skip: true,
-        required: true,
-        defaultValue: false,
-        valueSummary: (value) => String(value),
+        required: false,
         displayName: 'CounterClockWise',
-        options: (commandContext) => [
+        options: [
           {
             name: 'False',
             value: false,
-            isCurrent: !Boolean(commandContext.argumentsToSubmit.ccw),
           },
           {
             name: 'True',
             value: true,
-            isCurrent: Boolean(commandContext.argumentsToSubmit.ccw),
           },
         ],
       },

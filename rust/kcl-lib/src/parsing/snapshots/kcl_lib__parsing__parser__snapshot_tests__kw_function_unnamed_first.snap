@@ -12,6 +12,7 @@ expression: actual
         "id": {
           "commentStart": 0,
           "end": 3,
+          "moduleId": 0,
           "name": "val",
           "start": 0,
           "type": "Identifier"
@@ -23,6 +24,7 @@ expression: actual
               "label": {
                 "commentStart": 13,
                 "end": 14,
+                "moduleId": 0,
                 "name": "y",
                 "start": 13,
                 "type": "Identifier"
@@ -31,9 +33,11 @@ expression: actual
                 "abs_path": false,
                 "commentStart": 17,
                 "end": 18,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 17,
                   "end": 18,
+                  "moduleId": 0,
                   "name": "z",
                   "start": 17,
                   "type": "Identifier"
@@ -49,9 +53,11 @@ expression: actual
             "abs_path": false,
             "commentStart": 6,
             "end": 9,
+            "moduleId": 0,
             "name": {
               "commentStart": 6,
               "end": 9,
+              "moduleId": 0,
               "name": "foo",
               "start": 6,
               "type": "Identifier"
@@ -62,6 +68,7 @@ expression: actual
           },
           "commentStart": 6,
           "end": 19,
+          "moduleId": 0,
           "start": 6,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
@@ -69,9 +76,11 @@ expression: actual
             "abs_path": false,
             "commentStart": 10,
             "end": 11,
+            "moduleId": 0,
             "name": {
               "commentStart": 10,
               "end": 11,
+              "moduleId": 0,
               "name": "x",
               "start": 10,
               "type": "Identifier"
@@ -82,11 +91,13 @@ expression: actual
             "type": "Name"
           }
         },
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclarator"
       },
       "end": 19,
       "kind": "const",
+      "moduleId": 0,
       "start": 0,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
@@ -94,5 +105,6 @@ expression: actual
   ],
   "commentStart": 0,
   "end": 19,
+  "moduleId": 0,
   "start": 0
 }

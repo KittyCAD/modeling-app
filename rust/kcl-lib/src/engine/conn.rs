@@ -3,26 +3,26 @@
 
 use std::{collections::HashMap, sync::Arc};
 
-use anyhow::{anyhow, Result};
+use anyhow::{Result, anyhow};
 use futures::{SinkExt, StreamExt};
 use indexmap::IndexMap;
 use kcmc::{
+    ModelingCmd,
     websocket::{
         BatchResponse, FailureWebSocketResponse, ModelingCmdReq, ModelingSessionData, OkWebSocketResponseData,
         SuccessWebSocketResponse, WebSocketRequest, WebSocketResponse,
     },
-    ModelingCmd,
 };
 use kittycad_modeling_cmds::{self as kcmc};
-use tokio::sync::{mpsc, oneshot, RwLock};
+use tokio::sync::{RwLock, mpsc, oneshot};
 use tokio_tungstenite::tungstenite::Message as WsMsg;
 use uuid::Uuid;
 
 use crate::{
+    SourceRange,
     engine::{AsyncTasks, EngineManager, EngineStats},
     errors::{KclError, KclErrorDetails},
     execution::{DefaultPlanes, IdGenerator},
-    SourceRange,
 };
 
 #[derive(Debug, PartialEq)]
@@ -85,7 +85,7 @@ impl TcpRead {
         let msg = match msg {
             Ok(msg) => msg,
             Err(e) if matches!(e, tokio_tungstenite::tungstenite::Error::Protocol(_)) => {
-                return Err(WebSocketReadError::Read(e))
+                return Err(WebSocketReadError::Read(e));
             }
             Err(e) => return Err(anyhow::anyhow!("Error reading from engine's WebSocket: {e}").into()),
         };
@@ -427,7 +427,7 @@ impl EngineManager for EngineConnection {
                 request_sent: tx,
             })
             .await
-            .map_err(|e| KclError::new_engine(KclErrorDetails::new(format!("Failed to send debug: {}", e), vec![])))?;
+            .map_err(|e| KclError::new_engine(KclErrorDetails::new(format!("Failed to send debug: {e}"), vec![])))?;
 
         let _ = rx.await;
         Ok(())
@@ -463,7 +463,7 @@ impl EngineManager for EngineConnection {
             .await
             .map_err(|e| {
                 KclError::new_engine(KclErrorDetails::new(
-                    format!("Failed to send modeling command: {}", e),
+                    format!("Failed to send modeling command: {e}"),
                     vec![source_range],
                 ))
             })?;
@@ -533,7 +533,7 @@ impl EngineManager for EngineConnection {
         }
 
         Err(KclError::new_engine(KclErrorDetails::new(
-            format!("Modeling command timed out `{}`", id),
+            format!("Modeling command timed out `{id}`"),
             vec![source_range],
         )))
     }

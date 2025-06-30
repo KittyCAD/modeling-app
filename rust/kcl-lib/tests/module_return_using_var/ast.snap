@@ -8,6 +8,7 @@ description: Result of parsing module_return_using_var.kcl
       {
         "commentStart": 0,
         "end": 0,
+        "moduleId": 0,
         "path": {
           "type": "Kcl",
           "filename": "cube.kcl"
@@ -29,9 +30,11 @@ description: Result of parsing module_return_using_var.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "cube",
                 "start": 0,
                 "type": "Identifier"
@@ -48,6 +51,7 @@ description: Result of parsing module_return_using_var.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "x",
                     "start": 0,
                     "type": "Identifier"
@@ -55,6 +59,7 @@ description: Result of parsing module_return_using_var.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "5",
                     "start": 0,
                     "type": "Literal",
@@ -70,9 +75,11 @@ description: Result of parsing module_return_using_var.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "translate",
                   "start": 0,
                   "type": "Identifier"
@@ -83,6 +90,7 @@ description: Result of parsing module_return_using_var.kcl
               },
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
@@ -91,10 +99,12 @@ description: Result of parsing module_return_using_var.kcl
           ],
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "PipeExpression",
           "type": "PipeExpression"
         },
+        "moduleId": 0,
         "preComments": [
           "",
           "",
@@ -107,6 +117,7 @@ description: Result of parsing module_return_using_var.kcl
     ],
     "commentStart": 0,
     "end": 0,
+    "moduleId": 0,
     "start": 0
   }
 }

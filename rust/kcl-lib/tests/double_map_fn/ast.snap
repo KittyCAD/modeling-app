@@ -13,6 +13,7 @@ description: Result of parsing double_map_fn.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "increment",
             "start": 0,
             "type": "Identifier"
@@ -28,9 +29,11 @@ description: Result of parsing double_map_fn.kcl
                       "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "i",
                         "start": 0,
                         "type": "Identifier"
@@ -40,10 +43,12 @@ description: Result of parsing double_map_fn.kcl
                       "type": "Name",
                       "type": "Name"
                     },
+                    "moduleId": 0,
                     "operator": "+",
                     "right": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "1",
                       "start": 0,
                       "type": "Literal",
@@ -59,6 +64,7 @@ description: Result of parsing double_map_fn.kcl
                   },
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
@@ -66,16 +72,19 @@ description: Result of parsing double_map_fn.kcl
               ],
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0
             },
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "i",
                   "start": 0,
                   "type": "Identifier"
@@ -87,11 +96,13 @@ description: Result of parsing double_map_fn.kcl
             "type": "FunctionExpression",
             "type": "FunctionExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "fn",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -104,6 +115,7 @@ description: Result of parsing double_map_fn.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "xs",
             "start": 0,
             "type": "Identifier"
@@ -114,6 +126,7 @@ description: Result of parsing double_map_fn.kcl
             "endElement": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "raw": "2",
               "start": 0,
               "type": "Literal",
@@ -124,10 +137,12 @@ description: Result of parsing double_map_fn.kcl
               }
             },
             "endInclusive": true,
+            "moduleId": 0,
             "start": 0,
             "startElement": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "raw": "0",
               "start": 0,
               "type": "Literal",
@@ -140,11 +155,13 @@ description: Result of parsing double_map_fn.kcl
             "type": "ArrayRangeExpression",
             "type": "ArrayRangeExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -157,6 +174,7 @@ description: Result of parsing double_map_fn.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "ys",
             "start": 0,
             "type": "Identifier"
@@ -167,9 +185,11 @@ description: Result of parsing double_map_fn.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "xs",
                   "start": 0,
                   "type": "Identifier"
@@ -186,6 +206,7 @@ description: Result of parsing double_map_fn.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "f",
                       "start": 0,
                       "type": "Identifier"
@@ -194,9 +215,11 @@ description: Result of parsing double_map_fn.kcl
                       "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "increment",
                         "start": 0,
                         "type": "Identifier"
@@ -212,9 +235,11 @@ description: Result of parsing double_map_fn.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "map",
                     "start": 0,
                     "type": "Identifier"
@@ -225,6 +250,7 @@ description: Result of parsing double_map_fn.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -237,6 +263,7 @@ description: Result of parsing double_map_fn.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "f",
                       "start": 0,
                       "type": "Identifier"
@@ -245,9 +272,11 @@ description: Result of parsing double_map_fn.kcl
                       "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "increment",
                         "start": 0,
                         "type": "Identifier"
@@ -263,9 +292,11 @@ description: Result of parsing double_map_fn.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "map",
                     "start": 0,
                     "type": "Identifier"
@@ -276,6 +307,7 @@ description: Result of parsing double_map_fn.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -284,15 +316,18 @@ description: Result of parsing double_map_fn.kcl
             ],
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -300,12 +335,14 @@ description: Result of parsing double_map_fn.kcl
     ],
     "commentStart": 0,
     "end": 0,
+    "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {

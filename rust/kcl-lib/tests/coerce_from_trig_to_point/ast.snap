@@ -1,6 +1,6 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
-description: Result of parsing error_with_point_shows_numeric_units.kcl
+description: Result of parsing coerce_from_trig_to_point.kcl
 ---
 {
   "Ok": {
@@ -11,13 +11,16 @@ description: Result of parsing error_with_point_shows_numeric_units.kcl
         "expression": {
           "body": [
             {
+              "arguments": [],
               "callee": {
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "startSketchOn",
                   "start": 0,
                   "type": "Identifier"
@@ -28,6 +31,7 @@ description: Result of parsing error_with_point_shows_numeric_units.kcl
               },
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
@@ -35,9 +39,11 @@ description: Result of parsing error_with_point_shows_numeric_units.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "XZ",
                   "start": 0,
                   "type": "Identifier"
@@ -55,6 +61,7 @@ description: Result of parsing error_with_point_shows_numeric_units.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "center",
                     "start": 0,
                     "type": "Identifier"
@@ -63,13 +70,16 @@ description: Result of parsing error_with_point_shows_numeric_units.kcl
                     "commentStart": 0,
                     "elements": [
                       {
+                        "arguments": [],
                         "callee": {
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "sin",
                             "start": 0,
                             "type": "Identifier"
@@ -80,12 +90,14 @@ description: Result of parsing error_with_point_shows_numeric_units.kcl
                         },
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "start": 0,
                         "type": "CallExpressionKw",
                         "type": "CallExpressionKw",
                         "unlabeled": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "66.6deg",
                           "start": 0,
                           "type": "Literal",
@@ -97,13 +109,16 @@ description: Result of parsing error_with_point_shows_numeric_units.kcl
                         }
                       },
                       {
+                        "arguments": [],
                         "callee": {
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "cos",
                             "start": 0,
                             "type": "Identifier"
@@ -114,12 +129,14 @@ description: Result of parsing error_with_point_shows_numeric_units.kcl
                         },
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "start": 0,
                         "type": "CallExpressionKw",
                         "type": "CallExpressionKw",
                         "unlabeled": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "66.6deg",
                           "start": 0,
                           "type": "Literal",
@@ -132,6 +149,7 @@ description: Result of parsing error_with_point_shows_numeric_units.kcl
                       }
                     ],
                     "end": 0,
+                    "moduleId": 0,
                     "start": 0,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
@@ -142,6 +160,7 @@ description: Result of parsing error_with_point_shows_numeric_units.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "radius",
                     "start": 0,
                     "type": "Identifier"
@@ -149,6 +168,7 @@ description: Result of parsing error_with_point_shows_numeric_units.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "1",
                     "start": 0,
                     "type": "Literal",
@@ -164,9 +184,11 @@ description: Result of parsing error_with_point_shows_numeric_units.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "circle",
                   "start": 0,
                   "type": "Identifier"
@@ -177,6 +199,7 @@ description: Result of parsing error_with_point_shows_numeric_units.kcl
               },
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
@@ -185,10 +208,12 @@ description: Result of parsing error_with_point_shows_numeric_units.kcl
           ],
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "PipeExpression",
           "type": "PipeExpression"
         },
+        "moduleId": 0,
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -196,6 +221,7 @@ description: Result of parsing error_with_point_shows_numeric_units.kcl
     ],
     "commentStart": 0,
     "end": 0,
+    "moduleId": 0,
     "start": 0
   }
 }

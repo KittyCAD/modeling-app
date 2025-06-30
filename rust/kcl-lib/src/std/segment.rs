@@ -7,10 +7,10 @@ use super::utils::untype_point;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        types::{NumericType, PrimitiveType, RuntimeType},
         ExecState, KclValue, Sketch, TagIdentifier,
+        types::{NumericType, PrimitiveType, RuntimeType},
     },
-    std::{args::TyF64, utils::between, Args},
+    std::{Args, args::TyF64, utils::between},
 };
 
 /// Returns the point at the end of the given segment.
@@ -25,7 +25,7 @@ fn inner_segment_end(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args
     let line = args.get_tag_engine_info(exec_state, tag)?;
     let path = line.path.clone().ok_or_else(|| {
         KclError::new_type(KclErrorDetails::new(
-            format!("Expected a line segment with a path, found `{:?}`", line),
+            format!("Expected a line segment with a path, found `{line:?}`"),
             vec![args.source_range],
         ))
     })?;
@@ -48,7 +48,7 @@ fn inner_segment_end_x(tag: &TagIdentifier, exec_state: &mut ExecState, args: Ar
     let line = args.get_tag_engine_info(exec_state, tag)?;
     let path = line.path.clone().ok_or_else(|| {
         KclError::new_type(KclErrorDetails::new(
-            format!("Expected a line segment with a path, found `{:?}`", line),
+            format!("Expected a line segment with a path, found `{line:?}`"),
             vec![args.source_range],
         ))
     })?;
@@ -68,7 +68,7 @@ fn inner_segment_end_y(tag: &TagIdentifier, exec_state: &mut ExecState, args: Ar
     let line = args.get_tag_engine_info(exec_state, tag)?;
     let path = line.path.clone().ok_or_else(|| {
         KclError::new_type(KclErrorDetails::new(
-            format!("Expected a line segment with a path, found `{:?}`", line),
+            format!("Expected a line segment with a path, found `{line:?}`"),
             vec![args.source_range],
         ))
     })?;
@@ -88,7 +88,7 @@ fn inner_segment_start(tag: &TagIdentifier, exec_state: &mut ExecState, args: Ar
     let line = args.get_tag_engine_info(exec_state, tag)?;
     let path = line.path.clone().ok_or_else(|| {
         KclError::new_type(KclErrorDetails::new(
-            format!("Expected a line segment with a path, found `{:?}`", line),
+            format!("Expected a line segment with a path, found `{line:?}`"),
             vec![args.source_range],
         ))
     })?;
@@ -111,7 +111,7 @@ fn inner_segment_start_x(tag: &TagIdentifier, exec_state: &mut ExecState, args: 
     let line = args.get_tag_engine_info(exec_state, tag)?;
     let path = line.path.clone().ok_or_else(|| {
         KclError::new_type(KclErrorDetails::new(
-            format!("Expected a line segment with a path, found `{:?}`", line),
+            format!("Expected a line segment with a path, found `{line:?}`"),
             vec![args.source_range],
         ))
     })?;
@@ -131,7 +131,7 @@ fn inner_segment_start_y(tag: &TagIdentifier, exec_state: &mut ExecState, args: 
     let line = args.get_tag_engine_info(exec_state, tag)?;
     let path = line.path.clone().ok_or_else(|| {
         KclError::new_type(KclErrorDetails::new(
-            format!("Expected a line segment with a path, found `{:?}`", line),
+            format!("Expected a line segment with a path, found `{line:?}`"),
             vec![args.source_range],
         ))
     })?;
@@ -152,7 +152,7 @@ fn inner_last_segment_x(sketch: Sketch, args: Args) -> Result<TyF64, KclError> {
         .last()
         .ok_or_else(|| {
             KclError::new_type(KclErrorDetails::new(
-                format!("Expected a Sketch with at least one segment, found `{:?}`", sketch),
+                format!("Expected a Sketch with at least one segment, found `{sketch:?}`"),
                 vec![args.source_range],
             ))
         })?
@@ -175,7 +175,7 @@ fn inner_last_segment_y(sketch: Sketch, args: Args) -> Result<TyF64, KclError> {
         .last()
         .ok_or_else(|| {
             KclError::new_type(KclErrorDetails::new(
-                format!("Expected a Sketch with at least one segment, found `{:?}`", sketch),
+                format!("Expected a Sketch with at least one segment, found `{sketch:?}`"),
                 vec![args.source_range],
             ))
         })?
@@ -195,7 +195,7 @@ fn inner_segment_length(tag: &TagIdentifier, exec_state: &mut ExecState, args: A
     let line = args.get_tag_engine_info(exec_state, tag)?;
     let path = line.path.clone().ok_or_else(|| {
         KclError::new_type(KclErrorDetails::new(
-            format!("Expected a line segment with a path, found `{:?}`", line),
+            format!("Expected a line segment with a path, found `{line:?}`"),
             vec![args.source_range],
         ))
     })?;
@@ -215,7 +215,7 @@ fn inner_segment_angle(tag: &TagIdentifier, exec_state: &mut ExecState, args: Ar
     let line = args.get_tag_engine_info(exec_state, tag)?;
     let path = line.path.clone().ok_or_else(|| {
         KclError::new_type(KclErrorDetails::new(
-            format!("Expected a line segment with a path, found `{:?}`", line),
+            format!("Expected a line segment with a path, found `{line:?}`"),
             vec![args.source_range],
         ))
     })?;
@@ -237,7 +237,7 @@ async fn inner_tangent_to_end(tag: &TagIdentifier, exec_state: &mut ExecState, a
     let line = args.get_tag_engine_info(exec_state, tag)?;
     let path = line.path.clone().ok_or_else(|| {
         KclError::new_type(KclErrorDetails::new(
-            format!("Expected a line segment with a path, found `{:?}`", line),
+            format!("Expected a line segment with a path, found `{line:?}`"),
             vec![args.source_range],
         ))
     })?;
