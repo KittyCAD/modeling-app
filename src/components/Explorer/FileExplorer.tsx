@@ -110,7 +110,7 @@ function FileList({
     if (scrollToCreatingPlaceHolderIndex >= 0) {
       renderingList.current?.scrollToItem(scrollToCreatingPlaceHolderIndex)
     }
-    if (activeIndex) {
+    if (activeIndex >= 0) {
       renderingList.current?.scrollToItem(activeIndex)
     }
   }, [data])
