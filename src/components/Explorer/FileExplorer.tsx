@@ -9,9 +9,9 @@ import {
 } from '@src/components/Explorer/utils'
 import { ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
 import type { CSSProperties, Dispatch } from 'react'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { DeleteConfirmationDialog } from '@src/components/ProjectCard/DeleteProjectDialog'
-import { FixedSizeList as List } from 'react-window'
+import { FixedSizeList } from 'react-window'
 import AutoSizer from 'react-virtualized-auto-sizer'
 import type { MaybePressOrBlur, SubmitByPressOrBlur } from '@src/lib/types'
 
@@ -85,20 +85,44 @@ export const FileExplorer = ({
   return (
     <div role="presentation" className="relative h-full w-full">
       <AutoSizer>
-        {({ height, width }) => (
-          <List
-            height={height}
-            itemCount={data.length}
-            itemData={data}
-            width={width}
-            itemSize={20}
-            className="pb-12"
-          >
-            {FileExplorerRowElement}
-          </List>
+        {({ width, height }) => (
+          <FileList width={width} height={height} data={data}></FileList>
         )}
       </AutoSizer>
     </div>
+  )
+}
+
+function FileList({
+  width,
+  height,
+  data,
+}: { width: number; height: number; data: FileExplorerRender[] }) {
+  const renderingList = useRef<FixedSizeList>(null)
+
+  // When the list renders scroll to the fake placeholder that is awaiting creation
+  useEffect(() => {
+    const scrollToCreatingPlaceHolderIndex = data.findIndex((item) => {
+      const isMyRowCreating = item.isFake
+      return isMyRowCreating
+    })
+    if (scrollToCreatingPlaceHolderIndex >= 0) {
+      renderingList.current?.scrollToItem(scrollToCreatingPlaceHolderIndex)
+    }
+  }, [data])
+
+  return (
+    <FixedSizeList
+      ref={renderingList}
+      height={height}
+      itemCount={data.length}
+      itemData={data}
+      width={width}
+      itemSize={20}
+      className="pb-12"
+    >
+      {FileExplorerRowElement}
+    </FixedSizeList>
   )
 }
 
@@ -242,7 +266,6 @@ export const FileExplorerRowElement = ({
   // TODO: key is undefined..
   const isContextMenuRow = item.contextMenuRow?.path === item.path
   const isMyRowRenaming = isContextMenuRow && item.isRenaming
-
   const [isConfirmingDelete, setIsConfirmingDelete] = useState<boolean>(false)
 
   const outlineCSS =
