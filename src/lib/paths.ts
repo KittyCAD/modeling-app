@@ -235,14 +235,14 @@ export function webSafeJoin(paths: string[]): string {
 /**
  * Splits any paths safely based on the runtime
  */
-export function desktopSafePathSplit(path: string): string[] {
+export function desktopSafePathSplit(path: string, sep?: string): string[] {
   return isDesktop()
-    ? path.split(window?.electron?.sep)
+    ? path.split(sep || window?.electron?.sep)
     : webSafePathSplit(path)
 }
 
-export function desktopSafePathJoin(paths: string[]): string {
-  return isDesktop() ? paths.join(window?.electron?.sep) : webSafeJoin(paths)
+export function desktopSafePathJoin(paths: string[], sep?: string): string {
+  return isDesktop() ? paths.join(sep || window?.electron?.sep) : webSafeJoin(paths)
 }
 
 /**

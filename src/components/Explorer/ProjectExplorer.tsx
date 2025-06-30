@@ -24,7 +24,6 @@ import {
   desktopSafePathSplit,
   getEXTWithPeriod,
   getParentAbsolutePath,
-  joinOSPaths,
   parentPathRelativeToProject,
 } from '@src/lib/paths'
 import { kclErrorsByFilename } from '@src/lang/errors'
@@ -90,7 +89,7 @@ export const ProjectExplorer = ({
 
   const collapseAllDefaultOpenedRows: Map<string, boolean> = new Map()
   pathIterator = desktopSafePathSplit(
-    joinOSPaths(applicationProjectDirectory, project.name)
+    desktopSafePathJoin([applicationProjectDirectory, project.name])
   )
   while (pathIterator.length > 0) {
     const key = desktopSafePathJoin(pathIterator)
@@ -238,6 +237,8 @@ export const ProjectExplorer = ({
       value,
     }))
 
+    const sep = window?.electron?.sep
+
     const requestedRows: FileExplorerRow[] =
       flattenedData.map((child) => {
         const isFile = child.children === null
@@ -250,9 +251,9 @@ export const ProjectExplorer = ({
          */
         let isAnyParentClosed = false
         if (isOpen) {
-          const pathIterator = child.parentPath.split('/') //desktopSafePathSplit(child.parentPath)
+          const pathIterator = desktopSafePathSplit(child.parentPath, sep)
           while (pathIterator.length > 0) {
-            const key = pathIterator.join('/')
+            const key = desktopSafePathJoin(pathIterator, sep)
             const isOpened = openedRows.get(key) || project.name === key
             isAnyParentClosed = isAnyParentClosed || !isOpened
             if (isAnyParentClosed === true) break
@@ -372,9 +373,9 @@ export const ProjectExplorer = ({
                   systemIOActor.send({
                     type: SystemIOMachineEvents.createBlankFolder,
                     data: {
-                      requestedAbsolutePath: joinOSPaths(
-                        getParentAbsolutePath(row.path),
-                        requestedName
+                      requestedAbsolutePath: desktopSafePathJoin(
+                        [getParentAbsolutePath(row.path),
+                        requestedName]
                       ),
                     },
                   })
@@ -443,9 +444,9 @@ export const ProjectExplorer = ({
               }
 
               const pathRelativeToParent = parentPathRelativeToProject(
-                joinOSPaths(
-                  getParentAbsolutePath(row.path),
-                  fileNameForcedWithOriginalExt
+                desktopSafePathJoin(
+                  [getParentAbsolutePath(row.path),
+                  fileNameForcedWithOriginalExt]
                 ),
                 applicationProjectDirectory
               )
@@ -465,17 +466,17 @@ export const ProjectExplorer = ({
                   systemIOActor.send({
                     type: SystemIOMachineEvents.createBlankFile,
                     data: {
-                      requestedAbsolutePath: joinOSPaths(
-                        getParentAbsolutePath(row.path),
-                        fileNameForcedWithOriginalExt
+                      requestedAbsolutePath: desktopSafePathJoin(
+                        [getParentAbsolutePath(row.path),
+                        fileNameForcedWithOriginalExt]
                       ),
                     },
                   })
                 }
               } else {
-                const requestedAbsoluteFilePathWithExtension = joinOSPaths(
-                  getParentAbsolutePath(row.path),
-                  name
+                const requestedAbsoluteFilePathWithExtension = desktopSafePathJoin(
+                  [getParentAbsolutePath(row.path),
+                  name]
                 )
                 // If your router loader is within the file you are renaming then reroute to the new path on disk
                 // If you are renaming a file you are not loaded into, do not reload!

@@ -2,7 +2,7 @@ import type { ReactNode } from 'react'
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { sortFilesAndDirectories } from '@src/lib/desktopFS'
 import type { FileEntry } from '@src/lib/project'
-import { desktopSafePathJoin, joinOSPaths } from '@src/lib/paths'
+import { desktopSafePathJoin } from '@src/lib/paths'
 import type { SubmitByPressOrBlur } from '@src/lib/types'
 
 /**
@@ -110,7 +110,7 @@ const flattenProjectHelper = (
     return
   }
 
-  const nextParentPath = parentPath + '/' + f.name
+  const nextParentPath = desktopSafePathJoin([parentPath, f.name])
   const sortedChildren = sortFilesAndDirectories(f.children.slice())
   // keep recursing down the children
   for (let i = 0; i < sortedChildren.length; i++) {
@@ -167,19 +167,19 @@ export const addPlaceHoldersForNewFileAndFolder = (
   for (let i = 0; i < children.length; i++) {
     addPlaceHoldersForNewFileAndFolder(
       children[i].children,
-      joinOSPaths(parentPath, children[i].name)
+      desktopSafePathJoin([parentPath, children[i].name])
     )
   }
 
   const placeHolderFolderEntry: FileEntry = {
-    path: joinOSPaths(parentPath, FOLDER_PLACEHOLDER_NAME),
+    path: desktopSafePathJoin([parentPath, FOLDER_PLACEHOLDER_NAME]),
     name: FOLDER_PLACEHOLDER_NAME,
     children: [],
   }
   children.unshift(placeHolderFolderEntry)
 
   const placeHolderFileEntry: FileEntry = {
-    path: joinOSPaths(parentPath, FILE_PLACEHOLDER_NAME),
+    path: desktopSafePathJoin([parentPath, FILE_PLACEHOLDER_NAME]),
     name: FILE_PLACEHOLDER_NAME,
     children: null,
   }
