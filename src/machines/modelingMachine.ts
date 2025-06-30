@@ -9,6 +9,7 @@ import {
   orthoScale,
   quaternionFromUpNForward,
 } from '@src/clientSideScene/helpers'
+import { scaleProfiles } from '@src/clientSideScene/sceneEntities'
 import type { Setting } from '@src/lib/settings/initialSettings'
 import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
 import { DRAFT_DASHED_LINE } from '@src/clientSideScene/sceneConstants'
@@ -2247,6 +2248,55 @@ export const modelingMachine = setup({
         if (trap(pResult) || !resultIsOk(pResult))
           return Promise.reject(new Error('Unexpected compilation error'))
         let parsed = pResult.program
+
+        // Apply sketch scaling if enabled
+        if (data.scaleSketch && sketchDetails.sketchNodePaths) {
+          const originalValue = parseFloat(data.currentValue.valueText)
+          const newValue = parseFloat(
+            typeof data.namedValue === 'object' &&
+              'valueText' in data.namedValue
+              ? data.namedValue.valueText
+              : String(data.namedValue)
+          )
+
+          if (
+            !Number.isNaN(originalValue) &&
+            !Number.isNaN(newValue) &&
+            originalValue !== 0
+          ) {
+            const scaleFactor = newValue / originalValue
+
+            try {
+              const scaleResult = scaleProfiles({
+                ast: parsed,
+                pathsToProfile: sketchDetails.sketchNodePaths,
+                factor: scaleFactor,
+                variables: kclManager.variables,
+              })
+
+              if (!err(scaleResult)) {
+                parsed = scaleResult.modifiedAst
+
+                // Reparse and recast to get fresh source ranges after scaling
+                const reparseResult = parse(recast(parsed))
+                if (!trap(reparseResult) && resultIsOk(reparseResult)) {
+                  parsed = reparseResult.program
+                }
+              } else {
+                // Continue with constraint application even if scaling fails
+                console.warn(
+                  'Failed to scale sketch, continuing with constraint application'
+                )
+              }
+            } catch (error) {
+              // Continue with constraint application even if scaling fails
+              console.warn(
+                'Error scaling sketch, continuing with constraint application:',
+                error
+              )
+            }
+          }
+        }
 
         let result: {
           modifiedAst: Node<Program>
