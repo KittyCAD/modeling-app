@@ -1171,12 +1171,64 @@ export class SceneEntities {
           codeManager: this.codeManager,
         })
 
+        // Check if we need to update sketchNodePaths due to CallExpression -> PipeExpression transformation
+        let updatedSketchNodePaths = [...sketchNodePaths]
+        let updatedSketchEntryNodePath = sketchEntryNodePath
+        let needsSelectionUpdate = false
+
+        // Check if the sketch entry was converted from CallExpression to PipeExpression
+        const _nodeAfter = getNodeFromPath<VariableDeclaration>(
+          modifiedAst,
+          sketchEntryNodePath,
+          'VariableDeclaration'
+        )
+        if (!err(_nodeAfter)) {
+          const initAfter = _nodeAfter.node?.declaration?.init
+          if (initAfter?.type === 'PipeExpression') {
+            const INIT_PATH_STEP_INDEX = 3
+            const pathNeedingUpdatingIndex = sketchNodePaths.findIndex(
+              (pathToNode) =>
+                pathToNode.length === INIT_PATH_STEP_INDEX + 1 &&
+                pathToNode.every(
+                  (step, index) =>
+                    step?.[0] === sketchEntryNodePath?.[index]?.[0]
+                )
+            )
+            if (pathNeedingUpdatingIndex !== -1) {
+              const updatedPath: PathToNode = [
+                ...sketchNodePaths[pathNeedingUpdatingIndex],
+                ['body', 'PipeExpression'],
+                [0, 'CallExpressionKw'],
+              ]
+              updatedSketchNodePaths[pathNeedingUpdatingIndex] = updatedPath
+              updatedSketchEntryNodePath = updatedPath
+              needsSelectionUpdate = true
+            }
+          }
+        }
+
         if (intersectsProfileStart) {
           this.sceneInfra.modelingSend({ type: 'Close sketch' })
         } else {
+          // Send selection update if paths were modified
+          if (needsSelectionUpdate) {
+            this.sceneInfra.modelingSend({
+              type: 'Set selection',
+              data: {
+                selectionType: 'completeSelection',
+                selection: {
+                  graphSelections: [],
+                  otherSelections: [],
+                },
+                updatedSketchEntryNodePath,
+                updatedSketchNodePaths,
+              },
+            })
+          }
+
           await this.setupDraftSegment(
             sketchEntryNodePath,
-            sketchNodePaths,
+            updatedSketchNodePaths,
             planeNodePath,
             forward,
             up,
