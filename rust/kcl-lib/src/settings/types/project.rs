@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 use validator::Validate;
 
 use crate::settings::types::{
-    is_default, AppColor, CommandBarSettings, DefaultTrue, OnboardingStatus, TextEditorSettings, UnitLength,
+    AppColor, CommandBarSettings, DefaultTrue, OnboardingStatus, TextEditorSettings, UnitLength, is_default,
 };
 
 /// Project specific settings for the app.
@@ -203,14 +203,16 @@ color = 1567.4"#;
 
         let result = ProjectConfiguration::parse_and_validate(settings_file);
         if let Ok(r) = result {
-            panic!("Expected an error, but got success: {:?}", r);
+            panic!("Expected an error, but got success: {r:?}");
         }
         assert!(result.is_err());
 
-        assert!(result
-            .unwrap_err()
-            .to_string()
-            .contains("color: Validation error: color"));
+        assert!(
+            result
+                .unwrap_err()
+                .to_string()
+                .contains("color: Validation error: color")
+        );
     }
 
     #[test]

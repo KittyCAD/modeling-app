@@ -50,6 +50,7 @@ description: Variables in memory after executing flush_batch_on_end.kcl
           "tag": {
             "commentStart": 515,
             "end": 522,
+            "moduleId": 0,
             "start": 515,
             "type": "TagDeclarator",
             "value": "arc001"
@@ -175,6 +176,7 @@ description: Variables in memory after executing flush_batch_on_end.kcl
           "tag": {
             "commentStart": 360,
             "end": 367,
+            "moduleId": 0,
             "start": 360,
             "type": "TagDeclarator",
             "value": "arc000"
@@ -264,6 +266,7 @@ description: Variables in memory after executing flush_batch_on_end.kcl
           "tag": {
             "commentStart": 360,
             "end": 367,
+            "moduleId": 0,
             "start": 360,
             "type": "TagDeclarator",
             "value": "arc000"
@@ -293,6 +296,7 @@ description: Variables in memory after executing flush_batch_on_end.kcl
             "tag": {
               "commentStart": 360,
               "end": 367,
+              "moduleId": 0,
               "start": 360,
               "type": "TagDeclarator",
               "value": "arc000"
@@ -400,6 +404,7 @@ description: Variables in memory after executing flush_batch_on_end.kcl
           "tag": {
             "commentStart": 360,
             "end": 367,
+            "moduleId": 0,
             "start": 360,
             "type": "TagDeclarator",
             "value": "arc000"

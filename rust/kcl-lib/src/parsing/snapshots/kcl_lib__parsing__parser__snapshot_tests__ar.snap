@@ -13,6 +13,7 @@ expression: actual
         "left": {
           "commentStart": 0,
           "end": 1,
+          "moduleId": 0,
           "raw": "5",
           "start": 0,
           "type": "Literal",
@@ -22,10 +23,12 @@ expression: actual
             "suffix": "None"
           }
         },
+        "moduleId": 0,
         "operator": "+",
         "right": {
           "commentStart": 4,
           "end": 7,
+          "moduleId": 0,
           "raw": "\"a\"",
           "start": 4,
           "type": "Literal",
@@ -36,6 +39,7 @@ expression: actual
         "type": "BinaryExpression",
         "type": "BinaryExpression"
       },
+      "moduleId": 0,
       "start": 0,
       "type": "ExpressionStatement",
       "type": "ExpressionStatement"
@@ -43,5 +47,6 @@ expression: actual
   ],
   "commentStart": 0,
   "end": 7,
+  "moduleId": 0,
   "start": 0
 }

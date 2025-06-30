@@ -505,7 +505,11 @@ export const ModelingMachineProvider = ({
                     input.extrudePathToNode,
                     input.faceInfo
                   )
-                : sketchOnOffsetPlane(kclManager.ast, input.pathToNode)
+                : sketchOnOffsetPlane(
+                    kclManager.ast,
+                    input.pathToNode,
+                    input.negated
+                  )
             if (err(sketched)) {
               const sketchedError = new Error(
                 'Incompatible face, please try another'

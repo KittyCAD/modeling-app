@@ -2,12 +2,12 @@ use std::str::FromStr;
 
 use anyhow::Result;
 use kcmc::{
-    coord::{System, KITTYCAD},
+    ImportFile, ModelingCmd,
+    coord::{KITTYCAD, System},
     each_cmd as mcmd,
     format::InputFormat3d,
     shared::FileImportFormat,
     units::UnitLength,
-    ImportFile, ModelingCmd,
 };
 use kittycad_modeling_cmds as kcmc;
 use serde::{Deserialize, Serialize};
@@ -16,8 +16,8 @@ use uuid::Uuid;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        annotations, typed_path::TypedPath, types::UnitLen, ExecState, ExecutorContext, ImportedGeometry,
-        ModelingCmdMeta,
+        ExecState, ExecutorContext, ImportedGeometry, ModelingCmdMeta, annotations, typed_path::TypedPath,
+        types::UnitLen,
     },
     fs::FileSystem,
     parsing::ast::types::{Annotation, Node},
@@ -184,7 +184,7 @@ pub(super) fn format_from_annotations(
                         annotations::IMPORT_LENGTH_UNIT
                     ),
                     vec![p.as_source_range()],
-                )))
+                )));
             }
         }
     }
@@ -225,7 +225,7 @@ fn set_coords(fmt: &mut InputFormat3d, coords_str: &str, source_range: SourceRan
                     annotations::IMPORT_COORDS
                 ),
                 vec![source_range],
-            )))
+            )));
         }
     }
 
@@ -246,7 +246,7 @@ fn set_length_unit(fmt: &mut InputFormat3d, units_str: &str, source_range: Sourc
                     annotations::IMPORT_LENGTH_UNIT
                 ),
                 vec![source_range],
-            )))
+            )));
         }
     }
 
@@ -291,7 +291,9 @@ fn get_import_format_from_extension(ext: &str) -> Result<InputFormat3d> {
             } else if ext == "glb" {
                 FileImportFormat::Gltf
             } else {
-                anyhow::bail!("unknown source format for file extension: {ext}. Try setting the `--src-format` flag explicitly or use a valid format.")
+                anyhow::bail!(
+                    "unknown source format for file extension: {ext}. Try setting the `--src-format` flag explicitly or use a valid format."
+                )
             }
         }
     };

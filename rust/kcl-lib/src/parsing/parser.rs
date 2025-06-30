@@ -14,14 +14,16 @@ use winnow::{
 };
 
 use super::{
+    DeprecationKind,
     ast::types::{AscribedExpression, ImportPath, LabelledExpression},
     token::{NumericSuffix, RESERVED_WORDS},
-    DeprecationKind,
 };
 use crate::{
+    IMPORT_FILE_EXTENSIONS, SourceRange, TypedPath,
     errors::{CompilationError, Severity, Tag},
     execution::types::ArrayLen,
     parsing::{
+        PIPE_OPERATOR, PIPE_SUBSTITUTION_OPERATOR,
         ast::types::{
             Annotation, ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem,
             BoxNode, CallExpressionKw, CommentStyle, DefaultParamVal, ElseIf, Expr, ExpressionStatement,
@@ -33,9 +35,7 @@ use crate::{
         },
         math::BinaryExpressionToken,
         token::{Token, TokenSlice, TokenType},
-        PIPE_OPERATOR, PIPE_SUBSTITUTION_OPERATOR,
     },
-    SourceRange, TypedPath, IMPORT_FILE_EXTENSIONS,
 };
 
 thread_local! {
@@ -602,7 +602,7 @@ fn binary_operator(i: &mut TokenSlice) -> ModalResult<BinaryOperator> {
                 return Err(CompilationError::fatal(
                     token.as_source_range(),
                     format!("{} is not a binary operator", token.value.as_str()),
-                ))
+                ));
             }
         };
         Ok(op)
@@ -726,7 +726,7 @@ fn shebang(i: &mut TokenSlice) -> ModalResult<Node<Shebang>> {
     opt(whitespace).parse_next(i)?;
 
     Ok(Node::new(
-        Shebang::new(format!("#!{}", value)),
+        Shebang::new(format!("#!{value}")),
         0,
         tokens.last().unwrap().end,
         tokens.first().unwrap().module_id,
@@ -1926,7 +1926,7 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
             return Err(ErrMode::Cut(
                 CompilationError::fatal(
                     path_range,
-                    format!("Invalid import path for import from std: {}.", path_string),
+                    format!("Invalid import path for import from std: {path_string}."),
                 )
                 .into(),
             ));
@@ -1938,7 +1938,10 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
         if !IMPORT_FILE_EXTENSIONS.contains(&extn.to_string_lossy().to_string()) {
             ParseContext::warn(CompilationError::err(
                 path_range,
-                format!("unsupported import path format. KCL files can be imported from the current project, CAD files with the following formats are supported: {}", IMPORT_FILE_EXTENSIONS.join(", ")),
+                format!(
+                    "unsupported import path format. KCL files can be imported from the current project, CAD files with the following formats are supported: {}",
+                    IMPORT_FILE_EXTENSIONS.join(", ")
+                ),
             ))
         }
         ImportPath::Foreign {
@@ -2210,7 +2213,7 @@ fn declaration(i: &mut TokenSlice) -> ModalResult<BoxNode<VariableDeclaration>> 
                     if matches!(val, Expr::FunctionExpression(_)) {
                         return Err(CompilationError::fatal(
                             SourceRange::new(start, dec_end, id.module_id),
-                            format!("Expected a `fn` variable kind, found: `{}`", kind),
+                            format!("Expected a `fn` variable kind, found: `{kind}`"),
                         ));
                     }
                     Ok(val)
@@ -3312,10 +3315,10 @@ fn fn_call_kw(i: &mut TokenSlice) -> ModalResult<Node<CallExpressionKw>> {
         ParseContext::warn(
             CompilationError::err(
                 result.as_source_range(),
-                format!("Calling `{}` is deprecated, prefer using `{}`.", callee_str, suggestion),
+                format!("Calling `{callee_str}` is deprecated, prefer using `{suggestion}`."),
             )
             .with_suggestion(
-                format!("Replace `{}` with `{}`", callee_str, suggestion),
+                format!("Replace `{callee_str}` with `{suggestion}`"),
                 suggestion,
                 None,
                 Tag::Deprecated,
@@ -3333,13 +3336,13 @@ mod tests {
 
     use super::*;
     use crate::{
-        parsing::ast::types::{BodyItem, Expr, VariableKind},
         ModuleId,
+        parsing::ast::types::{BodyItem, Expr, VariableKind},
     };
 
     fn assert_reserved(word: &str) {
         // Try to use it as a variable name.
-        let code = format!(r#"{} = 0"#, word);
+        let code = format!(r#"{word} = 0"#);
         let result = crate::parsing::top_level_parse(code.as_str());
         let err = &result.unwrap_errs().next().unwrap();
         // Which token causes the error may change.  In "return = 0", for
@@ -5263,7 +5266,7 @@ mod snapshot_math_tests {
     // The macro takes a KCL program, ensures it tokenizes and parses, then compares
     // its parsed AST to a snapshot (kept in this repo in a file under snapshots/ dir)
     macro_rules! snapshot_test {
-        ($func_name:ident, $test_kcl_program:expr) => {
+        ($func_name:ident, $test_kcl_program:expr_2021) => {
             #[test]
             fn $func_name() {
                 let module_id = crate::ModuleId::default();
@@ -5301,7 +5304,7 @@ mod snapshot_tests {
     // The macro takes a KCL program, ensures it tokenizes and parses, then compares
     // its parsed AST to a snapshot (kept in this repo in a file under snapshots/ dir)
     macro_rules! snapshot_test {
-        ($func_name:ident, $test_kcl_program:expr) => {
+        ($func_name:ident, $test_kcl_program:expr_2021) => {
             #[test]
             fn $func_name() {
                 let module_id = crate::ModuleId::default();

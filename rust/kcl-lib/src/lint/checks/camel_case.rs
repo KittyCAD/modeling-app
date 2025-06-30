@@ -2,19 +2,19 @@ use anyhow::Result;
 use convert_case::Casing;
 
 use crate::{
+    SourceRange,
     errors::Suggestion,
-    lint::rule::{def_finding, Discovered, Finding},
+    lint::rule::{Discovered, Finding, def_finding},
     parsing::ast::types::{Node as AstNode, ObjectProperty, Program, VariableDeclarator},
     walk::Node,
-    SourceRange,
 };
 
 def_finding!(
     Z0001,
-    "Identifiers must be lowerCamelCase",
+    "Identifiers should be lowerCamelCase",
     "\
 By convention, variable names are lowerCamelCase, not snake_case, kebab-case,
-nor CammelCase. 🐪
+nor upper CamelCase (aka PascalCase). 🐪
 
 For instance, a good identifier for the variable representing 'box height'
 would be 'boxHeight', not 'BOX_HEIGHT', 'box_height' nor 'BoxHeight'. For
@@ -38,12 +38,12 @@ fn lint_lower_camel_case_var(decl: &VariableDeclarator, prog: &AstNode<Program>)
         let recast = prog.recast(&Default::default(), 0);
 
         let suggestion = Suggestion {
-            title: format!("rename '{}' to '{}'", name, new_name),
+            title: format!("rename '{name}' to '{new_name}'"),
             insert: recast,
             source_range: prog.as_source_range(),
         };
         findings.push(Z0001.at(
-            format!("found '{}'", name),
+            format!("found '{name}'"),
             SourceRange::new(ident.start, ident.end, ident.module_id),
             Some(suggestion.clone()),
         ));
@@ -61,7 +61,7 @@ fn lint_lower_camel_case_property(decl: &ObjectProperty, _prog: &AstNode<Program
     if !name.is_case(convert_case::Case::Camel) {
         // We can't rename the properties yet.
         findings.push(Z0001.at(
-            format!("found '{}'", name),
+            format!("found '{name}'"),
             SourceRange::new(ident.start, ident.end, ident.module_id),
             None,
         ));
@@ -93,7 +93,7 @@ pub fn lint_object_properties(decl: Node, prog: &AstNode<Program>) -> Result<Vec
 
 #[cfg(test)]
 mod tests {
-    use super::{lint_object_properties, lint_variables, Z0001};
+    use super::{Z0001, lint_object_properties, lint_variables};
     use crate::lint::rule::{assert_finding, test_finding, test_no_finding};
 
     #[tokio::test]

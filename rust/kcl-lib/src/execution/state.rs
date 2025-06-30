@@ -9,20 +9,19 @@ use uuid::Uuid;
 #[cfg(feature = "artifact-graph")]
 use crate::execution::{Artifact, ArtifactCommand, ArtifactGraph, ArtifactId};
 use crate::{
+    CompilationError, EngineManager, ExecutorContext, KclErrorWithOutputs,
     errors::{KclError, KclErrorDetails, Severity},
     exec::DefaultPlanes,
     execution::{
-        annotations,
+        EnvironmentRef, ExecOutcome, ExecutorSettings, KclValue, UnitAngle, UnitLen, annotations,
         cad_op::Operation,
         id_generator::IdGenerator,
         memory::{ProgramMemory, Stack},
         types::{self, NumericType},
-        EnvironmentRef, ExecOutcome, ExecutorSettings, KclValue, UnitAngle, UnitLen,
     },
     modules::{ModuleId, ModuleInfo, ModuleLoader, ModulePath, ModuleRepr, ModuleSource},
     parsing::ast::types::{Annotation, NodeRef},
     source_range::SourceRange,
-    CompilationError, EngineManager, ExecutorContext, KclErrorWithOutputs,
 };
 
 /// State for executing a program.
@@ -555,7 +554,7 @@ impl MetaSettings {
                             annotations::SETTINGS_UNIT_ANGLE
                         ),
                         vec![annotation.as_source_range()],
-                    )))
+                    )));
                 }
             }
         }

@@ -6,12 +6,12 @@ use std::{
 use anyhow::Result;
 
 use crate::{
+    ExecState, ExecutorContext, KclError, ModuleId, SourceRange,
     errors::KclErrorDetails,
     execution::typed_path::TypedPath,
     modules::{ModulePath, ModuleRepr},
     parsing::ast::types::{ImportPath, ImportStatement, Node as AstNode},
     walk::{Node, Visitable},
-    ExecState, ExecutorContext, KclError, ModuleId, SourceRange,
 };
 
 /// Specific dependency between two modules. The 0th element of this info
@@ -147,7 +147,7 @@ fn import_dependencies(
                     ret.lock()
                         .map_err(|err| {
                             KclError::new_internal(KclErrorDetails::new(
-                                format!("Failed to lock mutex: {}", err),
+                                format!("Failed to lock mutex: {err}"),
                                 Default::default(),
                             ))
                         })?
@@ -157,7 +157,7 @@ fn import_dependencies(
                     ret.lock()
                         .map_err(|err| {
                             KclError::new_internal(KclErrorDetails::new(
-                                format!("Failed to lock mutex: {}", err),
+                                format!("Failed to lock mutex: {err}"),
                                 Default::default(),
                             ))
                         })?
@@ -179,7 +179,7 @@ fn import_dependencies(
 
     let ret = ret.lock().map_err(|err| {
         KclError::new_internal(KclErrorDetails::new(
-            format!("Failed to lock mutex: {}", err),
+            format!("Failed to lock mutex: {err}"),
             Default::default(),
         ))
     })?;
@@ -224,7 +224,7 @@ pub(crate) async fn import_universe(
         let repr = {
             let Some(module_info) = exec_state.get_module(module_id) else {
                 return Err(KclError::new_internal(KclErrorDetails::new(
-                    format!("Module {} not found", module_id),
+                    format!("Module {module_id} not found"),
                     vec![import_stmt.into()],
                 )));
             };
@@ -244,9 +244,7 @@ mod tests {
     use crate::parsing::ast::types::{ImportSelector, Program};
 
     macro_rules! kcl {
-        ( $kcl:expr ) => {{
-            $crate::parsing::top_level_parse($kcl).unwrap()
-        }};
+        ( $kcl:expr_2021 ) => {{ $crate::parsing::top_level_parse($kcl).unwrap() }};
     }
 
     fn into_module_info(program: AstNode<Program>) -> DependencyInfo {

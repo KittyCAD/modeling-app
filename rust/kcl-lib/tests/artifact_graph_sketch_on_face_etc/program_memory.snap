@@ -24,6 +24,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           "tag": {
             "commentStart": 116,
             "end": 122,
+            "moduleId": 0,
             "start": 116,
             "type": "TagDeclarator",
             "value": "seg01"
@@ -73,6 +74,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             "tag": {
               "commentStart": 116,
               "end": 122,
+              "moduleId": 0,
               "start": 116,
               "type": "TagDeclarator",
               "value": "seg01"
@@ -344,6 +346,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                 "tag": {
                   "commentStart": 116,
                   "end": 122,
+                  "moduleId": 0,
                   "start": 116,
                   "type": "TagDeclarator",
                   "value": "seg01"
@@ -393,6 +396,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                   "tag": {
                     "commentStart": 116,
                     "end": 122,
+                    "moduleId": 0,
                     "start": 116,
                     "type": "TagDeclarator",
                     "value": "seg01"
@@ -564,6 +568,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           "tag": {
             "commentStart": 616,
             "end": 622,
+            "moduleId": 0,
             "start": 616,
             "type": "TagDeclarator",
             "value": "seg02"
@@ -601,6 +606,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             "tag": {
               "commentStart": 616,
               "end": 622,
+              "moduleId": 0,
               "start": 616,
               "type": "TagDeclarator",
               "value": "seg02"
@@ -841,6 +847,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                       "tag": {
                         "commentStart": 116,
                         "end": 122,
+                        "moduleId": 0,
                         "start": 116,
                         "type": "TagDeclarator",
                         "value": "seg01"
@@ -890,6 +897,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                         "tag": {
                           "commentStart": 116,
                           "end": 122,
+                          "moduleId": 0,
                           "start": 116,
                           "type": "TagDeclarator",
                           "value": "seg01"
@@ -1232,6 +1240,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                 "tag": {
                   "commentStart": 616,
                   "end": 622,
+                  "moduleId": 0,
                   "start": 616,
                   "type": "TagDeclarator",
                   "value": "seg02"
@@ -1269,6 +1278,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                   "tag": {
                     "commentStart": 616,
                     "end": 622,
+                    "moduleId": 0,
                     "start": 616,
                     "type": "TagDeclarator",
                     "value": "seg02"
@@ -1509,6 +1519,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                             "tag": {
                               "commentStart": 116,
                               "end": 122,
+                              "moduleId": 0,
                               "start": 116,
                               "type": "TagDeclarator",
                               "value": "seg01"
@@ -1558,6 +1569,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                               "tag": {
                                 "commentStart": 116,
                                 "end": 122,
+                                "moduleId": 0,
                                 "start": 116,
                                 "type": "TagDeclarator",
                                 "value": "seg01"
@@ -1840,6 +1852,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           "tag": {
             "commentStart": 116,
             "end": 122,
+            "moduleId": 0,
             "start": 116,
             "type": "TagDeclarator",
             "value": "seg01"
@@ -2076,6 +2089,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
               "tag": {
                 "commentStart": 116,
                 "end": 122,
+                "moduleId": 0,
                 "start": 116,
                 "type": "TagDeclarator",
                 "value": "seg01"
@@ -2125,6 +2139,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                 "tag": {
                   "commentStart": 116,
                   "end": 122,
+                  "moduleId": 0,
                   "start": 116,
                   "type": "TagDeclarator",
                   "value": "seg01"
@@ -2292,6 +2307,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           "tag": {
             "commentStart": 616,
             "end": 622,
+            "moduleId": 0,
             "start": 616,
             "type": "TagDeclarator",
             "value": "seg02"
@@ -2532,6 +2548,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                     "tag": {
                       "commentStart": 116,
                       "end": 122,
+                      "moduleId": 0,
                       "start": 116,
                       "type": "TagDeclarator",
                       "value": "seg01"
@@ -2581,6 +2598,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                       "tag": {
                         "commentStart": 116,
                         "end": 122,
+                        "moduleId": 0,
                         "start": 116,
                         "type": "TagDeclarator",
                         "value": "seg01"
@@ -2888,6 +2906,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
               "tag": {
                 "commentStart": 616,
                 "end": 622,
+                "moduleId": 0,
                 "start": 616,
                 "type": "TagDeclarator",
                 "value": "seg02"
@@ -2925,6 +2944,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                 "tag": {
                   "commentStart": 616,
                   "end": 622,
+                  "moduleId": 0,
                   "start": 616,
                   "type": "TagDeclarator",
                   "value": "seg02"
@@ -3165,6 +3185,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                           "tag": {
                             "commentStart": 116,
                             "end": 122,
+                            "moduleId": 0,
                             "start": 116,
                             "type": "TagDeclarator",
                             "value": "seg01"
@@ -3214,6 +3235,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                             "tag": {
                               "commentStart": 116,
                               "end": 122,
+                              "moduleId": 0,
                               "start": 116,
                               "type": "TagDeclarator",
                               "value": "seg01"

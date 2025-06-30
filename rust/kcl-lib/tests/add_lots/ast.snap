@@ -13,6 +13,7 @@ description: Result of parsing add_lots.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "f",
             "start": 0,
             "type": "Identifier"
@@ -28,9 +29,11 @@ description: Result of parsing add_lots.kcl
                       "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "i",
                         "start": 0,
                         "type": "Identifier"
@@ -40,10 +43,12 @@ description: Result of parsing add_lots.kcl
                       "type": "Name",
                       "type": "Name"
                     },
+                    "moduleId": 0,
                     "operator": "*",
                     "right": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "2",
                       "start": 0,
                       "type": "Literal",
@@ -59,6 +64,7 @@ description: Result of parsing add_lots.kcl
                   },
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
@@ -66,16 +72,19 @@ description: Result of parsing add_lots.kcl
               ],
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0
             },
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "i",
                   "start": 0,
                   "type": "Identifier"
@@ -87,11 +96,13 @@ description: Result of parsing add_lots.kcl
             "type": "FunctionExpression",
             "type": "FunctionExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "fn",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -104,6 +115,7 @@ description: Result of parsing add_lots.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "x",
             "start": 0,
             "type": "Identifier"
@@ -274,13 +286,16 @@ description: Result of parsing add_lots.kcl
                                                                                                                         "commentStart": 0,
                                                                                                                         "end": 0,
                                                                                                                         "left": {
+                                                                                                                          "arguments": [],
                                                                                                                           "callee": {
                                                                                                                             "abs_path": false,
                                                                                                                             "commentStart": 0,
                                                                                                                             "end": 0,
+                                                                                                                            "moduleId": 0,
                                                                                                                             "name": {
                                                                                                                               "commentStart": 0,
                                                                                                                               "end": 0,
+                                                                                                                              "moduleId": 0,
                                                                                                                               "name": "f",
                                                                                                                               "start": 0,
                                                                                                                               "type": "Identifier"
@@ -291,12 +306,14 @@ description: Result of parsing add_lots.kcl
                                                                                                                           },
                                                                                                                           "commentStart": 0,
                                                                                                                           "end": 0,
+                                                                                                                          "moduleId": 0,
                                                                                                                           "start": 0,
                                                                                                                           "type": "CallExpressionKw",
                                                                                                                           "type": "CallExpressionKw",
                                                                                                                           "unlabeled": {
                                                                                                                             "commentStart": 0,
                                                                                                                             "end": 0,
+                                                                                                                            "moduleId": 0,
                                                                                                                             "raw": "0",
                                                                                                                             "start": 0,
                                                                                                                             "type": "Literal",
@@ -307,15 +324,19 @@ description: Result of parsing add_lots.kcl
                                                                                                                             }
                                                                                                                           }
                                                                                                                         },
+                                                                                                                        "moduleId": 0,
                                                                                                                         "operator": "+",
                                                                                                                         "right": {
+                                                                                                                          "arguments": [],
                                                                                                                           "callee": {
                                                                                                                             "abs_path": false,
                                                                                                                             "commentStart": 0,
                                                                                                                             "end": 0,
+                                                                                                                            "moduleId": 0,
                                                                                                                             "name": {
                                                                                                                               "commentStart": 0,
                                                                                                                               "end": 0,
+                                                                                                                              "moduleId": 0,
                                                                                                                               "name": "f",
                                                                                                                               "start": 0,
                                                                                                                               "type": "Identifier"
@@ -326,12 +347,14 @@ description: Result of parsing add_lots.kcl
                                                                                                                           },
                                                                                                                           "commentStart": 0,
                                                                                                                           "end": 0,
+                                                                                                                          "moduleId": 0,
                                                                                                                           "start": 0,
                                                                                                                           "type": "CallExpressionKw",
                                                                                                                           "type": "CallExpressionKw",
                                                                                                                           "unlabeled": {
                                                                                                                             "commentStart": 0,
                                                                                                                             "end": 0,
+                                                                                                                            "moduleId": 0,
                                                                                                                             "raw": "1",
                                                                                                                             "start": 0,
                                                                                                                             "type": "Literal",
@@ -346,15 +369,19 @@ description: Result of parsing add_lots.kcl
                                                                                                                         "type": "BinaryExpression",
                                                                                                                         "type": "BinaryExpression"
                                                                                                                       },
+                                                                                                                      "moduleId": 0,
                                                                                                                       "operator": "+",
                                                                                                                       "right": {
+                                                                                                                        "arguments": [],
                                                                                                                         "callee": {
                                                                                                                           "abs_path": false,
                                                                                                                           "commentStart": 0,
                                                                                                                           "end": 0,
+                                                                                                                          "moduleId": 0,
                                                                                                                           "name": {
                                                                                                                             "commentStart": 0,
                                                                                                                             "end": 0,
+                                                                                                                            "moduleId": 0,
                                                                                                                             "name": "f",
                                                                                                                             "start": 0,
                                                                                                                             "type": "Identifier"
@@ -365,12 +392,14 @@ description: Result of parsing add_lots.kcl
                                                                                                                         },
                                                                                                                         "commentStart": 0,
                                                                                                                         "end": 0,
+                                                                                                                        "moduleId": 0,
                                                                                                                         "start": 0,
                                                                                                                         "type": "CallExpressionKw",
                                                                                                                         "type": "CallExpressionKw",
                                                                                                                         "unlabeled": {
                                                                                                                           "commentStart": 0,
                                                                                                                           "end": 0,
+                                                                                                                          "moduleId": 0,
                                                                                                                           "raw": "2",
                                                                                                                           "start": 0,
                                                                                                                           "type": "Literal",
@@ -385,15 +414,19 @@ description: Result of parsing add_lots.kcl
                                                                                                                       "type": "BinaryExpression",
                                                                                                                       "type": "BinaryExpression"
                                                                                                                     },
+                                                                                                                    "moduleId": 0,
                                                                                                                     "operator": "+",
                                                                                                                     "right": {
+                                                                                                                      "arguments": [],
                                                                                                                       "callee": {
                                                                                                                         "abs_path": false,
                                                                                                                         "commentStart": 0,
                                                                                                                         "end": 0,
+                                                                                                                        "moduleId": 0,
                                                                                                                         "name": {
                                                                                                                           "commentStart": 0,
                                                                                                                           "end": 0,
+                                                                                                                          "moduleId": 0,
                                                                                                                           "name": "f",
                                                                                                                           "start": 0,
                                                                                                                           "type": "Identifier"
@@ -404,12 +437,14 @@ description: Result of parsing add_lots.kcl
                                                                                                                       },
                                                                                                                       "commentStart": 0,
                                                                                                                       "end": 0,
+                                                                                                                      "moduleId": 0,
                                                                                                                       "start": 0,
                                                                                                                       "type": "CallExpressionKw",
                                                                                                                       "type": "CallExpressionKw",
                                                                                                                       "unlabeled": {
                                                                                                                         "commentStart": 0,
                                                                                                                         "end": 0,
+                                                                                                                        "moduleId": 0,
                                                                                                                         "raw": "3",
                                                                                                                         "start": 0,
                                                                                                                         "type": "Literal",
@@ -424,15 +459,19 @@ description: Result of parsing add_lots.kcl
                                                                                                                     "type": "BinaryExpression",
                                                                                                                     "type": "BinaryExpression"
                                                                                                                   },
+                                                                                                                  "moduleId": 0,
                                                                                                                   "operator": "+",
                                                                                                                   "right": {
+                                                                                                                    "arguments": [],
                                                                                                                     "callee": {
                                                                                                                       "abs_path": false,
                                                                                                                       "commentStart": 0,
                                                                                                                       "end": 0,
+                                                                                                                      "moduleId": 0,
                                                                                                                       "name": {
                                                                                                                         "commentStart": 0,
                                                                                                                         "end": 0,
+                                                                                                                        "moduleId": 0,
                                                                                                                         "name": "f",
                                                                                                                         "start": 0,
                                                                                                                         "type": "Identifier"
@@ -443,12 +482,14 @@ description: Result of parsing add_lots.kcl
                                                                                                                     },
                                                                                                                     "commentStart": 0,
                                                                                                                     "end": 0,
+                                                                                                                    "moduleId": 0,
                                                                                                                     "start": 0,
                                                                                                                     "type": "CallExpressionKw",
                                                                                                                     "type": "CallExpressionKw",
                                                                                                                     "unlabeled": {
                                                                                                                       "commentStart": 0,
                                                                                                                       "end": 0,
+                                                                                                                      "moduleId": 0,
                                                                                                                       "raw": "4",
                                                                                                                       "start": 0,
                                                                                                                       "type": "Literal",
@@ -463,15 +504,19 @@ description: Result of parsing add_lots.kcl
                                                                                                                   "type": "BinaryExpression",
                                                                                                                   "type": "BinaryExpression"
                                                                                                                 },
+                                                                                                                "moduleId": 0,
                                                                                                                 "operator": "+",
                                                                                                                 "right": {
+                                                                                                                  "arguments": [],
                                                                                                                   "callee": {
                                                                                                                     "abs_path": false,
                                                                                                                     "commentStart": 0,
                                                                                                                     "end": 0,
+                                                                                                                    "moduleId": 0,
                                                                                                                     "name": {
                                                                                                                       "commentStart": 0,
                                                                                                                       "end": 0,
+                                                                                                                      "moduleId": 0,
                                                                                                                       "name": "f",
                                                                                                                       "start": 0,
                                                                                                                       "type": "Identifier"
@@ -482,12 +527,14 @@ description: Result of parsing add_lots.kcl
                                                                                                                   },
                                                                                                                   "commentStart": 0,
                                                                                                                   "end": 0,
+                                                                                                                  "moduleId": 0,
                                                                                                                   "start": 0,
                                                                                                                   "type": "CallExpressionKw",
                                                                                                                   "type": "CallExpressionKw",
                                                                                                                   "unlabeled": {
                                                                                                                     "commentStart": 0,
                                                                                                                     "end": 0,
+                                                                                                                    "moduleId": 0,
                                                                                                                     "raw": "5",
                                                                                                                     "start": 0,
                                                                                                                     "type": "Literal",
@@ -502,15 +549,19 @@ description: Result of parsing add_lots.kcl
                                                                                                                 "type": "BinaryExpression",
                                                                                                                 "type": "BinaryExpression"
                                                                                                               },
+                                                                                                              "moduleId": 0,
                                                                                                               "operator": "+",
                                                                                                               "right": {
+                                                                                                                "arguments": [],
                                                                                                                 "callee": {
                                                                                                                   "abs_path": false,
                                                                                                                   "commentStart": 0,
                                                                                                                   "end": 0,
+                                                                                                                  "moduleId": 0,
                                                                                                                   "name": {
                                                                                                                     "commentStart": 0,
                                                                                                                     "end": 0,
+                                                                                                                    "moduleId": 0,
                                                                                                                     "name": "f",
                                                                                                                     "start": 0,
                                                                                                                     "type": "Identifier"
@@ -521,12 +572,14 @@ description: Result of parsing add_lots.kcl
                                                                                                                 },
                                                                                                                 "commentStart": 0,
                                                                                                                 "end": 0,
+                                                                                                                "moduleId": 0,
                                                                                                                 "start": 0,
                                                                                                                 "type": "CallExpressionKw",
                                                                                                                 "type": "CallExpressionKw",
                                                                                                                 "unlabeled": {
                                                                                                                   "commentStart": 0,
                                                                                                                   "end": 0,
+                                                                                                                  "moduleId": 0,
                                                                                                                   "raw": "6",
                                                                                                                   "start": 0,
                                                                                                                   "type": "Literal",
@@ -541,15 +594,19 @@ description: Result of parsing add_lots.kcl
                                                                                                               "type": "BinaryExpression",
                                                                                                               "type": "BinaryExpression"
                                                                                                             },
+                                                                                                            "moduleId": 0,
                                                                                                             "operator": "+",
                                                                                                             "right": {
+                                                                                                              "arguments": [],
                                                                                                               "callee": {
                                                                                                                 "abs_path": false,
                                                                                                                 "commentStart": 0,
                                                                                                                 "end": 0,
+                                                                                                                "moduleId": 0,
                                                                                                                 "name": {
                                                                                                                   "commentStart": 0,
                                                                                                                   "end": 0,
+                                                                                                                  "moduleId": 0,
                                                                                                                   "name": "f",
                                                                                                                   "start": 0,
                                                                                                                   "type": "Identifier"
@@ -560,12 +617,14 @@ description: Result of parsing add_lots.kcl
                                                                                                               },
                                                                                                               "commentStart": 0,
                                                                                                               "end": 0,
+                                                                                                              "moduleId": 0,
                                                                                                               "start": 0,
                                                                                                               "type": "CallExpressionKw",
                                                                                                               "type": "CallExpressionKw",
                                                                                                               "unlabeled": {
                                                                                                                 "commentStart": 0,
                                                                                                                 "end": 0,
+                                                                                                                "moduleId": 0,
                                                                                                                 "raw": "7",
                                                                                                                 "start": 0,
                                                                                                                 "type": "Literal",
@@ -580,15 +639,19 @@ description: Result of parsing add_lots.kcl
                                                                                                             "type": "BinaryExpression",
                                                                                                             "type": "BinaryExpression"
                                                                                                           },
+                                                                                                          "moduleId": 0,
                                                                                                           "operator": "+",
                                                                                                           "right": {
+                                                                                                            "arguments": [],
                                                                                                             "callee": {
                                                                                                               "abs_path": false,
                                                                                                               "commentStart": 0,
                                                                                                               "end": 0,
+                                                                                                              "moduleId": 0,
                                                                                                               "name": {
                                                                                                                 "commentStart": 0,
                                                                                                                 "end": 0,
+                                                                                                                "moduleId": 0,
                                                                                                                 "name": "f",
                                                                                                                 "start": 0,
                                                                                                                 "type": "Identifier"
@@ -599,12 +662,14 @@ description: Result of parsing add_lots.kcl
                                                                                                             },
                                                                                                             "commentStart": 0,
                                                                                                             "end": 0,
+                                                                                                            "moduleId": 0,
                                                                                                             "start": 0,
                                                                                                             "type": "CallExpressionKw",
                                                                                                             "type": "CallExpressionKw",
                                                                                                             "unlabeled": {
                                                                                                               "commentStart": 0,
                                                                                                               "end": 0,
+                                                                                                              "moduleId": 0,
                                                                                                               "raw": "8",
                                                                                                               "start": 0,
                                                                                                               "type": "Literal",
@@ -619,15 +684,19 @@ description: Result of parsing add_lots.kcl
                                                                                                           "type": "BinaryExpression",
                                                                                                           "type": "BinaryExpression"
                                                                                                         },
+                                                                                                        "moduleId": 0,
                                                                                                         "operator": "+",
                                                                                                         "right": {
+                                                                                                          "arguments": [],
                                                                                                           "callee": {
                                                                                                             "abs_path": false,
                                                                                                             "commentStart": 0,
                                                                                                             "end": 0,
+                                                                                                            "moduleId": 0,
                                                                                                             "name": {
                                                                                                               "commentStart": 0,
                                                                                                               "end": 0,
+                                                                                                              "moduleId": 0,
                                                                                                               "name": "f",
                                                                                                               "start": 0,
                                                                                                               "type": "Identifier"
@@ -638,12 +707,14 @@ description: Result of parsing add_lots.kcl
                                                                                                           },
                                                                                                           "commentStart": 0,
                                                                                                           "end": 0,
+                                                                                                          "moduleId": 0,
                                                                                                           "start": 0,
                                                                                                           "type": "CallExpressionKw",
                                                                                                           "type": "CallExpressionKw",
                                                                                                           "unlabeled": {
                                                                                                             "commentStart": 0,
                                                                                                             "end": 0,
+                                                                                                            "moduleId": 0,
                                                                                                             "raw": "9",
                                                                                                             "start": 0,
                                                                                                             "type": "Literal",
@@ -658,15 +729,19 @@ description: Result of parsing add_lots.kcl
                                                                                                         "type": "BinaryExpression",
                                                                                                         "type": "BinaryExpression"
                                                                                                       },
+                                                                                                      "moduleId": 0,
                                                                                                       "operator": "+",
                                                                                                       "right": {
+                                                                                                        "arguments": [],
                                                                                                         "callee": {
                                                                                                           "abs_path": false,
                                                                                                           "commentStart": 0,
                                                                                                           "end": 0,
+                                                                                                          "moduleId": 0,
                                                                                                           "name": {
                                                                                                             "commentStart": 0,
                                                                                                             "end": 0,
+                                                                                                            "moduleId": 0,
                                                                                                             "name": "f",
                                                                                                             "start": 0,
                                                                                                             "type": "Identifier"
@@ -677,12 +752,14 @@ description: Result of parsing add_lots.kcl
                                                                                                         },
                                                                                                         "commentStart": 0,
                                                                                                         "end": 0,
+                                                                                                        "moduleId": 0,
                                                                                                         "start": 0,
                                                                                                         "type": "CallExpressionKw",
                                                                                                         "type": "CallExpressionKw",
                                                                                                         "unlabeled": {
                                                                                                           "commentStart": 0,
                                                                                                           "end": 0,
+                                                                                                          "moduleId": 0,
                                                                                                           "raw": "10",
                                                                                                           "start": 0,
                                                                                                           "type": "Literal",
@@ -697,15 +774,19 @@ description: Result of parsing add_lots.kcl
                                                                                                       "type": "BinaryExpression",
                                                                                                       "type": "BinaryExpression"
                                                                                                     },
+                                                                                                    "moduleId": 0,
                                                                                                     "operator": "+",
                                                                                                     "right": {
+                                                                                                      "arguments": [],
                                                                                                       "callee": {
                                                                                                         "abs_path": false,
                                                                                                         "commentStart": 0,
                                                                                                         "end": 0,
+                                                                                                        "moduleId": 0,
                                                                                                         "name": {
                                                                                                           "commentStart": 0,
                                                                                                           "end": 0,
+                                                                                                          "moduleId": 0,
                                                                                                           "name": "f",
                                                                                                           "start": 0,
                                                                                                           "type": "Identifier"
@@ -716,12 +797,14 @@ description: Result of parsing add_lots.kcl
                                                                                                       },
                                                                                                       "commentStart": 0,
                                                                                                       "end": 0,
+                                                                                                      "moduleId": 0,
                                                                                                       "start": 0,
                                                                                                       "type": "CallExpressionKw",
                                                                                                       "type": "CallExpressionKw",
                                                                                                       "unlabeled": {
                                                                                                         "commentStart": 0,
                                                                                                         "end": 0,
+                                                                                                        "moduleId": 0,
                                                                                                         "raw": "11",
                                                                                                         "start": 0,
                                                                                                         "type": "Literal",
@@ -736,15 +819,19 @@ description: Result of parsing add_lots.kcl
                                                                                                     "type": "BinaryExpression",
                                                                                                     "type": "BinaryExpression"
                                                                                                   },
+                                                                                                  "moduleId": 0,
                                                                                                   "operator": "+",
                                                                                                   "right": {
+                                                                                                    "arguments": [],
                                                                                                     "callee": {
                                                                                                       "abs_path": false,
                                                                                                       "commentStart": 0,
                                                                                                       "end": 0,
+                                                                                                      "moduleId": 0,
                                                                                                       "name": {
                                                                                                         "commentStart": 0,
                                                                                                         "end": 0,
+                                                                                                        "moduleId": 0,
                                                                                                         "name": "f",
                                                                                                         "start": 0,
                                                                                                         "type": "Identifier"
@@ -755,12 +842,14 @@ description: Result of parsing add_lots.kcl
                                                                                                     },
                                                                                                     "commentStart": 0,
                                                                                                     "end": 0,
+                                                                                                    "moduleId": 0,
                                                                                                     "start": 0,
                                                                                                     "type": "CallExpressionKw",
                                                                                                     "type": "CallExpressionKw",
                                                                                                     "unlabeled": {
                                                                                                       "commentStart": 0,
                                                                                                       "end": 0,
+                                                                                                      "moduleId": 0,
                                                                                                       "raw": "12",
                                                                                                       "start": 0,
                                                                                                       "type": "Literal",
@@ -775,15 +864,19 @@ description: Result of parsing add_lots.kcl
                                                                                                   "type": "BinaryExpression",
                                                                                                   "type": "BinaryExpression"
                                                                                                 },
+                                                                                                "moduleId": 0,
                                                                                                 "operator": "+",
                                                                                                 "right": {
+                                                                                                  "arguments": [],
                                                                                                   "callee": {
                                                                                                     "abs_path": false,
                                                                                                     "commentStart": 0,
                                                                                                     "end": 0,
+                                                                                                    "moduleId": 0,
                                                                                                     "name": {
                                                                                                       "commentStart": 0,
                                                                                                       "end": 0,
+                                                                                                      "moduleId": 0,
                                                                                                       "name": "f",
                                                                                                       "start": 0,
                                                                                                       "type": "Identifier"
@@ -794,12 +887,14 @@ description: Result of parsing add_lots.kcl
                                                                                                   },
                                                                                                   "commentStart": 0,
                                                                                                   "end": 0,
+                                                                                                  "moduleId": 0,
                                                                                                   "start": 0,
                                                                                                   "type": "CallExpressionKw",
                                                                                                   "type": "CallExpressionKw",
                                                                                                   "unlabeled": {
                                                                                                     "commentStart": 0,
                                                                                                     "end": 0,
+                                                                                                    "moduleId": 0,
                                                                                                     "raw": "13",
                                                                                                     "start": 0,
                                                                                                     "type": "Literal",
@@ -814,15 +909,19 @@ description: Result of parsing add_lots.kcl
                                                                                                 "type": "BinaryExpression",
                                                                                                 "type": "BinaryExpression"
                                                                                               },
+                                                                                              "moduleId": 0,
                                                                                               "operator": "+",
                                                                                               "right": {
+                                                                                                "arguments": [],
                                                                                                 "callee": {
                                                                                                   "abs_path": false,
                                                                                                   "commentStart": 0,
                                                                                                   "end": 0,
+                                                                                                  "moduleId": 0,
                                                                                                   "name": {
                                                                                                     "commentStart": 0,
                                                                                                     "end": 0,
+                                                                                                    "moduleId": 0,
                                                                                                     "name": "f",
                                                                                                     "start": 0,
                                                                                                     "type": "Identifier"
@@ -833,12 +932,14 @@ description: Result of parsing add_lots.kcl
                                                                                                 },
                                                                                                 "commentStart": 0,
                                                                                                 "end": 0,
+                                                                                                "moduleId": 0,
                                                                                                 "start": 0,
                                                                                                 "type": "CallExpressionKw",
                                                                                                 "type": "CallExpressionKw",
                                                                                                 "unlabeled": {
                                                                                                   "commentStart": 0,
                                                                                                   "end": 0,
+                                                                                                  "moduleId": 0,
                                                                                                   "raw": "14",
                                                                                                   "start": 0,
                                                                                                   "type": "Literal",
@@ -853,15 +954,19 @@ description: Result of parsing add_lots.kcl
                                                                                               "type": "BinaryExpression",
                                                                                               "type": "BinaryExpression"
                                                                                             },
+                                                                                            "moduleId": 0,
                                                                                             "operator": "+",
                                                                                             "right": {
+                                                                                              "arguments": [],
                                                                                               "callee": {
                                                                                                 "abs_path": false,
                                                                                                 "commentStart": 0,
                                                                                                 "end": 0,
+                                                                                                "moduleId": 0,
                                                                                                 "name": {
                                                                                                   "commentStart": 0,
                                                                                                   "end": 0,
+                                                                                                  "moduleId": 0,
                                                                                                   "name": "f",
                                                                                                   "start": 0,
                                                                                                   "type": "Identifier"
@@ -872,12 +977,14 @@ description: Result of parsing add_lots.kcl
                                                                                               },
                                                                                               "commentStart": 0,
                                                                                               "end": 0,
+                                                                                              "moduleId": 0,
                                                                                               "start": 0,
                                                                                               "type": "CallExpressionKw",
                                                                                               "type": "CallExpressionKw",
                                                                                               "unlabeled": {
                                                                                                 "commentStart": 0,
                                                                                                 "end": 0,
+                                                                                                "moduleId": 0,
                                                                                                 "raw": "15",
                                                                                                 "start": 0,
                                                                                                 "type": "Literal",
@@ -892,15 +999,19 @@ description: Result of parsing add_lots.kcl
                                                                                             "type": "BinaryExpression",
                                                                                             "type": "BinaryExpression"
                                                                                           },
+                                                                                          "moduleId": 0,
                                                                                           "operator": "+",
                                                                                           "right": {
+                                                                                            "arguments": [],
                                                                                             "callee": {
                                                                                               "abs_path": false,
                                                                                               "commentStart": 0,
                                                                                               "end": 0,
+                                                                                              "moduleId": 0,
                                                                                               "name": {
                                                                                                 "commentStart": 0,
                                                                                                 "end": 0,
+                                                                                                "moduleId": 0,
                                                                                                 "name": "f",
                                                                                                 "start": 0,
                                                                                                 "type": "Identifier"
@@ -911,12 +1022,14 @@ description: Result of parsing add_lots.kcl
                                                                                             },
                                                                                             "commentStart": 0,
                                                                                             "end": 0,
+                                                                                            "moduleId": 0,
                                                                                             "start": 0,
                                                                                             "type": "CallExpressionKw",
                                                                                             "type": "CallExpressionKw",
                                                                                             "unlabeled": {
                                                                                               "commentStart": 0,
                                                                                               "end": 0,
+                                                                                              "moduleId": 0,
                                                                                               "raw": "16",
                                                                                               "start": 0,
                                                                                               "type": "Literal",
@@ -931,15 +1044,19 @@ description: Result of parsing add_lots.kcl
                                                                                           "type": "BinaryExpression",
                                                                                           "type": "BinaryExpression"
                                                                                         },
+                                                                                        "moduleId": 0,
                                                                                         "operator": "+",
                                                                                         "right": {
+                                                                                          "arguments": [],
                                                                                           "callee": {
                                                                                             "abs_path": false,
                                                                                             "commentStart": 0,
                                                                                             "end": 0,
+                                                                                            "moduleId": 0,
                                                                                             "name": {
                                                                                               "commentStart": 0,
                                                                                               "end": 0,
+                                                                                              "moduleId": 0,
                                                                                               "name": "f",
                                                                                               "start": 0,
                                                                                               "type": "Identifier"
@@ -950,12 +1067,14 @@ description: Result of parsing add_lots.kcl
                                                                                           },
                                                                                           "commentStart": 0,
                                                                                           "end": 0,
+                                                                                          "moduleId": 0,
                                                                                           "start": 0,
                                                                                           "type": "CallExpressionKw",
                                                                                           "type": "CallExpressionKw",
                                                                                           "unlabeled": {
                                                                                             "commentStart": 0,
                                                                                             "end": 0,
+                                                                                            "moduleId": 0,
                                                                                             "raw": "17",
                                                                                             "start": 0,
                                                                                             "type": "Literal",
@@ -970,15 +1089,19 @@ description: Result of parsing add_lots.kcl
                                                                                         "type": "BinaryExpression",
                                                                                         "type": "BinaryExpression"
                                                                                       },
+                                                                                      "moduleId": 0,
                                                                                       "operator": "+",
                                                                                       "right": {
+                                                                                        "arguments": [],
                                                                                         "callee": {
                                                                                           "abs_path": false,
                                                                                           "commentStart": 0,
                                                                                           "end": 0,
+                                                                                          "moduleId": 0,
                                                                                           "name": {
                                                                                             "commentStart": 0,
                                                                                             "end": 0,
+                                                                                            "moduleId": 0,
                                                                                             "name": "f",
                                                                                             "start": 0,
                                                                                             "type": "Identifier"
@@ -989,12 +1112,14 @@ description: Result of parsing add_lots.kcl
                                                                                         },
                                                                                         "commentStart": 0,
                                                                                         "end": 0,
+                                                                                        "moduleId": 0,
                                                                                         "start": 0,
                                                                                         "type": "CallExpressionKw",
                                                                                         "type": "CallExpressionKw",
                                                                                         "unlabeled": {
                                                                                           "commentStart": 0,
                                                                                           "end": 0,
+                                                                                          "moduleId": 0,
                                                                                           "raw": "18",
                                                                                           "start": 0,
                                                                                           "type": "Literal",
@@ -1009,15 +1134,19 @@ description: Result of parsing add_lots.kcl
                                                                                       "type": "BinaryExpression",
                                                                                       "type": "BinaryExpression"
                                                                                     },
+                                                                                    "moduleId": 0,
                                                                                     "operator": "+",
                                                                                     "right": {
+                                                                                      "arguments": [],
                                                                                       "callee": {
                                                                                         "abs_path": false,
                                                                                         "commentStart": 0,
                                                                                         "end": 0,
+                                                                                        "moduleId": 0,
                                                                                         "name": {
                                                                                           "commentStart": 0,
                                                                                           "end": 0,
+                                                                                          "moduleId": 0,
                                                                                           "name": "f",
                                                                                           "start": 0,
                                                                                           "type": "Identifier"
@@ -1028,12 +1157,14 @@ description: Result of parsing add_lots.kcl
                                                                                       },
                                                                                       "commentStart": 0,
                                                                                       "end": 0,
+                                                                                      "moduleId": 0,
                                                                                       "start": 0,
                                                                                       "type": "CallExpressionKw",
                                                                                       "type": "CallExpressionKw",
                                                                                       "unlabeled": {
                                                                                         "commentStart": 0,
                                                                                         "end": 0,
+                                                                                        "moduleId": 0,
                                                                                         "raw": "19",
                                                                                         "start": 0,
                                                                                         "type": "Literal",
@@ -1048,15 +1179,19 @@ description: Result of parsing add_lots.kcl
                                                                                     "type": "BinaryExpression",
                                                                                     "type": "BinaryExpression"
                                                                                   },
+                                                                                  "moduleId": 0,
                                                                                   "operator": "+",
                                                                                   "right": {
+                                                                                    "arguments": [],
                                                                                     "callee": {
                                                                                       "abs_path": false,
                                                                                       "commentStart": 0,
                                                                                       "end": 0,
+                                                                                      "moduleId": 0,
                                                                                       "name": {
                                                                                         "commentStart": 0,
                                                                                         "end": 0,
+                                                                                        "moduleId": 0,
                                                                                         "name": "f",
                                                                                         "start": 0,
                                                                                         "type": "Identifier"
@@ -1067,12 +1202,14 @@ description: Result of parsing add_lots.kcl
                                                                                     },
                                                                                     "commentStart": 0,
                                                                                     "end": 0,
+                                                                                    "moduleId": 0,
                                                                                     "start": 0,
                                                                                     "type": "CallExpressionKw",
                                                                                     "type": "CallExpressionKw",
                                                                                     "unlabeled": {
                                                                                       "commentStart": 0,
                                                                                       "end": 0,
+                                                                                      "moduleId": 0,
                                                                                       "raw": "20",
                                                                                       "start": 0,
                                                                                       "type": "Literal",
@@ -1087,15 +1224,19 @@ description: Result of parsing add_lots.kcl
                                                                                   "type": "BinaryExpression",
                                                                                   "type": "BinaryExpression"
                                                                                 },
+                                                                                "moduleId": 0,
                                                                                 "operator": "+",
                                                                                 "right": {
+                                                                                  "arguments": [],
                                                                                   "callee": {
                                                                                     "abs_path": false,
                                                                                     "commentStart": 0,
                                                                                     "end": 0,
+                                                                                    "moduleId": 0,
                                                                                     "name": {
                                                                                       "commentStart": 0,
                                                                                       "end": 0,
+                                                                                      "moduleId": 0,
                                                                                       "name": "f",
                                                                                       "start": 0,
                                                                                       "type": "Identifier"
@@ -1106,12 +1247,14 @@ description: Result of parsing add_lots.kcl
                                                                                   },
                                                                                   "commentStart": 0,
                                                                                   "end": 0,
+                                                                                  "moduleId": 0,
                                                                                   "start": 0,
                                                                                   "type": "CallExpressionKw",
                                                                                   "type": "CallExpressionKw",
                                                                                   "unlabeled": {
                                                                                     "commentStart": 0,
                                                                                     "end": 0,
+                                                                                    "moduleId": 0,
                                                                                     "raw": "21",
                                                                                     "start": 0,
                                                                                     "type": "Literal",
@@ -1126,15 +1269,19 @@ description: Result of parsing add_lots.kcl
                                                                                 "type": "BinaryExpression",
                                                                                 "type": "BinaryExpression"
                                                                               },
+                                                                              "moduleId": 0,
                                                                               "operator": "+",
                                                                               "right": {
+                                                                                "arguments": [],
                                                                                 "callee": {
                                                                                   "abs_path": false,
                                                                                   "commentStart": 0,
                                                                                   "end": 0,
+                                                                                  "moduleId": 0,
                                                                                   "name": {
                                                                                     "commentStart": 0,
                                                                                     "end": 0,
+                                                                                    "moduleId": 0,
                                                                                     "name": "f",
                                                                                     "start": 0,
                                                                                     "type": "Identifier"
@@ -1145,12 +1292,14 @@ description: Result of parsing add_lots.kcl
                                                                                 },
                                                                                 "commentStart": 0,
                                                                                 "end": 0,
+                                                                                "moduleId": 0,
                                                                                 "start": 0,
                                                                                 "type": "CallExpressionKw",
                                                                                 "type": "CallExpressionKw",
                                                                                 "unlabeled": {
                                                                                   "commentStart": 0,
                                                                                   "end": 0,
+                                                                                  "moduleId": 0,
                                                                                   "raw": "22",
                                                                                   "start": 0,
                                                                                   "type": "Literal",
@@ -1165,15 +1314,19 @@ description: Result of parsing add_lots.kcl
                                                                               "type": "BinaryExpression",
                                                                               "type": "BinaryExpression"
                                                                             },
+                                                                            "moduleId": 0,
                                                                             "operator": "+",
                                                                             "right": {
+                                                                              "arguments": [],
                                                                               "callee": {
                                                                                 "abs_path": false,
                                                                                 "commentStart": 0,
                                                                                 "end": 0,
+                                                                                "moduleId": 0,
                                                                                 "name": {
                                                                                   "commentStart": 0,
                                                                                   "end": 0,
+                                                                                  "moduleId": 0,
                                                                                   "name": "f",
                                                                                   "start": 0,
                                                                                   "type": "Identifier"
@@ -1184,12 +1337,14 @@ description: Result of parsing add_lots.kcl
                                                                               },
                                                                               "commentStart": 0,
                                                                               "end": 0,
+                                                                              "moduleId": 0,
                                                                               "start": 0,
                                                                               "type": "CallExpressionKw",
                                                                               "type": "CallExpressionKw",
                                                                               "unlabeled": {
                                                                                 "commentStart": 0,
                                                                                 "end": 0,
+                                                                                "moduleId": 0,
                                                                                 "raw": "23",
                                                                                 "start": 0,
                                                                                 "type": "Literal",
@@ -1204,15 +1359,19 @@ description: Result of parsing add_lots.kcl
                                                                             "type": "BinaryExpression",
                                                                             "type": "BinaryExpression"
                                                                           },
+                                                                          "moduleId": 0,
                                                                           "operator": "+",
                                                                           "right": {
+                                                                            "arguments": [],
                                                                             "callee": {
                                                                               "abs_path": false,
                                                                               "commentStart": 0,
                                                                               "end": 0,
+                                                                              "moduleId": 0,
                                                                               "name": {
                                                                                 "commentStart": 0,
                                                                                 "end": 0,
+                                                                                "moduleId": 0,
                                                                                 "name": "f",
                                                                                 "start": 0,
                                                                                 "type": "Identifier"
@@ -1223,12 +1382,14 @@ description: Result of parsing add_lots.kcl
                                                                             },
                                                                             "commentStart": 0,
                                                                             "end": 0,
+                                                                            "moduleId": 0,
                                                                             "start": 0,
                                                                             "type": "CallExpressionKw",
                                                                             "type": "CallExpressionKw",
                                                                             "unlabeled": {
                                                                               "commentStart": 0,
                                                                               "end": 0,
+                                                                              "moduleId": 0,
                                                                               "raw": "24",
                                                                               "start": 0,
                                                                               "type": "Literal",
@@ -1243,15 +1404,19 @@ description: Result of parsing add_lots.kcl
                                                                           "type": "BinaryExpression",
                                                                           "type": "BinaryExpression"
                                                                         },
+                                                                        "moduleId": 0,
                                                                         "operator": "+",
                                                                         "right": {
+                                                                          "arguments": [],
                                                                           "callee": {
                                                                             "abs_path": false,
                                                                             "commentStart": 0,
                                                                             "end": 0,
+                                                                            "moduleId": 0,
                                                                             "name": {
                                                                               "commentStart": 0,
                                                                               "end": 0,
+                                                                              "moduleId": 0,
                                                                               "name": "f",
                                                                               "start": 0,
                                                                               "type": "Identifier"
@@ -1262,12 +1427,14 @@ description: Result of parsing add_lots.kcl
                                                                           },
                                                                           "commentStart": 0,
                                                                           "end": 0,
+                                                                          "moduleId": 0,
                                                                           "start": 0,
                                                                           "type": "CallExpressionKw",
                                                                           "type": "CallExpressionKw",
                                                                           "unlabeled": {
                                                                             "commentStart": 0,
                                                                             "end": 0,
+                                                                            "moduleId": 0,
                                                                             "raw": "25",
                                                                             "start": 0,
                                                                             "type": "Literal",
@@ -1282,15 +1449,19 @@ description: Result of parsing add_lots.kcl
                                                                         "type": "BinaryExpression",
                                                                         "type": "BinaryExpression"
                                                                       },
+                                                                      "moduleId": 0,
                                                                       "operator": "+",
                                                                       "right": {
+                                                                        "arguments": [],
                                                                         "callee": {
                                                                           "abs_path": false,
                                                                           "commentStart": 0,
                                                                           "end": 0,
+                                                                          "moduleId": 0,
                                                                           "name": {
                                                                             "commentStart": 0,
                                                                             "end": 0,
+                                                                            "moduleId": 0,
                                                                             "name": "f",
                                                                             "start": 0,
                                                                             "type": "Identifier"
@@ -1301,12 +1472,14 @@ description: Result of parsing add_lots.kcl
                                                                         },
                                                                         "commentStart": 0,
                                                                         "end": 0,
+                                                                        "moduleId": 0,
                                                                         "start": 0,
                                                                         "type": "CallExpressionKw",
                                                                         "type": "CallExpressionKw",
                                                                         "unlabeled": {
                                                                           "commentStart": 0,
                                                                           "end": 0,
+                                                                          "moduleId": 0,
                                                                           "raw": "26",
                                                                           "start": 0,
                                                                           "type": "Literal",
@@ -1321,15 +1494,19 @@ description: Result of parsing add_lots.kcl
                                                                       "type": "BinaryExpression",
                                                                       "type": "BinaryExpression"
                                                                     },
+                                                                    "moduleId": 0,
                                                                     "operator": "+",
                                                                     "right": {
+                                                                      "arguments": [],
                                                                       "callee": {
                                                                         "abs_path": false,
                                                                         "commentStart": 0,
                                                                         "end": 0,
+                                                                        "moduleId": 0,
                                                                         "name": {
                                                                           "commentStart": 0,
                                                                           "end": 0,
+                                                                          "moduleId": 0,
                                                                           "name": "f",
                                                                           "start": 0,
                                                                           "type": "Identifier"
@@ -1340,12 +1517,14 @@ description: Result of parsing add_lots.kcl
                                                                       },
                                                                       "commentStart": 0,
                                                                       "end": 0,
+                                                                      "moduleId": 0,
                                                                       "start": 0,
                                                                       "type": "CallExpressionKw",
                                                                       "type": "CallExpressionKw",
                                                                       "unlabeled": {
                                                                         "commentStart": 0,
                                                                         "end": 0,
+                                                                        "moduleId": 0,
                                                                         "raw": "27",
                                                                         "start": 0,
                                                                         "type": "Literal",
@@ -1360,15 +1539,19 @@ description: Result of parsing add_lots.kcl
                                                                     "type": "BinaryExpression",
                                                                     "type": "BinaryExpression"
                                                                   },
+                                                                  "moduleId": 0,
                                                                   "operator": "+",
                                                                   "right": {
+                                                                    "arguments": [],
                                                                     "callee": {
                                                                       "abs_path": false,
                                                                       "commentStart": 0,
                                                                       "end": 0,
+                                                                      "moduleId": 0,
                                                                       "name": {
                                                                         "commentStart": 0,
                                                                         "end": 0,
+                                                                        "moduleId": 0,
                                                                         "name": "f",
                                                                         "start": 0,
                                                                         "type": "Identifier"
@@ -1379,12 +1562,14 @@ description: Result of parsing add_lots.kcl
                                                                     },
                                                                     "commentStart": 0,
                                                                     "end": 0,
+                                                                    "moduleId": 0,
                                                                     "start": 0,
                                                                     "type": "CallExpressionKw",
                                                                     "type": "CallExpressionKw",
                                                                     "unlabeled": {
                                                                       "commentStart": 0,
                                                                       "end": 0,
+                                                                      "moduleId": 0,
                                                                       "raw": "28",
                                                                       "start": 0,
                                                                       "type": "Literal",
@@ -1399,15 +1584,19 @@ description: Result of parsing add_lots.kcl
                                                                   "type": "BinaryExpression",
                                                                   "type": "BinaryExpression"
                                                                 },
+                                                                "moduleId": 0,
                                                                 "operator": "+",
                                                                 "right": {
+                                                                  "arguments": [],
                                                                   "callee": {
                                                                     "abs_path": false,
                                                                     "commentStart": 0,
                                                                     "end": 0,
+                                                                    "moduleId": 0,
                                                                     "name": {
                                                                       "commentStart": 0,
                                                                       "end": 0,
+                                                                      "moduleId": 0,
                                                                       "name": "f",
                                                                       "start": 0,
                                                                       "type": "Identifier"
@@ -1418,12 +1607,14 @@ description: Result of parsing add_lots.kcl
                                                                   },
                                                                   "commentStart": 0,
                                                                   "end": 0,
+                                                                  "moduleId": 0,
                                                                   "start": 0,
                                                                   "type": "CallExpressionKw",
                                                                   "type": "CallExpressionKw",
                                                                   "unlabeled": {
                                                                     "commentStart": 0,
                                                                     "end": 0,
+                                                                    "moduleId": 0,
                                                                     "raw": "29",
                                                                     "start": 0,
                                                                     "type": "Literal",
@@ -1438,15 +1629,19 @@ description: Result of parsing add_lots.kcl
                                                                 "type": "BinaryExpression",
                                                                 "type": "BinaryExpression"
                                                               },
+                                                              "moduleId": 0,
                                                               "operator": "+",
                                                               "right": {
+                                                                "arguments": [],
                                                                 "callee": {
                                                                   "abs_path": false,
                                                                   "commentStart": 0,
                                                                   "end": 0,
+                                                                  "moduleId": 0,
                                                                   "name": {
                                                                     "commentStart": 0,
                                                                     "end": 0,
+                                                                    "moduleId": 0,
                                                                     "name": "f",
                                                                     "start": 0,
                                                                     "type": "Identifier"
@@ -1457,12 +1652,14 @@ description: Result of parsing add_lots.kcl
                                                                 },
                                                                 "commentStart": 0,
                                                                 "end": 0,
+                                                                "moduleId": 0,
                                                                 "start": 0,
                                                                 "type": "CallExpressionKw",
                                                                 "type": "CallExpressionKw",
                                                                 "unlabeled": {
                                                                   "commentStart": 0,
                                                                   "end": 0,
+                                                                  "moduleId": 0,
                                                                   "raw": "30",
                                                                   "start": 0,
                                                                   "type": "Literal",
@@ -1477,15 +1674,19 @@ description: Result of parsing add_lots.kcl
                                                               "type": "BinaryExpression",
                                                               "type": "BinaryExpression"
                                                             },
+                                                            "moduleId": 0,
                                                             "operator": "+",
                                                             "right": {
+                                                              "arguments": [],
                                                               "callee": {
                                                                 "abs_path": false,
                                                                 "commentStart": 0,
                                                                 "end": 0,
+                                                                "moduleId": 0,
                                                                 "name": {
                                                                   "commentStart": 0,
                                                                   "end": 0,
+                                                                  "moduleId": 0,
                                                                   "name": "f",
                                                                   "start": 0,
                                                                   "type": "Identifier"
@@ -1496,12 +1697,14 @@ description: Result of parsing add_lots.kcl
                                                               },
                                                               "commentStart": 0,
                                                               "end": 0,
+                                                              "moduleId": 0,
                                                               "start": 0,
                                                               "type": "CallExpressionKw",
                                                               "type": "CallExpressionKw",
                                                               "unlabeled": {
                                                                 "commentStart": 0,
                                                                 "end": 0,
+                                                                "moduleId": 0,
                                                                 "raw": "31",
                                                                 "start": 0,
                                                                 "type": "Literal",
@@ -1516,15 +1719,19 @@ description: Result of parsing add_lots.kcl
                                                             "type": "BinaryExpression",
                                                             "type": "BinaryExpression"
                                                           },
+                                                          "moduleId": 0,
                                                           "operator": "+",
                                                           "right": {
+                                                            "arguments": [],
                                                             "callee": {
                                                               "abs_path": false,
                                                               "commentStart": 0,
                                                               "end": 0,
+                                                              "moduleId": 0,
                                                               "name": {
                                                                 "commentStart": 0,
                                                                 "end": 0,
+                                                                "moduleId": 0,
                                                                 "name": "f",
                                                                 "start": 0,
                                                                 "type": "Identifier"
@@ -1535,12 +1742,14 @@ description: Result of parsing add_lots.kcl
                                                             },
                                                             "commentStart": 0,
                                                             "end": 0,
+                                                            "moduleId": 0,
                                                             "start": 0,
                                                             "type": "CallExpressionKw",
                                                             "type": "CallExpressionKw",
                                                             "unlabeled": {
                                                               "commentStart": 0,
                                                               "end": 0,
+                                                              "moduleId": 0,
                                                               "raw": "32",
                                                               "start": 0,
                                                               "type": "Literal",
@@ -1555,15 +1764,19 @@ description: Result of parsing add_lots.kcl
                                                           "type": "BinaryExpression",
                                                           "type": "BinaryExpression"
                                                         },
+                                                        "moduleId": 0,
                                                         "operator": "+",
                                                         "right": {
+                                                          "arguments": [],
                                                           "callee": {
                                                             "abs_path": false,
                                                             "commentStart": 0,
                                                             "end": 0,
+                                                            "moduleId": 0,
                                                             "name": {
                                                               "commentStart": 0,
                                                               "end": 0,
+                                                              "moduleId": 0,
                                                               "name": "f",
                                                               "start": 0,
                                                               "type": "Identifier"
@@ -1574,12 +1787,14 @@ description: Result of parsing add_lots.kcl
                                                           },
                                                           "commentStart": 0,
                                                           "end": 0,
+                                                          "moduleId": 0,
                                                           "start": 0,
                                                           "type": "CallExpressionKw",
                                                           "type": "CallExpressionKw",
                                                           "unlabeled": {
                                                             "commentStart": 0,
                                                             "end": 0,
+                                                            "moduleId": 0,
                                                             "raw": "33",
                                                             "start": 0,
                                                             "type": "Literal",
@@ -1594,15 +1809,19 @@ description: Result of parsing add_lots.kcl
                                                         "type": "BinaryExpression",
                                                         "type": "BinaryExpression"
                                                       },
+                                                      "moduleId": 0,
                                                       "operator": "+",
                                                       "right": {
+                                                        "arguments": [],
                                                         "callee": {
                                                           "abs_path": false,
                                                           "commentStart": 0,
                                                           "end": 0,
+                                                          "moduleId": 0,
                                                           "name": {
                                                             "commentStart": 0,
                                                             "end": 0,
+                                                            "moduleId": 0,
                                                             "name": "f",
                                                             "start": 0,
                                                             "type": "Identifier"
@@ -1613,12 +1832,14 @@ description: Result of parsing add_lots.kcl
                                                         },
                                                         "commentStart": 0,
                                                         "end": 0,
+                                                        "moduleId": 0,
                                                         "start": 0,
                                                         "type": "CallExpressionKw",
                                                         "type": "CallExpressionKw",
                                                         "unlabeled": {
                                                           "commentStart": 0,
                                                           "end": 0,
+                                                          "moduleId": 0,
                                                           "raw": "34",
                                                           "start": 0,
                                                           "type": "Literal",
@@ -1633,15 +1854,19 @@ description: Result of parsing add_lots.kcl
                                                       "type": "BinaryExpression",
                                                       "type": "BinaryExpression"
                                                     },
+                                                    "moduleId": 0,
                                                     "operator": "+",
                                                     "right": {
+                                                      "arguments": [],
                                                       "callee": {
                                                         "abs_path": false,
                                                         "commentStart": 0,
                                                         "end": 0,
+                                                        "moduleId": 0,
                                                         "name": {
                                                           "commentStart": 0,
                                                           "end": 0,
+                                                          "moduleId": 0,
                                                           "name": "f",
                                                           "start": 0,
                                                           "type": "Identifier"
@@ -1652,12 +1877,14 @@ description: Result of parsing add_lots.kcl
                                                       },
                                                       "commentStart": 0,
                                                       "end": 0,
+                                                      "moduleId": 0,
                                                       "start": 0,
                                                       "type": "CallExpressionKw",
                                                       "type": "CallExpressionKw",
                                                       "unlabeled": {
                                                         "commentStart": 0,
                                                         "end": 0,
+                                                        "moduleId": 0,
                                                         "raw": "35",
                                                         "start": 0,
                                                         "type": "Literal",
@@ -1672,15 +1899,19 @@ description: Result of parsing add_lots.kcl
                                                     "type": "BinaryExpression",
                                                     "type": "BinaryExpression"
                                                   },
+                                                  "moduleId": 0,
                                                   "operator": "+",
                                                   "right": {
+                                                    "arguments": [],
                                                     "callee": {
                                                       "abs_path": false,
                                                       "commentStart": 0,
                                                       "end": 0,
+                                                      "moduleId": 0,
                                                       "name": {
                                                         "commentStart": 0,
                                                         "end": 0,
+                                                        "moduleId": 0,
                                                         "name": "f",
                                                         "start": 0,
                                                         "type": "Identifier"
@@ -1691,12 +1922,14 @@ description: Result of parsing add_lots.kcl
                                                     },
                                                     "commentStart": 0,
                                                     "end": 0,
+                                                    "moduleId": 0,
                                                     "start": 0,
                                                     "type": "CallExpressionKw",
                                                     "type": "CallExpressionKw",
                                                     "unlabeled": {
                                                       "commentStart": 0,
                                                       "end": 0,
+                                                      "moduleId": 0,
                                                       "raw": "36",
                                                       "start": 0,
                                                       "type": "Literal",
@@ -1711,15 +1944,19 @@ description: Result of parsing add_lots.kcl
                                                   "type": "BinaryExpression",
                                                   "type": "BinaryExpression"
                                                 },
+                                                "moduleId": 0,
                                                 "operator": "+",
                                                 "right": {
+                                                  "arguments": [],
                                                   "callee": {
                                                     "abs_path": false,
                                                     "commentStart": 0,
                                                     "end": 0,
+                                                    "moduleId": 0,
                                                     "name": {
                                                       "commentStart": 0,
                                                       "end": 0,
+                                                      "moduleId": 0,
                                                       "name": "f",
                                                       "start": 0,
                                                       "type": "Identifier"
@@ -1730,12 +1967,14 @@ description: Result of parsing add_lots.kcl
                                                   },
                                                   "commentStart": 0,
                                                   "end": 0,
+                                                  "moduleId": 0,
                                                   "start": 0,
                                                   "type": "CallExpressionKw",
                                                   "type": "CallExpressionKw",
                                                   "unlabeled": {
                                                     "commentStart": 0,
                                                     "end": 0,
+                                                    "moduleId": 0,
                                                     "raw": "37",
                                                     "start": 0,
                                                     "type": "Literal",
@@ -1750,15 +1989,19 @@ description: Result of parsing add_lots.kcl
                                                 "type": "BinaryExpression",
                                                 "type": "BinaryExpression"
                                               },
+                                              "moduleId": 0,
                                               "operator": "+",
                                               "right": {
+                                                "arguments": [],
                                                 "callee": {
                                                   "abs_path": false,
                                                   "commentStart": 0,
                                                   "end": 0,
+                                                  "moduleId": 0,
                                                   "name": {
                                                     "commentStart": 0,
                                                     "end": 0,
+                                                    "moduleId": 0,
                                                     "name": "f",
                                                     "start": 0,
                                                     "type": "Identifier"
@@ -1769,12 +2012,14 @@ description: Result of parsing add_lots.kcl
                                                 },
                                                 "commentStart": 0,
                                                 "end": 0,
+                                                "moduleId": 0,
                                                 "start": 0,
                                                 "type": "CallExpressionKw",
                                                 "type": "CallExpressionKw",
                                                 "unlabeled": {
                                                   "commentStart": 0,
                                                   "end": 0,
+                                                  "moduleId": 0,
                                                   "raw": "38",
                                                   "start": 0,
                                                   "type": "Literal",
@@ -1789,15 +2034,19 @@ description: Result of parsing add_lots.kcl
                                               "type": "BinaryExpression",
                                               "type": "BinaryExpression"
                                             },
+                                            "moduleId": 0,
                                             "operator": "+",
                                             "right": {
+                                              "arguments": [],
                                               "callee": {
                                                 "abs_path": false,
                                                 "commentStart": 0,
                                                 "end": 0,
+                                                "moduleId": 0,
                                                 "name": {
                                                   "commentStart": 0,
                                                   "end": 0,
+                                                  "moduleId": 0,
                                                   "name": "f",
                                                   "start": 0,
                                                   "type": "Identifier"
@@ -1808,12 +2057,14 @@ description: Result of parsing add_lots.kcl
                                               },
                                               "commentStart": 0,
                                               "end": 0,
+                                              "moduleId": 0,
                                               "start": 0,
                                               "type": "CallExpressionKw",
                                               "type": "CallExpressionKw",
                                               "unlabeled": {
                                                 "commentStart": 0,
                                                 "end": 0,
+                                                "moduleId": 0,
                                                 "raw": "39",
                                                 "start": 0,
                                                 "type": "Literal",
@@ -1828,15 +2079,19 @@ description: Result of parsing add_lots.kcl
                                             "type": "BinaryExpression",
                                             "type": "BinaryExpression"
                                           },
+                                          "moduleId": 0,
                                           "operator": "+",
                                           "right": {
+                                            "arguments": [],
                                             "callee": {
                                               "abs_path": false,
                                               "commentStart": 0,
                                               "end": 0,
+                                              "moduleId": 0,
                                               "name": {
                                                 "commentStart": 0,
                                                 "end": 0,
+                                                "moduleId": 0,
                                                 "name": "f",
                                                 "start": 0,
                                                 "type": "Identifier"
@@ -1847,12 +2102,14 @@ description: Result of parsing add_lots.kcl
                                             },
                                             "commentStart": 0,
                                             "end": 0,
+                                            "moduleId": 0,
                                             "start": 0,
                                             "type": "CallExpressionKw",
                                             "type": "CallExpressionKw",
                                             "unlabeled": {
                                               "commentStart": 0,
                                               "end": 0,
+                                              "moduleId": 0,
                                               "raw": "40",
                                               "start": 0,
                                               "type": "Literal",
@@ -1867,15 +2124,19 @@ description: Result of parsing add_lots.kcl
                                           "type": "BinaryExpression",
                                           "type": "BinaryExpression"
                                         },
+                                        "moduleId": 0,
                                         "operator": "+",
                                         "right": {
+                                          "arguments": [],
                                           "callee": {
                                             "abs_path": false,
                                             "commentStart": 0,
                                             "end": 0,
+                                            "moduleId": 0,
                                             "name": {
                                               "commentStart": 0,
                                               "end": 0,
+                                              "moduleId": 0,
                                               "name": "f",
                                               "start": 0,
                                               "type": "Identifier"
@@ -1886,12 +2147,14 @@ description: Result of parsing add_lots.kcl
                                           },
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "start": 0,
                                           "type": "CallExpressionKw",
                                           "type": "CallExpressionKw",
                                           "unlabeled": {
                                             "commentStart": 0,
                                             "end": 0,
+                                            "moduleId": 0,
                                             "raw": "41",
                                             "start": 0,
                                             "type": "Literal",
@@ -1906,15 +2169,19 @@ description: Result of parsing add_lots.kcl
                                         "type": "BinaryExpression",
                                         "type": "BinaryExpression"
                                       },
+                                      "moduleId": 0,
                                       "operator": "+",
                                       "right": {
+                                        "arguments": [],
                                         "callee": {
                                           "abs_path": false,
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": {
                                             "commentStart": 0,
                                             "end": 0,
+                                            "moduleId": 0,
                                             "name": "f",
                                             "start": 0,
                                             "type": "Identifier"
@@ -1925,12 +2192,14 @@ description: Result of parsing add_lots.kcl
                                         },
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "start": 0,
                                         "type": "CallExpressionKw",
                                         "type": "CallExpressionKw",
                                         "unlabeled": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "raw": "42",
                                           "start": 0,
                                           "type": "Literal",
@@ -1945,15 +2214,19 @@ description: Result of parsing add_lots.kcl
                                       "type": "BinaryExpression",
                                       "type": "BinaryExpression"
                                     },
+                                    "moduleId": 0,
                                     "operator": "+",
                                     "right": {
+                                      "arguments": [],
                                       "callee": {
                                         "abs_path": false,
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": "f",
                                           "start": 0,
                                           "type": "Identifier"
@@ -1964,12 +2237,14 @@ description: Result of parsing add_lots.kcl
                                       },
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "start": 0,
                                       "type": "CallExpressionKw",
                                       "type": "CallExpressionKw",
                                       "unlabeled": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "raw": "43",
                                         "start": 0,
                                         "type": "Literal",
@@ -1984,15 +2259,19 @@ description: Result of parsing add_lots.kcl
                                     "type": "BinaryExpression",
                                     "type": "BinaryExpression"
                                   },
+                                  "moduleId": 0,
                                   "operator": "+",
                                   "right": {
+                                    "arguments": [],
                                     "callee": {
                                       "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": "f",
                                         "start": 0,
                                         "type": "Identifier"
@@ -2003,12 +2282,14 @@ description: Result of parsing add_lots.kcl
                                     },
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "start": 0,
                                     "type": "CallExpressionKw",
                                     "type": "CallExpressionKw",
                                     "unlabeled": {
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "raw": "44",
                                       "start": 0,
                                       "type": "Literal",
@@ -2023,15 +2304,19 @@ description: Result of parsing add_lots.kcl
                                   "type": "BinaryExpression",
                                   "type": "BinaryExpression"
                                 },
+                                "moduleId": 0,
                                 "operator": "+",
                                 "right": {
+                                  "arguments": [],
                                   "callee": {
                                     "abs_path": false,
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "name": {
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": "f",
                                       "start": 0,
                                       "type": "Identifier"
@@ -2042,12 +2327,14 @@ description: Result of parsing add_lots.kcl
                                   },
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "start": 0,
                                   "type": "CallExpressionKw",
                                   "type": "CallExpressionKw",
                                   "unlabeled": {
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "raw": "45",
                                     "start": 0,
                                     "type": "Literal",
@@ -2062,15 +2349,19 @@ description: Result of parsing add_lots.kcl
                                 "type": "BinaryExpression",
                                 "type": "BinaryExpression"
                               },
+                              "moduleId": 0,
                               "operator": "+",
                               "right": {
+                                "arguments": [],
                                 "callee": {
                                   "abs_path": false,
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "name": {
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "name": "f",
                                     "start": 0,
                                     "type": "Identifier"
@@ -2081,12 +2372,14 @@ description: Result of parsing add_lots.kcl
                                 },
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "start": 0,
                                 "type": "CallExpressionKw",
                                 "type": "CallExpressionKw",
                                 "unlabeled": {
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "raw": "46",
                                   "start": 0,
                                   "type": "Literal",
@@ -2101,15 +2394,19 @@ description: Result of parsing add_lots.kcl
                               "type": "BinaryExpression",
                               "type": "BinaryExpression"
                             },
+                            "moduleId": 0,
                             "operator": "+",
                             "right": {
+                              "arguments": [],
                               "callee": {
                                 "abs_path": false,
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": {
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "name": "f",
                                   "start": 0,
                                   "type": "Identifier"
@@ -2120,12 +2417,14 @@ description: Result of parsing add_lots.kcl
                               },
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "start": 0,
                               "type": "CallExpressionKw",
                               "type": "CallExpressionKw",
                               "unlabeled": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "raw": "47",
                                 "start": 0,
                                 "type": "Literal",
@@ -2140,15 +2439,19 @@ description: Result of parsing add_lots.kcl
                             "type": "BinaryExpression",
                             "type": "BinaryExpression"
                           },
+                          "moduleId": 0,
                           "operator": "+",
                           "right": {
+                            "arguments": [],
                             "callee": {
                               "abs_path": false,
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "f",
                                 "start": 0,
                                 "type": "Identifier"
@@ -2159,12 +2462,14 @@ description: Result of parsing add_lots.kcl
                             },
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "start": 0,
                             "type": "CallExpressionKw",
                             "type": "CallExpressionKw",
                             "unlabeled": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "raw": "48",
                               "start": 0,
                               "type": "Literal",
@@ -2179,15 +2484,19 @@ description: Result of parsing add_lots.kcl
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         },
+                        "moduleId": 0,
                         "operator": "+",
                         "right": {
+                          "arguments": [],
                           "callee": {
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "f",
                               "start": 0,
                               "type": "Identifier"
@@ -2198,12 +2507,14 @@ description: Result of parsing add_lots.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "raw": "49",
                             "start": 0,
                             "type": "Literal",
@@ -2218,15 +2529,19 @@ description: Result of parsing add_lots.kcl
                         "type": "BinaryExpression",
                         "type": "BinaryExpression"
                       },
+                      "moduleId": 0,
                       "operator": "+",
                       "right": {
+                        "arguments": [],
                         "callee": {
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "f",
                             "start": 0,
                             "type": "Identifier"
@@ -2237,12 +2552,14 @@ description: Result of parsing add_lots.kcl
                         },
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "start": 0,
                         "type": "CallExpressionKw",
                         "type": "CallExpressionKw",
                         "unlabeled": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "50",
                           "start": 0,
                           "type": "Literal",
@@ -2257,15 +2574,19 @@ description: Result of parsing add_lots.kcl
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     },
+                    "moduleId": 0,
                     "operator": "+",
                     "right": {
+                      "arguments": [],
                       "callee": {
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "f",
                           "start": 0,
                           "type": "Identifier"
@@ -2276,12 +2597,14 @@ description: Result of parsing add_lots.kcl
                       },
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "CallExpressionKw",
                       "type": "CallExpressionKw",
                       "unlabeled": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "51",
                         "start": 0,
                         "type": "Literal",
@@ -2296,15 +2619,19 @@ description: Result of parsing add_lots.kcl
                     "type": "BinaryExpression",
                     "type": "BinaryExpression"
                   },
+                  "moduleId": 0,
                   "operator": "+",
                   "right": {
+                    "arguments": [],
                     "callee": {
                       "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "f",
                         "start": 0,
                         "type": "Identifier"
@@ -2315,12 +2642,14 @@ description: Result of parsing add_lots.kcl
                     },
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "start": 0,
                     "type": "CallExpressionKw",
                     "type": "CallExpressionKw",
                     "unlabeled": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "52",
                       "start": 0,
                       "type": "Literal",
@@ -2335,15 +2664,19 @@ description: Result of parsing add_lots.kcl
                   "type": "BinaryExpression",
                   "type": "BinaryExpression"
                 },
+                "moduleId": 0,
                 "operator": "+",
                 "right": {
+                  "arguments": [],
                   "callee": {
                     "abs_path": false,
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "f",
                       "start": 0,
                       "type": "Identifier"
@@ -2354,12 +2687,14 @@ description: Result of parsing add_lots.kcl
                   },
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "start": 0,
                   "type": "CallExpressionKw",
                   "type": "CallExpressionKw",
                   "unlabeled": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "53",
                     "start": 0,
                     "type": "Literal",
@@ -2374,15 +2709,19 @@ description: Result of parsing add_lots.kcl
                 "type": "BinaryExpression",
                 "type": "BinaryExpression"
               },
+              "moduleId": 0,
               "operator": "+",
               "right": {
+                "arguments": [],
                 "callee": {
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "f",
                     "start": 0,
                     "type": "Identifier"
@@ -2393,12 +2732,14 @@ description: Result of parsing add_lots.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "raw": "54",
                   "start": 0,
                   "type": "Literal",
@@ -2413,15 +2754,19 @@ description: Result of parsing add_lots.kcl
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             },
+            "moduleId": 0,
             "operator": "+",
             "right": {
+              "arguments": [],
               "callee": {
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "f",
                   "start": 0,
                   "type": "Identifier"
@@ -2432,12 +2777,14 @@ description: Result of parsing add_lots.kcl
               },
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
               "unlabeled": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "55",
                 "start": 0,
                 "type": "Literal",
@@ -2452,11 +2799,13 @@ description: Result of parsing add_lots.kcl
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -2471,6 +2820,7 @@ description: Result of parsing add_lots.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "isEqualTo",
                 "start": 0,
                 "type": "Identifier"
@@ -2478,6 +2828,7 @@ description: Result of parsing add_lots.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "3080",
                 "start": 0,
                 "type": "Literal",
@@ -2493,6 +2844,7 @@ description: Result of parsing add_lots.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "error",
                 "start": 0,
                 "type": "Identifier"
@@ -2500,6 +2852,7 @@ description: Result of parsing add_lots.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "\"Big sum\"",
                 "start": 0,
                 "type": "Literal",
@@ -2512,9 +2865,11 @@ description: Result of parsing add_lots.kcl
             "abs_path": false,
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "assert",
               "start": 0,
               "type": "Identifier"
@@ -2525,6 +2880,7 @@ description: Result of parsing add_lots.kcl
           },
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
@@ -2532,9 +2888,11 @@ description: Result of parsing add_lots.kcl
             "abs_path": false,
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "x",
               "start": 0,
               "type": "Identifier"
@@ -2545,6 +2903,7 @@ description: Result of parsing add_lots.kcl
             "type": "Name"
           }
         },
+        "moduleId": 0,
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -2552,12 +2911,14 @@ description: Result of parsing add_lots.kcl
     ],
     "commentStart": 0,
     "end": 0,
+    "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {
@@ -2569,6 +2930,7 @@ description: Result of parsing add_lots.kcl
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {

@@ -222,7 +222,11 @@ const VisibilityToggle = (props: VisibilityToggleProps) => {
   }, [props.onVisibilityChange])
 
   return (
-    <button onClick={handleToggleVisible} className="p-0 m-0">
+    <button
+      onClick={handleToggleVisible}
+      className="p-0 m-0"
+      data-testid="feature-tree-visibility-toggle"
+    >
       <CustomIcon
         name={visible ? 'eyeOpen' : 'eyeCrossedOut'}
         className="w-5 h-5"
@@ -265,6 +269,7 @@ const OperationItemWrapper = ({
     <div
       ref={menuRef}
       className={`flex select-none items-center group/item my-0 py-0.5 px-1 ${selectable ? 'focus-within:bg-primary/10 hover:bg-primary/5' : ''}`}
+      data-testid="feature-tree-operation-item"
     >
       <button
         {...props}

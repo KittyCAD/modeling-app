@@ -1025,7 +1025,10 @@ description: Artifact commands sketch_on_face_union.kcl
                 "w": -90.0
               },
               "set": false,
-              "is_local": true
+              "is_local": true,
+              "origin": {
+                "type": "local"
+              }
             },
             "scale": null
           }

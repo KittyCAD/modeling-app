@@ -16,10 +16,9 @@ pub(crate) use import::PreImportedGeometry;
 use indexmap::IndexMap;
 pub use kcl_value::{KclObjectFields, KclValue};
 use kcmc::{
-    each_cmd as mcmd,
-    ok_response::{output::TakeSnapshot, OkModelingCmdResponse},
+    ImageFormat, ModelingCmd, each_cmd as mcmd,
+    ok_response::{OkModelingCmdResponse, output::TakeSnapshot},
     websocket::{ModelingSessionData, OkWebSocketResponseData},
-    ImageFormat, ModelingCmd,
 };
 use kittycad_modeling_cmds::{self as kcmc, id::ModelingCmdId};
 pub use memory::EnvironmentRef;
@@ -31,6 +30,7 @@ pub use state::{ExecState, MetaSettings};
 use uuid::Uuid;
 
 use crate::{
+    CompilationError, ExecError, KclErrorWithOutputs,
     engine::{EngineManager, GridScaleBehavior},
     errors::{KclError, KclErrorDetails},
     execution::{
@@ -43,7 +43,6 @@ use crate::{
     modules::{ModuleId, ModulePath, ModuleRepr},
     parsing::ast::types::{Expr, ImportPath, NodeRef},
     source_range::SourceRange,
-    CompilationError, ExecError, KclErrorWithOutputs,
 };
 
 pub(crate) mod annotations;
@@ -1329,7 +1328,7 @@ impl ExecutorContext {
                     created: if deterministic_time {
                         Some("2021-01-01T00:00:00Z".parse().map_err(|e| {
                             KclError::new_internal(crate::errors::KclErrorDetails::new(
-                                format!("Failed to parse date: {}", e),
+                                format!("Failed to parse date: {e}"),
                                 vec![SourceRange::default()],
                             ))
                         })?)
@@ -1409,7 +1408,7 @@ pub(crate) async fn parse_execute_with_project_dir(
         engine: Arc::new(Box::new(
             crate::engine::conn_mock::EngineConnection::new().await.map_err(|err| {
                 KclError::new_internal(crate::errors::KclErrorDetails::new(
-                    format!("Failed to create mock engine connection: {}", err),
+                    format!("Failed to create mock engine connection: {err}"),
                     vec![SourceRange::default()],
                 ))
             })?,
@@ -1446,7 +1445,7 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     use super::*;
-    use crate::{errors::KclErrorDetails, execution::memory::Stack, ModuleId};
+    use crate::{ModuleId, errors::KclErrorDetails, execution::memory::Stack};
 
     /// Convenience function to get a JSON value from memory and unwrap.
     #[track_caller]
@@ -1922,6 +1921,22 @@ shape = layer() |> patternTransform(instances = 10, transform = transform)
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn pass_std_to_std() {
+        let ast = r#"sketch001 = startSketchOn(XY)
+profile001 = circle(sketch001, center = [0, 0], radius = 2)
+extrude001 = extrude(profile001, length = 5)
+extrudes = patternLinear3d(
+  extrude001,
+  instances = 3,
+  distance = 5,
+  axis = [1, 1, 0],
+)
+clone001 = map(extrudes, f = clone)
+"#;
+        parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_zero_param_fn() {
         let ast = r#"sigmaAllow = 35000 // psi
 leg1 = 5 // inches
@@ -2045,8 +2060,7 @@ notFunction = !x";
             fn_err
                 .message()
                 .starts_with("Cannot apply unary operator ! to non-boolean value: "),
-            "Actual error: {:?}",
-            fn_err
+            "Actual error: {fn_err:?}"
         );
 
         let code8 = "
@@ -2059,8 +2073,7 @@ notTagDeclarator = !myTagDeclarator";
             tag_declarator_err
                 .message()
                 .starts_with("Cannot apply unary operator ! to non-boolean value: a tag declarator"),
-            "Actual error: {:?}",
-            tag_declarator_err
+            "Actual error: {tag_declarator_err:?}"
         );
 
         let code9 = "
@@ -2073,8 +2086,7 @@ notTagIdentifier = !myTag";
             tag_identifier_err
                 .message()
                 .starts_with("Cannot apply unary operator ! to non-boolean value: a tag identifier"),
-            "Actual error: {:?}",
-            tag_identifier_err
+            "Actual error: {tag_identifier_err:?}"
         );
 
         let code10 = "notPipe = !(1 |> 2)";
@@ -2226,7 +2238,7 @@ w = f() + f()
         if let Err(err) = ctx.run_with_caching(old_program).await {
             let report = err.into_miette_report_with_outputs(code).unwrap();
             let report = miette::Report::new(report);
-            panic!("Error executing program: {:?}", report);
+            panic!("Error executing program: {report:?}");
         }
 
         // Get the id_generator from the first execution.

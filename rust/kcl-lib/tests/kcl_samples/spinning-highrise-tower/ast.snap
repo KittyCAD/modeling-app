@@ -13,6 +13,7 @@ description: Result of parsing spinning-highrise-tower.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "floorCount",
             "start": 0,
             "type": "Identifier"
@@ -20,6 +21,7 @@ description: Result of parsing spinning-highrise-tower.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "17",
             "start": 0,
             "type": "Literal",
@@ -29,11 +31,13 @@ description: Result of parsing spinning-highrise-tower.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "preComments": [
           "// Define global parameters for floor geometry and building layout"
         ],
@@ -49,6 +53,7 @@ description: Result of parsing spinning-highrise-tower.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "floorHeight",
             "start": 0,
             "type": "Identifier"
@@ -56,6 +61,7 @@ description: Result of parsing spinning-highrise-tower.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "5",
             "start": 0,
             "type": "Literal",
@@ -65,11 +71,13 @@ description: Result of parsing spinning-highrise-tower.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -82,6 +90,7 @@ description: Result of parsing spinning-highrise-tower.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "slabWidth",
             "start": 0,
             "type": "Identifier"
@@ -89,6 +98,7 @@ description: Result of parsing spinning-highrise-tower.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "30",
             "start": 0,
             "type": "Literal",
@@ -98,11 +108,13 @@ description: Result of parsing spinning-highrise-tower.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -115,6 +127,7 @@ description: Result of parsing spinning-highrise-tower.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "slabThickness",
             "start": 0,
             "type": "Identifier"
@@ -122,6 +135,7 @@ description: Result of parsing spinning-highrise-tower.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "0.5",
             "start": 0,
             "type": "Literal",
@@ -131,11 +145,13 @@ description: Result of parsing spinning-highrise-tower.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -148,6 +164,7 @@ description: Result of parsing spinning-highrise-tower.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "rotationAngleStep",
             "start": 0,
             "type": "Identifier"
@@ -155,6 +172,7 @@ description: Result of parsing spinning-highrise-tower.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "5",
             "start": 0,
             "type": "Literal",
@@ -164,11 +182,13 @@ description: Result of parsing spinning-highrise-tower.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -181,6 +201,7 @@ description: Result of parsing spinning-highrise-tower.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "handrailHeight",
             "start": 0,
             "type": "Identifier"
@@ -188,6 +209,7 @@ description: Result of parsing spinning-highrise-tower.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "1.2",
             "start": 0,
             "type": "Literal",
@@ -197,11 +219,13 @@ description: Result of parsing spinning-highrise-tower.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -214,6 +238,7 @@ description: Result of parsing spinning-highrise-tower.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "handrailThickness",
             "start": 0,
             "type": "Identifier"
@@ -221,6 +246,7 @@ description: Result of parsing spinning-highrise-tower.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "0.3",
             "start": 0,
             "type": "Literal",
@@ -230,11 +256,13 @@ description: Result of parsing spinning-highrise-tower.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -247,6 +275,7 @@ description: Result of parsing spinning-highrise-tower.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "balconyDepth",
             "start": 0,
             "type": "Identifier"
@@ -254,6 +283,7 @@ description: Result of parsing spinning-highrise-tower.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "3",
             "start": 0,
             "type": "Literal",
@@ -263,11 +293,13 @@ description: Result of parsing spinning-highrise-tower.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -280,6 +312,7 @@ description: Result of parsing spinning-highrise-tower.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "facadeWidth",
             "start": 0,
             "type": "Identifier"
@@ -291,9 +324,11 @@ description: Result of parsing spinning-highrise-tower.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "slabWidth",
                 "start": 0,
                 "type": "Identifier"
@@ -303,6 +338,7 @@ description: Result of parsing spinning-highrise-tower.kcl
               "type": "Name",
               "type": "Name"
             },
+            "moduleId": 0,
             "operator": "-",
             "right": {
               "commentStart": 0,
@@ -311,9 +347,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "balconyDepth",
                   "start": 0,
                   "type": "Identifier"
@@ -323,10 +361,12 @@ description: Result of parsing spinning-highrise-tower.kcl
                 "type": "Name",
                 "type": "Name"
               },
+              "moduleId": 0,
               "operator": "*",
               "right": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "2",
                 "start": 0,
                 "type": "Literal",
@@ -344,11 +384,13 @@ description: Result of parsing spinning-highrise-tower.kcl
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "preComments": [
           "",
           "",
@@ -366,6 +408,7 @@ description: Result of parsing spinning-highrise-tower.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "facadeHeight",
             "start": 0,
             "type": "Identifier"
@@ -377,9 +420,11 @@ description: Result of parsing spinning-highrise-tower.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "floorHeight",
                 "start": 0,
                 "type": "Identifier"
@@ -389,14 +434,17 @@ description: Result of parsing spinning-highrise-tower.kcl
               "type": "Name",
               "type": "Name"
             },
+            "moduleId": 0,
             "operator": "-",
             "right": {
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "slabThickness",
                 "start": 0,
                 "type": "Identifier"
@@ -410,11 +458,13 @@ description: Result of parsing spinning-highrise-tower.kcl
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -427,6 +477,7 @@ description: Result of parsing spinning-highrise-tower.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "coreHeight",
             "start": 0,
             "type": "Identifier"
@@ -441,9 +492,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "floorCount",
                   "start": 0,
                   "type": "Identifier"
@@ -453,14 +506,17 @@ description: Result of parsing spinning-highrise-tower.kcl
                 "type": "Name",
                 "type": "Name"
               },
+              "moduleId": 0,
               "operator": "*",
               "right": {
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "floorHeight",
                   "start": 0,
                   "type": "Identifier"
@@ -474,14 +530,17 @@ description: Result of parsing spinning-highrise-tower.kcl
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             },
+            "moduleId": 0,
             "operator": "-",
             "right": {
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "slabThickness",
                 "start": 0,
                 "type": "Identifier"
@@ -495,11 +554,13 @@ description: Result of parsing spinning-highrise-tower.kcl
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -512,6 +573,7 @@ description: Result of parsing spinning-highrise-tower.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "frameSide",
             "start": 0,
             "type": "Identifier"
@@ -519,6 +581,7 @@ description: Result of parsing spinning-highrise-tower.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "0.1",
             "start": 0,
             "type": "Literal",
@@ -528,11 +591,13 @@ description: Result of parsing spinning-highrise-tower.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -545,6 +610,7 @@ description: Result of parsing spinning-highrise-tower.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "windowTargetWidth",
             "start": 0,
             "type": "Identifier"
@@ -552,6 +618,7 @@ description: Result of parsing spinning-highrise-tower.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "6",
             "start": 0,
             "type": "Literal",
@@ -561,11 +628,13 @@ description: Result of parsing spinning-highrise-tower.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -578,6 +647,7 @@ description: Result of parsing spinning-highrise-tower.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "windowTargetCount",
             "start": 0,
             "type": "Identifier"
@@ -589,9 +659,11 @@ description: Result of parsing spinning-highrise-tower.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "facadeWidth",
                 "start": 0,
                 "type": "Identifier"
@@ -601,14 +673,17 @@ description: Result of parsing spinning-highrise-tower.kcl
               "type": "Name",
               "type": "Name"
             },
+            "moduleId": 0,
             "operator": "/",
             "right": {
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "windowTargetWidth",
                 "start": 0,
                 "type": "Identifier"
@@ -622,11 +697,13 @@ description: Result of parsing spinning-highrise-tower.kcl
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -639,18 +716,22 @@ description: Result of parsing spinning-highrise-tower.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "windowCount",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "arguments": [],
             "callee": {
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "round",
                 "start": 0,
                 "type": "Identifier"
@@ -661,6 +742,7 @@ description: Result of parsing spinning-highrise-tower.kcl
             },
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
@@ -668,9 +750,11 @@ description: Result of parsing spinning-highrise-tower.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "windowTargetCount",
                 "start": 0,
                 "type": "Identifier"
@@ -681,11 +765,13 @@ description: Result of parsing spinning-highrise-tower.kcl
               "type": "Name"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -698,6 +784,7 @@ description: Result of parsing spinning-highrise-tower.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "windowWidth",
             "start": 0,
             "type": "Identifier"
@@ -709,9 +796,11 @@ description: Result of parsing spinning-highrise-tower.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "facadeWidth",
                 "start": 0,
                 "type": "Identifier"
@@ -721,14 +810,17 @@ description: Result of parsing spinning-highrise-tower.kcl
               "type": "Name",
               "type": "Name"
             },
+            "moduleId": 0,
             "operator": "/",
             "right": {
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "windowCount",
                 "start": 0,
                 "type": "Identifier"
@@ -742,11 +834,13 @@ description: Result of parsing spinning-highrise-tower.kcl
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -759,6 +853,7 @@ description: Result of parsing spinning-highrise-tower.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "boxFn",
             "start": 0,
             "type": "Identifier"
@@ -774,6 +869,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                     "id": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "shape",
                       "start": 0,
                       "type": "Identifier"
@@ -781,13 +877,16 @@ description: Result of parsing spinning-highrise-tower.kcl
                     "init": {
                       "body": [
                         {
+                          "arguments": [],
                           "callee": {
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "startSketchOn",
                               "start": 0,
                               "type": "Identifier"
@@ -798,6 +897,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
@@ -805,9 +905,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "plane",
                               "start": 0,
                               "type": "Identifier"
@@ -825,6 +927,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "at",
                                 "start": 0,
                                 "type": "Identifier"
@@ -840,9 +943,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                                         "abs_path": false,
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": "width",
                                           "start": 0,
                                           "type": "Identifier"
@@ -854,15 +959,18 @@ description: Result of parsing spinning-highrise-tower.kcl
                                       },
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "operator": "-",
                                       "start": 0,
                                       "type": "UnaryExpression",
                                       "type": "UnaryExpression"
                                     },
+                                    "moduleId": 0,
                                     "operator": "/",
                                     "right": {
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "raw": "2",
                                       "start": 0,
                                       "type": "Literal",
@@ -884,9 +992,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                                         "abs_path": false,
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": "width",
                                           "start": 0,
                                           "type": "Identifier"
@@ -898,15 +1008,18 @@ description: Result of parsing spinning-highrise-tower.kcl
                                       },
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "operator": "-",
                                       "start": 0,
                                       "type": "UnaryExpression",
                                       "type": "UnaryExpression"
                                     },
+                                    "moduleId": 0,
                                     "operator": "/",
                                     "right": {
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "raw": "2",
                                       "start": 0,
                                       "type": "Literal",
@@ -922,6 +1035,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                                   }
                                 ],
                                 "end": 0,
+                                "moduleId": 0,
                                 "start": 0,
                                 "type": "ArrayExpression",
                                 "type": "ArrayExpression"
@@ -932,9 +1046,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "startProfile",
                               "start": 0,
                               "type": "Identifier"
@@ -945,12 +1061,14 @@ description: Result of parsing spinning-highrise-tower.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "start": 0,
                             "type": "PipeSubstitution",
                             "type": "PipeSubstitution"
@@ -963,6 +1081,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "end",
                                 "start": 0,
                                 "type": "Identifier"
@@ -973,6 +1092,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                                   {
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "raw": "0",
                                     "start": 0,
                                     "type": "Literal",
@@ -986,9 +1106,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                                     "abs_path": false,
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "name": {
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": "width",
                                       "start": 0,
                                       "type": "Identifier"
@@ -1000,6 +1122,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                                   }
                                 ],
                                 "end": 0,
+                                "moduleId": 0,
                                 "start": 0,
                                 "type": "ArrayExpression",
                                 "type": "ArrayExpression"
@@ -1010,9 +1133,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "line",
                               "start": 0,
                               "type": "Identifier"
@@ -1023,12 +1148,14 @@ description: Result of parsing spinning-highrise-tower.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "start": 0,
                             "type": "PipeSubstitution",
                             "type": "PipeSubstitution"
@@ -1041,6 +1168,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "end",
                                 "start": 0,
                                 "type": "Identifier"
@@ -1052,9 +1180,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                                     "abs_path": false,
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "name": {
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": "width",
                                       "start": 0,
                                       "type": "Identifier"
@@ -1067,6 +1197,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                                   {
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "raw": "0",
                                     "start": 0,
                                     "type": "Literal",
@@ -1078,6 +1209,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                                   }
                                 ],
                                 "end": 0,
+                                "moduleId": 0,
                                 "start": 0,
                                 "type": "ArrayExpression",
                                 "type": "ArrayExpression"
@@ -1088,9 +1220,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "line",
                               "start": 0,
                               "type": "Identifier"
@@ -1101,12 +1235,14 @@ description: Result of parsing spinning-highrise-tower.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "start": 0,
                             "type": "PipeSubstitution",
                             "type": "PipeSubstitution"
@@ -1119,6 +1255,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "end",
                                 "start": 0,
                                 "type": "Identifier"
@@ -1129,6 +1266,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                                   {
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "raw": "0",
                                     "start": 0,
                                     "type": "Literal",
@@ -1143,9 +1281,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                                       "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": "width",
                                         "start": 0,
                                         "type": "Identifier"
@@ -1157,6 +1297,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                                     },
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "operator": "-",
                                     "start": 0,
                                     "type": "UnaryExpression",
@@ -1164,6 +1305,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                                   }
                                 ],
                                 "end": 0,
+                                "moduleId": 0,
                                 "start": 0,
                                 "type": "ArrayExpression",
                                 "type": "ArrayExpression"
@@ -1174,9 +1316,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "line",
                               "start": 0,
                               "type": "Identifier"
@@ -1187,12 +1331,14 @@ description: Result of parsing spinning-highrise-tower.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "start": 0,
                             "type": "PipeSubstitution",
                             "type": "PipeSubstitution"
@@ -1205,6 +1351,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "endAbsolute",
                                 "start": 0,
                                 "type": "Identifier"
@@ -1213,13 +1360,16 @@ description: Result of parsing spinning-highrise-tower.kcl
                                 "commentStart": 0,
                                 "elements": [
                                   {
+                                    "arguments": [],
                                     "callee": {
                                       "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": "profileStartX",
                                         "start": 0,
                                         "type": "Identifier"
@@ -1230,25 +1380,30 @@ description: Result of parsing spinning-highrise-tower.kcl
                                     },
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "start": 0,
                                     "type": "CallExpressionKw",
                                     "type": "CallExpressionKw",
                                     "unlabeled": {
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "start": 0,
                                       "type": "PipeSubstitution",
                                       "type": "PipeSubstitution"
                                     }
                                   },
                                   {
+                                    "arguments": [],
                                     "callee": {
                                       "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": "profileStartY",
                                         "start": 0,
                                         "type": "Identifier"
@@ -1259,12 +1414,14 @@ description: Result of parsing spinning-highrise-tower.kcl
                                     },
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "start": 0,
                                     "type": "CallExpressionKw",
                                     "type": "CallExpressionKw",
                                     "unlabeled": {
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "start": 0,
                                       "type": "PipeSubstitution",
                                       "type": "PipeSubstitution"
@@ -1272,6 +1429,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                                   }
                                 ],
                                 "end": 0,
+                                "moduleId": 0,
                                 "start": 0,
                                 "type": "ArrayExpression",
                                 "type": "ArrayExpression"
@@ -1282,9 +1440,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "line",
                               "start": 0,
                               "type": "Identifier"
@@ -1295,19 +1455,23 @@ description: Result of parsing spinning-highrise-tower.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": null
                         },
                         {
+                          "arguments": [],
                           "callee": {
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "close",
                               "start": 0,
                               "type": "Identifier"
@@ -1318,12 +1482,14 @@ description: Result of parsing spinning-highrise-tower.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "start": 0,
                             "type": "PipeSubstitution",
                             "type": "PipeSubstitution"
@@ -1332,15 +1498,18 @@ description: Result of parsing spinning-highrise-tower.kcl
                       ],
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "PipeExpression",
                       "type": "PipeExpression"
                     },
+                    "moduleId": 0,
                     "start": 0,
                     "type": "VariableDeclarator"
                   },
                   "end": 0,
                   "kind": "const",
+                  "moduleId": 0,
                   "start": 0,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
@@ -1353,6 +1522,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                     "id": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "body",
                       "start": 0,
                       "type": "Identifier"
@@ -1364,6 +1534,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                           "label": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "length",
                             "start": 0,
                             "type": "Identifier"
@@ -1372,9 +1543,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "height",
                               "start": 0,
                               "type": "Identifier"
@@ -1390,9 +1563,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "extrude",
                           "start": 0,
                           "type": "Identifier"
@@ -1403,6 +1578,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                       },
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "CallExpressionKw",
                       "type": "CallExpressionKw",
@@ -1410,9 +1586,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "shape",
                           "start": 0,
                           "type": "Identifier"
@@ -1423,11 +1601,13 @@ description: Result of parsing spinning-highrise-tower.kcl
                         "type": "Name"
                       }
                     },
+                    "moduleId": 0,
                     "start": 0,
                     "type": "VariableDeclarator"
                   },
                   "end": 0,
                   "kind": "const",
+                  "moduleId": 0,
                   "start": 0,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
@@ -1437,9 +1617,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                     "abs_path": false,
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "body",
                       "start": 0,
                       "type": "Identifier"
@@ -1451,6 +1633,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                   },
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
@@ -1458,16 +1641,19 @@ description: Result of parsing spinning-highrise-tower.kcl
               ],
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0
             },
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "plane",
                   "start": 0,
                   "type": "Identifier"
@@ -1478,6 +1664,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                 "identifier": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "width",
                   "start": 0,
                   "type": "Identifier"
@@ -1488,6 +1675,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                 "identifier": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "height",
                   "start": 0,
                   "type": "Identifier"
@@ -1498,11 +1686,13 @@ description: Result of parsing spinning-highrise-tower.kcl
             "type": "FunctionExpression",
             "type": "FunctionExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "fn",
+        "moduleId": 0,
         "preComments": [
           "",
           "",
@@ -1520,6 +1710,7 @@ description: Result of parsing spinning-highrise-tower.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "transformFn",
             "start": 0,
             "type": "Identifier"
@@ -1531,6 +1722,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                   "argument": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "properties": [
                       {
                         "commentStart": 0,
@@ -1538,10 +1730,12 @@ description: Result of parsing spinning-highrise-tower.kcl
                         "key": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "translate",
                           "start": 0,
                           "type": "Identifier"
                         },
+                        "moduleId": 0,
                         "start": 0,
                         "type": "ObjectProperty",
                         "value": {
@@ -1550,6 +1744,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                             {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "raw": "0",
                               "start": 0,
                               "type": "Literal",
@@ -1562,6 +1757,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                             {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "raw": "0",
                               "start": 0,
                               "type": "Literal",
@@ -1578,9 +1774,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                                 "abs_path": false,
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": {
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "name": "i",
                                   "start": 0,
                                   "type": "Identifier"
@@ -1590,14 +1788,17 @@ description: Result of parsing spinning-highrise-tower.kcl
                                 "type": "Name",
                                 "type": "Name"
                               },
+                              "moduleId": 0,
                               "operator": "*",
                               "right": {
                                 "abs_path": false,
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": {
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "name": "floorHeight",
                                   "start": 0,
                                   "type": "Identifier"
@@ -1613,6 +1814,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                             }
                           ],
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "ArrayExpression",
                           "type": "ArrayExpression"
@@ -1624,15 +1826,18 @@ description: Result of parsing spinning-highrise-tower.kcl
                         "key": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "rotation",
                           "start": 0,
                           "type": "Identifier"
                         },
+                        "moduleId": 0,
                         "start": 0,
                         "type": "ObjectProperty",
                         "value": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "properties": [
                             {
                               "commentStart": 0,
@@ -1640,10 +1845,12 @@ description: Result of parsing spinning-highrise-tower.kcl
                               "key": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "angle",
                                 "start": 0,
                                 "type": "Identifier"
                               },
+                              "moduleId": 0,
                               "start": 0,
                               "type": "ObjectProperty",
                               "value": {
@@ -1653,9 +1860,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                                   "abs_path": false,
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "name": {
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "name": "rotationAngleStep",
                                     "start": 0,
                                     "type": "Identifier"
@@ -1665,14 +1874,17 @@ description: Result of parsing spinning-highrise-tower.kcl
                                   "type": "Name",
                                   "type": "Name"
                                 },
+                                "moduleId": 0,
                                 "operator": "*",
                                 "right": {
                                   "abs_path": false,
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "name": {
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "name": "i",
                                     "start": 0,
                                     "type": "Identifier"
@@ -1700,6 +1912,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                   },
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
@@ -1707,16 +1920,19 @@ description: Result of parsing spinning-highrise-tower.kcl
               ],
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0
             },
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "i",
                   "start": 0,
                   "type": "Identifier"
@@ -1728,11 +1944,13 @@ description: Result of parsing spinning-highrise-tower.kcl
             "type": "FunctionExpression",
             "type": "FunctionExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "fn",
+        "moduleId": 0,
         "preComments": [
           "",
           "",
@@ -1750,6 +1968,7 @@ description: Result of parsing spinning-highrise-tower.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "baseThickness",
             "start": 0,
             "type": "Identifier"
@@ -1757,6 +1976,7 @@ description: Result of parsing spinning-highrise-tower.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "0.2",
             "start": 0,
             "type": "Literal",
@@ -1766,11 +1986,13 @@ description: Result of parsing spinning-highrise-tower.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "preComments": [
           "",
           "",
@@ -1788,6 +2010,7 @@ description: Result of parsing spinning-highrise-tower.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "baseSlab",
             "start": 0,
             "type": "Identifier"
@@ -1801,6 +2024,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "plane",
                       "start": 0,
                       "type": "Identifier"
@@ -1809,9 +2033,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                       "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "XY",
                         "start": 0,
                         "type": "Identifier"
@@ -1827,6 +2053,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "width",
                       "start": 0,
                       "type": "Identifier"
@@ -1835,9 +2062,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                       "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "slabWidth",
                         "start": 0,
                         "type": "Identifier"
@@ -1853,6 +2082,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "height",
                       "start": 0,
                       "type": "Identifier"
@@ -1862,9 +2092,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "baseThickness",
                           "start": 0,
                           "type": "Identifier"
@@ -1876,6 +2108,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                       },
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "operator": "-",
                       "start": 0,
                       "type": "UnaryExpression",
@@ -1887,9 +2120,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "boxFn",
                     "start": 0,
                     "type": "Identifier"
@@ -1900,6 +2135,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -1912,6 +2148,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "color",
                       "start": 0,
                       "type": "Identifier"
@@ -1919,6 +2156,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "\"#dbd7d2\"",
                       "start": 0,
                       "type": "Literal",
@@ -1931,9 +2169,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "appearance",
                     "start": 0,
                     "type": "Identifier"
@@ -1944,12 +2184,14 @@ description: Result of parsing spinning-highrise-tower.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "start": 0,
                   "type": "PipeSubstitution",
                   "type": "PipeSubstitution"
@@ -1958,12 +2200,14 @@ description: Result of parsing spinning-highrise-tower.kcl
             ],
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "1": [
                   {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "start": 0,
                     "type": "NonCodeNode",
                     "value": {
@@ -1980,11 +2224,13 @@ description: Result of parsing spinning-highrise-tower.kcl
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -1997,6 +2243,7 @@ description: Result of parsing spinning-highrise-tower.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "groundSize",
             "start": 0,
             "type": "Identifier"
@@ -2004,6 +2251,7 @@ description: Result of parsing spinning-highrise-tower.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "50",
             "start": 0,
             "type": "Literal",
@@ -2013,11 +2261,13 @@ description: Result of parsing spinning-highrise-tower.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -2030,6 +2280,7 @@ description: Result of parsing spinning-highrise-tower.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "groundBody",
             "start": 0,
             "type": "Identifier"
@@ -2043,6 +2294,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "plane",
                       "start": 0,
                       "type": "Identifier"
@@ -2054,6 +2306,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                           "label": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "offset",
                             "start": 0,
                             "type": "Identifier"
@@ -2063,9 +2316,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                               "abs_path": false,
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "baseThickness",
                                 "start": 0,
                                 "type": "Identifier"
@@ -2077,6 +2332,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                             },
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "operator": "-",
                             "start": 0,
                             "type": "UnaryExpression",
@@ -2088,9 +2344,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "offsetPlane",
                           "start": 0,
                           "type": "Identifier"
@@ -2101,6 +2359,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                       },
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "CallExpressionKw",
                       "type": "CallExpressionKw",
@@ -2108,9 +2367,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "XY",
                           "start": 0,
                           "type": "Identifier"
@@ -2127,6 +2388,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "width",
                       "start": 0,
                       "type": "Identifier"
@@ -2135,9 +2397,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                       "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "groundSize",
                         "start": 0,
                         "type": "Identifier"
@@ -2153,6 +2417,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "height",
                       "start": 0,
                       "type": "Identifier"
@@ -2161,6 +2426,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                       "argument": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "5",
                         "start": 0,
                         "type": "Literal",
@@ -2172,6 +2438,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                       },
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "operator": "-",
                       "start": 0,
                       "type": "UnaryExpression",
@@ -2183,9 +2450,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "boxFn",
                     "start": 0,
                     "type": "Identifier"
@@ -2196,6 +2465,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -2208,6 +2478,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "color",
                       "start": 0,
                       "type": "Identifier"
@@ -2215,6 +2486,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "\"#3a3631\"",
                       "start": 0,
                       "type": "Literal",
@@ -2227,9 +2499,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "appearance",
                     "start": 0,
                     "type": "Identifier"
@@ -2240,12 +2514,14 @@ description: Result of parsing spinning-highrise-tower.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "start": 0,
                   "type": "PipeSubstitution",
                   "type": "PipeSubstitution"
@@ -2254,12 +2530,14 @@ description: Result of parsing spinning-highrise-tower.kcl
             ],
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "1": [
                   {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "start": 0,
                     "type": "NonCodeNode",
                     "value": {
@@ -2276,11 +2554,13 @@ description: Result of parsing spinning-highrise-tower.kcl
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -2293,6 +2573,7 @@ description: Result of parsing spinning-highrise-tower.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "slabAndHandrailGeometry",
             "start": 0,
             "type": "Identifier"
@@ -2304,6 +2585,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                 "label": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "plane",
                   "start": 0,
                   "type": "Identifier"
@@ -2315,6 +2597,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                       "label": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "offset",
                         "start": 0,
                         "type": "Identifier"
@@ -2326,9 +2609,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "floorHeight",
                             "start": 0,
                             "type": "Identifier"
@@ -2338,14 +2623,17 @@ description: Result of parsing spinning-highrise-tower.kcl
                           "type": "Name",
                           "type": "Name"
                         },
+                        "moduleId": 0,
                         "operator": "-",
                         "right": {
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "slabThickness",
                             "start": 0,
                             "type": "Identifier"
@@ -2365,9 +2653,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                     "abs_path": false,
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "offsetPlane",
                       "start": 0,
                       "type": "Identifier"
@@ -2378,6 +2668,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                   },
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "start": 0,
                   "type": "CallExpressionKw",
                   "type": "CallExpressionKw",
@@ -2385,9 +2676,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                     "abs_path": false,
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "XY",
                       "start": 0,
                       "type": "Identifier"
@@ -2404,6 +2697,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                 "label": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "width",
                   "start": 0,
                   "type": "Identifier"
@@ -2412,9 +2706,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "slabWidth",
                     "start": 0,
                     "type": "Identifier"
@@ -2430,6 +2726,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                 "label": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "height",
                   "start": 0,
                   "type": "Identifier"
@@ -2441,9 +2738,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                     "abs_path": false,
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "slabThickness",
                       "start": 0,
                       "type": "Identifier"
@@ -2453,14 +2752,17 @@ description: Result of parsing spinning-highrise-tower.kcl
                     "type": "Name",
                     "type": "Name"
                   },
+                  "moduleId": 0,
                   "operator": "+",
                   "right": {
                     "abs_path": false,
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "handrailHeight",
                       "start": 0,
                       "type": "Identifier"
@@ -2480,9 +2782,11 @@ description: Result of parsing spinning-highrise-tower.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "boxFn",
                 "start": 0,
                 "type": "Identifier"
@@ -2493,16 +2797,19 @@ description: Result of parsing spinning-highrise-tower.kcl
             },
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": null
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -2515,6 +2822,7 @@ description: Result of parsing spinning-highrise-tower.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "slabVoidStart",
             "start": 0,
             "type": "Identifier"
@@ -2530,9 +2838,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "slabWidth",
                     "start": 0,
                     "type": "Identifier"
@@ -2544,15 +2854,18 @@ description: Result of parsing spinning-highrise-tower.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "operator": "-",
                 "start": 0,
                 "type": "UnaryExpression",
                 "type": "UnaryExpression"
               },
+              "moduleId": 0,
               "operator": "/",
               "right": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "2",
                 "start": 0,
                 "type": "Literal",
@@ -2566,14 +2879,17 @@ description: Result of parsing spinning-highrise-tower.kcl
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             },
+            "moduleId": 0,
             "operator": "+",
             "right": {
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "handrailThickness",
                 "start": 0,
                 "type": "Identifier"
@@ -2587,11 +2903,13 @@ description: Result of parsing spinning-highrise-tower.kcl
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -2604,6 +2922,7 @@ description: Result of parsing spinning-highrise-tower.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "slabVoidWidth",
             "start": 0,
             "type": "Identifier"
@@ -2615,9 +2934,11 @@ description: Result of parsing spinning-highrise-tower.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "slabWidth",
                 "start": 0,
                 "type": "Identifier"
@@ -2627,6 +2948,7 @@ description: Result of parsing spinning-highrise-tower.kcl
               "type": "Name",
               "type": "Name"
             },
+            "moduleId": 0,
             "operator": "-",
             "right": {
               "commentStart": 0,
@@ -2635,9 +2957,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "handrailThickness",
                   "start": 0,
                   "type": "Identifier"
@@ -2647,10 +2971,12 @@ description: Result of parsing spinning-highrise-tower.kcl
                 "type": "Name",
                 "type": "Name"
               },
+              "moduleId": 0,
               "operator": "*",
               "right": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "2",
                 "start": 0,
                 "type": "Literal",
@@ -2668,11 +2994,13 @@ description: Result of parsing spinning-highrise-tower.kcl
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -2685,6 +3013,7 @@ description: Result of parsing spinning-highrise-tower.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "slabVoidShape",
             "start": 0,
             "type": "Identifier"
@@ -2698,6 +3027,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "face",
                       "start": 0,
                       "type": "Identifier"
@@ -2706,9 +3036,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                       "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "END",
                         "start": 0,
                         "type": "Identifier"
@@ -2724,9 +3056,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "startSketchOn",
                     "start": 0,
                     "type": "Identifier"
@@ -2737,6 +3071,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -2744,9 +3079,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "slabAndHandrailGeometry",
                     "start": 0,
                     "type": "Identifier"
@@ -2764,6 +3101,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "at",
                       "start": 0,
                       "type": "Identifier"
@@ -2775,9 +3113,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "slabVoidStart",
                             "start": 0,
                             "type": "Identifier"
@@ -2791,9 +3131,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "slabVoidStart",
                             "start": 0,
                             "type": "Identifier"
@@ -2805,6 +3147,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -2815,9 +3158,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "startProfile",
                     "start": 0,
                     "type": "Identifier"
@@ -2828,12 +3173,14 @@ description: Result of parsing spinning-highrise-tower.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "start": 0,
                   "type": "PipeSubstitution",
                   "type": "PipeSubstitution"
@@ -2846,6 +3193,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
@@ -2856,6 +3204,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "0",
                           "start": 0,
                           "type": "Literal",
@@ -2869,9 +3218,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "slabVoidWidth",
                             "start": 0,
                             "type": "Identifier"
@@ -2883,6 +3234,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -2893,9 +3245,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "line",
                     "start": 0,
                     "type": "Identifier"
@@ -2906,12 +3260,14 @@ description: Result of parsing spinning-highrise-tower.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "start": 0,
                   "type": "PipeSubstitution",
                   "type": "PipeSubstitution"
@@ -2924,6 +3280,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
@@ -2935,9 +3292,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "slabVoidWidth",
                             "start": 0,
                             "type": "Identifier"
@@ -2950,6 +3309,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "0",
                           "start": 0,
                           "type": "Literal",
@@ -2961,6 +3321,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -2971,9 +3332,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "line",
                     "start": 0,
                     "type": "Identifier"
@@ -2984,12 +3347,14 @@ description: Result of parsing spinning-highrise-tower.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "start": 0,
                   "type": "PipeSubstitution",
                   "type": "PipeSubstitution"
@@ -3002,6 +3367,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
@@ -3012,6 +3378,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "0",
                           "start": 0,
                           "type": "Literal",
@@ -3026,9 +3393,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "slabVoidWidth",
                               "start": 0,
                               "type": "Identifier"
@@ -3040,6 +3409,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "operator": "-",
                           "start": 0,
                           "type": "UnaryExpression",
@@ -3047,6 +3417,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -3057,9 +3428,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "line",
                     "start": 0,
                     "type": "Identifier"
@@ -3070,12 +3443,14 @@ description: Result of parsing spinning-highrise-tower.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "start": 0,
                   "type": "PipeSubstitution",
                   "type": "PipeSubstitution"
@@ -3088,6 +3463,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
@@ -3096,13 +3472,16 @@ description: Result of parsing spinning-highrise-tower.kcl
                       "commentStart": 0,
                       "elements": [
                         {
+                          "arguments": [],
                           "callee": {
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "profileStartX",
                               "start": 0,
                               "type": "Identifier"
@@ -3113,25 +3492,30 @@ description: Result of parsing spinning-highrise-tower.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "start": 0,
                             "type": "PipeSubstitution",
                             "type": "PipeSubstitution"
                           }
                         },
                         {
+                          "arguments": [],
                           "callee": {
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "profileStartY",
                               "start": 0,
                               "type": "Identifier"
@@ -3142,12 +3526,14 @@ description: Result of parsing spinning-highrise-tower.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "start": 0,
                             "type": "PipeSubstitution",
                             "type": "PipeSubstitution"
@@ -3155,6 +3541,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -3165,9 +3552,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "line",
                     "start": 0,
                     "type": "Identifier"
@@ -3178,19 +3567,23 @@ description: Result of parsing spinning-highrise-tower.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               },
               {
+                "arguments": [],
                 "callee": {
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "close",
                     "start": 0,
                     "type": "Identifier"
@@ -3201,12 +3594,14 @@ description: Result of parsing spinning-highrise-tower.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "start": 0,
                   "type": "PipeSubstitution",
                   "type": "PipeSubstitution"
@@ -3215,12 +3610,14 @@ description: Result of parsing spinning-highrise-tower.kcl
             ],
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "6": [
                   {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "start": 0,
                     "type": "NonCodeNode",
                     "value": {
@@ -3237,11 +3634,13 @@ description: Result of parsing spinning-highrise-tower.kcl
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -3254,6 +3653,7 @@ description: Result of parsing spinning-highrise-tower.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "slabBody",
             "start": 0,
             "type": "Identifier"
@@ -3267,6 +3667,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
@@ -3276,9 +3677,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "handrailHeight",
                           "start": 0,
                           "type": "Identifier"
@@ -3290,6 +3693,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                       },
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "operator": "-",
                       "start": 0,
                       "type": "UnaryExpression",
@@ -3301,9 +3705,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "extrude",
                     "start": 0,
                     "type": "Identifier"
@@ -3314,6 +3720,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -3321,9 +3728,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "slabVoidShape",
                     "start": 0,
                     "type": "Identifier"
@@ -3341,6 +3750,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "instances",
                       "start": 0,
                       "type": "Identifier"
@@ -3349,9 +3759,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                       "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "floorCount",
                         "start": 0,
                         "type": "Identifier"
@@ -3367,6 +3779,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "transform",
                       "start": 0,
                       "type": "Identifier"
@@ -3375,9 +3788,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                       "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "transformFn",
                         "start": 0,
                         "type": "Identifier"
@@ -3393,9 +3808,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "patternTransform",
                     "start": 0,
                     "type": "Identifier"
@@ -3406,6 +3823,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -3418,6 +3836,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "color",
                       "start": 0,
                       "type": "Identifier"
@@ -3425,6 +3844,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "\"#dbd7d2\"",
                       "start": 0,
                       "type": "Literal",
@@ -3437,9 +3857,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "appearance",
                     "start": 0,
                     "type": "Identifier"
@@ -3450,12 +3872,14 @@ description: Result of parsing spinning-highrise-tower.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "start": 0,
                   "type": "PipeSubstitution",
                   "type": "PipeSubstitution"
@@ -3464,12 +3888,14 @@ description: Result of parsing spinning-highrise-tower.kcl
             ],
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "2": [
                   {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "start": 0,
                     "type": "NonCodeNode",
                     "value": {
@@ -3486,11 +3912,13 @@ description: Result of parsing spinning-highrise-tower.kcl
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -3503,6 +3931,7 @@ description: Result of parsing spinning-highrise-tower.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "coreLength",
             "start": 0,
             "type": "Identifier"
@@ -3510,6 +3939,7 @@ description: Result of parsing spinning-highrise-tower.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "10",
             "start": 0,
             "type": "Literal",
@@ -3519,11 +3949,13 @@ description: Result of parsing spinning-highrise-tower.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -3536,6 +3968,7 @@ description: Result of parsing spinning-highrise-tower.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "coreWidth",
             "start": 0,
             "type": "Identifier"
@@ -3543,6 +3976,7 @@ description: Result of parsing spinning-highrise-tower.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "8",
             "start": 0,
             "type": "Literal",
@@ -3552,11 +3986,13 @@ description: Result of parsing spinning-highrise-tower.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -3569,6 +4005,7 @@ description: Result of parsing spinning-highrise-tower.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "core",
             "start": 0,
             "type": "Identifier"
@@ -3576,13 +4013,16 @@ description: Result of parsing spinning-highrise-tower.kcl
           "init": {
             "body": [
               {
+                "arguments": [],
                 "callee": {
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "startSketchOn",
                     "start": 0,
                     "type": "Identifier"
@@ -3593,6 +4033,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -3600,9 +4041,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "XY",
                     "start": 0,
                     "type": "Identifier"
@@ -3620,6 +4063,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "at",
                       "start": 0,
                       "type": "Identifier"
@@ -3635,9 +4079,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                               "abs_path": false,
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "coreLength",
                                 "start": 0,
                                 "type": "Identifier"
@@ -3649,15 +4095,18 @@ description: Result of parsing spinning-highrise-tower.kcl
                             },
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "operator": "-",
                             "start": 0,
                             "type": "UnaryExpression",
                             "type": "UnaryExpression"
                           },
+                          "moduleId": 0,
                           "operator": "/",
                           "right": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "raw": "2",
                             "start": 0,
                             "type": "Literal",
@@ -3679,9 +4128,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                               "abs_path": false,
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "coreWidth",
                                 "start": 0,
                                 "type": "Identifier"
@@ -3693,15 +4144,18 @@ description: Result of parsing spinning-highrise-tower.kcl
                             },
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "operator": "-",
                             "start": 0,
                             "type": "UnaryExpression",
                             "type": "UnaryExpression"
                           },
+                          "moduleId": 0,
                           "operator": "/",
                           "right": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "raw": "2",
                             "start": 0,
                             "type": "Literal",
@@ -3717,6 +4171,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -3727,9 +4182,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "startProfile",
                     "start": 0,
                     "type": "Identifier"
@@ -3740,12 +4197,14 @@ description: Result of parsing spinning-highrise-tower.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "start": 0,
                   "type": "PipeSubstitution",
                   "type": "PipeSubstitution"
@@ -3758,6 +4217,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
@@ -3768,6 +4228,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "0",
                           "start": 0,
                           "type": "Literal",
@@ -3781,9 +4242,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "coreWidth",
                             "start": 0,
                             "type": "Identifier"
@@ -3795,6 +4258,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -3805,9 +4269,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "line",
                     "start": 0,
                     "type": "Identifier"
@@ -3818,12 +4284,14 @@ description: Result of parsing spinning-highrise-tower.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "start": 0,
                   "type": "PipeSubstitution",
                   "type": "PipeSubstitution"
@@ -3836,6 +4304,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
@@ -3847,9 +4316,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "coreLength",
                             "start": 0,
                             "type": "Identifier"
@@ -3862,6 +4333,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "0",
                           "start": 0,
                           "type": "Literal",
@@ -3873,6 +4345,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -3883,9 +4356,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "line",
                     "start": 0,
                     "type": "Identifier"
@@ -3896,12 +4371,14 @@ description: Result of parsing spinning-highrise-tower.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "start": 0,
                   "type": "PipeSubstitution",
                   "type": "PipeSubstitution"
@@ -3914,6 +4391,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
@@ -3925,6 +4403,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                           "argument": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "raw": "0.22",
                             "start": 0,
                             "type": "Literal",
@@ -3936,6 +4415,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "operator": "-",
                           "start": 0,
                           "type": "UnaryExpression",
@@ -3946,9 +4426,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "coreWidth",
                               "start": 0,
                               "type": "Identifier"
@@ -3960,6 +4442,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "operator": "-",
                           "start": 0,
                           "type": "UnaryExpression",
@@ -3967,6 +4450,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -3977,9 +4461,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "line",
                     "start": 0,
                     "type": "Identifier"
@@ -3990,12 +4476,14 @@ description: Result of parsing spinning-highrise-tower.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "start": 0,
                   "type": "PipeSubstitution",
                   "type": "PipeSubstitution"
@@ -4008,6 +4496,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
@@ -4016,13 +4505,16 @@ description: Result of parsing spinning-highrise-tower.kcl
                       "commentStart": 0,
                       "elements": [
                         {
+                          "arguments": [],
                           "callee": {
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "profileStartX",
                               "start": 0,
                               "type": "Identifier"
@@ -4033,25 +4525,30 @@ description: Result of parsing spinning-highrise-tower.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "start": 0,
                             "type": "PipeSubstitution",
                             "type": "PipeSubstitution"
                           }
                         },
                         {
+                          "arguments": [],
                           "callee": {
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "profileStartY",
                               "start": 0,
                               "type": "Identifier"
@@ -4062,12 +4559,14 @@ description: Result of parsing spinning-highrise-tower.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "start": 0,
                             "type": "PipeSubstitution",
                             "type": "PipeSubstitution"
@@ -4075,6 +4574,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -4085,9 +4585,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "line",
                     "start": 0,
                     "type": "Identifier"
@@ -4098,19 +4600,23 @@ description: Result of parsing spinning-highrise-tower.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               },
               {
+                "arguments": [],
                 "callee": {
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "close",
                     "start": 0,
                     "type": "Identifier"
@@ -4121,12 +4627,14 @@ description: Result of parsing spinning-highrise-tower.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "start": 0,
                   "type": "PipeSubstitution",
                   "type": "PipeSubstitution"
@@ -4139,6 +4647,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
@@ -4147,9 +4656,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                       "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "coreHeight",
                         "start": 0,
                         "type": "Identifier"
@@ -4165,9 +4676,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "extrude",
                     "start": 0,
                     "type": "Identifier"
@@ -4178,12 +4691,14 @@ description: Result of parsing spinning-highrise-tower.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "start": 0,
                   "type": "PipeSubstitution",
                   "type": "PipeSubstitution"
@@ -4192,12 +4707,14 @@ description: Result of parsing spinning-highrise-tower.kcl
             ],
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "7": [
                   {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "start": 0,
                     "type": "NonCodeNode",
                     "value": {
@@ -4214,11 +4731,13 @@ description: Result of parsing spinning-highrise-tower.kcl
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -4231,6 +4750,7 @@ description: Result of parsing spinning-highrise-tower.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "facadeStart",
             "start": 0,
             "type": "Identifier"
@@ -4242,9 +4762,11 @@ description: Result of parsing spinning-highrise-tower.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "facadeWidth",
                 "start": 0,
                 "type": "Identifier"
@@ -4254,10 +4776,12 @@ description: Result of parsing spinning-highrise-tower.kcl
               "type": "Name",
               "type": "Name"
             },
+            "moduleId": 0,
             "operator": "/",
             "right": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "raw": "2",
               "start": 0,
               "type": "Literal",
@@ -4271,11 +4795,13 @@ description: Result of parsing spinning-highrise-tower.kcl
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -4288,6 +4814,7 @@ description: Result of parsing spinning-highrise-tower.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "facadeGeometry",
             "start": 0,
             "type": "Identifier"
@@ -4301,6 +4828,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "plane",
                       "start": 0,
                       "type": "Identifier"
@@ -4309,9 +4837,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                       "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "XY",
                         "start": 0,
                         "type": "Identifier"
@@ -4327,6 +4857,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "width",
                       "start": 0,
                       "type": "Identifier"
@@ -4335,9 +4866,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                       "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "facadeWidth",
                         "start": 0,
                         "type": "Identifier"
@@ -4353,6 +4886,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "height",
                       "start": 0,
                       "type": "Identifier"
@@ -4361,9 +4895,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                       "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "facadeHeight",
                         "start": 0,
                         "type": "Identifier"
@@ -4379,9 +4915,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "boxFn",
                     "start": 0,
                     "type": "Identifier"
@@ -4392,6 +4930,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -4404,6 +4943,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "instances",
                       "start": 0,
                       "type": "Identifier"
@@ -4412,9 +4952,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                       "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "floorCount",
                         "start": 0,
                         "type": "Identifier"
@@ -4430,6 +4972,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "transform",
                       "start": 0,
                       "type": "Identifier"
@@ -4438,9 +4981,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                       "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "transformFn",
                         "start": 0,
                         "type": "Identifier"
@@ -4456,9 +5001,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "patternTransform",
                     "start": 0,
                     "type": "Identifier"
@@ -4469,6 +5016,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -4481,6 +5029,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "color",
                       "start": 0,
                       "type": "Identifier"
@@ -4488,6 +5037,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "\"#151819\"",
                       "start": 0,
                       "type": "Literal",
@@ -4500,9 +5050,11 @@ description: Result of parsing spinning-highrise-tower.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "appearance",
                     "start": 0,
                     "type": "Identifier"
@@ -4513,12 +5065,14 @@ description: Result of parsing spinning-highrise-tower.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "start": 0,
                   "type": "PipeSubstitution",
                   "type": "PipeSubstitution"
@@ -4527,15 +5081,18 @@ description: Result of parsing spinning-highrise-tower.kcl
             ],
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -4547,9 +5104,11 @@ description: Result of parsing spinning-highrise-tower.kcl
       {
         "commentStart": 0,
         "end": 0,
+        "moduleId": 0,
         "name": {
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "name": "settings",
           "start": 0,
           "type": "Identifier"
@@ -4561,19 +5120,23 @@ description: Result of parsing spinning-highrise-tower.kcl
             "key": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "defaultLengthUnit",
               "start": 0,
               "type": "Identifier"
             },
+            "moduleId": 0,
             "start": 0,
             "type": "ObjectProperty",
             "value": {
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "m",
                 "start": 0,
                 "type": "Identifier"
@@ -4590,15 +5153,18 @@ description: Result of parsing spinning-highrise-tower.kcl
             "key": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "kclVersion",
               "start": 0,
               "type": "Identifier"
             },
+            "moduleId": 0,
             "start": 0,
             "type": "ObjectProperty",
             "value": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "raw": "1.0",
               "start": 0,
               "type": "Literal",
@@ -4614,12 +5180,14 @@ description: Result of parsing spinning-highrise-tower.kcl
         "type": "Annotation"
       }
     ],
+    "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {},
       "startNodes": [
         {
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "NonCodeNode",
           "value": {
@@ -4631,6 +5199,7 @@ description: Result of parsing spinning-highrise-tower.kcl
         {
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "NonCodeNode",
           "value": {
@@ -4642,6 +5211,7 @@ description: Result of parsing spinning-highrise-tower.kcl
         {
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "NonCodeNode",
           "value": {
@@ -4651,6 +5221,7 @@ description: Result of parsing spinning-highrise-tower.kcl
         {
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "NonCodeNode",
           "value": {

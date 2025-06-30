@@ -16,5 +16,5 @@ async fn main() {
 
     let result = kcl_to_engine_core(&kcl).await.expect("kcl conversion");
 
-    println!("{}", result);
+    println!("{result}");
 }

@@ -5,14 +5,14 @@ use anyhow::Result;
 use super::args::TyF64;
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{types::RuntimeType, ExecState, KclValue},
+    execution::{ExecState, KclValue, types::RuntimeType},
     std::Args,
 };
 
 async fn _assert(value: bool, message: &str, args: &Args) -> Result<(), KclError> {
     if !value {
         return Err(KclError::new_type(KclErrorDetails::new(
-            format!("assert failed: {}", message),
+            format!("assert failed: {message}"),
             vec![args.source_range],
         )));
     }

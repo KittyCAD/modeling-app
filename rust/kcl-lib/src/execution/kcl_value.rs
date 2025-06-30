@@ -5,18 +5,18 @@ use schemars::JsonSchema;
 use serde::Serialize;
 
 use crate::{
+    CompilationError, KclError, ModuleId, SourceRange,
     errors::KclErrorDetails,
     execution::{
-        annotations::{SETTINGS, SETTINGS_UNIT_LENGTH},
-        types::{NumericType, PrimitiveType, RuntimeType, UnitLen},
         EnvironmentRef, ExecState, Face, Geometry, GeometryWithImportedGeometry, Helix, ImportedGeometry, MetaSettings,
         Metadata, Plane, Sketch, Solid, TagIdentifier,
+        annotations::{SETTINGS, SETTINGS_UNIT_LENGTH},
+        types::{NumericType, PrimitiveType, RuntimeType, UnitLen},
     },
     parsing::ast::types::{
         DefaultParamVal, FunctionExpression, KclNone, Literal, LiteralValue, Node, TagDeclarator, TagNode,
     },
-    std::{args::TyF64, StdFnProps},
-    CompilationError, KclError, ModuleId, SourceRange,
+    std::{StdFnProps, args::TyF64},
 };
 
 pub type KclObjectFields = HashMap<String, KclValue>;
@@ -136,9 +136,9 @@ impl JsonSchema for FunctionSource {
         "FunctionSource".to_owned()
     }
 
-    fn json_schema(gen: &mut schemars::gen::SchemaGenerator) -> schemars::schema::Schema {
+    fn json_schema(r#gen: &mut schemars::r#gen::SchemaGenerator) -> schemars::schema::Schema {
         // TODO: Actually generate a reasonable schema.
-        gen.subschema_for::<()>()
+        r#gen.subschema_for::<()>()
     }
 }
 
@@ -587,7 +587,7 @@ impl KclValue {
         match self {
             KclValue::TagIdentifier(t) => Ok(*t.clone()),
             _ => Err(KclError::new_semantic(KclErrorDetails::new(
-                format!("Not a tag identifier: {:?}", self),
+                format!("Not a tag identifier: {self:?}"),
                 self.clone().into(),
             ))),
         }
@@ -598,7 +598,7 @@ impl KclValue {
         match self {
             KclValue::TagDeclarator(t) => Ok((**t).clone()),
             _ => Err(KclError::new_semantic(KclErrorDetails::new(
-                format!("Not a tag declarator: {:?}", self),
+                format!("Not a tag declarator: {self:?}"),
                 self.clone().into(),
             ))),
         }

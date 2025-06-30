@@ -13,6 +13,7 @@ description: Result of parsing invalid_index_negative.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "arr",
             "start": 0,
             "type": "Identifier"
@@ -23,6 +24,7 @@ description: Result of parsing invalid_index_negative.kcl
               {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "1",
                 "start": 0,
                 "type": "Literal",
@@ -35,6 +37,7 @@ description: Result of parsing invalid_index_negative.kcl
               {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "2",
                 "start": 0,
                 "type": "Literal",
@@ -47,6 +50,7 @@ description: Result of parsing invalid_index_negative.kcl
               {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "3",
                 "start": 0,
                 "type": "Literal",
@@ -58,15 +62,18 @@ description: Result of parsing invalid_index_negative.kcl
               }
             ],
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "ArrayExpression",
             "type": "ArrayExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -79,6 +86,7 @@ description: Result of parsing invalid_index_negative.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "i",
             "start": 0,
             "type": "Identifier"
@@ -87,6 +95,7 @@ description: Result of parsing invalid_index_negative.kcl
             "argument": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "raw": "1",
               "start": 0,
               "type": "Literal",
@@ -98,16 +107,19 @@ description: Result of parsing invalid_index_negative.kcl
             },
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "operator": "-",
             "start": 0,
             "type": "UnaryExpression",
             "type": "UnaryExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -120,6 +132,7 @@ description: Result of parsing invalid_index_negative.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "x",
             "start": 0,
             "type": "Identifier"
@@ -128,13 +141,16 @@ description: Result of parsing invalid_index_negative.kcl
             "commentStart": 0,
             "computed": true,
             "end": 0,
+            "moduleId": 0,
             "object": {
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "arr",
                 "start": 0,
                 "type": "Identifier"
@@ -147,6 +163,7 @@ description: Result of parsing invalid_index_negative.kcl
             "property": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "i",
               "start": 0,
               "type": "Identifier",
@@ -156,11 +173,13 @@ description: Result of parsing invalid_index_negative.kcl
             "type": "MemberExpression",
             "type": "MemberExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -168,6 +187,7 @@ description: Result of parsing invalid_index_negative.kcl
     ],
     "commentStart": 0,
     "end": 0,
+    "moduleId": 0,
     "start": 0
   }
 }

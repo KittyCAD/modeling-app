@@ -13,6 +13,7 @@ description: Result of parsing var_ref_in_own_def.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "sketch001",
             "start": 0,
             "type": "Identifier"
@@ -20,13 +21,16 @@ description: Result of parsing var_ref_in_own_def.kcl
           "init": {
             "body": [
               {
+                "arguments": [],
                 "callee": {
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "startSketchOn",
                     "start": 0,
                     "type": "Identifier"
@@ -37,6 +41,7 @@ description: Result of parsing var_ref_in_own_def.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -44,9 +49,11 @@ description: Result of parsing var_ref_in_own_def.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "XY",
                     "start": 0,
                     "type": "Identifier"
@@ -66,9 +73,11 @@ description: Result of parsing var_ref_in_own_def.kcl
                       "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "sketch001",
                         "start": 0,
                         "type": "Identifier"
@@ -84,9 +93,11 @@ description: Result of parsing var_ref_in_own_def.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "startProfileAt",
                     "start": 0,
                     "type": "Identifier"
@@ -97,6 +108,7 @@ description: Result of parsing var_ref_in_own_def.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -106,6 +118,7 @@ description: Result of parsing var_ref_in_own_def.kcl
                     {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "20",
                       "start": 0,
                       "type": "Literal",
@@ -119,6 +132,7 @@ description: Result of parsing var_ref_in_own_def.kcl
                       "argument": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "20",
                         "start": 0,
                         "type": "Literal",
@@ -130,6 +144,7 @@ description: Result of parsing var_ref_in_own_def.kcl
                       },
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "operator": "-",
                       "start": 0,
                       "type": "UnaryExpression",
@@ -137,6 +152,7 @@ description: Result of parsing var_ref_in_own_def.kcl
                     }
                   ],
                   "end": 0,
+                  "moduleId": 0,
                   "start": 0,
                   "type": "ArrayExpression",
                   "type": "ArrayExpression"
@@ -145,15 +161,18 @@ description: Result of parsing var_ref_in_own_def.kcl
             ],
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "preComments": [
           "// This won't work, because `sketch001` is being referenced in its own definition."
         ],
@@ -164,6 +183,7 @@ description: Result of parsing var_ref_in_own_def.kcl
     ],
     "commentStart": 0,
     "end": 0,
+    "moduleId": 0,
     "start": 0
   }
 }

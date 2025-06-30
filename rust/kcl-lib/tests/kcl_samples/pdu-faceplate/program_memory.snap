@@ -70,6 +70,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
           "tag": {
             "commentStart": 1252,
             "end": 1258,
+            "moduleId": 0,
             "start": 1252,
             "type": "TagDeclarator",
             "value": "seg01"
@@ -226,6 +227,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
             "tag": {
               "commentStart": 1252,
               "end": 1258,
+              "moduleId": 0,
               "start": 1252,
               "type": "TagDeclarator",
               "value": "seg01"
@@ -424,6 +426,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
             "tag": {
               "commentStart": 1252,
               "end": 1258,
+              "moduleId": 0,
               "start": 1252,
               "type": "TagDeclarator",
               "value": "seg01"
@@ -580,6 +583,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
               "tag": {
                 "commentStart": 1252,
                 "end": 1258,
+                "moduleId": 0,
                 "start": 1252,
                 "type": "TagDeclarator",
                 "value": "seg01"
@@ -850,6 +854,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
           "tag": {
             "commentStart": 1252,
             "end": 1258,
+            "moduleId": 0,
             "start": 1252,
             "type": "TagDeclarator",
             "value": "seg01"
@@ -1180,6 +1185,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                   "tag": {
                     "commentStart": 1252,
                     "end": 1258,
+                    "moduleId": 0,
                     "start": 1252,
                     "type": "TagDeclarator",
                     "value": "seg01"
@@ -1336,6 +1342,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                     "tag": {
                       "commentStart": 1252,
                       "end": 1258,
+                      "moduleId": 0,
                       "start": 1252,
                       "type": "TagDeclarator",
                       "value": "seg01"
@@ -1660,6 +1667,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                   "tag": {
                     "commentStart": 1252,
                     "end": 1258,
+                    "moduleId": 0,
                     "start": 1252,
                     "type": "TagDeclarator",
                     "value": "seg01"
@@ -1816,6 +1824,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                     "tag": {
                       "commentStart": 1252,
                       "end": 1258,
+                      "moduleId": 0,
                       "start": 1252,
                       "type": "TagDeclarator",
                       "value": "seg01"
@@ -2140,6 +2149,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                   "tag": {
                     "commentStart": 1252,
                     "end": 1258,
+                    "moduleId": 0,
                     "start": 1252,
                     "type": "TagDeclarator",
                     "value": "seg01"
@@ -2296,6 +2306,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                     "tag": {
                       "commentStart": 1252,
                       "end": 1258,
+                      "moduleId": 0,
                       "start": 1252,
                       "type": "TagDeclarator",
                       "value": "seg01"
@@ -2620,6 +2631,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                   "tag": {
                     "commentStart": 1252,
                     "end": 1258,
+                    "moduleId": 0,
                     "start": 1252,
                     "type": "TagDeclarator",
                     "value": "seg01"
@@ -2776,6 +2788,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                     "tag": {
                       "commentStart": 1252,
                       "end": 1258,
+                      "moduleId": 0,
                       "start": 1252,
                       "type": "TagDeclarator",
                       "value": "seg01"
@@ -3100,6 +3113,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                   "tag": {
                     "commentStart": 1252,
                     "end": 1258,
+                    "moduleId": 0,
                     "start": 1252,
                     "type": "TagDeclarator",
                     "value": "seg01"
@@ -3256,6 +3270,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                     "tag": {
                       "commentStart": 1252,
                       "end": 1258,
+                      "moduleId": 0,
                       "start": 1252,
                       "type": "TagDeclarator",
                       "value": "seg01"
@@ -3580,6 +3595,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                   "tag": {
                     "commentStart": 1252,
                     "end": 1258,
+                    "moduleId": 0,
                     "start": 1252,
                     "type": "TagDeclarator",
                     "value": "seg01"
@@ -3736,6 +3752,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                     "tag": {
                       "commentStart": 1252,
                       "end": 1258,
+                      "moduleId": 0,
                       "start": 1252,
                       "type": "TagDeclarator",
                       "value": "seg01"
@@ -4125,6 +4142,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                     "tag": {
                       "commentStart": 1252,
                       "end": 1258,
+                      "moduleId": 0,
                       "start": 1252,
                       "type": "TagDeclarator",
                       "value": "seg01"
@@ -4281,6 +4299,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                       "tag": {
                         "commentStart": 1252,
                         "end": 1258,
+                        "moduleId": 0,
                         "start": 1252,
                         "type": "TagDeclarator",
                         "value": "seg01"
@@ -4647,6 +4666,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                     "tag": {
                       "commentStart": 1252,
                       "end": 1258,
+                      "moduleId": 0,
                       "start": 1252,
                       "type": "TagDeclarator",
                       "value": "seg01"
@@ -4803,6 +4823,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                       "tag": {
                         "commentStart": 1252,
                         "end": 1258,
+                        "moduleId": 0,
                         "start": 1252,
                         "type": "TagDeclarator",
                         "value": "seg01"
@@ -5169,6 +5190,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                     "tag": {
                       "commentStart": 1252,
                       "end": 1258,
+                      "moduleId": 0,
                       "start": 1252,
                       "type": "TagDeclarator",
                       "value": "seg01"
@@ -5325,6 +5347,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                       "tag": {
                         "commentStart": 1252,
                         "end": 1258,
+                        "moduleId": 0,
                         "start": 1252,
                         "type": "TagDeclarator",
                         "value": "seg01"
@@ -5691,6 +5714,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                     "tag": {
                       "commentStart": 1252,
                       "end": 1258,
+                      "moduleId": 0,
                       "start": 1252,
                       "type": "TagDeclarator",
                       "value": "seg01"
@@ -5847,6 +5871,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                       "tag": {
                         "commentStart": 1252,
                         "end": 1258,
+                        "moduleId": 0,
                         "start": 1252,
                         "type": "TagDeclarator",
                         "value": "seg01"
@@ -6213,6 +6238,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                     "tag": {
                       "commentStart": 1252,
                       "end": 1258,
+                      "moduleId": 0,
                       "start": 1252,
                       "type": "TagDeclarator",
                       "value": "seg01"
@@ -6369,6 +6395,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                       "tag": {
                         "commentStart": 1252,
                         "end": 1258,
+                        "moduleId": 0,
                         "start": 1252,
                         "type": "TagDeclarator",
                         "value": "seg01"
@@ -6735,6 +6762,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                     "tag": {
                       "commentStart": 1252,
                       "end": 1258,
+                      "moduleId": 0,
                       "start": 1252,
                       "type": "TagDeclarator",
                       "value": "seg01"
@@ -6891,6 +6919,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                       "tag": {
                         "commentStart": 1252,
                         "end": 1258,
+                        "moduleId": 0,
                         "start": 1252,
                         "type": "TagDeclarator",
                         "value": "seg01"
@@ -7531,6 +7560,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
               "tag": {
                 "commentStart": 1252,
                 "end": 1258,
+                "moduleId": 0,
                 "start": 1252,
                 "type": "TagDeclarator",
                 "value": "seg01"
@@ -7687,6 +7717,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                 "tag": {
                   "commentStart": 1252,
                   "end": 1258,
+                  "moduleId": 0,
                   "start": 1252,
                   "type": "TagDeclarator",
                   "value": "seg01"
@@ -8035,6 +8066,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                 "tag": {
                   "commentStart": 1252,
                   "end": 1258,
+                  "moduleId": 0,
                   "start": 1252,
                   "type": "TagDeclarator",
                   "value": "seg01"
@@ -8191,6 +8223,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                   "tag": {
                     "commentStart": 1252,
                     "end": 1258,
+                    "moduleId": 0,
                     "start": 1252,
                     "type": "TagDeclarator",
                     "value": "seg01"

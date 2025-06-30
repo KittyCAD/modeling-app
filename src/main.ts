@@ -28,7 +28,10 @@ import {
   parseCLIArgs,
 } from '@src/commandLineArgs'
 import { initPromiseNode } from '@src/lang/wasmUtilsNode'
-import { ZOO_STUDIO_PROTOCOL } from '@src/lib/constants'
+import {
+  ZOO_STUDIO_PROTOCOL,
+  OAUTH2_DEVICE_CLIENT_ID,
+} from '@src/lib/constants'
 import getCurrentProjectFile from '@src/lib/getCurrentProjectFile'
 import { reportRejection } from '@src/lib/trap'
 import {
@@ -402,7 +405,7 @@ ipcMain.handle('startDeviceFlow', async (_, host: string) => {
     // We can hardcode the client ID.
     // This value is safe to be embedded in version control.
     // This is the client ID of the KittyCAD app.
-    client_id: '2af127fb-e14e-400a-9c57-a9ed08d1a5b7',
+    client_id: OAUTH2_DEVICE_CLIENT_ID,
     token_endpoint_auth_method: 'none',
   })
 

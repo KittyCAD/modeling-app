@@ -8,6 +8,7 @@ description: Result of parsing import_foreign.kcl
       {
         "commentStart": 0,
         "end": 0,
+        "moduleId": 0,
         "path": {
           "type": "Foreign",
           "path": "../inputs/cube.gltf"
@@ -17,6 +18,7 @@ description: Result of parsing import_foreign.kcl
           "alias": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "cube",
             "start": 0,
             "type": "Identifier"
@@ -34,6 +36,7 @@ description: Result of parsing import_foreign.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "model",
             "start": 0,
             "type": "Identifier"
@@ -42,9 +45,11 @@ description: Result of parsing import_foreign.kcl
             "abs_path": false,
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "cube",
               "start": 0,
               "type": "Identifier"
@@ -54,11 +59,13 @@ description: Result of parsing import_foreign.kcl
             "type": "Name",
             "type": "Name"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -66,12 +73,14 @@ description: Result of parsing import_foreign.kcl
     ],
     "commentStart": 0,
     "end": 0,
+    "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {

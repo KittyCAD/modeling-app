@@ -141,6 +141,7 @@ description: Variables in memory after executing poop_chute.kcl
           "tag": {
             "commentStart": 358,
             "end": 364,
+            "moduleId": 0,
             "start": 358,
             "type": "TagDeclarator",
             "value": "seg01"
@@ -260,6 +261,7 @@ description: Variables in memory after executing poop_chute.kcl
             "tag": {
               "commentStart": 358,
               "end": 364,
+              "moduleId": 0,
               "start": 358,
               "type": "TagDeclarator",
               "value": "seg01"
@@ -599,6 +601,7 @@ description: Variables in memory after executing poop_chute.kcl
           "tag": {
             "commentStart": 358,
             "end": 364,
+            "moduleId": 0,
             "start": 358,
             "type": "TagDeclarator",
             "value": "seg01"
@@ -904,6 +907,7 @@ description: Variables in memory after executing poop_chute.kcl
           "tag": {
             "commentStart": 1152,
             "end": 1158,
+            "moduleId": 0,
             "start": 1152,
             "type": "TagDeclarator",
             "value": "seg02"
@@ -1023,6 +1027,7 @@ description: Variables in memory after executing poop_chute.kcl
             "tag": {
               "commentStart": 1152,
               "end": 1158,
+              "moduleId": 0,
               "start": 1152,
               "type": "TagDeclarator",
               "value": "seg02"

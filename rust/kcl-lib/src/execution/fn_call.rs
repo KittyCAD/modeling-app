@@ -2,19 +2,19 @@ use async_recursion::async_recursion;
 use indexmap::IndexMap;
 
 use crate::{
+    CompilationError, NodePath,
     errors::{KclError, KclErrorDetails},
     execution::{
+        BodyType, EnvironmentRef, ExecState, ExecutorContext, KclValue, Metadata, StatementKind, TagEngineInfo,
+        TagIdentifier,
         cad_op::{Group, OpArg, OpKclValue, Operation},
         kcl_value::FunctionSource,
         memory,
         types::RuntimeType,
-        BodyType, EnvironmentRef, ExecState, ExecutorContext, KclValue, Metadata, StatementKind, TagEngineInfo,
-        TagIdentifier,
     },
     parsing::ast::types::{CallExpressionKw, DefaultParamVal, FunctionExpression, Node, Program, Type},
     source_range::SourceRange,
     std::StdFn,
-    CompilationError, NodePath,
 };
 
 #[derive(Debug, Clone)]
@@ -269,7 +269,7 @@ impl Node<CallExpressionKw> {
             };
             KclError::new_undefined_value(
                 KclErrorDetails::new(
-                    format!("Result of user-defined function {} is undefined", fn_name),
+                    format!("Result of user-defined function {fn_name} is undefined"),
                     source_ranges,
                 ),
                 None,
@@ -401,7 +401,7 @@ impl FunctionDefinition<'_> {
 impl FunctionBody<'_> {
     fn prep_mem(&self, exec_state: &mut ExecState) {
         match self {
-            FunctionBody::Rust(_) => exec_state.mut_stack().push_new_env_for_rust_call(),
+            FunctionBody::Rust(_) => exec_state.mut_stack().push_new_root_env(true),
             FunctionBody::Kcl(_, memory) => exec_state.mut_stack().push_new_env_for_call(*memory),
         }
     }
@@ -445,7 +445,7 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
                 }
             }
         }
-        KclValue::Solid { ref mut value } => {
+        KclValue::Solid { value } => {
             for v in &value.value {
                 if let Some(tag) = v.get_tag() {
                     // Get the past tag and update it.
@@ -555,9 +555,9 @@ fn type_err_str(expected: &Type, found: &KclValue, source_range: &SourceRange, e
     let found_human = found.human_friendly_type();
     let found_ty = found.principal_type_string();
     let found_str = if found_human == found_ty || found_human == format!("a {}", strip_backticks(&found_ty)) {
-        format!("a value with type {}", found_ty)
+        format!("a value with type {found_ty}")
     } else {
-        format!("{found_human} (with type {})", found_ty)
+        format!("{found_human} (with type {found_ty})")
     };
 
     let mut result = format!("{expected_str}, but found {found_str}.");
@@ -626,7 +626,7 @@ fn type_check_params_kw(
                     format!(
                         "`{label}` is not an argument of {}",
                         fn_name
-                            .map(|n| format!("`{}`", n))
+                            .map(|n| format!("`{n}`"))
                             .unwrap_or_else(|| "this function".to_owned()),
                     ),
                 ));
@@ -676,7 +676,7 @@ fn type_check_params_kw(
                     format!(
                         "The input argument of {} requires {}",
                         fn_name
-                            .map(|n| format!("`{}`", n))
+                            .map(|n| format!("`{n}`"))
                             .unwrap_or_else(|| "this function".to_owned()),
                         type_err_str(ty, &arg.1.value, &arg.1.source_range, exec_state),
                     ),
@@ -691,7 +691,7 @@ fn type_check_params_kw(
                 format!(
                     "{} expects an unlabeled first argument (`@{name}`), but it is labelled in the call",
                     fn_name
-                        .map(|n| format!("The function `{}`", n))
+                        .map(|n| format!("The function `{n}`"))
                         .unwrap_or_else(|| "This function".to_owned()),
                 ),
             ));
@@ -721,7 +721,7 @@ fn assign_args_to_params_kw(
                 )?;
             }
             None => match default {
-                Some(ref default_val) => {
+                Some(default_val) => {
                     let value = KclValue::from_default_param(default_val.clone(), exec_state);
                     exec_state
                         .mut_stack()
@@ -729,10 +729,7 @@ fn assign_args_to_params_kw(
                 }
                 None => {
                     return Err(KclError::new_semantic(KclErrorDetails::new(
-                        format!(
-                            "This function requires a parameter {}, but you haven't passed it one.",
-                            name
-                        ),
+                        format!("This function requires a parameter {name}, but you haven't passed it one."),
                         source_ranges,
                     )));
                 }
@@ -746,7 +743,9 @@ fn assign_args_to_params_kw(
         let Some(unlabeled) = unlabelled else {
             return Err(if args.kw_args.labeled.contains_key(param_name) {
                 KclError::new_semantic(KclErrorDetails::new(
-                    format!("The function does declare a parameter named '{param_name}', but this parameter doesn't use a label. Try removing the `{param_name}:`"),
+                    format!(
+                        "The function does declare a parameter named '{param_name}', but this parameter doesn't use a label. Try removing the `{param_name}:`"
+                    ),
                     source_ranges,
                 ))
             } else {
@@ -799,7 +798,7 @@ mod test {
 
     use super::*;
     use crate::{
-        execution::{memory::Stack, parse_execute, types::NumericType, ContextType},
+        execution::{ContextType, memory::Stack, parse_execute, types::NumericType},
         parsing::ast::types::{DefaultParamVal, Identifier, Parameter},
     };
 

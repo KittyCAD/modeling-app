@@ -268,7 +268,7 @@ impl ArtifactGraph {
         for (group_id, artifact_ids) in groups {
             let group_id = *stable_id_map.get(&group_id).unwrap();
             writeln!(output, "{prefix}subgraph path{group_id} [Path]")?;
-            let indented = format!("{}  ", prefix);
+            let indented = format!("{prefix}  ");
             for artifact_id in artifact_ids {
                 let artifact = self.map.get(&artifact_id).unwrap();
                 let id = *stable_id_map.get(&artifact_id).unwrap();
@@ -353,7 +353,7 @@ impl ArtifactGraph {
                 node_path_display(output, prefix, None, &segment.code_ref)?;
             }
             Artifact::Solid2d(_solid2d) => {
-                writeln!(output, "{prefix}{}[Solid2d]", id)?;
+                writeln!(output, "{prefix}{id}[Solid2d]")?;
             }
             Artifact::StartSketchOnFace(StartSketchOnFace { code_ref, .. }) => {
                 writeln!(
@@ -494,24 +494,24 @@ impl ArtifactGraph {
             match edge.flow {
                 EdgeFlow::SourceToTarget => match edge.direction {
                     EdgeDirection::Forward => {
-                        writeln!(output, "{prefix}{source_id} x{}--> {}", extra, target_id)?;
+                        writeln!(output, "{prefix}{source_id} x{extra}--> {target_id}")?;
                     }
                     EdgeDirection::Backward => {
-                        writeln!(output, "{prefix}{source_id} <{}--x {}", extra, target_id)?;
+                        writeln!(output, "{prefix}{source_id} <{extra}--x {target_id}")?;
                     }
                     EdgeDirection::Bidirectional => {
-                        writeln!(output, "{prefix}{source_id} {}--- {}", extra, target_id)?;
+                        writeln!(output, "{prefix}{source_id} {extra}--- {target_id}")?;
                     }
                 },
                 EdgeFlow::TargetToSource => match edge.direction {
                     EdgeDirection::Forward => {
-                        writeln!(output, "{prefix}{target_id} x{}--> {}", extra, source_id)?;
+                        writeln!(output, "{prefix}{target_id} x{extra}--> {source_id}")?;
                     }
                     EdgeDirection::Backward => {
-                        writeln!(output, "{prefix}{target_id} <{}--x {}", extra, source_id)?;
+                        writeln!(output, "{prefix}{target_id} <{extra}--x {source_id}")?;
                     }
                     EdgeDirection::Bidirectional => {
-                        writeln!(output, "{prefix}{target_id} {}--- {}", extra, source_id)?;
+                        writeln!(output, "{prefix}{target_id} {extra}--- {source_id}")?;
                     }
                 },
             }

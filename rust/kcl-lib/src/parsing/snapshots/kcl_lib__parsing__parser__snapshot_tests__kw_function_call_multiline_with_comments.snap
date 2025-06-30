@@ -12,6 +12,7 @@ expression: actual
         "id": {
           "commentStart": 0,
           "end": 3,
+          "moduleId": 0,
           "name": "val",
           "start": 0,
           "type": "Identifier"
@@ -23,6 +24,7 @@ expression: actual
               "label": {
                 "commentStart": 22,
                 "end": 25,
+                "moduleId": 0,
                 "name": "arg",
                 "start": 22,
                 "type": "Identifier"
@@ -31,9 +33,11 @@ expression: actual
                 "abs_path": false,
                 "commentStart": 28,
                 "end": 29,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 28,
                   "end": 29,
+                  "moduleId": 0,
                   "name": "x",
                   "start": 28,
                   "type": "Identifier"
@@ -49,6 +53,7 @@ expression: actual
               "label": {
                 "commentStart": 69,
                 "end": 72,
+                "moduleId": 0,
                 "name": "bar",
                 "start": 69,
                 "type": "Identifier"
@@ -57,9 +62,11 @@ expression: actual
                 "abs_path": false,
                 "commentStart": 75,
                 "end": 76,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 75,
                   "end": 76,
+                  "moduleId": 0,
                   "name": "x",
                   "start": 75,
                   "type": "Identifier"
@@ -75,9 +82,11 @@ expression: actual
             "abs_path": false,
             "commentStart": 6,
             "end": 7,
+            "moduleId": 0,
             "name": {
               "commentStart": 6,
               "end": 7,
+              "moduleId": 0,
               "name": "f",
               "start": 6,
               "type": "Identifier"
@@ -88,12 +97,14 @@ expression: actual
           },
           "commentStart": 6,
           "end": 90,
+          "moduleId": 0,
           "nonCodeMeta": {
             "nonCodeNodes": {
               "1": [
                 {
                   "commentStart": 44,
                   "end": 55,
+                  "moduleId": 0,
                   "start": 44,
                   "type": "NonCodeNode",
                   "value": {
@@ -111,11 +122,13 @@ expression: actual
           "type": "CallExpressionKw",
           "unlabeled": null
         },
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclarator"
       },
       "end": 90,
       "kind": "const",
+      "moduleId": 0,
       "start": 0,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
@@ -123,5 +136,6 @@ expression: actual
   ],
   "commentStart": 0,
   "end": 90,
+  "moduleId": 0,
   "start": 0
 }
