@@ -683,7 +683,6 @@ export const ProjectExplorer = ({
     >
       <div
         className={`overflow-auto absolute inset-0 ${activeIndex === -1 ? 'border-sky-500' : ''}`}
-        data-testid="file-pane-scroll-container"
         tabIndex={0}
         role="tree"
         aria-label="Files Explorer"

@@ -8,8 +8,8 @@ import {
   isRowFake,
 } from '@src/components/Explorer/utils'
 import { ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
-import type { CSSProperties, Dispatch } from 'react'
-import { useEffect, useRef, useState } from 'react'
+import type { CSSProperties, Dispatch, ForwardedRef } from 'react'
+import { forwardRef, useEffect, useRef, useState } from 'react'
 import { DeleteConfirmationDialog } from '@src/components/ProjectCard/DeleteProjectDialog'
 import { FixedSizeList } from 'react-window'
 import AutoSizer from 'react-virtualized-auto-sizer'
@@ -93,6 +93,12 @@ export const FileExplorer = ({
   )
 }
 
+const outerElementType = forwardRef(
+  (props, ref: ForwardedRef<HTMLDivElement>) => (
+    <div data-testid="file-pane-scroll-container" ref={ref} {...props} />
+  )
+)
+
 function FileList({
   width,
   height,
@@ -124,6 +130,7 @@ function FileList({
       width={width}
       itemSize={20}
       className="pb-12 fixed-size-list-render"
+      outerElementType={outerElementType}
     >
       {FileExplorerRowElement}
     </FixedSizeList>
