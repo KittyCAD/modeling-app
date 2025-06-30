@@ -105,6 +105,7 @@ function FileList({
   data,
 }: { width: number; height: number; data: FileExplorerRender[] }) {
   const renderingList = useRef<FixedSizeList>(null)
+  const [previousIndex, setPreviousIndex] = useState(-3)
 
   // When the list renders scroll to the fake placeholder that is awaiting creation
   useEffect(() => {
@@ -112,12 +113,16 @@ function FileList({
       const isMyRowCreating = item.isFake
       return isMyRowCreating
     })
-    const activeIndex = (data.length > 0 && data[0].activeIndex) || -1
+    let activeIndex = -1
+    if (data.length > 0 && data[0]) {
+      activeIndex = data[0].activeIndex
+    }
     if (scrollToCreatingPlaceHolderIndex >= 0) {
       renderingList.current?.scrollToItem(scrollToCreatingPlaceHolderIndex)
     }
-    if (activeIndex >= 0) {
+    if (activeIndex >= 0 && previousIndex !== activeIndex) {
       renderingList.current?.scrollToItem(activeIndex)
+      setPreviousIndex(activeIndex)
     }
   }, [data])
 
