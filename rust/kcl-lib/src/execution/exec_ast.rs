@@ -1297,7 +1297,7 @@ impl Node<UnaryExpression> {
                 Ok(KclValue::Number {
                     value: -value,
                     meta,
-                    ty: ty.clone(),
+                    ty: *ty,
                 })
             }
             KclValue::Plane { value } => {
@@ -1329,7 +1329,7 @@ impl Node<UnaryExpression> {
                             .map(|v| match v {
                                 KclValue::Number { value, ty, meta } => Ok(KclValue::Number {
                                     value: *value * -1.0,
-                                    ty: ty.clone(),
+                                    ty: *ty,
                                     meta: meta.clone(),
                                 }),
                                 _ => Err(err()),
@@ -1350,7 +1350,7 @@ impl Node<UnaryExpression> {
                             .map(|v| match v {
                                 KclValue::Number { value, ty, meta } => Ok(KclValue::Number {
                                     value: *value * -1.0,
-                                    ty: ty.clone(),
+                                    ty: *ty,
                                     meta: meta.clone(),
                                 }),
                                 _ => Err(err()),
@@ -1544,7 +1544,7 @@ impl Node<ArrayRangeExpression> {
                 .into_iter()
                 .map(|num| KclValue::Number {
                     value: num as f64,
-                    ty: start_ty.clone(),
+                    ty: start_ty,
                     meta: meta.clone(),
                 })
                 .collect(),
