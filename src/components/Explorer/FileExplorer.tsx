@@ -85,7 +85,7 @@ export const FileExplorer = ({
   return (
     <div role="presentation" className="relative h-full w-full">
       <AutoSizer>
-        {({ height, width}) => (
+        {({ height, width }) => (
           <List
             height={height}
             itemCount={data.length}

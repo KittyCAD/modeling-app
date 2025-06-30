@@ -244,7 +244,8 @@ export const ProjectExplorer = ({
         const isFile = child.children === null
         const isKCLFile = isFile && child.name?.endsWith(FILE_EXT)
 
-        const isOpen = project.name === child.path || openedRows.get(child.path) || false
+        const isOpen =
+          project.name === child.path || openedRows.get(child.path) || false
 
         /**
          * If any parent is closed, keep the history of open children
@@ -262,9 +263,10 @@ export const ProjectExplorer = ({
         }
 
         const render =
-          !isAnyParentClosed &&
-          (project.path === child.parentPath ||
-            openedRows.get(child.parentPath)) || false
+          (!isAnyParentClosed &&
+            (project.path === child.parentPath ||
+              openedRows.get(child.parentPath))) ||
+          false
 
         let icon: CustomIconName = 'file'
         if (isKCLFile) {
