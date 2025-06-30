@@ -19,6 +19,7 @@ import { err } from '@src/lib/trap'
 import {
   createIdentifier,
   createLiteral,
+  createLocalName,
   createVariableDeclaration,
 } from '@src/lang/create'
 import { ARG_END_ABSOLUTE, ARG_INTERIOR_ABSOLUTE } from '@src/lang/constants'
@@ -1157,7 +1158,7 @@ p3 = [342.51, 216.38],
             filter
           )
           const constraint = constraintInfo[constraintIndex]
-          console.log('constraint', constraint)
+
           if (!constraint.argPosition) {
             throw new Error(
               `Constraint at index ${constraintIndex} does not have argPosition`
@@ -1291,4 +1292,280 @@ p3 = [342.51, 216.38],
       }
     )
   })
+})
+
+describe('testing sketch scale on first length constraint', () => {
+  it('should scale sketch when constrain with named value is used with scale checkbox enabled', async () => {
+    // Create a sketch with multiple segments using only literal values (no constraints)
+    const code = `sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [100, 100])
+  |> line(end = [200, 0])
+  |> line(end = [0, 200])
+  |> line(end = [-200, 0])
+  |> close()
+profile002 = circle(sketch001, center = [400, 400], radius = 50)
+`
+
+    const ast = assertParse(code)
+    await kclManager.executeAst({ ast })
+    expect(kclManager.errors).toEqual([])
+
+    // Find a segment to constrain (the first line segment)
+    const indexOfInterest = code.indexOf('line(end = [200, 0])')
+    const artifact = [...kclManager.artifactGraph].find(
+      ([_, artifact]) =>
+        artifact?.type === 'segment' &&
+        artifact.codeRef.range[0] <= indexOfInterest &&
+        indexOfInterest <= artifact.codeRef.range[1]
+    )?.[1]
+
+    if (!artifact || !('codeRef' in artifact)) {
+      throw new Error('Artifact not found or invalid artifact structure')
+    }
+
+    // Create modeling machine actor
+    const modelingActor = createActor(modelingMachine, {
+      input: modelingMachineDefaultContext,
+    }).start()
+
+    // Enter sketch mode
+    modelingActor.send({
+      type: 'Set selection',
+      data: {
+        selectionType: 'mirrorCodeMirrorSelections',
+        selection: {
+          graphSelections: [
+            {
+              artifact: artifact,
+              codeRef: artifact.codeRef,
+            },
+          ],
+          otherSelections: [],
+        },
+      },
+    })
+    modelingActor.send({ type: 'Enter sketch' })
+
+    // Wait for sketch mode
+    await waitForCondition(() => {
+      const snapshot = modelingActor.getSnapshot()
+      return snapshot.value !== 'animating to existing sketch'
+    }, 5000)
+
+    expect(modelingActor.getSnapshot().value).toEqual({
+      Sketch: { SketchIdle: 'scene drawn' },
+    })
+
+    // Get constraint info for the segment
+    const callExp = getNodeFromPath<Node<CallExpressionKw>>(
+      kclManager.ast,
+      artifact.codeRef.pathToNode,
+      'CallExpressionKw'
+    )
+    if (err(callExp)) {
+      throw new Error('Failed to get CallExpressionKw node')
+    }
+
+    const constraintInfo = getConstraintInfoKw(
+      callExp.node,
+      codeManager.code,
+      artifact.codeRef.pathToNode
+    )
+    const constraint = constraintInfo[0] // First constraint (x value)
+
+    // Store original code to compare scaling
+    const originalCode = codeManager.code
+
+    // No need for command bar setup, we're testing the modeling machine directly
+
+    // Simulate submitting the command with scaling enabled
+    // The new value will be 100 (half of original 200), so scale factor should be 0.5
+    modelingActor.send({
+      type: 'Constrain with named value',
+      data: {
+        currentValue: {
+          valueText: constraint.value,
+          pathToNode: constraint.pathToNode,
+          variableName: 'length_var',
+        },
+        namedValue: {
+          valueText: '100',
+          variableName: 'length_var',
+          insertIndex: 0,
+          valueCalculated: '100',
+          variableDeclarationAst: createVariableDeclaration(
+            'length_var',
+            createLiteral('100')
+          ),
+          variableIdentifierAst: createLocalName('length_var'),
+          valueAst: createLiteral('100'),
+        },
+        scaleSketch: true, // This should trigger scaling
+      },
+    })
+
+    // Wait for the constraint to be applied and sketch to be scaled
+    await waitForCondition(() => {
+      const snapshot = modelingActor.getSnapshot()
+      return (
+        JSON.stringify(snapshot.value) !==
+        JSON.stringify({ Sketch: 'Converting to named value' })
+      )
+    }, 5000)
+
+    // Wait for code to be updated
+    const startTime = Date.now()
+    while (codeManager.code === originalCode && Date.now() - startTime < 5000) {
+      await new Promise((resolve) => setTimeout(resolve, 100))
+    }
+    await new Promise((resolve) => setTimeout(resolve, 1000))
+    console.log('code is', codeManager.code)
+
+    // Verify the constraint was applied
+    expect(codeManager.code).toContain('length_var')
+    expect(codeManager.code).toContain("length_var = '100'")
+
+    // Verify scaling occurred - all dimensions should be scaled by 0.5 (100/200)
+    // Original values: line(end = [200, 0]), line(end = [0, 200]), line(end = [-200, 0])
+    // Scaled values should be: line(end = [100, 0]), line(end = [0, 100]), line(end = [-100, 0])
+    expect(codeManager.code).toContain('line(end = [length_var, 0])') // First line uses variable
+    expect(codeManager.code).toContain('line(end = [0, 100])') // Second line scaled
+    expect(codeManager.code).toContain('line(end = [-100, 0])') // Third line scaled
+
+    // Circle should also be scaled: radius = 50 -> radius = 25
+    expect(codeManager.code).toContain('radius = 25')
+
+    // Start positions should be scaled: at = [100, 100] -> at = [50, 50], at = [400, 400] -> at = [200, 200]
+    expect(codeManager.code).toContain('at = [50, 50]')
+    expect(codeManager.code).toContain('center = [200, 200]')
+  }, 15_000)
+
+  it('should not scale sketch when constrain with named value is used with scale checkbox disabled', async () => {
+    // Create a sketch with multiple segments using only literal values (no constraints)
+    const code = `sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [100, 100])
+  |> line(end = [200, 0])
+  |> line(end = [0, 200])
+  |> close()`
+
+    const ast = assertParse(code)
+    await kclManager.executeAst({ ast })
+    expect(kclManager.errors).toEqual([])
+
+    // Find a segment to constrain (the first line segment)
+    const indexOfInterest = code.indexOf('line(end = [200, 0])')
+    const artifact = [...kclManager.artifactGraph].find(
+      ([_, artifact]) =>
+        artifact?.type === 'segment' &&
+        artifact.codeRef.range[0] <= indexOfInterest &&
+        indexOfInterest <= artifact.codeRef.range[1]
+    )?.[1]
+
+    if (!artifact || !('codeRef' in artifact)) {
+      throw new Error('Artifact not found or invalid artifact structure')
+    }
+
+    // Create modeling machine actor
+    const modelingActor = createActor(modelingMachine, {
+      input: modelingMachineDefaultContext,
+    }).start()
+
+    // Enter sketch mode
+    modelingActor.send({
+      type: 'Set selection',
+      data: {
+        selectionType: 'mirrorCodeMirrorSelections',
+        selection: {
+          graphSelections: [
+            {
+              artifact: artifact,
+              codeRef: artifact.codeRef,
+            },
+          ],
+          otherSelections: [],
+        },
+      },
+    })
+    modelingActor.send({ type: 'Enter sketch' })
+
+    // Wait for sketch mode
+    await waitForCondition(() => {
+      const snapshot = modelingActor.getSnapshot()
+      return snapshot.value !== 'animating to existing sketch'
+    }, 5000)
+
+    // Get constraint info for the segment
+    const callExp = getNodeFromPath<Node<CallExpressionKw>>(
+      kclManager.ast,
+      artifact.codeRef.pathToNode,
+      'CallExpressionKw'
+    )
+    if (err(callExp)) {
+      throw new Error('Failed to get CallExpressionKw node')
+    }
+
+    const constraintInfo = getConstraintInfoKw(
+      callExp.node,
+      codeManager.code,
+      artifact.codeRef.pathToNode
+    )
+    const constraint = constraintInfo[0] // First constraint (x value)
+
+    // Store original code to compare
+    const originalCode = codeManager.code
+
+    // Submit command with scaling disabled directly to modeling machine
+
+    modelingActor.send({
+      type: 'Constrain with named value',
+      data: {
+        currentValue: {
+          valueText: constraint.value,
+          pathToNode: constraint.pathToNode,
+          variableName: 'length_var',
+        },
+        namedValue: {
+          valueText: '100',
+          variableName: 'length_var',
+          insertIndex: 0,
+          valueCalculated: '100',
+          variableDeclarationAst: createVariableDeclaration(
+            'length_var',
+            createLiteral('100')
+          ),
+          variableIdentifierAst: createLocalName('length_var'),
+          valueAst: createLiteral('100'),
+        },
+        scaleSketch: false, // Scaling disabled
+      },
+    })
+
+    // Wait for the constraint to be applied
+    await waitForCondition(() => {
+      const snapshot = modelingActor.getSnapshot()
+      return (
+        JSON.stringify(snapshot.value) !==
+        JSON.stringify({ Sketch: 'Converting to named value' })
+      )
+    }, 5000)
+
+    // Wait for code to be updated
+    const startTime = Date.now()
+    while (codeManager.code === originalCode && Date.now() - startTime < 5000) {
+      await new Promise((resolve) => setTimeout(resolve, 100))
+    }
+
+    // Verify the constraint was applied but no scaling occurred
+    expect(codeManager.code).toContain('length_var')
+    expect(codeManager.code).toContain("length_var = '100'")
+    expect(codeManager.code).toContain('line(end = [length_var, 0])')
+
+    // Other dimensions should remain unchanged (no scaling)
+    expect(codeManager.code).toContain('line(end = [0, 200])') // Should remain 200, not scaled to 100
+    expect(codeManager.code).toContain('at = [100, 100]') // Should remain [100, 100], not scaled
+  }, 15_000)
+
+  // Note: The third test for checking if scale checkbox is disabled when sketch has existing constraints
+  // would be better tested in the UI layer (CommandBarKclInput.tsx) or as an e2e test
+  // since it's primarily a UI behavior test
 })

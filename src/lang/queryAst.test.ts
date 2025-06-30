@@ -10,6 +10,7 @@ import {
   createPipeSubstitution,
 } from '@src/lang/create'
 import {
+  doesProfileHaveAnyConstrainedDimension,
   doesSceneHaveExtrudedSketch,
   doesSceneHaveSweepableSketch,
   findAllPreviousVariables,
@@ -33,6 +34,95 @@ import { err } from '@src/lib/trap'
 
 beforeAll(async () => {
   await initPromise
+})
+
+describe('doesProfileHaveConstrainDimension', () => {
+  const code = `sketch001 = startSketchOn(YZ)
+profile001 = startProfile(sketch001, at = [100, 101])
+  |> line(end = [102, 103])
+  |> line(endAbsolute = [104, 105])
+  |> angledLine(angle = 206, length = 106)
+  |> angledLine(angle = -208, lengthX = 107)
+  |> angledLine(angle = 210, lengthY = 108)
+  |> angledLine(angle = 212, endAbsoluteX = 109)
+  |> angledLine(angle = 214, endAbsoluteY = 110)
+  |> arc(interiorAbsolute = [111, 112], endAbsolute = [113, 114])
+  |> tangentialArc(end = [115, -116])
+  |> tangentialArc(endAbsolute = [117, 118])
+  |> tangentialArc(angle = 224, radius = 119)
+  |> tangentialArc(angle = 226, diameter = 120)
+
+profile002 = startProfile(sketch001, at = [-121, 122])
+  |> angledLine(angle = 130, length = 123, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 232, length = 124)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+profile003 = circle(sketch001, center = [-125, -126], radius = 127)
+profile004 = circleThreePoint(
+  sketch001,
+  p1 = [128, 129],
+  p2 = [130, 131],
+  p3 = [132, 133],
+)
+profile005 = circle(sketch001, center = [-134, -135], diameter = 136)`
+  const profileSearchStrings = [
+    {
+      profileSearchString: 'profile001 = startProfile',
+      replaceCases: { start: 100, end: 120 },
+    },
+    {
+      profileSearchString: 'profile002 = startProfile',
+      replaceCases: { start: 121, end: 124 },
+    },
+    {
+      profileSearchString: 'profile003 = circle',
+      replaceCases: { start: 125, end: 127 },
+    },
+    {
+      profileSearchString: 'profile004 = circleThreePoint',
+      replaceCases: { start: 128, end: 133 },
+    },
+    {
+      profileSearchString: 'profile005 = circle',
+      replaceCases: { start: 134, end: 136 },
+    },
+  ] as const
+  it('should return false for all profiles (no constrained dimensions detected)', () => {
+    const ast = assertParse(code)
+
+    profileSearchStrings.forEach((profile) => {
+      const profileStart = code.indexOf(profile.profileSearchString)
+      const profilePath = getNodePathFromSourceRange(
+        ast,
+        topLevelRange(profileStart, profileStart)
+      )
+      expect(
+        doesProfileHaveAnyConstrainedDimension(profilePath, ast)
+      ).toBeFalsy()
+    })
+  })
+  it('should true false when adding constraints for each Profile all profiles (no constrained dimensions detected)', () => {
+    profileSearchStrings.forEach((profile) => {
+      for (
+        let i = profile.replaceCases.start;
+        i <= profile.replaceCases.end;
+        i++
+      ) {
+        const modifiedCode = code.replaceAll(String(i), `${i} + 5`)
+        const ast = assertParse(modifiedCode)
+        const profileStart = modifiedCode.indexOf(profile.profileSearchString)
+        const profilePath = getNodePathFromSourceRange(
+          ast,
+          topLevelRange(profileStart, profileStart)
+        )
+        expect(
+          doesProfileHaveAnyConstrainedDimension(profilePath, ast)
+        ).toBeTruthy()
+      }
+      // })
+    })
+  })
 })
 
 describe('findAllPreviousVariables', () => {
