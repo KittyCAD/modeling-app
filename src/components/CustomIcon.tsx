@@ -580,6 +580,7 @@ const CustomIconMap = {
       viewBox="0 0 20 20"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
+      aria-label="folder open"
     >
       <path
         d="M15.543 16H4.04297L6.54297 8H18.043L15.543 16ZM5.40234 15H14.8086L16.6836 9H7.27734L5.40234 15ZM7.70996 5H14.998L15.041 5.45215L15.1406 6.5H14.1357L14.0879 6H7.37598L5.37598 4.5H3.08594L3.70312 11.9102L2.92188 14.5674L2.04492 4.04199L2 3.5H5.70996L7.70996 5Z"
@@ -1558,6 +1559,7 @@ const CustomIconMap = {
       viewBox="0 0 20 20"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
+      aria-label="subtract"
     >
       <path
         fillRule="evenodd"
@@ -1574,6 +1576,7 @@ const CustomIconMap = {
       viewBox="0 0 20 20"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
+      aria-label="collapse"
     >
       <path
         d="M17 17H6V6H17V17ZM7 16H16V7H7V16ZM13 5H12V4H4V12H5V13H3V3H13V5ZM14 12H9V11H14V12Z"
