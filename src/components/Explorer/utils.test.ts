@@ -17,7 +17,6 @@ describe('Explorer utils.ts', () => {
           parentPath: '/home/kevin/zoo/test-project',
           level: 0,
           index: 0,
-          key: '/home/kevin/zoo/test-project/.zoo-placeholder-file.kcl',
           setSize: 1,
           positionInSet: 1,
         }
@@ -35,7 +34,6 @@ describe('Explorer utils.ts', () => {
           parentPath: '/home/kevin/zoo/test-project',
           level: 0,
           index: 0,
-          key: '/home/kevin/zoo/test-project/main.kcl',
           setSize: 1,
           positionInSet: 1,
         }
@@ -54,7 +52,6 @@ describe('Explorer utils.ts', () => {
         parentPath: '/home/kevin/zoo/test-project',
         level: 0,
         index: 0,
-        key: '/home/kevin/zoo/test-project/.zoo-placeholder-folder',
         setSize: 1,
         positionInSet: 1,
       }
@@ -72,7 +69,6 @@ describe('Explorer utils.ts', () => {
         parentPath: '/home/kevin/zoo/test-project',
         level: 0,
         index: 0,
-        key: '/home/kevin/zoo/test-project/part001',
         setSize: 1,
         positionInSet: 1,
       }

@@ -26,7 +26,11 @@ import { err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import { getInVariableCase } from '@src/lib/utils'
 import { IS_STAGING } from '@src/routes/utils'
-import { desktopSafePathJoin, desktopSafePathSplit, joinOSPaths } from './paths'
+import {
+  desktopSafePathJoin,
+  desktopSafePathSplit,
+  joinOSPaths,
+} from '@src/lib/paths'
 
 let cacheRelevantFileExtension: string[] | null = null
 const cachedRelevantFileExtensions = () => {
@@ -390,8 +394,8 @@ const directoryCount = (file: FileEntry) => {
   return count
 }
 
-function buildFileTree2(fileEntries, baseDir = '') {
-  const root = []
+function buildFileTree2(fileEntries: FileEntry[], baseDir = '') {
+  const root: Project[] = []
   const pathMap = new Map()
 
   for (const entry of fileEntries) {
@@ -400,7 +404,7 @@ function buildFileTree2(fileEntries, baseDir = '') {
         ? entry.path.slice(baseDir.length)
         : entry.path
 
-    const parts = relativePath.split('/').filter(Boolean)
+    const parts = desktopSafePathSplit(relativePath).filter(Boolean)
     let currentLevel = root
     let currentPath = ''
     let topLevelNode = null
@@ -461,13 +465,13 @@ export async function getProjectInfo(projectPath: string): Promise<Project> {
   const isRelevantFile = (filename: string): boolean =>
     cachedRelevantFileExtensions().some((ext) => filename.endsWith('.' + ext))
   results = results.filter((entry) => {
-    return isRelevantFile(entry.path) || entry?.children?.length >= 0
+    const isFolder = entry.children && entry.children.length >= 0
+    return isRelevantFile(entry.path) || isFolder
   })
   const splitter = desktopSafePathSplit(projectPath)
   splitter.pop()
   const projectDirectoryPath = desktopSafePathJoin(splitter)
   const project = buildFileTree2(results, projectDirectoryPath)[0]
-  console.log('PROJECT', project.name, project)
 
   project.children?.sort((a, b) => {
     if (a.path < b.path) {
@@ -480,7 +484,7 @@ export async function getProjectInfo(projectPath: string): Promise<Project> {
   })
   project.metadata = null
   project.default_file = await getDefaultKclFileForDir(projectPath, project)
-  project.readWriteAcces = true
+  project.readWriteAccess = true
 
   let metadata
   try {

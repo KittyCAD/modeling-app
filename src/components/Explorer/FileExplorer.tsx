@@ -8,7 +8,7 @@ import {
   isRowFake,
 } from '@src/components/Explorer/utils'
 import { ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
-import type { Dispatch } from 'react'
+import type { CSSProperties, Dispatch } from 'react'
 import { useRef, useState } from 'react'
 import { DeleteConfirmationDialog } from '@src/components/ProjectCard/DeleteProjectDialog'
 import { FixedSizeList as List } from 'react-window'
@@ -85,7 +85,7 @@ export const FileExplorer = ({
   return (
     <div role="presentation" className="relative h-full w-full">
       <AutoSizer>
-        {({ height, width }) => (
+        {({ height, width}) => (
           <List
             height={height}
             itemCount={data.length}
@@ -228,7 +228,11 @@ function DeleteFileTreeItemDialog({
  * Making div soup!
  * A row is a folder or a file.
  */
-export const FileExplorerRowElement = ({ data, index, style }: {}) => {
+export const FileExplorerRowElement = ({
+  data,
+  index,
+  style,
+}: { data: FileExplorerRender[]; index: number; style: CSSProperties }) => {
   const rowElementRef = useRef(null)
   const item = data[index]
   const isSelected =

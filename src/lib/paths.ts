@@ -242,7 +242,9 @@ export function desktopSafePathSplit(path: string, sep?: string): string[] {
 }
 
 export function desktopSafePathJoin(paths: string[], sep?: string): string {
-  return isDesktop() ? paths.join(sep || window?.electron?.sep) : webSafeJoin(paths)
+  return isDesktop()
+    ? paths.join(sep || window?.electron?.sep)
+    : webSafeJoin(paths)
 }
 
 /**

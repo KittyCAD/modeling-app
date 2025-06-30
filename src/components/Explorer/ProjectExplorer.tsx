@@ -244,7 +244,7 @@ export const ProjectExplorer = ({
         const isFile = child.children === null
         const isKCLFile = isFile && child.name?.endsWith(FILE_EXT)
 
-        const isOpen = project.name === child.path || openedRows.get(child.path)
+        const isOpen = project.name === child.path || openedRows.get(child.path) || false
 
         /**
          * If any parent is closed, keep the history of open children
@@ -264,7 +264,7 @@ export const ProjectExplorer = ({
         const render =
           !isAnyParentClosed &&
           (project.path === child.parentPath ||
-            openedRows.get(child.parentPath))
+            openedRows.get(child.parentPath)) || false
 
         let icon: CustomIconName = 'file'
         if (isKCLFile) {
@@ -373,10 +373,10 @@ export const ProjectExplorer = ({
                   systemIOActor.send({
                     type: SystemIOMachineEvents.createBlankFolder,
                     data: {
-                      requestedAbsolutePath: desktopSafePathJoin(
-                        [getParentAbsolutePath(row.path),
-                        requestedName]
-                      ),
+                      requestedAbsolutePath: desktopSafePathJoin([
+                        getParentAbsolutePath(row.path),
+                        requestedName,
+                      ]),
                     },
                   })
                 } else {
@@ -425,7 +425,10 @@ export const ProjectExplorer = ({
                   if (openedRowsRef.current.get(child.path)) {
                     // If the file tree had the folder opened make the new one open.
                     const newOpenedRows = new Map(openedRowsRef.current)
-                    const key = [child.parentPath, requestedName].join('/')
+                    const key = desktopSafePathJoin([
+                      child.parentPath,
+                      requestedName,
+                    ])
                     newOpenedRows.set(key, true)
                     setOpenedRows(newOpenedRows)
                   }
@@ -444,10 +447,10 @@ export const ProjectExplorer = ({
               }
 
               const pathRelativeToParent = parentPathRelativeToProject(
-                desktopSafePathJoin(
-                  [getParentAbsolutePath(row.path),
-                  fileNameForcedWithOriginalExt]
-                ),
+                desktopSafePathJoin([
+                  getParentAbsolutePath(row.path),
+                  fileNameForcedWithOriginalExt,
+                ]),
                 applicationProjectDirectory
               )
 
@@ -466,18 +469,16 @@ export const ProjectExplorer = ({
                   systemIOActor.send({
                     type: SystemIOMachineEvents.createBlankFile,
                     data: {
-                      requestedAbsolutePath: desktopSafePathJoin(
-                        [getParentAbsolutePath(row.path),
-                        fileNameForcedWithOriginalExt]
-                      ),
+                      requestedAbsolutePath: desktopSafePathJoin([
+                        getParentAbsolutePath(row.path),
+                        fileNameForcedWithOriginalExt,
+                      ]),
                     },
                   })
                 }
               } else {
-                const requestedAbsoluteFilePathWithExtension = desktopSafePathJoin(
-                  [getParentAbsolutePath(row.path),
-                  name]
-                )
+                const requestedAbsoluteFilePathWithExtension =
+                  desktopSafePathJoin([getParentAbsolutePath(row.path), name])
                 // If your router loader is within the file you are renaming then reroute to the new path on disk
                 // If you are renaming a file you are not loaded into, do not reload!
                 const shouldWeNavigate =
