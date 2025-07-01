@@ -1,7 +1,7 @@
 //! Standard library mirror.
 
 use anyhow::Result;
-use kcmc::{each_cmd as mcmd, ModelingCmd};
+use kcmc::{ModelingCmd, each_cmd as mcmd};
 use kittycad_modeling_cmds::{
     self as kcmc, length_unit::LengthUnit, ok_response::OkModelingCmdResponse, shared::Point3d,
     websocket::OkWebSocketResponseData,
@@ -10,10 +10,10 @@ use kittycad_modeling_cmds::{
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        types::{PrimitiveType, RuntimeType},
         ExecState, KclValue, Sketch,
+        types::{PrimitiveType, RuntimeType},
     },
-    std::{axis_or_reference::Axis2dOrEdgeReference, Args},
+    std::{Args, axis_or_reference::Axis2dOrEdgeReference},
 };
 
 /// Mirror a sketch.
@@ -84,14 +84,14 @@ async fn inner_mirror_2d(
                                 return Err(KclError::new_engine(KclErrorDetails::new(
                                     "No edges found in mirror info".to_string(),
                                     vec![args.source_range],
-                                )))
+                                )));
                             }
                         }
                         Ok(())
                     })?;
             } else {
                 return Err(KclError::new_engine(KclErrorDetails::new(
-                    format!("EntityMirror response was not as expected: {:?}", resp),
+                    format!("EntityMirror response was not as expected: {resp:?}"),
                     vec![args.source_range],
                 )));
             };
@@ -127,14 +127,14 @@ async fn inner_mirror_2d(
                                 return Err(KclError::new_engine(KclErrorDetails::new(
                                     "No edges found in mirror info".to_string(),
                                     vec![args.source_range],
-                                )))
+                                )));
                             }
                         }
                         Ok(())
                     })?;
             } else {
                 return Err(KclError::new_engine(KclErrorDetails::new(
-                    format!("EntityMirrorAcrossEdge response was not as expected: {:?}", resp),
+                    format!("EntityMirrorAcrossEdge response was not as expected: {resp:?}"),
                     vec![args.source_range],
                 )));
             };

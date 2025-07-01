@@ -12,15 +12,15 @@ pub mod conn_wasm;
 use std::{
     collections::HashMap,
     sync::{
-        atomic::{AtomicUsize, Ordering},
         Arc,
+        atomic::{AtomicUsize, Ordering},
     },
 };
 
 pub use async_tasks::AsyncTasks;
 use indexmap::IndexMap;
 use kcmc::{
-    each_cmd as mcmd,
+    ModelingCmd, each_cmd as mcmd,
     length_unit::LengthUnit,
     ok_response::OkModelingCmdResponse,
     shared::Color,
@@ -28,7 +28,6 @@ use kcmc::{
         BatchResponse, ModelingBatch, ModelingCmdReq, ModelingSessionData, OkWebSocketResponseData, WebSocketRequest,
         WebSocketResponse,
     },
-    ModelingCmd,
 };
 use kittycad_modeling_cmds as kcmc;
 use parse_display::{Display, FromStr};
@@ -39,9 +38,9 @@ use uuid::Uuid;
 use web_time::Instant;
 
 use crate::{
-    errors::{KclError, KclErrorDetails},
-    execution::{types::UnitLen, DefaultPlanes, IdGenerator, PlaneInfo, Point3d},
     SourceRange,
+    errors::{KclError, KclErrorDetails},
+    execution::{DefaultPlanes, IdGenerator, PlaneInfo, Point3d, types::UnitLen},
 };
 
 lazy_static::lazy_static! {
@@ -291,7 +290,10 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         // the artifact graph won't care either if its gone since you can't select it
         // anymore anyways.
         if let Err(err) = self.async_tasks().join_all().await {
-            crate::log::logln!("Error waiting for async tasks (this is typically fine and just means that an edge became something else): {:?}", err);
+            crate::log::logln!(
+                "Error waiting for async tasks (this is typically fine and just means that an edge became something else): {:?}",
+                err
+            );
         }
 
         // Flush the batch to make sure nothing remains.
@@ -499,7 +501,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
                 }
                 _ => {
                     return Err(KclError::new_engine(KclErrorDetails::new(
-                        format!("The request is not a modeling command: {:?}", req),
+                        format!("The request is not a modeling command: {req:?}"),
                         vec![*range],
                     )));
                 }
@@ -529,7 +531,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
                 } else {
                     // We should never get here.
                     Err(KclError::new_engine(KclErrorDetails::new(
-                        format!("Failed to get batch response: {:?}", response),
+                        format!("Failed to get batch response: {response:?}"),
                         vec![source_range],
                     )))
                 }
@@ -544,7 +546,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
                 // an error.
                 let source_range = id_to_source_range.get(cmd_id.as_ref()).cloned().ok_or_else(|| {
                     KclError::new_engine(KclErrorDetails::new(
-                        format!("Failed to get source range for command ID: {:?}", cmd_id),
+                        format!("Failed to get source range for command ID: {cmd_id:?}"),
                         vec![],
                     ))
                 })?;
@@ -554,7 +556,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
                 self.parse_websocket_response(ws_resp, source_range)
             }
             _ => Err(KclError::new_engine(KclErrorDetails::new(
-                format!("The final request is not a modeling command: {:?}", final_req),
+                format!("The final request is not a modeling command: {final_req:?}"),
                 vec![source_range],
             ))),
         }
@@ -663,7 +665,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             let info = DEFAULT_PLANE_INFO.get(&name).ok_or_else(|| {
                 // We should never get here.
                 KclError::new_engine(KclErrorDetails::new(
-                    format!("Failed to get default plane info for: {:?}", name),
+                    format!("Failed to get default plane info for: {name:?}"),
                     vec![source_range],
                 ))
             })?;
@@ -739,7 +741,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
                     // Get the source range for the command.
                     let source_range = id_to_source_range.get(cmd_id).cloned().ok_or_else(|| {
                         KclError::new_engine(KclErrorDetails::new(
-                            format!("Failed to get source range for command ID: {:?}", cmd_id),
+                            format!("Failed to get source range for command ID: {cmd_id:?}"),
                             vec![],
                         ))
                     })?;
@@ -754,7 +756,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         // Return an error that we did not get an error or the response we wanted.
         // This should never happen but who knows.
         Err(KclError::new_engine(KclErrorDetails::new(
-            format!("Failed to find response for command ID: {:?}", id),
+            format!("Failed to find response for command ID: {id:?}"),
             vec![],
         )))
     }

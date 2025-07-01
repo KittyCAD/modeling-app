@@ -136,17 +136,17 @@ test.describe('Point-and-click tests', () => {
         highlightedHeaderArg: 'length',
         commandName: 'Extrude',
       })
-      await page.keyboard.insertText('width - 0.001')
+      await page.keyboard.insertText('width - 0.001in')
       await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         stage: 'review',
         headerArguments: {
-          Length: '4.999',
+          Length: '4.999in',
         },
         commandName: 'Extrude',
       })
       await cmdBar.progressCmdBar()
-      await editor.expectEditor.toContain('extrude(length = width - 0.001)')
+      await editor.expectEditor.toContain('extrude(length = width - 0.001in)')
     })
 
     await test.step(`Edit second extrude via feature tree`, async () => {

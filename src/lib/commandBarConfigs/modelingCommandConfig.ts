@@ -599,7 +599,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'selection',
         selectionTypes: ['path'],
         selectionFilter: ['object'],
-        multiple: true,
+        // TODO: turn back to true once engine supports it, the codemod and KCL are ready
+        // Issue link: https://github.com/KittyCAD/engine/issues/3435
+        multiple: false,
         required: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },

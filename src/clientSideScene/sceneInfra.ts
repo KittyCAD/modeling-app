@@ -48,7 +48,11 @@ import type {
   SegmentOverlayPayload,
 } from '@src/machines/modelingMachine'
 import { PROFILE_START } from '@src/clientSideScene/sceneConstants'
-import { rustContext, sceneEntitiesManager } from '@src/lib/singletons'
+import {
+  rustContext,
+  sceneEntitiesManager,
+  sceneInfra,
+} from '@src/lib/singletons'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import type { Artifact } from '@src/lang/wasm'
 
@@ -797,20 +801,47 @@ export class SceneInfra {
       if (artifact?.type === 'plane') {
         const planeId = artifact.id
         void sceneEntitiesManager.getFaceDetails(planeId).then((planeInfo) => {
-          this.modelingSend({
+          // Apply camera-based orientation logic similar to default planes
+          let zAxis: [number, number, number] = [
+            planeInfo.z_axis.x,
+            planeInfo.z_axis.y,
+            planeInfo.z_axis.z,
+          ]
+          let yAxis: [number, number, number] = [
+            planeInfo.y_axis.x,
+            planeInfo.y_axis.y,
+            planeInfo.y_axis.z,
+          ]
+
+          // Get camera vector to determine which side of the plane we're viewing from
+          const camVector = sceneInfra.camControls.camera.position
+            .clone()
+            .sub(sceneInfra.camControls.target)
+
+          // Determine the canonical (absolute) plane orientation
+          const absZAxis: [number, number, number] = [
+            Math.abs(zAxis[0]),
+            Math.abs(zAxis[1]),
+            Math.abs(zAxis[2]),
+          ]
+
+          // Find the dominant axis (like default planes do)
+          const maxComponent = Math.max(...absZAxis)
+          const dominantAxisIndex = absZAxis.indexOf(maxComponent)
+
+          // Check camera position against canonical orientation (like default planes)
+          const cameraComponents = [camVector.x, camVector.y, camVector.z]
+          let negated = cameraComponents[dominantAxisIndex] < 0
+          if (dominantAxisIndex === 1) {
+            // offset of the XZ is being weird, not sure if this is a camera bug
+            negated = !negated
+          }
+          sceneInfra.modelingSend({
             type: 'Select sketch plane',
             data: {
               type: 'offsetPlane',
-              zAxis: [
-                planeInfo.z_axis.x,
-                planeInfo.z_axis.y,
-                planeInfo.z_axis.z,
-              ],
-              yAxis: [
-                planeInfo.y_axis.x,
-                planeInfo.y_axis.y,
-                planeInfo.y_axis.z,
-              ],
+              zAxis,
+              yAxis,
               position: [
                 planeInfo.origin.x,
                 planeInfo.origin.y,
@@ -822,6 +853,7 @@ export class SceneInfra {
               ],
               planeId,
               pathToNode: artifact.codeRef.pathToNode,
+              negated,
             },
           })
           resolve(true)

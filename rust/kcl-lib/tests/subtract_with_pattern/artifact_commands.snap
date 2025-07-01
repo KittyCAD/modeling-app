@@ -682,7 +682,10 @@ description: Artifact commands subtract_with_pattern.kcl
                 "w": 90.0
               },
               "set": false,
-              "is_local": true
+              "is_local": true,
+              "origin": {
+                "type": "local"
+              }
             },
             "scale": null
           }

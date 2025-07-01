@@ -1,20 +1,19 @@
 use fnv::FnvHashMap;
 use indexmap::IndexMap;
 use kittycad_modeling_cmds::{
-    self as kcmc,
+    self as kcmc, EnableSketchMode, ModelingCmd,
     ok_response::OkModelingCmdResponse,
     shared::ExtrusionFaceCapType,
     websocket::{BatchResponse, OkWebSocketResponseData, WebSocketResponse},
-    EnableSketchMode, ModelingCmd,
 };
-use serde::{ser::SerializeSeq, Serialize};
+use serde::{Serialize, ser::SerializeSeq};
 use uuid::Uuid;
 
 use crate::{
+    KclError, NodePath, SourceRange,
     errors::KclErrorDetails,
     execution::ArtifactId,
     parsing::ast::types::{Node, Program},
-    KclError, NodePath, SourceRange,
 };
 
 #[cfg(test)]
@@ -893,7 +892,10 @@ fn artifacts_to_update(
                 ),
             };
             if original_path_ids.len() != face_edge_infos.len() {
-                internal_error!(range, "EntityMirror or EntityMirrorAcrossEdge response has different number face edge info than original mirrored paths: id={id:?}, cmd={cmd:?}, response={response:?}");
+                internal_error!(
+                    range,
+                    "EntityMirror or EntityMirrorAcrossEdge response has different number face edge info than original mirrored paths: id={id:?}, cmd={cmd:?}, response={response:?}"
+                );
             }
             let mut return_arr = Vec::new();
             for (face_edge_info, original_path_id) in face_edge_infos.iter().zip(original_path_ids) {
@@ -909,7 +911,10 @@ fn artifacts_to_update(
                     // of its info.
                     let Some(Artifact::Path(original_path)) = artifacts.get(&original_path_id) else {
                         // We couldn't find the original path. This is a bug.
-                        internal_error!(range, "Couldn't find original path for mirror2d: original_path_id={original_path_id:?}, cmd={cmd:?}");
+                        internal_error!(
+                            range,
+                            "Couldn't find original path for mirror2d: original_path_id={original_path_id:?}, cmd={cmd:?}"
+                        );
                     };
                     Path {
                         id: path_id,

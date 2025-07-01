@@ -1,14 +1,14 @@
 use std::{
-    panic::{catch_unwind, AssertUnwindSafe},
+    panic::{AssertUnwindSafe, catch_unwind},
     path::{Path, PathBuf},
 };
 
 use indexmap::IndexMap;
 
 use crate::{
+    ExecOutcome, ExecState, ExecutorContext, ModuleId,
     errors::KclError,
     execution::{EnvironmentRef, ModuleArtifactState},
-    ExecOutcome, ExecState, ExecutorContext, ModuleId,
 };
 #[cfg(feature = "artifact-graph")]
 use crate::{
@@ -241,7 +241,10 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
         Ok((exec_state, ctx, env_ref, png, step)) => {
             let fail_path = test.output_dir.join("execution_error.snap");
             if std::fs::exists(&fail_path).unwrap() {
-                panic!("This test case is expected to fail, but it passed. If this is intended, and the test should actually be passing now, please delete kcl-lib/{}", fail_path.to_string_lossy())
+                panic!(
+                    "This test case is expected to fail, but it passed. If this is intended, and the test should actually be passing now, please delete kcl-lib/{}",
+                    fail_path.to_string_lossy()
+                )
             }
             if render_to_png {
                 twenty_twenty::assert_image(test.output_dir.join(RENDERED_MODEL_NAME), &png, 0.99);
@@ -287,10 +290,13 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
                     let report = error.clone().into_miette_report_with_outputs(&input).unwrap();
                     let report = miette::Report::new(report);
                     if previously_passed {
-                        eprintln!("This test case failed, but it previously passed. If this is intended, and the test should actually be failing now, please delete kcl-lib/{} and other associated passing artifacts", ok_path.to_string_lossy());
+                        eprintln!(
+                            "This test case failed, but it previously passed. If this is intended, and the test should actually be failing now, please delete kcl-lib/{} and other associated passing artifacts",
+                            ok_path.to_string_lossy()
+                        );
                         panic!("{report:?}");
                     }
-                    let report = format!("{:?}", report);
+                    let report = format!("{report:?}");
 
                     let err_result = catch_unwind(AssertUnwindSafe(|| {
                         assert_snapshot(test, "Error from executing", || {
@@ -2882,7 +2888,7 @@ mod clone_w_fillets {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     #[ignore] // turn on when https://github.com/KittyCAD/engine/pull/3380 is merged
-              // There's also a test in clone.rs you need to turn too
+    // There's also a test in clone.rs you need to turn too
     async fn kcl_test_execute() {
         super::execute(TEST_NAME, true).await
     }

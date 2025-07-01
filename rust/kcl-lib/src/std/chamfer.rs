@@ -1,18 +1,18 @@
 //! Standard library chamfers.
 
 use anyhow::Result;
-use kcmc::{each_cmd as mcmd, length_unit::LengthUnit, shared::CutType, ModelingCmd};
+use kcmc::{ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit, shared::CutType};
 use kittycad_modeling_cmds as kcmc;
 
 use super::args::TyF64;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        types::RuntimeType, ChamferSurface, EdgeCut, ExecState, ExtrudeSurface, GeoMeta, KclValue, ModelingCmdMeta,
-        Solid,
+        ChamferSurface, EdgeCut, ExecState, ExtrudeSurface, GeoMeta, KclValue, ModelingCmdMeta, Solid,
+        types::RuntimeType,
     },
     parsing::ast::types::TagNode,
-    std::{fillet::EdgeReference, Args},
+    std::{Args, fillet::EdgeReference},
 };
 
 pub(crate) const DEFAULT_TOLERANCE: f64 = 0.0000001;
