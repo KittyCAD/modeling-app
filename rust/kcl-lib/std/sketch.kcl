@@ -255,11 +255,11 @@ export fn rectangle(
   width: number(Length),
   /// Rectangle's height along Y axis.
   height: number(Length),
-  /// The center of the circle.
+  /// The center of the rectangle.
   /// Incompatible with `corner`.
   @(snippetArray = ["0", "0"])
   center?: Point2d,
-  /// The corner of the circle.
+  /// The corner of the rectangle.
   /// Incompatible with `center`.
   /// This will be the corner which is most negative on
   /// both X and Y axes.
