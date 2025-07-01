@@ -246,7 +246,7 @@ impl RuntimeType {
     }
 
     // Subtype with no coercion, including refining numeric types.
-    fn subtype(&self, sup: &RuntimeType) -> bool {
+    pub(super) fn subtype(&self, sup: &RuntimeType) -> bool {
         use RuntimeType::*;
 
         match (self, sup) {

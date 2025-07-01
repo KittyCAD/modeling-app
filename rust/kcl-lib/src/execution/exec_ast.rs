@@ -1086,6 +1086,32 @@ impl Node<MemberExpression> {
     }
 }
 
+fn concat(left: &[KclValue], left_el_ty: &RuntimeType, right: &[KclValue], right_el_ty: &RuntimeType) -> KclValue {
+    if left.is_empty() {
+        return KclValue::HomArray {
+            value: right.to_vec(),
+            ty: right_el_ty.clone(),
+        };
+    }
+    if right.is_empty() {
+        return KclValue::HomArray {
+            value: left.to_vec(),
+            ty: left_el_ty.clone(),
+        };
+    }
+    let mut new = left.to_vec();
+    new.extend_from_slice(right);
+    // Propagate the element type if we can.
+    let ty = if right_el_ty.subtype(left_el_ty) {
+        left_el_ty.clone()
+    } else if left_el_ty.subtype(right_el_ty) {
+        right_el_ty.clone()
+    } else {
+        RuntimeType::any()
+    };
+    KclValue::HomArray { value: new, ty }
+}
+
 impl Node<BinaryExpression> {
     #[async_recursion]
     pub async fn get_result(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
@@ -1103,6 +1129,50 @@ impl Node<BinaryExpression> {
                     value: format!("{left}{right}"),
                     meta,
                 });
+            }
+            // Array plus is concatenation.
+            match (&left_value, &right_value) {
+                (
+                    KclValue::HomArray {
+                        value: left,
+                        ty: left_el_ty,
+                        ..
+                    },
+                    KclValue::HomArray {
+                        value: right,
+                        ty: right_el_ty,
+                        ..
+                    },
+                ) => {
+                    return Ok(concat(left, left_el_ty, right, right_el_ty));
+                }
+                (
+                    KclValue::HomArray {
+                        value: left,
+                        ty: left_el_ty,
+                        ..
+                    },
+                    _,
+                ) => {
+                    // Any single value can be coerced to an array.
+                    let right = vec![right_value.clone()];
+                    let right_el_ty = RuntimeType::any();
+                    return Ok(concat(left, left_el_ty, &right, &right_el_ty));
+                }
+                (
+                    _,
+                    KclValue::HomArray {
+                        value: right,
+                        ty: right_el_ty,
+                        ..
+                    },
+                ) => {
+                    // Any single value can be coerced to an array.
+                    let left = vec![left_value.clone()];
+                    let left_el_ty = RuntimeType::any();
+                    return Ok(concat(&left, &left_el_ty, right, right_el_ty));
+                }
+                _ => {}
             }
         }
 

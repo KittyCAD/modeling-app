@@ -2,4 +2,6 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Result of unparsing add_arrays.kcl
 ---
-answer = [0, 1] + [2]
+a = [0, 1] + [2]
+b = [0, 1] + 2
+c = 0 + [1, 2]
