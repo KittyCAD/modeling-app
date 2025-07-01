@@ -363,6 +363,9 @@ impl BinaryPart {
             BinaryPart::MemberExpression(member_expression) => {
                 member_expression.recast(options, indentation_level, ctxt)
             }
+            BinaryPart::ArrayExpression(e) => e.recast(options, indentation_level, ctxt),
+            BinaryPart::ArrayRangeExpression(e) => e.recast(options, indentation_level, ctxt),
+            BinaryPart::ObjectExpression(e) => e.recast(options, indentation_level, ctxt),
             BinaryPart::IfExpression(e) => e.recast(options, indentation_level, ExprContext::Other),
             BinaryPart::AscribedExpression(e) => e.recast(options, indentation_level, ExprContext::Other),
         }
@@ -745,6 +748,9 @@ impl UnaryExpression {
             BinaryPart::Literal(_)
             | BinaryPart::Name(_)
             | BinaryPart::MemberExpression(_)
+            | BinaryPart::ArrayExpression(_)
+            | BinaryPart::ArrayRangeExpression(_)
+            | BinaryPart::ObjectExpression(_)
             | BinaryPart::IfExpression(_)
             | BinaryPart::AscribedExpression(_)
             | BinaryPart::CallExpressionKw(_) => {
