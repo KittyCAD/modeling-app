@@ -38,6 +38,119 @@ pub enum SketchOrSurface {
     Sketch(Box<Sketch>),
 }
 
+/// Sketch a rectangle.
+pub async fn rectangle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let sketch_or_surface =
+        args.get_unlabeled_kw_arg("sketchOrSurface", &RuntimeType::sketch_or_surface(), exec_state)?;
+    let center = args.get_kw_arg_opt("center", &RuntimeType::point2d(), exec_state)?;
+    let corner = args.get_kw_arg_opt("corner", &RuntimeType::point2d(), exec_state)?;
+    let width: TyF64 = args.get_kw_arg("width", &RuntimeType::length(), exec_state)?;
+    let height: TyF64 = args.get_kw_arg("height", &RuntimeType::length(), exec_state)?;
+
+    inner_rectangle(sketch_or_surface, center, corner, width, height, exec_state, args)
+        .await
+        .map(Box::new)
+        .map(|value| KclValue::Sketch { value })
+}
+
+async fn inner_rectangle(
+    sketch_or_surface: SketchOrSurface,
+    center: Option<[TyF64; 2]>,
+    corner: Option<[TyF64; 2]>,
+    width: TyF64,
+    height: TyF64,
+    exec_state: &mut ExecState,
+    args: Args,
+) -> Result<Sketch, KclError> {
+    let sketch_surface = match sketch_or_surface {
+        SketchOrSurface::SketchSurface(surface) => surface,
+        SketchOrSurface::Sketch(s) => s.on,
+    };
+
+    // Find the corner in the negative quadrant
+    let (ty, corner) = match (center, corner) {
+        (Some(center), None) => (
+            center[0].ty,
+            [center[0].n - width.n / 2.0, center[1].n - height.n / 2.0],
+        ),
+        (None, Some(corner)) => (corner[0].ty, [corner[0].n, corner[1].n]),
+        (None, None) => {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "You must supply either `corner` or `center` arguments, but not both".to_string(),
+                vec![args.source_range],
+            )));
+        }
+        (Some(_), Some(_)) => {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "You must supply either `corner` or `center` arguments, but not both".to_string(),
+                vec![args.source_range],
+            )));
+        }
+    };
+    let units = ty.expect_length();
+    let corner_t = [TyF64::new(corner[0], ty), TyF64::new(corner[1], ty)];
+
+    // Start the sketch then draw the 4 lines.
+    let sketch =
+        crate::std::sketch::inner_start_profile(sketch_surface, corner_t, None, exec_state, args.clone()).await?;
+    let sketch_id = sketch.id;
+    let deltas = [[width.n, 0.0], [0.0, height.n], [-width.n, 0.0], [0.0, -height.n]];
+    let ids = [
+        exec_state.next_uuid(),
+        exec_state.next_uuid(),
+        exec_state.next_uuid(),
+        exec_state.next_uuid(),
+    ];
+    for (id, delta) in ids.iter().copied().zip(deltas) {
+        exec_state
+            .batch_modeling_cmd(
+                ModelingCmdMeta::from_args_id(&args, id),
+                ModelingCmd::from(mcmd::ExtendPath {
+                    path: sketch.id.into(),
+                    segment: PathSegment::Line {
+                        end: KPoint2d::from(untyped_point_to_mm(delta, units))
+                            .with_z(0.0)
+                            .map(LengthUnit),
+                        relative: true,
+                    },
+                }),
+            )
+            .await?;
+    }
+    exec_state
+        .batch_modeling_cmd(
+            ModelingCmdMeta::from_args_id(&args, sketch_id),
+            ModelingCmd::from(mcmd::ClosePath { path_id: sketch.id }),
+        )
+        .await?;
+
+    // Update the sketch in KCL memory.
+    let mut new_sketch = sketch.clone();
+    fn add(a: [f64; 2], b: [f64; 2]) -> [f64; 2] {
+        [a[0] + b[0], a[1] + b[1]]
+    }
+    let a = (corner, add(corner, deltas[0]));
+    let b = (a.1, add(a.1, deltas[1]));
+    let c = (b.1, add(b.1, deltas[2]));
+    let d = (c.1, add(c.1, deltas[3]));
+    for (id, (from, to)) in ids.into_iter().zip([a, b, c, d]) {
+        let current_path = Path::ToPoint {
+            base: BasePath {
+                from,
+                to,
+                tag: None,
+                units,
+                geo_meta: GeoMeta {
+                    id,
+                    metadata: args.source_range.into(),
+                },
+            },
+        };
+        new_sketch.paths.push(current_path);
+    }
+    Ok(new_sketch)
+}
+
 /// Sketch a circle.
 pub async fn circle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketch_or_surface =
