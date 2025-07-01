@@ -13,6 +13,7 @@ description: Result of parsing spheres.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "diameter",
             "start": 0,
             "type": "Identifier"
@@ -20,6 +21,7 @@ description: Result of parsing spheres.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "10",
             "start": 0,
             "type": "Literal",
@@ -29,11 +31,13 @@ description: Result of parsing spheres.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -44,13 +48,16 @@ description: Result of parsing spheres.kcl
         "expression": {
           "body": [
             {
+              "arguments": [],
               "callee": {
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "startSketchOn",
                   "start": 0,
                   "type": "Identifier"
@@ -61,6 +68,7 @@ description: Result of parsing spheres.kcl
               },
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
@@ -68,9 +76,11 @@ description: Result of parsing spheres.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "XY",
                   "start": 0,
                   "type": "Identifier"
@@ -88,6 +98,7 @@ description: Result of parsing spheres.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "at",
                     "start": 0,
                     "type": "Identifier"
@@ -103,9 +114,11 @@ description: Result of parsing spheres.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "diameter",
                               "start": 0,
                               "type": "Identifier"
@@ -117,15 +130,18 @@ description: Result of parsing spheres.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "operator": "-",
                           "start": 0,
                           "type": "UnaryExpression",
                           "type": "UnaryExpression"
                         },
+                        "moduleId": 0,
                         "operator": "/",
                         "right": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "2",
                           "start": 0,
                           "type": "Literal",
@@ -142,6 +158,7 @@ description: Result of parsing spheres.kcl
                       {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "0",
                         "start": 0,
                         "type": "Literal",
@@ -153,6 +170,7 @@ description: Result of parsing spheres.kcl
                       }
                     ],
                     "end": 0,
+                    "moduleId": 0,
                     "start": 0,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
@@ -163,9 +181,11 @@ description: Result of parsing spheres.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "startProfile",
                   "start": 0,
                   "type": "Identifier"
@@ -176,6 +196,7 @@ description: Result of parsing spheres.kcl
               },
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
@@ -188,6 +209,7 @@ description: Result of parsing spheres.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "length",
                     "start": 0,
                     "type": "Identifier"
@@ -196,9 +218,11 @@ description: Result of parsing spheres.kcl
                     "abs_path": false,
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "diameter",
                       "start": 0,
                       "type": "Identifier"
@@ -214,9 +238,11 @@ description: Result of parsing spheres.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "xLine",
                   "start": 0,
                   "type": "Identifier"
@@ -227,6 +253,7 @@ description: Result of parsing spheres.kcl
               },
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
@@ -239,6 +266,7 @@ description: Result of parsing spheres.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "angleStart",
                     "start": 0,
                     "type": "Identifier"
@@ -246,6 +274,7 @@ description: Result of parsing spheres.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "0.0",
                     "start": 0,
                     "type": "Literal",
@@ -261,6 +290,7 @@ description: Result of parsing spheres.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "angleEnd",
                     "start": 0,
                     "type": "Identifier"
@@ -268,6 +298,7 @@ description: Result of parsing spheres.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "180.0",
                     "start": 0,
                     "type": "Literal",
@@ -283,6 +314,7 @@ description: Result of parsing spheres.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "radius",
                     "start": 0,
                     "type": "Identifier"
@@ -294,9 +326,11 @@ description: Result of parsing spheres.kcl
                       "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "diameter",
                         "start": 0,
                         "type": "Identifier"
@@ -306,10 +340,12 @@ description: Result of parsing spheres.kcl
                       "type": "Name",
                       "type": "Name"
                     },
+                    "moduleId": 0,
                     "operator": "/",
                     "right": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "2",
                       "start": 0,
                       "type": "Literal",
@@ -329,9 +365,11 @@ description: Result of parsing spheres.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "arc",
                   "start": 0,
                   "type": "Identifier"
@@ -342,19 +380,23 @@ description: Result of parsing spheres.kcl
               },
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
               "unlabeled": null
             },
             {
+              "arguments": [],
               "callee": {
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "close",
                   "start": 0,
                   "type": "Identifier"
@@ -365,6 +407,7 @@ description: Result of parsing spheres.kcl
               },
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
@@ -377,6 +420,7 @@ description: Result of parsing spheres.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "axis",
                     "start": 0,
                     "type": "Identifier"
@@ -385,9 +429,11 @@ description: Result of parsing spheres.kcl
                     "abs_path": false,
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "X",
                       "start": 0,
                       "type": "Identifier"
@@ -403,9 +449,11 @@ description: Result of parsing spheres.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "revolve",
                   "start": 0,
                   "type": "Identifier"
@@ -416,6 +464,7 @@ description: Result of parsing spheres.kcl
               },
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
@@ -424,10 +473,12 @@ description: Result of parsing spheres.kcl
           ],
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "PipeExpression",
           "type": "PipeExpression"
         },
+        "moduleId": 0,
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -438,13 +489,16 @@ description: Result of parsing spheres.kcl
         "expression": {
           "body": [
             {
+              "arguments": [],
               "callee": {
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "startSketchOn",
                   "start": 0,
                   "type": "Identifier"
@@ -455,6 +509,7 @@ description: Result of parsing spheres.kcl
               },
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
@@ -462,9 +517,11 @@ description: Result of parsing spheres.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "XY",
                   "start": 0,
                   "type": "Identifier"
@@ -482,6 +539,7 @@ description: Result of parsing spheres.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "at",
                     "start": 0,
                     "type": "Identifier"
@@ -492,6 +550,7 @@ description: Result of parsing spheres.kcl
                       {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "0",
                         "start": 0,
                         "type": "Literal",
@@ -504,6 +563,7 @@ description: Result of parsing spheres.kcl
                       {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "0",
                         "start": 0,
                         "type": "Literal",
@@ -515,6 +575,7 @@ description: Result of parsing spheres.kcl
                       }
                     ],
                     "end": 0,
+                    "moduleId": 0,
                     "start": 0,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
@@ -525,9 +586,11 @@ description: Result of parsing spheres.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "startProfile",
                   "start": 0,
                   "type": "Identifier"
@@ -538,6 +601,7 @@ description: Result of parsing spheres.kcl
               },
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
@@ -550,6 +614,7 @@ description: Result of parsing spheres.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "length",
                     "start": 0,
                     "type": "Identifier"
@@ -558,9 +623,11 @@ description: Result of parsing spheres.kcl
                     "abs_path": false,
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "diameter",
                       "start": 0,
                       "type": "Identifier"
@@ -576,9 +643,11 @@ description: Result of parsing spheres.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "yLine",
                   "start": 0,
                   "type": "Identifier"
@@ -589,6 +658,7 @@ description: Result of parsing spheres.kcl
               },
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
@@ -601,6 +671,7 @@ description: Result of parsing spheres.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "angleStart",
                     "start": 0,
                     "type": "Identifier"
@@ -608,6 +679,7 @@ description: Result of parsing spheres.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "90.0",
                     "start": 0,
                     "type": "Literal",
@@ -623,6 +695,7 @@ description: Result of parsing spheres.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "angleEnd",
                     "start": 0,
                     "type": "Identifier"
@@ -630,6 +703,7 @@ description: Result of parsing spheres.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "270.0",
                     "start": 0,
                     "type": "Literal",
@@ -645,6 +719,7 @@ description: Result of parsing spheres.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "radius",
                     "start": 0,
                     "type": "Identifier"
@@ -656,9 +731,11 @@ description: Result of parsing spheres.kcl
                       "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "diameter",
                         "start": 0,
                         "type": "Identifier"
@@ -668,10 +745,12 @@ description: Result of parsing spheres.kcl
                       "type": "Name",
                       "type": "Name"
                     },
+                    "moduleId": 0,
                     "operator": "/",
                     "right": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "2",
                       "start": 0,
                       "type": "Literal",
@@ -691,9 +770,11 @@ description: Result of parsing spheres.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "arc",
                   "start": 0,
                   "type": "Identifier"
@@ -704,19 +785,23 @@ description: Result of parsing spheres.kcl
               },
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
               "unlabeled": null
             },
             {
+              "arguments": [],
               "callee": {
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "close",
                   "start": 0,
                   "type": "Identifier"
@@ -727,6 +812,7 @@ description: Result of parsing spheres.kcl
               },
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
@@ -739,6 +825,7 @@ description: Result of parsing spheres.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "axis",
                     "start": 0,
                     "type": "Identifier"
@@ -747,9 +834,11 @@ description: Result of parsing spheres.kcl
                     "abs_path": false,
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "Y",
                       "start": 0,
                       "type": "Identifier"
@@ -765,9 +854,11 @@ description: Result of parsing spheres.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "revolve",
                   "start": 0,
                   "type": "Identifier"
@@ -778,6 +869,7 @@ description: Result of parsing spheres.kcl
               },
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
@@ -790,6 +882,7 @@ description: Result of parsing spheres.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "x",
                     "start": 0,
                     "type": "Identifier"
@@ -801,9 +894,11 @@ description: Result of parsing spheres.kcl
                       "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "diameter",
                         "start": 0,
                         "type": "Identifier"
@@ -813,10 +908,12 @@ description: Result of parsing spheres.kcl
                       "type": "Name",
                       "type": "Name"
                     },
+                    "moduleId": 0,
                     "operator": "*",
                     "right": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "1.5",
                       "start": 0,
                       "type": "Literal",
@@ -836,9 +933,11 @@ description: Result of parsing spheres.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "translate",
                   "start": 0,
                   "type": "Identifier"
@@ -849,6 +948,7 @@ description: Result of parsing spheres.kcl
               },
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
@@ -857,10 +957,12 @@ description: Result of parsing spheres.kcl
           ],
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "PipeExpression",
           "type": "PipeExpression"
         },
+        "moduleId": 0,
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -868,12 +970,14 @@ description: Result of parsing spheres.kcl
     ],
     "commentStart": 0,
     "end": 0,
+    "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {
@@ -885,6 +989,7 @@ description: Result of parsing spheres.kcl
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {

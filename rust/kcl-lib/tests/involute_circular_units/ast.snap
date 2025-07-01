@@ -1,6 +1,5 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
-assertion_line: 87
 description: Result of parsing involute_circular_units.kcl
 ---
 {
@@ -14,6 +13,7 @@ description: Result of parsing involute_circular_units.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "nTeeth",
             "start": 0,
             "type": "Identifier"
@@ -21,6 +21,7 @@ description: Result of parsing involute_circular_units.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "21",
             "start": 0,
             "type": "Literal",
@@ -30,11 +31,13 @@ description: Result of parsing involute_circular_units.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "preComments": [
           "// Define parameters"
         ],
@@ -50,6 +53,7 @@ description: Result of parsing involute_circular_units.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "module",
             "start": 0,
             "type": "Identifier"
@@ -57,6 +61,7 @@ description: Result of parsing involute_circular_units.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "0.5",
             "start": 0,
             "type": "Literal",
@@ -66,11 +71,13 @@ description: Result of parsing involute_circular_units.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -83,6 +90,7 @@ description: Result of parsing involute_circular_units.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "pitchDiameter",
             "start": 0,
             "type": "Identifier"
@@ -94,9 +102,11 @@ description: Result of parsing involute_circular_units.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "module",
                 "start": 0,
                 "type": "Identifier"
@@ -106,14 +116,17 @@ description: Result of parsing involute_circular_units.kcl
               "type": "Name",
               "type": "Name"
             },
+            "moduleId": 0,
             "operator": "*",
             "right": {
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "nTeeth",
                 "start": 0,
                 "type": "Identifier"
@@ -127,11 +140,13 @@ description: Result of parsing involute_circular_units.kcl
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -144,6 +159,7 @@ description: Result of parsing involute_circular_units.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "pressureAngle",
             "start": 0,
             "type": "Identifier"
@@ -151,6 +167,7 @@ description: Result of parsing involute_circular_units.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "20deg",
             "start": 0,
             "type": "Literal",
@@ -160,11 +177,13 @@ description: Result of parsing involute_circular_units.kcl
               "suffix": "Deg"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -177,6 +196,7 @@ description: Result of parsing involute_circular_units.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "addendum",
             "start": 0,
             "type": "Identifier"
@@ -185,9 +205,11 @@ description: Result of parsing involute_circular_units.kcl
             "abs_path": false,
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "module",
               "start": 0,
               "type": "Identifier"
@@ -197,11 +219,13 @@ description: Result of parsing involute_circular_units.kcl
             "type": "Name",
             "type": "Name"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -214,6 +238,7 @@ description: Result of parsing involute_circular_units.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "deddendum",
             "start": 0,
             "type": "Identifier"
@@ -224,6 +249,7 @@ description: Result of parsing involute_circular_units.kcl
             "left": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "raw": "1.25",
               "start": 0,
               "type": "Literal",
@@ -233,14 +259,17 @@ description: Result of parsing involute_circular_units.kcl
                 "suffix": "None"
               }
             },
+            "moduleId": 0,
             "operator": "*",
             "right": {
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "module",
                 "start": 0,
                 "type": "Identifier"
@@ -254,11 +283,13 @@ description: Result of parsing involute_circular_units.kcl
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -271,6 +302,7 @@ description: Result of parsing involute_circular_units.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "baseDiameter",
             "start": 0,
             "type": "Identifier"
@@ -282,9 +314,11 @@ description: Result of parsing involute_circular_units.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "pitchDiameter",
                 "start": 0,
                 "type": "Identifier"
@@ -294,15 +328,19 @@ description: Result of parsing involute_circular_units.kcl
               "type": "Name",
               "type": "Name"
             },
+            "moduleId": 0,
             "operator": "*",
             "right": {
+              "arguments": [],
               "callee": {
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "cos",
                   "start": 0,
                   "type": "Identifier"
@@ -313,6 +351,7 @@ description: Result of parsing involute_circular_units.kcl
               },
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
@@ -320,9 +359,11 @@ description: Result of parsing involute_circular_units.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "pressureAngle",
                   "start": 0,
                   "type": "Identifier"
@@ -337,11 +378,13 @@ description: Result of parsing involute_circular_units.kcl
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -354,6 +397,7 @@ description: Result of parsing involute_circular_units.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "tipDiameter",
             "start": 0,
             "type": "Identifier"
@@ -365,9 +409,11 @@ description: Result of parsing involute_circular_units.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "pitchDiameter",
                 "start": 0,
                 "type": "Identifier"
@@ -377,6 +423,7 @@ description: Result of parsing involute_circular_units.kcl
               "type": "Name",
               "type": "Name"
             },
+            "moduleId": 0,
             "operator": "+",
             "right": {
               "commentStart": 0,
@@ -384,6 +431,7 @@ description: Result of parsing involute_circular_units.kcl
               "left": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "2",
                 "start": 0,
                 "type": "Literal",
@@ -393,14 +441,17 @@ description: Result of parsing involute_circular_units.kcl
                   "suffix": "None"
                 }
               },
+              "moduleId": 0,
               "operator": "*",
               "right": {
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "module",
                   "start": 0,
                   "type": "Identifier"
@@ -418,11 +469,13 @@ description: Result of parsing involute_circular_units.kcl
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -435,6 +488,7 @@ description: Result of parsing involute_circular_units.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "gearHeight",
             "start": 0,
             "type": "Identifier"
@@ -442,6 +496,7 @@ description: Result of parsing involute_circular_units.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": ".3",
             "start": 0,
             "type": "Literal",
@@ -451,11 +506,13 @@ description: Result of parsing involute_circular_units.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -468,6 +525,7 @@ description: Result of parsing involute_circular_units.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "angle001",
             "start": 0,
             "type": "Identifier"
@@ -475,6 +533,7 @@ description: Result of parsing involute_circular_units.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "6",
             "start": 0,
             "type": "Literal",
@@ -484,11 +543,13 @@ description: Result of parsing involute_circular_units.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -501,6 +562,7 @@ description: Result of parsing involute_circular_units.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "sketch001",
             "start": 0,
             "type": "Identifier"
@@ -508,13 +570,16 @@ description: Result of parsing involute_circular_units.kcl
           "init": {
             "body": [
               {
+                "arguments": [],
                 "callee": {
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "startSketchOn",
                     "start": 0,
                     "type": "Identifier"
@@ -525,6 +590,7 @@ description: Result of parsing involute_circular_units.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -532,9 +598,11 @@ description: Result of parsing involute_circular_units.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "XY",
                     "start": 0,
                     "type": "Identifier"
@@ -552,6 +620,7 @@ description: Result of parsing involute_circular_units.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "at",
                       "start": 0,
                       "type": "Identifier"
@@ -566,9 +635,11 @@ description: Result of parsing involute_circular_units.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "baseDiameter",
                               "start": 0,
                               "type": "Identifier"
@@ -578,10 +649,12 @@ description: Result of parsing involute_circular_units.kcl
                             "type": "Name",
                             "type": "Name"
                           },
+                          "moduleId": 0,
                           "operator": "/",
                           "right": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "raw": "2",
                             "start": 0,
                             "type": "Literal",
@@ -598,6 +671,7 @@ description: Result of parsing involute_circular_units.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "0",
                           "start": 0,
                           "type": "Literal",
@@ -609,6 +683,7 @@ description: Result of parsing involute_circular_units.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -619,9 +694,11 @@ description: Result of parsing involute_circular_units.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "startProfile",
                     "start": 0,
                     "type": "Identifier"
@@ -632,6 +709,7 @@ description: Result of parsing involute_circular_units.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -644,6 +722,7 @@ description: Result of parsing involute_circular_units.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "startRadius",
                       "start": 0,
                       "type": "Identifier"
@@ -655,9 +734,11 @@ description: Result of parsing involute_circular_units.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "baseDiameter",
                           "start": 0,
                           "type": "Identifier"
@@ -667,10 +748,12 @@ description: Result of parsing involute_circular_units.kcl
                         "type": "Name",
                         "type": "Name"
                       },
+                      "moduleId": 0,
                       "operator": "/",
                       "right": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "2",
                         "start": 0,
                         "type": "Literal",
@@ -690,6 +773,7 @@ description: Result of parsing involute_circular_units.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "endRadius",
                       "start": 0,
                       "type": "Identifier"
@@ -701,9 +785,11 @@ description: Result of parsing involute_circular_units.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "tipDiameter",
                           "start": 0,
                           "type": "Identifier"
@@ -713,10 +799,12 @@ description: Result of parsing involute_circular_units.kcl
                         "type": "Name",
                         "type": "Name"
                       },
+                      "moduleId": 0,
                       "operator": "/",
                       "right": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "2",
                         "start": 0,
                         "type": "Literal",
@@ -736,6 +824,7 @@ description: Result of parsing involute_circular_units.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "angle",
                       "start": 0,
                       "type": "Identifier"
@@ -743,6 +832,7 @@ description: Result of parsing involute_circular_units.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "0",
                       "start": 0,
                       "type": "Literal",
@@ -758,6 +848,7 @@ description: Result of parsing involute_circular_units.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
@@ -765,6 +856,7 @@ description: Result of parsing involute_circular_units.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "TagDeclarator",
                       "type": "TagDeclarator",
@@ -776,9 +868,11 @@ description: Result of parsing involute_circular_units.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "involuteCircular",
                     "start": 0,
                     "type": "Identifier"
@@ -789,6 +883,7 @@ description: Result of parsing involute_circular_units.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -801,6 +896,7 @@ description: Result of parsing involute_circular_units.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
@@ -809,13 +905,16 @@ description: Result of parsing involute_circular_units.kcl
                       "commentStart": 0,
                       "elements": [
                         {
+                          "arguments": [],
                           "callee": {
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "lastSegX",
                               "start": 0,
                               "type": "Identifier"
@@ -826,25 +925,30 @@ description: Result of parsing involute_circular_units.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "start": 0,
                             "type": "PipeSubstitution",
                             "type": "PipeSubstitution"
                           }
                         },
                         {
+                          "arguments": [],
                           "callee": {
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "lastSegY",
                               "start": 0,
                               "type": "Identifier"
@@ -855,12 +959,14 @@ description: Result of parsing involute_circular_units.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "start": 0,
                             "type": "PipeSubstitution",
                             "type": "PipeSubstitution"
@@ -868,6 +974,7 @@ description: Result of parsing involute_circular_units.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -878,9 +985,11 @@ description: Result of parsing involute_circular_units.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "line",
                     "start": 0,
                     "type": "Identifier"
@@ -891,6 +1000,7 @@ description: Result of parsing involute_circular_units.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -903,18 +1013,22 @@ description: Result of parsing involute_circular_units.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "angleStart",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "arguments": [],
                       "callee": {
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "asin",
                           "start": 0,
                           "type": "Identifier"
@@ -925,6 +1039,7 @@ description: Result of parsing involute_circular_units.kcl
                       },
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "CallExpressionKw",
                       "type": "CallExpressionKw",
@@ -932,13 +1047,16 @@ description: Result of parsing involute_circular_units.kcl
                         "commentStart": 0,
                         "end": 0,
                         "left": {
+                          "arguments": [],
                           "callee": {
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "segEndY",
                               "start": 0,
                               "type": "Identifier"
@@ -949,6 +1067,7 @@ description: Result of parsing involute_circular_units.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
@@ -956,9 +1075,11 @@ description: Result of parsing involute_circular_units.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "seg01",
                               "start": 0,
                               "type": "Identifier"
@@ -969,15 +1090,19 @@ description: Result of parsing involute_circular_units.kcl
                             "type": "Name"
                           }
                         },
+                        "moduleId": 0,
                         "operator": "/",
                         "right": {
+                          "arguments": [],
                           "callee": {
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "segEndX",
                               "start": 0,
                               "type": "Identifier"
@@ -988,6 +1113,7 @@ description: Result of parsing involute_circular_units.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
@@ -995,9 +1121,11 @@ description: Result of parsing involute_circular_units.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "seg01",
                               "start": 0,
                               "type": "Identifier"
@@ -1019,6 +1147,7 @@ description: Result of parsing involute_circular_units.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "angleEnd",
                       "start": 0,
                       "type": "Identifier"
@@ -1026,6 +1155,7 @@ description: Result of parsing involute_circular_units.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "9",
                       "start": 0,
                       "type": "Literal",
@@ -1041,6 +1171,7 @@ description: Result of parsing involute_circular_units.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "radius",
                       "start": 0,
                       "type": "Identifier"
@@ -1052,9 +1183,11 @@ description: Result of parsing involute_circular_units.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "tipDiameter",
                           "start": 0,
                           "type": "Identifier"
@@ -1064,10 +1197,12 @@ description: Result of parsing involute_circular_units.kcl
                         "type": "Name",
                         "type": "Name"
                       },
+                      "moduleId": 0,
                       "operator": "/",
                       "right": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "2",
                         "start": 0,
                         "type": "Literal",
@@ -1087,6 +1222,7 @@ description: Result of parsing involute_circular_units.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
@@ -1094,6 +1230,7 @@ description: Result of parsing involute_circular_units.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "TagDeclarator",
                       "type": "TagDeclarator",
@@ -1105,9 +1242,11 @@ description: Result of parsing involute_circular_units.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "arc",
                     "start": 0,
                     "type": "Identifier"
@@ -1118,6 +1257,7 @@ description: Result of parsing involute_circular_units.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -1130,6 +1270,7 @@ description: Result of parsing involute_circular_units.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "startRadius",
                       "start": 0,
                       "type": "Identifier"
@@ -1141,9 +1282,11 @@ description: Result of parsing involute_circular_units.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "baseDiameter",
                           "start": 0,
                           "type": "Identifier"
@@ -1153,10 +1296,12 @@ description: Result of parsing involute_circular_units.kcl
                         "type": "Name",
                         "type": "Name"
                       },
+                      "moduleId": 0,
                       "operator": "/",
                       "right": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "2",
                         "start": 0,
                         "type": "Literal",
@@ -1176,6 +1321,7 @@ description: Result of parsing involute_circular_units.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "endRadius",
                       "start": 0,
                       "type": "Identifier"
@@ -1187,9 +1333,11 @@ description: Result of parsing involute_circular_units.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "tipDiameter",
                           "start": 0,
                           "type": "Identifier"
@@ -1199,10 +1347,12 @@ description: Result of parsing involute_circular_units.kcl
                         "type": "Name",
                         "type": "Name"
                       },
+                      "moduleId": 0,
                       "operator": "/",
                       "right": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "2",
                         "start": 0,
                         "type": "Literal",
@@ -1222,6 +1372,7 @@ description: Result of parsing involute_circular_units.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "angle",
                       "start": 0,
                       "type": "Identifier"
@@ -1230,6 +1381,7 @@ description: Result of parsing involute_circular_units.kcl
                       "argument": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "12",
                         "start": 0,
                         "type": "Literal",
@@ -1241,6 +1393,7 @@ description: Result of parsing involute_circular_units.kcl
                       },
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "operator": "-",
                       "start": 0,
                       "type": "UnaryExpression",
@@ -1252,6 +1405,7 @@ description: Result of parsing involute_circular_units.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "reverse",
                       "start": 0,
                       "type": "Identifier"
@@ -1259,6 +1413,7 @@ description: Result of parsing involute_circular_units.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "true",
                       "start": 0,
                       "type": "Literal",
@@ -1271,9 +1426,11 @@ description: Result of parsing involute_circular_units.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "involuteCircular",
                     "start": 0,
                     "type": "Identifier"
@@ -1284,6 +1441,7 @@ description: Result of parsing involute_circular_units.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -1296,6 +1454,7 @@ description: Result of parsing involute_circular_units.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
@@ -1304,13 +1463,16 @@ description: Result of parsing involute_circular_units.kcl
                       "commentStart": 0,
                       "elements": [
                         {
+                          "arguments": [],
                           "callee": {
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "lastSegX",
                               "start": 0,
                               "type": "Identifier"
@@ -1321,25 +1483,30 @@ description: Result of parsing involute_circular_units.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "start": 0,
                             "type": "PipeSubstitution",
                             "type": "PipeSubstitution"
                           }
                         },
                         {
+                          "arguments": [],
                           "callee": {
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "lastSegY",
                               "start": 0,
                               "type": "Identifier"
@@ -1350,12 +1517,14 @@ description: Result of parsing involute_circular_units.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "start": 0,
                             "type": "PipeSubstitution",
                             "type": "PipeSubstitution"
@@ -1363,6 +1532,7 @@ description: Result of parsing involute_circular_units.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -1373,9 +1543,11 @@ description: Result of parsing involute_circular_units.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "line",
                     "start": 0,
                     "type": "Identifier"
@@ -1386,6 +1558,7 @@ description: Result of parsing involute_circular_units.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -1398,6 +1571,7 @@ description: Result of parsing involute_circular_units.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
@@ -1409,6 +1583,7 @@ description: Result of parsing involute_circular_units.kcl
                           "label": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "angle",
                             "start": 0,
                             "type": "Identifier"
@@ -1419,6 +1594,7 @@ description: Result of parsing involute_circular_units.kcl
                             "left": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "raw": "360",
                               "start": 0,
                               "type": "Literal",
@@ -1428,14 +1604,17 @@ description: Result of parsing involute_circular_units.kcl
                                 "suffix": "None"
                               }
                             },
+                            "moduleId": 0,
                             "operator": "/",
                             "right": {
                               "abs_path": false,
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "nTeeth",
                                 "start": 0,
                                 "type": "Identifier"
@@ -1455,6 +1634,7 @@ description: Result of parsing involute_circular_units.kcl
                           "label": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "length",
                             "start": 0,
                             "type": "Identifier"
@@ -1466,9 +1646,11 @@ description: Result of parsing involute_circular_units.kcl
                               "abs_path": false,
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "baseDiameter",
                                 "start": 0,
                                 "type": "Identifier"
@@ -1478,10 +1660,12 @@ description: Result of parsing involute_circular_units.kcl
                               "type": "Name",
                               "type": "Name"
                             },
+                            "moduleId": 0,
                             "operator": "/",
                             "right": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "raw": "2",
                               "start": 0,
                               "type": "Literal",
@@ -1501,9 +1685,11 @@ description: Result of parsing involute_circular_units.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "polar",
                           "start": 0,
                           "type": "Identifier"
@@ -1514,6 +1700,7 @@ description: Result of parsing involute_circular_units.kcl
                       },
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "CallExpressionKw",
                       "type": "CallExpressionKw",
@@ -1525,9 +1712,11 @@ description: Result of parsing involute_circular_units.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "line",
                     "start": 0,
                     "type": "Identifier"
@@ -1538,6 +1727,7 @@ description: Result of parsing involute_circular_units.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -1550,6 +1740,7 @@ description: Result of parsing involute_circular_units.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "instances",
                       "start": 0,
                       "type": "Identifier"
@@ -1558,9 +1749,11 @@ description: Result of parsing involute_circular_units.kcl
                       "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "nTeeth",
                         "start": 0,
                         "type": "Identifier"
@@ -1576,6 +1769,7 @@ description: Result of parsing involute_circular_units.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "center",
                       "start": 0,
                       "type": "Identifier"
@@ -1586,6 +1780,7 @@ description: Result of parsing involute_circular_units.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "0",
                           "start": 0,
                           "type": "Literal",
@@ -1598,6 +1793,7 @@ description: Result of parsing involute_circular_units.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "0",
                           "start": 0,
                           "type": "Literal",
@@ -1609,6 +1805,7 @@ description: Result of parsing involute_circular_units.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -1619,6 +1816,7 @@ description: Result of parsing involute_circular_units.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "arcDegrees",
                       "start": 0,
                       "type": "Identifier"
@@ -1626,6 +1824,7 @@ description: Result of parsing involute_circular_units.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "360",
                       "start": 0,
                       "type": "Literal",
@@ -1641,6 +1840,7 @@ description: Result of parsing involute_circular_units.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "rotateDuplicates",
                       "start": 0,
                       "type": "Identifier"
@@ -1648,6 +1848,7 @@ description: Result of parsing involute_circular_units.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "true",
                       "start": 0,
                       "type": "Literal",
@@ -1660,9 +1861,11 @@ description: Result of parsing involute_circular_units.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "patternCircular2d",
                     "start": 0,
                     "type": "Identifier"
@@ -1673,25 +1876,30 @@ description: Result of parsing involute_circular_units.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "start": 0,
                   "type": "PipeSubstitution",
                   "type": "PipeSubstitution"
                 }
               },
               {
+                "arguments": [],
                 "callee": {
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "close",
                     "start": 0,
                     "type": "Identifier"
@@ -1702,6 +1910,7 @@ description: Result of parsing involute_circular_units.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -1714,6 +1923,7 @@ description: Result of parsing involute_circular_units.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "tool",
                       "start": 0,
                       "type": "Identifier"
@@ -1725,6 +1935,7 @@ description: Result of parsing involute_circular_units.kcl
                           "label": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "center",
                             "start": 0,
                             "type": "Identifier"
@@ -1735,6 +1946,7 @@ description: Result of parsing involute_circular_units.kcl
                               {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "raw": "0",
                                 "start": 0,
                                 "type": "Literal",
@@ -1747,6 +1959,7 @@ description: Result of parsing involute_circular_units.kcl
                               {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "raw": "0",
                                 "start": 0,
                                 "type": "Literal",
@@ -1758,6 +1971,7 @@ description: Result of parsing involute_circular_units.kcl
                               }
                             ],
                             "end": 0,
+                            "moduleId": 0,
                             "start": 0,
                             "type": "ArrayExpression",
                             "type": "ArrayExpression"
@@ -1768,6 +1982,7 @@ description: Result of parsing involute_circular_units.kcl
                           "label": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "radius",
                             "start": 0,
                             "type": "Identifier"
@@ -1775,6 +1990,7 @@ description: Result of parsing involute_circular_units.kcl
                           "arg": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "raw": "1",
                             "start": 0,
                             "type": "Literal",
@@ -1790,9 +2006,11 @@ description: Result of parsing involute_circular_units.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "circle",
                           "start": 0,
                           "type": "Identifier"
@@ -1803,6 +2021,7 @@ description: Result of parsing involute_circular_units.kcl
                       },
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "CallExpressionKw",
                       "type": "CallExpressionKw",
@@ -1814,9 +2033,11 @@ description: Result of parsing involute_circular_units.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "subtract2d",
                     "start": 0,
                     "type": "Identifier"
@@ -1827,6 +2048,7 @@ description: Result of parsing involute_circular_units.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -1839,6 +2061,7 @@ description: Result of parsing involute_circular_units.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
@@ -1847,9 +2070,11 @@ description: Result of parsing involute_circular_units.kcl
                       "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "gearHeight",
                         "start": 0,
                         "type": "Identifier"
@@ -1865,9 +2090,11 @@ description: Result of parsing involute_circular_units.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "extrude",
                     "start": 0,
                     "type": "Identifier"
@@ -1878,6 +2105,7 @@ description: Result of parsing involute_circular_units.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -1886,15 +2114,18 @@ description: Result of parsing involute_circular_units.kcl
             ],
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -1906,9 +2137,11 @@ description: Result of parsing involute_circular_units.kcl
       {
         "commentStart": 0,
         "end": 0,
+        "moduleId": 0,
         "name": {
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "name": "settings",
           "start": 0,
           "type": "Identifier"
@@ -1920,19 +2153,23 @@ description: Result of parsing involute_circular_units.kcl
             "key": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "defaultLengthUnit",
               "start": 0,
               "type": "Identifier"
             },
+            "moduleId": 0,
             "start": 0,
             "type": "ObjectProperty",
             "value": {
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "cm",
                 "start": 0,
                 "type": "Identifier"
@@ -1948,12 +2185,14 @@ description: Result of parsing involute_circular_units.kcl
         "type": "Annotation"
       }
     ],
+    "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "8": [
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {
@@ -1966,6 +2205,7 @@ description: Result of parsing involute_circular_units.kcl
         {
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "NonCodeNode",
           "value": {

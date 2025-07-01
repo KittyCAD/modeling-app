@@ -180,14 +180,6 @@ description: Artifact commands i-beam.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
         "type": "entity_mirror",
         "ids": [
           "[uuid]"
@@ -202,14 +194,6 @@ description: Artifact commands i-beam.kcl
           "y": 0.0,
           "z": 0.0
         }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
       }
     },
     {

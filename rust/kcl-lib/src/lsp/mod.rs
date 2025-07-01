@@ -13,8 +13,8 @@ use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity, DiagnosticTag};
 pub use util::IntoDiagnostic;
 
 use crate::{
-    errors::{Severity, Tag},
     CompilationError,
+    errors::{Severity, Tag},
 };
 
 impl IntoDiagnostic for CompilationError {

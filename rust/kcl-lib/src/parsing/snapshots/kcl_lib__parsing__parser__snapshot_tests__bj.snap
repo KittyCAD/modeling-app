@@ -10,12 +10,14 @@ expression: actual
       "expression": {
         "commentStart": 0,
         "end": 4,
+        "moduleId": 0,
         "raw": "true",
         "start": 0,
         "type": "Literal",
         "type": "Literal",
         "value": true
       },
+      "moduleId": 0,
       "start": 0,
       "type": "ExpressionStatement",
       "type": "ExpressionStatement"
@@ -23,5 +25,6 @@ expression: actual
   ],
   "commentStart": 0,
   "end": 4,
+  "moduleId": 0,
   "start": 0
 }

@@ -8,6 +8,7 @@ use tower_lsp::lsp_types::{
 };
 
 use crate::{
+    ModuleId,
     execution::annotations,
     parsing::{
         ast::types::{
@@ -15,7 +16,6 @@ use crate::{
         },
         token::NumericSuffix,
     },
-    ModuleId,
 };
 
 pub fn walk_prelude() -> ModData {
@@ -97,7 +97,7 @@ fn visit_module(name: &str, preferred_prefix: &str, names: WalkForNames) -> Resu
                         ImportSelector::None { .. } => {
                             let name = import.module_name().unwrap();
                             if names.contains(&name) {
-                                Some(visit_module(&path[1], &format!("{}::", name), WalkForNames::All)?)
+                                Some(visit_module(&path[1], &format!("{name}::"), WalkForNames::All)?)
                             } else {
                                 None
                             }
@@ -451,7 +451,7 @@ impl ModData {
         let (name, qual_name, module_name) = if name == "prelude" {
             ("std", "std".to_owned(), String::new())
         } else {
-            (name, format!("std::{}", name), "std".to_owned())
+            (name, format!("std::{name}"), "std".to_owned())
         };
         Self {
             preferred_name: format!("{preferred_prefix}{name}"),
@@ -767,14 +767,12 @@ impl ArgData {
                         for s in &arr.elements {
                             let Expr::Literal(lit) = s else {
                                 panic!(
-                                    "Invalid value in `snippetArray`, all items must be string literals but found {:?}",
-                                    s
+                                    "Invalid value in `snippetArray`, all items must be string literals but found {s:?}"
                                 );
                             };
                             let LiteralValue::String(litstr) = &lit.inner.value else {
                                 panic!(
-                                    "Invalid value in `snippetArray`, all items must be string literals but found {:?}",
-                                    s
+                                    "Invalid value in `snippetArray`, all items must be string literals but found {s:?}"
                                 );
                             };
                             items.push(litstr.to_owned());
@@ -816,7 +814,7 @@ impl ArgData {
         }
         match self.ty.as_deref() {
             Some("Sketch") if self.kind == ArgKind::Special => None,
-            Some(s) if s.starts_with("number") => Some((index, format!(r#"{label}${{{}:10}}"#, index))),
+            Some(s) if s.starts_with("number") => Some((index, format!(r#"{label}${{{index}:10}}"#))),
             Some("Point2d") => Some((index + 1, format!(r#"{label}[${{{}:0}}, ${{{}:0}}]"#, index, index + 1))),
             Some("Point3d") => Some((
                 index + 2,
@@ -831,7 +829,7 @@ impl ArgData {
             Some("Sketch") | Some("Sketch | Helix") => Some((index, format!(r#"{label}${{{index}:sketch000}}"#))),
             Some("Edge") => Some((index, format!(r#"{label}${{{index}:tag_or_edge_fn}}"#))),
             Some("[Edge; 1+]") => Some((index, format!(r#"{label}[${{{index}:tag_or_edge_fn}}]"#))),
-            Some("Plane") | Some("Solid | Plane") => Some((index, format!(r#"{label}${{{}:XY}}"#, index))),
+            Some("Plane") | Some("Solid | Plane") => Some((index, format!(r#"{label}${{{index}:XY}}"#))),
             Some("[TaggedFace; 2]") => Some((
                 index + 1,
                 format!(r#"{label}[${{{}:tag}}, ${{{}:tag}}]"#, index, index + 1),
@@ -841,10 +839,10 @@ impl ArgData {
                 if self.name == "color" {
                     Some((index, format!(r"{label}${{{}:{}}}", index, "\"#ff0000\"")))
                 } else {
-                    Some((index, format!(r#"{label}${{{}:"string"}}"#, index)))
+                    Some((index, format!(r#"{label}${{{index}:"string"}}"#)))
                 }
             }
-            Some("bool") => Some((index, format!(r#"{label}${{{}:false}}"#, index))),
+            Some("bool") => Some((index, format!(r#"{label}${{{index}:false}}"#))),
             _ => None,
         }
     }
@@ -1298,7 +1296,10 @@ mod test {
                         continue;
                     }
                     let name = format!("{}-{i}", f.qual_name.replace("::", "-"));
-                    assert!(TEST_NAMES.contains(&&*name), "Missing test for example \"{name}\", maybe need to update kcl-derive-docs/src/example_tests.rs?")
+                    assert!(
+                        TEST_NAMES.contains(&&*name),
+                        "Missing test for example \"{name}\", maybe need to update kcl-derive-docs/src/example_tests.rs?"
+                    )
                 }
             }
         }
@@ -1334,7 +1335,9 @@ mod test {
         };
 
         let Some(DocData::Fn(d)) = data.children.get(&format!("I:{qualname}")) else {
-            panic!("Could not find data for {NAME} (missing a child entry for {qualname}), maybe need to update kcl-derive-docs/src/example_tests.rs?");
+            panic!(
+                "Could not find data for {NAME} (missing a child entry for {qualname}), maybe need to update kcl-derive-docs/src/example_tests.rs?"
+            );
         };
 
         for (i, eg) in d.examples.iter().enumerate() {
@@ -1362,6 +1365,8 @@ mod test {
             return;
         }
 
-        panic!("Could not find data for {NAME} (no example {number}), maybe need to update kcl-derive-docs/src/example_tests.rs?");
+        panic!(
+            "Could not find data for {NAME} (no example {number}), maybe need to update kcl-derive-docs/src/example_tests.rs?"
+        );
     }
 }

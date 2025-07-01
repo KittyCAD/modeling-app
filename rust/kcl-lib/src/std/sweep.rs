@@ -1,20 +1,20 @@
 //! Standard library sweep.
 
 use anyhow::Result;
-use kcmc::{each_cmd as mcmd, length_unit::LengthUnit, ModelingCmd};
+use kcmc::{ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit};
 use kittycad_modeling_cmds::{self as kcmc, shared::RelativeTo};
 use schemars::JsonSchema;
 use serde::Serialize;
 
-use super::{args::TyF64, DEFAULT_TOLERANCE};
+use super::{DEFAULT_TOLERANCE_MM, args::TyF64};
 use crate::{
     errors::KclError,
     execution::{
-        types::{NumericType, RuntimeType},
         ExecState, Helix, KclValue, ModelingCmdMeta, Sketch, Solid,
+        types::{NumericType, RuntimeType},
     },
     parsing::ast::types::TagNode,
-    std::{extrude::do_post_extrude, Args},
+    std::{Args, extrude::do_post_extrude},
 };
 
 /// A path to sweep along.
@@ -79,7 +79,7 @@ async fn inner_sweep(
             return Err(KclError::new_syntax(crate::errors::KclErrorDetails::new(
                 "If you provide relativeTo, it must either be 'sketchPlane' or 'trajectoryCurve'".to_owned(),
                 vec![args.source_range],
-            )))
+            )));
         }
     };
 
@@ -93,7 +93,7 @@ async fn inner_sweep(
                     target: sketch.id.into(),
                     trajectory,
                     sectional: sectional.unwrap_or(false),
-                    tolerance: LengthUnit(tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE)),
+                    tolerance: LengthUnit(tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM)),
                     relative_to,
                 }),
             )

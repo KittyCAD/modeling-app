@@ -570,7 +570,10 @@ description: Artifact commands prosthetic-hip.kcl
                 "z": 110.0
               },
               "set": false,
-              "is_local": true
+              "is_local": true,
+              "origin": {
+                "type": "local"
+              }
             },
             "rotate_rpy": null,
             "rotate_angle_axis": null,
@@ -595,7 +598,10 @@ description: Artifact commands prosthetic-hip.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true
+              "is_local": true,
+              "origin": {
+                "type": "local"
+              }
             },
             "rotate_angle_axis": null,
             "scale": null
@@ -794,7 +800,10 @@ description: Artifact commands prosthetic-hip.kcl
                 "z": 130.0
               },
               "set": false,
-              "is_local": true
+              "is_local": true,
+              "origin": {
+                "type": "local"
+              }
             },
             "rotate_rpy": null,
             "rotate_angle_axis": null,
@@ -819,7 +828,10 @@ description: Artifact commands prosthetic-hip.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true
+              "is_local": true,
+              "origin": {
+                "type": "local"
+              }
             },
             "rotate_angle_axis": null,
             "scale": null
@@ -1018,7 +1030,10 @@ description: Artifact commands prosthetic-hip.kcl
                 "z": 140.0
               },
               "set": false,
-              "is_local": true
+              "is_local": true,
+              "origin": {
+                "type": "local"
+              }
             },
             "rotate_rpy": null,
             "rotate_angle_axis": null,
@@ -1043,7 +1058,10 @@ description: Artifact commands prosthetic-hip.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true
+              "is_local": true,
+              "origin": {
+                "type": "local"
+              }
             },
             "rotate_angle_axis": null,
             "scale": null
@@ -1242,7 +1260,10 @@ description: Artifact commands prosthetic-hip.kcl
                 "z": 145.0
               },
               "set": false,
-              "is_local": true
+              "is_local": true,
+              "origin": {
+                "type": "local"
+              }
             },
             "rotate_rpy": null,
             "rotate_angle_axis": null,
@@ -1267,7 +1288,10 @@ description: Artifact commands prosthetic-hip.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true
+              "is_local": true,
+              "origin": {
+                "type": "local"
+              }
             },
             "rotate_angle_axis": null,
             "scale": null
@@ -1709,7 +1733,10 @@ description: Artifact commands prosthetic-hip.kcl
                 "z": 133.0
               },
               "set": false,
-              "is_local": true
+              "is_local": true,
+              "origin": {
+                "type": "local"
+              }
             },
             "rotate_rpy": null,
             "rotate_angle_axis": null,
@@ -1734,7 +1761,10 @@ description: Artifact commands prosthetic-hip.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true
+              "is_local": true,
+              "origin": {
+                "type": "local"
+              }
             },
             "rotate_angle_axis": null,
             "scale": null
@@ -2003,7 +2033,10 @@ description: Artifact commands prosthetic-hip.kcl
                 "z": 133.0
               },
               "set": false,
-              "is_local": true
+              "is_local": true,
+              "origin": {
+                "type": "local"
+              }
             },
             "rotate_rpy": null,
             "rotate_angle_axis": null,
@@ -2028,7 +2061,10 @@ description: Artifact commands prosthetic-hip.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true
+              "is_local": true,
+              "origin": {
+                "type": "local"
+              }
             },
             "rotate_angle_axis": null,
             "scale": null
@@ -2297,7 +2333,10 @@ description: Artifact commands prosthetic-hip.kcl
                 "z": 133.0
               },
               "set": false,
-              "is_local": true
+              "is_local": true,
+              "origin": {
+                "type": "local"
+              }
             },
             "rotate_rpy": null,
             "rotate_angle_axis": null,
@@ -2322,7 +2361,10 @@ description: Artifact commands prosthetic-hip.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true
+              "is_local": true,
+              "origin": {
+                "type": "local"
+              }
             },
             "rotate_angle_axis": null,
             "scale": null

@@ -13,6 +13,7 @@ import type {
   default_app_settings as DefaultAppSettings,
   default_project_settings as DefaultProjectSettings,
   format_number_literal as FormatNumberLiteral,
+  format_number_value as FormatNumberValue,
   human_display_number as HumanDisplayNumber,
   get_kcl_version as GetKclVersion,
   get_tangential_arc_to_info as GetTangentialArcToInfo,
@@ -58,6 +59,9 @@ export const recast_wasm: typeof RecastWasm = (...args) => {
 }
 export const format_number_literal: typeof FormatNumberLiteral = (...args) => {
   return getModule().format_number_literal(...args)
+}
+export const format_number_value: typeof FormatNumberValue = (...args) => {
+  return getModule().format_number_value(...args)
 }
 export const human_display_number: typeof HumanDisplayNumber = (...args) => {
   return getModule().human_display_number(...args)

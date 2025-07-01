@@ -43,7 +43,7 @@ jobs:
       - name: Download Wasm Cache
         id: download-wasm
         if: ${{ github.event_name == 'pull_request' && steps.filter.outputs.rust == 'false' }}
-        uses: dawidd6/action-download-artifact@v7
+        uses: dawidd6/action-download-artifact@v11
         continue-on-error: true
         with:
           github_token: ${{secrets.GITHUB_TOKEN}}
@@ -362,7 +362,7 @@ jobs:
 
       - name: Authenticate to Google Cloud
         if: ${{ env.IS_STAGING == 'true' }}
-        uses: 'google-github-actions/auth@v2.1.8'
+        uses: 'google-github-actions/auth@v2.1.10'
         with:
           credentials_json: '${{ secrets.GOOGLE_CLOUD_DL_SA }}'
 

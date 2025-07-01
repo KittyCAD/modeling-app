@@ -5,8 +5,12 @@ import type { SettingsType } from '@src/lib/settings/initialSettings'
 import { engineCommandManager, sceneInfra } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
-import { authActor, settingsActor } from '@src/lib/singletons'
-import { commandBarActor } from '@src/lib/singletons'
+import {
+  authActor,
+  commandBarActor,
+  editorManager,
+  settingsActor,
+} from '@src/lib/singletons'
 import type { WebContentSendPayload } from '@src/menu/channels'
 import type { NavigateFunction } from 'react-router-dom'
 
@@ -119,6 +123,10 @@ export function modelingMenuCallbackMostActions(
         type: 'Find and select command',
         data: { name: 'format-code', groupId: 'code' },
       })
+    } else if (data.menuLabel === 'Edit.Undo') {
+      editorManager.undo()
+    } else if (data.menuLabel === 'Edit.Redo') {
+      editorManager.redo()
     } else if (data.menuLabel === 'View.Orthographic view') {
       settingsActor.send({
         type: 'set.modeling.cameraProjection',

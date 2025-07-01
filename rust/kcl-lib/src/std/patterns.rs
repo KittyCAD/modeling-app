@@ -4,8 +4,8 @@ use std::cmp::Ordering;
 
 use anyhow::Result;
 use kcmc::{
-    each_cmd as mcmd, length_unit::LengthUnit, ok_response::OkModelingCmdResponse, shared::Transform,
-    websocket::OkWebSocketResponseData, ModelingCmd,
+    ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit, ok_response::OkModelingCmdResponse, shared::Transform,
+    websocket::OkWebSocketResponseData,
 };
 use kittycad_modeling_cmds::{
     self as kcmc,
@@ -16,19 +16,19 @@ use uuid::Uuid;
 
 use super::axis_or_reference::Axis3dOrPoint3d;
 use crate::{
+    ExecutorContext, SourceRange,
     errors::{KclError, KclErrorDetails},
     execution::{
+        ExecState, Geometries, Geometry, KclObjectFields, KclValue, Sketch, Solid,
         fn_call::{Arg, Args, KwArgs},
         kcl_value::FunctionSource,
         types::{NumericType, PrimitiveType, RuntimeType},
-        ExecState, Geometries, Geometry, KclObjectFields, KclValue, Sketch, Solid,
     },
     std::{
         args::TyF64,
         axis_or_reference::Axis2dOrPoint2d,
         utils::{point_3d_to_mm, point_to_mm},
     },
-    ExecutorContext, SourceRange,
 };
 
 const MUST_HAVE_ONE_INSTANCE: &str = "There must be at least 1 instance of your geometry";
@@ -176,7 +176,7 @@ async fn send_pattern_transform<T: GeometryTrait>(
         &mock_ids
     } else {
         return Err(KclError::new_engine(KclErrorDetails::new(
-            format!("EntityLinearPattern response was not as expected: {:?}", resp),
+            format!("EntityLinearPattern response was not as expected: {resp:?}"),
             vec![args.source_range],
         )));
     };
@@ -244,7 +244,7 @@ async fn make_transform<T: GeometryTrait>(
             return Err(KclError::new_semantic(KclErrorDetails::new(
                 "Transform function must return a transform object".to_string(),
                 source_ranges.clone(),
-            )))
+            )));
         }
     };
 
@@ -970,7 +970,7 @@ async fn pattern_circular(
         &mock_ids
     } else {
         return Err(KclError::new_engine(KclErrorDetails::new(
-            format!("EntityCircularPattern response was not as expected: {:?}", resp),
+            format!("EntityCircularPattern response was not as expected: {resp:?}"),
             vec![args.source_range],
         )));
     };

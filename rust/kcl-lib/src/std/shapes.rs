@@ -2,10 +2,9 @@
 
 use anyhow::Result;
 use kcmc::{
-    each_cmd as mcmd,
+    ModelingCmd, each_cmd as mcmd,
     length_unit::LengthUnit,
     shared::{Angle, Point2d as KPoint2d},
-    ModelingCmd,
 };
 use kittycad_modeling_cmds as kcmc;
 use kittycad_modeling_cmds::shared::PathSegment;
@@ -17,17 +16,17 @@ use super::{
     utils::{point_to_len_unit, point_to_mm, point_to_typed, untype_point, untyped_point_to_mm},
 };
 use crate::{
+    SourceRange,
     errors::{KclError, KclErrorDetails},
     execution::{
-        types::{RuntimeType, UnitLen},
         BasePath, ExecState, GeoMeta, KclValue, ModelingCmdMeta, Path, Sketch, SketchSurface,
+        types::{RuntimeType, UnitLen},
     },
     parsing::ast::types::TagNode,
     std::{
-        utils::{calculate_circle_center, distance},
         Args,
+        utils::{calculate_circle_center, distance},
     },
-    SourceRange,
 };
 
 /// A sketch surface or a sketch.
@@ -416,15 +415,25 @@ pub(crate) fn get_radius(
     diameter: Option<TyF64>,
     source_range: SourceRange,
 ) -> Result<TyF64, KclError> {
+    get_radius_labelled(radius, diameter, source_range, "radius", "diameter")
+}
+
+pub(crate) fn get_radius_labelled(
+    radius: Option<TyF64>,
+    diameter: Option<TyF64>,
+    source_range: SourceRange,
+    label_radius: &'static str,
+    label_diameter: &'static str,
+) -> Result<TyF64, KclError> {
     match (radius, diameter) {
         (Some(radius), None) => Ok(radius),
         (None, Some(diameter)) => Ok(TyF64::new(diameter.n / 2.0, diameter.ty)),
         (None, None) => Err(KclError::new_type(KclErrorDetails::new(
-            "This function needs either `diameter` or `radius`".to_string(),
+            format!("This function needs either `{label_diameter}` or `{label_radius}`"),
             vec![source_range],
         ))),
         (Some(_), Some(_)) => Err(KclError::new_type(KclErrorDetails::new(
-            "You cannot specify both `diameter` and `radius`, please remove one".to_string(),
+            format!("You cannot specify both `{label_diameter}` and `{label_radius}`, please remove one"),
             vec![source_range],
         ))),
     }

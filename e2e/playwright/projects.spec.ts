@@ -475,6 +475,7 @@ test.describe('Can export from electron app', () => {
               },
               tronApp.projectDirName,
               page,
+              cmdBar,
               method
             )
           )
@@ -779,9 +780,6 @@ test.describe(`Project management commands`, () => {
       const commandContinueButton = page.getByRole('button', {
         name: 'Continue',
       })
-      const commandSubmitButton = page.getByRole('button', {
-        name: 'Submit command',
-      })
       const toastMessage = page.getByText(`Successfully renamed`)
 
       await test.step(`Setup`, async () => {
@@ -800,8 +798,7 @@ test.describe(`Project management commands`, () => {
         await expect(commandContinueButton).toBeVisible()
         await commandContinueButton.click()
 
-        await expect(commandSubmitButton).toBeVisible()
-        await commandSubmitButton.click()
+        await cmdBar.submit()
 
         await expect(toastMessage).toBeVisible()
       })
@@ -837,9 +834,6 @@ test.describe(`Project management commands`, () => {
       })
       const projectNameOption = page.getByRole('option', { name: projectName })
       const commandWarning = page.getByText('Are you sure you want to delete?')
-      const commandSubmitButton = page.getByRole('button', {
-        name: 'Submit command',
-      })
       const toastMessage = page.getByText(`Successfully deleted`)
       const noProjectsMessage = page.getByText('No projects found')
 
@@ -859,8 +853,7 @@ test.describe(`Project management commands`, () => {
         await projectNameOption.click()
 
         await expect(commandWarning).toBeVisible()
-        await expect(commandSubmitButton).toBeVisible()
-        await commandSubmitButton.click()
+        await cmdBar.submit()
 
         await expect(toastMessage).toBeVisible()
       })
@@ -894,9 +887,6 @@ test.describe(`Project management commands`, () => {
       const commandContinueButton = page.getByRole('button', {
         name: 'Continue',
       })
-      const commandSubmitButton = page.getByRole('button', {
-        name: 'Submit command',
-      })
       const toastMessage = page.getByText(`Successfully renamed`)
 
       await test.step(`Setup`, async () => {
@@ -914,8 +904,7 @@ test.describe(`Project management commands`, () => {
         await expect(commandContinueButton).toBeVisible()
         await commandContinueButton.click()
 
-        await expect(commandSubmitButton).toBeVisible()
-        await commandSubmitButton.click()
+        await cmdBar.submit()
 
         await expect(toastMessage).toBeVisible()
       })
@@ -949,9 +938,6 @@ test.describe(`Project management commands`, () => {
       })
       const projectNameOption = page.getByRole('option', { name: projectName })
       const commandWarning = page.getByText('Are you sure you want to delete?')
-      const commandSubmitButton = page.getByRole('button', {
-        name: 'Submit command',
-      })
       const toastMessage = page.getByText(`Successfully deleted`)
       const noProjectsMessage = page.getByText('No projects found')
 
@@ -967,8 +953,7 @@ test.describe(`Project management commands`, () => {
         await projectNameOption.click()
 
         await expect(commandWarning).toBeVisible()
-        await expect(commandSubmitButton).toBeVisible()
-        await commandSubmitButton.click()
+        await cmdBar.submit()
 
         await expect(toastMessage).toBeVisible()
       })

@@ -4,30 +4,29 @@ use anyhow::Result;
 use indexmap::IndexMap;
 use kcmc::shared::Point2d as KPoint2d; // Point2d is already defined in this pkg, to impl ts_rs traits.
 use kcmc::shared::Point3d as KPoint3d; // Point3d is already defined in this pkg, to impl ts_rs traits.
-use kcmc::{each_cmd as mcmd, length_unit::LengthUnit, shared::Angle, websocket::ModelingCmdReq, ModelingCmd};
+use kcmc::{ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit, shared::Angle, websocket::ModelingCmdReq};
 use kittycad_modeling_cmds as kcmc;
 use kittycad_modeling_cmds::shared::PathSegment;
 use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-use super::shapes::get_radius;
+use super::shapes::{get_radius, get_radius_labelled};
 #[cfg(feature = "artifact-graph")]
 use crate::execution::{Artifact, ArtifactId, CodeRef, StartSketchOnFace, StartSketchOnPlane};
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        types::{ArrayLen, NumericType, PrimitiveType, RuntimeType, UnitLen},
         BasePath, ExecState, Face, GeoMeta, KclValue, ModelingCmdMeta, Path, Plane, PlaneInfo, Point2d, Sketch,
         SketchSurface, Solid, TagEngineInfo, TagIdentifier,
+        types::{ArrayLen, NumericType, PrimitiveType, RuntimeType, UnitLen},
     },
     parsing::ast::types::TagNode,
     std::{
         args::{Args, TyF64},
         utils::{
-            arc_center_and_end, get_tangential_arc_to_info, get_x_component, get_y_component,
+            TangentialArcInfoInput, arc_center_and_end, get_tangential_arc_to_info, get_x_component, get_y_component,
             intersection_with_parallel_line, point_to_len_unit, point_to_mm, untyped_point_to_mm,
-            TangentialArcInfoInput,
         },
     },
 };
@@ -45,7 +44,7 @@ pub enum FaceTag {
 impl std::fmt::Display for FaceTag {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            FaceTag::Tag(t) => write!(f, "{}", t),
+            FaceTag::Tag(t) => write!(f, "{t}"),
             FaceTag::StartOrEnd(StartOrEnd::Start) => write!(f, "start"),
             FaceTag::StartOrEnd(StartOrEnd::End) => write!(f, "end"),
         }
@@ -62,7 +61,7 @@ impl FaceTag {
         must_be_planar: bool,
     ) -> Result<uuid::Uuid, KclError> {
         match self {
-            FaceTag::Tag(ref t) => args.get_adjacent_face_to_tag(exec_state, t, must_be_planar).await,
+            FaceTag::Tag(t) => args.get_adjacent_face_to_tag(exec_state, t, must_be_planar).await,
             FaceTag::StartOrEnd(StartOrEnd::Start) => solid.start_cap_id.ok_or_else(|| {
                 KclError::new_type(KclErrorDetails::new(
                     "Expected a start face".to_string(),
@@ -101,13 +100,26 @@ pub const NEW_TAG_KW: &str = "tag";
 pub async fn involute_circular(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketch = args.get_unlabeled_kw_arg("sketch", &RuntimeType::sketch(), exec_state)?;
 
-    let start_radius: TyF64 = args.get_kw_arg("startRadius", &RuntimeType::length(), exec_state)?;
-    let end_radius: TyF64 = args.get_kw_arg("endRadius", &RuntimeType::length(), exec_state)?;
+    let start_radius: Option<TyF64> = args.get_kw_arg_opt("startRadius", &RuntimeType::length(), exec_state)?;
+    let end_radius: Option<TyF64> = args.get_kw_arg_opt("endRadius", &RuntimeType::length(), exec_state)?;
+    let start_diameter: Option<TyF64> = args.get_kw_arg_opt("startDiameter", &RuntimeType::length(), exec_state)?;
+    let end_diameter: Option<TyF64> = args.get_kw_arg_opt("endDiameter", &RuntimeType::length(), exec_state)?;
     let angle: TyF64 = args.get_kw_arg("angle", &RuntimeType::angle(), exec_state)?;
     let reverse = args.get_kw_arg_opt("reverse", &RuntimeType::bool(), exec_state)?;
     let tag = args.get_kw_arg_opt("tag", &RuntimeType::tag_decl(), exec_state)?;
-    let new_sketch =
-        inner_involute_circular(sketch, start_radius, end_radius, angle, reverse, tag, exec_state, args).await?;
+    let new_sketch = inner_involute_circular(
+        sketch,
+        start_radius,
+        end_radius,
+        start_diameter,
+        end_diameter,
+        angle,
+        reverse,
+        tag,
+        exec_state,
+        args,
+    )
+    .await?;
     Ok(KclValue::Sketch {
         value: Box::new(new_sketch),
     })
@@ -123,8 +135,10 @@ fn involute_curve(radius: f64, angle: f64) -> (f64, f64) {
 #[allow(clippy::too_many_arguments)]
 async fn inner_involute_circular(
     sketch: Sketch,
-    start_radius: TyF64,
-    end_radius: TyF64,
+    start_radius: Option<TyF64>,
+    end_radius: Option<TyF64>,
+    start_diameter: Option<TyF64>,
+    end_diameter: Option<TyF64>,
     angle: TyF64,
     reverse: Option<bool>,
     tag: Option<TagNode>,
@@ -132,6 +146,22 @@ async fn inner_involute_circular(
     args: Args,
 ) -> Result<Sketch, KclError> {
     let id = exec_state.next_uuid();
+
+    let longer_args_dot_source_range = args.source_range;
+    let start_radius = get_radius_labelled(
+        start_radius,
+        start_diameter,
+        args.source_range,
+        "startRadius",
+        "startDiameter",
+    )?;
+    let end_radius = get_radius_labelled(
+        end_radius,
+        end_diameter,
+        longer_args_dot_source_range,
+        "endRadius",
+        "endDiameter",
+    )?;
 
     exec_state
         .batch_modeling_cmd(
@@ -706,7 +736,7 @@ pub async fn inner_angled_line_that_intersects(
     let intersect_path = args.get_tag_engine_info(exec_state, &intersect_tag)?;
     let path = intersect_path.path.clone().ok_or_else(|| {
         KclError::new_type(KclErrorDetails::new(
-            format!("Expected an intersect path with a path, found `{:?}`", intersect_path),
+            format!("Expected an intersect path with a path, found `{intersect_path:?}`"),
             vec![args.source_range],
         ))
     })?;

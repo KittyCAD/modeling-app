@@ -66,6 +66,7 @@ import {
   defaultLocalStatusBarItems,
   defaultGlobalStatusBarItems,
 } from '@src/components/StatusBar/defaultStatusBarItems'
+import { useSelector } from '@xstate/react'
 
 type ReadWriteProjectState = {
   value: boolean
@@ -81,6 +82,8 @@ const Home = () => {
   const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
   const apiToken = useToken()
   const networkMachineStatus = useNetworkMachineStatus()
+  const billingContext = useSelector(billingActor, ({ context }) => context)
+  const hasUnlimitedCredits = billingContext.credits === Infinity
 
   // Only create the native file menus on desktop
   useEffect(() => {
@@ -354,11 +357,13 @@ const Home = () => {
             </li>
           </ul>
           <ul className="flex flex-col">
-            <li className="contents">
-              <div className="my-2">
-                <BillingDialog billingActor={billingActor} />
-              </div>
-            </li>
+            {!hasUnlimitedCredits && (
+              <li className="contents">
+                <div className="my-2">
+                  <BillingDialog billingActor={billingActor} />
+                </div>
+              </li>
+            )}
             <li className="contents">
               <ActionButton
                 Element="externalLink"
@@ -403,7 +408,7 @@ const Home = () => {
       </div>
       <StatusBar
         globalItems={[
-          networkMachineStatus,
+          ...(isDesktop() ? [networkMachineStatus] : []),
           ...defaultGlobalStatusBarItems({ location, filePath: undefined }),
         ]}
         localItems={defaultLocalStatusBarItems}

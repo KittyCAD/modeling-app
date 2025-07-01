@@ -31,7 +31,7 @@ pub use args::Args;
 
 use crate::{
     errors::KclError,
-    execution::{types::PrimitiveType, ExecState, KclValue},
+    execution::{ExecState, KclValue, types::PrimitiveType},
 };
 
 pub type StdFn = fn(
@@ -442,5 +442,5 @@ pub(crate) fn std_ty(path: &str, fn_name: &str) -> (PrimitiveType, StdFnProps) {
     }
 }
 
-/// The default tolerance for modeling commands in [`kittycad_modeling_cmds::length_unit::LengthUnit`].
-const DEFAULT_TOLERANCE: f64 = 0.0000001;
+/// The default tolerance for modeling commands in millimeters.
+const DEFAULT_TOLERANCE_MM: f64 = 0.0000001;

@@ -265,6 +265,8 @@ middle(0)
     })
     await expect(
       page.getByText(`assert failed: Expected 0 to be greater than 0 but it wasn't
+
+Backtrace:
 assert()
 check()
 middle()`)
