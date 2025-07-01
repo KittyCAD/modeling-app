@@ -1,0 +1,60 @@
+// There are 3 ways to define a plane in KCL, according to https://zoo.dev/docs/kcl-std/types/std-types-Plane
+//  - A default plane
+//  - Modifying a default plane e.g. via offsetPlane
+//  - Defining your own struct
+// This file tests they all work equivalently.
+
+// Define a plane using struct representation.
+myPlane = {
+    origin = { x = 0, y = 0, z = 0 },
+    xAxis = { x = 1, y = 0, z = 0 },
+    yAxis = { x = 0, y = 1, z = 0 },
+}
+
+// Prove we can get its axes and origin.
+ax = myPlane.xAxis
+assert(ax[0], isEqualTo = 1)
+assert(ax[1], isEqualTo = 0)
+assert(ax[2], isEqualTo = 0)
+ay = myPlane.yAxis
+assert(ay[0], isEqualTo = 0)
+assert(ay[1], isEqualTo = 1)
+assert(ay[2], isEqualTo = 0)
+aorigin = myPlane.origin
+assert(aorigin[0], isEqualTo = 0)
+assert(aorigin[1], isEqualTo = 0)
+assert(aorigin[2], isEqualTo = 0)
+
+// Define a plane using standard planes.
+myOtherPlane = XY
+
+// Prove we can get its axes and origin.
+axOther = myOtherPlane.xAxis
+assert(axOther[0], isEqualTo = 1)
+assert(axOther[1], isEqualTo = 0)
+assert(axOther[2], isEqualTo = 0)
+ayOther = myOtherPlane.yAxis
+assert(ayOther[0], isEqualTo = 0)
+assert(ayOther[1], isEqualTo = 1)
+assert(ayOther[2], isEqualTo = 0)
+aoriginOther = myPlane.origin
+assert(aoriginOther[0], isEqualTo = 0)
+assert(aoriginOther[1], isEqualTo = 0)
+assert(aoriginOther[2], isEqualTo = 0)
+
+// Define a plane using a plane-modifying function like offsetPlane.
+myAlternatePlane = offsetPlane(XY, offset = 0)
+
+// Prove we can get its axes and origin.
+axAlternate = myAlternatePlane.xAxis
+assert(axAlternate[0], isEqualTo = 1)
+assert(axAlternate[1], isEqualTo = 0)
+assert(axAlternate[2], isEqualTo = 0)
+ayAlternate = myAlternatePlane.yAxis
+assert(ayAlternate[0], isEqualTo = 0)
+assert(ayAlternate[1], isEqualTo = 1)
+assert(ayAlternate[2], isEqualTo = 0)
+aoriginAlternate = myPlane.origin
+assert(aoriginAlternate[0], isEqualTo = 0)
+assert(aoriginAlternate[1], isEqualTo = 0)
+assert(aoriginAlternate[2], isEqualTo = 0)

@@ -458,6 +458,32 @@ impl KclValue {
         }
     }
 
+    /// Put the point into a KCL point.
+    pub fn array_from_point3d(p: [f64; 3], ty: NumericType, meta: Vec<Metadata>) -> Self {
+        let [x, y, z] = p;
+        eprintln!("Making HomArray");
+        Self::HomArray {
+            value: vec![
+                Self::Number {
+                    value: x,
+                    meta: meta.clone(),
+                    ty,
+                },
+                Self::Number {
+                    value: y,
+                    meta: meta.clone(),
+                    ty,
+                },
+                Self::Number {
+                    value: z,
+                    meta: meta.clone(),
+                    ty,
+                },
+            ],
+            ty: ty.into(),
+        }
+    }
+
     pub(crate) fn as_usize(&self) -> Option<usize> {
         match self {
             KclValue::Number { value, .. } => crate::try_f64_to_usize(*value),
