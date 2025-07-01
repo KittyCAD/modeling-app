@@ -13,6 +13,7 @@ import {
   createLiteral,
   createLocalName,
   createPipeExpression,
+  createUnaryExpression,
   createVariableDeclaration,
   findUniqueName,
 } from '@src/lang/create'
@@ -713,7 +714,8 @@ export function insertNamedConstant({
  */
 export function sketchOnOffsetPlane(
   node: Node<Program>,
-  offsetPathToNode: PathToNode
+  offsetPathToNode: PathToNode,
+  negated: boolean = false
 ) {
   let _node = { ...node }
 
@@ -728,6 +730,11 @@ export function sketchOnOffsetPlane(
   const { node: offsetPlaneNode } = offsetPlaneDeclarator
   const offsetPlaneName = offsetPlaneNode.id.name
 
+  // Create the plane argument - either the plane name or negated plane name
+  const planeArgument = negated
+    ? createUnaryExpression(createLocalName(offsetPlaneName), '-')
+    : createLocalName(offsetPlaneName)
+
   // Create a new sketch declaration
   const newSketchName = findUniqueName(
     node,
@@ -735,11 +742,7 @@ export function sketchOnOffsetPlane(
   )
   const newSketch = createVariableDeclaration(
     newSketchName,
-    createCallExpressionStdLibKw(
-      'startSketchOn',
-      createLocalName(offsetPlaneName),
-      []
-    ),
+    createCallExpressionStdLibKw('startSketchOn', planeArgument, []),
     undefined,
     'const'
   )
