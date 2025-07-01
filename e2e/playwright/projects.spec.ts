@@ -1857,11 +1857,12 @@ test(
       const u = await getUtils(page)
       const element = u.locatorFile('tangential_arc.kcl')
       const container = page.getByTestId('file-pane-scroll-container')
-
-      await expect(await isOutOfViewInScrollContainer(element, container)).toBe(
-        true
-      )
-      await element.scrollIntoViewIfNeeded()
+      // Click container to scroll
+      await container.click()
+      // Check that the file cannot be scene in the view
+      await expect(element).toHaveCount(0)
+      // Do a massive scroll to the bottom of the container, will not scroll past.
+      await page.mouse.wheel(0, 1500)
       await expect(await isOutOfViewInScrollContainer(element, container)).toBe(
         false
       )
