@@ -32,6 +32,7 @@ import {
   getStringAfterLastSeparator,
   joinOSPaths,
 } from '@src/lib/paths'
+import { sortProjectAndChildren } from '@src/components/Explorer/utils'
 
 let cacheRelevantFileExtension: string[] | null = null
 const cachedRelevantFileExtensions = () => {
@@ -350,6 +351,10 @@ function buildProjectsBasedOffFileEntries(
     }
   }
 
+  // sort every single level of the project
+  for (let i = 0; i < root.length; i++) {
+    sortProjectAndChildren(root[i])
+  }
   return root
 }
 
@@ -374,17 +379,9 @@ export async function getProjectInfo(projectPath: string): Promise<Project> {
     name: projectName,
     children: [],
   }
-
-  project.children?.sort((a, b) => {
-    if (a.path < b.path) {
-      return -1
-    }
-    if (a.path > b.path) {
-      return 1
-    }
-    return 0
-  })
   project.metadata = null
+  // Gotcha: make sure that the entire project and children are sorted at each
+  // level!
   const { defaultFilePath, didCreate } = await getDefaultKclFileForDir(
     projectPath,
     project
@@ -400,16 +397,6 @@ export async function getProjectInfo(projectPath: string): Promise<Project> {
       name: projectName,
       children: [],
     }
-
-    project.children?.sort((a, b) => {
-      if (a.path < b.path) {
-        return -1
-      }
-      if (a.path > b.path) {
-        return 1
-      }
-      return 0
-    })
   }
   project.readWriteAccess = true
 

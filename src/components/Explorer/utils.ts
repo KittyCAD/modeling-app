@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { sortFilesAndDirectories } from '@src/lib/desktopFS'
-import type { FileEntry } from '@src/lib/project'
+import type { FileEntry, Project } from '@src/lib/project'
 import { desktopSafePathJoin } from '@src/lib/paths'
 import type { SubmitByPressOrBlur } from '@src/lib/types'
 
@@ -184,6 +184,30 @@ export const addPlaceHoldersForNewFileAndFolder = (
     children: null,
   }
   children.push(placeHolderFileEntry)
+}
+
+export const sortProjectAndChildren = (project: Project) => {
+  sortProjectAndChildrenHelper(project.children)
+}
+
+export const sortProjectAndChildrenHelper = (children: FileEntry[] | null) => {
+  if (children === null) {
+    return
+  }
+
+  children?.sort((a, b) => {
+    if (a.path < b.path) {
+      return -1
+    }
+    if (a.path > b.path) {
+      return 1
+    }
+    return 0
+  })
+
+  for (let i = 0; i < children.length; i++) {
+    sortProjectAndChildrenHelper(children[i].children)
+  }
 }
 
 export const isRowFake = (
