@@ -1,0 +1,38 @@
+/// Find X axis of a plane.
+///```kcl
+/// mySolid = startSketchOn(XZ)
+///   |> polygon(numSides = 3, radius = 1, center = [3, 2])
+///   |> extrude(length = 5)
+/// 
+/// target = planeOf(mySolid, face = END)
+/// 
+/// xTarget = planes::xAxis(target)
+/// assert(xTarget[0], isEqualTo = 1)
+/// assert(xTarget[1], isEqualTo = 0)
+/// assert(xTarget[2], isEqualTo = 0)
+/// ```
+@(impl = std_rust)
+export fn xAxis(
+  /// The solid whose face is being queried.
+  @plane: Plane,
+): Point3d {}
+
+/// Find Y axis of a plane.
+///```kcl
+/// mySolid = startSketchOn(XZ)
+///   |> polygon(numSides = 3, radius = 1, center = [3, 2])
+///   |> extrude(length = 5)
+/// 
+/// target = planeOf(mySolid, face = END)
+/// 
+/// yTarget = planes::yAxis(target)
+/// assert(yTarget[0], isEqualTo = 0)
+/// assert(yTarget[1], isEqualTo = 0)
+/// assert(yTarget[2], isEqualTo = 1)
+/// ```
+@(impl = std_rust)
+export fn yAxis(
+  /// The solid whose face is being queried.
+  @plane: Plane,
+): Point3d {}
+

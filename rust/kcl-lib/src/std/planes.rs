@@ -14,6 +14,30 @@ use crate::{
     std::Args,
 };
 
+/// Get the axes of a plane
+pub async fn x_axis(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let plane: Plane = args.get_unlabeled_kw_arg("plane", &RuntimeType::plane(), exec_state)?;
+    let plane_meta = plane.meta.clone();
+    let axis = plane.info.x_axis;
+    Ok(KclValue::from_point3d(
+        [axis.x, axis.y, axis.z],
+        axis.units.into(),
+        plane_meta.clone(),
+    ))
+}
+
+/// Get the axes of a plane
+pub async fn y_axis(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let plane: Plane = args.get_unlabeled_kw_arg("plane", &RuntimeType::plane(), exec_state)?;
+    let plane_meta = plane.meta.clone();
+    let axis = plane.info.y_axis;
+    Ok(KclValue::from_point3d(
+        [axis.x, axis.y, axis.z],
+        axis.units.into(),
+        plane_meta.clone(),
+    ))
+}
+
 /// Find the plane of a given face.
 pub async fn plane_of(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let solid = args.get_unlabeled_kw_arg("solid", &RuntimeType::solid(), exec_state)?;

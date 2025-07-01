@@ -18,6 +18,7 @@ You might also want the [KCL language reference](/docs/kcl-lang) or the [KCL gui
 * [`appearance::appearance`](/docs/kcl-std/modules/std-appearance)
 * [`array`](/docs/kcl-std/modules/std-array)
 * [`math`](/docs/kcl-std/modules/std-math)
+* [`planes::planes`](/docs/kcl-std/modules/std-planes)
 * [`sketch`](/docs/kcl-std/modules/std-sketch)
 * [`solid`](/docs/kcl-std/modules/std-solid)
 * [`sweep::sweep`](/docs/kcl-std/modules/std-sweep)

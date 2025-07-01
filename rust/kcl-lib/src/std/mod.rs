@@ -424,6 +424,14 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::appearance::hex_string(e, a)),
             StdFnProps::default("std::appearance::hexString"),
         ),
+        ("planes", "xAxis") => (
+            |e, a| Box::pin(crate::std::planes::x_axis(e, a)),
+            StdFnProps::default("std::planes::xAxis"),
+        ),
+        ("planes", "yAxis") => (
+            |e, a| Box::pin(crate::std::planes::y_axis(e, a)),
+            StdFnProps::default("std::planes::yAxis"),
+        ),
         (module, fn_name) => {
             panic!("No implementation found for {module}::{fn_name}, please add it to this big match statement")
         }

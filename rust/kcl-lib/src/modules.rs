@@ -92,6 +92,7 @@ pub(crate) fn read_std(mod_name: &str) -> Option<&'static str> {
         "math" => Some(include_str!("../std/math.kcl")),
         "sketch" => Some(include_str!("../std/sketch.kcl")),
         "turns" => Some(include_str!("../std/turns.kcl")),
+        "planes" => Some(include_str!("../std/planes.kcl")),
         "types" => Some(include_str!("../std/types.kcl")),
         "solid" => Some(include_str!("../std/solid.kcl")),
         "units" => Some(include_str!("../std/units.kcl")),
