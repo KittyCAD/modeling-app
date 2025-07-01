@@ -2,7 +2,6 @@ import type { Models } from '@kittycad/lib'
 import {
   VITE_KC_API_BASE_URL,
   VITE_KC_DEV_TOKEN,
-  SKIP_AUTH
 } from '@src/env'
 import { assign, fromPromise, setup } from 'xstate'
 
@@ -161,7 +160,7 @@ async function getUser(input: { token?: string }) {
   if (!token && isDesktop()) return Promise.reject(new Error('No token found'))
   if (token) headers['Authorization'] = `Bearer ${token}`
 
-  if (SKIP_AUTH) {
+  if (VITE_KC_DEV_TOKEN) {
     // For local tests
     if (localStorage.getItem('FORCE_NO_IMAGE')) {
       LOCAL_USER.image = ''
@@ -223,15 +222,12 @@ export function getCookie(cname: string): string | null {
 async function getAndSyncStoredToken(input: {
   token?: string
 }): Promise<string> {
-  // Gotcha: VITE_KC_SKIP_AUTH should not allow this to happen
-  if (VITE_KC_DEV_TOKEN && SKIP_AUTH) {
-    console.warn(`Authentication skipped, SKIP_AUTH:${SKIP_AUTH} and VITE_KC_DEV_TOKEN:${!!VITE_KC_DEV_TOKEN ? '<REDACTED>' : 'Oh no, this should not be missing.'}`)
+  if (VITE_KC_DEV_TOKEN) {
+    console.warn(`Authentication skipped, VITE_KC_DEV_TOKEN:${!!VITE_KC_DEV_TOKEN ? '<REDACTED>' : 'Oh no, this should not be missing.'}`)
     return VITE_KC_DEV_TOKEN
   }
 
-  // If SKIP_AUTH is false, you must auth
   console.warn('Authentication is required')
-
   const tokenPassedFromInput = input.token
   const tokenFromCookie = getCookie(COOKIE_NAME)
   const tokenFromLocalStorage = localStorage?.getItem(TOKEN_PERSIST_KEY)
