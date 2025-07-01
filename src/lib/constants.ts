@@ -53,6 +53,7 @@ export const KCL_DEFAULT_CONSTANT_PREFIXES = {
   PLANE: 'plane',
   HELIX: 'helix',
   CLONE: 'clone',
+  TRANSLATE: 'translate',
 } as const
 /** The default KCL length expression */
 export const KCL_DEFAULT_LENGTH = `5`

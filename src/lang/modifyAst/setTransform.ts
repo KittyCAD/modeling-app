@@ -7,8 +7,10 @@ import {
   createLiteral,
   createLocalName,
   createPipeExpression,
+  createVariableDeclaration,
+  findUniqueName,
 } from '@src/lang/create'
-import { getNodeFromPath } from '@src/lang/queryAst'
+import { getNodeFromPath, getExprsFromSelection, valueOrVariable } from '@src/lang/queryAst'
 import type {
   ArtifactGraph,
   CallExpressionKw,
@@ -25,46 +27,88 @@ import {
   getLastVariable,
 } from '@src/lang/modifyAst/boolean'
 import type { Selections } from '@src/lib/selections'
+import { KclCommandValue } from '@src/lib/commandTypes'
+import { createPathToNode, createSketchExpression } from './addSweep'
+import { insertVariableAndOffsetPathToNode } from '../modifyAst'
+import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 
 export function setTranslate({
-  modifiedAst,
-  pathToNode,
+  ast,
+  objects,
   x,
   y,
   z,
   global,
+  nodeToEdit,
 }: {
-  modifiedAst: Node<Program>
-  pathToNode: PathToNode
-  x: Expr
-  y: Expr
-  z: Expr
+  ast: Node<Program>
+  objects: Selections
+  x: KclCommandValue
+  y: KclCommandValue
+  z: KclCommandValue
   global?: boolean
+  nodeToEdit: PathToNode
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
+  // 1. Clone the ast so we can edit it
+  const modifiedAst = structuredClone(ast)
+
+  // 2. Prepare unlabeled and labeled arguments
+  // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
+  const objectsExprList = getExprsFromSelection(
+    objects,
+    modifiedAst,
+    nodeToEdit
+  )
+  if (err(objectsExprList)) {
+    return objectsExprList
+  }
+
   // Extra labeled args expression
   const globalExpr = global
     ? [createLabeledArg('global', createLiteral(global))]
     : []
-  const noPercentSign = null
-  const call = createCallExpressionStdLibKw('translate', noPercentSign, [
-    createLabeledArg('x', x),
-    createLabeledArg('y', y),
-    createLabeledArg('z', z),
+   const objectsExpr = createSketchExpression(objectsExprList)
+  const call = createCallExpressionStdLibKw('translate', objectsExpr, [
+    createLabeledArg('x', valueOrVariable(x)),
+    createLabeledArg('y', valueOrVariable(y)),
+    createLabeledArg('z', valueOrVariable(z)),
     ...globalExpr,
   ])
 
-  const potentialPipe = getNodeFromPath<PipeExpression>(
-    modifiedAst,
-    pathToNode,
-    ['PipeExpression']
-  )
-  if (!err(potentialPipe) && potentialPipe.node.type === 'PipeExpression') {
-    setTransformInPipe(potentialPipe.node, call)
-  } else {
-    const error = createPipeWithTransform(modifiedAst, pathToNode, call)
-    if (err(error)) {
-      return error
+  // Insert variables for labeled arguments if provided
+  if ('variableName' in x && x.variableName) {
+    insertVariableAndOffsetPathToNode(x, modifiedAst, nodeToEdit)
+  }
+  if ('variableName' in y && y.variableName) {
+    insertVariableAndOffsetPathToNode(y, modifiedAst, nodeToEdit)
+  }
+  if ('variableName' in z && z.variableName) {
+    insertVariableAndOffsetPathToNode(z, modifiedAst, nodeToEdit)
+  }
+
+  // 3. If edit, we assign the new function call declaration to the existing node,
+  // otherwise just push to the end
+  let pathToNode: PathToNode | undefined
+  if (nodeToEdit) {
+    const result = getNodeFromPath<CallExpressionKw>(
+      modifiedAst,
+      nodeToEdit,
+      'CallExpressionKw'
+    )
+    if (err(result)) {
+      return result
     }
+
+    Object.assign(result.node, call)
+    pathToNode = nodeToEdit
+  } else {
+    const name = findUniqueName(
+      modifiedAst,
+      KCL_DEFAULT_CONSTANT_PREFIXES.TRANSLATE,
+    )
+    const declaration = createVariableDeclaration(name, call)
+    modifiedAst.body.push(declaration)
+    pathToNode = createPathToNode(modifiedAst)
   }
 
   return {

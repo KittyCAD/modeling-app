@@ -186,7 +186,7 @@ export type ModelingCommandSchema = {
   }
   Translate: {
     nodeToEdit?: PathToNode
-    selection: Selections
+    objects: Selections
     x: KclCommandValue
     y: KclCommandValue
     z: KclCommandValue
@@ -1083,7 +1083,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       nodeToEdit: {
         ...nodeToEditProps,
       },
-      selection: {
+      objects: {
         // selectionMixed allows for feature tree selection of module imports
         inputType: 'selectionMixed',
         multiple: false,
