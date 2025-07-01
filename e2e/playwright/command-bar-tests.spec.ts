@@ -525,7 +525,9 @@ test.describe('Command bar tests', () => {
     const projectName = 'test'
     const beforeKclCode = `a = 5
 b = a * a
-c = 3 + a`
+c = 3 + a
+theta = 45deg
+`
     await context.folderSetupFn(async (dir) => {
       const testProject = join(dir, projectName)
       await fsp.mkdir(testProject, { recursive: true })
@@ -615,9 +617,45 @@ c = 3 + a`
         stage: 'commandBarClosed',
       })
     })
+    await test.step(`Edit a parameter with explicit units via command bar`, async () => {
+      await cmdBar.cmdBarOpenBtn.click()
+      await cmdBar.chooseCommand('edit parameter')
+      await cmdBar
+        .selectOption({
+          name: 'theta',
+        })
+        .click()
+      await cmdBar.expectState({
+        stage: 'arguments',
+        commandName: 'Edit parameter',
+        currentArgKey: 'value',
+        currentArgValue: '45deg',
+        headerArguments: {
+          Name: 'theta',
+          Value: '',
+        },
+        highlightedHeaderArg: 'value',
+      })
+      await cmdBar.argumentInput
+        .locator('[contenteditable]')
+        .fill('45deg + 1deg')
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        commandName: 'Edit parameter',
+        headerArguments: {
+          Name: 'theta',
+          Value: '46deg',
+        },
+      })
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'commandBarClosed',
+      })
+    })
 
     await editor.expectEditor.toContain(
-      `a = 5b = a * amyParameter001 = ${newValue}c = 3 + a`
+      `a = 5b = a * amyParameter001 = ${newValue}c = 3 + atheta = 45deg + 1deg`
     )
   })
 

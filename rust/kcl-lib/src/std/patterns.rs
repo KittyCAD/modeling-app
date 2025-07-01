@@ -408,7 +408,7 @@ impl GeometryTrait for Sketch {
         exec_state: &mut ExecState,
     ) -> Result<[TyF64; 3], KclError> {
         let [x, y] = array_to_point2d(val, source_ranges, exec_state)?;
-        let ty = x.ty.clone();
+        let ty = x.ty;
         Ok([x, y, TyF64::new(0.0, ty)])
     }
 

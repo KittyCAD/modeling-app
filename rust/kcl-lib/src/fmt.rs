@@ -45,6 +45,31 @@ pub fn format_number_literal(value: f64, suffix: NumericSuffix) -> Result<String
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Serialize, thiserror::Error)]
+#[serde(tag = "type")]
+pub enum FormatNumericTypeError {
+    #[error("Invalid numeric type: {0:?}")]
+    Invalid(NumericType),
+}
+
+/// For UI code generation, format a number value with a suffix such that the
+/// result can parse as a literal. If it can't be done, returns an error.
+///
+/// This is used by TS.
+pub fn format_number_value(value: f64, ty: NumericType) -> Result<String, FormatNumericTypeError> {
+    match ty {
+        NumericType::Default { .. } => Ok(value.to_string()),
+        // There isn't a syntactic suffix for these. For unknown, we don't want
+        // to ever generate the unknown suffix. We currently warn on it, and we
+        // may remove it in the future.
+        NumericType::Unknown | NumericType::Any => Err(FormatNumericTypeError::Invalid(ty)),
+        NumericType::Known(unit_type) => unit_type
+            .to_suffix()
+            .map(|suffix| format!("{value}{suffix}"))
+            .ok_or(FormatNumericTypeError::Invalid(ty)),
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use pretty_assertions::assert_eq;
@@ -132,6 +157,76 @@ mod tests {
         assert_eq!(
             format_number_literal(1.0, NumericSuffix::Unknown),
             Err(FormatNumericSuffixError::Invalid(NumericSuffix::Unknown))
+        );
+    }
+
+    #[test]
+    fn test_format_number_value() {
+        assert_eq!(
+            format_number_value(
+                1.0,
+                NumericType::Default {
+                    len: Default::default(),
+                    angle: Default::default()
+                }
+            ),
+            Ok("1".to_owned())
+        );
+        assert_eq!(
+            format_number_value(1.0, NumericType::Known(UnitType::Length(UnitLen::Unknown))),
+            Err(FormatNumericTypeError::Invalid(NumericType::Known(UnitType::Length(
+                UnitLen::Unknown
+            ))))
+        );
+        assert_eq!(
+            format_number_value(1.0, NumericType::Known(UnitType::Angle(UnitAngle::Unknown))),
+            Err(FormatNumericTypeError::Invalid(NumericType::Known(UnitType::Angle(
+                UnitAngle::Unknown
+            ))))
+        );
+        assert_eq!(
+            format_number_value(1.0, NumericType::Known(UnitType::Count)),
+            Ok("1_".to_owned())
+        );
+        assert_eq!(
+            format_number_value(1.0, NumericType::Known(UnitType::Length(UnitLen::Mm))),
+            Ok("1mm".to_owned())
+        );
+        assert_eq!(
+            format_number_value(1.0, NumericType::Known(UnitType::Length(UnitLen::Cm))),
+            Ok("1cm".to_owned())
+        );
+        assert_eq!(
+            format_number_value(1.0, NumericType::Known(UnitType::Length(UnitLen::M))),
+            Ok("1m".to_owned())
+        );
+        assert_eq!(
+            format_number_value(1.0, NumericType::Known(UnitType::Length(UnitLen::Inches))),
+            Ok("1in".to_owned())
+        );
+        assert_eq!(
+            format_number_value(1.0, NumericType::Known(UnitType::Length(UnitLen::Feet))),
+            Ok("1ft".to_owned())
+        );
+        assert_eq!(
+            format_number_value(1.0, NumericType::Known(UnitType::Length(UnitLen::Yards))),
+            Ok("1yd".to_owned())
+        );
+        assert_eq!(
+            format_number_value(1.0, NumericType::Known(UnitType::Angle(UnitAngle::Degrees))),
+            Ok("1deg".to_owned())
+        );
+        assert_eq!(
+            format_number_value(1.0, NumericType::Known(UnitType::Angle(UnitAngle::Radians))),
+            Ok("1rad".to_owned())
+        );
+        assert_eq!(
+            format_number_value(1.0, NumericType::Unknown),
+            Err(FormatNumericTypeError::Invalid(NumericType::Unknown))
+        );
+        assert_eq!(
+            format_number_value(1.0, NumericType::Any),
+            Err(FormatNumericTypeError::Invalid(NumericType::Any))
         );
     }
 }
