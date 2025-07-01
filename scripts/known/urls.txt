@@ -14,7 +14,7 @@ URL  STATUS
 302  https://reactrouter.com/en/6.16.0/routers/picking-a-router#using-v64-data-apis
 302  https://stackoverflow.com/a/57390160/22753272
 302  https://stackoverflow.com/a/58436959/22753272
-301  https://text-to-cad.zoo.dev/dashboard
+303  https://text-to-cad.zoo.dev/dashboard
 307  https://zoo.dev/
 308  https://zoo.dev/docs/api/ml/generate-a-cad-model-from-text
 308  https://zoo.dev/docs/kcl
