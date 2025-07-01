@@ -401,7 +401,7 @@ impl FunctionDefinition<'_> {
 impl FunctionBody<'_> {
     fn prep_mem(&self, exec_state: &mut ExecState) {
         match self {
-            FunctionBody::Rust(_) => exec_state.mut_stack().push_new_env_for_rust_call(),
+            FunctionBody::Rust(_) => exec_state.mut_stack().push_new_root_env(true),
             FunctionBody::Kcl(_, memory) => exec_state.mut_stack().push_new_env_for_call(*memory),
         }
     }
