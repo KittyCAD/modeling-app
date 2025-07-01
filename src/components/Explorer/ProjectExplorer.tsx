@@ -662,7 +662,7 @@ export const ProjectExplorer = ({
       document.removeEventListener('click', handleClickOutside)
       document.removeEventListener('keydown', keyDownHandler)
       fileExplorerContainer.current?.removeEventListener('focus', handleFocus)
-      fileExplorerContainer.current?.addEventListener('blur', handleBlur)
+      fileExplorerContainer.current?.removeEventListener('blur', handleBlur)
     }
   }, [])
 
