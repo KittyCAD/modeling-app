@@ -292,6 +292,7 @@ function buildProjectsBasedOffFileEntries(
 ) {
   const root: Project[] = []
   const pathMap = new Map()
+  const cachedSepForPaths = window.electron.sep
 
   for (const entry of fileEntries) {
     let relativePath =
@@ -306,7 +307,7 @@ function buildProjectsBasedOffFileEntries(
 
     for (let i = 0; i < parts.length; i++) {
       const part = parts[i]
-      currentPath += '/' + part
+      currentPath += cachedSepForPaths + part
 
       const isLeaf = i === parts.length - 1
       const isFile = isLeaf && entry.children === null
