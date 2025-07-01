@@ -8,6 +8,9 @@ lint:
     # Ensure we can build without extra feature flags.
     cargo clippy -p kcl-lib --all-targets -- -D warnings
 
+lint-fix:
+    cargo clippy --workspace --all-targets --all-features --fix
+
 # Run the stdlib docs generation
 redo-kcl-stdlib-docs-no-imgs:
     EXPECTORATE=overwrite {{cnr}} {{kcl_lib_flags}} docs::gen_std_tests::test_generate_stdlib

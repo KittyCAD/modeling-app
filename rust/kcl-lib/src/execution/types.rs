@@ -460,7 +460,7 @@ impl fmt::Display for PrimitiveType {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum NumericType {
@@ -575,7 +575,7 @@ impl NumericType {
             match (&ty, &i.ty) {
                 (Any, Default { .. }) if i.n == 0.0 => {}
                 (Any, t) => {
-                    ty = t.clone();
+                    ty = *t;
                 }
                 (_, Unknown) | (Default { .. }, Default { .. }) => return (result, Unknown),
 
@@ -598,7 +598,7 @@ impl NumericType {
         }
 
         if ty == Any && !input.is_empty() {
-            ty = input[0].ty.clone();
+            ty = input[0].ty;
         }
 
         (result, ty)
@@ -722,7 +722,7 @@ impl NumericType {
         if ty.subtype(self) {
             return Ok(KclValue::Number {
                 value: *value,
-                ty: ty.clone(),
+                ty: *ty,
                 meta: meta.clone(),
             });
         }
@@ -736,7 +736,7 @@ impl NumericType {
 
             (Any, _) => Ok(KclValue::Number {
                 value: *value,
-                ty: self.clone(),
+                ty: *self,
                 meta: meta.clone(),
             }),
 
@@ -744,7 +744,7 @@ impl NumericType {
             // means accept any number rather than force the current default.
             (_, Default { .. }) => Ok(KclValue::Number {
                 value: *value,
-                ty: ty.clone(),
+                ty: *ty,
                 meta: meta.clone(),
             }),
 
@@ -1491,7 +1491,7 @@ impl KclValue {
     pub fn principal_type(&self) -> Option<RuntimeType> {
         match self {
             KclValue::Bool { .. } => Some(RuntimeType::Primitive(PrimitiveType::Boolean)),
-            KclValue::Number { ty, .. } => Some(RuntimeType::Primitive(PrimitiveType::Number(ty.clone()))),
+            KclValue::Number { ty, .. } => Some(RuntimeType::Primitive(PrimitiveType::Number(*ty))),
             KclValue::String { .. } => Some(RuntimeType::Primitive(PrimitiveType::String)),
             KclValue::Object { value, .. } => {
                 let properties = value
