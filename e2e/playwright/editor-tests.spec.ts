@@ -288,7 +288,7 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
     // error text on hover
     await page.hover('.cm-lint-marker-info')
     await expect(
-      page.getByText('Identifiers must be lowerCamelCase').first()
+      page.getByText('Identifiers should be lowerCamelCase').first()
     ).toBeVisible()
 
     await page.locator('#code-pane button:first-child').click()
@@ -314,7 +314,7 @@ sketch_001 = startSketchOn(XY)
     // error text on hover
     await page.hover('.cm-lint-marker-info')
     await expect(
-      page.getByText('Identifiers must be lowerCamelCase').first()
+      page.getByText('Identifiers should be lowerCamelCase').first()
     ).toBeVisible()
   })
 
@@ -511,7 +511,7 @@ sketch_001 = startSketchOn(XY)
     // error text on hover
     await page.hover('.cm-lint-marker-info')
     await expect(
-      page.getByText('Identifiers must be lowerCamelCase').first()
+      page.getByText('Identifiers should be lowerCamelCase').first()
     ).toBeVisible()
 
     // focus the editor
@@ -539,7 +539,7 @@ sketch_001 = startSketchOn(XY)
     // error text on hover
     await page.hover('.cm-lint-marker-info')
     await expect(
-      page.getByText('Identifiers must be lowerCamelCase').first()
+      page.getByText('Identifiers should be lowerCamelCase').first()
     ).toBeVisible()
   })
 
@@ -681,7 +681,7 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
     // error text on hover
     await page.hover('.cm-lint-marker-info')
     await expect(
-      page.getByText('Identifiers must be lowerCamelCase').first()
+      page.getByText('Identifiers should be lowerCamelCase').first()
     ).toBeVisible()
 
     // select the line that's causing the error and delete it

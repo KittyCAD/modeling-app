@@ -13,6 +13,7 @@ description: Result of parsing non_english_identifiers.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "comprimentoTotal",
             "start": 0,
             "type": "Identifier"
@@ -20,6 +21,7 @@ description: Result of parsing non_english_identifiers.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "100",
             "start": 0,
             "type": "Literal",
@@ -29,11 +31,13 @@ description: Result of parsing non_english_identifiers.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -46,6 +50,7 @@ description: Result of parsing non_english_identifiers.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "亞當",
             "start": 0,
             "type": "Identifier"
@@ -53,6 +58,7 @@ description: Result of parsing non_english_identifiers.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "100",
             "start": 0,
             "type": "Literal",
@@ -62,11 +68,13 @@ description: Result of parsing non_english_identifiers.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -79,6 +87,7 @@ description: Result of parsing non_english_identifiers.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "comprimentoRosca",
             "start": 0,
             "type": "Identifier"
@@ -90,9 +99,11 @@ description: Result of parsing non_english_identifiers.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "亞當",
                 "start": 0,
                 "type": "Identifier"
@@ -102,10 +113,12 @@ description: Result of parsing non_english_identifiers.kcl
               "type": "Name",
               "type": "Name"
             },
+            "moduleId": 0,
             "operator": "*",
             "right": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "raw": "0.8",
               "start": 0,
               "type": "Literal",
@@ -119,11 +132,13 @@ description: Result of parsing non_english_identifiers.kcl
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -136,6 +151,7 @@ description: Result of parsing non_english_identifiers.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "comprimentoCabeça",
             "start": 0,
             "type": "Identifier"
@@ -147,9 +163,11 @@ description: Result of parsing non_english_identifiers.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "comprimentoTotal",
                 "start": 0,
                 "type": "Identifier"
@@ -159,14 +177,17 @@ description: Result of parsing non_english_identifiers.kcl
               "type": "Name",
               "type": "Name"
             },
+            "moduleId": 0,
             "operator": "-",
             "right": {
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "comprimentoRosca",
                 "start": 0,
                 "type": "Identifier"
@@ -180,11 +201,13 @@ description: Result of parsing non_english_identifiers.kcl
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -199,6 +222,7 @@ description: Result of parsing non_english_identifiers.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "isEqualTo",
                 "start": 0,
                 "type": "Identifier"
@@ -206,6 +230,7 @@ description: Result of parsing non_english_identifiers.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "20",
                 "start": 0,
                 "type": "Literal",
@@ -221,9 +246,11 @@ description: Result of parsing non_english_identifiers.kcl
             "abs_path": false,
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "assert",
               "start": 0,
               "type": "Identifier"
@@ -234,6 +261,7 @@ description: Result of parsing non_english_identifiers.kcl
           },
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
@@ -241,9 +269,11 @@ description: Result of parsing non_english_identifiers.kcl
             "abs_path": false,
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "comprimentoCabeça",
               "start": 0,
               "type": "Identifier"
@@ -254,6 +284,7 @@ description: Result of parsing non_english_identifiers.kcl
             "type": "Name"
           }
         },
+        "moduleId": 0,
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -261,12 +292,14 @@ description: Result of parsing non_english_identifiers.kcl
     ],
     "commentStart": 0,
     "end": 0,
+    "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "2": [
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {

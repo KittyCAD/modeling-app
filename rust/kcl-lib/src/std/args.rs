@@ -7,12 +7,13 @@ use serde::Serialize;
 use super::fillet::EdgeReference;
 pub use crate::execution::fn_call::Args;
 use crate::{
+    ModuleId,
     errors::{KclError, KclErrorDetails},
     execution::{
-        kcl_value::FunctionSource,
-        types::{NumericType, PrimitiveType, RuntimeType, UnitAngle, UnitLen, UnitType},
         ExecState, ExtrudeSurface, Helix, KclObjectFields, KclValue, Metadata, PlaneInfo, Sketch, SketchSurface, Solid,
         TagIdentifier,
+        kcl_value::FunctionSource,
+        types::{NumericType, PrimitiveType, RuntimeType, UnitAngle, UnitLen, UnitType},
     },
     parsing::ast::types::TagNode,
     source_range::SourceRange,
@@ -21,7 +22,6 @@ use crate::{
         sketch::FaceTag,
         sweep::SweepPath,
     },
-    ModuleId,
 };
 
 const ERROR_STRING_SKETCH_TO_SOLID_HELPER: &str =
@@ -97,8 +97,8 @@ impl JsonSchema for TyF64 {
         "TyF64".to_string()
     }
 
-    fn json_schema(gen: &mut schemars::gen::SchemaGenerator) -> schemars::schema::Schema {
-        gen.subschema_for::<f64>()
+    fn json_schema(r#gen: &mut schemars::r#gen::SchemaGenerator) -> schemars::schema::Schema {
+        r#gen.subschema_for::<f64>()
     }
 }
 
@@ -340,12 +340,12 @@ impl Args {
         let x = KclValue::Number {
             value: p[0],
             meta: vec![meta],
-            ty: ty.clone(),
+            ty,
         };
         let y = KclValue::Number {
             value: p[1],
             meta: vec![meta],
-            ty: ty.clone(),
+            ty,
         };
         let ty = RuntimeType::Primitive(PrimitiveType::Number(ty));
 
@@ -1038,7 +1038,7 @@ impl<'a> FromKclValue<'a> for u64 {
 impl<'a> FromKclValue<'a> for TyF64 {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         match arg {
-            KclValue::Number { value, ty, .. } => Some(TyF64::new(*value, ty.clone())),
+            KclValue::Number { value, ty, .. } => Some(TyF64::new(*value, *ty)),
             _ => None,
         }
     }

@@ -3,16 +3,16 @@ use std::ops::{Add, AddAssign, Mul};
 use anyhow::Result;
 use indexmap::IndexMap;
 use kittycad_modeling_cmds as kcmc;
-use kittycad_modeling_cmds::{each_cmd as mcmd, length_unit::LengthUnit, websocket::ModelingCmdReq, ModelingCmd};
+use kittycad_modeling_cmds::{ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit, websocket::ModelingCmdReq};
 use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    engine::{PlaneName, DEFAULT_PLANE_INFO},
+    engine::{DEFAULT_PLANE_INFO, PlaneName},
     errors::{KclError, KclErrorDetails},
     execution::{
-        types::NumericType, ArtifactId, ExecState, ExecutorContext, Metadata, TagEngineInfo, TagIdentifier, UnitLen,
+        ArtifactId, ExecState, ExecutorContext, Metadata, TagEngineInfo, TagIdentifier, UnitLen, types::NumericType,
     },
     parsing::ast::types::{Node, NodeRef, TagDeclarator, TagNode},
     std::{args::TyF64, sketch::PlaneData},
@@ -472,7 +472,7 @@ impl TryFrom<PlaneData> for PlaneInfo {
             PlaneData::Plane(_) => {
                 // We will never get here since we already checked for PlaneData::Plane.
                 return Err(KclError::new_internal(KclErrorDetails::new(
-                    format!("PlaneData {:?} not found", value),
+                    format!("PlaneData {value:?} not found"),
                     Default::default(),
                 )));
             }
@@ -480,7 +480,7 @@ impl TryFrom<PlaneData> for PlaneInfo {
 
         let info = DEFAULT_PLANE_INFO.get(&name).ok_or_else(|| {
             KclError::new_internal(KclErrorDetails::new(
-                format!("Plane {} not found", name),
+                format!("Plane {name} not found"),
                 Default::default(),
             ))
         })?;
@@ -815,8 +815,8 @@ impl EdgeCut {
 
     pub fn set_id(&mut self, id: uuid::Uuid) {
         match self {
-            EdgeCut::Fillet { id: ref mut i, .. } => *i = id,
-            EdgeCut::Chamfer { id: ref mut i, .. } => *i = id,
+            EdgeCut::Fillet { id: i, .. } => *i = id,
+            EdgeCut::Chamfer { id: i, .. } => *i = id,
         }
     }
 
@@ -829,8 +829,8 @@ impl EdgeCut {
 
     pub fn set_edge_id(&mut self, id: uuid::Uuid) {
         match self {
-            EdgeCut::Fillet { edge_id: ref mut i, .. } => *i = id,
-            EdgeCut::Chamfer { edge_id: ref mut i, .. } => *i = id,
+            EdgeCut::Fillet { edge_id: i, .. } => *i = id,
+            EdgeCut::Chamfer { edge_id: i, .. } => *i = id,
         }
     }
 
@@ -939,6 +939,7 @@ impl From<Point3d> for Point3D {
         Self { x: p.x, y: p.y, z: p.z }
     }
 }
+
 impl From<Point3d> for kittycad_modeling_cmds::shared::Point3d<LengthUnit> {
     fn from(p: Point3d) -> Self {
         Self {
@@ -1004,12 +1005,12 @@ pub struct BasePath {
 impl BasePath {
     pub fn get_to(&self) -> [TyF64; 2] {
         let ty: NumericType = self.units.into();
-        [TyF64::new(self.to[0], ty.clone()), TyF64::new(self.to[1], ty)]
+        [TyF64::new(self.to[0], ty), TyF64::new(self.to[1], ty)]
     }
 
     pub fn get_from(&self) -> [TyF64; 2] {
         let ty: NumericType = self.units.into();
-        [TyF64::new(self.from[0], ty.clone()), TyF64::new(self.from[1], ty)]
+        [TyF64::new(self.from[0], ty), TyF64::new(self.from[1], ty)]
     }
 }
 
@@ -1030,7 +1031,7 @@ pub struct GeoMeta {
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum Path {
-    /// A path that goes to a point.
+    /// A straight line which ends at the given point.
     ToPoint {
         #[serde(flatten)]
         base: BasePath,
@@ -1225,14 +1226,14 @@ impl Path {
     pub fn get_from(&self) -> [TyF64; 2] {
         let p = &self.get_base().from;
         let ty: NumericType = self.get_base().units.into();
-        [TyF64::new(p[0], ty.clone()), TyF64::new(p[1], ty)]
+        [TyF64::new(p[0], ty), TyF64::new(p[1], ty)]
     }
 
     /// Where does this path segment end?
     pub fn get_to(&self) -> [TyF64; 2] {
         let p = &self.get_base().to;
         let ty: NumericType = self.get_base().units.into();
-        [TyF64::new(p[0], ty.clone()), TyF64::new(p[1], ty)]
+        [TyF64::new(p[0], ty), TyF64::new(p[1], ty)]
     }
 
     /// The path segment start point and its type.

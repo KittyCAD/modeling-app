@@ -1029,6 +1029,35 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
     return { reason: 'Error in angle argument retrieval' }
   }
 
+  // symmetric argument from a string to boolean
+  let symmetric: boolean | undefined
+  if ('symmetric' in operation.labeledArgs && operation.labeledArgs.symmetric) {
+    symmetric =
+      codeManager.code.slice(
+        operation.labeledArgs.symmetric.sourceRange[0],
+        operation.labeledArgs.symmetric.sourceRange[1]
+      ) === 'true'
+  }
+
+  // bidirectionalLength argument from a string to a KCL expression
+  let bidirectionalAngle: KclCommandValue | undefined
+  if (
+    'bidirectionalAngle' in operation.labeledArgs &&
+    operation.labeledArgs.bidirectionalAngle
+  ) {
+    const result = await stringToKclExpression(
+      codeManager.code.slice(
+        operation.labeledArgs.bidirectionalAngle.sourceRange[0],
+        operation.labeledArgs.bidirectionalAngle.sourceRange[1]
+      )
+    )
+    if (err(result) || 'errors' in result) {
+      return { reason: "Couldn't retrieve bidirectionalAngle argument" }
+    }
+
+    bidirectionalAngle = result
+  }
+
   // 3. Assemble the default argument values for the command,
   // with `nodeToEdit` set, which will let the actor know
   // to edit the node that corresponds to the StdLibCall.
@@ -1038,6 +1067,8 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
     axis,
     edge,
     angle,
+    symmetric,
+    bidirectionalAngle,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
   return {

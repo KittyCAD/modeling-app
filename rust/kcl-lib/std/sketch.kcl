@@ -234,6 +234,39 @@ export fn startProfile(
   tag?: TagDecl,
 ): Sketch {}
 
+/// Sketch a rectangle.
+///
+/// ```
+/// exampleSketch = startSketchOn(-XZ)
+///   |> rectangle(center = [0, 0], width = 10, height = 5)
+//    |> extrude(length = 2)
+/// ```
+///
+/// ```
+/// exampleSketch = startSketchOn(-XZ)
+///   |> rectangle(corner = [0, 0], width = 10, height = 5)
+//    |> extrude(length = 2)
+/// ```
+@(impl = std_rust)
+export fn rectangle(
+  /// Sketch to extend, or plane or surface to sketch on.
+  @sketchOrSurface: Sketch | Plane | Face,
+  /// Rectangle's width along X axis.
+  width: number(Length),
+  /// Rectangle's height along Y axis.
+  height: number(Length),
+  /// The center of the rectangle.
+  /// Incompatible with `corner`.
+  @(snippetArray = ["0", "0"])
+  center?: Point2d,
+  /// The corner of the rectangle.
+  /// Incompatible with `center`.
+  /// This will be the corner which is most negative on
+  /// both X and Y axes.
+  @(snippetArray = ["0", "0"])
+  corner?: Point2d,
+): Sketch {}
+
 /// Construct a 2-dimensional circle, of the specified radius, centered at
 /// the provided (x, y) origin point.
 ///
@@ -1941,3 +1974,24 @@ export fn subtract2d(
   /// The shape(s) which should be cut out of the sketch.
   tool: [Sketch; 1+],
 ): Sketch {}
+
+/// Find the plane a face lies on.
+/// Returns an error if the face doesn't lie on any plane (for example, the curved face of a cylinder)
+///```kcl
+/// triangle = startSketchOn(XY)
+/// |> polygon(radius = 3, numSides = 3, center = [0, 0])
+/// |> extrude(length = 2)
+/// 
+/// // Find the plane of the triangle's top face.
+/// topPlane = planeOf(triangle, face = END)
+/// 
+/// // Create a new plane, 10 units above the triangle's top face.
+/// startSketchOn(offsetPlane(topPlane, offset = 10))
+/// ```
+@(impl = std_rust)
+export fn planeOf(
+  /// The solid whose face is being queried.
+  @solid: Solid,
+  /// Find the plane which this face lies on.
+  face: TaggedFace,
+): Plane {}

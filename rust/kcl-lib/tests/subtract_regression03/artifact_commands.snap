@@ -233,7 +233,10 @@ description: Artifact commands subtract_regression03.kcl
                 "z": 1.0
               },
               "set": false,
-              "is_local": true
+              "is_local": true,
+              "origin": {
+                "type": "local"
+              }
             }
           }
         ]

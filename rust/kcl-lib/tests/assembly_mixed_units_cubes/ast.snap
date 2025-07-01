@@ -8,6 +8,7 @@ description: Result of parsing assembly_mixed_units_cubes.kcl
       {
         "commentStart": 0,
         "end": 0,
+        "moduleId": 0,
         "path": {
           "type": "Kcl",
           "filename": "cube-inches.kcl"
@@ -17,6 +18,7 @@ description: Result of parsing assembly_mixed_units_cubes.kcl
           "alias": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "cubeIn",
             "start": 0,
             "type": "Identifier"
@@ -29,6 +31,7 @@ description: Result of parsing assembly_mixed_units_cubes.kcl
       {
         "commentStart": 0,
         "end": 0,
+        "moduleId": 0,
         "path": {
           "type": "Kcl",
           "filename": "cube-mm.kcl"
@@ -38,6 +41,7 @@ description: Result of parsing assembly_mixed_units_cubes.kcl
           "alias": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "cubeMm",
             "start": 0,
             "type": "Identifier"
@@ -54,9 +58,11 @@ description: Result of parsing assembly_mixed_units_cubes.kcl
           "abs_path": false,
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "name": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "cubeIn",
             "start": 0,
             "type": "Identifier"
@@ -66,6 +72,7 @@ description: Result of parsing assembly_mixed_units_cubes.kcl
           "type": "Name",
           "type": "Name"
         },
+        "moduleId": 0,
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -77,9 +84,11 @@ description: Result of parsing assembly_mixed_units_cubes.kcl
           "abs_path": false,
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "name": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "cubeMm",
             "start": 0,
             "type": "Identifier"
@@ -89,6 +98,7 @@ description: Result of parsing assembly_mixed_units_cubes.kcl
           "type": "Name",
           "type": "Name"
         },
+        "moduleId": 0,
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -100,9 +110,11 @@ description: Result of parsing assembly_mixed_units_cubes.kcl
       {
         "commentStart": 0,
         "end": 0,
+        "moduleId": 0,
         "name": {
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "name": "settings",
           "start": 0,
           "type": "Identifier"
@@ -114,19 +126,23 @@ description: Result of parsing assembly_mixed_units_cubes.kcl
             "key": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "defaultLengthUnit",
               "start": 0,
               "type": "Identifier"
             },
+            "moduleId": 0,
             "start": 0,
             "type": "ObjectProperty",
             "value": {
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "in",
                 "start": 0,
                 "type": "Identifier"
@@ -142,12 +158,14 @@ description: Result of parsing assembly_mixed_units_cubes.kcl
         "type": "Annotation"
       }
     ],
+    "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "1": [
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {
@@ -160,6 +178,7 @@ description: Result of parsing assembly_mixed_units_cubes.kcl
         {
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "NonCodeNode",
           "value": {

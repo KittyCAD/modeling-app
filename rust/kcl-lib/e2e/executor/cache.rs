@@ -1,9 +1,9 @@
 //! Cache testing framework.
 
-use kcl_lib::{bust_cache, ExecError, ExecOutcome};
+use kcl_lib::{ExecError, ExecOutcome, bust_cache};
 #[cfg(feature = "artifact-graph")]
-use kcl_lib::{exec::Operation, NodePathStep};
-use kcmc::{each_cmd as mcmd, ModelingCmd};
+use kcl_lib::{NodePathStep, exec::Operation};
+use kcmc::{ModelingCmd, each_cmd as mcmd};
 use kittycad_modeling_cmds as kcmc;
 use pretty_assertions::assert_eq;
 
@@ -38,7 +38,7 @@ async fn cache_test(
         if !variation.other_files.is_empty() {
             let tmp_dir = std::env::temp_dir();
             let tmp_dir = tmp_dir
-                .join(format!("kcl_test_{}", test_name))
+                .join(format!("kcl_test_{test_name}"))
                 .join(uuid::Uuid::new_v4().to_string());
 
             // Create a temporary file for each of the other files.
@@ -56,7 +56,7 @@ async fn cache_test(
             Err(error) => {
                 let report = error.clone().into_miette_report_with_outputs(variation.code).unwrap();
                 let report = miette::Report::new(report);
-                panic!("{:?}", report);
+                panic!("{report:?}");
             }
         };
 
@@ -69,7 +69,7 @@ async fn cache_test(
             .and_then(|x| x.decode().map_err(|e| ExecError::BadPng(e.to_string())))
             .unwrap();
         // Save the snapshot.
-        let path = crate::assert_out(&format!("cache_{}_{}", test_name, index), &img);
+        let path = crate::assert_out(&format!("cache_{test_name}_{index}"), &img);
 
         img_results.push((path, img, outcome));
     }
@@ -337,8 +337,7 @@ extrude001 = extrude(profile001, length = 4)
                 // 0] as a more lenient check.
                 .map(|c| !c.range.is_synthetic() && c.node_path.is_empty())
                 .unwrap_or(false),
-            "artifact={:?}",
-            artifact
+            "artifact={artifact:?}"
         );
     }
 }

@@ -36,6 +36,7 @@ description: Variables in memory after executing artifact_graph_example_code_no_
           "tag": {
             "commentStart": 115,
             "end": 136,
+            "moduleId": 0,
             "start": 115,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA001"
@@ -61,6 +62,7 @@ description: Variables in memory after executing artifact_graph_example_code_no_
           "tag": {
             "commentStart": 218,
             "end": 239,
+            "moduleId": 0,
             "start": 218,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB001"
@@ -86,6 +88,7 @@ description: Variables in memory after executing artifact_graph_example_code_no_
           "tag": {
             "commentStart": 341,
             "end": 362,
+            "moduleId": 0,
             "start": 341,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC001"

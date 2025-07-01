@@ -13,6 +13,7 @@ description: Result of parsing argument_error.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "f",
             "start": 0,
             "type": "Identifier"
@@ -24,6 +25,7 @@ description: Result of parsing argument_error.kcl
                   "argument": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "5",
                     "start": 0,
                     "type": "Literal",
@@ -35,6 +37,7 @@ description: Result of parsing argument_error.kcl
                   },
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
@@ -42,16 +45,19 @@ description: Result of parsing argument_error.kcl
               ],
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0
             },
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "i",
                   "start": 0,
                   "type": "Identifier"
@@ -63,11 +69,13 @@ description: Result of parsing argument_error.kcl
             "type": "FunctionExpression",
             "type": "FunctionExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "fn",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -82,6 +90,7 @@ description: Result of parsing argument_error.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "f",
                 "start": 0,
                 "type": "Identifier"
@@ -92,6 +101,7 @@ description: Result of parsing argument_error.kcl
                   {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "0",
                     "start": 0,
                     "type": "Literal",
@@ -104,6 +114,7 @@ description: Result of parsing argument_error.kcl
                   {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "1",
                     "start": 0,
                     "type": "Literal",
@@ -115,6 +126,7 @@ description: Result of parsing argument_error.kcl
                   }
                 ],
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "ArrayExpression",
                 "type": "ArrayExpression"
@@ -125,9 +137,11 @@ description: Result of parsing argument_error.kcl
             "abs_path": false,
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "map",
               "start": 0,
               "type": "Identifier"
@@ -138,6 +152,7 @@ description: Result of parsing argument_error.kcl
           },
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
@@ -145,9 +160,11 @@ description: Result of parsing argument_error.kcl
             "abs_path": false,
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "f",
               "start": 0,
               "type": "Identifier"
@@ -158,6 +175,7 @@ description: Result of parsing argument_error.kcl
             "type": "Name"
           }
         },
+        "moduleId": 0,
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -165,12 +183,14 @@ description: Result of parsing argument_error.kcl
     ],
     "commentStart": 0,
     "end": 0,
+    "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {

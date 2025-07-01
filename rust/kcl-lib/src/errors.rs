@@ -7,11 +7,11 @@ use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity};
 #[cfg(feature = "artifact-graph")]
 use crate::execution::{ArtifactCommand, ArtifactGraph, Operation};
 use crate::{
+    ModuleId,
     execution::DefaultPlanes,
     lsp::IntoDiagnostic,
     modules::{ModulePath, ModuleSource},
     source_range::SourceRange,
-    ModuleId,
 };
 
 /// How did the KCL execution fail

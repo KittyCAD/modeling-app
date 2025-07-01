@@ -319,6 +319,7 @@ description: Variables in memory after executing mug.kcl
           "tag": {
             "commentStart": 1438,
             "end": 1444,
+            "moduleId": 0,
             "start": 1438,
             "type": "TagDeclarator",
             "value": "seg02"

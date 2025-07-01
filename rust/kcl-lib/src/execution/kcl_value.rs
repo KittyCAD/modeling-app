@@ -5,18 +5,18 @@ use schemars::JsonSchema;
 use serde::Serialize;
 
 use crate::{
+    CompilationError, KclError, ModuleId, SourceRange,
     errors::KclErrorDetails,
     execution::{
-        annotations::{SETTINGS, SETTINGS_UNIT_LENGTH},
-        types::{NumericType, PrimitiveType, RuntimeType, UnitLen},
         EnvironmentRef, ExecState, Face, Geometry, GeometryWithImportedGeometry, Helix, ImportedGeometry, MetaSettings,
         Metadata, Plane, Sketch, Solid, TagIdentifier,
+        annotations::{SETTINGS, SETTINGS_UNIT_LENGTH},
+        types::{NumericType, PrimitiveType, RuntimeType, UnitLen},
     },
     parsing::ast::types::{
         DefaultParamVal, FunctionExpression, KclNone, Literal, LiteralValue, Node, TagDeclarator, TagNode,
     },
-    std::{args::TyF64, StdFnProps},
-    CompilationError, KclError, ModuleId, SourceRange,
+    std::{StdFnProps, args::TyF64},
 };
 
 pub type KclObjectFields = HashMap<String, KclValue>;
@@ -136,9 +136,9 @@ impl JsonSchema for FunctionSource {
         "FunctionSource".to_owned()
     }
 
-    fn json_schema(gen: &mut schemars::gen::SchemaGenerator) -> schemars::schema::Schema {
+    fn json_schema(r#gen: &mut schemars::r#gen::SchemaGenerator) -> schemars::schema::Schema {
         // TODO: Actually generate a reasonable schema.
-        gen.subschema_for::<()>()
+        r#gen.subschema_for::<()>()
     }
 }
 
@@ -415,15 +415,41 @@ impl KclValue {
 
     /// Put the point into a KCL value.
     pub fn from_point2d(p: [f64; 2], ty: NumericType, meta: Vec<Metadata>) -> Self {
+        let [x, y] = p;
         Self::Tuple {
             value: vec![
                 Self::Number {
-                    value: p[0],
+                    value: x,
                     meta: meta.clone(),
-                    ty: ty.clone(),
+                    ty,
                 },
                 Self::Number {
-                    value: p[1],
+                    value: y,
+                    meta: meta.clone(),
+                    ty,
+                },
+            ],
+            meta,
+        }
+    }
+
+    /// Put the point into a KCL value.
+    pub fn from_point3d(p: [f64; 3], ty: NumericType, meta: Vec<Metadata>) -> Self {
+        let [x, y, z] = p;
+        Self::Tuple {
+            value: vec![
+                Self::Number {
+                    value: x,
+                    meta: meta.clone(),
+                    ty,
+                },
+                Self::Number {
+                    value: y,
+                    meta: meta.clone(),
+                    ty,
+                },
+                Self::Number {
+                    value: z,
                     meta: meta.clone(),
                     ty,
                 },
@@ -448,7 +474,7 @@ impl KclValue {
 
     pub fn as_int_with_ty(&self) -> Option<(i64, NumericType)> {
         match self {
-            KclValue::Number { value, ty, .. } => crate::try_f64_to_i64(*value).map(|i| (i, ty.clone())),
+            KclValue::Number { value, ty, .. } => crate::try_f64_to_i64(*value).map(|i| (i, *ty)),
             _ => None,
         }
     }
@@ -562,7 +588,7 @@ impl KclValue {
 
     pub fn as_ty_f64(&self) -> Option<TyF64> {
         match self {
-            KclValue::Number { value, ty, .. } => Some(TyF64::new(*value, ty.clone())),
+            KclValue::Number { value, ty, .. } => Some(TyF64::new(*value, *ty)),
             _ => None,
         }
     }
@@ -587,7 +613,7 @@ impl KclValue {
         match self {
             KclValue::TagIdentifier(t) => Ok(*t.clone()),
             _ => Err(KclError::new_semantic(KclErrorDetails::new(
-                format!("Not a tag identifier: {:?}", self),
+                format!("Not a tag identifier: {self:?}"),
                 self.clone().into(),
             ))),
         }
@@ -598,7 +624,7 @@ impl KclValue {
         match self {
             KclValue::TagDeclarator(t) => Ok((**t).clone()),
             _ => Err(KclError::new_semantic(KclErrorDetails::new(
-                format!("Not a tag declarator: {:?}", self),
+                format!("Not a tag declarator: {self:?}"),
                 self.clone().into(),
             ))),
         }

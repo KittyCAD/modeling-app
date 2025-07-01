@@ -5,17 +5,17 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
+    CompilationError, SourceRange,
     execution::{
+        ExecState, Plane, PlaneInfo, Point3d,
         kcl_value::{KclValue, TypeDef},
         memory::{self},
-        ExecState, Plane, PlaneInfo, Point3d,
     },
     parsing::{
         ast::types::{PrimitiveType as AstPrimitiveType, Type},
         token::NumericSuffix,
     },
     std::args::{FromKclValue, TyF64},
-    CompilationError, SourceRange,
 };
 
 #[derive(Debug, Clone, PartialEq)]
@@ -210,7 +210,7 @@ impl RuntimeType {
         let ty_val = exec_state
             .stack()
             .get(&format!("{}{}", memory::TYPE_PREFIX, alias), source_range)
-            .map_err(|_| CompilationError::err(source_range, format!("Unknown type: {}", alias)))?;
+            .map_err(|_| CompilationError::err(source_range, format!("Unknown type: {alias}")))?;
 
         Ok(match ty_val {
             KclValue::Type { value, .. } => match value {
@@ -241,7 +241,7 @@ impl RuntimeType {
                 "a tuple with values of types ({})",
                 tys.iter().map(Self::human_friendly_type).collect::<Vec<_>>().join(", ")
             ),
-            RuntimeType::Object(_) => format!("an object with fields {}", self),
+            RuntimeType::Object(_) => format!("an object with fields {self}"),
         }
     }
 
@@ -460,7 +460,7 @@ impl fmt::Display for PrimitiveType {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum NumericType {
@@ -575,7 +575,7 @@ impl NumericType {
             match (&ty, &i.ty) {
                 (Any, Default { .. }) if i.n == 0.0 => {}
                 (Any, t) => {
-                    ty = t.clone();
+                    ty = *t;
                 }
                 (_, Unknown) | (Default { .. }, Default { .. }) => return (result, Unknown),
 
@@ -598,7 +598,7 @@ impl NumericType {
         }
 
         if ty == Any && !input.is_empty() {
-            ty = input[0].ty.clone();
+            ty = input[0].ty;
         }
 
         (result, ty)
@@ -722,7 +722,7 @@ impl NumericType {
         if ty.subtype(self) {
             return Ok(KclValue::Number {
                 value: *value,
-                ty: ty.clone(),
+                ty: *ty,
                 meta: meta.clone(),
             });
         }
@@ -736,7 +736,7 @@ impl NumericType {
 
             (Any, _) => Ok(KclValue::Number {
                 value: *value,
-                ty: self.clone(),
+                ty: *self,
                 meta: meta.clone(),
             }),
 
@@ -744,7 +744,7 @@ impl NumericType {
             // means accept any number rather than force the current default.
             (_, Default { .. }) => Ok(KclValue::Number {
                 value: *value,
-                ty: ty.clone(),
+                ty: *ty,
                 meta: meta.clone(),
             }),
 
@@ -838,6 +838,18 @@ pub enum UnitType {
     Count,
     Length(UnitLen),
     Angle(UnitAngle),
+}
+
+impl UnitType {
+    pub(crate) fn to_suffix(self) -> Option<String> {
+        match self {
+            UnitType::Count => Some("_".to_owned()),
+            UnitType::Length(UnitLen::Unknown) => None,
+            UnitType::Angle(UnitAngle::Unknown) => None,
+            UnitType::Length(l) => Some(l.to_string()),
+            UnitType::Angle(a) => Some(a.to_string()),
+        }
+    }
 }
 
 impl std::fmt::Display for UnitType {
@@ -1479,7 +1491,7 @@ impl KclValue {
     pub fn principal_type(&self) -> Option<RuntimeType> {
         match self {
             KclValue::Bool { .. } => Some(RuntimeType::Primitive(PrimitiveType::Boolean)),
-            KclValue::Number { ty, .. } => Some(RuntimeType::Primitive(PrimitiveType::Number(ty.clone()))),
+            KclValue::Number { ty, .. } => Some(RuntimeType::Primitive(PrimitiveType::Number(*ty))),
             KclValue::String { .. } => Some(RuntimeType::Primitive(PrimitiveType::String)),
             KclValue::Object { value, .. } => {
                 let properties = value
@@ -1529,7 +1541,7 @@ impl KclValue {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::execution::{parse_execute, ExecTestResults};
+    use crate::execution::{ExecTestResults, parse_execute};
 
     fn values(exec_state: &mut ExecState) -> Vec<KclValue> {
         vec![
@@ -1975,14 +1987,16 @@ mod test {
                 ])
             )
         );
-        assert!(RuntimeType::Union(vec![
-            RuntimeType::Primitive(PrimitiveType::Number(NumericType::Any)),
-            RuntimeType::Primitive(PrimitiveType::Boolean)
-        ])
-        .subtype(&RuntimeType::Union(vec![
-            RuntimeType::Primitive(PrimitiveType::Number(NumericType::Any)),
-            RuntimeType::Primitive(PrimitiveType::Boolean)
-        ])));
+        assert!(
+            RuntimeType::Union(vec![
+                RuntimeType::Primitive(PrimitiveType::Number(NumericType::Any)),
+                RuntimeType::Primitive(PrimitiveType::Boolean)
+            ])
+            .subtype(&RuntimeType::Union(vec![
+                RuntimeType::Primitive(PrimitiveType::Number(NumericType::Any)),
+                RuntimeType::Primitive(PrimitiveType::Boolean)
+            ]))
+        );
 
         // Covariance
         let count = KclValue::Number {

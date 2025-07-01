@@ -13,6 +13,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "boltDiameter",
             "start": 0,
             "type": "Identifier"
@@ -20,6 +21,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "5",
             "start": 0,
             "type": "Literal",
@@ -29,11 +31,13 @@ description: Result of parsing shepherds-hook-bolt.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "preComments": [
           "// Define bolt geometry parameters"
         ],
@@ -49,6 +53,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "hookRadius",
             "start": 0,
             "type": "Identifier"
@@ -56,6 +61,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "12",
             "start": 0,
             "type": "Literal",
@@ -65,11 +71,13 @@ description: Result of parsing shepherds-hook-bolt.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -82,6 +90,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "shankLength",
             "start": 0,
             "type": "Identifier"
@@ -89,6 +98,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "5",
             "start": 0,
             "type": "Literal",
@@ -98,11 +108,13 @@ description: Result of parsing shepherds-hook-bolt.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -115,6 +127,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "threadedEndLength",
             "start": 0,
             "type": "Identifier"
@@ -122,6 +135,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "30",
             "start": 0,
             "type": "Literal",
@@ -131,11 +145,13 @@ description: Result of parsing shepherds-hook-bolt.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -148,6 +164,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "nutDistance",
             "start": 0,
             "type": "Identifier"
@@ -155,6 +172,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "20",
             "start": 0,
             "type": "Literal",
@@ -164,11 +182,13 @@ description: Result of parsing shepherds-hook-bolt.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -181,6 +201,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "hookStartAngle",
             "start": 0,
             "type": "Identifier"
@@ -188,6 +209,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "290",
             "start": 0,
             "type": "Literal",
@@ -197,11 +219,13 @@ description: Result of parsing shepherds-hook-bolt.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -214,6 +238,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "hookEndAngle",
             "start": 0,
             "type": "Identifier"
@@ -221,6 +246,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "150",
             "start": 0,
             "type": "Literal",
@@ -230,11 +256,13 @@ description: Result of parsing shepherds-hook-bolt.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -247,6 +275,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "approximatePitch",
             "start": 0,
             "type": "Identifier"
@@ -258,9 +287,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "boltDiameter",
                 "start": 0,
                 "type": "Identifier"
@@ -270,10 +301,12 @@ description: Result of parsing shepherds-hook-bolt.kcl
               "type": "Name",
               "type": "Name"
             },
+            "moduleId": 0,
             "operator": "*",
             "right": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "raw": "0.15",
               "start": 0,
               "type": "Literal",
@@ -287,11 +320,13 @@ description: Result of parsing shepherds-hook-bolt.kcl
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -304,6 +339,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "threadDepth",
             "start": 0,
             "type": "Identifier"
@@ -314,6 +350,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
             "left": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "raw": "0.6134",
               "start": 0,
               "type": "Literal",
@@ -323,14 +360,17 @@ description: Result of parsing shepherds-hook-bolt.kcl
                 "suffix": "None"
               }
             },
+            "moduleId": 0,
             "operator": "*",
             "right": {
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "approximatePitch",
                 "start": 0,
                 "type": "Identifier"
@@ -344,11 +384,13 @@ description: Result of parsing shepherds-hook-bolt.kcl
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -361,6 +403,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "innerRadius",
             "start": 0,
             "type": "Identifier"
@@ -375,9 +418,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "boltDiameter",
                   "start": 0,
                   "type": "Identifier"
@@ -387,10 +432,12 @@ description: Result of parsing shepherds-hook-bolt.kcl
                 "type": "Name",
                 "type": "Name"
               },
+              "moduleId": 0,
               "operator": "/",
               "right": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "2",
                 "start": 0,
                 "type": "Literal",
@@ -404,14 +451,17 @@ description: Result of parsing shepherds-hook-bolt.kcl
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             },
+            "moduleId": 0,
             "operator": "-",
             "right": {
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "threadDepth",
                 "start": 0,
                 "type": "Identifier"
@@ -425,11 +475,13 @@ description: Result of parsing shepherds-hook-bolt.kcl
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -442,6 +494,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "boltNumberOfRevolutions",
             "start": 0,
             "type": "Identifier"
@@ -453,9 +506,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "threadedEndLength",
                 "start": 0,
                 "type": "Identifier"
@@ -465,14 +520,17 @@ description: Result of parsing shepherds-hook-bolt.kcl
               "type": "Name",
               "type": "Name"
             },
+            "moduleId": 0,
             "operator": "/",
             "right": {
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "approximatePitch",
                 "start": 0,
                 "type": "Identifier"
@@ -486,11 +544,13 @@ description: Result of parsing shepherds-hook-bolt.kcl
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -503,6 +563,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "hypotenuse",
             "start": 0,
             "type": "Identifier"
@@ -514,9 +575,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "hookRadius",
                 "start": 0,
                 "type": "Identifier"
@@ -526,15 +589,19 @@ description: Result of parsing shepherds-hook-bolt.kcl
               "type": "Name",
               "type": "Name"
             },
+            "moduleId": 0,
             "operator": "/",
             "right": {
+              "arguments": [],
               "callee": {
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "cos",
                   "start": 0,
                   "type": "Identifier"
@@ -545,6 +612,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
               },
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
@@ -555,9 +623,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "hookStartAngle",
                     "start": 0,
                     "type": "Identifier"
@@ -567,10 +637,12 @@ description: Result of parsing shepherds-hook-bolt.kcl
                   "type": "Name",
                   "type": "Name"
                 },
+                "moduleId": 0,
                 "operator": "-",
                 "right": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "raw": "270",
                   "start": 0,
                   "type": "Literal",
@@ -589,11 +661,13 @@ description: Result of parsing shepherds-hook-bolt.kcl
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "preComments": [
           "",
           "",
@@ -611,18 +685,22 @@ description: Result of parsing shepherds-hook-bolt.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "side",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "arguments": [],
             "callee": {
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "sqrt",
                 "start": 0,
                 "type": "Identifier"
@@ -633,6 +711,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
             },
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
@@ -646,6 +725,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "exp",
                       "start": 0,
                       "type": "Identifier"
@@ -653,6 +733,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "2",
                       "start": 0,
                       "type": "Literal",
@@ -668,9 +749,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "pow",
                     "start": 0,
                     "type": "Identifier"
@@ -681,6 +764,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -688,9 +772,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "hypotenuse",
                     "start": 0,
                     "type": "Identifier"
@@ -701,6 +787,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                   "type": "Name"
                 }
               },
+              "moduleId": 0,
               "operator": "-",
               "right": {
                 "arguments": [
@@ -709,6 +796,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "exp",
                       "start": 0,
                       "type": "Identifier"
@@ -716,6 +804,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "2",
                       "start": 0,
                       "type": "Literal",
@@ -731,9 +820,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "pow",
                     "start": 0,
                     "type": "Identifier"
@@ -744,6 +835,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -751,9 +843,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "hookRadius",
                     "start": 0,
                     "type": "Identifier"
@@ -769,11 +863,13 @@ description: Result of parsing shepherds-hook-bolt.kcl
               "type": "BinaryExpression"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -786,6 +882,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "shankOffset",
             "start": 0,
             "type": "Identifier"
@@ -797,9 +894,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "hypotenuse",
                 "start": 0,
                 "type": "Identifier"
@@ -809,14 +908,17 @@ description: Result of parsing shepherds-hook-bolt.kcl
               "type": "Name",
               "type": "Name"
             },
+            "moduleId": 0,
             "operator": "+",
             "right": {
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "side",
                 "start": 0,
                 "type": "Identifier"
@@ -830,11 +932,13 @@ description: Result of parsing shepherds-hook-bolt.kcl
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -847,6 +951,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "polarToCartesian",
             "start": 0,
             "type": "Identifier"
@@ -862,6 +967,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                     "id": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "x",
                       "start": 0,
                       "type": "Identifier"
@@ -873,9 +979,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "radius",
                           "start": 0,
                           "type": "Identifier"
@@ -885,15 +993,19 @@ description: Result of parsing shepherds-hook-bolt.kcl
                         "type": "Name",
                         "type": "Name"
                       },
+                      "moduleId": 0,
                       "operator": "*",
                       "right": {
+                        "arguments": [],
                         "callee": {
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "cos",
                             "start": 0,
                             "type": "Identifier"
@@ -904,6 +1016,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                         },
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "start": 0,
                         "type": "CallExpressionKw",
                         "type": "CallExpressionKw",
@@ -911,9 +1024,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "angle",
                             "start": 0,
                             "type": "Identifier"
@@ -928,11 +1043,13 @@ description: Result of parsing shepherds-hook-bolt.kcl
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     },
+                    "moduleId": 0,
                     "start": 0,
                     "type": "VariableDeclarator"
                   },
                   "end": 0,
                   "kind": "const",
+                  "moduleId": 0,
                   "start": 0,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
@@ -945,6 +1062,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                     "id": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "y",
                       "start": 0,
                       "type": "Identifier"
@@ -956,9 +1074,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "radius",
                           "start": 0,
                           "type": "Identifier"
@@ -968,15 +1088,19 @@ description: Result of parsing shepherds-hook-bolt.kcl
                         "type": "Name",
                         "type": "Name"
                       },
+                      "moduleId": 0,
                       "operator": "*",
                       "right": {
+                        "arguments": [],
                         "callee": {
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "sin",
                             "start": 0,
                             "type": "Identifier"
@@ -987,6 +1111,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                         },
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "start": 0,
                         "type": "CallExpressionKw",
                         "type": "CallExpressionKw",
@@ -994,9 +1119,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "angle",
                             "start": 0,
                             "type": "Identifier"
@@ -1011,11 +1138,13 @@ description: Result of parsing shepherds-hook-bolt.kcl
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     },
+                    "moduleId": 0,
                     "start": 0,
                     "type": "VariableDeclarator"
                   },
                   "end": 0,
                   "kind": "const",
+                  "moduleId": 0,
                   "start": 0,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
@@ -1028,9 +1157,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "x",
                           "start": 0,
                           "type": "Identifier"
@@ -1044,9 +1175,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "y",
                           "start": 0,
                           "type": "Identifier"
@@ -1058,12 +1191,14 @@ description: Result of parsing shepherds-hook-bolt.kcl
                       }
                     ],
                     "end": 0,
+                    "moduleId": 0,
                     "start": 0,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   },
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
@@ -1071,16 +1206,19 @@ description: Result of parsing shepherds-hook-bolt.kcl
               ],
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0
             },
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "radius",
                   "start": 0,
                   "type": "Identifier"
@@ -1091,6 +1229,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                 "identifier": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "angle",
                   "start": 0,
                   "type": "Identifier"
@@ -1101,11 +1240,13 @@ description: Result of parsing shepherds-hook-bolt.kcl
             "type": "FunctionExpression",
             "type": "FunctionExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "fn",
+        "moduleId": 0,
         "preComments": [
           "",
           "",
@@ -1123,18 +1264,22 @@ description: Result of parsing shepherds-hook-bolt.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "hookProfilePlane",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "arguments": [],
             "callee": {
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "startSketchOn",
                 "start": 0,
                 "type": "Identifier"
@@ -1145,6 +1290,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
             },
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
@@ -1152,9 +1298,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "XZ",
                 "start": 0,
                 "type": "Identifier"
@@ -1165,11 +1313,13 @@ description: Result of parsing shepherds-hook-bolt.kcl
               "type": "Name"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "preComments": [
           "",
           "",
@@ -1188,6 +1338,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "hookProfileShape",
             "start": 0,
             "type": "Identifier"
@@ -1201,6 +1352,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "at",
                       "start": 0,
                       "type": "Identifier"
@@ -1211,6 +1363,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "0",
                           "start": 0,
                           "type": "Literal",
@@ -1228,9 +1381,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
                               "abs_path": false,
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "shankOffset",
                                 "start": 0,
                                 "type": "Identifier"
@@ -1242,19 +1397,23 @@ description: Result of parsing shepherds-hook-bolt.kcl
                             },
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "operator": "-",
                             "start": 0,
                             "type": "UnaryExpression",
                             "type": "UnaryExpression"
                           },
+                          "moduleId": 0,
                           "operator": "-",
                           "right": {
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "shankLength",
                               "start": 0,
                               "type": "Identifier"
@@ -1270,6 +1429,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -1280,9 +1440,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "startProfile",
                     "start": 0,
                     "type": "Identifier"
@@ -1293,6 +1455,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -1300,9 +1463,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "hookProfilePlane",
                     "start": 0,
                     "type": "Identifier"
@@ -1320,6 +1485,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
@@ -1330,6 +1496,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "0",
                           "start": 0,
                           "type": "Literal",
@@ -1344,9 +1511,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "shankOffset",
                               "start": 0,
                               "type": "Identifier"
@@ -1358,6 +1527,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "operator": "-",
                           "start": 0,
                           "type": "UnaryExpression",
@@ -1365,6 +1535,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -1375,9 +1546,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "line",
                     "start": 0,
                     "type": "Identifier"
@@ -1388,6 +1561,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -1400,6 +1574,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
@@ -1411,6 +1586,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                           "label": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "radius",
                             "start": 0,
                             "type": "Identifier"
@@ -1419,9 +1595,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "hookRadius",
                               "start": 0,
                               "type": "Identifier"
@@ -1437,6 +1615,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                           "label": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "angle",
                             "start": 0,
                             "type": "Identifier"
@@ -1445,9 +1624,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "hookStartAngle",
                               "start": 0,
                               "type": "Identifier"
@@ -1463,9 +1644,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "polarToCartesian",
                           "start": 0,
                           "type": "Identifier"
@@ -1476,6 +1659,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                       },
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "CallExpressionKw",
                       "type": "CallExpressionKw",
@@ -1487,9 +1671,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "tangentialArc",
                     "start": 0,
                     "type": "Identifier"
@@ -1500,6 +1686,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -1512,6 +1699,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
@@ -1523,6 +1711,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                           "label": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "radius",
                             "start": 0,
                             "type": "Identifier"
@@ -1531,9 +1720,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "hookRadius",
                               "start": 0,
                               "type": "Identifier"
@@ -1549,6 +1740,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                           "label": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "angle",
                             "start": 0,
                             "type": "Identifier"
@@ -1557,9 +1749,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "hookEndAngle",
                               "start": 0,
                               "type": "Identifier"
@@ -1575,9 +1769,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "polarToCartesian",
                           "start": 0,
                           "type": "Identifier"
@@ -1588,6 +1784,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                       },
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "CallExpressionKw",
                       "type": "CallExpressionKw",
@@ -1599,6 +1796,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
@@ -1606,6 +1804,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "TagDeclarator",
                       "type": "TagDeclarator",
@@ -1617,9 +1816,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "tangentialArc",
                     "start": 0,
                     "type": "Identifier"
@@ -1630,6 +1831,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -1638,12 +1840,14 @@ description: Result of parsing shepherds-hook-bolt.kcl
             ],
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "3": [
                   {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "start": 0,
                     "type": "NonCodeNode",
                     "value": {
@@ -1660,11 +1864,13 @@ description: Result of parsing shepherds-hook-bolt.kcl
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -1677,6 +1883,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "hookSectionPlane",
             "start": 0,
             "type": "Identifier"
@@ -1688,6 +1895,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                 "label": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "offset",
                   "start": 0,
                   "type": "Identifier"
@@ -1700,9 +1908,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
                       "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "shankOffset",
                         "start": 0,
                         "type": "Identifier"
@@ -1714,19 +1924,23 @@ description: Result of parsing shepherds-hook-bolt.kcl
                     },
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "operator": "-",
                     "start": 0,
                     "type": "UnaryExpression",
                     "type": "UnaryExpression"
                   },
+                  "moduleId": 0,
                   "operator": "-",
                   "right": {
                     "abs_path": false,
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "shankLength",
                       "start": 0,
                       "type": "Identifier"
@@ -1746,9 +1960,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "offsetPlane",
                 "start": 0,
                 "type": "Identifier"
@@ -1759,6 +1975,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
             },
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
@@ -1766,9 +1983,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "XY",
                 "start": 0,
                 "type": "Identifier"
@@ -1779,11 +1998,13 @@ description: Result of parsing shepherds-hook-bolt.kcl
               "type": "Name"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -1796,6 +2017,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "hookSectionShape",
             "start": 0,
             "type": "Identifier"
@@ -1807,6 +2029,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                 "label": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "center",
                   "start": 0,
                   "type": "Identifier"
@@ -1817,6 +2040,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                     {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "0",
                       "start": 0,
                       "type": "Literal",
@@ -1829,6 +2053,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                     {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "0",
                       "start": 0,
                       "type": "Literal",
@@ -1840,6 +2065,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                     }
                   ],
                   "end": 0,
+                  "moduleId": 0,
                   "start": 0,
                   "type": "ArrayExpression",
                   "type": "ArrayExpression"
@@ -1850,6 +2076,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                 "label": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "radius",
                   "start": 0,
                   "type": "Identifier"
@@ -1861,9 +2088,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
                     "abs_path": false,
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "boltDiameter",
                       "start": 0,
                       "type": "Identifier"
@@ -1873,10 +2102,12 @@ description: Result of parsing shepherds-hook-bolt.kcl
                     "type": "Name",
                     "type": "Name"
                   },
+                  "moduleId": 0,
                   "operator": "/",
                   "right": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "2",
                     "start": 0,
                     "type": "Literal",
@@ -1896,9 +2127,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "circle",
                 "start": 0,
                 "type": "Identifier"
@@ -1909,6 +2142,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
             },
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
@@ -1916,9 +2150,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "hookSectionPlane",
                 "start": 0,
                 "type": "Identifier"
@@ -1929,11 +2165,13 @@ description: Result of parsing shepherds-hook-bolt.kcl
               "type": "Name"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -1946,6 +2184,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "hookBody",
             "start": 0,
             "type": "Identifier"
@@ -1957,6 +2196,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                 "label": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "path",
                   "start": 0,
                   "type": "Identifier"
@@ -1965,9 +2205,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "hookProfileShape",
                     "start": 0,
                     "type": "Identifier"
@@ -1983,6 +2225,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                 "label": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "sectional",
                   "start": 0,
                   "type": "Identifier"
@@ -1990,6 +2233,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                 "arg": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "raw": "true",
                   "start": 0,
                   "type": "Literal",
@@ -2002,9 +2246,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "sweep",
                 "start": 0,
                 "type": "Identifier"
@@ -2015,6 +2261,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
             },
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
@@ -2022,9 +2269,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "hookSectionShape",
                 "start": 0,
                 "type": "Identifier"
@@ -2035,11 +2284,13 @@ description: Result of parsing shepherds-hook-bolt.kcl
               "type": "Name"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "preComments": [
           "",
           "",
@@ -2057,6 +2308,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "tipPlane",
             "start": 0,
             "type": "Identifier"
@@ -2068,6 +2320,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                 "label": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "face",
                   "start": 0,
                   "type": "Identifier"
@@ -2076,9 +2329,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "END",
                     "start": 0,
                     "type": "Identifier"
@@ -2094,9 +2349,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "startSketchOn",
                 "start": 0,
                 "type": "Identifier"
@@ -2107,6 +2364,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
             },
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
@@ -2114,9 +2372,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "hookBody",
                 "start": 0,
                 "type": "Identifier"
@@ -2127,11 +2387,13 @@ description: Result of parsing shepherds-hook-bolt.kcl
               "type": "Name"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "preComments": [
           "",
           "",
@@ -2149,6 +2411,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "tipShape",
             "start": 0,
             "type": "Identifier"
@@ -2160,6 +2423,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                 "label": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "center",
                   "start": 0,
                   "type": "Identifier"
@@ -2171,9 +2435,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
                       "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "hookRadius",
                         "start": 0,
                         "type": "Identifier"
@@ -2186,6 +2452,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                     {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "0",
                       "start": 0,
                       "type": "Literal",
@@ -2197,6 +2464,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                     }
                   ],
                   "end": 0,
+                  "moduleId": 0,
                   "start": 0,
                   "type": "ArrayExpression",
                   "type": "ArrayExpression"
@@ -2207,6 +2475,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                 "label": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "radius",
                   "start": 0,
                   "type": "Identifier"
@@ -2218,9 +2487,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
                     "abs_path": false,
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "boltDiameter",
                       "start": 0,
                       "type": "Identifier"
@@ -2230,10 +2501,12 @@ description: Result of parsing shepherds-hook-bolt.kcl
                     "type": "Name",
                     "type": "Name"
                   },
+                  "moduleId": 0,
                   "operator": "/",
                   "right": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "2",
                     "start": 0,
                     "type": "Literal",
@@ -2253,6 +2526,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                 "label": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "tag",
                   "start": 0,
                   "type": "Identifier"
@@ -2260,6 +2534,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                 "arg": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "start": 0,
                   "type": "TagDeclarator",
                   "type": "TagDeclarator",
@@ -2271,9 +2546,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "circle",
                 "start": 0,
                 "type": "Identifier"
@@ -2284,6 +2561,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
             },
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
@@ -2291,9 +2569,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "tipPlane",
                 "start": 0,
                 "type": "Identifier"
@@ -2304,11 +2584,13 @@ description: Result of parsing shepherds-hook-bolt.kcl
               "type": "Name"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -2321,6 +2603,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "tipBody",
             "start": 0,
             "type": "Identifier"
@@ -2334,6 +2617,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
@@ -2345,9 +2629,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "hookRadius",
                           "start": 0,
                           "type": "Identifier"
@@ -2357,10 +2643,12 @@ description: Result of parsing shepherds-hook-bolt.kcl
                         "type": "Name",
                         "type": "Name"
                       },
+                      "moduleId": 0,
                       "operator": "*",
                       "right": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "0.5",
                         "start": 0,
                         "type": "Literal",
@@ -2380,6 +2668,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "tagStart",
                       "start": 0,
                       "type": "Identifier"
@@ -2387,6 +2676,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "TagDeclarator",
                       "type": "TagDeclarator",
@@ -2398,6 +2688,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "tagEnd",
                       "start": 0,
                       "type": "Identifier"
@@ -2405,6 +2696,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "TagDeclarator",
                       "type": "TagDeclarator",
@@ -2416,9 +2708,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "extrude",
                     "start": 0,
                     "type": "Identifier"
@@ -2429,6 +2723,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -2436,9 +2731,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "tipShape",
                     "start": 0,
                     "type": "Identifier"
@@ -2456,6 +2753,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "radius",
                       "start": 0,
                       "type": "Identifier"
@@ -2467,9 +2765,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "boltDiameter",
                           "start": 0,
                           "type": "Identifier"
@@ -2479,10 +2779,12 @@ description: Result of parsing shepherds-hook-bolt.kcl
                         "type": "Name",
                         "type": "Name"
                       },
+                      "moduleId": 0,
                       "operator": "/",
                       "right": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "4",
                         "start": 0,
                         "type": "Literal",
@@ -2502,6 +2804,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "tags",
                       "start": 0,
                       "type": "Identifier"
@@ -2516,6 +2819,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "faces",
                                 "start": 0,
                                 "type": "Identifier"
@@ -2527,9 +2831,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
                                     "abs_path": false,
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "name": {
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": "seg01",
                                       "start": 0,
                                       "type": "Identifier"
@@ -2543,9 +2849,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
                                     "abs_path": false,
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "name": {
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": "capEnd001",
                                       "start": 0,
                                       "type": "Identifier"
@@ -2557,6 +2865,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                                   }
                                 ],
                                 "end": 0,
+                                "moduleId": 0,
                                 "start": 0,
                                 "type": "ArrayExpression",
                                 "type": "ArrayExpression"
@@ -2567,9 +2876,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "getCommonEdge",
                               "start": 0,
                               "type": "Identifier"
@@ -2580,6 +2891,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
@@ -2587,6 +2899,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -2597,9 +2910,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "fillet",
                     "start": 0,
                     "type": "Identifier"
@@ -2610,6 +2925,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -2618,12 +2934,14 @@ description: Result of parsing shepherds-hook-bolt.kcl
             ],
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "1": [
                   {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "start": 0,
                     "type": "NonCodeNode",
                     "value": {
@@ -2635,6 +2953,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                   {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "start": 0,
                     "type": "NonCodeNode",
                     "value": {
@@ -2651,11 +2970,13 @@ description: Result of parsing shepherds-hook-bolt.kcl
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -2668,18 +2989,22 @@ description: Result of parsing shepherds-hook-bolt.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "boltThreadSectionPlane",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "arguments": [],
             "callee": {
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "startSketchOn",
                 "start": 0,
                 "type": "Identifier"
@@ -2690,6 +3015,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
             },
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
@@ -2697,9 +3023,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "XZ",
                 "start": 0,
                 "type": "Identifier"
@@ -2710,11 +3038,13 @@ description: Result of parsing shepherds-hook-bolt.kcl
               "type": "Name"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -2727,6 +3057,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "boltThreadSectionShapeForRevolve",
             "start": 0,
             "type": "Identifier"
@@ -2740,6 +3071,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "at",
                       "start": 0,
                       "type": "Identifier"
@@ -2751,9 +3083,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "innerRadius",
                             "start": 0,
                             "type": "Identifier"
@@ -2774,9 +3108,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
                                 "abs_path": false,
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": {
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "name": "shankOffset",
                                   "start": 0,
                                   "type": "Identifier"
@@ -2788,19 +3124,23 @@ description: Result of parsing shepherds-hook-bolt.kcl
                               },
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "operator": "-",
                               "start": 0,
                               "type": "UnaryExpression",
                               "type": "UnaryExpression"
                             },
+                            "moduleId": 0,
                             "operator": "-",
                             "right": {
                               "abs_path": false,
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "shankLength",
                                 "start": 0,
                                 "type": "Identifier"
@@ -2814,14 +3154,17 @@ description: Result of parsing shepherds-hook-bolt.kcl
                             "type": "BinaryExpression",
                             "type": "BinaryExpression"
                           },
+                          "moduleId": 0,
                           "operator": "-",
                           "right": {
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "threadedEndLength",
                               "start": 0,
                               "type": "Identifier"
@@ -2837,6 +3180,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -2847,9 +3191,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "startProfile",
                     "start": 0,
                     "type": "Identifier"
@@ -2860,6 +3206,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -2867,9 +3214,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "boltThreadSectionPlane",
                     "start": 0,
                     "type": "Identifier"
@@ -2887,6 +3236,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
@@ -2898,9 +3248,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "threadDepth",
                             "start": 0,
                             "type": "Identifier"
@@ -2917,9 +3269,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "approximatePitch",
                               "start": 0,
                               "type": "Identifier"
@@ -2929,10 +3283,12 @@ description: Result of parsing shepherds-hook-bolt.kcl
                             "type": "Name",
                             "type": "Name"
                           },
+                          "moduleId": 0,
                           "operator": "/",
                           "right": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "raw": "2",
                             "start": 0,
                             "type": "Literal",
@@ -2948,6 +3304,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -2958,9 +3315,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "line",
                     "start": 0,
                     "type": "Identifier"
@@ -2971,6 +3330,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -2983,6 +3343,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
@@ -2995,9 +3356,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "threadDepth",
                               "start": 0,
                               "type": "Identifier"
@@ -3009,6 +3372,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "operator": "-",
                           "start": 0,
                           "type": "UnaryExpression",
@@ -3021,9 +3385,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "approximatePitch",
                               "start": 0,
                               "type": "Identifier"
@@ -3033,10 +3399,12 @@ description: Result of parsing shepherds-hook-bolt.kcl
                             "type": "Name",
                             "type": "Name"
                           },
+                          "moduleId": 0,
                           "operator": "/",
                           "right": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "raw": "2",
                             "start": 0,
                             "type": "Literal",
@@ -3052,6 +3420,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -3062,9 +3431,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "line",
                     "start": 0,
                     "type": "Identifier"
@@ -3075,6 +3446,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -3087,6 +3459,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "axis",
                       "start": 0,
                       "type": "Identifier"
@@ -3097,6 +3470,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "0",
                           "start": 0,
                           "type": "Literal",
@@ -3109,6 +3483,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "1",
                           "start": 0,
                           "type": "Literal",
@@ -3120,6 +3495,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -3130,6 +3506,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "instances",
                       "start": 0,
                       "type": "Identifier"
@@ -3138,9 +3515,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
                       "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "boltNumberOfRevolutions",
                         "start": 0,
                         "type": "Identifier"
@@ -3156,6 +3535,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "distance",
                       "start": 0,
                       "type": "Identifier"
@@ -3164,9 +3544,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
                       "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "approximatePitch",
                         "start": 0,
                         "type": "Identifier"
@@ -3182,9 +3564,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "patternLinear2d",
                     "start": 0,
                     "type": "Identifier"
@@ -3195,6 +3579,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -3207,6 +3592,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
@@ -3219,9 +3605,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "innerRadius",
                             "start": 0,
                             "type": "Identifier"
@@ -3233,15 +3621,18 @@ description: Result of parsing shepherds-hook-bolt.kcl
                         },
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "operator": "-",
                         "start": 0,
                         "type": "UnaryExpression",
                         "type": "UnaryExpression"
                       },
+                      "moduleId": 0,
                       "operator": "*",
                       "right": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "0.9",
                         "start": 0,
                         "type": "Literal",
@@ -3261,9 +3652,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "xLine",
                     "start": 0,
                     "type": "Identifier"
@@ -3274,6 +3667,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -3286,6 +3680,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
@@ -3295,9 +3690,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "threadedEndLength",
                           "start": 0,
                           "type": "Identifier"
@@ -3309,6 +3706,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                       },
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "operator": "-",
                       "start": 0,
                       "type": "UnaryExpression",
@@ -3320,9 +3718,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "yLine",
                     "start": 0,
                     "type": "Identifier"
@@ -3333,6 +3733,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -3345,6 +3746,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
@@ -3353,13 +3755,16 @@ description: Result of parsing shepherds-hook-bolt.kcl
                       "commentStart": 0,
                       "elements": [
                         {
+                          "arguments": [],
                           "callee": {
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "profileStartX",
                               "start": 0,
                               "type": "Identifier"
@@ -3370,25 +3775,30 @@ description: Result of parsing shepherds-hook-bolt.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "start": 0,
                             "type": "PipeSubstitution",
                             "type": "PipeSubstitution"
                           }
                         },
                         {
+                          "arguments": [],
                           "callee": {
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "profileStartY",
                               "start": 0,
                               "type": "Identifier"
@@ -3399,12 +3809,14 @@ description: Result of parsing shepherds-hook-bolt.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "start": 0,
                             "type": "PipeSubstitution",
                             "type": "PipeSubstitution"
@@ -3412,6 +3824,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -3422,9 +3835,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "line",
                     "start": 0,
                     "type": "Identifier"
@@ -3435,19 +3850,23 @@ description: Result of parsing shepherds-hook-bolt.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               },
               {
+                "arguments": [],
                 "callee": {
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "close",
                     "start": 0,
                     "type": "Identifier"
@@ -3458,6 +3877,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -3466,12 +3886,14 @@ description: Result of parsing shepherds-hook-bolt.kcl
             ],
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "7": [
                   {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "start": 0,
                     "type": "NonCodeNode",
                     "value": {
@@ -3488,11 +3910,13 @@ description: Result of parsing shepherds-hook-bolt.kcl
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -3505,6 +3929,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "boltThreadRevolve",
             "start": 0,
             "type": "Identifier"
@@ -3516,6 +3941,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                 "label": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "angle",
                   "start": 0,
                   "type": "Identifier"
@@ -3523,6 +3949,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                 "arg": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "raw": "360",
                   "start": 0,
                   "type": "Literal",
@@ -3538,6 +3965,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
                 "label": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "axis",
                   "start": 0,
                   "type": "Identifier"
@@ -3546,9 +3974,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "Y",
                     "start": 0,
                     "type": "Identifier"
@@ -3564,9 +3994,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "revolve",
                 "start": 0,
                 "type": "Identifier"
@@ -3577,6 +4009,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
             },
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
@@ -3584,9 +4017,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "boltThreadSectionShapeForRevolve",
                 "start": 0,
                 "type": "Identifier"
@@ -3597,11 +4032,13 @@ description: Result of parsing shepherds-hook-bolt.kcl
               "type": "Name"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -3613,9 +4050,11 @@ description: Result of parsing shepherds-hook-bolt.kcl
       {
         "commentStart": 0,
         "end": 0,
+        "moduleId": 0,
         "name": {
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "name": "settings",
           "start": 0,
           "type": "Identifier"
@@ -3634,19 +4073,23 @@ description: Result of parsing shepherds-hook-bolt.kcl
             "key": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "defaultLengthUnit",
               "start": 0,
               "type": "Identifier"
             },
+            "moduleId": 0,
             "start": 0,
             "type": "ObjectProperty",
             "value": {
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "mm",
                 "start": 0,
                 "type": "Identifier"
@@ -3663,15 +4106,18 @@ description: Result of parsing shepherds-hook-bolt.kcl
             "key": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "kclVersion",
               "start": 0,
               "type": "Identifier"
             },
+            "moduleId": 0,
             "start": 0,
             "type": "ObjectProperty",
             "value": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "raw": "1.0",
               "start": 0,
               "type": "Literal",
@@ -3687,12 +4133,14 @@ description: Result of parsing shepherds-hook-bolt.kcl
         "type": "Annotation"
       }
     ],
+    "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "6": [
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {
@@ -3705,6 +4153,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
         {
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "NonCodeNode",
           "value": {

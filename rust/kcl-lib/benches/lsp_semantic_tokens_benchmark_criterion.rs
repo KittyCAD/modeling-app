@@ -1,6 +1,6 @@
 use std::hint::black_box;
 
-use criterion::{criterion_group, criterion_main, BenchmarkId, Criterion};
+use criterion::{BenchmarkId, Criterion, criterion_group, criterion_main};
 use kcl_lib::kcl_lsp_server;
 use tokio::runtime::Runtime;
 use tower_lsp::LanguageServer;

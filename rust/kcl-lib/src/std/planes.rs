@@ -1,14 +1,122 @@
 //! Standard library plane helpers.
 
-use kcmc::{each_cmd as mcmd, length_unit::LengthUnit, shared::Color, ModelingCmd};
-use kittycad_modeling_cmds as kcmc;
+use kcmc::{ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit, shared::Color};
+use kittycad_modeling_cmds::{self as kcmc, ok_response::OkModelingCmdResponse, websocket::OkWebSocketResponseData};
 
-use super::{args::TyF64, sketch::PlaneData};
+use super::{
+    args::TyF64,
+    sketch::{FaceTag, PlaneData},
+};
 use crate::{
-    errors::KclError,
-    execution::{types::RuntimeType, ExecState, KclValue, ModelingCmdMeta, Plane, PlaneType},
+    UnitLen,
+    errors::{KclError, KclErrorDetails},
+    execution::{ExecState, KclValue, Metadata, ModelingCmdMeta, Plane, PlaneType, types::RuntimeType},
     std::Args,
 };
+
+/// Find the plane of a given face.
+pub async fn plane_of(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let solid = args.get_unlabeled_kw_arg("solid", &RuntimeType::solid(), exec_state)?;
+    let face = args.get_kw_arg("face", &RuntimeType::tagged_face(), exec_state)?;
+
+    inner_plane_of(solid, face, exec_state, &args)
+        .await
+        .map(Box::new)
+        .map(|value| KclValue::Plane { value })
+}
+
+async fn inner_plane_of(
+    solid: crate::execution::Solid,
+    face: FaceTag,
+    exec_state: &mut ExecState,
+    args: &Args,
+) -> Result<Plane, KclError> {
+    // Support mock execution
+    // Return an arbitrary (incorrect) plane and a non-fatal error.
+    if args.ctx.no_engine_commands().await {
+        let plane_id = exec_state.id_generator().next_uuid();
+        exec_state.err(crate::CompilationError {
+            source_range: args.source_range,
+            message: "The engine isn't available, so returning an arbitrary incorrect plane".to_owned(),
+            suggestion: None,
+            severity: crate::errors::Severity::Error,
+            tag: crate::errors::Tag::None,
+        });
+        return Ok(Plane {
+            artifact_id: plane_id.into(),
+            id: plane_id,
+            // Engine doesn't know about the ID we created, so set this to Uninit.
+            value: PlaneType::Uninit,
+            info: crate::execution::PlaneInfo {
+                origin: Default::default(),
+                x_axis: Default::default(),
+                y_axis: Default::default(),
+            },
+            meta: vec![Metadata {
+                source_range: args.source_range,
+            }],
+        });
+    }
+
+    // Query the engine to learn what plane, if any, this face is on.
+    let face_id = face.get_face_id(&solid, exec_state, args, true).await?;
+    let meta = args.into();
+    let cmd = ModelingCmd::FaceIsPlanar(mcmd::FaceIsPlanar { object_id: face_id });
+    let plane_resp = exec_state.send_modeling_cmd(meta, cmd).await?;
+    let OkWebSocketResponseData::Modeling {
+        modeling_response: OkModelingCmdResponse::FaceIsPlanar(planar),
+    } = plane_resp
+    else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            format!(
+                "Engine returned invalid response, it should have returned FaceIsPlanar but it returned {plane_resp:#?}"
+            ),
+            vec![args.source_range],
+        )));
+    };
+    // Destructure engine's response to check if the face was on a plane.
+    let not_planar: Result<_, KclError> = Err(KclError::new_semantic(KclErrorDetails::new(
+        "The face you provided doesn't lie on any plane. It might be curved.".to_owned(),
+        vec![args.source_range],
+    )));
+    let Some(x_axis) = planar.x_axis else { return not_planar };
+    let Some(y_axis) = planar.y_axis else { return not_planar };
+    let Some(origin) = planar.origin else { return not_planar };
+
+    // Engine always returns measurements in mm.
+    let engine_units = UnitLen::Mm;
+    let x_axis = crate::execution::Point3d {
+        x: x_axis.x,
+        y: x_axis.y,
+        z: x_axis.z,
+        units: engine_units,
+    };
+    let y_axis = crate::execution::Point3d {
+        x: y_axis.x,
+        y: y_axis.y,
+        z: y_axis.z,
+        units: engine_units,
+    };
+    let origin = crate::execution::Point3d {
+        x: origin.x.0,
+        y: origin.y.0,
+        z: origin.z.0,
+        units: engine_units,
+    };
+
+    // Engine doesn't send back an ID, so let's just make a new plane ID.
+    let plane_id = exec_state.id_generator().next_uuid();
+    Ok(Plane {
+        artifact_id: plane_id.into(),
+        id: plane_id,
+        // Engine doesn't know about the ID we created, so set this to Uninit.
+        value: PlaneType::Uninit,
+        info: crate::execution::PlaneInfo { origin, x_axis, y_axis },
+        meta: vec![Metadata {
+            source_range: args.source_range,
+        }],
+    })
+}
 
 /// Offset a plane by a distance along its normal.
 pub async fn offset_plane(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {

@@ -21,13 +21,13 @@ import { Spinner } from '@src/components/Spinner'
 import { createLocalName, createVariableDeclaration } from '@src/lang/create'
 import { getNodeFromPath } from '@src/lang/queryAst'
 import type { SourceRange, VariableDeclarator } from '@src/lang/wasm'
-import { isPathToNode } from '@src/lang/wasm'
+import { formatNumberValue, isPathToNode } from '@src/lang/wasm'
 import type { CommandArgument, KclCommandValue } from '@src/lib/commandTypes'
 import { kclManager } from '@src/lib/singletons'
 import { getSystemTheme } from '@src/lib/theme'
 import { err } from '@src/lib/trap'
 import { useCalculateKclExpression } from '@src/lib/useCalculateKclExpression'
-import { roundOff } from '@src/lib/utils'
+import { roundOff, roundOffWithUnits } from '@src/lib/utils'
 import { varMentions } from '@src/lib/varCompletionExtension'
 import { useSettings } from '@src/lib/singletons'
 import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
@@ -128,10 +128,22 @@ function CommandBarKclInput({
     sourceRange: sourceRangeForPrevVariables,
   })
 
-  const varMentionData: Completion[] = prevVariables.map((v) => ({
-    label: v.key,
-    detail: String(roundOff(Number(v.value))),
-  }))
+  const varMentionData: Completion[] = prevVariables.map((v) => {
+    const roundedWithUnits = (() => {
+      if (typeof v.value !== 'number' || !v.ty) {
+        return undefined
+      }
+      const numWithUnits = formatNumberValue(v.value, v.ty)
+      if (err(numWithUnits)) {
+        return undefined
+      }
+      return roundOffWithUnits(numWithUnits)
+    })()
+    return {
+      label: v.key,
+      detail: roundedWithUnits ?? String(roundOff(Number(v.value))),
+    }
+  })
   const varMentionsExtension = varMentions(varMentionData)
 
   const { setContainer, view } = useCodeMirror({
@@ -282,7 +294,7 @@ function CommandBarKclInput({
           ) : calcResult === 'NAN' ? (
             "Can't calculate"
           ) : (
-            roundOff(Number(calcResult), 4)
+            roundOffWithUnits(calcResult, 4)
           )}
         </span>
       </label>

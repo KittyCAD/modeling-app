@@ -6,7 +6,7 @@ import {
   BillingRemainingMode,
 } from '@src/components/BillingRemaining'
 
-import type { BillingActor } from '@src/machines/billingMachine'
+import { type BillingActor } from '@src/machines/billingMachine'
 
 export const BillingDialog = (props: { billingActor: BillingActor }) => {
   const billingContext = useSelector(
@@ -39,15 +39,18 @@ export const BillingDialog = (props: { billingActor: BillingActor }) => {
           mode={BillingRemainingMode.ProgressBarStretch}
           billingActor={props.billingActor}
         />
-        <a
-          className="bg-ml-black text-ml-white rounded-lg text-center p-1 cursor-pointer"
-          href="https://zoo.dev/design-studio-pricing"
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={openExternalBrowserIfDesktop()}
-        >
-          Upgrade
-        </a>
+        {!hasUnlimited && (
+          <a
+            className="bg-ml-black text-ml-white rounded-lg text-center p-1 cursor-pointer"
+            href="https://zoo.dev/design-studio-pricing"
+            target="_blank"
+            rel="noopener noreferrer"
+            data-testid="billing-upgrade-button"
+            onClick={openExternalBrowserIfDesktop()}
+          >
+            Upgrade
+          </a>
+        )}
       </div>
     </div>
   )

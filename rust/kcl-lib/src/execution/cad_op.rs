@@ -1,10 +1,10 @@
 use indexmap::IndexMap;
 use serde::Serialize;
 
-use super::{types::NumericType, ArtifactId, KclValue};
+use super::{ArtifactId, KclValue, types::NumericType};
 #[cfg(feature = "artifact-graph")]
 use crate::parsing::ast::types::{Node, Program};
-use crate::{parsing::ast::types::ItemVisibility, ModuleId, NodePath, SourceRange};
+use crate::{ModuleId, NodePath, SourceRange, parsing::ast::types::ItemVisibility};
 
 /// A CAD modeling operation for display in the feature tree, AKA operations
 /// timeline.
@@ -57,7 +57,7 @@ impl Operation {
     /// If the variant is `StdLibCall`, set the `is_error` field.
     pub(crate) fn set_std_lib_call_is_error(&mut self, is_err: bool) {
         match self {
-            Self::StdLibCall { ref mut is_error, .. } => *is_error = is_err,
+            Self::StdLibCall { is_error, .. } => *is_error = is_err,
             Self::VariableDeclaration { .. } | Self::GroupBegin { .. } | Self::GroupEnd => {}
         }
     }
@@ -226,10 +226,7 @@ impl From<&KclValue> for OpKclValue {
         match value {
             KclValue::Uuid { value, .. } => Self::Uuid { value: *value },
             KclValue::Bool { value, .. } => Self::Bool { value: *value },
-            KclValue::Number { value, ty, .. } => Self::Number {
-                value: *value,
-                ty: ty.clone(),
-            },
+            KclValue::Number { value, ty, .. } => Self::Number { value: *value, ty: *ty },
             KclValue::String { value, .. } => Self::String { value: value.clone() },
             KclValue::Tuple { value, .. } | KclValue::HomArray { value, .. } => {
                 let value = value.iter().map(Self::from).collect();

@@ -502,7 +502,10 @@ description: Artifact commands t-slot-rail.kcl
                 "z": 1.5
               },
               "set": false,
-              "is_local": true
+              "is_local": true,
+              "origin": {
+                "type": "local"
+              }
             }
           }
         ]

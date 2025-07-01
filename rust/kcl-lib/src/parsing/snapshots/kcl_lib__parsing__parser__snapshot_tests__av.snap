@@ -12,6 +12,7 @@ expression: actual
         "id": {
           "commentStart": 3,
           "end": 4,
+          "moduleId": 0,
           "name": "f",
           "start": 3,
           "type": "Identifier"
@@ -27,6 +28,7 @@ expression: actual
                       "label": {
                         "commentStart": 30,
                         "end": 35,
+                        "moduleId": 0,
                         "name": "maybe",
                         "start": 30,
                         "type": "Identifier"
@@ -35,9 +37,11 @@ expression: actual
                         "abs_path": false,
                         "commentStart": 36,
                         "end": 41,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 36,
                           "end": 41,
+                          "moduleId": 0,
                           "name": "angle",
                           "start": 36,
                           "type": "Identifier"
@@ -53,6 +57,7 @@ expression: actual
                       "label": {
                         "commentStart": 43,
                         "end": 52,
+                        "moduleId": 0,
                         "name": "otherwise",
                         "start": 43,
                         "type": "Identifier"
@@ -60,6 +65,7 @@ expression: actual
                       "arg": {
                         "commentStart": 53,
                         "end": 56,
+                        "moduleId": 0,
                         "raw": "360",
                         "start": 53,
                         "type": "Literal",
@@ -75,9 +81,11 @@ expression: actual
                     "abs_path": false,
                     "commentStart": 22,
                     "end": 29,
+                    "moduleId": 0,
                     "name": {
                       "commentStart": 22,
                       "end": 29,
+                      "moduleId": 0,
                       "name": "default",
                       "start": 22,
                       "type": "Identifier"
@@ -88,6 +96,7 @@ expression: actual
                   },
                   "commentStart": 22,
                   "end": 57,
+                  "moduleId": 0,
                   "start": 22,
                   "type": "CallExpressionKw",
                   "type": "CallExpressionKw",
@@ -95,6 +104,7 @@ expression: actual
                 },
                 "commentStart": 15,
                 "end": 57,
+                "moduleId": 0,
                 "start": 15,
                 "type": "ReturnStatement",
                 "type": "ReturnStatement"
@@ -102,16 +112,19 @@ expression: actual
             ],
             "commentStart": 13,
             "end": 59,
+            "moduleId": 0,
             "start": 13
           },
           "commentStart": 4,
           "end": 59,
+          "moduleId": 0,
           "params": [
             {
               "type": "Parameter",
               "identifier": {
                 "commentStart": 5,
                 "end": 10,
+                "moduleId": 0,
                 "name": "angle",
                 "start": 5,
                 "type": "Identifier"
@@ -127,11 +140,13 @@ expression: actual
           "type": "FunctionExpression",
           "type": "FunctionExpression"
         },
+        "moduleId": 0,
         "start": 3,
         "type": "VariableDeclarator"
       },
       "end": 59,
       "kind": "fn",
+      "moduleId": 0,
       "start": 0,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
@@ -139,5 +154,6 @@ expression: actual
   ],
   "commentStart": 0,
   "end": 59,
+  "moduleId": 0,
   "start": 0
 }

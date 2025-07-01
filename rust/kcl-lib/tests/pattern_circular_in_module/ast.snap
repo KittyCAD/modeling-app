@@ -8,6 +8,7 @@ description: Result of parsing pattern_circular_in_module.kcl
       {
         "commentStart": 0,
         "end": 0,
+        "moduleId": 0,
         "path": {
           "type": "Kcl",
           "filename": "thing.kcl"
@@ -19,9 +20,11 @@ description: Result of parsing pattern_circular_in_module.kcl
               "alias": null,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "thing",
                 "start": 0,
                 "type": "Identifier"
@@ -39,13 +42,16 @@ description: Result of parsing pattern_circular_in_module.kcl
         "commentStart": 0,
         "end": 0,
         "expression": {
+          "arguments": [],
           "callee": {
             "abs_path": false,
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "thing",
               "start": 0,
               "type": "Identifier"
@@ -56,11 +62,13 @@ description: Result of parsing pattern_circular_in_module.kcl
           },
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
           "unlabeled": null
         },
+        "moduleId": 0,
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -68,12 +76,14 @@ description: Result of parsing pattern_circular_in_module.kcl
     ],
     "commentStart": 0,
     "end": 0,
+    "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {

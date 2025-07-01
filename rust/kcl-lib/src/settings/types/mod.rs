@@ -94,15 +94,19 @@ pub struct AppSettings {
     /// of the app to aid in development.
     #[serde(default, skip_serializing_if = "is_default")]
     pub show_debug_panel: bool,
-    /// If true, the grid cells will be fixed-size, where the width is the user's default length unit.
-    /// If false, the grid's size will scale as the user zooms in and out.
-    #[serde(default = "make_it_so")]
+    /// If true, the grid cells will be fixed-size, where the width is your default length unit.
+    /// If false, the grid will get larger as you zoom out, and smaller as you zoom in.
+    #[serde(default = "make_it_so", skip_serializing_if = "is_true")]
     pub fixed_size_grid: bool,
 }
 
 /// Default to true.
 fn make_it_so() -> bool {
     true
+}
+
+fn is_true(b: &bool) -> bool {
+    *b
 }
 
 impl Default for AppSettings {
@@ -691,7 +695,6 @@ text_wrapping = true"#;
             serialized,
             r#"[settings.app]
 onboarding_status = "dismissed"
-fixed_size_grid = true
 
 [settings.app.appearance]
 theme = "dark"
@@ -713,13 +716,15 @@ enable_ssao = false
 
         let result = color.validate();
         if let Ok(r) = result {
-            panic!("Expected an error, but got success: {:?}", r);
+            panic!("Expected an error, but got success: {r:?}");
         }
         assert!(result.is_err());
-        assert!(result
-            .unwrap_err()
-            .to_string()
-            .contains("color: Validation error: color"));
+        assert!(
+            result
+                .unwrap_err()
+                .to_string()
+                .contains("color: Validation error: color")
+        );
 
         let appearance = AppearanceSettings {
             theme: AppTheme::System,
@@ -727,13 +732,15 @@ enable_ssao = false
         };
         let result = appearance.validate();
         if let Ok(r) = result {
-            panic!("Expected an error, but got success: {:?}", r);
+            panic!("Expected an error, but got success: {r:?}");
         }
         assert!(result.is_err());
-        assert!(result
-            .unwrap_err()
-            .to_string()
-            .contains("color: Validation error: color"));
+        assert!(
+            result
+                .unwrap_err()
+                .to_string()
+                .contains("color: Validation error: color")
+        );
     }
 
     #[test]
@@ -743,13 +750,15 @@ color = 1567.4"#;
 
         let result = Configuration::parse_and_validate(settings_file);
         if let Ok(r) = result {
-            panic!("Expected an error, but got success: {:?}", r);
+            panic!("Expected an error, but got success: {r:?}");
         }
         assert!(result.is_err());
 
-        assert!(result
-            .unwrap_err()
-            .to_string()
-            .contains("color: Validation error: color"));
+        assert!(
+            result
+                .unwrap_err()
+                .to_string()
+                .contains("color: Validation error: color")
+        );
     }
 }

@@ -573,7 +573,10 @@ description: Artifact commands scale_after_fillet.kcl
                 "z": 3.14
               },
               "set": false,
-              "is_local": true
+              "is_local": true,
+              "origin": {
+                "type": "local"
+              }
             }
           }
         ]

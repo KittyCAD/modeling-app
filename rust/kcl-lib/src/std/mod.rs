@@ -31,7 +31,7 @@ pub use args::Args;
 
 use crate::{
     errors::KclError,
-    execution::{types::PrimitiveType, ExecState, KclValue},
+    execution::{ExecState, KclValue, types::PrimitiveType},
 };
 
 pub type StdFn = fn(
@@ -255,6 +255,14 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ("sketch", "circle") => (
             |e, a| Box::pin(crate::std::shapes::circle(e, a)),
             StdFnProps::default("std::sketch::circle"),
+        ),
+        ("sketch", "rectangle") => (
+            |e, a| Box::pin(crate::std::shapes::rectangle(e, a)),
+            StdFnProps::default("std::sketch::rectangle"),
+        ),
+        ("sketch", "planeOf") => (
+            |e, a| Box::pin(crate::std::planes::plane_of(e, a)),
+            StdFnProps::default("std::sketch::planeOf"),
         ),
         ("sketch", "extrude") => (
             |e, a| Box::pin(crate::std::extrude::extrude(e, a)),

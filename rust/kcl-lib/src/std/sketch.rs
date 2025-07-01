@@ -4,7 +4,7 @@ use anyhow::Result;
 use indexmap::IndexMap;
 use kcmc::shared::Point2d as KPoint2d; // Point2d is already defined in this pkg, to impl ts_rs traits.
 use kcmc::shared::Point3d as KPoint3d; // Point3d is already defined in this pkg, to impl ts_rs traits.
-use kcmc::{each_cmd as mcmd, length_unit::LengthUnit, shared::Angle, websocket::ModelingCmdReq, ModelingCmd};
+use kcmc::{ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit, shared::Angle, websocket::ModelingCmdReq};
 use kittycad_modeling_cmds as kcmc;
 use kittycad_modeling_cmds::shared::PathSegment;
 use parse_display::{Display, FromStr};
@@ -17,17 +17,16 @@ use crate::execution::{Artifact, ArtifactId, CodeRef, StartSketchOnFace, StartSk
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        types::{ArrayLen, NumericType, PrimitiveType, RuntimeType, UnitLen},
         BasePath, ExecState, Face, GeoMeta, KclValue, ModelingCmdMeta, Path, Plane, PlaneInfo, Point2d, Sketch,
         SketchSurface, Solid, TagEngineInfo, TagIdentifier,
+        types::{ArrayLen, NumericType, PrimitiveType, RuntimeType, UnitLen},
     },
     parsing::ast::types::TagNode,
     std::{
         args::{Args, TyF64},
         utils::{
-            arc_center_and_end, get_tangential_arc_to_info, get_x_component, get_y_component,
+            TangentialArcInfoInput, arc_center_and_end, get_tangential_arc_to_info, get_x_component, get_y_component,
             intersection_with_parallel_line, point_to_len_unit, point_to_mm, untyped_point_to_mm,
-            TangentialArcInfoInput,
         },
     },
 };
@@ -45,7 +44,7 @@ pub enum FaceTag {
 impl std::fmt::Display for FaceTag {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            FaceTag::Tag(t) => write!(f, "{}", t),
+            FaceTag::Tag(t) => write!(f, "{t}"),
             FaceTag::StartOrEnd(StartOrEnd::Start) => write!(f, "start"),
             FaceTag::StartOrEnd(StartOrEnd::End) => write!(f, "end"),
         }
@@ -62,7 +61,7 @@ impl FaceTag {
         must_be_planar: bool,
     ) -> Result<uuid::Uuid, KclError> {
         match self {
-            FaceTag::Tag(ref t) => args.get_adjacent_face_to_tag(exec_state, t, must_be_planar).await,
+            FaceTag::Tag(t) => args.get_adjacent_face_to_tag(exec_state, t, must_be_planar).await,
             FaceTag::StartOrEnd(StartOrEnd::Start) => solid.start_cap_id.ok_or_else(|| {
                 KclError::new_type(KclErrorDetails::new(
                     "Expected a start face".to_string(),
@@ -600,7 +599,7 @@ async fn inner_angled_line_of_x_length(
     }
 
     let to = get_y_component(Angle::from_degrees(angle_degrees), length.n);
-    let to = [TyF64::new(to[0], length.ty.clone()), TyF64::new(to[1], length.ty)];
+    let to = [TyF64::new(to[0], length.ty), TyF64::new(to[1], length.ty)];
 
     let new_sketch = straight_line(StraightLineParams::relative(to, sketch, tag), exec_state, args).await?;
 
@@ -667,7 +666,7 @@ async fn inner_angled_line_of_y_length(
     }
 
     let to = get_x_component(Angle::from_degrees(angle_degrees), length.n);
-    let to = [TyF64::new(to[0], length.ty.clone()), TyF64::new(to[1], length.ty)];
+    let to = [TyF64::new(to[0], length.ty), TyF64::new(to[1], length.ty)];
 
     let new_sketch = straight_line(StraightLineParams::relative(to, sketch, tag), exec_state, args).await?;
 
@@ -737,7 +736,7 @@ pub async fn inner_angled_line_that_intersects(
     let intersect_path = args.get_tag_engine_info(exec_state, &intersect_tag)?;
     let path = intersect_path.path.clone().ok_or_else(|| {
         KclError::new_type(KclErrorDetails::new(
-            format!("Expected an intersect path with a path, found `{:?}`", intersect_path),
+            format!("Expected an intersect path with a path, found `{intersect_path:?}`"),
             vec![args.source_range],
         ))
     })?;
