@@ -939,6 +939,7 @@ impl From<Point3d> for Point3D {
         Self { x: p.x, y: p.y, z: p.z }
     }
 }
+
 impl From<Point3d> for kittycad_modeling_cmds::shared::Point3d<LengthUnit> {
     fn from(p: Point3d) -> Self {
         Self {

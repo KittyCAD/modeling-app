@@ -1974,3 +1974,24 @@ export fn subtract2d(
   /// The shape(s) which should be cut out of the sketch.
   tool: [Sketch; 1+],
 ): Sketch {}
+
+/// Find the plane a face lies on.
+/// Returns an error if the face doesn't lie on any plane (for example, the curved face of a cylinder)
+///```kcl
+/// triangle = startSketchOn(XY)
+/// |> polygon(radius = 3, numSides = 3, center = [0, 0])
+/// |> extrude(length = 2)
+/// 
+/// // Find the plane of the triangle's top face.
+/// topPlane = planeOf(triangle, face = END)
+/// 
+/// // Create a new plane, 10 units above the triangle's top face.
+/// startSketchOn(offsetPlane(topPlane, offset = 10))
+/// ```
+@(impl = std_rust)
+export fn planeOf(
+  /// The solid whose face is being queried.
+  @solid: Solid,
+  /// Find the plane which this face lies on.
+  face: TaggedFace,
+): Plane {}
