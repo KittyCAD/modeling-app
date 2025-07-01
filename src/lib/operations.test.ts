@@ -1,11 +1,11 @@
 import type { NodePath } from '@rust/kcl-lib/bindings/NodePath'
 import type { Operation } from '@rust/kcl-lib/bindings/Operation'
+import { defaultSourceRange } from '@src/lang/sourceRange'
 import { topLevelRange } from '@src/lang/util'
 
 import {
   assertParse,
   defaultNodePath,
-  defaultSourceRange,
   nodePathFromRange,
   type SourceRange,
 } from '@src/lang/wasm'

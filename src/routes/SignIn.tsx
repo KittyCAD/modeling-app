@@ -280,7 +280,7 @@ const SignIn = () => {
                   }}
                   className="!bg-primary !text-chalkboard-10 !border-transarent"
                 >
-                  <span className="py-2 lg:py-0">AI-unlocked CAD</span>
+                  <span className="py-2 lg:py-0">ML-unlocked CAD</span>
                 </ActionButton>
               </div>
             </div>

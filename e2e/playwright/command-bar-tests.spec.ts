@@ -4,7 +4,6 @@ import * as fsp from 'fs/promises'
 
 import { executorInputPath, getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
-import { expectPixelColor } from '@e2e/playwright/fixtures/sceneFixture'
 
 test.describe('Command bar tests', () => {
   test('Extrude from command bar selects extrude line after', async ({
@@ -302,13 +301,13 @@ test.describe('Command bar tests', () => {
 
     // Assert that the an alternative variable name is chosen,
     // since the default variable name is already in use (distance)
-    await page.getByRole('button', { name: 'Create new variable' }).click()
+    await cmdBar.variableCheckbox.click()
     await expect(page.getByPlaceholder('Variable name')).toHaveValue(
       'length001'
     )
 
     const continueButton = page.getByRole('button', { name: 'Continue' })
-    const submitButton = page.getByRole('button', { name: 'Submit command' })
+    const submitButton = page.getByTestId('command-bar-submit')
     await continueButton.click()
 
     // Review step and argument hotkeys
@@ -515,47 +514,6 @@ test.describe('Command bar tests', () => {
     })
   })
 
-  test(
-    `Zoom to fit to shared model on web`,
-    { tag: ['@web'] },
-    async ({ page, scene }) => {
-      if (process.env.TARGET !== 'web') {
-        // This test is web-only
-        // TODO: re-enable on CI as part of a new @web test suite
-        return
-      }
-      await test.step(`Prepare and navigate to home page with query params`, async () => {
-        // a quad in the top left corner of the XZ plane (which is out of the current view)
-        const code = `sketch001 = startSketchOn(XZ)
-profile001 = startProfile(sketch001, at = [-484.34, 484.95])
-  |> yLine(length = -69.1)
-  |> xLine(length = 66.84)
-  |> yLine(length = 71.37)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
-`
-        const targetURL = `?create-file=true&name=test&units=mm&code=${encodeURIComponent(btoa(code))}&ask-open-desktop=true`
-        await page.goto(page.url() + targetURL)
-        expect(page.url()).toContain(targetURL)
-      })
-
-      await test.step(`Submit the command`, async () => {
-        await page.getByTestId('continue-to-web-app-button').click()
-
-        await scene.connectionEstablished()
-
-        // This makes SystemIOMachineActors.createKCLFile run after EngineStream/firstPlay
-        await page.waitForTimeout(3000)
-
-        await page.getByTestId('command-bar-submit').click()
-      })
-
-      await test.step(`Ensure we created the project and are in the modeling scene`, async () => {
-        await expectPixelColor(page, [252, 252, 252], { x: 600, y: 260 }, 8)
-      })
-    }
-  )
-
   test(`Can add and edit a named parameter or constant`, async ({
     page,
     homePage,
@@ -567,7 +525,9 @@ profile001 = startProfile(sketch001, at = [-484.34, 484.95])
     const projectName = 'test'
     const beforeKclCode = `a = 5
 b = a * a
-c = 3 + a`
+c = 3 + a
+theta = 45deg
+`
     await context.folderSetupFn(async (dir) => {
       const testProject = join(dir, projectName)
       await fsp.mkdir(testProject, { recursive: true })
@@ -657,9 +617,45 @@ c = 3 + a`
         stage: 'commandBarClosed',
       })
     })
+    await test.step(`Edit a parameter with explicit units via command bar`, async () => {
+      await cmdBar.cmdBarOpenBtn.click()
+      await cmdBar.chooseCommand('edit parameter')
+      await cmdBar
+        .selectOption({
+          name: 'theta',
+        })
+        .click()
+      await cmdBar.expectState({
+        stage: 'arguments',
+        commandName: 'Edit parameter',
+        currentArgKey: 'value',
+        currentArgValue: '45deg',
+        headerArguments: {
+          Name: 'theta',
+          Value: '',
+        },
+        highlightedHeaderArg: 'value',
+      })
+      await cmdBar.argumentInput
+        .locator('[contenteditable]')
+        .fill('45deg + 1deg')
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        commandName: 'Edit parameter',
+        headerArguments: {
+          Name: 'theta',
+          Value: '46deg',
+        },
+      })
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'commandBarClosed',
+      })
+    })
 
     await editor.expectEditor.toContain(
-      `a = 5b = a * amyParameter001 = ${newValue}c = 3 + a`
+      `a = 5b = a * amyParameter001 = ${newValue}c = 3 + atheta = 45deg + 1deg`
     )
   })
 

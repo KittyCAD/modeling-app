@@ -2,22 +2,21 @@
 
 use anyhow::Result;
 use kcmc::{
-    each_cmd as mcmd,
+    ModelingCmd, each_cmd as mcmd,
     length_unit::LengthUnit,
     shared::{Angle, Opposite},
-    ModelingCmd,
 };
 use kittycad_modeling_cmds::{self as kcmc, shared::Point3d};
 
-use super::{args::TyF64, DEFAULT_TOLERANCE};
+use super::{DEFAULT_TOLERANCE_MM, args::TyF64};
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
+        ExecState, KclValue, ModelingCmdMeta, Sketch, Solid,
         types::{NumericType, PrimitiveType, RuntimeType},
-        ExecState, KclValue, Sketch, Solid,
     },
     parsing::ast::types::TagNode,
-    std::{axis_or_reference::Axis2dOrEdgeReference, extrude::do_post_extrude, Args},
+    std::{Args, axis_or_reference::Axis2dOrEdgeReference, extrude::do_post_extrude},
 };
 
 extern crate nalgebra_glm as glm;
@@ -76,7 +75,7 @@ async fn inner_revolve(
         // nice and we use the other data in the docs, so we still need use the derive above for the json schema.
         if !(-360.0..=360.0).contains(&angle) || angle == 0.0 {
             return Err(KclError::new_semantic(KclErrorDetails::new(
-                format!("Expected angle to be between -360 and 360 and not 0, found `{}`", angle),
+                format!("Expected angle to be between -360 and 360 and not 0, found `{angle}`"),
                 vec![args.source_range],
             )));
         }
@@ -89,8 +88,7 @@ async fn inner_revolve(
         if !(-360.0..=360.0).contains(&bidirectional_angle) || bidirectional_angle == 0.0 {
             return Err(KclError::new_semantic(KclErrorDetails::new(
                 format!(
-                    "Expected bidirectional angle to be between -360 and 360 and not 0, found `{}`",
-                    bidirectional_angle
+                    "Expected bidirectional angle to be between -360 and 360 and not 0, found `{bidirectional_angle}`"
                 ),
                 vec![args.source_range],
             )));
@@ -100,10 +98,7 @@ async fn inner_revolve(
             let ang = angle.signum() * bidirectional_angle + angle;
             if !(-360.0..=360.0).contains(&ang) {
                 return Err(KclError::new_semantic(KclErrorDetails::new(
-                    format!(
-                        "Combined angle and bidirectional must be between -360 and 360, found '{}'",
-                        ang
-                    ),
+                    format!("Combined angle and bidirectional must be between -360 and 360, found '{ang}'"),
                     vec![args.source_range],
                 )));
             }
@@ -133,46 +128,48 @@ async fn inner_revolve(
     let mut solids = Vec::new();
     for sketch in &sketches {
         let id = exec_state.next_uuid();
-        let tolerance = tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE);
+        let tolerance = tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM);
 
         let direction = match &axis {
             Axis2dOrEdgeReference::Axis { direction, origin } => {
-                args.batch_modeling_cmd(
-                    id,
-                    ModelingCmd::from(mcmd::Revolve {
-                        angle,
-                        target: sketch.id.into(),
-                        axis: Point3d {
-                            x: direction[0].to_mm(),
-                            y: direction[1].to_mm(),
-                            z: 0.0,
-                        },
-                        origin: Point3d {
-                            x: LengthUnit(origin[0].to_mm()),
-                            y: LengthUnit(origin[1].to_mm()),
-                            z: LengthUnit(0.0),
-                        },
-                        tolerance: LengthUnit(tolerance),
-                        axis_is_2d: true,
-                        opposite: opposite.clone(),
-                    }),
-                )
-                .await?;
+                exec_state
+                    .batch_modeling_cmd(
+                        ModelingCmdMeta::from_args_id(&args, id),
+                        ModelingCmd::from(mcmd::Revolve {
+                            angle,
+                            target: sketch.id.into(),
+                            axis: Point3d {
+                                x: direction[0].to_mm(),
+                                y: direction[1].to_mm(),
+                                z: 0.0,
+                            },
+                            origin: Point3d {
+                                x: LengthUnit(origin[0].to_mm()),
+                                y: LengthUnit(origin[1].to_mm()),
+                                z: LengthUnit(0.0),
+                            },
+                            tolerance: LengthUnit(tolerance),
+                            axis_is_2d: true,
+                            opposite: opposite.clone(),
+                        }),
+                    )
+                    .await?;
                 glm::DVec2::new(direction[0].to_mm(), direction[1].to_mm())
             }
             Axis2dOrEdgeReference::Edge(edge) => {
                 let edge_id = edge.get_engine_id(exec_state, &args)?;
-                args.batch_modeling_cmd(
-                    id,
-                    ModelingCmd::from(mcmd::RevolveAboutEdge {
-                        angle,
-                        target: sketch.id.into(),
-                        edge_id,
-                        tolerance: LengthUnit(tolerance),
-                        opposite: opposite.clone(),
-                    }),
-                )
-                .await?;
+                exec_state
+                    .batch_modeling_cmd(
+                        ModelingCmdMeta::from_args_id(&args, id),
+                        ModelingCmd::from(mcmd::RevolveAboutEdge {
+                            angle,
+                            target: sketch.id.into(),
+                            edge_id,
+                            tolerance: LengthUnit(tolerance),
+                            opposite: opposite.clone(),
+                        }),
+                    )
+                    .await?;
                 //TODO: fix me! Need to be able to calculate this to ensure the path isn't colinear
                 glm::DVec2::new(0.0, 1.0)
             }

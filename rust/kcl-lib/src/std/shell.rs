@@ -1,17 +1,17 @@
 //! Standard library shells.
 
 use anyhow::Result;
-use kcmc::{each_cmd as mcmd, length_unit::LengthUnit, ModelingCmd};
+use kcmc::{ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit};
 use kittycad_modeling_cmds as kcmc;
 
 use super::args::TyF64;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        types::{ArrayLen, RuntimeType},
         ExecState, KclValue, Solid,
+        types::{ArrayLen, RuntimeType},
     },
-    std::{sketch::FaceTag, Args},
+    std::{Args, sketch::FaceTag},
 };
 
 /// Create a shell.
@@ -20,7 +20,7 @@ pub async fn shell(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     let thickness: TyF64 = args.get_kw_arg("thickness", &RuntimeType::length(), exec_state)?;
     let faces = args.get_kw_arg(
         "faces",
-        &RuntimeType::Array(Box::new(RuntimeType::tag()), ArrayLen::Minimum(1)),
+        &RuntimeType::Array(Box::new(RuntimeType::tagged_face()), ArrayLen::Minimum(1)),
         exec_state,
     )?;
 
@@ -53,7 +53,9 @@ async fn inner_shell(
     for solid in &solids {
         // Flush the batch for our fillets/chamfers if there are any.
         // If we do not do these for sketch on face, things will fail with face does not exist.
-        args.flush_batch_for_solids(exec_state, &[solid.clone()]).await?;
+        exec_state
+            .flush_batch_for_solids((&args).into(), &[solid.clone()])
+            .await?;
 
         for tag in &faces {
             let extrude_plane_id = tag.get_face_id(solid, exec_state, &args, false).await?;
@@ -78,16 +80,17 @@ async fn inner_shell(
         )));
     }
 
-    args.batch_modeling_cmd(
-        exec_state.next_uuid(),
-        ModelingCmd::from(mcmd::Solid3dShellFace {
-            hollow: false,
-            face_ids,
-            object_id: solids[0].id,
-            shell_thickness: LengthUnit(thickness.to_mm()),
-        }),
-    )
-    .await?;
+    exec_state
+        .batch_modeling_cmd(
+            (&args).into(),
+            ModelingCmd::from(mcmd::Solid3dShellFace {
+                hollow: false,
+                face_ids,
+                object_id: solids[0].id,
+                shell_thickness: LengthUnit(thickness.to_mm()),
+            }),
+        )
+        .await?;
 
     Ok(solids)
 }
@@ -109,18 +112,21 @@ async fn inner_hollow(
 ) -> Result<Box<Solid>, KclError> {
     // Flush the batch for our fillets/chamfers if there are any.
     // If we do not do these for sketch on face, things will fail with face does not exist.
-    args.flush_batch_for_solids(exec_state, &[(*solid).clone()]).await?;
+    exec_state
+        .flush_batch_for_solids((&args).into(), &[(*solid).clone()])
+        .await?;
 
-    args.batch_modeling_cmd(
-        exec_state.next_uuid(),
-        ModelingCmd::from(mcmd::Solid3dShellFace {
-            hollow: true,
-            face_ids: Vec::new(), // This is empty because we want to hollow the entire object.
-            object_id: solid.id,
-            shell_thickness: LengthUnit(thickness.to_mm()),
-        }),
-    )
-    .await?;
+    exec_state
+        .batch_modeling_cmd(
+            (&args).into(),
+            ModelingCmd::from(mcmd::Solid3dShellFace {
+                hollow: true,
+                face_ids: Vec::new(), // This is empty because we want to hollow the entire object.
+                object_id: solid.id,
+                shell_thickness: LengthUnit(thickness.to_mm()),
+            }),
+        )
+        .await?;
 
     Ok(solid)
 }

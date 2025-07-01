@@ -2829,7 +2829,7 @@ description: Variables in memory after executing kittycad_svg.kcl
             ],
             "tag": null,
             "to": [
-              0.84,
+              0.839996,
               -20.58
             ],
             "type": "ToPoint",
@@ -2843,12 +2843,12 @@ description: Variables in memory after executing kittycad_svg.kcl
               "sourceRange": []
             },
             "from": [
-              0.84,
+              0.839996,
               -20.58
             ],
             "tag": null,
             "to": [
-              0.84,
+              0.839996,
               -24.36
             ],
             "type": "ToPoint",
@@ -2862,7 +2862,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               "sourceRange": []
             },
             "from": [
-              0.84,
+              0.839996,
               -24.36
             ],
             "tag": null,
@@ -3247,7 +3247,7 @@ description: Variables in memory after executing kittycad_svg.kcl
             ],
             "tag": null,
             "to": [
-              15.96,
+              15.959999999999999,
               -21.84
             ],
             "type": "ToPoint",
@@ -3261,12 +3261,12 @@ description: Variables in memory after executing kittycad_svg.kcl
               "sourceRange": []
             },
             "from": [
-              15.96,
+              15.959999999999999,
               -21.84
             ],
             "tag": null,
             "to": [
-              15.96,
+              15.959999999999999,
               -22.68
             ],
             "type": "ToPoint",
@@ -3280,7 +3280,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               "sourceRange": []
             },
             "from": [
-              15.96,
+              15.959999999999999,
               -22.68
             ],
             "tag": null,
@@ -3703,7 +3703,7 @@ description: Variables in memory after executing kittycad_svg.kcl
             ],
             "tag": null,
             "to": [
-              0.84,
+              0.839996,
               -6.72
             ],
             "type": "ToPoint",
@@ -3717,12 +3717,12 @@ description: Variables in memory after executing kittycad_svg.kcl
               "sourceRange": []
             },
             "from": [
-              0.84,
+              0.839996,
               -6.72
             ],
             "tag": null,
             "to": [
-              0.84,
+              0.839996,
               -8.4
             ],
             "type": "ToPoint",
@@ -3736,7 +3736,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               "sourceRange": []
             },
             "from": [
-              0.84,
+              0.839996,
               -8.4
             ],
             "tag": null,
@@ -3836,7 +3836,7 @@ description: Variables in memory after executing kittycad_svg.kcl
             ],
             "tag": null,
             "to": [
-              0.84,
+              0.839996,
               -7.56
             ],
             "type": "ToPoint",
@@ -3850,12 +3850,12 @@ description: Variables in memory after executing kittycad_svg.kcl
               "sourceRange": []
             },
             "from": [
-              0.84,
+              0.839996,
               -7.56
             ],
             "tag": null,
             "to": [
-              0.84,
+              0.839996,
               -19.32
             ],
             "type": "ToPoint",
@@ -3869,7 +3869,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               "sourceRange": []
             },
             "from": [
-              0.84,
+              0.839996,
               -19.32
             ],
             "tag": null,
@@ -3913,7 +3913,7 @@ description: Variables in memory after executing kittycad_svg.kcl
             "tag": null,
             "to": [
               3.36,
-              -9.24
+              -9.24001
             ],
             "type": "ToPoint",
             "units": {
@@ -3927,12 +3927,12 @@ description: Variables in memory after executing kittycad_svg.kcl
             },
             "from": [
               3.36,
-              -9.24
+              -9.24001
             ],
             "tag": null,
             "to": [
               17.64,
-              -9.24
+              -9.24001
             ],
             "type": "ToPoint",
             "units": {
@@ -3946,7 +3946,7 @@ description: Variables in memory after executing kittycad_svg.kcl
             },
             "from": [
               17.64,
-              -9.24
+              -9.24001
             ],
             "tag": null,
             "to": [
@@ -4103,7 +4103,7 @@ description: Variables in memory after executing kittycad_svg.kcl
             "tag": null,
             "to": [
               2.52,
-              -10.08
+              -10.080000000000002
             ],
             "type": "ToPoint",
             "units": {
@@ -4117,7 +4117,7 @@ description: Variables in memory after executing kittycad_svg.kcl
             },
             "from": [
               2.52,
-              -10.08
+              -10.080000000000002
             ],
             "tag": null,
             "to": [
@@ -4293,7 +4293,7 @@ description: Variables in memory after executing kittycad_svg.kcl
             "tag": null,
             "to": [
               10.92,
-              -15.96
+              -15.959999999999999
             ],
             "type": "ToPoint",
             "units": {
@@ -4307,12 +4307,12 @@ description: Variables in memory after executing kittycad_svg.kcl
             },
             "from": [
               10.92,
-              -15.96
+              -15.959999999999999
             ],
             "tag": null,
             "to": [
               13.44,
-              -15.96
+              -15.959999999999999
             ],
             "type": "ToPoint",
             "units": {
@@ -4326,7 +4326,7 @@ description: Variables in memory after executing kittycad_svg.kcl
             },
             "from": [
               13.44,
-              -15.96
+              -15.959999999999999
             ],
             "tag": null,
             "to": [
@@ -4369,7 +4369,7 @@ description: Variables in memory after executing kittycad_svg.kcl
             "tag": null,
             "to": [
               14.28,
-              -15.96
+              -15.959999999999999
             ],
             "type": "ToPoint",
             "units": {
@@ -4383,12 +4383,12 @@ description: Variables in memory after executing kittycad_svg.kcl
             },
             "from": [
               14.28,
-              -15.96
+              -15.959999999999999
             ],
             "tag": null,
             "to": [
               13.44,
-              -15.96
+              -15.959999999999999
             ],
             "type": "ToPoint",
             "units": {
@@ -4402,7 +4402,7 @@ description: Variables in memory after executing kittycad_svg.kcl
             },
             "from": [
               13.44,
-              -15.96
+              -15.959999999999999
             ],
             "tag": null,
             "to": [
@@ -4483,7 +4483,7 @@ description: Variables in memory after executing kittycad_svg.kcl
             "tag": null,
             "to": [
               6.72,
-              -15.12
+              -15.120000000000001
             ],
             "type": "ToPoint",
             "units": {
@@ -4497,12 +4497,12 @@ description: Variables in memory after executing kittycad_svg.kcl
             },
             "from": [
               6.72,
-              -15.12
+              -15.120000000000001
             ],
             "tag": null,
             "to": [
               7.56,
-              -15.12
+              -15.120000000000001
             ],
             "type": "ToPoint",
             "units": {
@@ -4516,7 +4516,7 @@ description: Variables in memory after executing kittycad_svg.kcl
             },
             "from": [
               7.56,
-              -15.12
+              -15.120000000000001
             ],
             "tag": null,
             "to": [
@@ -4748,7 +4748,7 @@ description: Variables in memory after executing kittycad_svg.kcl
             ],
             "tag": null,
             "to": [
-              7.56,
+              7.5600000000000005,
               -10.92
             ],
             "type": "ToPoint",
@@ -4762,12 +4762,12 @@ description: Variables in memory after executing kittycad_svg.kcl
               "sourceRange": []
             },
             "from": [
-              7.56,
+              7.5600000000000005,
               -10.92
             ],
             "tag": null,
             "to": [
-              7.56,
+              7.5600000000000005,
               -11.76
             ],
             "type": "ToPoint",
@@ -4781,7 +4781,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               "sourceRange": []
             },
             "from": [
-              7.56,
+              7.5600000000000005,
               -11.76
             ],
             "tag": null,
@@ -4958,7 +4958,7 @@ description: Variables in memory after executing kittycad_svg.kcl
             "tag": null,
             "to": [
               5.88,
-              -0.84
+              -0.83999599
             ],
             "type": "ToPoint",
             "units": {
@@ -4972,12 +4972,12 @@ description: Variables in memory after executing kittycad_svg.kcl
             },
             "from": [
               5.88,
-              -0.84
+              -0.83999599
             ],
             "tag": null,
             "to": [
               6.72,
-              -0.84
+              -0.83999599
             ],
             "type": "ToPoint",
             "units": {
@@ -4991,7 +4991,7 @@ description: Variables in memory after executing kittycad_svg.kcl
             },
             "from": [
               6.72,
-              -0.84
+              -0.83999599
             ],
             "tag": null,
             "to": [
@@ -5300,7 +5300,7 @@ description: Variables in memory after executing kittycad_svg.kcl
             "tag": null,
             "to": [
               14.28,
-              -0.84
+              -0.83999599
             ],
             "type": "ToPoint",
             "units": {
@@ -5314,12 +5314,12 @@ description: Variables in memory after executing kittycad_svg.kcl
             },
             "from": [
               14.28,
-              -0.84
+              -0.83999599
             ],
             "tag": null,
             "to": [
               15.12,
-              -0.84
+              -0.83999599
             ],
             "type": "ToPoint",
             "units": {
@@ -5333,7 +5333,7 @@ description: Variables in memory after executing kittycad_svg.kcl
             },
             "from": [
               15.12,
-              -0.84
+              -0.83999599
             ],
             "tag": null,
             "to": [
@@ -5356,7 +5356,7 @@ description: Variables in memory after executing kittycad_svg.kcl
             ],
             "tag": null,
             "to": [
-              15.96,
+              15.959999999999999,
               -1.68
             ],
             "type": "ToPoint",
@@ -5370,12 +5370,12 @@ description: Variables in memory after executing kittycad_svg.kcl
               "sourceRange": []
             },
             "from": [
-              15.96,
+              15.959999999999999,
               -1.68
             ],
             "tag": null,
             "to": [
-              15.96,
+              15.959999999999999,
               -3.36
             ],
             "type": "ToPoint",
@@ -5389,7 +5389,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               "sourceRange": []
             },
             "from": [
-              15.96,
+              15.959999999999999,
               -3.36
             ],
             "tag": null,
@@ -5470,7 +5470,7 @@ description: Variables in memory after executing kittycad_svg.kcl
             ],
             "tag": null,
             "to": [
-              15.96,
+              15.959999999999999,
               -0.0
             ],
             "type": "ToPoint",
@@ -5484,12 +5484,12 @@ description: Variables in memory after executing kittycad_svg.kcl
               "sourceRange": []
             },
             "from": [
-              15.96,
+              15.959999999999999,
               -0.0
             ],
             "tag": null,
             "to": [
-              15.96,
+              15.959999999999999,
               -1.68
             ],
             "type": "ToPoint",
@@ -5503,7 +5503,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               "sourceRange": []
             },
             "from": [
-              15.96,
+              15.959999999999999,
               -1.68
             ],
             "tag": null,
@@ -5680,7 +5680,7 @@ description: Variables in memory after executing kittycad_svg.kcl
             "tag": null,
             "to": [
               15.12,
-              -0.84
+              -0.83999999
             ],
             "type": "ToPoint",
             "units": {
@@ -5694,12 +5694,12 @@ description: Variables in memory after executing kittycad_svg.kcl
             },
             "from": [
               15.12,
-              -0.84
+              -0.83999999
             ],
             "tag": null,
             "to": [
               14.28,
-              -0.84
+              -0.83999999
             ],
             "type": "ToPoint",
             "units": {
@@ -5713,7 +5713,7 @@ description: Variables in memory after executing kittycad_svg.kcl
             },
             "from": [
               14.28,
-              -0.84
+              -0.83999999
             ],
             "tag": null,
             "to": [
@@ -6136,7 +6136,7 @@ description: Variables in memory after executing kittycad_svg.kcl
             "tag": null,
             "to": [
               6.72,
-              -0.84
+              -0.83999999
             ],
             "type": "ToPoint",
             "units": {
@@ -6150,12 +6150,12 @@ description: Variables in memory after executing kittycad_svg.kcl
             },
             "from": [
               6.72,
-              -0.84
+              -0.83999999
             ],
             "tag": null,
             "to": [
               5.88,
-              -0.84
+              -0.83999999
             ],
             "type": "ToPoint",
             "units": {
@@ -6169,7 +6169,7 @@ description: Variables in memory after executing kittycad_svg.kcl
             },
             "from": [
               5.88,
-              -0.84
+              -0.83999999
             ],
             "tag": null,
             "to": [
@@ -6458,7 +6458,7 @@ description: Variables in memory after executing kittycad_svg.kcl
             ],
             "tag": null,
             "to": [
-              15.96,
+              15.959999999999999,
               -5.04
             ],
             "type": "ToPoint",
@@ -6472,12 +6472,12 @@ description: Variables in memory after executing kittycad_svg.kcl
               "sourceRange": []
             },
             "from": [
-              15.96,
+              15.959999999999999,
               -5.04
             ],
             "tag": null,
             "to": [
-              15.96,
+              15.959999999999999,
               -5.88
             ],
             "type": "ToPoint",
@@ -6491,7 +6491,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               "sourceRange": []
             },
             "from": [
-              15.96,
+              15.959999999999999,
               -5.88
             ],
             "tag": null,

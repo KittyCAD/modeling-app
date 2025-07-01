@@ -1,7 +1,7 @@
 //! Constructive Solid Geometry (CSG) operations.
 
 use anyhow::Result;
-use kcmc::{each_cmd as mcmd, length_unit::LengthUnit, ModelingCmd};
+use kcmc::{ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit};
 use kittycad_modeling_cmds::{
     self as kcmc,
     ok_response::OkModelingCmdResponse,
@@ -9,11 +9,11 @@ use kittycad_modeling_cmds::{
     websocket::OkWebSocketResponseData,
 };
 
-use super::{args::TyF64, DEFAULT_TOLERANCE};
+use super::{DEFAULT_TOLERANCE_MM, args::TyF64};
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{types::RuntimeType, ExecState, KclValue, Solid},
-    std::{patterns::GeometryTrait, Args},
+    execution::{ExecState, KclValue, ModelingCmdMeta, Solid, types::RuntimeType},
+    std::{Args, patterns::GeometryTrait},
 };
 
 /// Union two or more solids into a single solid.
@@ -50,14 +50,14 @@ pub(crate) async fn inner_union(
     }
 
     // Flush the fillets for the solids.
-    args.flush_batch_for_solids(exec_state, &solids).await?;
+    exec_state.flush_batch_for_solids((&args).into(), &solids).await?;
 
-    let result = args
+    let result = exec_state
         .send_modeling_cmd(
-            solid_out_id,
+            ModelingCmdMeta::from_args_id(&args, solid_out_id),
             ModelingCmd::from(mcmd::BooleanUnion {
                 solid_ids: solids.iter().map(|s| s.id).collect(),
-                tolerance: LengthUnit(tolerance.map(|t| t.n).unwrap_or(DEFAULT_TOLERANCE)),
+                tolerance: LengthUnit(tolerance.map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM)),
             }),
         )
         .await?;
@@ -115,14 +115,14 @@ pub(crate) async fn inner_intersect(
     }
 
     // Flush the fillets for the solids.
-    args.flush_batch_for_solids(exec_state, &solids).await?;
+    exec_state.flush_batch_for_solids((&args).into(), &solids).await?;
 
-    let result = args
+    let result = exec_state
         .send_modeling_cmd(
-            solid_out_id,
+            ModelingCmdMeta::from_args_id(&args, solid_out_id),
             ModelingCmd::from(mcmd::BooleanIntersection {
                 solid_ids: solids.iter().map(|s| s.id).collect(),
-                tolerance: LengthUnit(tolerance.map(|t| t.n).unwrap_or(DEFAULT_TOLERANCE)),
+                tolerance: LengthUnit(tolerance.map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM)),
             }),
         )
         .await?;
@@ -176,15 +176,17 @@ pub(crate) async fn inner_subtract(
 
     // Flush the fillets for the solids and the tools.
     let combined_solids = solids.iter().chain(tools.iter()).cloned().collect::<Vec<Solid>>();
-    args.flush_batch_for_solids(exec_state, &combined_solids).await?;
+    exec_state
+        .flush_batch_for_solids((&args).into(), &combined_solids)
+        .await?;
 
-    let result = args
+    let result = exec_state
         .send_modeling_cmd(
-            solid_out_id,
+            ModelingCmdMeta::from_args_id(&args, solid_out_id),
             ModelingCmd::from(mcmd::BooleanSubtract {
                 target_ids: solids.iter().map(|s| s.id).collect(),
                 tool_ids: tools.iter().map(|s| s.id).collect(),
-                tolerance: LengthUnit(tolerance.map(|t| t.n).unwrap_or(DEFAULT_TOLERANCE)),
+                tolerance: LengthUnit(tolerance.map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM)),
             }),
         )
         .await?;

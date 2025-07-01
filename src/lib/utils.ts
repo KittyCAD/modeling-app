@@ -55,6 +55,12 @@ export function isArray(val: any): val is unknown[] {
   return Array.isArray(val)
 }
 
+export function areArraysEqual<T>(a: T[], b: T[]): boolean {
+  if (a.length !== b.length) return false
+  const set1 = new Set(a)
+  return b.every((element) => set1.has(element))
+}
+
 export type SafeArray<T> = Omit<Array<T>, number> & {
   [index: number]: T | undefined
 }
@@ -261,6 +267,9 @@ export function platform(): Platform {
   if (navigator.platform === 'Windows' || navigator.platform === 'Win32') {
     return 'windows'
   }
+  if (navigator.platform?.indexOf('Linux') === 0) {
+    return 'linux'
+  }
 
   // Chrome only, but more accurate than userAgent.
   let userAgentDataPlatform: unknown
@@ -317,6 +326,32 @@ export function simulateOnMouseDragMatch(text: string) {
 export function roundOff(num: number, precision: number = 2): number {
   const x = Math.pow(10, precision)
   return Math.round(num * x) / x
+}
+
+export function roundOffWithUnits(
+  numWithUnits: string,
+  precision: number = 2
+): string {
+  const match = numWithUnits.match(
+    /^([+-]?[\d.]+(?:[eE][+-]?\d+)?)([a-zA-Z_?]+)$/
+  )
+  let num: string
+  let suffix: string
+  if (match) {
+    num = match[1]
+    suffix = match[2] ?? ''
+  } else {
+    // If no match, assume it's just a number with no units.
+    num = numWithUnits
+    suffix = ''
+  }
+  const parsedNum = parseFloat(num)
+  if (Number.isNaN(parsedNum)) {
+    // If parsing fails, return the original string.
+    return numWithUnits
+  }
+  const roundedNum = roundOff(parsedNum, precision)
+  return `${roundedNum}${suffix}`
 }
 
 /**
@@ -640,11 +675,40 @@ export async function engineViewIsometricWithoutGeometryPresent({
   cameraProjection,
 }: {
   engineCommandManager: EngineCommandManager
-  unit?: UnitLength_type
+  unit: UnitLength_type
   cameraProjection: CameraProjectionType
 }) {
+  // When the video first loads, if the scene is empty (has no sketches/solids/etc defined)
+  // then the grid has a fixed size of 10 mm/cm/inches/whatever unit the user chose, and it
+  // will be at some fixed distance. This means the grid could be way too zoomed in or out.
+  // So, adjust the zoom depending on the chosen unit.
+  const scaleFactor = (() => {
+    const mmScale = 300
+    const cmScale = mmScale / 10
+    const mScale = cmScale / 100
+    const inScale = mmScale / 25.4
+    const ftScale = mmScale / 304.8
+    const ydScale = mmScale / 914.4
+    switch (unit) {
+      case 'mm':
+        return mmScale
+      case 'cm':
+        return cmScale
+      case 'm':
+        return mScale
+      case 'in':
+        return inScale
+      case 'yd':
+        return ydScale
+      case 'ft':
+        return ftScale
+      default:
+        const _exhaustiveCheck: never = unit
+        return 0 // unreachable
+    }
+  })()
   // If you load an empty scene with any file unit it will have an eye offset of this
-  const MAGIC_ENGINE_EYE_OFFSET = 1378.0057
+  const magicEngineEyeOffset = 1378.0057 / scaleFactor
   const quat = computeIsometricQuaternionForEmptyScene()
   const isometricView: CameraViewState_type = {
     pivot_rotation: {
@@ -658,7 +722,7 @@ export async function engineViewIsometricWithoutGeometryPresent({
       y: 0,
       z: 0,
     },
-    eye_offset: MAGIC_ENGINE_EYE_OFFSET,
+    eye_offset: magicEngineEyeOffset,
     fov_y: 45,
     ortho_scale_factor: 1.4063792,
     is_ortho: cameraProjection !== 'perspective',

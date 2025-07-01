@@ -12,6 +12,7 @@ expression: actual
         "id": {
           "commentStart": 0,
           "end": 4,
+          "moduleId": 0,
           "name": "incl",
           "start": 0,
           "type": "Identifier"
@@ -22,6 +23,7 @@ expression: actual
           "endElement": {
             "commentStart": 11,
             "end": 13,
+            "moduleId": 0,
             "raw": "10",
             "start": 11,
             "type": "Literal",
@@ -32,10 +34,12 @@ expression: actual
             }
           },
           "endInclusive": true,
+          "moduleId": 0,
           "start": 7,
           "startElement": {
             "commentStart": 8,
             "end": 9,
+            "moduleId": 0,
             "raw": "1",
             "start": 8,
             "type": "Literal",
@@ -48,11 +52,13 @@ expression: actual
           "type": "ArrayRangeExpression",
           "type": "ArrayRangeExpression"
         },
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclarator"
       },
       "end": 14,
       "kind": "const",
+      "moduleId": 0,
       "start": 0,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
@@ -65,6 +71,7 @@ expression: actual
         "id": {
           "commentStart": 23,
           "end": 27,
+          "moduleId": 0,
           "name": "excl",
           "start": 23,
           "type": "Identifier"
@@ -75,6 +82,7 @@ expression: actual
           "endElement": {
             "commentStart": 35,
             "end": 37,
+            "moduleId": 0,
             "raw": "10",
             "start": 35,
             "type": "Literal",
@@ -85,10 +93,12 @@ expression: actual
             }
           },
           "endInclusive": false,
+          "moduleId": 0,
           "start": 30,
           "startElement": {
             "commentStart": 31,
             "end": 32,
+            "moduleId": 0,
             "raw": "0",
             "start": 31,
             "type": "Literal",
@@ -101,11 +111,13 @@ expression: actual
           "type": "ArrayRangeExpression",
           "type": "ArrayRangeExpression"
         },
+        "moduleId": 0,
         "start": 23,
         "type": "VariableDeclarator"
       },
       "end": 38,
       "kind": "const",
+      "moduleId": 0,
       "start": 23,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
@@ -113,5 +125,6 @@ expression: actual
   ],
   "commentStart": 0,
   "end": 38,
+  "moduleId": 0,
   "start": 0
 }

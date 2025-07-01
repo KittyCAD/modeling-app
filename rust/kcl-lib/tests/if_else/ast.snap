@@ -13,6 +13,7 @@ description: Result of parsing if_else.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "a",
             "start": 0,
             "type": "Identifier"
@@ -22,6 +23,7 @@ description: Result of parsing if_else.kcl
             "cond": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "raw": "true",
               "start": 0,
               "type": "Literal",
@@ -35,6 +37,7 @@ description: Result of parsing if_else.kcl
                 "cond": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "raw": "true",
                   "start": 0,
                   "type": "Literal",
@@ -43,6 +46,7 @@ description: Result of parsing if_else.kcl
                 },
                 "digest": null,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "then_val": {
                   "body": [
@@ -52,6 +56,7 @@ description: Result of parsing if_else.kcl
                       "expression": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "4",
                         "start": 0,
                         "type": "Literal",
@@ -61,6 +66,7 @@ description: Result of parsing if_else.kcl
                           "suffix": "None"
                         }
                       },
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ExpressionStatement",
                       "type": "ExpressionStatement"
@@ -68,6 +74,7 @@ description: Result of parsing if_else.kcl
                   ],
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "start": 0
                 },
                 "type": "ElseIf"
@@ -82,6 +89,7 @@ description: Result of parsing if_else.kcl
                   "expression": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "5",
                     "start": 0,
                     "type": "Literal",
@@ -91,6 +99,7 @@ description: Result of parsing if_else.kcl
                       "suffix": "None"
                     }
                   },
+                  "moduleId": 0,
                   "start": 0,
                   "type": "ExpressionStatement",
                   "type": "ExpressionStatement"
@@ -98,8 +107,10 @@ description: Result of parsing if_else.kcl
               ],
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0
             },
+            "moduleId": 0,
             "start": 0,
             "then_val": {
               "body": [
@@ -109,6 +120,7 @@ description: Result of parsing if_else.kcl
                   "expression": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "3",
                     "start": 0,
                     "type": "Literal",
@@ -118,6 +130,7 @@ description: Result of parsing if_else.kcl
                       "suffix": "None"
                     }
                   },
+                  "moduleId": 0,
                   "start": 0,
                   "type": "ExpressionStatement",
                   "type": "ExpressionStatement"
@@ -125,16 +138,19 @@ description: Result of parsing if_else.kcl
               ],
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0
             },
             "type": "IfExpression",
             "type": "IfExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -149,6 +165,7 @@ description: Result of parsing if_else.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "isEqualTo",
                 "start": 0,
                 "type": "Identifier"
@@ -156,6 +173,7 @@ description: Result of parsing if_else.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "3",
                 "start": 0,
                 "type": "Literal",
@@ -171,6 +189,7 @@ description: Result of parsing if_else.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "error",
                 "start": 0,
                 "type": "Identifier"
@@ -178,6 +197,7 @@ description: Result of parsing if_else.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "\"the 'if' branch gets returned\"",
                 "start": 0,
                 "type": "Literal",
@@ -190,9 +210,11 @@ description: Result of parsing if_else.kcl
             "abs_path": false,
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "assert",
               "start": 0,
               "type": "Identifier"
@@ -203,6 +225,7 @@ description: Result of parsing if_else.kcl
           },
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
@@ -210,9 +233,11 @@ description: Result of parsing if_else.kcl
             "abs_path": false,
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "a",
               "start": 0,
               "type": "Identifier"
@@ -223,6 +248,7 @@ description: Result of parsing if_else.kcl
             "type": "Name"
           }
         },
+        "moduleId": 0,
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -235,6 +261,7 @@ description: Result of parsing if_else.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "b",
             "start": 0,
             "type": "Identifier"
@@ -244,6 +271,7 @@ description: Result of parsing if_else.kcl
             "cond": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "raw": "false",
               "start": 0,
               "type": "Literal",
@@ -257,6 +285,7 @@ description: Result of parsing if_else.kcl
                 "cond": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "raw": "true",
                   "start": 0,
                   "type": "Literal",
@@ -265,6 +294,7 @@ description: Result of parsing if_else.kcl
                 },
                 "digest": null,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "then_val": {
                   "body": [
@@ -274,6 +304,7 @@ description: Result of parsing if_else.kcl
                       "expression": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "4",
                         "start": 0,
                         "type": "Literal",
@@ -283,6 +314,7 @@ description: Result of parsing if_else.kcl
                           "suffix": "None"
                         }
                       },
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ExpressionStatement",
                       "type": "ExpressionStatement"
@@ -290,6 +322,7 @@ description: Result of parsing if_else.kcl
                   ],
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "start": 0
                 },
                 "type": "ElseIf"
@@ -304,6 +337,7 @@ description: Result of parsing if_else.kcl
                   "expression": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "5",
                     "start": 0,
                     "type": "Literal",
@@ -313,6 +347,7 @@ description: Result of parsing if_else.kcl
                       "suffix": "None"
                     }
                   },
+                  "moduleId": 0,
                   "start": 0,
                   "type": "ExpressionStatement",
                   "type": "ExpressionStatement"
@@ -320,8 +355,10 @@ description: Result of parsing if_else.kcl
               ],
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0
             },
+            "moduleId": 0,
             "start": 0,
             "then_val": {
               "body": [
@@ -331,6 +368,7 @@ description: Result of parsing if_else.kcl
                   "expression": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "3",
                     "start": 0,
                     "type": "Literal",
@@ -340,6 +378,7 @@ description: Result of parsing if_else.kcl
                       "suffix": "None"
                     }
                   },
+                  "moduleId": 0,
                   "start": 0,
                   "type": "ExpressionStatement",
                   "type": "ExpressionStatement"
@@ -347,16 +386,19 @@ description: Result of parsing if_else.kcl
               ],
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0
             },
             "type": "IfExpression",
             "type": "IfExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -371,6 +413,7 @@ description: Result of parsing if_else.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "isEqualTo",
                 "start": 0,
                 "type": "Identifier"
@@ -378,6 +421,7 @@ description: Result of parsing if_else.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "4",
                 "start": 0,
                 "type": "Literal",
@@ -393,6 +437,7 @@ description: Result of parsing if_else.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "error",
                 "start": 0,
                 "type": "Identifier"
@@ -400,6 +445,7 @@ description: Result of parsing if_else.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "\"the 'else if' branch gets returned\"",
                 "start": 0,
                 "type": "Literal",
@@ -412,9 +458,11 @@ description: Result of parsing if_else.kcl
             "abs_path": false,
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "assert",
               "start": 0,
               "type": "Identifier"
@@ -425,6 +473,7 @@ description: Result of parsing if_else.kcl
           },
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
@@ -432,9 +481,11 @@ description: Result of parsing if_else.kcl
             "abs_path": false,
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "b",
               "start": 0,
               "type": "Identifier"
@@ -445,6 +496,7 @@ description: Result of parsing if_else.kcl
             "type": "Name"
           }
         },
+        "moduleId": 0,
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -457,6 +509,7 @@ description: Result of parsing if_else.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "c",
             "start": 0,
             "type": "Identifier"
@@ -466,6 +519,7 @@ description: Result of parsing if_else.kcl
             "cond": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "raw": "false",
               "start": 0,
               "type": "Literal",
@@ -479,6 +533,7 @@ description: Result of parsing if_else.kcl
                 "cond": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "raw": "false",
                   "start": 0,
                   "type": "Literal",
@@ -487,6 +542,7 @@ description: Result of parsing if_else.kcl
                 },
                 "digest": null,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "then_val": {
                   "body": [
@@ -496,6 +552,7 @@ description: Result of parsing if_else.kcl
                       "expression": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "4",
                         "start": 0,
                         "type": "Literal",
@@ -505,6 +562,7 @@ description: Result of parsing if_else.kcl
                           "suffix": "None"
                         }
                       },
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ExpressionStatement",
                       "type": "ExpressionStatement"
@@ -512,6 +570,7 @@ description: Result of parsing if_else.kcl
                   ],
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "start": 0
                 },
                 "type": "ElseIf"
@@ -526,6 +585,7 @@ description: Result of parsing if_else.kcl
                   "expression": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "5",
                     "start": 0,
                     "type": "Literal",
@@ -535,6 +595,7 @@ description: Result of parsing if_else.kcl
                       "suffix": "None"
                     }
                   },
+                  "moduleId": 0,
                   "start": 0,
                   "type": "ExpressionStatement",
                   "type": "ExpressionStatement"
@@ -542,8 +603,10 @@ description: Result of parsing if_else.kcl
               ],
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0
             },
+            "moduleId": 0,
             "start": 0,
             "then_val": {
               "body": [
@@ -553,6 +616,7 @@ description: Result of parsing if_else.kcl
                   "expression": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "3",
                     "start": 0,
                     "type": "Literal",
@@ -562,6 +626,7 @@ description: Result of parsing if_else.kcl
                       "suffix": "None"
                     }
                   },
+                  "moduleId": 0,
                   "start": 0,
                   "type": "ExpressionStatement",
                   "type": "ExpressionStatement"
@@ -569,16 +634,19 @@ description: Result of parsing if_else.kcl
               ],
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0
             },
             "type": "IfExpression",
             "type": "IfExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -593,6 +661,7 @@ description: Result of parsing if_else.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "isEqualTo",
                 "start": 0,
                 "type": "Identifier"
@@ -600,6 +669,7 @@ description: Result of parsing if_else.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "5",
                 "start": 0,
                 "type": "Literal",
@@ -615,6 +685,7 @@ description: Result of parsing if_else.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "error",
                 "start": 0,
                 "type": "Identifier"
@@ -622,6 +693,7 @@ description: Result of parsing if_else.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "\"the 'else' branch gets returned\"",
                 "start": 0,
                 "type": "Literal",
@@ -634,9 +706,11 @@ description: Result of parsing if_else.kcl
             "abs_path": false,
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "assert",
               "start": 0,
               "type": "Identifier"
@@ -647,6 +721,7 @@ description: Result of parsing if_else.kcl
           },
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
@@ -654,9 +729,11 @@ description: Result of parsing if_else.kcl
             "abs_path": false,
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "c",
               "start": 0,
               "type": "Identifier"
@@ -667,6 +744,7 @@ description: Result of parsing if_else.kcl
             "type": "Name"
           }
         },
+        "moduleId": 0,
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -674,12 +752,14 @@ description: Result of parsing if_else.kcl
     ],
     "commentStart": 0,
     "end": 0,
+    "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "1": [
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {
@@ -691,6 +771,7 @@ description: Result of parsing if_else.kcl
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {
@@ -703,6 +784,7 @@ description: Result of parsing if_else.kcl
         {
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "NonCodeNode",
           "value": {
@@ -714,6 +796,7 @@ description: Result of parsing if_else.kcl
         {
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "NonCodeNode",
           "value": {

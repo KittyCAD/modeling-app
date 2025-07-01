@@ -6,21 +6,20 @@ use itertools::{EitherOrBoth, Itertools};
 use tokio::sync::RwLock;
 
 use crate::{
+    ExecOutcome, ExecutorContext,
     execution::{
-        annotations,
+        EnvironmentRef, ExecutorSettings, annotations,
         memory::Stack,
         state::{self as exec_state, ModuleInfoMap},
-        EnvironmentRef, ExecutorSettings,
     },
     parsing::ast::types::{Annotation, Node, Program},
     walk::Node as WalkNode,
-    ExecOutcome, ExecutorContext,
 };
 
 lazy_static::lazy_static! {
     /// A static mutable lock for updating the last successful execution state for the cache.
     static ref OLD_AST: Arc<RwLock<Option<GlobalState>>> = Default::default();
-    // The last successful run's memory. Not cleared after an unssuccessful run.
+    // The last successful run's memory. Not cleared after an unsuccessful run.
     static ref PREV_MEMORY: Arc<RwLock<Option<(Stack, ModuleInfoMap)>>> = Default::default();
 }
 
@@ -109,9 +108,7 @@ impl GlobalState {
             variables: self.main.exec_state.variables(self.main.result_env),
             filenames: self.exec_state.filenames(),
             #[cfg(feature = "artifact-graph")]
-            operations: self.exec_state.artifacts.operations,
-            #[cfg(feature = "artifact-graph")]
-            artifact_commands: self.exec_state.artifacts.commands,
+            operations: self.exec_state.root_module_artifacts.operations,
             #[cfg(feature = "artifact-graph")]
             artifact_graph: self.exec_state.artifacts.graph,
             errors: self.exec_state.errors,
@@ -339,7 +336,7 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     use super::*;
-    use crate::execution::{parse_execute, parse_execute_with_project_dir, ExecTestResults};
+    use crate::execution::{ExecTestResults, parse_execute, parse_execute_with_project_dir};
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_get_changed_program_same_code() {
@@ -757,7 +754,7 @@ extrude(profile001, length = 100)"#
         .await;
 
         let CacheResult::CheckImportsOnly { reapply_settings, .. } = result else {
-            panic!("Expected CheckImportsOnly, got {:?}", result);
+            panic!("Expected CheckImportsOnly, got {result:?}");
         };
 
         assert_eq!(reapply_settings, false);
@@ -841,7 +838,7 @@ extrude(profile001, length = 100)
         .await;
 
         let CacheResult::CheckImportsOnly { reapply_settings, .. } = result else {
-            panic!("Expected CheckImportsOnly, got {:?}", result);
+            panic!("Expected CheckImportsOnly, got {result:?}");
         };
 
         assert_eq!(reapply_settings, false);

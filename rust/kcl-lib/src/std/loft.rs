@@ -3,18 +3,18 @@
 use std::num::NonZeroU32;
 
 use anyhow::Result;
-use kcmc::{each_cmd as mcmd, length_unit::LengthUnit, ModelingCmd};
+use kcmc::{ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit};
 use kittycad_modeling_cmds as kcmc;
 
-use super::{args::TyF64, DEFAULT_TOLERANCE};
+use super::{DEFAULT_TOLERANCE_MM, args::TyF64};
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
+        ExecState, KclValue, ModelingCmdMeta, Sketch, Solid,
         types::{NumericType, RuntimeType},
-        ExecState, KclValue, Sketch, Solid,
     },
     parsing::ast::types::TagNode,
-    std::{extrude::do_post_extrude, Args},
+    std::{Args, extrude::do_post_extrude},
 };
 
 const DEFAULT_V_DEGREE: u32 = 2;
@@ -77,17 +77,18 @@ async fn inner_loft(
     }
 
     let id = exec_state.next_uuid();
-    args.batch_modeling_cmd(
-        id,
-        ModelingCmd::from(mcmd::Loft {
-            section_ids: sketches.iter().map(|group| group.id).collect(),
-            base_curve_index,
-            bez_approximate_rational,
-            tolerance: LengthUnit(tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE)),
-            v_degree,
-        }),
-    )
-    .await?;
+    exec_state
+        .batch_modeling_cmd(
+            ModelingCmdMeta::from_args_id(&args, id),
+            ModelingCmd::from(mcmd::Loft {
+                section_ids: sketches.iter().map(|group| group.id).collect(),
+                base_curve_index,
+                bez_approximate_rational,
+                tolerance: LengthUnit(tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM)),
+                v_degree,
+            }),
+        )
+        .await?;
 
     // Using the first sketch as the base curve, idk we might want to change this later.
     let mut sketch = sketches[0].clone();

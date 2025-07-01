@@ -12,7 +12,7 @@ xLine(
   @sketch: Sketch,
   length?: number(Length),
   endAbsolute?: number(Length),
-  tag?: tag,
+  tag?: TagDecl,
 ): Sketch
 ```
 
@@ -25,7 +25,7 @@ xLine(
 | `sketch` | [`Sketch`](/docs/kcl-std/types/std-types-Sketch) | Which sketch should this path be added to? | Yes |
 | `length` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | How far away along the X axis should this line go? Incompatible with `endAbsolute`. | No |
 | `endAbsolute` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | Which absolute X value should this line go to? Incompatible with `length`. | No |
-| [`tag`](/docs/kcl-std/types/std-types-tag) | [`tag`](/docs/kcl-std/types/std-types-tag) | Create a new tag which refers to this line. | No |
+| `tag` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | Create a new tag which refers to this line. | No |
 
 ### Returns
 
@@ -38,10 +38,10 @@ xLine(
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> xLine(length = 15)
-  |> angledLine(angle = 80, length = 15)
+  |> angledLine(angle = 80deg, length = 15)
   |> line(end = [8, -10])
   |> xLine(length = 10)
-  |> angledLine(angle = 120, length = 30)
+  |> angledLine(angle = 120deg, length = 30)
   |> xLine(length = -15)
   |> close()
 

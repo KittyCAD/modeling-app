@@ -281,8 +281,11 @@ mod tests {
   length: number(Length),
   symmetric?: bool,
   bidirectionalLength?: number(Length),
-  tagStart?: tag,
-  tagEnd?: tag,
+  tagStart?: TagDecl,
+  tagEnd?: TagDecl,
+  twistAngle?: number(Angle),
+  twistAngleStep?: number(Angle),
+  twistCenter?: Point2d,
 ): [Solid; 1+]"#
         );
     }

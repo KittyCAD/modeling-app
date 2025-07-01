@@ -13,18 +13,22 @@ description: Result of parsing subtract_regression09.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "sketch001",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "arguments": [],
             "callee": {
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "startSketchOn",
                 "start": 0,
                 "type": "Identifier"
@@ -35,6 +39,7 @@ description: Result of parsing subtract_regression09.kcl
             },
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
@@ -42,9 +47,11 @@ description: Result of parsing subtract_regression09.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "YZ",
                 "start": 0,
                 "type": "Identifier"
@@ -55,11 +62,13 @@ description: Result of parsing subtract_regression09.kcl
               "type": "Name"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -72,6 +81,7 @@ description: Result of parsing subtract_regression09.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "sketch001Profile000",
             "start": 0,
             "type": "Identifier"
@@ -85,6 +95,7 @@ description: Result of parsing subtract_regression09.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "at",
                       "start": 0,
                       "type": "Identifier"
@@ -95,6 +106,7 @@ description: Result of parsing subtract_regression09.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "5",
                           "start": 0,
                           "type": "Literal",
@@ -107,6 +119,7 @@ description: Result of parsing subtract_regression09.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "3",
                           "start": 0,
                           "type": "Literal",
@@ -118,6 +131,7 @@ description: Result of parsing subtract_regression09.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -128,9 +142,11 @@ description: Result of parsing subtract_regression09.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "startProfile",
                     "start": 0,
                     "type": "Identifier"
@@ -141,6 +157,7 @@ description: Result of parsing subtract_regression09.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -148,9 +165,11 @@ description: Result of parsing subtract_regression09.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "sketch001",
                     "start": 0,
                     "type": "Identifier"
@@ -168,6 +187,7 @@ description: Result of parsing subtract_regression09.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
@@ -176,6 +196,7 @@ description: Result of parsing subtract_regression09.kcl
                       "argument": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "6",
                         "start": 0,
                         "type": "Literal",
@@ -187,6 +208,7 @@ description: Result of parsing subtract_regression09.kcl
                       },
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "operator": "-",
                       "start": 0,
                       "type": "UnaryExpression",
@@ -198,9 +220,11 @@ description: Result of parsing subtract_regression09.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "yLine",
                     "start": 0,
                     "type": "Identifier"
@@ -211,6 +235,7 @@ description: Result of parsing subtract_regression09.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -223,6 +248,7 @@ description: Result of parsing subtract_regression09.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
@@ -230,6 +256,7 @@ description: Result of parsing subtract_regression09.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "24.972",
                       "start": 0,
                       "type": "Literal",
@@ -245,9 +272,11 @@ description: Result of parsing subtract_regression09.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "xLine",
                     "start": 0,
                     "type": "Identifier"
@@ -258,6 +287,7 @@ description: Result of parsing subtract_regression09.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -270,6 +300,7 @@ description: Result of parsing subtract_regression09.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
@@ -277,6 +308,7 @@ description: Result of parsing subtract_regression09.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "6",
                       "start": 0,
                       "type": "Literal",
@@ -292,9 +324,11 @@ description: Result of parsing subtract_regression09.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "yLine",
                     "start": 0,
                     "type": "Identifier"
@@ -305,6 +339,7 @@ description: Result of parsing subtract_regression09.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -317,6 +352,7 @@ description: Result of parsing subtract_regression09.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
@@ -325,6 +361,7 @@ description: Result of parsing subtract_regression09.kcl
                       "argument": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "24.972",
                         "start": 0,
                         "type": "Literal",
@@ -336,6 +373,7 @@ description: Result of parsing subtract_regression09.kcl
                       },
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "operator": "-",
                       "start": 0,
                       "type": "UnaryExpression",
@@ -347,9 +385,11 @@ description: Result of parsing subtract_regression09.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "xLine",
                     "start": 0,
                     "type": "Identifier"
@@ -360,19 +400,23 @@ description: Result of parsing subtract_regression09.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               },
               {
+                "arguments": [],
                 "callee": {
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "close",
                     "start": 0,
                     "type": "Identifier"
@@ -383,6 +427,7 @@ description: Result of parsing subtract_regression09.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -391,15 +436,18 @@ description: Result of parsing subtract_regression09.kcl
             ],
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -412,6 +460,7 @@ description: Result of parsing subtract_regression09.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "revolve000",
             "start": 0,
             "type": "Identifier"
@@ -423,6 +472,7 @@ description: Result of parsing subtract_regression09.kcl
                 "label": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "axis",
                   "start": 0,
                   "type": "Identifier"
@@ -431,9 +481,11 @@ description: Result of parsing subtract_regression09.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "Y",
                     "start": 0,
                     "type": "Identifier"
@@ -449,6 +501,7 @@ description: Result of parsing subtract_regression09.kcl
                 "label": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "angle",
                   "start": 0,
                   "type": "Identifier"
@@ -456,6 +509,7 @@ description: Result of parsing subtract_regression09.kcl
                 "arg": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "raw": "360",
                   "start": 0,
                   "type": "Literal",
@@ -471,9 +525,11 @@ description: Result of parsing subtract_regression09.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "revolve",
                 "start": 0,
                 "type": "Identifier"
@@ -484,6 +540,7 @@ description: Result of parsing subtract_regression09.kcl
             },
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
@@ -491,9 +548,11 @@ description: Result of parsing subtract_regression09.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "sketch001Profile000",
                 "start": 0,
                 "type": "Identifier"
@@ -504,11 +563,13 @@ description: Result of parsing subtract_regression09.kcl
               "type": "Name"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -521,18 +582,22 @@ description: Result of parsing subtract_regression09.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "sketch003",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "arguments": [],
             "callee": {
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "startSketchOn",
                 "start": 0,
                 "type": "Identifier"
@@ -543,6 +608,7 @@ description: Result of parsing subtract_regression09.kcl
             },
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
@@ -550,9 +616,11 @@ description: Result of parsing subtract_regression09.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "XY",
                 "start": 0,
                 "type": "Identifier"
@@ -563,11 +631,13 @@ description: Result of parsing subtract_regression09.kcl
               "type": "Name"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -580,6 +650,7 @@ description: Result of parsing subtract_regression09.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "sketch003Profile000",
             "start": 0,
             "type": "Identifier"
@@ -593,6 +664,7 @@ description: Result of parsing subtract_regression09.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "at",
                       "start": 0,
                       "type": "Identifier"
@@ -603,6 +675,7 @@ description: Result of parsing subtract_regression09.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "1.188246",
                           "start": 0,
                           "type": "Literal",
@@ -615,6 +688,7 @@ description: Result of parsing subtract_regression09.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "27.497102",
                           "start": 0,
                           "type": "Literal",
@@ -626,6 +700,7 @@ description: Result of parsing subtract_regression09.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -636,9 +711,11 @@ description: Result of parsing subtract_regression09.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "startProfile",
                     "start": 0,
                     "type": "Identifier"
@@ -649,6 +726,7 @@ description: Result of parsing subtract_regression09.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -656,9 +734,11 @@ description: Result of parsing subtract_regression09.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "sketch003",
                     "start": 0,
                     "type": "Identifier"
@@ -676,6 +756,7 @@ description: Result of parsing subtract_regression09.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
@@ -687,6 +768,7 @@ description: Result of parsing subtract_regression09.kcl
                           "argument": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "raw": "0.177089",
                             "start": 0,
                             "type": "Literal",
@@ -698,6 +780,7 @@ description: Result of parsing subtract_regression09.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "operator": "-",
                           "start": 0,
                           "type": "UnaryExpression",
@@ -706,6 +789,7 @@ description: Result of parsing subtract_regression09.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "0.740791",
                           "start": 0,
                           "type": "Literal",
@@ -717,6 +801,7 @@ description: Result of parsing subtract_regression09.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -727,9 +812,11 @@ description: Result of parsing subtract_regression09.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "line",
                     "start": 0,
                     "type": "Identifier"
@@ -740,6 +827,7 @@ description: Result of parsing subtract_regression09.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -752,6 +840,7 @@ description: Result of parsing subtract_regression09.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "angleStart",
                       "start": 0,
                       "type": "Identifier"
@@ -759,6 +848,7 @@ description: Result of parsing subtract_regression09.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "13.444444",
                       "start": 0,
                       "type": "Literal",
@@ -774,6 +864,7 @@ description: Result of parsing subtract_regression09.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "angleEnd",
                       "start": 0,
                       "type": "Identifier"
@@ -781,6 +872,7 @@ description: Result of parsing subtract_regression09.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "38.628165",
                       "start": 0,
                       "type": "Literal",
@@ -796,6 +888,7 @@ description: Result of parsing subtract_regression09.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "radius",
                       "start": 0,
                       "type": "Identifier"
@@ -803,6 +896,7 @@ description: Result of parsing subtract_regression09.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "5.283446",
                       "start": 0,
                       "type": "Literal",
@@ -818,9 +912,11 @@ description: Result of parsing subtract_regression09.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "arc",
                     "start": 0,
                     "type": "Identifier"
@@ -831,6 +927,7 @@ description: Result of parsing subtract_regression09.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -843,6 +940,7 @@ description: Result of parsing subtract_regression09.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "angleStart",
                       "start": 0,
                       "type": "Identifier"
@@ -850,6 +948,7 @@ description: Result of parsing subtract_regression09.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "145.295512",
                       "start": 0,
                       "type": "Literal",
@@ -865,6 +964,7 @@ description: Result of parsing subtract_regression09.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "angleEnd",
                       "start": 0,
                       "type": "Identifier"
@@ -872,6 +972,7 @@ description: Result of parsing subtract_regression09.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "14.704488",
                       "start": 0,
                       "type": "Literal",
@@ -887,6 +988,7 @@ description: Result of parsing subtract_regression09.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "radius",
                       "start": 0,
                       "type": "Identifier"
@@ -894,6 +996,7 @@ description: Result of parsing subtract_regression09.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "5.793095",
                       "start": 0,
                       "type": "Literal",
@@ -909,9 +1012,11 @@ description: Result of parsing subtract_regression09.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "arc",
                     "start": 0,
                     "type": "Identifier"
@@ -922,6 +1027,7 @@ description: Result of parsing subtract_regression09.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -934,6 +1040,7 @@ description: Result of parsing subtract_regression09.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "angleStart",
                       "start": 0,
                       "type": "Identifier"
@@ -941,6 +1048,7 @@ description: Result of parsing subtract_regression09.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "121.371835",
                       "start": 0,
                       "type": "Literal",
@@ -956,6 +1064,7 @@ description: Result of parsing subtract_regression09.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "angleEnd",
                       "start": 0,
                       "type": "Identifier"
@@ -963,6 +1072,7 @@ description: Result of parsing subtract_regression09.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "146.555556",
                       "start": 0,
                       "type": "Literal",
@@ -978,6 +1088,7 @@ description: Result of parsing subtract_regression09.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "radius",
                       "start": 0,
                       "type": "Identifier"
@@ -985,6 +1096,7 @@ description: Result of parsing subtract_regression09.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "5.283446",
                       "start": 0,
                       "type": "Literal",
@@ -1000,9 +1112,11 @@ description: Result of parsing subtract_regression09.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "arc",
                     "start": 0,
                     "type": "Identifier"
@@ -1013,6 +1127,7 @@ description: Result of parsing subtract_regression09.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -1025,6 +1140,7 @@ description: Result of parsing subtract_regression09.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
@@ -1036,6 +1152,7 @@ description: Result of parsing subtract_regression09.kcl
                           "argument": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "raw": "0.419774",
                             "start": 0,
                             "type": "Literal",
@@ -1047,6 +1164,7 @@ description: Result of parsing subtract_regression09.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "operator": "-",
                           "start": 0,
                           "type": "UnaryExpression",
@@ -1056,6 +1174,7 @@ description: Result of parsing subtract_regression09.kcl
                           "argument": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "raw": "0.635548",
                             "start": 0,
                             "type": "Literal",
@@ -1067,6 +1186,7 @@ description: Result of parsing subtract_regression09.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "operator": "-",
                           "start": 0,
                           "type": "UnaryExpression",
@@ -1074,6 +1194,7 @@ description: Result of parsing subtract_regression09.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -1084,9 +1205,11 @@ description: Result of parsing subtract_regression09.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "line",
                     "start": 0,
                     "type": "Identifier"
@@ -1097,6 +1220,7 @@ description: Result of parsing subtract_regression09.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -1109,6 +1233,7 @@ description: Result of parsing subtract_regression09.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "angleStart",
                       "start": 0,
                       "type": "Identifier"
@@ -1116,6 +1241,7 @@ description: Result of parsing subtract_regression09.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "326.170267",
                       "start": 0,
                       "type": "Literal",
@@ -1131,6 +1257,7 @@ description: Result of parsing subtract_regression09.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "angleEnd",
                       "start": 0,
                       "type": "Identifier"
@@ -1138,6 +1265,7 @@ description: Result of parsing subtract_regression09.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "311.293981",
                       "start": 0,
                       "type": "Literal",
@@ -1153,6 +1281,7 @@ description: Result of parsing subtract_regression09.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "radius",
                       "start": 0,
                       "type": "Identifier"
@@ -1160,6 +1289,7 @@ description: Result of parsing subtract_regression09.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "8.272375",
                       "start": 0,
                       "type": "Literal",
@@ -1175,9 +1305,11 @@ description: Result of parsing subtract_regression09.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "arc",
                     "start": 0,
                     "type": "Identifier"
@@ -1188,6 +1320,7 @@ description: Result of parsing subtract_regression09.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -1200,6 +1333,7 @@ description: Result of parsing subtract_regression09.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "angleStart",
                       "start": 0,
                       "type": "Identifier"
@@ -1207,6 +1341,7 @@ description: Result of parsing subtract_regression09.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "311.666667",
                       "start": 0,
                       "type": "Literal",
@@ -1222,6 +1357,7 @@ description: Result of parsing subtract_regression09.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "angleEnd",
                       "start": 0,
                       "type": "Identifier"
@@ -1229,6 +1365,7 @@ description: Result of parsing subtract_regression09.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "208.333333",
                       "start": 0,
                       "type": "Literal",
@@ -1244,6 +1381,7 @@ description: Result of parsing subtract_regression09.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "radius",
                       "start": 0,
                       "type": "Identifier"
@@ -1251,6 +1389,7 @@ description: Result of parsing subtract_regression09.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "3.178087",
                       "start": 0,
                       "type": "Literal",
@@ -1266,9 +1405,11 @@ description: Result of parsing subtract_regression09.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "arc",
                     "start": 0,
                     "type": "Identifier"
@@ -1279,6 +1420,7 @@ description: Result of parsing subtract_regression09.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -1291,6 +1433,7 @@ description: Result of parsing subtract_regression09.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
@@ -1301,6 +1444,7 @@ description: Result of parsing subtract_regression09.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "1.188246",
                           "start": 0,
                           "type": "Literal",
@@ -1313,6 +1457,7 @@ description: Result of parsing subtract_regression09.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "27.497102",
                           "start": 0,
                           "type": "Literal",
@@ -1324,6 +1469,7 @@ description: Result of parsing subtract_regression09.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -1334,9 +1480,11 @@ description: Result of parsing subtract_regression09.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "tangentialArc",
                     "start": 0,
                     "type": "Identifier"
@@ -1347,19 +1495,23 @@ description: Result of parsing subtract_regression09.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               },
               {
+                "arguments": [],
                 "callee": {
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "close",
                     "start": 0,
                     "type": "Identifier"
@@ -1370,6 +1522,7 @@ description: Result of parsing subtract_regression09.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -1378,12 +1531,14 @@ description: Result of parsing subtract_regression09.kcl
             ],
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "8": [
                   {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "start": 0,
                     "type": "NonCodeNode",
                     "value": {
@@ -1395,6 +1550,7 @@ description: Result of parsing subtract_regression09.kcl
                   {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "start": 0,
                     "type": "NonCodeNode",
                     "value": {
@@ -1406,6 +1562,7 @@ description: Result of parsing subtract_regression09.kcl
                   {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "start": 0,
                     "type": "NonCodeNode",
                     "value": {
@@ -1417,6 +1574,7 @@ description: Result of parsing subtract_regression09.kcl
                   {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "start": 0,
                     "type": "NonCodeNode",
                     "value": {
@@ -1428,6 +1586,7 @@ description: Result of parsing subtract_regression09.kcl
                   {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "start": 0,
                     "type": "NonCodeNode",
                     "value": {
@@ -1444,11 +1603,13 @@ description: Result of parsing subtract_regression09.kcl
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -1461,6 +1622,7 @@ description: Result of parsing subtract_regression09.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "cut000Extrude",
             "start": 0,
             "type": "Identifier"
@@ -1472,6 +1634,7 @@ description: Result of parsing subtract_regression09.kcl
                 "label": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "length",
                   "start": 0,
                   "type": "Identifier"
@@ -1479,6 +1642,7 @@ description: Result of parsing subtract_regression09.kcl
                 "arg": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "raw": "10",
                   "start": 0,
                   "type": "Literal",
@@ -1494,6 +1658,7 @@ description: Result of parsing subtract_regression09.kcl
                 "label": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "bidirectionalLength",
                   "start": 0,
                   "type": "Identifier"
@@ -1501,6 +1666,7 @@ description: Result of parsing subtract_regression09.kcl
                 "arg": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "raw": "10",
                   "start": 0,
                   "type": "Literal",
@@ -1516,9 +1682,11 @@ description: Result of parsing subtract_regression09.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "extrude",
                 "start": 0,
                 "type": "Identifier"
@@ -1529,6 +1697,7 @@ description: Result of parsing subtract_regression09.kcl
             },
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
@@ -1539,9 +1708,11 @@ description: Result of parsing subtract_regression09.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "sketch003Profile000",
                     "start": 0,
                     "type": "Identifier"
@@ -1553,16 +1724,19 @@ description: Result of parsing subtract_regression09.kcl
                 }
               ],
               "end": 0,
+              "moduleId": 0,
               "start": 0,
               "type": "ArrayExpression",
               "type": "ArrayExpression"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -1577,6 +1751,7 @@ description: Result of parsing subtract_regression09.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "tools",
                 "start": 0,
                 "type": "Identifier"
@@ -1585,9 +1760,11 @@ description: Result of parsing subtract_regression09.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "cut000Extrude",
                   "start": 0,
                   "type": "Identifier"
@@ -1603,9 +1780,11 @@ description: Result of parsing subtract_regression09.kcl
             "abs_path": false,
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "subtract",
               "start": 0,
               "type": "Identifier"
@@ -1616,6 +1795,7 @@ description: Result of parsing subtract_regression09.kcl
           },
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
@@ -1623,9 +1803,11 @@ description: Result of parsing subtract_regression09.kcl
             "abs_path": false,
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "revolve000",
               "start": 0,
               "type": "Identifier"
@@ -1636,6 +1818,7 @@ description: Result of parsing subtract_regression09.kcl
             "type": "Name"
           }
         },
+        "moduleId": 0,
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -1647,9 +1830,11 @@ description: Result of parsing subtract_regression09.kcl
       {
         "commentStart": 0,
         "end": 0,
+        "moduleId": 0,
         "name": {
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "name": "settings",
           "start": 0,
           "type": "Identifier"
@@ -1661,19 +1846,23 @@ description: Result of parsing subtract_regression09.kcl
             "key": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "defaultLengthUnit",
               "start": 0,
               "type": "Identifier"
             },
+            "moduleId": 0,
             "start": 0,
             "type": "ObjectProperty",
             "value": {
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "mm",
                 "start": 0,
                 "type": "Identifier"
@@ -1689,12 +1878,14 @@ description: Result of parsing subtract_regression09.kcl
         "type": "Annotation"
       }
     ],
+    "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {
@@ -1706,6 +1897,7 @@ description: Result of parsing subtract_regression09.kcl
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {
@@ -1717,6 +1909,7 @@ description: Result of parsing subtract_regression09.kcl
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {
@@ -1728,6 +1921,7 @@ description: Result of parsing subtract_regression09.kcl
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {
@@ -1739,6 +1933,7 @@ description: Result of parsing subtract_regression09.kcl
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {
@@ -1750,6 +1945,7 @@ description: Result of parsing subtract_regression09.kcl
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {
@@ -1762,6 +1958,7 @@ description: Result of parsing subtract_regression09.kcl
         {
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "NonCodeNode",
           "value": {

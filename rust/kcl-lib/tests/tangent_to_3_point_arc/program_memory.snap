@@ -52,6 +52,7 @@ description: Variables in memory after executing tangent_to_3_point_arc.kcl
           "tag": {
             "commentStart": 221,
             "end": 227,
+            "moduleId": 0,
             "start": 221,
             "type": "TagDeclarator",
             "value": "seg01"
@@ -76,8 +77,8 @@ description: Variables in memory after executing tangent_to_3_point_arc.kcl
           ],
           "tag": null,
           "to": [
-            100.196,
-            -106.261
+            100.1961777805678,
+            -106.26075637538877
           ],
           "type": "ToPoint",
           "units": {

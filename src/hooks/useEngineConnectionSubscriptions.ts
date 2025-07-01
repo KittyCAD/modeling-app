@@ -13,7 +13,7 @@ import {
 } from '@src/lang/std/artifactGraph'
 import { isTopLevelModule } from '@src/lang/util'
 import type { CallExpressionKw, PathToNode } from '@src/lang/wasm'
-import { defaultSourceRange } from '@src/lang/wasm'
+import { defaultSourceRange } from '@src/lang/sourceRange'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import { getEventForSelectWithPoint } from '@src/lib/selections'
 import {
@@ -164,20 +164,49 @@ export function useEngineConnectionSubscriptions() {
               if (artifact?.type === 'plane') {
                 const planeInfo =
                   await sceneEntitiesManager.getFaceDetails(planeOrFaceId)
+
+                // Apply camera-based orientation logic similar to default planes
+                let zAxis: [number, number, number] = [
+                  planeInfo.z_axis.x,
+                  planeInfo.z_axis.y,
+                  planeInfo.z_axis.z,
+                ]
+                let yAxis: [number, number, number] = [
+                  planeInfo.y_axis.x,
+                  planeInfo.y_axis.y,
+                  planeInfo.y_axis.z,
+                ]
+
+                // Get camera vector to determine which side of the plane we're viewing from
+                const camVector = sceneInfra.camControls.camera.position
+                  .clone()
+                  .sub(sceneInfra.camControls.target)
+
+                // Determine the canonical (absolute) plane orientation
+                const absZAxis: [number, number, number] = [
+                  Math.abs(zAxis[0]),
+                  Math.abs(zAxis[1]),
+                  Math.abs(zAxis[2]),
+                ]
+
+                // Find the dominant axis (like default planes do)
+                const maxComponent = Math.max(...absZAxis)
+                const dominantAxisIndex = absZAxis.indexOf(maxComponent)
+
+                // Check camera position against canonical orientation (like default planes)
+                const cameraComponents = [camVector.x, camVector.y, camVector.z]
+                let negated = cameraComponents[dominantAxisIndex] < 0
+                if (dominantAxisIndex === 1) {
+                  // offset of the XZ is being weird, not sure if this is a camera bug
+                  negated = !negated
+                }
+
                 sceneInfra.modelingSend({
                   type: 'Select sketch plane',
                   data: {
                     type: 'offsetPlane',
-                    zAxis: [
-                      planeInfo.z_axis.x,
-                      planeInfo.z_axis.y,
-                      planeInfo.z_axis.z,
-                    ],
-                    yAxis: [
-                      planeInfo.y_axis.x,
-                      planeInfo.y_axis.y,
-                      planeInfo.y_axis.z,
-                    ],
+                    zAxis,
+                    yAxis,
                     position: [
                       planeInfo.origin.x,
                       planeInfo.origin.y,
@@ -189,6 +218,7 @@ export function useEngineConnectionSubscriptions() {
                     ],
                     planeId: planeOrFaceId,
                     pathToNode: artifact.codeRef.pathToNode,
+                    negated,
                   },
                 })
                 return

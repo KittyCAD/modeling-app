@@ -4,8 +4,8 @@ use std::cmp::Ordering;
 
 use anyhow::Result;
 use kcmc::{
-    each_cmd as mcmd, length_unit::LengthUnit, ok_response::OkModelingCmdResponse, shared::Transform,
-    websocket::OkWebSocketResponseData, ModelingCmd,
+    ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit, ok_response::OkModelingCmdResponse, shared::Transform,
+    websocket::OkWebSocketResponseData,
 };
 use kittycad_modeling_cmds::{
     self as kcmc,
@@ -16,19 +16,19 @@ use uuid::Uuid;
 
 use super::axis_or_reference::Axis3dOrPoint3d;
 use crate::{
+    ExecutorContext, SourceRange,
     errors::{KclError, KclErrorDetails},
     execution::{
+        ExecState, Geometries, Geometry, KclObjectFields, KclValue, Sketch, Solid,
         fn_call::{Arg, Args, KwArgs},
         kcl_value::FunctionSource,
         types::{NumericType, PrimitiveType, RuntimeType},
-        ExecState, Geometries, Geometry, KclObjectFields, KclValue, Sketch, Solid,
     },
     std::{
         args::TyF64,
         axis_or_reference::Axis2dOrPoint2d,
         utils::{point_3d_to_mm, point_to_mm},
     },
-    ExecutorContext, SourceRange,
 };
 
 const MUST_HAVE_ONE_INSTANCE: &str = "There must be at least 1 instance of your geometry";
@@ -149,12 +149,11 @@ async fn send_pattern_transform<T: GeometryTrait>(
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<Vec<T>, KclError> {
-    let id = exec_state.next_uuid();
     let extra_instances = transforms.len();
 
-    let resp = args
+    let resp = exec_state
         .send_modeling_cmd(
-            id,
+            args.into(),
             ModelingCmd::from(mcmd::EntityLinearPatternTransform {
                 entity_id: if use_original { solid.original_id() } else { solid.id() },
                 transform: Default::default(),
@@ -177,7 +176,7 @@ async fn send_pattern_transform<T: GeometryTrait>(
         &mock_ids
     } else {
         return Err(KclError::new_engine(KclErrorDetails::new(
-            format!("EntityLinearPattern response was not as expected: {:?}", resp),
+            format!("EntityLinearPattern response was not as expected: {resp:?}"),
             vec![args.source_range],
         )));
     };
@@ -245,7 +244,7 @@ async fn make_transform<T: GeometryTrait>(
             return Err(KclError::new_semantic(KclErrorDetails::new(
                 "Transform function must return a transform object".to_string(),
                 source_ranges.clone(),
-            )))
+            )));
         }
     };
 
@@ -443,7 +442,7 @@ impl GeometryTrait for Solid {
     }
 
     async fn flush_batch(args: &Args, exec_state: &mut ExecState, solid_set: &Self::Set) -> Result<(), KclError> {
-        args.flush_batch_for_solids(exec_state, solid_set).await
+        exec_state.flush_batch_for_solids(args.into(), solid_set).await
     }
 }
 
@@ -874,7 +873,7 @@ async fn inner_pattern_circular_3d(
     // Flush the batch for our fillets/chamfers if there are any.
     // If we do not flush these, then you won't be able to pattern something with fillets.
     // Flush just the fillets/chamfers that apply to these solids.
-    args.flush_batch_for_solids(exec_state, &solids).await?;
+    exec_state.flush_batch_for_solids((&args).into(), &solids).await?;
 
     let starting_solids = solids;
 
@@ -919,7 +918,6 @@ async fn pattern_circular(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Geometries, KclError> {
-    let id = exec_state.next_uuid();
     let num_repetitions = match data.repetitions() {
         RepetitionsNeeded::More(n) => n,
         RepetitionsNeeded::None => {
@@ -934,9 +932,9 @@ async fn pattern_circular(
     };
 
     let center = data.center_mm();
-    let resp = args
+    let resp = exec_state
         .send_modeling_cmd(
-            id,
+            (&args).into(),
             ModelingCmd::from(mcmd::EntityCircularPattern {
                 axis: kcmc::shared::Point3d::from(data.axis()),
                 entity_id: if data.use_original() {
@@ -972,7 +970,7 @@ async fn pattern_circular(
         &mock_ids
     } else {
         return Err(KclError::new_engine(KclErrorDetails::new(
-            format!("EntityCircularPattern response was not as expected: {:?}", resp),
+            format!("EntityCircularPattern response was not as expected: {resp:?}"),
             vec![args.source_range],
         )));
     };

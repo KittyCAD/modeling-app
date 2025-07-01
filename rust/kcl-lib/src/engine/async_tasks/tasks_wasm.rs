@@ -2,11 +2,11 @@
 //! tasks.
 
 use std::sync::{
-    atomic::{AtomicUsize, Ordering},
     Arc,
+    atomic::{AtomicUsize, Ordering},
 };
 
-use tokio::sync::{mpsc, Notify};
+use tokio::sync::{Notify, mpsc};
 
 use crate::errors::KclError;
 

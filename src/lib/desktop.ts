@@ -618,7 +618,7 @@ export const readProjectSettingsFile = async (
 export const readAppSettingsFile = async () => {
   let settingsPath = await getAppSettingsFilePath()
   const initialProjectDirConfig: DeepPartial<
-    Configuration['settings']['project']
+    NonNullable<Required<Configuration>['settings']['project']>
   > = { directory: await getInitialDefaultDir() }
 
   // The file exists, read it and parse it.

@@ -28,7 +28,10 @@ import {
   parseCLIArgs,
 } from '@src/commandLineArgs'
 import { initPromiseNode } from '@src/lang/wasmUtilsNode'
-import { ZOO_STUDIO_PROTOCOL } from '@src/lib/constants'
+import {
+  ZOO_STUDIO_PROTOCOL,
+  OAUTH2_DEVICE_CLIENT_ID,
+} from '@src/lib/constants'
 import getCurrentProjectFile from '@src/lib/getCurrentProjectFile'
 import { reportRejection } from '@src/lib/trap'
 import {
@@ -102,13 +105,9 @@ if (!singleInstanceLock && !IS_PLAYWRIGHT) {
   registerStartupListeners()
 }
 
-const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
+const createWindow = (pathToOpen?: string): BrowserWindow => {
   let newWindow: BrowserWindow | null = null
 
-  if (reuse) {
-    newWindow = mainWindow
-    Menu.setApplicationMenu(null)
-  }
   if (!newWindow) {
     const primaryDisplay = screen.getPrimaryDisplay()
     const { width, height } = primaryDisplay.workAreaSize
@@ -154,6 +153,10 @@ const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
       titleBarStyle: 'hiddenInset',
       backgroundColor: nativeTheme.shouldUseDarkColors ? '#1C1C1C' : '#FCFCFC',
     })
+    // This is only needed on windows, but it doesn't do any harm on other platforms.
+    // On windows the initial width, height supplied above cannot be larger than screen resolution which causes
+    // some weird border to appear when the last window size was close to full screen.
+    newWindow.setBounds({ x, y, width: windowWidth, height: windowHeight })
   }
 
   newWindow.on('close', () => {
@@ -239,9 +242,7 @@ const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()
 
-  if (!reuse) {
-    if (!process.env.HEADLESS) newWindow.show()
-  }
+  if (!process.env.HEADLESS) newWindow.show()
 
   return newWindow
 }
@@ -404,7 +405,7 @@ ipcMain.handle('startDeviceFlow', async (_, host: string) => {
     // We can hardcode the client ID.
     // This value is safe to be embedded in version control.
     // This is the client ID of the KittyCAD app.
-    client_id: '2af127fb-e14e-400a-9c57-a9ed08d1a5b7',
+    client_id: OAUTH2_DEVICE_CLIENT_ID,
     token_endpoint_auth_method: 'none',
   })
 

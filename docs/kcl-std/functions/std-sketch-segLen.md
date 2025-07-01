@@ -8,7 +8,7 @@ layout: manual
 Compute the length of the provided line segment.
 
 ```kcl
-segLen(@tag: tag): number(Length)
+segLen(@tag: TaggedEdge): number(Length)
 ```
 
 
@@ -17,7 +17,7 @@ segLen(@tag: tag): number(Length)
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| [`tag`](/docs/kcl-std/types/std-types-tag) | [`tag`](/docs/kcl-std/types/std-types-tag) | The line segment being queried by its tag. | Yes |
+| `tag` | [`TaggedEdge`](/docs/kcl-std/types/std-types-TaggedEdge) | The line segment being queried by its tag. | Yes |
 
 ### Returns
 
@@ -30,8 +30,8 @@ segLen(@tag: tag): number(Length)
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> angledLine(angle = 60, length = 10, tag = $thing)
-  |> tangentialArc(angle = -120, radius = 5)
-  |> angledLine(angle = -60, length = segLen(thing))
+  |> tangentialArc(angle = -120deg, radius = 5)
+  |> angledLine(angle = -60deg, length = segLen(thing))
   |> close()
 
 example = extrude(exampleSketch, length = 5)

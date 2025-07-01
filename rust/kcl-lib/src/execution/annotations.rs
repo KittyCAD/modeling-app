@@ -2,13 +2,13 @@
 
 use std::str::FromStr;
 
-use kittycad_modeling_cmds::coord::{System, KITTYCAD, OPENGL, VULKAN};
+use kittycad_modeling_cmds::coord::{KITTYCAD, OPENGL, System, VULKAN};
 
 use crate::{
+    KclError, SourceRange,
     errors::KclErrorDetails,
     execution::types::{UnitAngle, UnitLen},
     parsing::ast::types::{Annotation, Expr, LiteralValue, Node, ObjectProperty},
-    KclError, SourceRange,
 };
 
 /// Annotations which should cause re-execution if they change.
@@ -31,6 +31,8 @@ pub(crate) const IMPL_RUST: &str = "std_rust";
 pub(crate) const IMPL_KCL: &str = "kcl";
 pub(crate) const IMPL_PRIMITIVE: &str = "primitive";
 pub(super) const IMPL_VALUES: [&str; 3] = [IMPL_RUST, IMPL_KCL, IMPL_PRIMITIVE];
+
+pub(crate) const DEPRECATED: &str = "deprecated";
 
 #[derive(Clone, Copy, Eq, PartialEq, Debug, Default)]
 pub enum Impl {

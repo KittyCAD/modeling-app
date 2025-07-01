@@ -295,13 +295,13 @@ description: Variables in memory after executing engine-valve.kcl
               0.0
             ],
             "from": [
-              2.4,
+              2.4000000000000004,
               0.0
             ],
             "radius": 2.4000000000000004,
             "tag": null,
             "to": [
-              2.4,
+              2.4000000000000004,
               0.0
             ],
             "type": "Circle",
@@ -542,11 +542,11 @@ description: Variables in memory after executing engine-valve.kcl
         },
         "start": {
           "from": [
-            2.4,
+            2.4000000000000004,
             0.0
           ],
           "to": [
-            2.4,
+            2.4000000000000004,
             0.0
           ],
           "units": {
@@ -667,13 +667,13 @@ description: Variables in memory after executing engine-valve.kcl
                     0.0
                   ],
                   "from": [
-                    2.4,
+                    2.4000000000000004,
                     0.0
                   ],
                   "radius": 2.4000000000000004,
                   "tag": null,
                   "to": [
-                    2.4,
+                    2.4000000000000004,
                     0.0
                   ],
                   "type": "Circle",
@@ -914,11 +914,11 @@ description: Variables in memory after executing engine-valve.kcl
               },
               "start": {
                 "from": [
-                  2.4,
+                  2.4000000000000004,
                   0.0
                 ],
                 "to": [
-                  2.4,
+                  2.4000000000000004,
                   0.0
                 ],
                 "units": {
@@ -1011,13 +1011,13 @@ description: Variables in memory after executing engine-valve.kcl
               0.0
             ],
             "from": [
-              2.4,
+              2.4000000000000004,
               0.0
             ],
             "radius": 2.4000000000000004,
             "tag": null,
             "to": [
-              2.4,
+              2.4000000000000004,
               0.0
             ],
             "type": "Circle",
@@ -1139,13 +1139,13 @@ description: Variables in memory after executing engine-valve.kcl
                           0.0
                         ],
                         "from": [
-                          2.4,
+                          2.4000000000000004,
                           0.0
                         ],
                         "radius": 2.4000000000000004,
                         "tag": null,
                         "to": [
-                          2.4,
+                          2.4000000000000004,
                           0.0
                         ],
                         "type": "Circle",
@@ -1386,11 +1386,11 @@ description: Variables in memory after executing engine-valve.kcl
                     },
                     "start": {
                       "from": [
-                        2.4,
+                        2.4000000000000004,
                         0.0
                       ],
                       "to": [
-                        2.4,
+                        2.4000000000000004,
                         0.0
                       ],
                       "units": {
@@ -1458,11 +1458,11 @@ description: Variables in memory after executing engine-valve.kcl
         },
         "start": {
           "from": [
-            2.4,
+            2.4000000000000004,
             0.0
           ],
           "to": [
-            2.4,
+            2.4000000000000004,
             0.0
           ],
           "units": {
@@ -1583,13 +1583,13 @@ description: Variables in memory after executing engine-valve.kcl
                     0.0
                   ],
                   "from": [
-                    2.4,
+                    2.4000000000000004,
                     0.0
                   ],
                   "radius": 2.4000000000000004,
                   "tag": null,
                   "to": [
-                    2.4,
+                    2.4000000000000004,
                     0.0
                   ],
                   "type": "Circle",
@@ -1711,13 +1711,13 @@ description: Variables in memory after executing engine-valve.kcl
                                 0.0
                               ],
                               "from": [
-                                2.4,
+                                2.4000000000000004,
                                 0.0
                               ],
                               "radius": 2.4000000000000004,
                               "tag": null,
                               "to": [
-                                2.4,
+                                2.4000000000000004,
                                 0.0
                               ],
                               "type": "Circle",
@@ -1958,11 +1958,11 @@ description: Variables in memory after executing engine-valve.kcl
                           },
                           "start": {
                             "from": [
-                              2.4,
+                              2.4000000000000004,
                               0.0
                             ],
                             "to": [
-                              2.4,
+                              2.4000000000000004,
                               0.0
                             ],
                             "units": {
@@ -2030,11 +2030,11 @@ description: Variables in memory after executing engine-valve.kcl
               },
               "start": {
                 "from": [
-                  2.4,
+                  2.4000000000000004,
                   0.0
                 ],
                 "to": [
-                  2.4,
+                  2.4000000000000004,
                   0.0
                 ],
                 "units": {
@@ -2127,13 +2127,13 @@ description: Variables in memory after executing engine-valve.kcl
               0.0
             ],
             "from": [
-              2.4,
+              2.4000000000000004,
               0.0
             ],
             "radius": 2.4000000000000004,
             "tag": null,
             "to": [
-              2.4,
+              2.4000000000000004,
               0.0
             ],
             "type": "Circle",
@@ -2255,13 +2255,13 @@ description: Variables in memory after executing engine-valve.kcl
                           0.0
                         ],
                         "from": [
-                          2.4,
+                          2.4000000000000004,
                           0.0
                         ],
                         "radius": 2.4000000000000004,
                         "tag": null,
                         "to": [
-                          2.4,
+                          2.4000000000000004,
                           0.0
                         ],
                         "type": "Circle",
@@ -2383,13 +2383,13 @@ description: Variables in memory after executing engine-valve.kcl
                                       0.0
                                     ],
                                     "from": [
-                                      2.4,
+                                      2.4000000000000004,
                                       0.0
                                     ],
                                     "radius": 2.4000000000000004,
                                     "tag": null,
                                     "to": [
-                                      2.4,
+                                      2.4000000000000004,
                                       0.0
                                     ],
                                     "type": "Circle",
@@ -2630,11 +2630,11 @@ description: Variables in memory after executing engine-valve.kcl
                                 },
                                 "start": {
                                   "from": [
-                                    2.4,
+                                    2.4000000000000004,
                                     0.0
                                   ],
                                   "to": [
-                                    2.4,
+                                    2.4000000000000004,
                                     0.0
                                   ],
                                   "units": {
@@ -2702,11 +2702,11 @@ description: Variables in memory after executing engine-valve.kcl
                     },
                     "start": {
                       "from": [
-                        2.4,
+                        2.4000000000000004,
                         0.0
                       ],
                       "to": [
-                        2.4,
+                        2.4000000000000004,
                         0.0
                       ],
                       "units": {
@@ -2774,11 +2774,11 @@ description: Variables in memory after executing engine-valve.kcl
         },
         "start": {
           "from": [
-            2.4,
+            2.4000000000000004,
             0.0
           ],
           "to": [
-            2.4,
+            2.4000000000000004,
             0.0
           ],
           "units": {
@@ -2819,6 +2819,7 @@ description: Variables in memory after executing engine-valve.kcl
           "tag": {
             "commentStart": 2483,
             "end": 2489,
+            "moduleId": 0,
             "start": 2483,
             "type": "TagDeclarator",
             "value": "seg02"
@@ -2832,6 +2833,7 @@ description: Variables in memory after executing engine-valve.kcl
           "tag": {
             "commentStart": 2548,
             "end": 2558,
+            "moduleId": 0,
             "start": 2548,
             "type": "TagDeclarator",
             "value": "capEnd001"
@@ -2861,6 +2863,7 @@ description: Variables in memory after executing engine-valve.kcl
             "tag": {
               "commentStart": 2483,
               "end": 2489,
+              "moduleId": 0,
               "start": 2483,
               "type": "TagDeclarator",
               "value": "seg02"
@@ -2924,13 +2927,13 @@ description: Variables in memory after executing engine-valve.kcl
                     0.0
                   ],
                   "from": [
-                    2.4,
+                    2.4000000000000004,
                     0.0
                   ],
                   "radius": 2.4000000000000004,
                   "tag": null,
                   "to": [
-                    2.4,
+                    2.4000000000000004,
                     0.0
                   ],
                   "type": "Circle",
@@ -3052,13 +3055,13 @@ description: Variables in memory after executing engine-valve.kcl
                                 0.0
                               ],
                               "from": [
-                                2.4,
+                                2.4000000000000004,
                                 0.0
                               ],
                               "radius": 2.4000000000000004,
                               "tag": null,
                               "to": [
-                                2.4,
+                                2.4000000000000004,
                                 0.0
                               ],
                               "type": "Circle",
@@ -3180,13 +3183,13 @@ description: Variables in memory after executing engine-valve.kcl
                                             0.0
                                           ],
                                           "from": [
-                                            2.4,
+                                            2.4000000000000004,
                                             0.0
                                           ],
                                           "radius": 2.4000000000000004,
                                           "tag": null,
                                           "to": [
-                                            2.4,
+                                            2.4000000000000004,
                                             0.0
                                           ],
                                           "type": "Circle",
@@ -3427,11 +3430,11 @@ description: Variables in memory after executing engine-valve.kcl
                                       },
                                       "start": {
                                         "from": [
-                                          2.4,
+                                          2.4000000000000004,
                                           0.0
                                         ],
                                         "to": [
-                                          2.4,
+                                          2.4000000000000004,
                                           0.0
                                         ],
                                         "units": {
@@ -3499,11 +3502,11 @@ description: Variables in memory after executing engine-valve.kcl
                           },
                           "start": {
                             "from": [
-                              2.4,
+                              2.4000000000000004,
                               0.0
                             ],
                             "to": [
-                              2.4,
+                              2.4000000000000004,
                               0.0
                             ],
                             "units": {
@@ -3571,11 +3574,11 @@ description: Variables in memory after executing engine-valve.kcl
               },
               "start": {
                 "from": [
-                  2.4,
+                  2.4000000000000004,
                   0.0
                 ],
                 "to": [
-                  2.4,
+                  2.4000000000000004,
                   0.0
                 ],
                 "units": {
@@ -3722,6 +3725,7 @@ description: Variables in memory after executing engine-valve.kcl
           "tag": {
             "commentStart": 744,
             "end": 750,
+            "moduleId": 0,
             "start": 744,
             "type": "TagDeclarator",
             "value": "seg01"
@@ -3806,8 +3810,8 @@ description: Variables in memory after executing engine-valve.kcl
             },
             "ccw": false,
             "center": [
-              -15.475,
-              14.992
+              -15.47503548458638,
+              14.991676643010273
             ],
             "from": [
               -2.99,
@@ -3816,6 +3820,7 @@ description: Variables in memory after executing engine-valve.kcl
             "tag": {
               "commentStart": 744,
               "end": 750,
+              "moduleId": 0,
               "start": 744,
               "type": "TagDeclarator",
               "value": "seg01"
@@ -3836,8 +3841,8 @@ description: Variables in memory after executing engine-valve.kcl
             },
             "ccw": true,
             "center": [
-              -10.776,
-              -1.224
+              -10.775913384181093,
+              -1.2240866158189068
             ],
             "from": [
               -12.0,
@@ -4107,8 +4112,8 @@ description: Variables in memory after executing engine-valve.kcl
           },
           "ccw": false,
           "center": [
-            -15.475,
-            14.992
+            -15.47503548458638,
+            14.991676643010273
           ],
           "from": [
             -2.99,
@@ -4117,6 +4122,7 @@ description: Variables in memory after executing engine-valve.kcl
           "tag": {
             "commentStart": 744,
             "end": 750,
+            "moduleId": 0,
             "start": 744,
             "type": "TagDeclarator",
             "value": "seg01"
@@ -4137,8 +4143,8 @@ description: Variables in memory after executing engine-valve.kcl
           },
           "ccw": true,
           "center": [
-            -10.776,
-            -1.224
+            -10.775913384181093,
+            -1.2240866158189068
           ],
           "from": [
             -12.0,

@@ -2,12 +2,12 @@ use std::str::FromStr;
 
 use anyhow::Result;
 use kcmc::{
-    coord::{System, KITTYCAD},
+    ImportFile, ModelingCmd,
+    coord::{KITTYCAD, System},
     each_cmd as mcmd,
     format::InputFormat3d,
     shared::FileImportFormat,
     units::UnitLength,
-    ImportFile, ModelingCmd,
 };
 use kittycad_modeling_cmds as kcmc;
 use serde::{Deserialize, Serialize};
@@ -15,7 +15,10 @@ use uuid::Uuid;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{annotations, typed_path::TypedPath, types::UnitLen, ExecState, ExecutorContext, ImportedGeometry},
+    execution::{
+        ExecState, ExecutorContext, ImportedGeometry, ModelingCmdMeta, annotations, typed_path::TypedPath,
+        types::UnitLen,
+    },
     fs::FileSystem,
     parsing::ast::types::{Annotation, Node},
     source_range::SourceRange,
@@ -181,7 +184,7 @@ pub(super) fn format_from_annotations(
                         annotations::IMPORT_LENGTH_UNIT
                     ),
                     vec![p.as_source_range()],
-                )))
+                )));
             }
         }
     }
@@ -222,7 +225,7 @@ fn set_coords(fmt: &mut InputFormat3d, coords_str: &str, source_range: SourceRan
                     annotations::IMPORT_COORDS
                 ),
                 vec![source_range],
-            )))
+            )));
         }
     }
 
@@ -243,7 +246,7 @@ fn set_length_unit(fmt: &mut InputFormat3d, units_str: &str, source_range: Sourc
                     annotations::IMPORT_LENGTH_UNIT
                 ),
                 vec![source_range],
-            )))
+            )));
         }
     }
 
@@ -257,15 +260,22 @@ pub struct PreImportedGeometry {
     pub source_range: SourceRange,
 }
 
-pub async fn send_to_engine(pre: PreImportedGeometry, ctxt: &ExecutorContext) -> Result<ImportedGeometry, KclError> {
+pub async fn send_to_engine(
+    pre: PreImportedGeometry,
+    exec_state: &mut ExecState,
+    ctxt: &ExecutorContext,
+) -> Result<ImportedGeometry, KclError> {
     let imported_geometry = ImportedGeometry::new(
         pre.id,
         pre.command.files.iter().map(|f| f.path.to_string()).collect(),
         vec![pre.source_range.into()],
     );
 
-    ctxt.engine
-        .async_modeling_cmd(pre.id, pre.source_range, &ModelingCmd::from(pre.command.clone()))
+    exec_state
+        .async_modeling_cmd(
+            ModelingCmdMeta::with_id(ctxt, pre.source_range, pre.id),
+            &ModelingCmd::from(pre.command.clone()),
+        )
         .await?;
 
     Ok(imported_geometry)
@@ -281,7 +291,9 @@ fn get_import_format_from_extension(ext: &str) -> Result<InputFormat3d> {
             } else if ext == "glb" {
                 FileImportFormat::Gltf
             } else {
-                anyhow::bail!("unknown source format for file extension: {ext}. Try setting the `--src-format` flag explicitly or use a valid format.")
+                anyhow::bail!(
+                    "unknown source format for file extension: {ext}. Try setting the `--src-format` flag explicitly or use a valid format."
+                )
             }
         }
     };

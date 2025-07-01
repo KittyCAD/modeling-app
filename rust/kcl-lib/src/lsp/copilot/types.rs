@@ -85,7 +85,7 @@ impl CopilotCompletionResponse {
 impl CopilotCyclingCompletion {
     pub fn new(text: String, line_before: String, position: CopilotPosition) -> Self {
         let display_text = text.clone();
-        let text = format!("{}{}", line_before, text);
+        let text = format!("{line_before}{text}");
         let end_char = text.find('\n').unwrap_or(text.len()) as u32;
         Self {
             uuid: uuid::Uuid::new_v4(),

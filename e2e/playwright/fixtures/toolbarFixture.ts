@@ -274,6 +274,13 @@ export class ToolbarFixture {
       .nth(operationIndex)
   }
 
+  getDefaultPlaneVisibilityButton(plane: 'XY' | 'XZ' | 'YZ' = 'XY') {
+    const index = plane === 'XZ' ? 0 : plane === 'XY' ? 1 : 2
+    return this.featureTreePane
+      .getByTestId('feature-tree-visibility-toggle')
+      .nth(index)
+  }
+
   /**
    * View source on a specific operation in the Feature Tree pane.
    * @param operationName The name of the operation type

@@ -13,6 +13,7 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "cube",
             "start": 0,
             "type": "Identifier"
@@ -24,13 +25,16 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                   "argument": {
                     "body": [
                       {
+                        "arguments": [],
                         "callee": {
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "startSketchOn",
                             "start": 0,
                             "type": "Identifier"
@@ -41,6 +45,7 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                         },
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "start": 0,
                         "type": "CallExpressionKw",
                         "type": "CallExpressionKw",
@@ -48,9 +53,11 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "XY",
                             "start": 0,
                             "type": "Identifier"
@@ -68,6 +75,7 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                             "label": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "at",
                               "start": 0,
                               "type": "Identifier"
@@ -82,13 +90,16 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                                     "commentStart": 0,
                                     "computed": false,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "object": {
                                       "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": "pos",
                                         "start": 0,
                                         "type": "Identifier"
@@ -101,6 +112,7 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                                     "property": {
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "raw": "0",
                                       "start": 0,
                                       "type": "Literal",
@@ -114,14 +126,17 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                                     "type": "MemberExpression",
                                     "type": "MemberExpression"
                                   },
+                                  "moduleId": 0,
                                   "operator": "-",
                                   "right": {
                                     "abs_path": false,
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "name": {
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": "scale",
                                       "start": 0,
                                       "type": "Identifier"
@@ -142,13 +157,16 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                                     "commentStart": 0,
                                     "computed": false,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "object": {
                                       "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": "pos",
                                         "start": 0,
                                         "type": "Identifier"
@@ -161,6 +179,7 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                                     "property": {
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "raw": "1",
                                       "start": 0,
                                       "type": "Literal",
@@ -174,14 +193,17 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                                     "type": "MemberExpression",
                                     "type": "MemberExpression"
                                   },
+                                  "moduleId": 0,
                                   "operator": "-",
                                   "right": {
                                     "abs_path": false,
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "name": {
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": "scale",
                                       "start": 0,
                                       "type": "Identifier"
@@ -197,6 +219,7 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                                 }
                               ],
                               "end": 0,
+                              "moduleId": 0,
                               "start": 0,
                               "type": "ArrayExpression",
                               "type": "ArrayExpression"
@@ -207,9 +230,11 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "startProfile",
                             "start": 0,
                             "type": "Identifier"
@@ -220,6 +245,7 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                         },
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "start": 0,
                         "type": "CallExpressionKw",
                         "type": "CallExpressionKw",
@@ -232,6 +258,7 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                             "label": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "endAbsolute",
                               "start": 0,
                               "type": "Identifier"
@@ -246,13 +273,16 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                                     "commentStart": 0,
                                     "computed": false,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "object": {
                                       "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": "pos",
                                         "start": 0,
                                         "type": "Identifier"
@@ -265,6 +295,7 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                                     "property": {
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "raw": "0",
                                       "start": 0,
                                       "type": "Literal",
@@ -278,14 +309,17 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                                     "type": "MemberExpression",
                                     "type": "MemberExpression"
                                   },
+                                  "moduleId": 0,
                                   "operator": "+",
                                   "right": {
                                     "abs_path": false,
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "name": {
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": "scale",
                                       "start": 0,
                                       "type": "Identifier"
@@ -306,13 +340,16 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                                     "commentStart": 0,
                                     "computed": false,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "object": {
                                       "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": "pos",
                                         "start": 0,
                                         "type": "Identifier"
@@ -325,6 +362,7 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                                     "property": {
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "raw": "1",
                                       "start": 0,
                                       "type": "Literal",
@@ -338,14 +376,17 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                                     "type": "MemberExpression",
                                     "type": "MemberExpression"
                                   },
+                                  "moduleId": 0,
                                   "operator": "-",
                                   "right": {
                                     "abs_path": false,
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "name": {
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": "scale",
                                       "start": 0,
                                       "type": "Identifier"
@@ -361,6 +402,7 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                                 }
                               ],
                               "end": 0,
+                              "moduleId": 0,
                               "start": 0,
                               "type": "ArrayExpression",
                               "type": "ArrayExpression"
@@ -371,9 +413,11 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "line",
                             "start": 0,
                             "type": "Identifier"
@@ -384,6 +428,7 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                         },
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "start": 0,
                         "type": "CallExpressionKw",
                         "type": "CallExpressionKw",
@@ -396,6 +441,7 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                             "label": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "endAbsolute",
                               "start": 0,
                               "type": "Identifier"
@@ -410,13 +456,16 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                                     "commentStart": 0,
                                     "computed": false,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "object": {
                                       "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": "pos",
                                         "start": 0,
                                         "type": "Identifier"
@@ -429,6 +478,7 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                                     "property": {
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "raw": "0",
                                       "start": 0,
                                       "type": "Literal",
@@ -442,14 +492,17 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                                     "type": "MemberExpression",
                                     "type": "MemberExpression"
                                   },
+                                  "moduleId": 0,
                                   "operator": "+",
                                   "right": {
                                     "abs_path": false,
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "name": {
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": "scale",
                                       "start": 0,
                                       "type": "Identifier"
@@ -470,13 +523,16 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                                     "commentStart": 0,
                                     "computed": false,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "object": {
                                       "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": "pos",
                                         "start": 0,
                                         "type": "Identifier"
@@ -489,6 +545,7 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                                     "property": {
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "raw": "1",
                                       "start": 0,
                                       "type": "Literal",
@@ -502,14 +559,17 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                                     "type": "MemberExpression",
                                     "type": "MemberExpression"
                                   },
+                                  "moduleId": 0,
                                   "operator": "+",
                                   "right": {
                                     "abs_path": false,
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "name": {
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": "scale",
                                       "start": 0,
                                       "type": "Identifier"
@@ -525,6 +585,7 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                                 }
                               ],
                               "end": 0,
+                              "moduleId": 0,
                               "start": 0,
                               "type": "ArrayExpression",
                               "type": "ArrayExpression"
@@ -535,9 +596,11 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "line",
                             "start": 0,
                             "type": "Identifier"
@@ -548,6 +611,7 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                         },
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "start": 0,
                         "type": "CallExpressionKw",
                         "type": "CallExpressionKw",
@@ -560,6 +624,7 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                             "label": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "endAbsolute",
                               "start": 0,
                               "type": "Identifier"
@@ -574,13 +639,16 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                                     "commentStart": 0,
                                     "computed": false,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "object": {
                                       "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": "pos",
                                         "start": 0,
                                         "type": "Identifier"
@@ -593,6 +661,7 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                                     "property": {
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "raw": "0",
                                       "start": 0,
                                       "type": "Literal",
@@ -606,14 +675,17 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                                     "type": "MemberExpression",
                                     "type": "MemberExpression"
                                   },
+                                  "moduleId": 0,
                                   "operator": "-",
                                   "right": {
                                     "abs_path": false,
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "name": {
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": "scale",
                                       "start": 0,
                                       "type": "Identifier"
@@ -634,13 +706,16 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                                     "commentStart": 0,
                                     "computed": false,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "object": {
                                       "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": "pos",
                                         "start": 0,
                                         "type": "Identifier"
@@ -653,6 +728,7 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                                     "property": {
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "raw": "1",
                                       "start": 0,
                                       "type": "Literal",
@@ -666,14 +742,17 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                                     "type": "MemberExpression",
                                     "type": "MemberExpression"
                                   },
+                                  "moduleId": 0,
                                   "operator": "+",
                                   "right": {
                                     "abs_path": false,
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "name": {
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": "scale",
                                       "start": 0,
                                       "type": "Identifier"
@@ -689,6 +768,7 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                                 }
                               ],
                               "end": 0,
+                              "moduleId": 0,
                               "start": 0,
                               "type": "ArrayExpression",
                               "type": "ArrayExpression"
@@ -699,9 +779,11 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "line",
                             "start": 0,
                             "type": "Identifier"
@@ -712,19 +794,23 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                         },
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "start": 0,
                         "type": "CallExpressionKw",
                         "type": "CallExpressionKw",
                         "unlabeled": null
                       },
                       {
+                        "arguments": [],
                         "callee": {
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "close",
                             "start": 0,
                             "type": "Identifier"
@@ -735,6 +821,7 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                         },
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "start": 0,
                         "type": "CallExpressionKw",
                         "type": "CallExpressionKw",
@@ -747,6 +834,7 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                             "label": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "length",
                               "start": 0,
                               "type": "Identifier"
@@ -754,6 +842,7 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                             "arg": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "raw": "10",
                               "start": 0,
                               "type": "Literal",
@@ -769,9 +858,11 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "extrude",
                             "start": 0,
                             "type": "Identifier"
@@ -782,6 +873,7 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                         },
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "start": 0,
                         "type": "CallExpressionKw",
                         "type": "CallExpressionKw",
@@ -790,12 +882,14 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                     ],
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "start": 0,
                     "type": "PipeExpression",
                     "type": "PipeExpression"
                   },
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
@@ -803,16 +897,19 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
               ],
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0
             },
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "pos",
                   "start": 0,
                   "type": "Identifier"
@@ -823,6 +920,7 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                 "identifier": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "scale",
                   "start": 0,
                   "type": "Identifier"
@@ -833,11 +931,13 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
             "type": "FunctionExpression",
             "type": "FunctionExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "fn",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -850,6 +950,7 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "part001",
             "start": 0,
             "type": "Identifier"
@@ -861,6 +962,7 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                 "label": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "pos",
                   "start": 0,
                   "type": "Identifier"
@@ -871,6 +973,7 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                     {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "0",
                       "start": 0,
                       "type": "Literal",
@@ -883,6 +986,7 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                     {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "0",
                       "start": 0,
                       "type": "Literal",
@@ -894,6 +998,7 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                     }
                   ],
                   "end": 0,
+                  "moduleId": 0,
                   "start": 0,
                   "type": "ArrayExpression",
                   "type": "ArrayExpression"
@@ -904,6 +1009,7 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                 "label": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "scale",
                   "start": 0,
                   "type": "Identifier"
@@ -911,6 +1017,7 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                 "arg": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "raw": "10",
                   "start": 0,
                   "type": "Literal",
@@ -926,9 +1033,11 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "cube",
                 "start": 0,
                 "type": "Identifier"
@@ -939,16 +1048,19 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
             },
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": null
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -961,6 +1073,7 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "part002",
             "start": 0,
             "type": "Identifier"
@@ -974,6 +1087,7 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "pos",
                       "start": 0,
                       "type": "Identifier"
@@ -984,6 +1098,7 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "7",
                           "start": 0,
                           "type": "Literal",
@@ -996,6 +1111,7 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "3",
                           "start": 0,
                           "type": "Literal",
@@ -1007,6 +1123,7 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -1017,6 +1134,7 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "scale",
                       "start": 0,
                       "type": "Identifier"
@@ -1024,6 +1142,7 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "5",
                       "start": 0,
                       "type": "Literal",
@@ -1039,9 +1158,11 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "cube",
                     "start": 0,
                     "type": "Identifier"
@@ -1052,6 +1173,7 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -1064,6 +1186,7 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "z",
                       "start": 0,
                       "type": "Identifier"
@@ -1071,6 +1194,7 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "1",
                       "start": 0,
                       "type": "Literal",
@@ -1086,9 +1210,11 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "translate",
                     "start": 0,
                     "type": "Identifier"
@@ -1099,6 +1225,7 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -1107,15 +1234,18 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
             ],
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -1128,6 +1258,7 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "subtractedPart",
             "start": 0,
             "type": "Identifier"
@@ -1139,6 +1270,7 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                 "label": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "tools",
                   "start": 0,
                   "type": "Identifier"
@@ -1147,9 +1279,11 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "part002",
                     "start": 0,
                     "type": "Identifier"
@@ -1165,9 +1299,11 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "subtract",
                 "start": 0,
                 "type": "Identifier"
@@ -1178,6 +1314,7 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
             },
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
@@ -1185,9 +1322,11 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "part001",
                 "start": 0,
                 "type": "Identifier"
@@ -1198,11 +1337,13 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
               "type": "Name"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -1210,12 +1351,14 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
     ],
     "commentStart": 0,
     "end": 0,
+    "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {
@@ -1227,6 +1370,7 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {

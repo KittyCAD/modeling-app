@@ -36,13 +36,14 @@ description: Variables in memory after executing artifact_graph_example_code_no_
           "tag": {
             "commentStart": 115,
             "end": 136,
+            "moduleId": 0,
             "start": 115,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA001"
           },
           "to": [
-            -5.72,
-            0.0
+            -5.719999999999999,
+            0.0000000000000014132424062160455
           ],
           "type": "ToPoint",
           "units": {
@@ -55,19 +56,20 @@ description: Variables in memory after executing artifact_graph_example_code_no_
             "sourceRange": []
           },
           "from": [
-            -5.72,
-            0.0
+            -5.719999999999999,
+            0.0000000000000014132424062160455
           ],
           "tag": {
             "commentStart": 218,
             "end": 239,
+            "moduleId": 0,
             "start": 218,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB001"
           },
           "to": [
-            -5.72,
-            8.21
+            -5.719999999999998,
+            8.210000000000003
           ],
           "type": "ToPoint",
           "units": {
@@ -80,18 +82,19 @@ description: Variables in memory after executing artifact_graph_example_code_no_
             "sourceRange": []
           },
           "from": [
-            -5.72,
-            8.21
+            -5.719999999999998,
+            8.210000000000003
           ],
           "tag": {
             "commentStart": 341,
             "end": 362,
+            "moduleId": 0,
             "start": 341,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC001"
           },
           "to": [
-            5.82,
+            5.820000000000001,
             8.21
           ],
           "type": "ToPoint",
@@ -105,7 +108,7 @@ description: Variables in memory after executing artifact_graph_example_code_no_
             "sourceRange": []
           },
           "from": [
-            5.82,
+            5.820000000000001,
             8.21
           ],
           "tag": null,
@@ -239,8 +242,8 @@ description: Variables in memory after executing artifact_graph_example_code_no_
           },
           "ccw": false,
           "center": [
-            15.54,
-            -1.175
+            15.54030518835946,
+            -1.1745473537604454
           ],
           "from": [
             15.49,
@@ -263,8 +266,8 @@ description: Variables in memory after executing artifact_graph_example_code_no_
           },
           "ccw": true,
           "center": [
-            -7.616,
-            0.576
+            -7.6163791614610235,
+            0.5756513711217917
           ],
           "from": [
             0.0,

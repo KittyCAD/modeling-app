@@ -4,7 +4,7 @@ import type { ComponentProps } from 'react'
 import { useCallback, useEffect, useMemo, useRef } from 'react'
 import type { Actor, Prop } from 'xstate'
 
-import type { Operation } from '@rust/kcl-lib/bindings/Operation'
+import type { Operation, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
 
 import { ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
 import type { CustomIconName } from '@src/components/CustomIcon'
@@ -16,7 +16,7 @@ import {
   codeRefFromRange,
   getArtifactFromRange,
 } from '@src/lang/std/artifactGraph'
-import { sourceRangeFromRust } from '@src/lang/wasm'
+import { sourceRangeFromRust } from '@src/lang/sourceRange'
 import {
   filterOperations,
   getOperationIcon,
@@ -45,7 +45,7 @@ export const FeatureTreePane = () => {
       guards: {
         codePaneIsOpen: () =>
           modelingState.context.store.openPanes.includes('code') &&
-          editorManager.editorView !== null,
+          editorManager.getEditorView() !== null,
       },
       actions: {
         openCodePane: () => {
@@ -222,7 +222,11 @@ const VisibilityToggle = (props: VisibilityToggleProps) => {
   }, [props.onVisibilityChange])
 
   return (
-    <button onClick={handleToggleVisible} className="p-0 m-0">
+    <button
+      onClick={handleToggleVisible}
+      className="p-0 m-0"
+      data-testid="feature-tree-visibility-toggle"
+    >
       <CustomIcon
         name={visible ? 'eyeOpen' : 'eyeCrossedOut'}
         className="w-5 h-5"
@@ -241,6 +245,7 @@ const OperationItemWrapper = ({
   name,
   variableName,
   visibilityToggle,
+  valueDetail,
   menuItems,
   errors,
   customSuffix,
@@ -252,6 +257,7 @@ const OperationItemWrapper = ({
   name: string
   variableName?: string
   visibilityToggle?: VisibilityToggleProps
+  valueDetail?: { calculated: OpKclValue; display: string }
   customSuffix?: JSX.Element
   menuItems?: ComponentProps<typeof ContextMenu>['items']
   errors?: Diagnostic[]
@@ -263,22 +269,28 @@ const OperationItemWrapper = ({
     <div
       ref={menuRef}
       className={`flex select-none items-center group/item my-0 py-0.5 px-1 ${selectable ? 'focus-within:bg-primary/10 hover:bg-primary/5' : ''}`}
+      data-testid="feature-tree-operation-item"
     >
       <button
         {...props}
-        className={`reset flex-1 flex items-center gap-2 text-left text-base ${selectable ? 'border-transparent dark:border-transparent' : 'border-none cursor-default'} ${className}`}
+        className={`reset !py-0.5 !px-1 flex-1 flex items-center gap-2 text-left text-base ${selectable ? 'border-transparent dark:border-transparent' : 'border-none cursor-default'} ${className}`}
       >
         <CustomIcon name={icon} className="w-5 h-5 block" />
-        <div className="flex items-baseline align-baseline">
-          <div className="mr-2">
+        <div className="flex flex-1 items-baseline align-baseline">
+          <div className="flex-1 inline-flex items-baseline flex-wrap gap-x-2">
             {name}
             {variableName && (
-              <span className="ml-2 opacity-50 text-[11px] font-semibold">
+              <span className="text-chalkboard-70 dark:text-chalkboard-40 text-xs">
                 {variableName}
               </span>
             )}
+            {customSuffix && customSuffix}
           </div>
-          {customSuffix && customSuffix}
+          {valueDetail && (
+            <code className="px-1 text-right text-chalkboard-70 dark:text-chalkboard-40 text-xs">
+              {valueDetail.display}
+            </code>
+          )}
         </div>
       </button>
       {errors && errors.length > 0 && (
@@ -302,6 +314,19 @@ const OperationItem = (props: {
 }) => {
   const kclContext = useKclContext()
   const name = getOperationLabel(props.item)
+  const valueDetail = useMemo(
+    () =>
+      props.item.type === 'VariableDeclaration'
+        ? {
+            display: kclContext.code.slice(
+              props.item.sourceRange[0],
+              props.item.sourceRange[1]
+            ),
+            calculated: props.item.value,
+          }
+        : undefined,
+    [props.item, kclContext.code]
+  )
 
   const variableName = useMemo(() => {
     return getOperationVariableName(props.item, kclContext.ast)
@@ -334,7 +359,10 @@ const OperationItem = (props: {
    * TODO: https://github.com/KittyCAD/modeling-app/issues/4442
    */
   function enterEditFlow() {
-    if (props.item.type === 'StdLibCall') {
+    if (
+      props.item.type === 'StdLibCall' ||
+      props.item.type === 'VariableDeclaration'
+    ) {
       props.send({
         type: 'enterEditFlow',
         data: {
@@ -449,15 +477,25 @@ const OperationItem = (props: {
             </ContextMenuItem>,
           ]
         : []),
-      ...(props.item.type === 'StdLibCall'
+      ...(props.item.type === 'StdLibCall' ||
+      props.item.type === 'VariableDeclaration'
         ? [
             <ContextMenuItem
-              disabled={!stdLibMap[props.item.name]?.prepareToEdit}
+              disabled={
+                !(
+                  stdLibMap[props.item.name]?.prepareToEdit ||
+                  props.item.type === 'VariableDeclaration'
+                )
+              }
               onClick={enterEditFlow}
               hotkey="Double click"
             >
               Edit
             </ContextMenuItem>,
+          ]
+        : []),
+      ...(props.item.type === 'StdLibCall'
+        ? [
             <ContextMenuItem
               disabled={!stdLibMap[props.item.name]?.supportsAppearance}
               onClick={enterAppearanceFlow}
@@ -517,6 +555,7 @@ const OperationItem = (props: {
       icon={getOperationIcon(props.item)}
       name={name}
       variableName={variableName}
+      valueDetail={valueDetail}
       menuItems={menuItems}
       onClick={selectOperation}
       onDoubleClick={enterEditFlow}
