@@ -340,12 +340,12 @@ impl Args {
         let x = KclValue::Number {
             value: p[0],
             meta: vec![meta],
-            ty: ty.clone(),
+            ty,
         };
         let y = KclValue::Number {
             value: p[1],
             meta: vec![meta],
-            ty: ty.clone(),
+            ty,
         };
         let ty = RuntimeType::Primitive(PrimitiveType::Number(ty));
 
@@ -1038,7 +1038,7 @@ impl<'a> FromKclValue<'a> for u64 {
 impl<'a> FromKclValue<'a> for TyF64 {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         match arg {
-            KclValue::Number { value, ty, .. } => Some(TyF64::new(*value, ty.clone())),
+            KclValue::Number { value, ty, .. } => Some(TyF64::new(*value, *ty)),
             _ => None,
         }
     }

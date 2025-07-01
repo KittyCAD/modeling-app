@@ -415,15 +415,41 @@ impl KclValue {
 
     /// Put the point into a KCL value.
     pub fn from_point2d(p: [f64; 2], ty: NumericType, meta: Vec<Metadata>) -> Self {
+        let [x, y] = p;
         Self::Tuple {
             value: vec![
                 Self::Number {
-                    value: p[0],
+                    value: x,
                     meta: meta.clone(),
-                    ty: ty.clone(),
+                    ty,
                 },
                 Self::Number {
-                    value: p[1],
+                    value: y,
+                    meta: meta.clone(),
+                    ty,
+                },
+            ],
+            meta,
+        }
+    }
+
+    /// Put the point into a KCL value.
+    pub fn from_point3d(p: [f64; 3], ty: NumericType, meta: Vec<Metadata>) -> Self {
+        let [x, y, z] = p;
+        Self::Tuple {
+            value: vec![
+                Self::Number {
+                    value: x,
+                    meta: meta.clone(),
+                    ty,
+                },
+                Self::Number {
+                    value: y,
+                    meta: meta.clone(),
+                    ty,
+                },
+                Self::Number {
+                    value: z,
                     meta: meta.clone(),
                     ty,
                 },
@@ -448,7 +474,7 @@ impl KclValue {
 
     pub fn as_int_with_ty(&self) -> Option<(i64, NumericType)> {
         match self {
-            KclValue::Number { value, ty, .. } => crate::try_f64_to_i64(*value).map(|i| (i, ty.clone())),
+            KclValue::Number { value, ty, .. } => crate::try_f64_to_i64(*value).map(|i| (i, *ty)),
             _ => None,
         }
     }
@@ -562,7 +588,7 @@ impl KclValue {
 
     pub fn as_ty_f64(&self) -> Option<TyF64> {
         match self {
-            KclValue::Number { value, ty, .. } => Some(TyF64::new(*value, ty.clone())),
+            KclValue::Number { value, ty, .. } => Some(TyF64::new(*value, *ty)),
             _ => None,
         }
     }
