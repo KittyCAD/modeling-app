@@ -10,7 +10,7 @@ import {
   createVariableDeclaration,
   findUniqueName,
 } from '@src/lang/create'
-import { getNodeFromPath, getExprsFromSelection, valueOrVariable } from '@src/lang/queryAst'
+import { createPathToNodeForLastVariable, createVariableExpressionsArray, getNodeFromPath, getVariableExprsFromSelection, valueOrVariable } from '@src/lang/queryAst'
 import type {
   ArtifactGraph,
   CallExpressionKw,
@@ -28,7 +28,6 @@ import {
 } from '@src/lang/modifyAst/boolean'
 import type { Selections } from '@src/lib/selections'
 import { KclCommandValue } from '@src/lib/commandTypes'
-import { createPathToNode, createSketchExpression } from './addSweep'
 import { insertVariableAndOffsetPathToNode } from '../modifyAst'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 
@@ -54,20 +53,20 @@ export function setTranslate({
 
   // 2. Prepare unlabeled and labeled arguments
   // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
-  const objectsExprList = getExprsFromSelection(
+  const variableExpressions = getVariableExprsFromSelection(
     objects,
     modifiedAst,
     nodeToEdit
   )
-  if (err(objectsExprList)) {
-    return objectsExprList
+  if (err(variableExpressions)) {
+    return variableExpressions
   }
 
   // Extra labeled args expression
   const globalExpr = global
     ? [createLabeledArg('global', createLiteral(global))]
     : []
-   const objectsExpr = createSketchExpression(objectsExprList)
+   const objectsExpr = createVariableExpressionsArray(variableExpressions.exprs)
   const call = createCallExpressionStdLibKw('translate', objectsExpr, [
     createLabeledArg('x', valueOrVariable(x)),
     createLabeledArg('y', valueOrVariable(y)),
@@ -102,13 +101,28 @@ export function setTranslate({
     Object.assign(result.node, call)
     pathToNode = nodeToEdit
   } else {
-    const name = findUniqueName(
-      modifiedAst,
-      KCL_DEFAULT_CONSTANT_PREFIXES.TRANSLATE,
-    )
-    const declaration = createVariableDeclaration(name, call)
-    modifiedAst.body.push(declaration)
-    pathToNode = createPathToNode(modifiedAst)
+    const lastPathToNode: PathToNode | undefined =
+      variableExpressions.paths.pop()
+    if (objectsExpr === null && lastPathToNode) {
+      const pipe = getNodeFromPath<PipeExpression>(
+        modifiedAst,
+        lastPathToNode,
+        'PipeExpression'
+      )
+      if (err(pipe)) {
+        return pipe
+      }
+      pipe.node.body.push(call)
+      pathToNode = lastPathToNode
+    } else {
+      const name = findUniqueName(
+        modifiedAst,
+        KCL_DEFAULT_CONSTANT_PREFIXES.TRANSLATE,
+      )
+      const declaration = createVariableDeclaration(name, call)
+      modifiedAst.body.push(declaration)
+      pathToNode = createPathToNodeForLastVariable(modifiedAst)
+    }
   }
 
   return {
