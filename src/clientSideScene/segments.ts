@@ -76,12 +76,17 @@ import {
 } from '@src/clientSideScene/sceneUtils'
 import { angleLengthInfo } from '@src/components/Toolbar/angleLengthInfo'
 import type { Coords2d } from '@src/lang/std/sketch'
+import { getConstraintInfoKw } from '@src/lang/std/sketch'
 import type { SegmentInputs } from '@src/lang/std/stdTypes'
-import type { PathToNode } from '@src/lang/wasm'
+import type { PathToNode, Program } from '@src/lang/wasm'
 import { getTangentialArcToInfo } from '@src/lang/wasm'
+import { getNodeFromPath } from '@src/lang/queryAst'
 import type { Selections } from '@src/lib/selections'
 import type { Themes } from '@src/lib/theme'
-import { getThemeColorForThreeJs } from '@src/lib/theme'
+import {
+  getThemeColorForThreeJs,
+  getPrimaryColorForThreeJs,
+} from '@src/lib/theme'
 import { err } from '@src/lib/trap'
 import { isClockwise, normaliseAngle, roundOff } from '@src/lib/utils'
 import { getTangentPointFromPreviousArc } from '@src/lib/utils2d'
@@ -95,6 +100,7 @@ import toast from 'react-hot-toast'
 import { ARG_INTERIOR_ABSOLUTE } from '@src/lang/constants'
 
 const ANGLE_INDICATOR_RADIUS = 30 // in px
+
 interface CreateSegmentArgs {
   input: SegmentInputs
   prevSegment: Sketch['paths'][number]
@@ -108,6 +114,9 @@ interface CreateSegmentArgs {
   isSelected?: boolean
   sceneInfra: SceneInfra
   selection?: Selections
+  // Add optional AST and code for constraint checking
+  ast?: Program
+  code?: string
 }
 
 interface UpdateSegmentArgs {
@@ -116,6 +125,9 @@ interface UpdateSegmentArgs {
   group: Group
   sceneInfra: SceneInfra
   scale?: number
+  // Add optional AST and code for constraint checking
+  ast?: Program
+  code?: string
 }
 
 interface CreateSegmentResult {
@@ -144,6 +156,55 @@ export interface SegmentUtils {
   ) => CreateSegmentResult['updateOverlaysCallback'] | Error
 }
 
+/**
+ * Checks if a segment is fully constrained by examining all its constraint info
+ */
+function isSegmentFullyConstrained(
+  pathToNode: PathToNode,
+  ast: Program,
+  code: string
+): boolean {
+  try {
+    const nodeMeta = getNodeFromPath<any>(ast, pathToNode)
+    if (err(nodeMeta) || nodeMeta.node.type !== 'CallExpressionKw') {
+      return false
+    }
+
+    const constraintInfos = getConstraintInfoKw(nodeMeta.node, code, pathToNode)
+
+    // If there are no constraints, consider it not fully constrained
+    if (constraintInfos.length === 0) {
+      return false
+    }
+
+    // Check if all constraints are constrained
+    return constraintInfos.every((info) => info.isConstrained)
+  } catch (error) {
+    console.warn('Error checking segment constraints:', error)
+    return false
+  }
+}
+
+/**
+ * Gets the appropriate color for a segment based on selection, constraints, and theme
+ */
+function getSegmentColor({
+  theme,
+  isSelected,
+  callExpName = '',
+  isFullyConstrained = false,
+}: {
+  theme: Themes
+  isSelected: boolean
+  callExpName?: string
+  isFullyConstrained: boolean
+}): number {
+  if (isSelected) return 0x0000ff // Blue for selected
+  if (callExpName === 'close') return 0x444444 // Gray for close segments
+  if (!isFullyConstrained) return getPrimaryColorForThreeJs() // Primary color for unconstrained segments
+  return getThemeColorForThreeJs(theme) // Default theme color for constrained segments
+}
+
 class StraightSegment implements SegmentUtils {
   init: SegmentUtils['init'] = ({
     input,
@@ -158,13 +219,28 @@ class StraightSegment implements SegmentUtils {
     sceneInfra,
     prevSegment,
     selection,
+    ast,
+    code,
   }) => {
     if (input.type !== 'straight-segment')
       return new Error('Invalid segment type')
     const { from, to } = input
-    const baseColor =
-      callExpName === 'close' ? 0x444444 : getThemeColorForThreeJs(theme)
-    const color = isSelected ? 0x0000ff : baseColor
+
+    // Check if segment is fully constrained (only if we have AST and code)
+    const isFullyConstrained =
+      ast && code ? isSegmentFullyConstrained(pathToNode, ast, code) : false
+
+    const color = getSegmentColor({
+      theme,
+      isSelected: !!isSelected,
+      callExpName,
+      isFullyConstrained,
+    })
+    const baseColor = !isFullyConstrained
+      ? getPrimaryColorForThreeJs()
+      : callExpName === 'close'
+        ? 0x444444
+        : getThemeColorForThreeJs(theme)
     const meshType = isDraftSegment
       ? STRAIGHT_SEGMENT_DASH
       : STRAIGHT_SEGMENT_BODY
@@ -250,12 +326,41 @@ class StraightSegment implements SegmentUtils {
     group,
     scale = 1,
     sceneInfra,
+    ast,
+    code,
   }) => {
     if (input.type !== 'straight-segment')
       return new Error('Invalid segment type')
     const { from, to } = input
     group.userData.from = from
     group.userData.to = to
+
+    // Check if segment is fully constrained and update color if needed
+    if (ast && code) {
+      const pathToNode = group.userData.pathToNode
+      const isFullyConstrained = isSegmentFullyConstrained(
+        pathToNode,
+        ast,
+        code
+      )
+      const color = getSegmentColor({
+        theme: sceneInfra._theme,
+        isSelected: group.userData.isSelected,
+        callExpName: group.userData.callExpName,
+        isFullyConstrained,
+      })
+
+      // Update the material color
+      const straightSegmentBody = group.children.find(
+        (child) => child.userData.type === STRAIGHT_SEGMENT_BODY
+      ) as Mesh
+      if (
+        straightSegmentBody &&
+        straightSegmentBody.material instanceof MeshBasicMaterial
+      ) {
+        straightSegmentBody.material.color.set(color)
+      }
+    }
     const shape = createLineShape(scale)
     const arrowGroup = group.getObjectByName(ARROWHEAD) as Group
     const labelGroup = group.getObjectByName(SEGMENT_LENGTH_LABEL) as Group
@@ -391,6 +496,8 @@ class TangentialArcToSegment implements SegmentUtils {
     theme,
     isSelected,
     sceneInfra,
+    ast,
+    code,
   }) => {
     if (input.type !== 'straight-segment')
       return new Error('Invalid segment type')
@@ -409,8 +516,19 @@ class TangentialArcToSegment implements SegmentUtils {
       isDashed: isDraftSegment,
       scale,
     })
-    const baseColor = getThemeColorForThreeJs(theme)
-    const color = isSelected ? 0x0000ff : baseColor
+
+    // Check if segment is fully constrained (only if we have AST and code)
+    const isFullyConstrained =
+      ast && code ? isSegmentFullyConstrained(pathToNode, ast, code) : false
+
+    const color = getSegmentColor({
+      theme,
+      isSelected: !!isSelected,
+      isFullyConstrained,
+    })
+    const baseColor = !isFullyConstrained
+      ? getPrimaryColorForThreeJs()
+      : getThemeColorForThreeJs(theme)
     const body = new MeshBasicMaterial({ color })
     const mesh = new Mesh(geometry, body)
     const arrowGroup = createArrowhead(scale, theme, color)
@@ -453,6 +571,8 @@ class TangentialArcToSegment implements SegmentUtils {
     group,
     scale = 1,
     sceneInfra,
+    ast,
+    code,
   }) => {
     if (input.type !== 'straight-segment')
       return new Error('Invalid segment type')
@@ -460,6 +580,32 @@ class TangentialArcToSegment implements SegmentUtils {
     group.userData.from = from
     group.userData.to = to
     group.userData.prevSegment = prevSegment
+
+    // Check if segment is fully constrained and update color if needed
+    if (ast && code) {
+      const pathToNode = group.userData.pathToNode
+      const isFullyConstrained = isSegmentFullyConstrained(
+        pathToNode,
+        ast,
+        code
+      )
+      const color = getSegmentColor({
+        theme: sceneInfra._theme,
+        isSelected: group.userData.isSelected,
+        isFullyConstrained,
+      })
+
+      // Update the material color
+      const tangentialArcSegmentBody = group.children.find(
+        (child) => child.userData.type === TANGENTIAL_ARC_TO_SEGMENT_BODY
+      ) as Mesh
+      if (
+        tangentialArcSegmentBody &&
+        tangentialArcSegmentBody.material instanceof MeshBasicMaterial
+      ) {
+        tangentialArcSegmentBody.material.color.set(color)
+      }
+    }
     const arrowGroup = group.getObjectByName(ARROWHEAD) as Group
     const extraSegmentGroup = group.getObjectByName(EXTRA_SEGMENT_HANDLE)
 
@@ -588,13 +734,26 @@ class CircleSegment implements SegmentUtils {
     theme,
     isSelected,
     sceneInfra,
+    ast,
+    code,
   }) => {
     if (input.type !== 'arc-segment') {
       return new Error('Invalid segment type')
     }
     const { from, center, radius } = input
-    const baseColor = getThemeColorForThreeJs(theme)
-    const color = isSelected ? 0x0000ff : baseColor
+
+    // Check if segment is fully constrained
+    const isFullyConstrained =
+      ast && code ? isSegmentFullyConstrained(pathToNode, ast, code) : false
+
+    const color = getSegmentColor({
+      theme,
+      isSelected: !!isSelected,
+      isFullyConstrained,
+    })
+    const baseColor = !isFullyConstrained
+      ? getPrimaryColorForThreeJs()
+      : getThemeColorForThreeJs(theme)
 
     const group = new Group()
     const geometry = createArcGeometry({
@@ -678,6 +837,8 @@ class CircleSegment implements SegmentUtils {
     group,
     scale = 1,
     sceneInfra,
+    ast,
+    code,
   }) => {
     if (input.type !== 'arc-segment') {
       return new Error('Invalid segment type')
@@ -687,6 +848,32 @@ class CircleSegment implements SegmentUtils {
     group.userData.center = center
     group.userData.radius = radius
     group.userData.prevSegment = prevSegment
+
+    // Check if segment is fully constrained and update color if needed
+    if (ast && code) {
+      const pathToNode = group.userData.pathToNode
+      const isFullyConstrained = isSegmentFullyConstrained(
+        pathToNode,
+        ast,
+        code
+      )
+      const color = getSegmentColor({
+        theme: sceneInfra._theme,
+        isSelected: group.userData.isSelected,
+        isFullyConstrained,
+      })
+
+      // Update the material color
+      const circleSegmentBody = group.children.find(
+        (child) => child.userData.type === CIRCLE_SEGMENT_BODY
+      ) as Mesh
+      if (
+        circleSegmentBody &&
+        circleSegmentBody.material instanceof MeshBasicMaterial
+      ) {
+        circleSegmentBody.material.color.set(color)
+      }
+    }
     const arrowGroup = group.getObjectByName(ARROWHEAD) as Group
     const radiusLengthIndicator = group.getObjectByName(
       SEGMENT_LENGTH_LABEL
@@ -831,6 +1018,8 @@ class CircleThreePointSegment implements SegmentUtils {
     isSelected = false,
     sceneInfra,
     prevSegment,
+    ast,
+    code,
   }) => {
     if (input.type !== 'circle-three-point-segment') {
       return new Error('Invalid segment type')
@@ -845,8 +1034,19 @@ class CircleThreePointSegment implements SegmentUtils {
       p3[1]
     )
     const center: [number, number] = [center_x, center_y]
-    const baseColor = getThemeColorForThreeJs(theme)
-    const color = isSelected ? 0x0000ff : baseColor
+
+    // Check if segment is fully constrained
+    const isFullyConstrained =
+      ast && code ? isSegmentFullyConstrained(pathToNode, ast, code) : false
+
+    const color = getSegmentColor({
+      theme,
+      isSelected: !!isSelected,
+      isFullyConstrained,
+    })
+    const baseColor = !isFullyConstrained
+      ? getPrimaryColorForThreeJs()
+      : getThemeColorForThreeJs(theme)
 
     const group = new Group()
     const geometry = createArcGeometry({
@@ -919,6 +1119,8 @@ class CircleThreePointSegment implements SegmentUtils {
     group,
     scale = 1,
     sceneInfra,
+    ast,
+    code,
   }) => {
     if (input.type !== 'circle-three-point-segment') {
       return new Error('Invalid segment type')
@@ -927,6 +1129,32 @@ class CircleThreePointSegment implements SegmentUtils {
     group.userData.p1 = p1
     group.userData.p2 = p2
     group.userData.p3 = p3
+
+    // Check if segment is fully constrained and update color if needed
+    if (ast && code) {
+      const pathToNode = group.userData.pathToNode
+      const isFullyConstrained = isSegmentFullyConstrained(
+        pathToNode,
+        ast,
+        code
+      )
+      const color = getSegmentColor({
+        theme: sceneInfra._theme,
+        isSelected: group.userData.isSelected,
+        isFullyConstrained,
+      })
+
+      // Update the material color
+      const circleSegmentBody = group.children.find(
+        (child) => child.userData.type === CIRCLE_THREE_POINT_SEGMENT_BODY
+      ) as Mesh
+      if (
+        circleSegmentBody &&
+        circleSegmentBody.material instanceof MeshBasicMaterial
+      ) {
+        circleSegmentBody.material.color.set(color)
+      }
+    }
     const { center_x, center_y, radius } = calculate_circle_from_3_points(
       p1[0],
       p1[1],
@@ -1048,13 +1276,26 @@ class ArcSegment implements SegmentUtils {
     theme,
     isSelected,
     sceneInfra,
+    ast,
+    code,
   }) => {
     if (input.type !== 'arc-segment') {
       return new Error('Invalid segment type')
     }
     const { from, to, center, radius, ccw } = input
-    const baseColor = getThemeColorForThreeJs(theme)
-    const color = isSelected ? 0x0000ff : baseColor
+
+    // Check if segment is fully constrained
+    const isFullyConstrained =
+      ast && code ? isSegmentFullyConstrained(pathToNode, ast, code) : false
+
+    const color = getSegmentColor({
+      theme,
+      isSelected: !!isSelected,
+      isFullyConstrained,
+    })
+    const baseColor = !isFullyConstrained
+      ? getPrimaryColorForThreeJs()
+      : getThemeColorForThreeJs(theme)
 
     // Calculate start and end angles
     const startAngle = Math.atan2(from[1] - center[1], from[0] - center[0])
@@ -1195,6 +1436,8 @@ class ArcSegment implements SegmentUtils {
     group,
     scale = 1,
     sceneInfra,
+    ast,
+    code,
   }) => {
     if (input.type !== 'arc-segment') {
       return new Error('Invalid segment type')
@@ -1206,6 +1449,32 @@ class ArcSegment implements SegmentUtils {
     group.userData.radius = radius
     group.userData.ccw = ccw
     group.userData.prevSegment = prevSegment
+
+    // Check if segment is fully constrained and update color if needed
+    if (ast && code) {
+      const pathToNode = group.userData.pathToNode
+      const isFullyConstrained = isSegmentFullyConstrained(
+        pathToNode,
+        ast,
+        code
+      )
+      const color = getSegmentColor({
+        theme: sceneInfra._theme,
+        isSelected: group.userData.isSelected,
+        isFullyConstrained,
+      })
+
+      // Update the material color
+      const arcSegmentBody = group.children.find(
+        (child) => child.userData.type === ARC_SEGMENT_BODY
+      ) as Mesh
+      if (
+        arcSegmentBody &&
+        arcSegmentBody.material instanceof MeshBasicMaterial
+      ) {
+        arcSegmentBody.material.color.set(color)
+      }
+    }
 
     // Calculate start and end angles
     const startAngle = Math.atan2(from[1] - center[1], from[0] - center[0])
@@ -1403,6 +1672,8 @@ class ThreePointArcSegment implements SegmentUtils {
     isSelected = false,
     sceneInfra,
     prevSegment,
+    ast,
+    code,
   }) => {
     if (input.type !== 'circle-three-point-segment') {
       return new Error('Invalid segment type')
@@ -1417,8 +1688,19 @@ class ThreePointArcSegment implements SegmentUtils {
       p3[1]
     )
     const center: [number, number] = [center_x, center_y]
-    const baseColor = getThemeColorForThreeJs(theme)
-    const color = isSelected ? 0x0000ff : baseColor
+
+    // Check if segment is fully constrained
+    const isFullyConstrained =
+      ast && code ? isSegmentFullyConstrained(pathToNode, ast, code) : false
+
+    const color = getSegmentColor({
+      theme,
+      isSelected: !!isSelected,
+      isFullyConstrained,
+    })
+    const baseColor = !isFullyConstrained
+      ? getPrimaryColorForThreeJs()
+      : getThemeColorForThreeJs(theme)
 
     // Calculate start and end angles
     const startAngle = Math.atan2(p1[1] - center[1], p1[0] - center[0])
@@ -1500,6 +1782,8 @@ class ThreePointArcSegment implements SegmentUtils {
     group,
     scale = 1,
     sceneInfra,
+    ast,
+    code,
   }) => {
     if (input.type !== 'circle-three-point-segment') {
       return new Error('Invalid segment type')
@@ -1522,6 +1806,32 @@ class ThreePointArcSegment implements SegmentUtils {
     group.userData.center = center
     group.userData.radius = radius
     group.userData.prevSegment = prevSegment
+
+    // Check if segment is fully constrained and update color if needed
+    if (ast && code) {
+      const pathToNode = group.userData.pathToNode
+      const isFullyConstrained = isSegmentFullyConstrained(
+        pathToNode,
+        ast,
+        code
+      )
+      const color = getSegmentColor({
+        theme: sceneInfra._theme,
+        isSelected: group.userData.isSelected,
+        isFullyConstrained,
+      })
+
+      // Update the material color
+      const arcSegmentBody = group.children.find(
+        (child) => child.userData.type === THREE_POINT_ARC_SEGMENT_BODY
+      ) as Mesh
+      if (
+        arcSegmentBody &&
+        arcSegmentBody.material instanceof MeshBasicMaterial
+      ) {
+        arcSegmentBody.material.color.set(color)
+      }
+    }
 
     // Calculate start and end angles
     const startAngle = Math.atan2(p1[1] - center[1], p1[0] - center[0])
@@ -1619,6 +1929,8 @@ export function createProfileStartHandle({
   theme,
   isSelected,
   size = 12,
+  ast,
+  code,
   ...rest
 }: {
   from: Coords2d
@@ -1626,15 +1938,30 @@ export function createProfileStartHandle({
   theme: Themes
   isSelected?: boolean
   size?: number
+  ast?: Program
+  code?: string
 } & (
   | { isDraft: true }
   | { isDraft: false; id: string; pathToNode: PathToNode }
 )) {
   const group = new Group()
 
+  // Check if profile start is fully constrained (only if we have AST, code, and it's not a draft)
+  const isFullyConstrained =
+    !isDraft && ast && code && 'pathToNode' in rest
+      ? isSegmentFullyConstrained(rest.pathToNode, ast, code)
+      : false
+
   const geometry = new BoxGeometry(size, size, size) // in pixels scaled later
-  const baseColor = getThemeColorForThreeJs(theme)
-  const color = isSelected ? 0x0000ff : baseColor
+  const color = getSegmentColor({
+    theme,
+    isSelected: !!isSelected,
+    callExpName: 'profileStart',
+    isFullyConstrained,
+  })
+  const baseColor = !isFullyConstrained
+    ? getPrimaryColorForThreeJs()
+    : getThemeColorForThreeJs(theme)
   const body = new MeshBasicMaterial({ color })
   const mesh = new Mesh(geometry, body)
 
@@ -1645,6 +1972,7 @@ export function createProfileStartHandle({
     from,
     isSelected,
     baseColor,
+    isFullyConstrained,
     ...rest,
   }
   group.name = isDraft ? DRAFT_POINT : PROFILE_START
