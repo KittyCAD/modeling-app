@@ -31,6 +31,33 @@ async fn inner_plane_of(
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<Plane, KclError> {
+    // Support mock execution
+    // Return an arbitrary (incorrect) plane and a non-fatal error.
+    if args.ctx.no_engine_commands().await {
+        let plane_id = exec_state.id_generator().next_uuid();
+        exec_state.err(crate::CompilationError {
+            source_range: args.source_range,
+            message: "The engine isn't available, so returning an arbitrary incorrect plane".to_owned(),
+            suggestion: None,
+            severity: crate::errors::Severity::Error,
+            tag: crate::errors::Tag::None,
+        });
+        return Ok(Plane {
+            artifact_id: plane_id.into(),
+            id: plane_id,
+            // Engine doesn't know about the ID we created, so set this to Uninit.
+            value: PlaneType::Uninit,
+            info: crate::execution::PlaneInfo {
+                origin: Default::default(),
+                x_axis: Default::default(),
+                y_axis: Default::default(),
+            },
+            meta: vec![Metadata {
+                source_range: args.source_range,
+            }],
+        });
+    }
+
     // Query the engine to learn what plane, if any, this face is on.
     let face_id = face.get_face_id(&solid, exec_state, args, true).await?;
     let meta = args.into();

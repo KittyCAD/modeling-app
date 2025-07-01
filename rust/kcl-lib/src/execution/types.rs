@@ -1109,7 +1109,6 @@ impl KclValue {
             RuntimeType::Tuple(tys) => self.coerce_to_tuple_type(tys, convert_units, exec_state),
             RuntimeType::Union(tys) => self.coerce_to_union_type(tys, convert_units, exec_state),
             RuntimeType::Object(tys) => self.coerce_to_object_type(tys, convert_units, exec_state),
-            // ADAM: Add new coercion here
         }
     }
 
