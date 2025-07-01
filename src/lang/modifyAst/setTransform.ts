@@ -10,7 +10,13 @@ import {
   createVariableDeclaration,
   findUniqueName,
 } from '@src/lang/create'
-import { createPathToNodeForLastVariable, createVariableExpressionsArray, getNodeFromPath, getVariableExprsFromSelection, valueOrVariable } from '@src/lang/queryAst'
+import {
+  createPathToNodeForLastVariable,
+  createVariableExpressionsArray,
+  getNodeFromPath,
+  getVariableExprsFromSelection,
+  valueOrVariable,
+} from '@src/lang/queryAst'
 import type {
   ArtifactGraph,
   CallExpressionKw,
@@ -66,7 +72,7 @@ export function setTranslate({
   const globalExpr = global
     ? [createLabeledArg('global', createLiteral(global))]
     : []
-   const objectsExpr = createVariableExpressionsArray(variableExpressions.exprs)
+  const objectsExpr = createVariableExpressionsArray(variableExpressions.exprs)
   const call = createCallExpressionStdLibKw('translate', objectsExpr, [
     createLabeledArg('x', valueOrVariable(x)),
     createLabeledArg('y', valueOrVariable(y)),
@@ -117,7 +123,7 @@ export function setTranslate({
     } else {
       const name = findUniqueName(
         modifiedAst,
-        KCL_DEFAULT_CONSTANT_PREFIXES.TRANSLATE,
+        KCL_DEFAULT_CONSTANT_PREFIXES.TRANSLATE
       )
       const declaration = createVariableDeclaration(name, call)
       modifiedAst.body.push(declaration)
