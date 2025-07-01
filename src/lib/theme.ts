@@ -1,5 +1,5 @@
 import type { AppTheme } from '@rust/kcl-lib/bindings/AppTheme'
-import { convert, OKLCH, sRGB } from '@texel/color'
+import { converter } from 'culori'
 
 /** A media query matcher for dark mode */
 export const darkModeMatcher =
@@ -60,20 +60,28 @@ export function getOppositeTheme(theme: Themes) {
 }
 
 /**
- * Converts OKLCH values to RGB using @texel/color library
+ * Converts OKLCH values to RGB using Culori library
  * @param l - Lightness (0-1)
  * @param c - Chroma (0-1)
  * @param h - Hue (0-360 degrees)
  * @returns RGB values as [r, g, b] where each component is 0-255
  */
 function oklchToRgb(l: number, c: number, h: number): [number, number, number] {
-  // Convert OKLCH to sRGB using @texel/color
-  const [r, g, b] = convert([l, c, h], OKLCH, sRGB)
+  // Create a converter from OKLCH to RGB using Culori
+  const toRgb = converter('rgb')
+
+  // Convert OKLCH to RGB using Culori
+  const rgb = toRgb({ mode: 'oklch', l, c, h })
+
+  if (!rgb) {
+    // Fallback if conversion fails
+    return [255, 255, 255]
+  }
 
   // Clamp values. When OKLCH values represent colors outside the sRGB gamut, the RGB values can be negative or greater than 1.
-  const clampedR = Math.max(0, Math.min(1, r))
-  const clampedG = Math.max(0, Math.min(1, g))
-  const clampedB = Math.max(0, Math.min(1, b))
+  const clampedR = Math.max(0, Math.min(1, rgb.r))
+  const clampedG = Math.max(0, Math.min(1, rgb.g))
+  const clampedB = Math.max(0, Math.min(1, rgb.b))
 
   // Convert from 0-1 range to 0-255 range
   return [
