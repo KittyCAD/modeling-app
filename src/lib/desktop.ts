@@ -360,7 +360,11 @@ function buildProjectsBasedOffFileEntries(
 }
 
 export async function getProjectInfo(projectPath: string): Promise<Project> {
-  const starMatchedPath = joinOSPaths(projectPath, '**', '*')
+  /**
+   * Gotcha: Glob patterns should always use / as a path separator, even on Windows systems, as \ is used to escape glob characters. 
+   * You can disable this but it comes with gotchas!
+   */
+  const starMatchedPath = projectPath + '/**/*'
   let results = await window.electron.globDir(starMatchedPath)
   const isRelevantFile = (filename: string): boolean =>
     cachedRelevantFileExtensions().some((ext) => filename.endsWith('.' + ext))
