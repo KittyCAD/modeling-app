@@ -1,8 +1,5 @@
 import type { Models } from '@kittycad/lib'
-import {
-  VITE_KC_API_BASE_URL,
-  VITE_KC_DEV_TOKEN,
-} from '@src/env'
+import { VITE_KC_API_BASE_URL, VITE_KC_DEV_TOKEN } from '@src/env'
 import { assign, fromPromise, setup } from 'xstate'
 
 import { COOKIE_NAME, OAUTH2_DEVICE_CLIENT_ID } from '@src/lib/constants'
@@ -18,7 +15,6 @@ import {
   default as withBaseUrl,
 } from '@src/lib/withBaseURL'
 import { ACTOR_IDS } from '@src/machines/machineConstants'
-
 
 const LOCAL_USER: Models['User_type'] = {
   id: '8675309',
@@ -54,9 +50,7 @@ export type Events =
 
 export const TOKEN_PERSIST_KEY = 'TOKEN_PERSIST_KEY'
 export const persistedToken =
-  getCookie(COOKIE_NAME) ||
-  localStorage?.getItem(TOKEN_PERSIST_KEY) ||
-  ''
+  getCookie(COOKIE_NAME) || localStorage?.getItem(TOKEN_PERSIST_KEY) || ''
 export const authMachine = setup({
   types: {} as {
     context: UserContext
@@ -223,7 +217,9 @@ async function getAndSyncStoredToken(input: {
   token?: string
 }): Promise<string> {
   if (VITE_KC_DEV_TOKEN) {
-    console.warn(`Authentication skipped, VITE_KC_DEV_TOKEN:${!!VITE_KC_DEV_TOKEN ? '<REDACTED>' : 'Oh no, this should not be missing.'}`)
+    console.warn(
+      `Authentication skipped, VITE_KC_DEV_TOKEN:${!!VITE_KC_DEV_TOKEN ? '<REDACTED>' : 'Oh no, this should not be missing.'}`
+    )
     return VITE_KC_DEV_TOKEN
   }
 
