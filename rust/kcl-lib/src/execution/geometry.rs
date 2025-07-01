@@ -1031,7 +1031,7 @@ pub struct GeoMeta {
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum Path {
-    /// A path that goes to a point.
+    /// A straight line which ends at the given point.
     ToPoint {
         #[serde(flatten)]
         base: BasePath,

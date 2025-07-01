@@ -2,7 +2,11 @@ import type { FunctionExpression } from '@rust/kcl-lib/bindings/FunctionExpressi
 import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { TypeDeclaration } from '@rust/kcl-lib/bindings/TypeDeclaration'
-import { createLocalName, createPipeSubstitution } from '@src/lang/create'
+import {
+  createLocalName,
+  createPipeSubstitution,
+  createArrayExpression,
+} from '@src/lang/create'
 import type { ToolTip } from '@src/lang/langHelpers'
 import { splitPathAtLastIndex } from '@src/lang/modifyAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
@@ -1042,19 +1046,21 @@ export const valueOrVariable = (variable: KclCommandValue) => {
 
 // Go from a selection of sketches to a list of KCL expressions that
 // can be used to create KCL sweep call declarations.
-export function getSketchExprsFromSelection(
+export function getVariableExprsFromSelection(
   selection: Selections,
   ast: Node<Program>,
   nodeToEdit?: PathToNode
-): Error | Expr[] {
-  const sketches: Expr[] = selection.graphSelections.flatMap((s) => {
+): Error | { exprs: Expr[]; paths: PathToNode[] } {
+  const paths: PathToNode[] = []
+  const exprs: Expr[] = []
+  for (const s of selection.graphSelections) {
     const sketchVariable = getNodeFromPath<VariableDeclarator>(
       ast,
       s?.codeRef.pathToNode,
       'VariableDeclarator'
     )
     if (err(sketchVariable)) {
-      return []
+      continue
     }
 
     if (sketchVariable.node.id) {
@@ -1071,22 +1077,63 @@ export function getSketchExprsFromSelection(
           name === result.node.id.name
         ) {
           // Pointing to same variable case
-          return createPipeSubstitution()
+          paths.push(nodeToEdit)
+          exprs.push(createPipeSubstitution())
         }
       }
       // Pointing to different variable case
-      return createLocalName(name)
+      paths.push(sketchVariable.deepPath)
+      exprs.push(createLocalName(name))
     } else {
       // No variable case
-      return createPipeSubstitution()
+      paths.push(sketchVariable.deepPath)
+      exprs.push(createPipeSubstitution())
     }
-  })
+  }
 
-  if (sketches.length === 0) {
+  if (exprs.length === 0) {
     return new Error("Couldn't map selections to program references")
   }
 
-  return sketches
+  return { exprs, paths }
+}
+
+// Create an array expression for variables,
+// or keep it null if all are PipeSubstitutions
+export function createVariableExpressionsArray(sketches: Expr[]) {
+  let sketchesExpr: Expr | null = null
+  if (sketches.every((s) => s.type === 'PipeSubstitution')) {
+    // Keeping null so we don't even put it the % sign
+  } else if (sketches.length === 1) {
+    sketchesExpr = sketches[0]
+  } else {
+    sketchesExpr = createArrayExpression(sketches)
+  }
+  return sketchesExpr
+}
+
+// Create a path to node to the last variable declaroator of an ast
+// Optionally, can point to the first kwarg of the CallExpressionKw
+export function createPathToNodeForLastVariable(
+  ast: Node<Program>,
+  toFirstKwarg = true
+): PathToNode {
+  const argIndex = 0 // first kwarg for all sweeps here
+  const pathToCall: PathToNode = [
+    ['body', ''],
+    [ast.body.length - 1, 'index'],
+    ['declaration', 'VariableDeclaration'],
+    ['init', 'VariableDeclarator'],
+  ]
+  if (toFirstKwarg) {
+    pathToCall.push(
+      ['arguments', 'CallExpressionKw'],
+      [argIndex, ARG_INDEX_FIELD],
+      ['arg', LABELED_ARG_FIELD]
+    )
+  }
+
+  return pathToCall
 }
 
 // Go from the sketches argument in a KCL sweep call declaration
