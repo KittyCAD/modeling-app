@@ -1,9 +1,8 @@
 import type { Models } from '@kittycad/lib'
 import {
-  DEV,
   VITE_KC_API_BASE_URL,
   VITE_KC_DEV_TOKEN,
-  VITE_KC_SKIP_AUTH,
+  SKIP_AUTH
 } from '@src/env'
 import { assign, fromPromise, setup } from 'xstate'
 
@@ -21,7 +20,6 @@ import {
 } from '@src/lib/withBaseURL'
 import { ACTOR_IDS } from '@src/machines/machineConstants'
 
-const SKIP_AUTH = VITE_KC_SKIP_AUTH === 'true' && DEV
 
 const LOCAL_USER: Models['User_type'] = {
   id: '8675309',
@@ -57,11 +55,9 @@ export type Events =
 
 export const TOKEN_PERSIST_KEY = 'TOKEN_PERSIST_KEY'
 export const persistedToken =
-  VITE_KC_DEV_TOKEN ||
   getCookie(COOKIE_NAME) ||
   localStorage?.getItem(TOKEN_PERSIST_KEY) ||
   ''
-
 export const authMachine = setup({
   types: {} as {
     context: UserContext
@@ -227,13 +223,28 @@ export function getCookie(cname: string): string | null {
 async function getAndSyncStoredToken(input: {
   token?: string
 }): Promise<string> {
-  // dev mode
-  if (VITE_KC_DEV_TOKEN) return VITE_KC_DEV_TOKEN
+  // Gotcha: VITE_KC_SKIP_AUTH should not allow this to happen
+  if (VITE_KC_DEV_TOKEN && SKIP_AUTH) {
+    console.warn(`Authentication skipped, SKIP_AUTH:${SKIP_AUTH} and VITE_KC_DEV_TOKEN:${!!VITE_KC_DEV_TOKEN ? '<REDACTED>' : 'Oh no, this should not be missing.'}`)
+    return VITE_KC_DEV_TOKEN
+  }
+
+  // If SKIP_AUTH is false, you must auth
+  console.warn('Authentication is required')
+
+  const tokenPassedFromInput = input.token
+  const tokenFromCookie = getCookie(COOKIE_NAME)
+  const tokenFromLocalStorage = localStorage?.getItem(TOKEN_PERSIST_KEY)
+
+  console.warn(`token from input`, !!tokenPassedFromInput)
+  console.warn(`token from cookie`, !!tokenFromCookie)
+  console.warn(`token from local storage`, !!tokenFromLocalStorage)
 
   const token =
     input.token && input.token !== ''
       ? input.token
       : getCookie(COOKIE_NAME) || localStorage?.getItem(TOKEN_PERSIST_KEY) || ''
+
   if (token) {
     // has just logged in, update storage
     localStorage.setItem(TOKEN_PERSIST_KEY, token)
@@ -242,6 +253,7 @@ async function getAndSyncStoredToken(input: {
     }
     return token
   }
+
   if (!isDesktop()) return ''
   const fileToken = isDesktop() ? await readTokenFile() : ''
   // prefer other above, but file will ensure login persists after app updates

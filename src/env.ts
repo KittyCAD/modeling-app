@@ -19,3 +19,5 @@ export const PROD = env.PROD as string | undefined
 export const TEST = env.TEST as string | undefined
 export const DEV = env.DEV as string | undefined
 export const CI = env.CI as string | undefined
+console.log('huh', VITE_KC_SKIP_AUTH, DEV)
+export const SKIP_AUTH = VITE_KC_SKIP_AUTH === 'true' && DEV

@@ -697,7 +697,9 @@ export const readTokenFile = async () => {
 export const writeTokenFile = async (token: string) => {
   const tokenFilePath = await getTokenFilePath()
   if (err(token)) return Promise.reject(token)
-  return window.electron.writeFile(tokenFilePath, token)
+  const result =  window.electron.writeFile(tokenFilePath, token)
+  console.warn(`token written to disk`)
+  return result
 }
 
 export const writeTelemetryFile = async (content: string) => {
