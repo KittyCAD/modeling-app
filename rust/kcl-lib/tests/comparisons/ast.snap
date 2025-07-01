@@ -15,6 +15,7 @@ description: Result of parsing comparisons.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "isEqualTo",
                 "start": 0,
                 "type": "Identifier"
@@ -22,6 +23,7 @@ description: Result of parsing comparisons.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "3",
                 "start": 0,
                 "type": "Literal",
@@ -37,6 +39,7 @@ description: Result of parsing comparisons.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "error",
                 "start": 0,
                 "type": "Identifier"
@@ -44,6 +47,7 @@ description: Result of parsing comparisons.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "\"equality\"",
                 "start": 0,
                 "type": "Literal",
@@ -56,9 +60,11 @@ description: Result of parsing comparisons.kcl
             "abs_path": false,
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "assert",
               "start": 0,
               "type": "Identifier"
@@ -69,12 +75,14 @@ description: Result of parsing comparisons.kcl
           },
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
           "unlabeled": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "3",
             "start": 0,
             "type": "Literal",
@@ -85,6 +93,7 @@ description: Result of parsing comparisons.kcl
             }
           }
         },
+        "moduleId": 0,
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -99,6 +108,7 @@ description: Result of parsing comparisons.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "isEqualTo",
                 "start": 0,
                 "type": "Identifier"
@@ -106,6 +116,7 @@ description: Result of parsing comparisons.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "3.0",
                 "start": 0,
                 "type": "Literal",
@@ -121,6 +132,7 @@ description: Result of parsing comparisons.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "error",
                 "start": 0,
                 "type": "Identifier"
@@ -128,6 +140,7 @@ description: Result of parsing comparisons.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "\"equality of floats\"",
                 "start": 0,
                 "type": "Literal",
@@ -140,9 +153,11 @@ description: Result of parsing comparisons.kcl
             "abs_path": false,
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "assert",
               "start": 0,
               "type": "Identifier"
@@ -153,12 +168,14 @@ description: Result of parsing comparisons.kcl
           },
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
           "unlabeled": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "3.0",
             "start": 0,
             "type": "Literal",
@@ -169,6 +186,7 @@ description: Result of parsing comparisons.kcl
             }
           }
         },
+        "moduleId": 0,
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -183,6 +201,7 @@ description: Result of parsing comparisons.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "isLessThan",
                 "start": 0,
                 "type": "Identifier"
@@ -190,6 +209,7 @@ description: Result of parsing comparisons.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "4",
                 "start": 0,
                 "type": "Literal",
@@ -205,6 +225,7 @@ description: Result of parsing comparisons.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "error",
                 "start": 0,
                 "type": "Identifier"
@@ -212,6 +233,7 @@ description: Result of parsing comparisons.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "\"lt\"",
                 "start": 0,
                 "type": "Literal",
@@ -224,9 +246,11 @@ description: Result of parsing comparisons.kcl
             "abs_path": false,
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "assert",
               "start": 0,
               "type": "Identifier"
@@ -237,12 +261,14 @@ description: Result of parsing comparisons.kcl
           },
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
           "unlabeled": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "3",
             "start": 0,
             "type": "Literal",
@@ -253,6 +279,7 @@ description: Result of parsing comparisons.kcl
             }
           }
         },
+        "moduleId": 0,
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -267,6 +294,7 @@ description: Result of parsing comparisons.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "isLessThanOrEqual",
                 "start": 0,
                 "type": "Identifier"
@@ -274,6 +302,7 @@ description: Result of parsing comparisons.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "4",
                 "start": 0,
                 "type": "Literal",
@@ -289,6 +318,7 @@ description: Result of parsing comparisons.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "error",
                 "start": 0,
                 "type": "Identifier"
@@ -296,6 +326,7 @@ description: Result of parsing comparisons.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "\"lte but actually lt\"",
                 "start": 0,
                 "type": "Literal",
@@ -308,9 +339,11 @@ description: Result of parsing comparisons.kcl
             "abs_path": false,
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "assert",
               "start": 0,
               "type": "Identifier"
@@ -321,12 +354,14 @@ description: Result of parsing comparisons.kcl
           },
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
           "unlabeled": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "3",
             "start": 0,
             "type": "Literal",
@@ -337,6 +372,7 @@ description: Result of parsing comparisons.kcl
             }
           }
         },
+        "moduleId": 0,
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -351,6 +387,7 @@ description: Result of parsing comparisons.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "isLessThanOrEqual",
                 "start": 0,
                 "type": "Identifier"
@@ -358,6 +395,7 @@ description: Result of parsing comparisons.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "4",
                 "start": 0,
                 "type": "Literal",
@@ -373,6 +411,7 @@ description: Result of parsing comparisons.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "error",
                 "start": 0,
                 "type": "Identifier"
@@ -380,6 +419,7 @@ description: Result of parsing comparisons.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "\"lte but actually eq\"",
                 "start": 0,
                 "type": "Literal",
@@ -392,9 +432,11 @@ description: Result of parsing comparisons.kcl
             "abs_path": false,
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "assert",
               "start": 0,
               "type": "Identifier"
@@ -405,12 +447,14 @@ description: Result of parsing comparisons.kcl
           },
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
           "unlabeled": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "4",
             "start": 0,
             "type": "Literal",
@@ -421,6 +465,7 @@ description: Result of parsing comparisons.kcl
             }
           }
         },
+        "moduleId": 0,
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -435,6 +480,7 @@ description: Result of parsing comparisons.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "isGreaterThan",
                 "start": 0,
                 "type": "Identifier"
@@ -442,6 +488,7 @@ description: Result of parsing comparisons.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "3",
                 "start": 0,
                 "type": "Literal",
@@ -457,6 +504,7 @@ description: Result of parsing comparisons.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "error",
                 "start": 0,
                 "type": "Identifier"
@@ -464,6 +512,7 @@ description: Result of parsing comparisons.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "\"gt\"",
                 "start": 0,
                 "type": "Literal",
@@ -476,9 +525,11 @@ description: Result of parsing comparisons.kcl
             "abs_path": false,
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "assert",
               "start": 0,
               "type": "Identifier"
@@ -489,12 +540,14 @@ description: Result of parsing comparisons.kcl
           },
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
           "unlabeled": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "4",
             "start": 0,
             "type": "Literal",
@@ -505,6 +558,7 @@ description: Result of parsing comparisons.kcl
             }
           }
         },
+        "moduleId": 0,
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -519,6 +573,7 @@ description: Result of parsing comparisons.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "isGreaterThanOrEqual",
                 "start": 0,
                 "type": "Identifier"
@@ -526,6 +581,7 @@ description: Result of parsing comparisons.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "3",
                 "start": 0,
                 "type": "Literal",
@@ -541,6 +597,7 @@ description: Result of parsing comparisons.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "error",
                 "start": 0,
                 "type": "Identifier"
@@ -548,6 +605,7 @@ description: Result of parsing comparisons.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "\"gte but actually gt\"",
                 "start": 0,
                 "type": "Literal",
@@ -560,9 +618,11 @@ description: Result of parsing comparisons.kcl
             "abs_path": false,
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "assert",
               "start": 0,
               "type": "Identifier"
@@ -573,12 +633,14 @@ description: Result of parsing comparisons.kcl
           },
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
           "unlabeled": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "4",
             "start": 0,
             "type": "Literal",
@@ -589,6 +651,7 @@ description: Result of parsing comparisons.kcl
             }
           }
         },
+        "moduleId": 0,
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -603,6 +666,7 @@ description: Result of parsing comparisons.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "isGreaterThanOrEqual",
                 "start": 0,
                 "type": "Identifier"
@@ -610,6 +674,7 @@ description: Result of parsing comparisons.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "3",
                 "start": 0,
                 "type": "Literal",
@@ -625,6 +690,7 @@ description: Result of parsing comparisons.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "error",
                 "start": 0,
                 "type": "Identifier"
@@ -632,6 +698,7 @@ description: Result of parsing comparisons.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "\"gte but actually eq\"",
                 "start": 0,
                 "type": "Literal",
@@ -644,9 +711,11 @@ description: Result of parsing comparisons.kcl
             "abs_path": false,
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "assert",
               "start": 0,
               "type": "Identifier"
@@ -657,12 +726,14 @@ description: Result of parsing comparisons.kcl
           },
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
           "unlabeled": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "3",
             "start": 0,
             "type": "Literal",
@@ -673,6 +744,7 @@ description: Result of parsing comparisons.kcl
             }
           }
         },
+        "moduleId": 0,
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -687,6 +759,7 @@ description: Result of parsing comparisons.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "isEqualTo",
                 "start": 0,
                 "type": "Identifier"
@@ -694,6 +767,7 @@ description: Result of parsing comparisons.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "0.0",
                 "start": 0,
                 "type": "Literal",
@@ -709,6 +783,7 @@ description: Result of parsing comparisons.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "error",
                 "start": 0,
                 "type": "Identifier"
@@ -716,6 +791,7 @@ description: Result of parsing comparisons.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "\"equality of zero\"",
                 "start": 0,
                 "type": "Literal",
@@ -728,9 +804,11 @@ description: Result of parsing comparisons.kcl
             "abs_path": false,
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "assert",
               "start": 0,
               "type": "Identifier"
@@ -741,12 +819,14 @@ description: Result of parsing comparisons.kcl
           },
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
           "unlabeled": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "0.0",
             "start": 0,
             "type": "Literal",
@@ -757,6 +837,7 @@ description: Result of parsing comparisons.kcl
             }
           }
         },
+        "moduleId": 0,
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -771,6 +852,7 @@ description: Result of parsing comparisons.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "isEqualTo",
                 "start": 0,
                 "type": "Identifier"
@@ -779,6 +861,7 @@ description: Result of parsing comparisons.kcl
                 "argument": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "raw": "0.0",
                   "start": 0,
                   "type": "Literal",
@@ -790,6 +873,7 @@ description: Result of parsing comparisons.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "operator": "-",
                 "start": 0,
                 "type": "UnaryExpression",
@@ -801,6 +885,7 @@ description: Result of parsing comparisons.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "error",
                 "start": 0,
                 "type": "Identifier"
@@ -808,6 +893,7 @@ description: Result of parsing comparisons.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "\"equality of zero and neg zero\"",
                 "start": 0,
                 "type": "Literal",
@@ -820,9 +906,11 @@ description: Result of parsing comparisons.kcl
             "abs_path": false,
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "assert",
               "start": 0,
               "type": "Identifier"
@@ -833,12 +921,14 @@ description: Result of parsing comparisons.kcl
           },
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
           "unlabeled": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "0.0",
             "start": 0,
             "type": "Literal",
@@ -849,6 +939,7 @@ description: Result of parsing comparisons.kcl
             }
           }
         },
+        "moduleId": 0,
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -856,12 +947,14 @@ description: Result of parsing comparisons.kcl
     ],
     "commentStart": 0,
     "end": 0,
+    "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "7": [
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {

@@ -17,6 +17,7 @@ import {
   kclManager,
   sceneInfra,
 } from '@src/lib/singletons'
+import { KclManagerEvents } from '@src/lang/KclSingleton'
 import { REASONABLE_TIME_TO_REFRESH_STREAM_SIZE } from '@src/lib/timings'
 import { err, reportRejection, trap } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
@@ -46,11 +47,15 @@ export const EngineStream = (props: {
   const settings = useSettings()
   const { state: modelingMachineState, send: modelingMachineActorSend } =
     useModelingContext()
+  const [streamIdleMode, setStreamIdleMode] = useState(
+    settings.app.streamIdleMode.current
+  )
 
   const { file, project } = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
   const last = useRef<number>(Date.now())
 
-  const [firstPlay, setFirstPlay] = useState(true)
+  const [firstRun, setFirstRun] = useState(true)
+  const [needsExecution, setNeedsExecution] = useState(true)
   const [goRestart, setGoRestart] = useState(false)
   const [timeoutId, setTimeoutId] = useState<
     ReturnType<typeof setTimeout> | undefined
@@ -83,7 +88,9 @@ export const EngineStream = (props: {
     cameraOrbit: settings.modeling.cameraOrbit.current,
   }
 
-  const streamIdleMode = settings.app.streamIdleMode.current
+  useEffect(() => {
+    setStreamIdleMode(settings.app.streamIdleMode.current)
+  }, [settings.app.streamIdleMode.current])
 
   useEffect(() => {
     // Will cause a useEffect loop if not checked for.
@@ -143,11 +150,25 @@ export const EngineStream = (props: {
   }
 
   useEffect(() => {
+    // When execution takes a long time, it's most likely a user will want to
+    // come back and be able to say, export the model. The issue with this is
+    // that means the application should NOT go into idle mode for a long time!
+    // We've picked 8 hours to coincide with the typical length of a workday.
+    const onLongExecution = () => {
+      setStreamIdleMode(1000 * 60 * 60 * 8)
+    }
+
+    kclManager.addEventListener(KclManagerEvents.LongExecution, onLongExecution)
+
     engineCommandManager.addEventListener(
       EngineCommandManagerEvents.SceneReady,
       play
     )
     return () => {
+      kclManager.removeEventListener(
+        KclManagerEvents.LongExecution,
+        onLongExecution
+      )
       engineCommandManager.removeEventListener(
         EngineCommandManagerEvents.SceneReady,
         play
@@ -163,13 +184,14 @@ export const EngineStream = (props: {
     // Reset the restart timeouts
     setAttemptTimes([0, TIME_1_SECOND])
 
-    console.log(firstPlay)
-    if (!firstPlay) return
+    console.log(needsExecution)
+    if (!needsExecution) return
 
-    setFirstPlay(false)
-    console.log('firstPlay true, zoom to fit')
+    setNeedsExecution(false)
+    console.log('needsExecution true, zoom to fit')
     kmp
       .then(async () => {
+        setFirstRun(false)
         await resetCameraPosition()
 
         if (project && project.path) {
@@ -192,7 +214,7 @@ export const EngineStream = (props: {
         executeKcl
       )
     }
-  }, [firstPlay])
+  }, [needsExecution])
 
   useEffect(() => {
     // We do a back-off restart, using a fibonacci sequence, since it
@@ -206,7 +228,7 @@ export const EngineStream = (props: {
           engineStreamState.context.videoRef.current?.pause()
           engineCommandManager.tearDown()
           startOrReconfigureEngine()
-          setFirstPlay(true)
+          setNeedsExecution(true)
 
           setTimeoutId(undefined)
           setGoRestart(false)
@@ -377,7 +399,11 @@ export const EngineStream = (props: {
           engineStreamState.value === EngineStreamState.Playing
         ) {
           timeoutStart.current = null
-          console.log('PAUSING')
+          console.log('Pausing')
+          console.log(
+            engineStreamActor.getSnapshot().value,
+            engineStreamState.value
+          )
           engineStreamActor.send({ type: EngineStreamTransition.Pause })
         }
       }
@@ -536,7 +562,7 @@ export const EngineStream = (props: {
     // eslint-disable-next-line jsx-a11y/no-static-element-interactions
     <div
       ref={videoWrapperRef}
-      className="absolute inset-0 z-0"
+      className="fixed inset-0 z-0"
       id="stream"
       data-testid="stream"
       onMouseUp={handleMouseUp}
@@ -578,8 +604,13 @@ export const EngineStream = (props: {
         EngineStreamState.Paused,
         EngineStreamState.Resuming,
       ].some((s) => s === engineStreamState.value) && (
-        <Loading dataTestId="loading-engine" className="fixed inset-0 h-screen">
-          Connecting to engine...
+        <Loading
+          isRetrying={timeoutId !== undefined && !firstRun}
+          retryAttemptCountdown={attemptTimes[1]}
+          dataTestId="loading-engine"
+          className="fixed inset-0 h-screen"
+        >
+          Connecting and setting up scene...
         </Loading>
       )}
     </div>

@@ -1,7 +1,4 @@
-import type {
-  ArtifactCommand,
-  ArtifactGraph as RustArtifactGraph,
-} from '@rust/kcl-lib/bindings/Artifact'
+import type { ArtifactGraph as RustArtifactGraph } from '@rust/kcl-lib/bindings/Artifact'
 import type { ArtifactId } from '@rust/kcl-lib/bindings/ArtifactId'
 import type { CompilationError } from '@rust/kcl-lib/bindings/CompilationError'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
@@ -48,6 +45,7 @@ import {
   default_app_settings,
   default_project_settings,
   format_number_literal,
+  format_number_value,
   get_kcl_version,
   get_tangential_arc_to_info,
   human_display_number,
@@ -70,11 +68,11 @@ import {
 } from '@src/lang/queryAstConstants'
 import type { NumericType } from '@rust/kcl-lib/bindings/NumericType'
 import { isTopLevelModule } from '@src/lang/util'
+import { defaultSourceRange, sourceRangeFromRust } from '@src/lang/sourceRange'
 
 export type { ArrayExpression } from '@rust/kcl-lib/bindings/ArrayExpression'
 export type {
   Artifact,
-  ArtifactCommand,
   Cap as CapArtifact,
   CodeRef,
   CompositeSolid as CompositeSolidArtifact,
@@ -140,23 +138,6 @@ export type { KclValue } from '@rust/kcl-lib/bindings/KclValue'
 export type { Path } from '@rust/kcl-lib/bindings/Path'
 export type { Sketch } from '@rust/kcl-lib/bindings/Sketch'
 export type { Solid } from '@rust/kcl-lib/bindings/Solid'
-
-/**
- * Convert a SourceRange as used inside the KCL interpreter into the above one for use in the
- * frontend (essentially we're eagerly checking whether the frontend should care about the SourceRange
- * so as not to expose details of the interpreter's current representation of module ids throughout
- * the frontend).
- */
-export function sourceRangeFromRust(s: SourceRange): SourceRange {
-  return [s[0], s[1], s[2]]
-}
-
-/**
- * Create a default SourceRange for testing or as a placeholder.
- */
-export function defaultSourceRange(): SourceRange {
-  return [0, 0, 0]
-}
 
 function bestSourceRange(error: RustKclError): SourceRange {
   if (error.details.sourceRanges.length === 0) {
@@ -252,7 +233,6 @@ export const parse = (code: string | Error): ParseResult | Error => {
       [],
       [],
       [],
-      [],
       defaultArtifactGraph(),
       {},
       null
@@ -297,7 +277,6 @@ export const isPathToNode = (input: unknown): input is PathToNode =>
 export interface ExecState {
   variables: { [key in string]?: KclValue }
   operations: Operation[]
-  artifactCommands: ArtifactCommand[]
   artifactGraph: ArtifactGraph
   errors: CompilationError[]
   filenames: { [x: number]: ModulePath | undefined }
@@ -312,7 +291,6 @@ export function emptyExecState(): ExecState {
   return {
     variables: {},
     operations: [],
-    artifactCommands: [],
     artifactGraph: defaultArtifactGraph(),
     errors: [],
     filenames: [],
@@ -321,32 +299,12 @@ export function emptyExecState(): ExecState {
 }
 
 export function execStateFromRust(execOutcome: RustExecOutcome): ExecState {
-  const artifactGraph = rustArtifactGraphToMap(execOutcome.artifactGraph)
-  // Translate NodePath to PathToNode.
-  for (const [_id, artifact] of artifactGraph) {
-    if (!artifact) continue
-    if (!('codeRef' in artifact)) continue
-    const pathToNode = pathToNodeFromRustNodePath(artifact.codeRef.nodePath)
-    artifact.codeRef.pathToNode = pathToNode
-  }
+  const artifactGraph = artifactGraphFromRust(execOutcome.artifactGraph)
 
   return {
     variables: execOutcome.variables,
     operations: execOutcome.operations,
-    artifactCommands: execOutcome.artifactCommands,
     artifactGraph,
-    errors: execOutcome.errors,
-    filenames: execOutcome.filenames,
-    defaultPlanes: execOutcome.defaultPlanes,
-  }
-}
-
-export function mockExecStateFromRust(execOutcome: RustExecOutcome): ExecState {
-  return {
-    variables: execOutcome.variables,
-    operations: execOutcome.operations,
-    artifactCommands: execOutcome.artifactCommands,
-    artifactGraph: new Map<ArtifactId, Artifact>(),
     errors: execOutcome.errors,
     filenames: execOutcome.filenames,
     defaultPlanes: execOutcome.defaultPlanes,
@@ -355,16 +313,24 @@ export function mockExecStateFromRust(execOutcome: RustExecOutcome): ExecState {
 
 export type ArtifactGraph = Map<ArtifactId, Artifact>
 
-function rustArtifactGraphToMap(
+function artifactGraphFromRust(
   rustArtifactGraph: RustArtifactGraph
 ): ArtifactGraph {
-  const map = new Map<ArtifactId, Artifact>()
+  const artifactGraph = new Map<ArtifactId, Artifact>()
+  // Convert to a Map.
   for (const [id, artifact] of Object.entries(rustArtifactGraph.map)) {
     if (!artifact) continue
-    map.set(id, artifact)
+    artifactGraph.set(id, artifact)
   }
 
-  return map
+  // Translate NodePath to PathToNode.
+  for (const [_id, artifact] of artifactGraph) {
+    if (!artifact) continue
+    if (!('codeRef' in artifact)) continue
+    const pathToNode = pathToNodeFromRustNodePath(artifact.codeRef.nodePath)
+    artifact.codeRef.pathToNode = pathToNode
+  }
+  return artifactGraph
 }
 
 export function sketchFromKclValueOptional(
@@ -416,8 +382,7 @@ export const errFromErrWithOutputs = (e: any): KCLError => {
     parsed.error.details.backtrace,
     parsed.nonFatal,
     parsed.operations,
-    parsed.artifactCommands,
-    rustArtifactGraphToMap(parsed.artifactGraph),
+    artifactGraphFromRust(parsed.artifactGraph),
     parsed.filenames,
     parsed.defaultPlanes
   )
@@ -425,10 +390,10 @@ export const errFromErrWithOutputs = (e: any): KCLError => {
 
 export const kclLint = async (ast: Program): Promise<Array<Discovered>> => {
   try {
-    const discovered_findings: Array<Discovered> = await kcl_lint(
+    const discoveredFindings: Array<Discovered> = await kcl_lint(
       JSON.stringify(ast)
     )
-    return discovered_findings
+    return discoveredFindings
   } catch (e: any) {
     return Promise.reject(e)
   }
@@ -479,6 +444,23 @@ export function formatNumberLiteral(
   } catch (e) {
     return new Error(
       `Error formatting number literal: value=${value}, suffix=${suffix}`,
+      { cause: e }
+    )
+  }
+}
+
+/**
+ * Format a number from a KclValue such that it could be parsed as KCL.
+ */
+export function formatNumberValue(
+  value: number,
+  numericType: NumericType
+): string | Error {
+  try {
+    return format_number_value(value, JSON.stringify(numericType))
+  } catch (e) {
+    return new Error(
+      `Error formatting number value: value=${value}, numericType=${numericType}`,
       { cause: e }
     )
   }

@@ -12,26 +12,22 @@ use kcmc::{
         WebSocketResponse,
     },
 };
-use kittycad_modeling_cmds::{self as kcmc, websocket::ModelingCmdReq, ImportFiles, ModelingCmd};
+use kittycad_modeling_cmds::{self as kcmc, ImportFiles, ModelingCmd, websocket::ModelingCmdReq};
 use tokio::sync::RwLock;
 use uuid::Uuid;
 
-#[cfg(feature = "artifact-graph")]
-use crate::execution::ArtifactCommand;
 use crate::{
+    SourceRange,
     engine::{AsyncTasks, EngineStats},
     errors::KclError,
     exec::DefaultPlanes,
     execution::IdGenerator,
-    SourceRange,
 };
 
 #[derive(Debug, Clone)]
 pub struct EngineConnection {
     batch: Arc<RwLock<Vec<(WebSocketRequest, SourceRange)>>>,
     batch_end: Arc<RwLock<IndexMap<uuid::Uuid, (WebSocketRequest, SourceRange)>>>,
-    #[cfg(feature = "artifact-graph")]
-    artifact_commands: Arc<RwLock<Vec<ArtifactCommand>>>,
     ids_of_async_commands: Arc<RwLock<IndexMap<Uuid, SourceRange>>>,
     responses: Arc<RwLock<IndexMap<Uuid, WebSocketResponse>>>,
     /// The default planes for the scene.
@@ -45,8 +41,6 @@ impl EngineConnection {
         Ok(EngineConnection {
             batch: Arc::new(RwLock::new(Vec::new())),
             batch_end: Arc::new(RwLock::new(IndexMap::new())),
-            #[cfg(feature = "artifact-graph")]
-            artifact_commands: Arc::new(RwLock::new(Vec::new())),
             ids_of_async_commands: Arc::new(RwLock::new(IndexMap::new())),
             responses: Arc::new(RwLock::new(IndexMap::new())),
             default_planes: Default::default(),
@@ -72,11 +66,6 @@ impl crate::engine::EngineManager for EngineConnection {
 
     fn stats(&self) -> &EngineStats {
         &self.stats
-    }
-
-    #[cfg(feature = "artifact-graph")]
-    fn artifact_commands(&self) -> Arc<RwLock<Vec<ArtifactCommand>>> {
-        self.artifact_commands.clone()
     }
 
     fn ids_of_async_commands(&self) -> Arc<RwLock<IndexMap<Uuid, SourceRange>>> {

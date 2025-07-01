@@ -280,6 +280,7 @@ export type OffsetPlane = {
   pathToNode: PathToNode
   zAxis: [number, number, number]
   yAxis: [number, number, number]
+  negated: boolean
 }
 
 export type SegmentOverlayPayload =
@@ -799,19 +800,25 @@ export const modelingMachine = setup({
   actions: {
     toastError: ({ event }) => {
       if ('output' in event && event.output instanceof Error) {
+        console.error(event.output)
         toast.error(event.output.message)
       } else if ('data' in event && event.data instanceof Error) {
+        console.error(event.data)
         toast.error(event.data.message)
       } else if ('error' in event && event.error instanceof Error) {
+        console.error(event.error)
         toast.error(event.error.message)
       }
     },
     toastErrorAndExitSketch: ({ event }) => {
       if ('output' in event && event.output instanceof Error) {
+        console.error(event.output)
         toast.error(event.output.message)
       } else if ('data' in event && event.data instanceof Error) {
+        console.error(event.data)
         toast.error(event.data.message)
       } else if ('error' in event && event.error instanceof Error) {
+        console.error(event.error)
         toast.error(event.error.message)
       }
 
@@ -2429,12 +2436,22 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const { nodeToEdit, sketches, length } = input
+        const {
+          nodeToEdit,
+          sketches,
+          length,
+          symmetric,
+          bidirectionalLength,
+          twistAngle,
+        } = input
         const { ast } = kclManager
         const astResult = addExtrude({
           ast,
           sketches,
           length,
+          symmetric,
+          bidirectionalLength,
+          twistAngle,
           nodeToEdit,
         })
         if (err(astResult)) {
@@ -2466,14 +2483,10 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const { nodeToEdit, sketches, path, sectional } = input
         const { ast } = kclManager
         const astResult = addSweep({
+          ...input,
           ast,
-          sketches,
-          path,
-          sectional,
-          nodeToEdit,
         })
         if (err(astResult)) {
           return Promise.reject(astResult)
@@ -2504,9 +2517,8 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const { sketches } = input
         const { ast } = kclManager
-        const astResult = addLoft({ ast, sketches })
+        const astResult = addLoft({ ast, ...input })
         if (err(astResult)) {
           return Promise.reject(astResult)
         }
@@ -2536,16 +2548,10 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const { nodeToEdit, sketches, angle, axis, edge, axisOrEdge } = input
         const { ast } = kclManager
         const astResult = addRevolve({
           ast,
-          sketches,
-          angle,
-          axisOrEdge,
-          axis,
-          edge,
-          nodeToEdit,
+          ...input,
         })
         if (err(astResult)) {
           return Promise.reject(astResult)
@@ -3565,17 +3571,17 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const { target, tool } = input
+        const { solids, tools } = input
         if (
-          !target.graphSelections[0].artifact ||
-          !tool.graphSelections[0].artifact
+          !solids.graphSelections.some((selection) => selection.artifact) ||
+          !tools.graphSelections.some((selection) => selection.artifact)
         ) {
           return Promise.reject(new Error('No artifact in selections found'))
         }
 
-        await applySubtractFromTargetOperatorSelections(
-          target.graphSelections[0],
-          tool.graphSelections[0],
+        const result = await applySubtractFromTargetOperatorSelections(
+          solids,
+          tools,
           {
             kclManager,
             codeManager,
@@ -3583,6 +3589,9 @@ export const modelingMachine = setup({
             editorManager,
           }
         )
+        if (err(result)) {
+          return Promise.reject(result)
+        }
       }
     ),
     boolUnionAstMod: fromPromise(
@@ -3600,12 +3609,15 @@ export const modelingMachine = setup({
           return Promise.reject(new Error('No artifact in selections found'))
         }
 
-        await applyUnionFromTargetOperatorSelections(solids, {
+        const result = await applyUnionFromTargetOperatorSelections(solids, {
           kclManager,
           codeManager,
           engineCommandManager,
           editorManager,
         })
+        if (err(result)) {
+          return Promise.reject(result)
+        }
       }
     ),
     boolIntersectAstMod: fromPromise(
@@ -3623,12 +3635,18 @@ export const modelingMachine = setup({
           return Promise.reject(new Error('No artifact in selections found'))
         }
 
-        await applyIntersectFromTargetOperatorSelections(solids, {
-          kclManager,
-          codeManager,
-          engineCommandManager,
-          editorManager,
-        })
+        const result = await applyIntersectFromTargetOperatorSelections(
+          solids,
+          {
+            kclManager,
+            codeManager,
+            engineCommandManager,
+            editorManager,
+          }
+        )
+        if (err(result)) {
+          return Promise.reject(result)
+        }
       }
     ),
 
@@ -3794,12 +3812,12 @@ export const modelingMachine = setup({
         },
 
         'event.parameter.create': {
-          target: '#Modeling.parameter.creating',
+          target: '#Modeling.state:parameter:creating',
           guard: 'no kcl errors',
         },
 
         'event.parameter.edit': {
-          target: '#Modeling.parameter.editing',
+          target: '#Modeling.state:parameter:editing',
           guard: 'no kcl errors',
         },
 
@@ -5206,39 +5224,33 @@ export const modelingMachine = setup({
       },
     },
 
-    parameter: {
-      type: 'parallel',
-
-      states: {
-        creating: {
-          invoke: {
-            src: 'actor.parameter.create',
-            id: 'actor.parameter.create',
-            input: ({ event }) => {
-              if (event.type !== 'event.parameter.create') return undefined
-              return event.data
-            },
-            onDone: ['#Modeling.idle'],
-            onError: {
-              target: '#Modeling.idle',
-              actions: 'toastError',
-            },
-          },
+    'state:parameter:creating': {
+      invoke: {
+        src: 'actor.parameter.create',
+        id: 'actor.parameter.create',
+        input: ({ event }) => {
+          if (event.type !== 'event.parameter.create') return undefined
+          return event.data
         },
-        editing: {
-          invoke: {
-            src: 'actor.parameter.edit',
-            id: 'actor.parameter.edit',
-            input: ({ event }) => {
-              if (event.type !== 'event.parameter.edit') return undefined
-              return event.data
-            },
-            onDone: ['#Modeling.idle'],
-            onError: {
-              target: '#Modeling.idle',
-              actions: 'toastError',
-            },
-          },
+        onDone: ['#Modeling.idle'],
+        onError: {
+          target: '#Modeling.idle',
+          actions: 'toastError',
+        },
+      },
+    },
+    'state:parameter:editing': {
+      invoke: {
+        src: 'actor.parameter.edit',
+        id: 'actor.parameter.edit',
+        input: ({ event }) => {
+          if (event.type !== 'event.parameter.edit') return undefined
+          return event.data
+        },
+        onDone: ['#Modeling.idle'],
+        onError: {
+          target: '#Modeling.idle',
+          actions: 'toastError',
         },
       },
     },

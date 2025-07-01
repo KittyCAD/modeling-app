@@ -4,20 +4,19 @@ use anyhow::Result;
 use schemars::JsonSchema;
 use serde::Serialize;
 
-use super::types::UnitType;
 use crate::{
+    CompilationError, KclError, ModuleId, SourceRange,
     errors::KclErrorDetails,
     execution::{
-        annotations::{SETTINGS, SETTINGS_UNIT_LENGTH},
-        types::{NumericType, PrimitiveType, RuntimeType, UnitLen},
         EnvironmentRef, ExecState, Face, Geometry, GeometryWithImportedGeometry, Helix, ImportedGeometry, MetaSettings,
         Metadata, Plane, Sketch, Solid, TagIdentifier,
+        annotations::{SETTINGS, SETTINGS_UNIT_LENGTH},
+        types::{NumericType, PrimitiveType, RuntimeType, UnitLen},
     },
     parsing::ast::types::{
         DefaultParamVal, FunctionExpression, KclNone, Literal, LiteralValue, Node, TagDeclarator, TagNode,
     },
-    std::{args::TyF64, StdFnProps},
-    CompilationError, KclError, ModuleId, SourceRange,
+    std::{StdFnProps, args::TyF64},
 };
 
 pub type KclObjectFields = HashMap<String, KclValue>;
@@ -137,9 +136,9 @@ impl JsonSchema for FunctionSource {
         "FunctionSource".to_owned()
     }
 
-    fn json_schema(gen: &mut schemars::gen::SchemaGenerator) -> schemars::schema::Schema {
+    fn json_schema(r#gen: &mut schemars::r#gen::SchemaGenerator) -> schemars::schema::Schema {
         // TODO: Actually generate a reasonable schema.
-        gen.subschema_for::<()>()
+        r#gen.subschema_for::<()>()
     }
 }
 
@@ -278,72 +277,85 @@ impl KclValue {
         }
     }
 
+    /// Returns true if we should generate an [`crate::execution::Operation`] to
+    /// display in the Feature Tree for variable declarations initialized with
+    /// this value.
+    pub(crate) fn show_variable_in_feature_tree(&self) -> bool {
+        match self {
+            KclValue::Uuid { .. } => false,
+            KclValue::Bool { .. } | KclValue::Number { .. } | KclValue::String { .. } => true,
+            KclValue::Tuple { .. }
+            | KclValue::HomArray { .. }
+            | KclValue::Object { .. }
+            | KclValue::TagIdentifier(_)
+            | KclValue::TagDeclarator(_)
+            | KclValue::Plane { .. }
+            | KclValue::Face { .. }
+            | KclValue::Sketch { .. }
+            | KclValue::Solid { .. }
+            | KclValue::Helix { .. }
+            | KclValue::ImportedGeometry(_)
+            | KclValue::Function { .. }
+            | KclValue::Module { .. }
+            | KclValue::Type { .. }
+            | KclValue::KclNone { .. } => false,
+        }
+    }
+
     /// Human readable type name used in error messages.  Should not be relied
     /// on for program logic.
     pub(crate) fn human_friendly_type(&self) -> String {
-        self.inner_human_friendly_type(1)
-    }
-
-    fn inner_human_friendly_type(&self, max_depth: usize) -> String {
-        if let Some(pt) = self.principal_type() {
-            if max_depth > 0 {
-                // The principal type of an array uses the array's element type,
-                // which is oftentimes `any`, and that's not a helpful message. So
-                // we show the actual elements.
-                if let KclValue::Tuple { value, .. } | KclValue::HomArray { value, .. } = self {
-                    // If it's empty, we want to show the type of the array.
-                    if !value.is_empty() {
-                        // A max of 3 is good because it's common to use 3D points.
-                        let max = 3;
-                        let len = value.len();
-                        let ellipsis = if len > max { ", ..." } else { "" };
-                        let element_label = if len == 1 { "value" } else { "values" };
-                        let element_tys = value
-                            .iter()
-                            .take(max)
-                            .map(|elem| elem.inner_human_friendly_type(max_depth - 1))
-                            .collect::<Vec<_>>()
-                            .join(", ");
-                        return format!("array of {element_tys}{ellipsis} with {len} {element_label}");
-                    }
-                }
-            }
-            return pt.to_string();
-        }
         match self {
-            KclValue::Uuid { .. } => "Unique ID (uuid)",
-            KclValue::TagDeclarator(_) => "TagDeclarator",
-            KclValue::TagIdentifier(_) => "TagIdentifier",
-            KclValue::Solid { .. } => "Solid",
-            KclValue::Sketch { .. } => "Sketch",
-            KclValue::Helix { .. } => "Helix",
-            KclValue::ImportedGeometry(_) => "ImportedGeometry",
-            KclValue::Function { .. } => "Function",
-            KclValue::Plane { .. } => "Plane",
-            KclValue::Face { .. } => "Face",
-            KclValue::Bool { .. } => "boolean (true/false value)",
+            KclValue::Uuid { .. } => "a unique ID (uuid)".to_owned(),
+            KclValue::TagDeclarator(_) => "a tag declarator".to_owned(),
+            KclValue::TagIdentifier(_) => "a tag identifier".to_owned(),
+            KclValue::Solid { .. } => "a solid".to_owned(),
+            KclValue::Sketch { .. } => "a sketch".to_owned(),
+            KclValue::Helix { .. } => "a helix".to_owned(),
+            KclValue::ImportedGeometry(_) => "an imported geometry".to_owned(),
+            KclValue::Function { .. } => "a function".to_owned(),
+            KclValue::Plane { .. } => "a plane".to_owned(),
+            KclValue::Face { .. } => "a face".to_owned(),
+            KclValue::Bool { .. } => "a boolean (`true` or `false`)".to_owned(),
             KclValue::Number {
                 ty: NumericType::Unknown,
                 ..
-            } => "number(unknown units)",
+            } => "a number with unknown units".to_owned(),
             KclValue::Number {
-                ty: NumericType::Known(UnitType::Length(_)),
+                ty: NumericType::Known(units),
                 ..
-            } => "number(Length)",
-            KclValue::Number {
-                ty: NumericType::Known(UnitType::Angle(_)),
-                ..
-            } => "number(Angle)",
-            KclValue::Number { .. } => "number",
-            KclValue::String { .. } => "string (text)",
-            KclValue::Tuple { .. } => "tuple (list)",
-            KclValue::HomArray { .. } => "array (list)",
-            KclValue::Object { .. } => "object",
-            KclValue::Module { .. } => "module",
-            KclValue::Type { .. } => "type",
-            KclValue::KclNone { .. } => "None",
+            } => format!("a number ({units})"),
+            KclValue::Number { .. } => "a number".to_owned(),
+            KclValue::String { .. } => "a string".to_owned(),
+            KclValue::Object { .. } => "an object".to_owned(),
+            KclValue::Module { .. } => "a module".to_owned(),
+            KclValue::Type { .. } => "a type".to_owned(),
+            KclValue::KclNone { .. } => "none".to_owned(),
+            KclValue::Tuple { value, .. } | KclValue::HomArray { value, .. } => {
+                if value.is_empty() {
+                    "an empty array".to_owned()
+                } else {
+                    // A max of 3 is good because it's common to use 3D points.
+                    const MAX: usize = 3;
+
+                    let len = value.len();
+                    let element_tys = value
+                        .iter()
+                        .take(MAX)
+                        .map(|elem| elem.principal_type_string())
+                        .collect::<Vec<_>>()
+                        .join(", ");
+                    let mut result = format!("an array of {element_tys}");
+                    if len > MAX {
+                        result.push_str(&format!(", ... with {len} values"));
+                    }
+                    if len == 1 {
+                        result.push_str(" with 1 value");
+                    }
+                    result
+                }
+            }
         }
-        .to_owned()
     }
 
     pub(crate) fn from_literal(literal: Node<Literal>, exec_state: &mut ExecState) -> Self {
@@ -575,7 +587,7 @@ impl KclValue {
         match self {
             KclValue::TagIdentifier(t) => Ok(*t.clone()),
             _ => Err(KclError::new_semantic(KclErrorDetails::new(
-                format!("Not a tag identifier: {:?}", self),
+                format!("Not a tag identifier: {self:?}"),
                 self.clone().into(),
             ))),
         }
@@ -586,7 +598,7 @@ impl KclValue {
         match self {
             KclValue::TagDeclarator(t) => Ok((**t).clone()),
             _ => Err(KclError::new_semantic(KclErrorDetails::new(
-                format!("Not a tag declarator: {:?}", self),
+                format!("Not a tag declarator: {self:?}"),
                 self.clone().into(),
             ))),
         }
@@ -600,6 +612,13 @@ impl KclValue {
                 self.into(),
             ))
         })
+    }
+
+    pub fn is_unknown_number(&self) -> bool {
+        match self {
+            KclValue::Number { ty, .. } => !ty.is_fully_specified(),
+            _ => false,
+        }
     }
 
     pub fn value_str(&self) -> Option<String> {
@@ -650,6 +669,7 @@ impl From<GeometryWithImportedGeometry> for KclValue {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::exec::UnitType;
 
     #[test]
     fn test_human_friendly_type() {
@@ -658,21 +678,21 @@ mod tests {
             ty: NumericType::Known(UnitType::Length(UnitLen::Unknown)),
             meta: vec![],
         };
-        assert_eq!(len.human_friendly_type(), "number(Length)".to_string());
+        assert_eq!(len.human_friendly_type(), "a number (Length)".to_string());
 
         let unknown = KclValue::Number {
             value: 1.0,
             ty: NumericType::Unknown,
             meta: vec![],
         };
-        assert_eq!(unknown.human_friendly_type(), "number(unknown units)".to_string());
+        assert_eq!(unknown.human_friendly_type(), "a number with unknown units".to_string());
 
         let mm = KclValue::Number {
             value: 1.0,
             ty: NumericType::Known(UnitType::Length(UnitLen::Mm)),
             meta: vec![],
         };
-        assert_eq!(mm.human_friendly_type(), "number(mm)".to_string());
+        assert_eq!(mm.human_friendly_type(), "a number (mm)".to_string());
 
         let array1_mm = KclValue::HomArray {
             value: vec![mm.clone()],
@@ -680,7 +700,7 @@ mod tests {
         };
         assert_eq!(
             array1_mm.human_friendly_type(),
-            "array of number(mm) with 1 value".to_string()
+            "an array of `number(mm)` with 1 value".to_string()
         );
 
         let array2_mm = KclValue::HomArray {
@@ -689,7 +709,7 @@ mod tests {
         };
         assert_eq!(
             array2_mm.human_friendly_type(),
-            "array of number(mm), number(mm) with 2 values".to_string()
+            "an array of `number(mm)`, `number(mm)`".to_string()
         );
 
         let array3_mm = KclValue::HomArray {
@@ -698,7 +718,7 @@ mod tests {
         };
         assert_eq!(
             array3_mm.human_friendly_type(),
-            "array of number(mm), number(mm), number(mm) with 3 values".to_string()
+            "an array of `number(mm)`, `number(mm)`, `number(mm)`".to_string()
         );
 
         let inches = KclValue::Number {
@@ -712,14 +732,14 @@ mod tests {
         };
         assert_eq!(
             array4.human_friendly_type(),
-            "array of number(mm), number(mm), number(in), ... with 4 values".to_string()
+            "an array of `number(mm)`, `number(mm)`, `number(in)`, ... with 4 values".to_string()
         );
 
         let empty_array = KclValue::HomArray {
             value: vec![],
             ty: RuntimeType::any(),
         };
-        assert_eq!(empty_array.human_friendly_type(), "[any; 0]".to_string());
+        assert_eq!(empty_array.human_friendly_type(), "an empty array".to_string());
 
         let array_nested = KclValue::HomArray {
             value: vec![array2_mm.clone()],
@@ -727,7 +747,7 @@ mod tests {
         };
         assert_eq!(
             array_nested.human_friendly_type(),
-            "array of [any; 2] with 1 value".to_string()
+            "an array of `[any; 2]` with 1 value".to_string()
         );
     }
 }

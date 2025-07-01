@@ -33,7 +33,7 @@ pow(
 ```kcl
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
-  |> angledLine(angle = 50, length = pow(5, exp = 2))
+  |> angledLine(angle = 50deg, length = pow(5, exp = 2))
   |> yLine(endAbsolute = 0)
   |> close()
 

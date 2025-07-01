@@ -1,9 +1,9 @@
 //! Cache testing framework.
 
+use kcl_lib::{ExecError, ExecOutcome, bust_cache};
 #[cfg(feature = "artifact-graph")]
-use kcl_lib::NodePathStep;
-use kcl_lib::{bust_cache, ExecError, ExecOutcome};
-use kcmc::{each_cmd as mcmd, ModelingCmd};
+use kcl_lib::{NodePathStep, exec::Operation};
+use kcmc::{ModelingCmd, each_cmd as mcmd};
 use kittycad_modeling_cmds as kcmc;
 use pretty_assertions::assert_eq;
 
@@ -38,7 +38,7 @@ async fn cache_test(
         if !variation.other_files.is_empty() {
             let tmp_dir = std::env::temp_dir();
             let tmp_dir = tmp_dir
-                .join(format!("kcl_test_{}", test_name))
+                .join(format!("kcl_test_{test_name}"))
                 .join(uuid::Uuid::new_v4().to_string());
 
             // Create a temporary file for each of the other files.
@@ -56,7 +56,7 @@ async fn cache_test(
             Err(error) => {
                 let report = error.clone().into_miette_report_with_outputs(variation.code).unwrap();
                 let report = miette::Report::new(report);
-                panic!("{:?}", report);
+                panic!("{report:?}");
             }
         };
 
@@ -69,7 +69,7 @@ async fn cache_test(
             .and_then(|x| x.decode().map_err(|e| ExecError::BadPng(e.to_string())))
             .unwrap();
         // Save the snapshot.
-        let path = crate::assert_out(&format!("cache_{}_{}", test_name, index), &img);
+        let path = crate::assert_out(&format!("cache_{test_name}_{index}"), &img);
 
         img_results.push((path, img, outcome));
     }
@@ -259,7 +259,7 @@ extrude(profile001, length = 100)"#
 
 #[cfg(feature = "artifact-graph")]
 #[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_cache_add_line_preserves_artifact_commands() {
+async fn kcl_test_cache_add_line_preserves_artifact_graph() {
     let code = r#"sketch001 = startSketchOn(XY)
 profile001 = startProfile(sketch001, at = [5.5, 5.25])
   |> line(end = [10.5, -1.19])
@@ -281,7 +281,7 @@ extrude001 = extrude(profile001, length = 4)
 "#;
 
     let result = cache_test(
-        "add_line_preserves_artifact_commands",
+        "add_line_preserves_artifact_graph",
         vec![
             Variation {
                 code,
@@ -301,16 +301,27 @@ extrude001 = extrude(profile001, length = 4)
     let second = &result.last().unwrap().2;
 
     assert!(
-        first.artifact_commands.len() < second.artifact_commands.len(),
-        "Second should have all the artifact commands of the first, plus more. first={:?}, second={:?}",
-        first.artifact_commands.len(),
-        second.artifact_commands.len()
+        first.artifact_graph.len() < second.artifact_graph.len(),
+        "Second should have all the artifacts of the first, plus more. first={:#?}, second={:#?}",
+        first.artifact_graph,
+        second.artifact_graph
     );
     assert!(
-        first.artifact_graph.len() < second.artifact_graph.len(),
-        "Second should have all the artifacts of the first, plus more. first={:?}, second={:?}",
-        first.artifact_graph.len(),
-        second.artifact_graph.len()
+        first.operations.len() < second.operations.len(),
+        "Second should have all the operations of the first, plus more. first={:?}, second={:?}",
+        first.operations.len(),
+        second.operations.len()
+    );
+    let Some(Operation::StdLibCall { name, .. }) = second.operations.last() else {
+        panic!("Last operation should be stdlib call extrude");
+    };
+    assert_eq!(name, "extrude");
+    // Make sure there are no duplicates.
+    assert_eq!(
+        second.operations.len(),
+        3,
+        "There should be exactly this many operations in the second run. {:#?}",
+        &second.operations
     );
     // Make sure we have NodePaths referring to the old code.
     let graph = &second.artifact_graph;
@@ -326,8 +337,7 @@ extrude001 = extrude(profile001, length = 4)
                 // 0] as a more lenient check.
                 .map(|c| !c.range.is_synthetic() && c.node_path.is_empty())
                 .unwrap_or(false),
-            "artifact={:?}",
-            artifact
+            "artifact={artifact:?}"
         );
     }
 }

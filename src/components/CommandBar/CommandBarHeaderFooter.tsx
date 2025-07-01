@@ -5,16 +5,20 @@ import { useHotkeys } from 'react-hotkeys-hook'
 import { ActionButton } from '@src/components/ActionButton'
 import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
+import CommandBarDivider from '@src/components/CommandBar/CommandBarDivider'
 import type {
   KclCommandValue,
   KclExpressionWithVariable,
 } from '@src/lib/commandTypes'
 import type { Selections } from '@src/lib/selections'
 import { getSelectionTypeDisplayText } from '@src/lib/selections'
-import { roundOff } from '@src/lib/utils'
+import { roundOffWithUnits } from '@src/lib/utils'
 import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
 
-function CommandBarHeader({ children }: React.PropsWithChildren<object>) {
+function CommandBarHeaderFooter({
+  children,
+  stepBack,
+}: React.PropsWithChildren<object> & { stepBack: () => void }) {
   const commandBarState = useCommandBarState()
   const {
     context: { selectedCommand, currentArgument, argumentsToSubmit },
@@ -102,19 +106,23 @@ function CommandBarHeader({ children }: React.PropsWithChildren<object>) {
                 <span className="pr-2" />
               )}
             </p>
-            {Object.entries(nonHiddenArgs || {})
-              .filter(
-                ([_, argConfig]) =>
-                  argConfig.skip === false ||
-                  (typeof argConfig.required === 'function'
-                    ? argConfig.required(commandBarState.context)
-                    : argConfig.required)
-              )
-              .map(([argName, arg], i) => {
+            {Object.entries(nonHiddenArgs || {}).flatMap(
+              ([argName, arg], i) => {
                 const argValue =
                   (typeof argumentsToSubmit[argName] === 'function'
                     ? argumentsToSubmit[argName](commandBarState.context)
                     : argumentsToSubmit[argName]) || ''
+                const isCurrentArg = argName === currentArgument?.name
+                const isSkipFalse = arg.skip === false
+                const isRequired =
+                  typeof arg.required === 'function'
+                    ? arg.required(commandBarState.context)
+                    : arg.required
+
+                // We actually want to show non-hidden optional args that have a value set already
+                if (!(argValue || isCurrentArg || isSkipFalse || isRequired)) {
+                  return []
+                }
 
                 return (
                   <button
@@ -155,13 +163,13 @@ function CommandBarHeader({ children }: React.PropsWithChildren<object>) {
                         arg.inputType === 'selectionMixed' ? (
                           getSelectionTypeDisplayText(argValue as Selections)
                         ) : arg.inputType === 'kcl' ? (
-                          roundOff(
-                            Number(
-                              (argValue as KclCommandValue).valueCalculated
-                            ),
+                          roundOffWithUnits(
+                            (argValue as KclCommandValue).valueCalculated,
                             4
                           )
-                        ) : arg.inputType === 'text' && !arg.valueSummary ? (
+                        ) : arg.inputType === 'text' &&
+                          !arg.valueSummary &&
+                          typeof argValue === 'string' ? (
                           `${argValue.slice(0, 12)}${argValue.length > 12 ? '...' : ''}`
                         ) : typeof argValue === 'object' ? (
                           arg.valueSummary ? (
@@ -207,8 +215,14 @@ function CommandBarHeader({ children }: React.PropsWithChildren<object>) {
                       )}
                   </button>
                 )
-              })}
+              }
+            )}
           </div>
+        </div>
+        <CommandBarDivider />
+        {children}
+        <div className="px-4 pb-2 flex justify-between items-center gap-2">
+          <StepBackButton stepBack={stepBack} />
           {isReviewing ? (
             <ReviewingButton
               bgClassName={
@@ -237,8 +251,6 @@ function CommandBarHeader({ children }: React.PropsWithChildren<object>) {
             />
           )}
         </div>
-        <div className="block w-full my-2 h-[1px] bg-chalkboard-20 dark:bg-chalkboard-80" />
-        {children}
       </>
     )
   )
@@ -258,16 +270,16 @@ function ReviewingButton({ bgClassName, iconClassName }: ButtonProps) {
       ref={buttonRef}
       type="submit"
       form="review-form"
-      className="w-fit !p-0 rounded-sm hover:shadow focus:outline-current"
+      className={`w-fit !p-0 rounded-sm hover:brightness-110 hover:shadow focus:outline-current ${bgClassName}`}
       tabIndex={0}
       data-testid="command-bar-submit"
-      iconStart={{
+      iconEnd={{
         icon: 'checkmark',
-        bgClassName: `p-1 rounded-sm hover:brightness-110 ${bgClassName}`,
+        bgClassName: `p-1 rounded-sm ${bgClassName}`,
         iconClassName: `${iconClassName}`,
       }}
     >
-      <span className="sr-only">Submit command</span>
+      <span className={`pl-2 ${iconClassName}`}>Submit</span>
     </ActionButton>
   )
 }
@@ -278,18 +290,48 @@ function GatheringArgsButton({ bgClassName, iconClassName }: ButtonProps) {
       Element="button"
       type="submit"
       form="arg-form"
-      className="w-fit !p-0 rounded-sm hover:shadow focus:outline-current"
+      className={`w-fit !p-0 rounded-sm hover:brightness-110 hover:shadow focus:outline-current ${bgClassName}`}
       tabIndex={0}
       data-testid="command-bar-continue"
-      iconStart={{
+      iconEnd={{
         icon: 'arrowRight',
-        bgClassName: `p-1 rounded-sm hover:brightness-110 ${bgClassName}`,
+        bgClassName: `p-1 rounded-sm ${bgClassName}`,
         iconClassName: `${iconClassName}`,
       }}
     >
-      <span className="sr-only">Continue</span>
+      <span className={`pl-2 ${iconClassName}`}>Continue</span>
     </ActionButton>
   )
 }
 
-export default CommandBarHeader
+function StepBackButton({
+  bgClassName,
+  iconClassName,
+  stepBack,
+}: ButtonProps & { stepBack: () => void }) {
+  return (
+    <ActionButton
+      Element="button"
+      type="button"
+      form="arg-form"
+      className={`w-fit !p-0 rounded-sm hover:brightness-110 hover:shadow focus:outline-current bg-chalkboard-20/50 dark:bg-chalkboard-80/50 border-chalkboard-20 dark:border-chalkboard-80 ${bgClassName}`}
+      tabIndex={0}
+      data-testid="command-bar-step-back"
+      iconStart={{
+        icon: 'arrowLeft',
+        bgClassName: `p-1 rounded-sm bg-chalkboard-20/50 dark:bg-chalkboard-80/50 ${bgClassName}`,
+        iconClassName: `${iconClassName}`,
+      }}
+      onClick={stepBack}
+    >
+      <span className={`pr-2 ${iconClassName}`}>Step back</span>
+      <Tooltip position="bottom">
+        Step back
+        <kbd className="hotkey ml-4 dark:!bg-chalkboard-80">Shift</kbd>
+        <kbd className="hotkey ml-2 dark:!bg-chalkboard-80">Bksp</kbd>
+      </Tooltip>
+    </ActionButton>
+  )
+}
+
+export default CommandBarHeaderFooter

@@ -2,10 +2,9 @@
 
 use anyhow::Result;
 use kcmc::{
-    each_cmd as mcmd,
+    ModelingCmd, each_cmd as mcmd,
     length_unit::LengthUnit,
     shared::{Angle, Point2d as KPoint2d},
-    ModelingCmd,
 };
 use kittycad_modeling_cmds as kcmc;
 use kittycad_modeling_cmds::shared::PathSegment;
@@ -17,17 +16,17 @@ use super::{
     utils::{point_to_len_unit, point_to_mm, point_to_typed, untype_point, untyped_point_to_mm},
 };
 use crate::{
+    SourceRange,
     errors::{KclError, KclErrorDetails},
     execution::{
+        BasePath, ExecState, GeoMeta, KclValue, ModelingCmdMeta, Path, Sketch, SketchSurface,
         types::{RuntimeType, UnitLen},
-        BasePath, ExecState, GeoMeta, KclValue, Path, Sketch, SketchSurface,
     },
     parsing::ast::types::TagNode,
     std::{
-        utils::{calculate_circle_center, distance},
         Args,
+        utils::{calculate_circle_center, distance},
     },
-    SourceRange,
 };
 
 /// A sketch surface or a sketch.
@@ -82,20 +81,21 @@ async fn inner_circle(
 
     let id = exec_state.next_uuid();
 
-    args.batch_modeling_cmd(
-        id,
-        ModelingCmd::from(mcmd::ExtendPath {
-            path: sketch.id.into(),
-            segment: PathSegment::Arc {
-                start: angle_start,
-                end: angle_end,
-                center: KPoint2d::from(point_to_mm(center)).map(LengthUnit),
-                radius: LengthUnit(radius.to_mm()),
-                relative: false,
-            },
-        }),
-    )
-    .await?;
+    exec_state
+        .batch_modeling_cmd(
+            ModelingCmdMeta::from_args_id(&args, id),
+            ModelingCmd::from(mcmd::ExtendPath {
+                path: sketch.id.into(),
+                segment: PathSegment::Arc {
+                    start: angle_start,
+                    end: angle_end,
+                    center: KPoint2d::from(point_to_mm(center)).map(LengthUnit),
+                    radius: LengthUnit(radius.to_mm()),
+                    relative: false,
+                },
+            }),
+        )
+        .await?;
 
     let current_path = Path::Circle {
         base: BasePath {
@@ -120,7 +120,11 @@ async fn inner_circle(
 
     new_sketch.paths.push(current_path);
 
-    args.batch_modeling_cmd(id, ModelingCmd::from(mcmd::ClosePath { path_id: new_sketch.id }))
+    exec_state
+        .batch_modeling_cmd(
+            ModelingCmdMeta::from_args_id(&args, id),
+            ModelingCmd::from(mcmd::ClosePath { path_id: new_sketch.id }),
+        )
         .await?;
 
     Ok(new_sketch)
@@ -180,20 +184,21 @@ async fn inner_circle_three_point(
 
     let id = exec_state.next_uuid();
 
-    args.batch_modeling_cmd(
-        id,
-        ModelingCmd::from(mcmd::ExtendPath {
-            path: sketch.id.into(),
-            segment: PathSegment::Arc {
-                start: angle_start,
-                end: angle_end,
-                center: KPoint2d::from(untyped_point_to_mm(center, units)).map(LengthUnit),
-                radius: units.adjust_to(radius, UnitLen::Mm).0.into(),
-                relative: false,
-            },
-        }),
-    )
-    .await?;
+    exec_state
+        .batch_modeling_cmd(
+            ModelingCmdMeta::from_args_id(&args, id),
+            ModelingCmd::from(mcmd::ExtendPath {
+                path: sketch.id.into(),
+                segment: PathSegment::Arc {
+                    start: angle_start,
+                    end: angle_end,
+                    center: KPoint2d::from(untyped_point_to_mm(center, units)).map(LengthUnit),
+                    radius: units.adjust_to(radius, UnitLen::Mm).0.into(),
+                    relative: false,
+                },
+            }),
+        )
+        .await?;
 
     let current_path = Path::CircleThreePoint {
         base: BasePath {
@@ -219,7 +224,11 @@ async fn inner_circle_three_point(
 
     new_sketch.paths.push(current_path);
 
-    args.batch_modeling_cmd(id, ModelingCmd::from(mcmd::ClosePath { path_id: new_sketch.id }))
+    exec_state
+        .batch_modeling_cmd(
+            ModelingCmdMeta::from_args_id(&args, id),
+            ModelingCmd::from(mcmd::ClosePath { path_id: new_sketch.id }),
+        )
         .await?;
 
     Ok(new_sketch)
@@ -295,7 +304,7 @@ async fn inner_polygon(
         radius.n
     } else {
         // circumscribed
-        radius.n / half_angle.cos()
+        radius.n / libm::cos(half_angle)
     };
 
     let angle_step = std::f64::consts::TAU / num_sides as f64;
@@ -306,8 +315,8 @@ async fn inner_polygon(
         .map(|i| {
             let angle = angle_step * i as f64;
             [
-                center_u[0] + radius_to_vertices * angle.cos(),
-                center_u[1] + radius_to_vertices * angle.sin(),
+                center_u[0] + radius_to_vertices * libm::cos(angle),
+                center_u[1] + radius_to_vertices * libm::sin(angle),
             ]
         })
         .collect();
@@ -326,19 +335,20 @@ async fn inner_polygon(
         let from = sketch.current_pen_position()?;
         let id = exec_state.next_uuid();
 
-        args.batch_modeling_cmd(
-            id,
-            ModelingCmd::from(mcmd::ExtendPath {
-                path: sketch.id.into(),
-                segment: PathSegment::Line {
-                    end: KPoint2d::from(untyped_point_to_mm(*vertex, units))
-                        .with_z(0.0)
-                        .map(LengthUnit),
-                    relative: false,
-                },
-            }),
-        )
-        .await?;
+        exec_state
+            .batch_modeling_cmd(
+                ModelingCmdMeta::from_args_id(&args, id),
+                ModelingCmd::from(mcmd::ExtendPath {
+                    path: sketch.id.into(),
+                    segment: PathSegment::Line {
+                        end: KPoint2d::from(untyped_point_to_mm(*vertex, units))
+                            .with_z(0.0)
+                            .map(LengthUnit),
+                        relative: false,
+                    },
+                }),
+            )
+            .await?;
 
         let current_path = Path::ToPoint {
             base: BasePath {
@@ -360,19 +370,20 @@ async fn inner_polygon(
     let from = sketch.current_pen_position()?;
     let close_id = exec_state.next_uuid();
 
-    args.batch_modeling_cmd(
-        close_id,
-        ModelingCmd::from(mcmd::ExtendPath {
-            path: sketch.id.into(),
-            segment: PathSegment::Line {
-                end: KPoint2d::from(untyped_point_to_mm(vertices[0], units))
-                    .with_z(0.0)
-                    .map(LengthUnit),
-                relative: false,
-            },
-        }),
-    )
-    .await?;
+    exec_state
+        .batch_modeling_cmd(
+            ModelingCmdMeta::from_args_id(&args, close_id),
+            ModelingCmd::from(mcmd::ExtendPath {
+                path: sketch.id.into(),
+                segment: PathSegment::Line {
+                    end: KPoint2d::from(untyped_point_to_mm(vertices[0], units))
+                        .with_z(0.0)
+                        .map(LengthUnit),
+                    relative: false,
+                },
+            }),
+        )
+        .await?;
 
     let current_path = Path::ToPoint {
         base: BasePath {
@@ -389,11 +400,12 @@ async fn inner_polygon(
 
     sketch.paths.push(current_path);
 
-    args.batch_modeling_cmd(
-        exec_state.next_uuid(),
-        ModelingCmd::from(mcmd::ClosePath { path_id: sketch.id }),
-    )
-    .await?;
+    exec_state
+        .batch_modeling_cmd(
+            (&args).into(),
+            ModelingCmd::from(mcmd::ClosePath { path_id: sketch.id }),
+        )
+        .await?;
 
     Ok(sketch)
 }
@@ -403,15 +415,25 @@ pub(crate) fn get_radius(
     diameter: Option<TyF64>,
     source_range: SourceRange,
 ) -> Result<TyF64, KclError> {
+    get_radius_labelled(radius, diameter, source_range, "radius", "diameter")
+}
+
+pub(crate) fn get_radius_labelled(
+    radius: Option<TyF64>,
+    diameter: Option<TyF64>,
+    source_range: SourceRange,
+    label_radius: &'static str,
+    label_diameter: &'static str,
+) -> Result<TyF64, KclError> {
     match (radius, diameter) {
         (Some(radius), None) => Ok(radius),
         (None, Some(diameter)) => Ok(TyF64::new(diameter.n / 2.0, diameter.ty)),
         (None, None) => Err(KclError::new_type(KclErrorDetails::new(
-            "This function needs either `diameter` or `radius`".to_string(),
+            format!("This function needs either `{label_diameter}` or `{label_radius}`"),
             vec![source_range],
         ))),
         (Some(_), Some(_)) => Err(KclError::new_type(KclErrorDetails::new(
-            "You cannot specify both `diameter` and `radius`, please remove one".to_string(),
+            format!("You cannot specify both `{label_diameter}` and `{label_radius}`, please remove one"),
             vec![source_range],
         ))),
     }

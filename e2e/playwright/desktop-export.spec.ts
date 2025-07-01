@@ -54,9 +54,7 @@ test(
       await page.keyboard.press('Enter')
 
       // Click the checkbox
-      const submitButton = page.getByText('Confirm Export')
-      await expect(submitButton).toBeVisible()
-      await page.keyboard.press('Enter')
+      await cmdBar.submit()
 
       // Expect it to succeed
       const errorToastMessage = page.getByText(`Error while exporting`)
@@ -119,9 +117,7 @@ test(
       await page.keyboard.press('Enter')
 
       // Click the checkbox
-      const submitButton = page.getByText('Confirm Export')
-      await expect(submitButton).toBeVisible()
-      await page.keyboard.press('Enter')
+      await cmdBar.submit()
 
       // Look out for the toast message
       const exportingToastMessage = page.getByText(`Exporting...`)

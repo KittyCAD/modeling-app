@@ -1,20 +1,20 @@
 //! Standard library sweep.
 
 use anyhow::Result;
-use kcmc::{each_cmd as mcmd, length_unit::LengthUnit, ModelingCmd};
+use kcmc::{ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit};
 use kittycad_modeling_cmds::{self as kcmc, shared::RelativeTo};
 use schemars::JsonSchema;
 use serde::Serialize;
 
-use super::{args::TyF64, DEFAULT_TOLERANCE};
+use super::{DEFAULT_TOLERANCE_MM, args::TyF64};
 use crate::{
     errors::KclError,
     execution::{
+        ExecState, Helix, KclValue, ModelingCmdMeta, Sketch, Solid,
         types::{NumericType, RuntimeType},
-        ExecState, Helix, KclValue, Sketch, Solid,
     },
     parsing::ast::types::TagNode,
-    std::{extrude::do_post_extrude, Args},
+    std::{Args, extrude::do_post_extrude},
 };
 
 /// A path to sweep along.
@@ -79,24 +79,25 @@ async fn inner_sweep(
             return Err(KclError::new_syntax(crate::errors::KclErrorDetails::new(
                 "If you provide relativeTo, it must either be 'sketchPlane' or 'trajectoryCurve'".to_owned(),
                 vec![args.source_range],
-            )))
+            )));
         }
     };
 
     let mut solids = Vec::new();
     for sketch in &sketches {
         let id = exec_state.next_uuid();
-        args.batch_modeling_cmd(
-            id,
-            ModelingCmd::from(mcmd::Sweep {
-                target: sketch.id.into(),
-                trajectory,
-                sectional: sectional.unwrap_or(false),
-                tolerance: LengthUnit(tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE)),
-                relative_to,
-            }),
-        )
-        .await?;
+        exec_state
+            .batch_modeling_cmd(
+                ModelingCmdMeta::from_args_id(&args, id),
+                ModelingCmd::from(mcmd::Sweep {
+                    target: sketch.id.into(),
+                    trajectory,
+                    sectional: sectional.unwrap_or(false),
+                    tolerance: LengthUnit(tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM)),
+                    relative_to,
+                }),
+            )
+            .await?;
 
         solids.push(
             do_post_extrude(
@@ -117,14 +118,15 @@ async fn inner_sweep(
     }
 
     // Hide the artifact from the sketch or helix.
-    args.batch_modeling_cmd(
-        exec_state.next_uuid(),
-        ModelingCmd::from(mcmd::ObjectVisible {
-            object_id: trajectory.into(),
-            hidden: true,
-        }),
-    )
-    .await?;
+    exec_state
+        .batch_modeling_cmd(
+            (&args).into(),
+            ModelingCmd::from(mcmd::ObjectVisible {
+                object_id: trajectory.into(),
+                hidden: true,
+            }),
+        )
+        .await?;
 
     Ok(solids)
 }

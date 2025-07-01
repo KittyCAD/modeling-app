@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 use crate::{
     errors::{KclError, KclErrorDetails},
     exec::KclValue,
-    execution::{typed_path::TypedPath, EnvironmentRef, PreImportedGeometry},
+    execution::{EnvironmentRef, ModuleArtifactState, PreImportedGeometry, typed_path::TypedPath},
     fs::{FileManager, FileSystem},
     parsing::ast::types::{ImportPath, Node, Program},
     source_range::SourceRange,
@@ -73,13 +73,13 @@ impl ModuleLoader {
     }
 
     pub(crate) fn enter_module(&mut self, path: &ModulePath) {
-        if let ModulePath::Local { value: ref path } = path {
+        if let ModulePath::Local { value: path } = path {
             self.import_stack.push(path.clone());
         }
     }
 
     pub(crate) fn leave_module(&mut self, path: &ModulePath) {
-        if let ModulePath::Local { value: ref path } = path {
+        if let ModulePath::Local { value: path } = path {
             let popped = self.import_stack.pop().unwrap();
             assert_eq!(path, &popped);
         }
@@ -131,8 +131,11 @@ impl ModuleInfo {
 pub enum ModuleRepr {
     Root,
     // AST, memory, exported names
-    Kcl(Node<Program>, Option<(Option<KclValue>, EnvironmentRef, Vec<String>)>),
-    Foreign(PreImportedGeometry, Option<KclValue>),
+    Kcl(
+        Node<Program>,
+        Option<(Option<KclValue>, EnvironmentRef, Vec<String>, ModuleArtifactState)>,
+    ),
+    Foreign(PreImportedGeometry, Option<(Option<KclValue>, ModuleArtifactState)>),
     Dummy,
 }
 

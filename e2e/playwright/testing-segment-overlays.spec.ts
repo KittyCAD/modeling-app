@@ -3,6 +3,7 @@ import type { LineInputsType } from '@src/lang/std/sketchcombos'
 import { uuidv4 } from '@src/lib/utils'
 
 import type { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
+import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
 import { deg, getUtils, wiggleMove } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
@@ -18,7 +19,7 @@ test.describe('Testing segment overlays', () => {
      * @param {number} options.steps - The number of steps to perform
      */
     const _clickConstrained =
-      (page: Page, editor: EditorFixture) =>
+      (page: Page, editor: EditorFixture, cmdBar: CmdBarFixture) =>
       async ({
         hoverPos,
         constraintType,
@@ -93,11 +94,7 @@ test.describe('Testing segment overlays', () => {
           page.getByTestId('cmd-bar-arg-value').getByRole('textbox')
         ).toBeFocused()
         await page.waitForTimeout(500)
-        await page
-          .getByRole('button', {
-            name: 'arrow right Continue',
-          })
-          .click()
+        await cmdBar.continue()
         await editor.expectEditor.toContain(expectFinal, {
           shouldNormalise: true,
         })
@@ -113,7 +110,7 @@ test.describe('Testing segment overlays', () => {
      * @param {number} options.steps - The number of steps to perform
      */
     const _clickUnconstrained =
-      (page: Page, editor: EditorFixture) =>
+      (page: Page, editor: EditorFixture, cmdBar: CmdBarFixture) =>
       async ({
         hoverPos,
         constraintType,
@@ -163,11 +160,7 @@ test.describe('Testing segment overlays', () => {
           page.getByTestId('cmd-bar-arg-value').getByRole('textbox')
         ).toBeFocused()
         await page.waitForTimeout(500)
-        await page
-          .getByRole('button', {
-            name: 'arrow right Continue',
-          })
-          .click()
+        await cmdBar.continue()
         await editor.expectEditor.toContain(expectAfterUnconstrained, {
           shouldNormalise: true,
         })
@@ -239,8 +232,8 @@ test.describe('Testing segment overlays', () => {
 
       await expect(page.getByTestId('segment-overlay')).toHaveCount(14)
 
-      const clickUnconstrained = _clickUnconstrained(page, editor)
-      const clickConstrained = _clickConstrained(page, editor)
+      const clickUnconstrained = _clickUnconstrained(page, editor, cmdBar)
+      const clickConstrained = _clickConstrained(page, editor, cmdBar)
 
       await u.openAndClearDebugPanel()
       await u.sendCustomCmd({
@@ -664,7 +657,7 @@ profile002 = circle(sketch001, center = [345, 0], radius = 238.38)
       await expect(
         page.getByTestId('cmd-bar-arg-value').getByRole('textbox')
       ).toBeFocused()
-      await page.getByRole('button', { name: 'arrow right Continue' }).click()
+      await cmdBar.continue()
 
       // Verify the X constraint was added
       await editor.expectEditor.toContain('center = [xAbs001, 0]', {
@@ -682,7 +675,7 @@ profile002 = circle(sketch001, center = [345, 0], radius = 238.38)
       await expect(
         page.getByTestId('cmd-bar-arg-value').getByRole('textbox')
       ).toBeFocused()
-      await page.getByRole('button', { name: 'arrow right Continue' }).click()
+      await cmdBar.continue()
 
       // Verify the Y constraint was added
       await editor.expectEditor.toContain('center = [xAbs001, yAbs001]', {
@@ -700,7 +693,7 @@ profile002 = circle(sketch001, center = [345, 0], radius = 238.38)
       await expect(
         page.getByTestId('cmd-bar-arg-value').getByRole('textbox')
       ).toBeFocused()
-      await page.getByRole('button', { name: 'arrow right Continue' }).click()
+      await cmdBar.continue()
 
       // Verify all constraints were added
       await editor.expectEditor.toContain(
@@ -887,7 +880,7 @@ profile003 = startProfile(sketch001, at = [64.39, 35.16])
     await expect(
       page.getByTestId('cmd-bar-arg-value').getByRole('textbox')
     ).toBeFocused()
-    await page.getByRole('button', { name: 'arrow right Continue' }).click()
+    await cmdBar.continue()
 
     // Verify the constraint was added
     await editor.expectEditor.toContain(
@@ -910,7 +903,7 @@ profile003 = startProfile(sketch001, at = [64.39, 35.16])
     await expect(
       page.getByTestId('cmd-bar-arg-value').getByRole('textbox')
     ).toBeFocused()
-    await page.getByRole('button', { name: 'arrow right Continue' }).click()
+    await cmdBar.continue()
 
     // Verify both constraints were added
     await editor.expectEditor.toContain(
@@ -935,7 +928,7 @@ profile003 = startProfile(sketch001, at = [64.39, 35.16])
     await expect(
       page.getByTestId('cmd-bar-arg-value').getByRole('textbox')
     ).toBeFocused()
-    await page.getByRole('button', { name: 'arrow right Continue' }).click()
+    await cmdBar.continue()
 
     // Verify the constraint was added
     await editor.expectEditor.toContain('endAbsolute = [xAbs002, 84.07]', {
@@ -955,7 +948,7 @@ profile003 = startProfile(sketch001, at = [64.39, 35.16])
     await expect(
       page.getByTestId('cmd-bar-arg-value').getByRole('textbox')
     ).toBeFocused()
-    await page.getByRole('button', { name: 'arrow right Continue' }).click()
+    await cmdBar.continue()
 
     // Verify all constraints were added
     await editor.expectEditor.toContain(

@@ -65,7 +65,7 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
   },
   "boltHexFlatLength": {
     "type": "Number",
-    "value": 0.289,
+    "value": 0.28867513459481287,
     "ty": {
       "type": "Default",
       "len": {
@@ -260,7 +260,7 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
   },
   "hexNutFlatLength": {
     "type": "Number",
-    "value": 0.541,
+    "value": 0.5412658773652741,
     "ty": {
       "type": "Default",
       "len": {
@@ -273,7 +273,7 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
   },
   "hexNutFlatToFlat": {
     "type": "Number",
-    "value": 0.938,
+    "value": 0.9375,
     "ty": {
       "type": "Default",
       "len": {
@@ -286,7 +286,7 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
   },
   "hexNutThickness": {
     "type": "Number",
-    "value": 0.547,
+    "value": 0.546875,
     "ty": {
       "type": "Default",
       "len": {

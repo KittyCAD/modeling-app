@@ -189,7 +189,7 @@ fn generate_example(index: usize, src: &str, props: &ExampleProperties, file_nam
             index
         );
         let image_data =
-            std::fs::read(&image_path).unwrap_or_else(|_| panic!("Failed to read image file: {}", image_path));
+            std::fs::read(&image_path).unwrap_or_else(|_| panic!("Failed to read image file: {image_path}"));
         base64::engine::general_purpose::STANDARD.encode(&image_data)
     };
 
@@ -225,7 +225,7 @@ fn generate_type_from_kcl(ty: &TyData, file_name: String, example_name: String, 
 
     let output = hbs.render("kclType", &data)?;
     let output = cleanup_types(&output, kcl_std);
-    expectorate::assert_contents(format!("../../docs/kcl-std/{}.md", file_name), &output);
+    expectorate::assert_contents(format!("../../docs/kcl-std/{file_name}.md"), &output);
 
     Ok(())
 }
@@ -267,7 +267,7 @@ fn generate_mod_from_kcl(m: &ModData, file_name: String) -> Result<()> {
     });
 
     let output = hbs.render("module", &data)?;
-    expectorate::assert_contents(format!("../../docs/kcl-std/{}.md", file_name), &output);
+    expectorate::assert_contents(format!("../../docs/kcl-std/{file_name}.md"), &output);
 
     Ok(())
 }
@@ -334,7 +334,7 @@ fn generate_function_from_kcl(
 
     let output = hbs.render("function", &data)?;
     let output = &cleanup_types(&output, kcl_std);
-    expectorate::assert_contents(format!("../../docs/kcl-std/{}.md", file_name), output);
+    expectorate::assert_contents(format!("../../docs/kcl-std/{file_name}.md"), output);
 
     Ok(())
 }
@@ -351,7 +351,7 @@ fn docs_for_type(ty: &str, kcl_std: &ModData) -> Option<String> {
     None
 }
 
-fn generate_const_from_kcl(cnst: &ConstData, file_name: String, example_name: String) -> Result<()> {
+fn generate_const_from_kcl(cnst: &ConstData, file_name: String, example_name: String, kcl_std: &ModData) -> Result<()> {
     if cnst.properties.doc_hidden {
         return Ok(());
     }
@@ -371,12 +371,14 @@ fn generate_const_from_kcl(cnst: &ConstData, file_name: String, example_name: St
         "description": cnst.description,
         "deprecated": cnst.properties.deprecated,
         "type_": cnst.ty,
+        "type_desc": cnst.ty.as_ref().map(|t| docs_for_type(t, kcl_std).unwrap_or_default()),
         "examples": examples,
         "value": cnst.value.as_deref().unwrap_or(""),
     });
 
     let output = hbs.render("const", &data)?;
-    expectorate::assert_contents(format!("../../docs/kcl-std/{}.md", file_name), &output);
+    let output = cleanup_types(&output, kcl_std);
+    expectorate::assert_contents(format!("../../docs/kcl-std/{file_name}.md"), &output);
 
     Ok(())
 }
@@ -529,7 +531,8 @@ fn cleanup_type_string(input: &str, fmt_for_text: bool, kcl_std: &ModData) -> St
                 format!("[{prefix}{ty}{suffix}](/docs/kcl-std/types/std-types-number)")
             } else if fmt_for_text && ty.starts_with("fn") {
                 format!("[{prefix}{ty}{suffix}](/docs/kcl-std/types/std-types-fn)")
-            } else if fmt_for_text && matches!(kcl_std.find_by_name(ty), Some(DocData::Ty(_))) {
+            // Special case for `tag` because it exists as a type but is deprecated and mostly used as an arg name
+            } else if fmt_for_text && matches!(kcl_std.find_by_name(ty), Some(DocData::Ty(_))) && ty != "tag" {
                 format!("[{prefix}{ty}{suffix}](/docs/kcl-std/types/std-types-{ty})")
             } else {
                 format!("{prefix}{ty}{suffix}")
@@ -550,7 +553,7 @@ fn test_generate_stdlib_markdown_docs() {
     for d in kcl_std.all_docs() {
         match d {
             DocData::Fn(f) => generate_function_from_kcl(f, d.file_name(), d.example_name(), &kcl_std).unwrap(),
-            DocData::Const(c) => generate_const_from_kcl(c, d.file_name(), d.example_name()).unwrap(),
+            DocData::Const(c) => generate_const_from_kcl(c, d.file_name(), d.example_name(), &kcl_std).unwrap(),
             DocData::Ty(t) => generate_type_from_kcl(t, d.file_name(), d.example_name(), &kcl_std).unwrap(),
             DocData::Mod(m) => generate_mod_from_kcl(m, d.file_name()).unwrap(),
         }

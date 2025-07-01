@@ -1,1 +1,19 @@
 enum-variant-size-threshold = 48
+
+disallowed-methods = [
+  { path = "f64::sin",   reason = "Use trig functions from libm crate instead, to ensure FP math works the same across OSs and platforms."},
+  { path = "f64::cos",   reason = "Use trig functions from libm crate instead, to ensure FP math works the same across OSs and platforms."},
+  { path = "f64::tan",   reason = "Use trig functions from libm crate instead, to ensure FP math works the same across OSs and platforms."},
+  { path = "f64::asin",  reason = "Use trig functions from libm crate instead, to ensure FP math works the same across OSs and platforms."},
+  { path = "f64::acos",  reason = "Use trig functions from libm crate instead, to ensure FP math works the same across OSs and platforms."},
+  { path = "f64::atan",  reason = "Use trig functions from libm crate instead, to ensure FP math works the same across OSs and platforms."},
+  { path = "f64::atan2", reason = "Use trig functions from libm crate instead, to ensure FP math works the same across OSs and platforms."},
+  { path = "f32::sin",   reason = "Use trig functions from libm crate instead, to ensure FP math works the same across OSs and platforms."},
+  { path = "f32::cos",   reason = "Use trig functions from libm crate instead, to ensure FP math works the same across OSs and platforms."},
+  { path = "f32::tan",   reason = "Use trig functions from libm crate instead, to ensure FP math works the same across OSs and platforms."},
+  { path = "f32::asin",  reason = "Use trig functions from libm crate instead, to ensure FP math works the same across OSs and platforms."},
+  { path = "f32::acos",  reason = "Use trig functions from libm crate instead, to ensure FP math works the same across OSs and platforms."},
+  { path = "f32::atan",  reason = "Use trig functions from libm crate instead, to ensure FP math works the same across OSs and platforms."},
+  { path = "f32::atan2", reason = "Use trig functions from libm crate instead, to ensure FP math works the same across OSs and platforms."},
+]
+

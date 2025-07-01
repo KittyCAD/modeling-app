@@ -13,6 +13,7 @@ description: Result of parsing cycloidal-gear.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "cycloidalGear",
             "start": 0,
             "type": "Identifier"
@@ -28,6 +29,7 @@ description: Result of parsing cycloidal-gear.kcl
                     "id": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "gearSketch",
                       "start": 0,
                       "type": "Identifier"
@@ -43,6 +45,7 @@ description: Result of parsing cycloidal-gear.kcl
                               "id": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "helixAngleP",
                                 "start": 0,
                                 "type": "Identifier"
@@ -57,9 +60,11 @@ description: Result of parsing cycloidal-gear.kcl
                                     "abs_path": false,
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "name": {
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": "helixAngle",
                                       "start": 0,
                                       "type": "Identifier"
@@ -69,14 +74,17 @@ description: Result of parsing cycloidal-gear.kcl
                                     "type": "Name",
                                     "type": "Name"
                                   },
+                                  "moduleId": 0,
                                   "operator": "*",
                                   "right": {
                                     "abs_path": false,
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "name": {
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": "gHeight",
                                       "start": 0,
                                       "type": "Identifier"
@@ -90,14 +98,17 @@ description: Result of parsing cycloidal-gear.kcl
                                   "type": "BinaryExpression",
                                   "type": "BinaryExpression"
                                 },
+                                "moduleId": 0,
                                 "operator": "/",
                                 "right": {
                                   "abs_path": false,
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "name": {
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "name": "gearHeight",
                                     "start": 0,
                                     "type": "Identifier"
@@ -111,11 +122,13 @@ description: Result of parsing cycloidal-gear.kcl
                                 "type": "BinaryExpression",
                                 "type": "BinaryExpression"
                               },
+                              "moduleId": 0,
                               "start": 0,
                               "type": "VariableDeclarator"
                             },
                             "end": 0,
                             "kind": "const",
+                            "moduleId": 0,
                             "start": 0,
                             "type": "VariableDeclaration",
                             "type": "VariableDeclaration"
@@ -128,6 +141,7 @@ description: Result of parsing cycloidal-gear.kcl
                               "id": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "gearProfile",
                                 "start": 0,
                                 "type": "Identifier"
@@ -135,13 +149,16 @@ description: Result of parsing cycloidal-gear.kcl
                               "init": {
                                 "body": [
                                   {
+                                    "arguments": [],
                                     "callee": {
                                       "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": "startSketchOn",
                                         "start": 0,
                                         "type": "Identifier"
@@ -152,6 +169,7 @@ description: Result of parsing cycloidal-gear.kcl
                                     },
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "start": 0,
                                     "type": "CallExpressionKw",
                                     "type": "CallExpressionKw",
@@ -162,6 +180,7 @@ description: Result of parsing cycloidal-gear.kcl
                                           "label": {
                                             "commentStart": 0,
                                             "end": 0,
+                                            "moduleId": 0,
                                             "name": "offset",
                                             "start": 0,
                                             "type": "Identifier"
@@ -170,9 +189,11 @@ description: Result of parsing cycloidal-gear.kcl
                                             "abs_path": false,
                                             "commentStart": 0,
                                             "end": 0,
+                                            "moduleId": 0,
                                             "name": {
                                               "commentStart": 0,
                                               "end": 0,
+                                              "moduleId": 0,
                                               "name": "gHeight",
                                               "start": 0,
                                               "type": "Identifier"
@@ -188,9 +209,11 @@ description: Result of parsing cycloidal-gear.kcl
                                         "abs_path": false,
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": "offsetPlane",
                                           "start": 0,
                                           "type": "Identifier"
@@ -201,6 +224,7 @@ description: Result of parsing cycloidal-gear.kcl
                                       },
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "start": 0,
                                       "type": "CallExpressionKw",
                                       "type": "CallExpressionKw",
@@ -208,9 +232,11 @@ description: Result of parsing cycloidal-gear.kcl
                                         "abs_path": false,
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": "XY",
                                           "start": 0,
                                           "type": "Identifier"
@@ -229,6 +255,7 @@ description: Result of parsing cycloidal-gear.kcl
                                         "label": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": "at",
                                           "start": 0,
                                           "type": "Identifier"
@@ -249,9 +276,11 @@ description: Result of parsing cycloidal-gear.kcl
                                                     "abs_path": false,
                                                     "commentStart": 0,
                                                     "end": 0,
+                                                    "moduleId": 0,
                                                     "name": {
                                                       "commentStart": 0,
                                                       "end": 0,
+                                                      "moduleId": 0,
                                                       "name": "gearPitch",
                                                       "start": 0,
                                                       "type": "Identifier"
@@ -261,10 +290,12 @@ description: Result of parsing cycloidal-gear.kcl
                                                     "type": "Name",
                                                     "type": "Name"
                                                   },
+                                                  "moduleId": 0,
                                                   "operator": "*",
                                                   "right": {
                                                     "commentStart": 0,
                                                     "end": 0,
+                                                    "moduleId": 0,
                                                     "raw": "1.55",
                                                     "start": 0,
                                                     "type": "Literal",
@@ -278,15 +309,19 @@ description: Result of parsing cycloidal-gear.kcl
                                                   "type": "BinaryExpression",
                                                   "type": "BinaryExpression"
                                                 },
+                                                "moduleId": 0,
                                                 "operator": "*",
                                                 "right": {
+                                                  "arguments": [],
                                                   "callee": {
                                                     "abs_path": false,
                                                     "commentStart": 0,
                                                     "end": 0,
+                                                    "moduleId": 0,
                                                     "name": {
                                                       "commentStart": 0,
                                                       "end": 0,
+                                                      "moduleId": 0,
                                                       "name": "cos",
                                                       "start": 0,
                                                       "type": "Identifier"
@@ -297,6 +332,7 @@ description: Result of parsing cycloidal-gear.kcl
                                                   },
                                                   "commentStart": 0,
                                                   "end": 0,
+                                                  "moduleId": 0,
                                                   "start": 0,
                                                   "type": "CallExpressionKw",
                                                   "type": "CallExpressionKw",
@@ -304,9 +340,11 @@ description: Result of parsing cycloidal-gear.kcl
                                                     "abs_path": false,
                                                     "commentStart": 0,
                                                     "end": 0,
+                                                    "moduleId": 0,
                                                     "name": {
                                                       "commentStart": 0,
                                                       "end": 0,
+                                                      "moduleId": 0,
                                                       "name": "helixAngleP",
                                                       "start": 0,
                                                       "type": "Identifier"
@@ -321,6 +359,7 @@ description: Result of parsing cycloidal-gear.kcl
                                                 "type": "BinaryExpression",
                                                 "type": "BinaryExpression"
                                               },
+                                              "moduleId": 0,
                                               "operator": "+",
                                               "right": {
                                                 "commentStart": 0,
@@ -329,9 +368,11 @@ description: Result of parsing cycloidal-gear.kcl
                                                   "abs_path": false,
                                                   "commentStart": 0,
                                                   "end": 0,
+                                                  "moduleId": 0,
                                                   "name": {
                                                     "commentStart": 0,
                                                     "end": 0,
+                                                    "moduleId": 0,
                                                     "name": "gearPitch",
                                                     "start": 0,
                                                     "type": "Identifier"
@@ -341,15 +382,19 @@ description: Result of parsing cycloidal-gear.kcl
                                                   "type": "Name",
                                                   "type": "Name"
                                                 },
+                                                "moduleId": 0,
                                                 "operator": "*",
                                                 "right": {
+                                                  "arguments": [],
                                                   "callee": {
                                                     "abs_path": false,
                                                     "commentStart": 0,
                                                     "end": 0,
+                                                    "moduleId": 0,
                                                     "name": {
                                                       "commentStart": 0,
                                                       "end": 0,
+                                                      "moduleId": 0,
                                                       "name": "sin",
                                                       "start": 0,
                                                       "type": "Identifier"
@@ -360,6 +405,7 @@ description: Result of parsing cycloidal-gear.kcl
                                                   },
                                                   "commentStart": 0,
                                                   "end": 0,
+                                                  "moduleId": 0,
                                                   "start": 0,
                                                   "type": "CallExpressionKw",
                                                   "type": "CallExpressionKw",
@@ -368,9 +414,11 @@ description: Result of parsing cycloidal-gear.kcl
                                                       "abs_path": false,
                                                       "commentStart": 0,
                                                       "end": 0,
+                                                      "moduleId": 0,
                                                       "name": {
                                                         "commentStart": 0,
                                                         "end": 0,
+                                                        "moduleId": 0,
                                                         "name": "helixAngleP",
                                                         "start": 0,
                                                         "type": "Identifier"
@@ -382,6 +430,7 @@ description: Result of parsing cycloidal-gear.kcl
                                                     },
                                                     "commentStart": 0,
                                                     "end": 0,
+                                                    "moduleId": 0,
                                                     "operator": "-",
                                                     "start": 0,
                                                     "type": "UnaryExpression",
@@ -409,9 +458,11 @@ description: Result of parsing cycloidal-gear.kcl
                                                     "abs_path": false,
                                                     "commentStart": 0,
                                                     "end": 0,
+                                                    "moduleId": 0,
                                                     "name": {
                                                       "commentStart": 0,
                                                       "end": 0,
+                                                      "moduleId": 0,
                                                       "name": "gearPitch",
                                                       "start": 0,
                                                       "type": "Identifier"
@@ -421,10 +472,12 @@ description: Result of parsing cycloidal-gear.kcl
                                                     "type": "Name",
                                                     "type": "Name"
                                                   },
+                                                  "moduleId": 0,
                                                   "operator": "*",
                                                   "right": {
                                                     "commentStart": 0,
                                                     "end": 0,
+                                                    "moduleId": 0,
                                                     "raw": "1.55",
                                                     "start": 0,
                                                     "type": "Literal",
@@ -438,15 +491,19 @@ description: Result of parsing cycloidal-gear.kcl
                                                   "type": "BinaryExpression",
                                                   "type": "BinaryExpression"
                                                 },
+                                                "moduleId": 0,
                                                 "operator": "*",
                                                 "right": {
+                                                  "arguments": [],
                                                   "callee": {
                                                     "abs_path": false,
                                                     "commentStart": 0,
                                                     "end": 0,
+                                                    "moduleId": 0,
                                                     "name": {
                                                       "commentStart": 0,
                                                       "end": 0,
+                                                      "moduleId": 0,
                                                       "name": "sin",
                                                       "start": 0,
                                                       "type": "Identifier"
@@ -457,6 +514,7 @@ description: Result of parsing cycloidal-gear.kcl
                                                   },
                                                   "commentStart": 0,
                                                   "end": 0,
+                                                  "moduleId": 0,
                                                   "start": 0,
                                                   "type": "CallExpressionKw",
                                                   "type": "CallExpressionKw",
@@ -464,9 +522,11 @@ description: Result of parsing cycloidal-gear.kcl
                                                     "abs_path": false,
                                                     "commentStart": 0,
                                                     "end": 0,
+                                                    "moduleId": 0,
                                                     "name": {
                                                       "commentStart": 0,
                                                       "end": 0,
+                                                      "moduleId": 0,
                                                       "name": "helixAngleP",
                                                       "start": 0,
                                                       "type": "Identifier"
@@ -481,6 +541,7 @@ description: Result of parsing cycloidal-gear.kcl
                                                 "type": "BinaryExpression",
                                                 "type": "BinaryExpression"
                                               },
+                                              "moduleId": 0,
                                               "operator": "+",
                                               "right": {
                                                 "commentStart": 0,
@@ -489,9 +550,11 @@ description: Result of parsing cycloidal-gear.kcl
                                                   "abs_path": false,
                                                   "commentStart": 0,
                                                   "end": 0,
+                                                  "moduleId": 0,
                                                   "name": {
                                                     "commentStart": 0,
                                                     "end": 0,
+                                                    "moduleId": 0,
                                                     "name": "gearPitch",
                                                     "start": 0,
                                                     "type": "Identifier"
@@ -501,15 +564,19 @@ description: Result of parsing cycloidal-gear.kcl
                                                   "type": "Name",
                                                   "type": "Name"
                                                 },
+                                                "moduleId": 0,
                                                 "operator": "*",
                                                 "right": {
+                                                  "arguments": [],
                                                   "callee": {
                                                     "abs_path": false,
                                                     "commentStart": 0,
                                                     "end": 0,
+                                                    "moduleId": 0,
                                                     "name": {
                                                       "commentStart": 0,
                                                       "end": 0,
+                                                      "moduleId": 0,
                                                       "name": "cos",
                                                       "start": 0,
                                                       "type": "Identifier"
@@ -520,6 +587,7 @@ description: Result of parsing cycloidal-gear.kcl
                                                   },
                                                   "commentStart": 0,
                                                   "end": 0,
+                                                  "moduleId": 0,
                                                   "start": 0,
                                                   "type": "CallExpressionKw",
                                                   "type": "CallExpressionKw",
@@ -528,9 +596,11 @@ description: Result of parsing cycloidal-gear.kcl
                                                       "abs_path": false,
                                                       "commentStart": 0,
                                                       "end": 0,
+                                                      "moduleId": 0,
                                                       "name": {
                                                         "commentStart": 0,
                                                         "end": 0,
+                                                        "moduleId": 0,
                                                         "name": "helixAngleP",
                                                         "start": 0,
                                                         "type": "Identifier"
@@ -542,6 +612,7 @@ description: Result of parsing cycloidal-gear.kcl
                                                     },
                                                     "commentStart": 0,
                                                     "end": 0,
+                                                    "moduleId": 0,
                                                     "operator": "-",
                                                     "start": 0,
                                                     "type": "UnaryExpression",
@@ -558,6 +629,7 @@ description: Result of parsing cycloidal-gear.kcl
                                             }
                                           ],
                                           "end": 0,
+                                          "moduleId": 0,
                                           "start": 0,
                                           "type": "ArrayExpression",
                                           "type": "ArrayExpression"
@@ -568,9 +640,11 @@ description: Result of parsing cycloidal-gear.kcl
                                       "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": "startProfile",
                                         "start": 0,
                                         "type": "Identifier"
@@ -581,6 +655,7 @@ description: Result of parsing cycloidal-gear.kcl
                                     },
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "start": 0,
                                     "type": "CallExpressionKw",
                                     "type": "CallExpressionKw",
@@ -593,6 +668,7 @@ description: Result of parsing cycloidal-gear.kcl
                                         "label": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": "angleStart",
                                           "start": 0,
                                           "type": "Identifier"
@@ -603,6 +679,7 @@ description: Result of parsing cycloidal-gear.kcl
                                           "left": {
                                             "commentStart": 0,
                                             "end": 0,
+                                            "moduleId": 0,
                                             "raw": "90",
                                             "start": 0,
                                             "type": "Literal",
@@ -612,14 +689,17 @@ description: Result of parsing cycloidal-gear.kcl
                                               "suffix": "None"
                                             }
                                           },
+                                          "moduleId": 0,
                                           "operator": "+",
                                           "right": {
                                             "abs_path": false,
                                             "commentStart": 0,
                                             "end": 0,
+                                            "moduleId": 0,
                                             "name": {
                                               "commentStart": 0,
                                               "end": 0,
+                                              "moduleId": 0,
                                               "name": "helixAngleP",
                                               "start": 0,
                                               "type": "Identifier"
@@ -639,6 +719,7 @@ description: Result of parsing cycloidal-gear.kcl
                                         "label": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": "angleEnd",
                                           "start": 0,
                                           "type": "Identifier"
@@ -650,6 +731,7 @@ description: Result of parsing cycloidal-gear.kcl
                                             "argument": {
                                               "commentStart": 0,
                                               "end": 0,
+                                              "moduleId": 0,
                                               "raw": "90",
                                               "start": 0,
                                               "type": "Literal",
@@ -661,19 +743,23 @@ description: Result of parsing cycloidal-gear.kcl
                                             },
                                             "commentStart": 0,
                                             "end": 0,
+                                            "moduleId": 0,
                                             "operator": "-",
                                             "start": 0,
                                             "type": "UnaryExpression",
                                             "type": "UnaryExpression"
                                           },
+                                          "moduleId": 0,
                                           "operator": "+",
                                           "right": {
                                             "abs_path": false,
                                             "commentStart": 0,
                                             "end": 0,
+                                            "moduleId": 0,
                                             "name": {
                                               "commentStart": 0,
                                               "end": 0,
+                                              "moduleId": 0,
                                               "name": "helixAngleP",
                                               "start": 0,
                                               "type": "Identifier"
@@ -693,6 +779,7 @@ description: Result of parsing cycloidal-gear.kcl
                                         "label": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": "radius",
                                           "start": 0,
                                           "type": "Identifier"
@@ -701,9 +788,11 @@ description: Result of parsing cycloidal-gear.kcl
                                           "abs_path": false,
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": {
                                             "commentStart": 0,
                                             "end": 0,
+                                            "moduleId": 0,
                                             "name": "gearPitch",
                                             "start": 0,
                                             "type": "Identifier"
@@ -719,9 +808,11 @@ description: Result of parsing cycloidal-gear.kcl
                                       "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": "arc",
                                         "start": 0,
                                         "type": "Identifier"
@@ -732,6 +823,7 @@ description: Result of parsing cycloidal-gear.kcl
                                     },
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "start": 0,
                                     "type": "CallExpressionKw",
                                     "type": "CallExpressionKw",
@@ -744,6 +836,7 @@ description: Result of parsing cycloidal-gear.kcl
                                         "label": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": "radius",
                                           "start": 0,
                                           "type": "Identifier"
@@ -755,9 +848,11 @@ description: Result of parsing cycloidal-gear.kcl
                                             "abs_path": false,
                                             "commentStart": 0,
                                             "end": 0,
+                                            "moduleId": 0,
                                             "name": {
                                               "commentStart": 0,
                                               "end": 0,
+                                              "moduleId": 0,
                                               "name": "gearPitch",
                                               "start": 0,
                                               "type": "Identifier"
@@ -767,10 +862,12 @@ description: Result of parsing cycloidal-gear.kcl
                                             "type": "Name",
                                             "type": "Name"
                                           },
+                                          "moduleId": 0,
                                           "operator": "*",
                                           "right": {
                                             "commentStart": 0,
                                             "end": 0,
+                                            "moduleId": 0,
                                             "raw": "1.67",
                                             "start": 0,
                                             "type": "Literal",
@@ -790,6 +887,7 @@ description: Result of parsing cycloidal-gear.kcl
                                         "label": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": "angle",
                                           "start": 0,
                                           "type": "Identifier"
@@ -797,6 +895,7 @@ description: Result of parsing cycloidal-gear.kcl
                                         "arg": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "raw": "60",
                                           "start": 0,
                                           "type": "Literal",
@@ -812,9 +911,11 @@ description: Result of parsing cycloidal-gear.kcl
                                       "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": "tangentialArc",
                                         "start": 0,
                                         "type": "Identifier"
@@ -825,6 +926,7 @@ description: Result of parsing cycloidal-gear.kcl
                                     },
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "start": 0,
                                     "type": "CallExpressionKw",
                                     "type": "CallExpressionKw",
@@ -837,6 +939,7 @@ description: Result of parsing cycloidal-gear.kcl
                                         "label": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": "radius",
                                           "start": 0,
                                           "type": "Identifier"
@@ -845,9 +948,11 @@ description: Result of parsing cycloidal-gear.kcl
                                           "abs_path": false,
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": {
                                             "commentStart": 0,
                                             "end": 0,
+                                            "moduleId": 0,
                                             "name": "gearPitch",
                                             "start": 0,
                                             "type": "Identifier"
@@ -863,6 +968,7 @@ description: Result of parsing cycloidal-gear.kcl
                                         "label": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": "angle",
                                           "start": 0,
                                           "type": "Identifier"
@@ -871,6 +977,7 @@ description: Result of parsing cycloidal-gear.kcl
                                           "argument": {
                                             "commentStart": 0,
                                             "end": 0,
+                                            "moduleId": 0,
                                             "raw": "180",
                                             "start": 0,
                                             "type": "Literal",
@@ -882,6 +989,7 @@ description: Result of parsing cycloidal-gear.kcl
                                           },
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "operator": "-",
                                           "start": 0,
                                           "type": "UnaryExpression",
@@ -893,9 +1001,11 @@ description: Result of parsing cycloidal-gear.kcl
                                       "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": "tangentialArc",
                                         "start": 0,
                                         "type": "Identifier"
@@ -906,6 +1016,7 @@ description: Result of parsing cycloidal-gear.kcl
                                     },
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "start": 0,
                                     "type": "CallExpressionKw",
                                     "type": "CallExpressionKw",
@@ -918,6 +1029,7 @@ description: Result of parsing cycloidal-gear.kcl
                                         "label": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": "radius",
                                           "start": 0,
                                           "type": "Identifier"
@@ -929,9 +1041,11 @@ description: Result of parsing cycloidal-gear.kcl
                                             "abs_path": false,
                                             "commentStart": 0,
                                             "end": 0,
+                                            "moduleId": 0,
                                             "name": {
                                               "commentStart": 0,
                                               "end": 0,
+                                              "moduleId": 0,
                                               "name": "gearPitch",
                                               "start": 0,
                                               "type": "Identifier"
@@ -941,10 +1055,12 @@ description: Result of parsing cycloidal-gear.kcl
                                             "type": "Name",
                                             "type": "Name"
                                           },
+                                          "moduleId": 0,
                                           "operator": "*",
                                           "right": {
                                             "commentStart": 0,
                                             "end": 0,
+                                            "moduleId": 0,
                                             "raw": "1.67",
                                             "start": 0,
                                             "type": "Literal",
@@ -964,6 +1080,7 @@ description: Result of parsing cycloidal-gear.kcl
                                         "label": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": "angle",
                                           "start": 0,
                                           "type": "Identifier"
@@ -971,6 +1088,7 @@ description: Result of parsing cycloidal-gear.kcl
                                         "arg": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "raw": "60",
                                           "start": 0,
                                           "type": "Literal",
@@ -986,9 +1104,11 @@ description: Result of parsing cycloidal-gear.kcl
                                       "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": "tangentialArc",
                                         "start": 0,
                                         "type": "Identifier"
@@ -999,6 +1119,7 @@ description: Result of parsing cycloidal-gear.kcl
                                     },
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "start": 0,
                                     "type": "CallExpressionKw",
                                     "type": "CallExpressionKw",
@@ -1011,6 +1132,7 @@ description: Result of parsing cycloidal-gear.kcl
                                         "label": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": "radius",
                                           "start": 0,
                                           "type": "Identifier"
@@ -1019,9 +1141,11 @@ description: Result of parsing cycloidal-gear.kcl
                                           "abs_path": false,
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": {
                                             "commentStart": 0,
                                             "end": 0,
+                                            "moduleId": 0,
                                             "name": "gearPitch",
                                             "start": 0,
                                             "type": "Identifier"
@@ -1037,6 +1161,7 @@ description: Result of parsing cycloidal-gear.kcl
                                         "label": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": "angle",
                                           "start": 0,
                                           "type": "Identifier"
@@ -1045,6 +1170,7 @@ description: Result of parsing cycloidal-gear.kcl
                                           "argument": {
                                             "commentStart": 0,
                                             "end": 0,
+                                            "moduleId": 0,
                                             "raw": "180",
                                             "start": 0,
                                             "type": "Literal",
@@ -1056,6 +1182,7 @@ description: Result of parsing cycloidal-gear.kcl
                                           },
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "operator": "-",
                                           "start": 0,
                                           "type": "UnaryExpression",
@@ -1067,9 +1194,11 @@ description: Result of parsing cycloidal-gear.kcl
                                       "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": "tangentialArc",
                                         "start": 0,
                                         "type": "Identifier"
@@ -1080,6 +1209,7 @@ description: Result of parsing cycloidal-gear.kcl
                                     },
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "start": 0,
                                     "type": "CallExpressionKw",
                                     "type": "CallExpressionKw",
@@ -1092,6 +1222,7 @@ description: Result of parsing cycloidal-gear.kcl
                                         "label": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": "endAbsolute",
                                           "start": 0,
                                           "type": "Identifier"
@@ -1100,13 +1231,16 @@ description: Result of parsing cycloidal-gear.kcl
                                           "commentStart": 0,
                                           "elements": [
                                             {
+                                              "arguments": [],
                                               "callee": {
                                                 "abs_path": false,
                                                 "commentStart": 0,
                                                 "end": 0,
+                                                "moduleId": 0,
                                                 "name": {
                                                   "commentStart": 0,
                                                   "end": 0,
+                                                  "moduleId": 0,
                                                   "name": "profileStartX",
                                                   "start": 0,
                                                   "type": "Identifier"
@@ -1117,25 +1251,30 @@ description: Result of parsing cycloidal-gear.kcl
                                               },
                                               "commentStart": 0,
                                               "end": 0,
+                                              "moduleId": 0,
                                               "start": 0,
                                               "type": "CallExpressionKw",
                                               "type": "CallExpressionKw",
                                               "unlabeled": {
                                                 "commentStart": 0,
                                                 "end": 0,
+                                                "moduleId": 0,
                                                 "start": 0,
                                                 "type": "PipeSubstitution",
                                                 "type": "PipeSubstitution"
                                               }
                                             },
                                             {
+                                              "arguments": [],
                                               "callee": {
                                                 "abs_path": false,
                                                 "commentStart": 0,
                                                 "end": 0,
+                                                "moduleId": 0,
                                                 "name": {
                                                   "commentStart": 0,
                                                   "end": 0,
+                                                  "moduleId": 0,
                                                   "name": "profileStartY",
                                                   "start": 0,
                                                   "type": "Identifier"
@@ -1146,12 +1285,14 @@ description: Result of parsing cycloidal-gear.kcl
                                               },
                                               "commentStart": 0,
                                               "end": 0,
+                                              "moduleId": 0,
                                               "start": 0,
                                               "type": "CallExpressionKw",
                                               "type": "CallExpressionKw",
                                               "unlabeled": {
                                                 "commentStart": 0,
                                                 "end": 0,
+                                                "moduleId": 0,
                                                 "start": 0,
                                                 "type": "PipeSubstitution",
                                                 "type": "PipeSubstitution"
@@ -1159,6 +1300,7 @@ description: Result of parsing cycloidal-gear.kcl
                                             }
                                           ],
                                           "end": 0,
+                                          "moduleId": 0,
                                           "start": 0,
                                           "type": "ArrayExpression",
                                           "type": "ArrayExpression"
@@ -1169,9 +1311,11 @@ description: Result of parsing cycloidal-gear.kcl
                                       "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": "tangentialArc",
                                         "start": 0,
                                         "type": "Identifier"
@@ -1182,19 +1326,23 @@ description: Result of parsing cycloidal-gear.kcl
                                     },
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "start": 0,
                                     "type": "CallExpressionKw",
                                     "type": "CallExpressionKw",
                                     "unlabeled": null
                                   },
                                   {
+                                    "arguments": [],
                                     "callee": {
                                       "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": "close",
                                         "start": 0,
                                         "type": "Identifier"
@@ -1205,12 +1353,14 @@ description: Result of parsing cycloidal-gear.kcl
                                     },
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "start": 0,
                                     "type": "CallExpressionKw",
                                     "type": "CallExpressionKw",
                                     "unlabeled": {
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "start": 0,
                                       "type": "PipeSubstitution",
                                       "type": "PipeSubstitution"
@@ -1223,6 +1373,7 @@ description: Result of parsing cycloidal-gear.kcl
                                         "label": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": "tool",
                                           "start": 0,
                                           "type": "Identifier"
@@ -1234,6 +1385,7 @@ description: Result of parsing cycloidal-gear.kcl
                                               "label": {
                                                 "commentStart": 0,
                                                 "end": 0,
+                                                "moduleId": 0,
                                                 "name": "center",
                                                 "start": 0,
                                                 "type": "Identifier"
@@ -1244,6 +1396,7 @@ description: Result of parsing cycloidal-gear.kcl
                                                   {
                                                     "commentStart": 0,
                                                     "end": 0,
+                                                    "moduleId": 0,
                                                     "raw": "0",
                                                     "start": 0,
                                                     "type": "Literal",
@@ -1256,6 +1409,7 @@ description: Result of parsing cycloidal-gear.kcl
                                                   {
                                                     "commentStart": 0,
                                                     "end": 0,
+                                                    "moduleId": 0,
                                                     "raw": "0",
                                                     "start": 0,
                                                     "type": "Literal",
@@ -1267,6 +1421,7 @@ description: Result of parsing cycloidal-gear.kcl
                                                   }
                                                 ],
                                                 "end": 0,
+                                                "moduleId": 0,
                                                 "start": 0,
                                                 "type": "ArrayExpression",
                                                 "type": "ArrayExpression"
@@ -1277,6 +1432,7 @@ description: Result of parsing cycloidal-gear.kcl
                                               "label": {
                                                 "commentStart": 0,
                                                 "end": 0,
+                                                "moduleId": 0,
                                                 "name": "radius",
                                                 "start": 0,
                                                 "type": "Identifier"
@@ -1288,9 +1444,11 @@ description: Result of parsing cycloidal-gear.kcl
                                                   "abs_path": false,
                                                   "commentStart": 0,
                                                   "end": 0,
+                                                  "moduleId": 0,
                                                   "name": {
                                                     "commentStart": 0,
                                                     "end": 0,
+                                                    "moduleId": 0,
                                                     "name": "holeDiameter",
                                                     "start": 0,
                                                     "type": "Identifier"
@@ -1300,10 +1458,12 @@ description: Result of parsing cycloidal-gear.kcl
                                                   "type": "Name",
                                                   "type": "Name"
                                                 },
+                                                "moduleId": 0,
                                                 "operator": "/",
                                                 "right": {
                                                   "commentStart": 0,
                                                   "end": 0,
+                                                  "moduleId": 0,
                                                   "raw": "2",
                                                   "start": 0,
                                                   "type": "Literal",
@@ -1323,9 +1483,11 @@ description: Result of parsing cycloidal-gear.kcl
                                             "abs_path": false,
                                             "commentStart": 0,
                                             "end": 0,
+                                            "moduleId": 0,
                                             "name": {
                                               "commentStart": 0,
                                               "end": 0,
+                                              "moduleId": 0,
                                               "name": "circle",
                                               "start": 0,
                                               "type": "Identifier"
@@ -1336,6 +1498,7 @@ description: Result of parsing cycloidal-gear.kcl
                                           },
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "start": 0,
                                           "type": "CallExpressionKw",
                                           "type": "CallExpressionKw",
@@ -1347,9 +1510,11 @@ description: Result of parsing cycloidal-gear.kcl
                                       "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": "subtract2d",
                                         "start": 0,
                                         "type": "Identifier"
@@ -1360,6 +1525,7 @@ description: Result of parsing cycloidal-gear.kcl
                                     },
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "start": 0,
                                     "type": "CallExpressionKw",
                                     "type": "CallExpressionKw",
@@ -1368,15 +1534,18 @@ description: Result of parsing cycloidal-gear.kcl
                                 ],
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "start": 0,
                                 "type": "PipeExpression",
                                 "type": "PipeExpression"
                               },
+                              "moduleId": 0,
                               "start": 0,
                               "type": "VariableDeclarator"
                             },
                             "end": 0,
                             "kind": "const",
+                            "moduleId": 0,
                             "start": 0,
                             "type": "VariableDeclaration",
                             "type": "VariableDeclaration"
@@ -1386,9 +1555,11 @@ description: Result of parsing cycloidal-gear.kcl
                               "abs_path": false,
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "gearProfile",
                                 "start": 0,
                                 "type": "Identifier"
@@ -1400,6 +1571,7 @@ description: Result of parsing cycloidal-gear.kcl
                             },
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "start": 0,
                             "type": "ReturnStatement",
                             "type": "ReturnStatement"
@@ -1407,16 +1579,19 @@ description: Result of parsing cycloidal-gear.kcl
                         ],
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "start": 0
                       },
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "params": [
                         {
                           "type": "Parameter",
                           "identifier": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "gHeight",
                             "start": 0,
                             "type": "Identifier"
@@ -1428,11 +1603,13 @@ description: Result of parsing cycloidal-gear.kcl
                       "type": "FunctionExpression",
                       "type": "FunctionExpression"
                     },
+                    "moduleId": 0,
                     "start": 0,
                     "type": "VariableDeclarator"
                   },
                   "end": 0,
                   "kind": "fn",
+                  "moduleId": 0,
                   "preComments": [
                     "// Create a function to draw the gear profile as a sketch. Rotate each profile about the gear's axis by an helix angle proportional to the total gear height"
                   ],
@@ -1448,18 +1625,22 @@ description: Result of parsing cycloidal-gear.kcl
                     "id": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "gearLoft",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "init": {
+                      "arguments": [],
                       "callee": {
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "loft",
                           "start": 0,
                           "type": "Identifier"
@@ -1470,6 +1651,7 @@ description: Result of parsing cycloidal-gear.kcl
                       },
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "CallExpressionKw",
                       "type": "CallExpressionKw",
@@ -1477,13 +1659,16 @@ description: Result of parsing cycloidal-gear.kcl
                         "commentStart": 0,
                         "elements": [
                           {
+                            "arguments": [],
                             "callee": {
                               "abs_path": false,
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "gearSketch",
                                 "start": 0,
                                 "type": "Identifier"
@@ -1494,12 +1679,14 @@ description: Result of parsing cycloidal-gear.kcl
                             },
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "start": 0,
                             "type": "CallExpressionKw",
                             "type": "CallExpressionKw",
                             "unlabeled": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "raw": "0",
                               "start": 0,
                               "type": "Literal",
@@ -1511,13 +1698,16 @@ description: Result of parsing cycloidal-gear.kcl
                             }
                           },
                           {
+                            "arguments": [],
                             "callee": {
                               "abs_path": false,
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "gearSketch",
                                 "start": 0,
                                 "type": "Identifier"
@@ -1528,6 +1718,7 @@ description: Result of parsing cycloidal-gear.kcl
                             },
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "start": 0,
                             "type": "CallExpressionKw",
                             "type": "CallExpressionKw",
@@ -1538,9 +1729,11 @@ description: Result of parsing cycloidal-gear.kcl
                                 "abs_path": false,
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": {
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "name": "gearHeight",
                                   "start": 0,
                                   "type": "Identifier"
@@ -1550,10 +1743,12 @@ description: Result of parsing cycloidal-gear.kcl
                                 "type": "Name",
                                 "type": "Name"
                               },
+                              "moduleId": 0,
                               "operator": "/",
                               "right": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "raw": "2",
                                 "start": 0,
                                 "type": "Literal",
@@ -1569,13 +1764,16 @@ description: Result of parsing cycloidal-gear.kcl
                             }
                           },
                           {
+                            "arguments": [],
                             "callee": {
                               "abs_path": false,
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "gearSketch",
                                 "start": 0,
                                 "type": "Identifier"
@@ -1586,6 +1784,7 @@ description: Result of parsing cycloidal-gear.kcl
                             },
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "start": 0,
                             "type": "CallExpressionKw",
                             "type": "CallExpressionKw",
@@ -1593,9 +1792,11 @@ description: Result of parsing cycloidal-gear.kcl
                               "abs_path": false,
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "gearHeight",
                                 "start": 0,
                                 "type": "Identifier"
@@ -1608,16 +1809,19 @@ description: Result of parsing cycloidal-gear.kcl
                           }
                         ],
                         "end": 0,
+                        "moduleId": 0,
                         "start": 0,
                         "type": "ArrayExpression",
                         "type": "ArrayExpression"
                       }
                     },
+                    "moduleId": 0,
                     "start": 0,
                     "type": "VariableDeclarator"
                   },
                   "end": 0,
                   "kind": "const",
+                  "moduleId": 0,
                   "preComments": [
                     "",
                     "",
@@ -1632,9 +1836,11 @@ description: Result of parsing cycloidal-gear.kcl
                     "abs_path": false,
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "gearLoft",
                       "start": 0,
                       "type": "Identifier"
@@ -1646,6 +1852,7 @@ description: Result of parsing cycloidal-gear.kcl
                   },
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
@@ -1653,12 +1860,14 @@ description: Result of parsing cycloidal-gear.kcl
               ],
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "nonCodeMeta": {
                 "nonCodeNodes": {
                   "1": [
                     {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "NonCodeNode",
                       "value": {
@@ -1673,12 +1882,14 @@ description: Result of parsing cycloidal-gear.kcl
             },
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "gearPitch",
                   "start": 0,
                   "type": "Identifier"
@@ -1689,6 +1900,7 @@ description: Result of parsing cycloidal-gear.kcl
                 "identifier": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "gearHeight",
                   "start": 0,
                   "type": "Identifier"
@@ -1699,6 +1911,7 @@ description: Result of parsing cycloidal-gear.kcl
                 "identifier": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "holeDiameter",
                   "start": 0,
                   "type": "Identifier"
@@ -1709,6 +1922,7 @@ description: Result of parsing cycloidal-gear.kcl
                 "identifier": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "helixAngle",
                   "start": 0,
                   "type": "Identifier"
@@ -1719,11 +1933,13 @@ description: Result of parsing cycloidal-gear.kcl
             "type": "FunctionExpression",
             "type": "FunctionExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "fn",
+        "moduleId": 0,
         "preComments": [
           "// Create a function for the cycloidal gear"
         ],
@@ -1741,6 +1957,7 @@ description: Result of parsing cycloidal-gear.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "gearPitch",
                 "start": 0,
                 "type": "Identifier"
@@ -1748,6 +1965,7 @@ description: Result of parsing cycloidal-gear.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": ".3",
                 "start": 0,
                 "type": "Literal",
@@ -1763,6 +1981,7 @@ description: Result of parsing cycloidal-gear.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "gearHeight",
                 "start": 0,
                 "type": "Identifier"
@@ -1770,6 +1989,7 @@ description: Result of parsing cycloidal-gear.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "1.5",
                 "start": 0,
                 "type": "Literal",
@@ -1785,6 +2005,7 @@ description: Result of parsing cycloidal-gear.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "holeDiameter",
                 "start": 0,
                 "type": "Identifier"
@@ -1792,6 +2013,7 @@ description: Result of parsing cycloidal-gear.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "0.297",
                 "start": 0,
                 "type": "Literal",
@@ -1807,6 +2029,7 @@ description: Result of parsing cycloidal-gear.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "helixAngle",
                 "start": 0,
                 "type": "Identifier"
@@ -1815,6 +2038,7 @@ description: Result of parsing cycloidal-gear.kcl
                 "argument": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "raw": "80",
                   "start": 0,
                   "type": "Literal",
@@ -1826,6 +2050,7 @@ description: Result of parsing cycloidal-gear.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "operator": "-",
                 "start": 0,
                 "type": "UnaryExpression",
@@ -1837,9 +2062,11 @@ description: Result of parsing cycloidal-gear.kcl
             "abs_path": false,
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "cycloidalGear",
               "start": 0,
               "type": "Identifier"
@@ -1850,11 +2077,13 @@ description: Result of parsing cycloidal-gear.kcl
           },
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
           "unlabeled": null
         },
+        "moduleId": 0,
         "preComments": [
           "",
           "",
@@ -1871,9 +2100,11 @@ description: Result of parsing cycloidal-gear.kcl
       {
         "commentStart": 0,
         "end": 0,
+        "moduleId": 0,
         "name": {
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "name": "settings",
           "start": 0,
           "type": "Identifier"
@@ -1892,19 +2123,23 @@ description: Result of parsing cycloidal-gear.kcl
             "key": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "defaultLengthUnit",
               "start": 0,
               "type": "Identifier"
             },
+            "moduleId": 0,
             "start": 0,
             "type": "ObjectProperty",
             "value": {
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "in",
                 "start": 0,
                 "type": "Identifier"
@@ -1921,15 +2156,18 @@ description: Result of parsing cycloidal-gear.kcl
             "key": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "kclVersion",
               "start": 0,
               "type": "Identifier"
             },
+            "moduleId": 0,
             "start": 0,
             "type": "ObjectProperty",
             "value": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "raw": "1.0",
               "start": 0,
               "type": "Literal",
@@ -1945,12 +2183,14 @@ description: Result of parsing cycloidal-gear.kcl
         "type": "Annotation"
       }
     ],
+    "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {},
       "startNodes": [
         {
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "NonCodeNode",
           "value": {

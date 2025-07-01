@@ -21,13 +21,13 @@ import { Spinner } from '@src/components/Spinner'
 import { createLocalName, createVariableDeclaration } from '@src/lang/create'
 import { getNodeFromPath } from '@src/lang/queryAst'
 import type { SourceRange, VariableDeclarator } from '@src/lang/wasm'
-import { isPathToNode } from '@src/lang/wasm'
+import { formatNumberValue, isPathToNode } from '@src/lang/wasm'
 import type { CommandArgument, KclCommandValue } from '@src/lib/commandTypes'
 import { kclManager } from '@src/lib/singletons'
 import { getSystemTheme } from '@src/lib/theme'
 import { err } from '@src/lib/trap'
 import { useCalculateKclExpression } from '@src/lib/useCalculateKclExpression'
-import { roundOff } from '@src/lib/utils'
+import { roundOff, roundOffWithUnits } from '@src/lib/utils'
 import { varMentions } from '@src/lib/varCompletionExtension'
 import { useSettings } from '@src/lib/singletons'
 import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
@@ -128,10 +128,22 @@ function CommandBarKclInput({
     sourceRange: sourceRangeForPrevVariables,
   })
 
-  const varMentionData: Completion[] = prevVariables.map((v) => ({
-    label: v.key,
-    detail: String(roundOff(Number(v.value))),
-  }))
+  const varMentionData: Completion[] = prevVariables.map((v) => {
+    const roundedWithUnits = (() => {
+      if (typeof v.value !== 'number' || !v.ty) {
+        return undefined
+      }
+      const numWithUnits = formatNumberValue(v.value, v.ty)
+      if (err(numWithUnits)) {
+        return undefined
+      }
+      return roundOffWithUnits(numWithUnits)
+    })()
+    return {
+      label: v.key,
+      detail: roundedWithUnits ?? String(roundOff(Number(v.value))),
+    }
+  })
   const varMentionsExtension = varMentions(varMentionData)
 
   const { setContainer, view } = useCodeMirror({
@@ -282,68 +294,70 @@ function CommandBarKclInput({
           ) : calcResult === 'NAN' ? (
             "Can't calculate"
           ) : (
-            roundOff(Number(calcResult), 4)
+            roundOffWithUnits(calcResult, 4)
           )}
         </span>
       </label>
-      {createNewVariable ? (
-        <div className="flex items-baseline gap-4 mx-4 border-solid border-0 border-b border-chalkboard-50">
-          <label
-            htmlFor="variable-name"
-            className="text-base text-chalkboard-80 dark:text-chalkboard-20"
-          >
-            Variable name
-          </label>
+      {arg.createVariable !== 'disallow' && (
+        <div className="flex items-baseline gap-4 mx-4">
           <input
-            type="text"
-            id="variable-name"
-            name="variable-name"
-            className="flex-1 border-none bg-transparent focus:outline-none"
-            placeholder="Variable name"
-            value={newVariableName}
-            autoCapitalize="off"
-            autoCorrect="off"
-            autoComplete="off"
-            spellCheck="false"
-            autoFocus
-            onChange={(e) => setNewVariableName(e.target.value)}
-            onKeyDown={(e) => {
-              if (
-                e.currentTarget.value === '' &&
-                e.key === 'Backspace' &&
-                arg.createVariable !== 'force'
-              ) {
-                setCreateNewVariable(false)
-              }
+            type="checkbox"
+            id="variable-checkbox"
+            data-testid="cmd-bar-variable-checkbox"
+            checked={createNewVariable}
+            onChange={(e) => {
+              setCreateNewVariable(e.target.checked)
             }}
-            onKeyUp={(e) => {
-              if (e.key === 'Enter' && canSubmit) {
-                handleSubmit()
-              }
-            }}
+            className="bg-chalkboard-10 dark:bg-chalkboard-80"
           />
-          <span
-            className={
-              isNewVariableNameUnique
-                ? 'text-succeed-60 dark:text-succeed-40'
-                : 'text-destroy-60 dark:text-destroy-40'
-            }
+          <label
+            htmlFor="variable-checkbox"
+            className="text-blue border-none bg-transparent font-sm flex gap-1 items-center pl-0 pr-1"
           >
-            {isNewVariableNameUnique ? 'Available' : 'Unavailable'}
-          </span>
+            Create new variable
+          </label>
+          {createNewVariable && (
+            <>
+              <input
+                type="text"
+                id="variable-name"
+                name="variable-name"
+                className="flex-1  border-solid border-0 border-b border-chalkboard-50 bg-transparent focus:outline-none"
+                placeholder="Variable name"
+                value={newVariableName}
+                autoCapitalize="off"
+                autoCorrect="off"
+                autoComplete="off"
+                spellCheck="false"
+                autoFocus
+                onChange={(e) => setNewVariableName(e.target.value)}
+                onKeyDown={(e) => {
+                  if (
+                    e.currentTarget.value === '' &&
+                    e.key === 'Backspace' &&
+                    arg.createVariable !== 'force'
+                  ) {
+                    setCreateNewVariable(false)
+                  }
+                }}
+                onKeyUp={(e) => {
+                  if (e.key === 'Enter' && canSubmit) {
+                    handleSubmit()
+                  }
+                }}
+              />
+              <span
+                className={
+                  isNewVariableNameUnique
+                    ? 'text-succeed-60 dark:text-succeed-40'
+                    : 'text-destroy-60 dark:text-destroy-40'
+                }
+              >
+                {isNewVariableNameUnique ? 'Available' : 'Unavailable'}
+              </span>
+            </>
+          )}
         </div>
-      ) : (
-        arg.createVariable !== 'disallow' && (
-          <div className="flex justify-between gap-2 px-4">
-            <button
-              onClick={() => setCreateNewVariable(true)}
-              className="text-blue border-none bg-transparent font-sm flex gap-1 items-center pl-0 pr-1"
-            >
-              <CustomIcon name="plus" className="w-5 h-5" />
-              Create new variable
-            </button>
-          </div>
-        )
       )}
     </form>
   )

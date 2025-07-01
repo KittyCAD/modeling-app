@@ -101,7 +101,7 @@ pub trait CoreDump: Clone {
             .meta()
             .create_debug_uploads(vec![kittycad::types::multipart::Attachment {
                 name: "".to_string(),
-                filepath: Some(format!(r#"modeling-app/coredump-{}.json"#, coredump_id).into()),
+                filepath: Some(format!(r#"modeling-app/coredump-{coredump_id}.json"#).into()),
                 content_type: Some("application/json".to_string()),
                 data,
             }])

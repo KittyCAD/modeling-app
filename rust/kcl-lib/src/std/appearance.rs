@@ -1,7 +1,7 @@
 //! Standard library appearance.
 
 use anyhow::Result;
-use kcmc::{each_cmd as mcmd, ModelingCmd};
+use kcmc::{ModelingCmd, each_cmd as mcmd};
 use kittycad_modeling_cmds::{self as kcmc, shared::Color};
 use regex::Regex;
 use rgba_simple::Hex;
@@ -10,8 +10,8 @@ use super::args::TyF64;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        types::{ArrayLen, RuntimeType},
         ExecState, KclValue, SolidOrImportedGeometry,
+        types::{ArrayLen, RuntimeType},
     },
     std::Args,
 };
@@ -63,7 +63,7 @@ pub async fn appearance(exec_state: &mut ExecState, args: Args) -> Result<KclVal
     // Make sure the color if set is valid.
     if !HEX_REGEX.is_match(&color) {
         return Err(KclError::new_semantic(KclErrorDetails::new(
-            format!("Invalid hex color (`{}`), try something like `#fff000`", color),
+            format!("Invalid hex color (`{color}`), try something like `#fff000`"),
             vec![args.source_range],
         )));
     }
@@ -106,17 +106,18 @@ async fn inner_appearance(
             a: 100.0,
         };
 
-        args.batch_modeling_cmd(
-            exec_state.next_uuid(),
-            ModelingCmd::from(mcmd::ObjectSetMaterialParamsPbr {
-                object_id: solid_id,
-                color,
-                metalness: metalness.unwrap_or_default() as f32 / 100.0,
-                roughness: roughness.unwrap_or_default() as f32 / 100.0,
-                ambient_occlusion: 0.0,
-            }),
-        )
-        .await?;
+        exec_state
+            .batch_modeling_cmd(
+                (&args).into(),
+                ModelingCmd::from(mcmd::ObjectSetMaterialParamsPbr {
+                    object_id: solid_id,
+                    color,
+                    metalness: metalness.unwrap_or_default() as f32 / 100.0,
+                    roughness: roughness.unwrap_or_default() as f32 / 100.0,
+                    ambient_occlusion: 0.0,
+                }),
+            )
+            .await?;
 
         // Idk if we want to actually modify the memory for the colors, but I'm not right now since
         // I can't think of a use case for it.

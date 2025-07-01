@@ -14,9 +14,12 @@ flowchart LR
   end
   1["Plane<br>[10, 27, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+  7["Sweep Extrusion<br>[226, 245, 0]"]
+    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 6 }]
   1 --- 2
   2 --- 3
   2 --- 4
   2 --- 5
   2 --- 6
+  2 ---- 7
 ```

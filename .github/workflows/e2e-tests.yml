@@ -46,7 +46,7 @@ jobs:
       - name: Download Wasm cache
         id: download-wasm
         if: ${{ github.event_name != 'schedule' && steps.filter.outputs.rust == 'false' }}
-        uses: dawidd6/action-download-artifact@v7
+        uses: dawidd6/action-download-artifact@v11
         continue-on-error: true
         with:
           github_token: ${{secrets.GITHUB_TOKEN}}
@@ -95,7 +95,8 @@ jobs:
         shell: bash
         run: npm run build:wasm
 
-      - uses: actions/upload-artifact@v4
+      - name: Upload compiled wasm artifacts
+        uses: actions/upload-artifact@v4
         with:
           name: prepared-wasm
           path: |
@@ -109,7 +110,7 @@ jobs:
 
     steps:
 
-      - uses: actions/create-github-app-token@v1
+      - uses: actions/create-github-app-token@v2
         id: app-token
         with:
           app-id: ${{ secrets.MODELING_APP_GH_APP_ID }}
@@ -176,7 +177,8 @@ jobs:
           CI_SUITE: e2e:snapshots
           TARGET: web
 
-      - uses: actions/upload-artifact@v4
+      - name: Upload playwright report
+        uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
           name: playwright-report-snapshot-${{ github.sha }}
@@ -228,7 +230,7 @@ jobs:
 
     steps:
 
-      - uses: actions/create-github-app-token@v1
+      - uses: actions/create-github-app-token@v2
         id: app-token
         with:
           app-id: ${{ secrets.MODELING_APP_GH_APP_ID }}
@@ -290,7 +292,8 @@ jobs:
           CI_SUITE: e2e:web
           TARGET: web
 
-      - uses: actions/upload-artifact@v4
+      - name: Upload playwright report
+        uses: actions/upload-artifact@v4
         if: ${{ !cancelled() && (success() || failure()) }}
         with:
           name: playwright-report-web-${{ env.OS_NAME }}-${{ matrix.shardIndex }}-${{ github.sha }}
@@ -415,7 +418,8 @@ jobs:
           CI_SUITE: e2e:desktop
           TARGET: desktop
 
-      - uses: actions/upload-artifact@v4
+      - name: Upload test report
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: test-results-desktop-${{ env.OS_NAME }}-${{ matrix.shardIndex }}-${{ github.sha }}
@@ -424,7 +428,8 @@ jobs:
           retention-days: 30
           overwrite: true
 
-      - uses: actions/upload-artifact@v4
+      - name: Upload playwright report
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: playwright-report-desktop-${{ env.OS_NAME }}-${{ matrix.shardIndex }}-${{ github.sha }}

@@ -13,7 +13,7 @@ export const projectFileRole = (
     label: 'File',
     submenu: [
       {
-        label: 'Create project',
+        label: 'Create Project',
         id: 'File.Create project',
         accelerator: 'CommandOrControl+N',
         click: () => {
@@ -23,7 +23,7 @@ export const projectFileRole = (
         },
       },
       {
-        label: 'Open project',
+        label: 'Open Project',
         id: 'File.Open project',
         accelerator: 'CommandOrControl+P',
         click: () => {
@@ -36,7 +36,7 @@ export const projectFileRole = (
       // Appears to be only Windows and Mac OS specific. Linux does not have support
       { type: 'separator' },
       {
-        label: 'Add file to project',
+        label: 'Add File to Project',
         id: 'File.Add file to project',
         click: () => {
           typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
@@ -58,7 +58,7 @@ export const projectFileRole = (
         label: 'Preferences',
         submenu: [
           {
-            label: 'User settings',
+            label: 'User Settings',
             id: 'File.Preferences.User settings',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
@@ -76,7 +76,7 @@ export const projectFileRole = (
             },
           },
           {
-            label: 'User default units',
+            label: 'User Default Units',
             id: 'File.Preferences.User default units',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
@@ -94,7 +94,7 @@ export const projectFileRole = (
             },
           },
           {
-            label: 'Theme color',
+            label: 'Theme Color',
             id: 'File.Preferences.Theme color',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
@@ -107,7 +107,7 @@ export const projectFileRole = (
       { type: 'separator' },
       // Last in list
       {
-        label: 'Sign out',
+        label: 'Sign Out',
         id: 'File.Sign out',
         click: () => {
           typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
@@ -128,7 +128,7 @@ export const modelingFileRole = (
     submenu: [
       // TODO: Once a safe command bar create new file and folder is implemented we can turn these on
       // {
-      //   label: 'Create new file',
+      //   label: 'Create New File',
       //   click: () => {
       //     typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
       //       menuLabel: 'File.Create new file',
@@ -136,7 +136,7 @@ export const modelingFileRole = (
       //   },
       // },
       // {
-      //   label: 'Create new folder',
+      //   label: 'Create New Folder',
       //   click: () => {
       //     typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
       //       menuLabel: 'File.Create new folder',
@@ -144,7 +144,7 @@ export const modelingFileRole = (
       //   },
       // },
       {
-        label: 'Create project',
+        label: 'Create Project',
         id: 'File.Create project',
         accelerator: 'CommandOrControl+N',
         click: () => {
@@ -154,7 +154,7 @@ export const modelingFileRole = (
         },
       },
       {
-        label: 'Open project',
+        label: 'Open Project',
         id: 'File.Open project',
         accelerator: 'CommandOrControl+P',
         click: () => {
@@ -167,7 +167,7 @@ export const modelingFileRole = (
       // Appears to be only Windows and Mac OS specific. Linux does not have support
       { type: 'separator' },
       {
-        label: 'Add file to project',
+        label: 'Add File to Project',
         id: 'File.Add file to project',
         click: () => {
           typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
@@ -176,7 +176,7 @@ export const modelingFileRole = (
         },
       },
       {
-        label: 'Export current part',
+        label: 'Export Current Part',
         id: 'File.Export current part',
         click: () => {
           typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
@@ -189,7 +189,7 @@ export const modelingFileRole = (
         label: 'Preferences',
         submenu: [
           {
-            label: 'Project settings',
+            label: 'Project Settings',
             id: 'File.Preferences.Project settings',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
@@ -198,7 +198,7 @@ export const modelingFileRole = (
             },
           },
           {
-            label: 'User settings',
+            label: 'User Settings',
             id: 'File.Preferences.User settings',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
@@ -216,7 +216,7 @@ export const modelingFileRole = (
             },
           },
           {
-            label: 'User default units',
+            label: 'User Default Units',
             id: 'File.Preferences.User default units',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
@@ -234,7 +234,7 @@ export const modelingFileRole = (
             },
           },
           {
-            label: 'Theme color',
+            label: 'Theme Color',
             id: 'File.Preferences.Theme color',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
@@ -247,7 +247,7 @@ export const modelingFileRole = (
       { type: 'separator' },
       // Last in list
       {
-        label: 'Sign out',
+        label: 'Sign Out',
         id: 'File.Sign out',
         click: () => {
           typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {

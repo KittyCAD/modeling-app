@@ -141,6 +141,7 @@ description: Variables in memory after executing poop_chute.kcl
           "tag": {
             "commentStart": 358,
             "end": 364,
+            "moduleId": 0,
             "start": 358,
             "type": "TagDeclarator",
             "value": "seg01"
@@ -240,7 +241,7 @@ description: Variables in memory after executing poop_chute.kcl
             ],
             "tag": null,
             "to": [
-              1.063,
+              1.0625,
               0.0
             ],
             "type": "ToPoint",
@@ -254,19 +255,20 @@ description: Variables in memory after executing poop_chute.kcl
               "sourceRange": []
             },
             "from": [
-              1.063,
+              1.0625,
               0.0
             ],
             "tag": {
               "commentStart": 358,
               "end": 364,
+              "moduleId": 0,
               "start": 358,
               "type": "TagDeclarator",
               "value": "seg01"
             },
             "to": [
               2.0,
-              0.937
+              0.9374999999999999
             ],
             "type": "ToPoint",
             "units": {
@@ -280,7 +282,7 @@ description: Variables in memory after executing poop_chute.kcl
             },
             "from": [
               2.0,
-              0.937
+              0.9374999999999999
             ],
             "tag": null,
             "to": [
@@ -323,7 +325,7 @@ description: Variables in memory after executing poop_chute.kcl
             "tag": null,
             "to": [
               1.875,
-              0.937
+              0.9374999999999999
             ],
             "type": "ToPoint",
             "units": {
@@ -337,11 +339,11 @@ description: Variables in memory after executing poop_chute.kcl
             },
             "from": [
               1.875,
-              0.937
+              0.9374999999999999
             ],
             "tag": null,
             "to": [
-              1.063,
+              1.0625,
               0.125
             ],
             "type": "ToPoint",
@@ -355,12 +357,12 @@ description: Variables in memory after executing poop_chute.kcl
               "sourceRange": []
             },
             "from": [
-              1.063,
+              1.0625,
               0.125
             ],
             "tag": null,
             "to": [
-              0.938,
+              0.9375,
               0.125
             ],
             "type": "ToPoint",
@@ -374,13 +376,13 @@ description: Variables in memory after executing poop_chute.kcl
               "sourceRange": []
             },
             "from": [
-              0.938,
+              0.9375,
               0.125
             ],
             "tag": null,
             "to": [
               0.125,
-              0.938
+              0.9375000000000002
             ],
             "type": "ToPoint",
             "units": {
@@ -394,7 +396,7 @@ description: Variables in memory after executing poop_chute.kcl
             },
             "from": [
               0.125,
-              0.938
+              0.9375000000000002
             ],
             "tag": null,
             "to": [
@@ -437,7 +439,7 @@ description: Variables in memory after executing poop_chute.kcl
             "tag": null,
             "to": [
               0.0,
-              0.937
+              0.9374999999999999
             ],
             "type": "ToPoint",
             "units": {
@@ -451,11 +453,11 @@ description: Variables in memory after executing poop_chute.kcl
             },
             "from": [
               0.0,
-              0.937
+              0.9374999999999999
             ],
             "tag": null,
             "to": [
-              0.937,
+              0.9374999999999997,
               0.0
             ],
             "type": "ToPoint",
@@ -469,7 +471,7 @@ description: Variables in memory after executing poop_chute.kcl
               "sourceRange": []
             },
             "from": [
-              0.937,
+              0.9374999999999997,
               0.0
             ],
             "tag": null,
@@ -579,7 +581,7 @@ description: Variables in memory after executing poop_chute.kcl
           ],
           "tag": null,
           "to": [
-            1.063,
+            1.0625,
             0.0
           ],
           "type": "ToPoint",
@@ -593,19 +595,20 @@ description: Variables in memory after executing poop_chute.kcl
             "sourceRange": []
           },
           "from": [
-            1.063,
+            1.0625,
             0.0
           ],
           "tag": {
             "commentStart": 358,
             "end": 364,
+            "moduleId": 0,
             "start": 358,
             "type": "TagDeclarator",
             "value": "seg01"
           },
           "to": [
             2.0,
-            0.937
+            0.9374999999999999
           ],
           "type": "ToPoint",
           "units": {
@@ -619,7 +622,7 @@ description: Variables in memory after executing poop_chute.kcl
           },
           "from": [
             2.0,
-            0.937
+            0.9374999999999999
           ],
           "tag": null,
           "to": [
@@ -662,7 +665,7 @@ description: Variables in memory after executing poop_chute.kcl
           "tag": null,
           "to": [
             1.875,
-            0.937
+            0.9374999999999999
           ],
           "type": "ToPoint",
           "units": {
@@ -676,11 +679,11 @@ description: Variables in memory after executing poop_chute.kcl
           },
           "from": [
             1.875,
-            0.937
+            0.9374999999999999
           ],
           "tag": null,
           "to": [
-            1.063,
+            1.0625,
             0.125
           ],
           "type": "ToPoint",
@@ -694,12 +697,12 @@ description: Variables in memory after executing poop_chute.kcl
             "sourceRange": []
           },
           "from": [
-            1.063,
+            1.0625,
             0.125
           ],
           "tag": null,
           "to": [
-            0.938,
+            0.9375,
             0.125
           ],
           "type": "ToPoint",
@@ -713,13 +716,13 @@ description: Variables in memory after executing poop_chute.kcl
             "sourceRange": []
           },
           "from": [
-            0.938,
+            0.9375,
             0.125
           ],
           "tag": null,
           "to": [
             0.125,
-            0.938
+            0.9375000000000002
           ],
           "type": "ToPoint",
           "units": {
@@ -733,7 +736,7 @@ description: Variables in memory after executing poop_chute.kcl
           },
           "from": [
             0.125,
-            0.938
+            0.9375000000000002
           ],
           "tag": null,
           "to": [
@@ -776,7 +779,7 @@ description: Variables in memory after executing poop_chute.kcl
           "tag": null,
           "to": [
             0.0,
-            0.937
+            0.9374999999999999
           ],
           "type": "ToPoint",
           "units": {
@@ -790,11 +793,11 @@ description: Variables in memory after executing poop_chute.kcl
           },
           "from": [
             0.0,
-            0.937
+            0.9374999999999999
           ],
           "tag": null,
           "to": [
-            0.937,
+            0.9374999999999997,
             0.0
           ],
           "type": "ToPoint",
@@ -808,7 +811,7 @@ description: Variables in memory after executing poop_chute.kcl
             "sourceRange": []
           },
           "from": [
-            0.937,
+            0.9374999999999997,
             0.0
           ],
           "tag": null,
@@ -904,6 +907,7 @@ description: Variables in memory after executing poop_chute.kcl
           "tag": {
             "commentStart": 1152,
             "end": 1158,
+            "moduleId": 0,
             "start": 1152,
             "type": "TagDeclarator",
             "value": "seg02"
@@ -1003,7 +1007,7 @@ description: Variables in memory after executing poop_chute.kcl
             ],
             "tag": null,
             "to": [
-              1.063,
+              1.0625,
               0.0
             ],
             "type": "ToPoint",
@@ -1017,19 +1021,20 @@ description: Variables in memory after executing poop_chute.kcl
               "sourceRange": []
             },
             "from": [
-              1.063,
+              1.0625,
               0.0
             ],
             "tag": {
               "commentStart": 1152,
               "end": 1158,
+              "moduleId": 0,
               "start": 1152,
               "type": "TagDeclarator",
               "value": "seg02"
             },
             "to": [
               2.0,
-              0.937
+              0.9374999999999999
             ],
             "type": "ToPoint",
             "units": {
@@ -1043,7 +1048,7 @@ description: Variables in memory after executing poop_chute.kcl
             },
             "from": [
               2.0,
-              0.937
+              0.9374999999999999
             ],
             "tag": null,
             "to": [
@@ -1086,7 +1091,7 @@ description: Variables in memory after executing poop_chute.kcl
             "tag": null,
             "to": [
               1.875,
-              0.937
+              0.9374999999999999
             ],
             "type": "ToPoint",
             "units": {
@@ -1100,11 +1105,11 @@ description: Variables in memory after executing poop_chute.kcl
             },
             "from": [
               1.875,
-              0.937
+              0.9374999999999999
             ],
             "tag": null,
             "to": [
-              1.063,
+              1.0625,
               0.125
             ],
             "type": "ToPoint",
@@ -1118,12 +1123,12 @@ description: Variables in memory after executing poop_chute.kcl
               "sourceRange": []
             },
             "from": [
-              1.063,
+              1.0625,
               0.125
             ],
             "tag": null,
             "to": [
-              0.938,
+              0.9375,
               0.125
             ],
             "type": "ToPoint",
@@ -1137,13 +1142,13 @@ description: Variables in memory after executing poop_chute.kcl
               "sourceRange": []
             },
             "from": [
-              0.938,
+              0.9375,
               0.125
             ],
             "tag": null,
             "to": [
               0.125,
-              0.938
+              0.9375000000000002
             ],
             "type": "ToPoint",
             "units": {
@@ -1157,7 +1162,7 @@ description: Variables in memory after executing poop_chute.kcl
             },
             "from": [
               0.125,
-              0.938
+              0.9375000000000002
             ],
             "tag": null,
             "to": [
@@ -1200,7 +1205,7 @@ description: Variables in memory after executing poop_chute.kcl
             "tag": null,
             "to": [
               0.0,
-              0.937
+              0.9374999999999999
             ],
             "type": "ToPoint",
             "units": {
@@ -1214,11 +1219,11 @@ description: Variables in memory after executing poop_chute.kcl
             },
             "from": [
               0.0,
-              0.937
+              0.9374999999999999
             ],
             "tag": null,
             "to": [
-              0.937,
+              0.9374999999999997,
               0.0
             ],
             "type": "ToPoint",
@@ -1232,7 +1237,7 @@ description: Variables in memory after executing poop_chute.kcl
               "sourceRange": []
             },
             "from": [
-              0.937,
+              0.9374999999999997,
               0.0
             ],
             "tag": null,

@@ -64,7 +64,11 @@ interface Singletons {
   sceneInfra: SceneInfra
 }
 
-export class KclManager {
+export enum KclManagerEvents {
+  LongExecution = 'long-execution',
+}
+
+export class KclManager extends EventTarget {
   /**
    * The artifactGraph is a client-side representation of the commands that have been sent
    * see: src/lang/std/artifactGraph-README.md for a full explanation.
@@ -117,6 +121,10 @@ export class KclManager {
   private _fileSettings: KclSettingsAnnotation = {}
   private _kclVersion: string | undefined = undefined
   private singletons: Singletons
+  private executionTimeoutId: ReturnType<typeof setTimeout> | undefined =
+    undefined
+  // In the future this could be a setting.
+  public longExecutionTimeMs = 1000 * 60 * 5
 
   engineCommandManager: EngineCommandManager
 
@@ -261,6 +269,7 @@ export class KclManager {
     engineCommandManager: EngineCommandManager,
     singletons: Singletons
   ) {
+    super()
     this.engineCommandManager = engineCommandManager
     this.singletons = singletons
 
@@ -380,7 +389,7 @@ export class KclManager {
 
     if (err(result)) {
       const kclError: KCLError = result as KCLError
-      this.diagnostics = kclErrorsToDiagnostics([kclError])
+      this.diagnostics = kclErrorsToDiagnostics([kclError], code)
       this._astParseFailed = true
 
       await this.checkIfSwitchedFilesShouldClear()
@@ -394,8 +403,8 @@ export class KclManager {
     this._kclErrorsCallBack([])
     this._logsCallBack([])
 
-    this.addDiagnostics(compilationErrorsToDiagnostics(result.errors))
-    this.addDiagnostics(compilationErrorsToDiagnostics(result.warnings))
+    this.addDiagnostics(compilationErrorsToDiagnostics(result.errors, code))
+    this.addDiagnostics(compilationErrorsToDiagnostics(result.warnings, code))
     if (result.errors.length > 0) {
       this._astParseFailed = true
 
@@ -456,7 +465,12 @@ export class KclManager {
     // Program was not interrupted, setup the scene
     // Do not send send scene commands if the program was interrupted, go to clean up
     if (!isInterrupted) {
-      this.addDiagnostics(await lintAst({ ast: ast }))
+      this.addDiagnostics(
+        await lintAst({
+          ast,
+          sourceCode: this.singletons.codeManager.code,
+        })
+      )
       await setSelectionFilterToDefault(this.engineCommandManager)
     }
 
@@ -477,11 +491,16 @@ export class KclManager {
 
     this.logs = logs
     this.errors = errors
+    const code = this.singletons.codeManager.code
     // Do not add the errors since the program was interrupted and the error is not a real KCL error
-    this.addDiagnostics(isInterrupted ? [] : kclErrorsToDiagnostics(errors))
+    this.addDiagnostics(
+      isInterrupted ? [] : kclErrorsToDiagnostics(errors, code)
+    )
     // Add warnings and non-fatal errors
     this.addDiagnostics(
-      isInterrupted ? [] : compilationErrorsToDiagnostics(execState.errors)
+      isInterrupted
+        ? []
+        : compilationErrorsToDiagnostics(execState.errors, code)
     )
     this.execState = execState
     if (!errors.length) {
@@ -553,6 +572,7 @@ export class KclManager {
       this.lastSuccessfulVariables = execState.variables
       this.lastSuccessfulOperations = execState.operations
     }
+    await this.updateArtifactGraph(execState.artifactGraph)
     return null
   }
   cancelAllExecutions() {
@@ -569,6 +589,18 @@ export class KclManager {
       this.clearAst()
       return
     }
+
+    clearTimeout(this.executionTimeoutId)
+
+    // We consider anything taking longer than 5 minutes a long execution.
+    this.executionTimeoutId = setTimeout(() => {
+      if (!this.isExecuting) {
+        clearTimeout(this.executionTimeoutId)
+        return
+      }
+
+      this.dispatchEvent(new CustomEvent(KclManagerEvents.LongExecution, {}))
+    }, this.longExecutionTimeMs)
 
     return this.executeAst({ ast })
   }

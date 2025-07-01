@@ -6,6 +6,8 @@ export type DownloadAppToastProps = {
   onDismiss: () => void
 }
 
+export const desktopAppPitchMessage = `The present web app is limited in features. We don't want you to miss out!`
+
 export function DownloadAppToast({
   onAccept,
   onDismiss,
@@ -20,8 +22,7 @@ export function DownloadAppToast({
         <section>
           <h2>Zoo Design Studio is primarily a desktop app</h2>
           <p className="text-sm text-chalkboard-70 dark:text-chalkboard-30">
-            The present web app is limited in features. We don't want you to
-            miss out!
+            {desktopAppPitchMessage}
           </p>
           {!navigator?.userAgent.includes('Chrome') && (
             <p className="mt-2 text-sm font-semibold text-chalkboard-70 dark:text-chalkboard-30">

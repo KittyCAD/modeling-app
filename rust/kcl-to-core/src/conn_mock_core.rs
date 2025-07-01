@@ -3,7 +3,7 @@ use std::{collections::HashMap, sync::Arc};
 use anyhow::Result;
 use indexmap::IndexMap;
 use kcl_lib::{
-    exec::{ArtifactCommand, DefaultPlanes, IdGenerator},
+    exec::{DefaultPlanes, IdGenerator},
     AsyncTasks, EngineStats, KclError,
 };
 use kittycad_modeling_cmds::{
@@ -47,7 +47,7 @@ impl EngineConnection {
 
     fn handle_command(&self, cmd_id: &ModelingCmdId, cmd: &kcmc::ModelingCmd) -> (String, OkModelingCmdResponse) {
         let cpp_id = id_to_cpp(cmd_id);
-        let cmd_id = format!("{}", cmd_id);
+        let cmd_id = format!("{cmd_id}");
         let mut this_response = OkModelingCmdResponse::Empty {};
 
         let new_code = match cmd {
@@ -86,7 +86,7 @@ impl EngineConnection {
                 size,
                 ..
             }) => {
-                let plane_id = format!("plane_{}", cpp_id);
+                let plane_id = format!("plane_{cpp_id}");
                 format!(
                     r#"
                     auto {plane_id} = make_shared<Object>("plane", glm::dvec3 {{ 0, 0, 0 }});
@@ -108,8 +108,8 @@ impl EngineConnection {
                 )
             }
             kcmc::ModelingCmd::StartPath(kcmc::StartPath { .. }) => {
-                let sketch_id = format!("sketch_{}", cpp_id);
-                let path_id = format!("path_{}", cpp_id);
+                let sketch_id = format!("sketch_{cpp_id}");
+                let path_id = format!("path_{cpp_id}");
                 format!(
                     r#"
                     auto {sketch_id} = make_shared<Object>("sketch", glm::dvec3 {{ 0, 0, 0 }});
@@ -178,7 +178,7 @@ impl EngineConnection {
                     )
                 }
                 _ => {
-                    format!("//{:?}", cmd)
+                    format!("//{cmd:?}")
                 }
             },
             kcmc::ModelingCmd::ClosePath(kcmc::ClosePath { path_id }) => {
@@ -240,9 +240,8 @@ impl EngineConnection {
             }) => {
                 format!(
                     r#"
-                    //face info get {} {}
-                "#,
-                    object_id, edge_id
+                    //face info get {object_id} {edge_id}
+                "#
                 )
             }
             kcmc::ModelingCmd::EntityCircularPattern(kcmc::EntityCircularPattern {
@@ -256,7 +255,6 @@ impl EngineConnection {
                 let entity_ids = generate_repl_uuids(*num_repetitions as usize);
 
                 this_response = OkModelingCmdResponse::EntityCircularPattern(kcmc::output::EntityCircularPattern {
-                    entity_ids: entity_ids.clone(),
                     entity_face_edge_ids: vec![],
                 });
 
@@ -314,11 +312,11 @@ impl EngineConnection {
                 // base_code.push_str(&repl_uuid_fix_code);
 
                 // base_code
-                format!("//{:?}", cmd)
+                format!("//{cmd:?}")
             }
             _ => {
                 //helps us follow along with the currently unhandled engine commands
-                format!("//{:?}", cmd)
+                format!("//{cmd:?}")
             }
         };
 
@@ -331,7 +329,7 @@ fn id_to_cpp(id: &ModelingCmdId) -> String {
 }
 
 fn uuid_to_cpp(id: &uuid::Uuid) -> String {
-    let str = format!("{}", id);
+    let str = format!("{id}");
     str::replace(&str, "-", "_")
 }
 
@@ -378,10 +376,6 @@ impl kcl_lib::EngineManager for EngineConnection {
 
     fn stats(&self) -> &EngineStats {
         &self.stats
-    }
-
-    fn artifact_commands(&self) -> Arc<RwLock<Vec<ArtifactCommand>>> {
-        Arc::new(RwLock::new(Vec::new()))
     }
 
     fn ids_of_async_commands(&self) -> Arc<RwLock<IndexMap<Uuid, kcl_lib::SourceRange>>> {

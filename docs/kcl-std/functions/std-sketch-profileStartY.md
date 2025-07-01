@@ -29,8 +29,8 @@ profileStartY(@profile: Sketch): number(Length)
 ```kcl
 sketch001 = startSketchOn(XY)
   |> startProfile(at = [5, 2])
-  |> angledLine(angle = -60, length = 14)
-  |> angledLine(angle = 30, endAbsoluteY = profileStartY(%))
+  |> angledLine(angle = -60deg, length = 14)
+  |> angledLine(angle = 30deg, endAbsoluteY = profileStartY(%))
 
 ```
 

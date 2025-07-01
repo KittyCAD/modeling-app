@@ -1,15 +1,15 @@
 use anyhow::Result;
 
 use crate::{
-    engine::{PlaneName, DEFAULT_PLANE_INFO},
+    SourceRange,
+    engine::{DEFAULT_PLANE_INFO, PlaneName},
     errors::Suggestion,
-    execution::{types::UnitLen, PlaneInfo, Point3d},
-    lint::rule::{def_finding, Discovered, Finding},
+    execution::{PlaneInfo, Point3d, types::UnitLen},
+    lint::rule::{Discovered, Finding, def_finding},
     parsing::ast::types::{
         BinaryPart, CallExpressionKw, Expr, LiteralValue, Node as AstNode, ObjectExpression, Program, UnaryOperator,
     },
     walk::Node,
-    SourceRange,
 };
 
 def_finding!(
@@ -39,14 +39,11 @@ pub fn lint_should_be_offset_plane(node: Node, _prog: &AstNode<Program>) -> Resu
     }
     let suggestion = Suggestion {
         title: "use offsetPlane instead".to_owned(),
-        insert: format!("offsetPlane({}, offset = {})", plane_name, offset),
+        insert: format!("offsetPlane({plane_name}, offset = {offset})"),
         source_range: call_source_range,
     };
     Ok(vec![Z0003.at(
-        format!(
-            "custom plane in startSketchOn; offsetPlane from {} would work here",
-            plane_name
-        ),
+        format!("custom plane in startSketchOn; offsetPlane from {plane_name} would work here"),
         call_source_range,
         Some(suggestion),
     )])
@@ -68,16 +65,16 @@ fn get_xyz(point: &ObjectExpression) -> Option<(f64, f64, f64)> {
 
     for property in &point.properties {
         let Some(value) = (match &property.value {
-            Expr::UnaryExpression(ref value) => {
+            Expr::UnaryExpression(value) => {
                 if value.operator != UnaryOperator::Neg {
                     continue;
                 }
-                let BinaryPart::Literal(ref value) = &value.inner.argument else {
+                let BinaryPart::Literal(value) = &value.inner.argument else {
                     continue;
                 };
                 unlitafy(&value.inner.value).map(|v| -v)
             }
-            Expr::Literal(ref value) => unlitafy(&value.value),
+            Expr::Literal(value) => unlitafy(&value.value),
             _ => {
                 continue;
             }
@@ -271,7 +268,7 @@ fn normalize_plane_info(plane_info: &PlaneInfo) -> PlaneInfo {
 
 #[cfg(test)]
 mod tests {
-    use super::{lint_should_be_offset_plane, Z0003};
+    use super::{Z0003, lint_should_be_offset_plane};
     use crate::lint::rule::{test_finding, test_no_finding};
 
     test_finding!(

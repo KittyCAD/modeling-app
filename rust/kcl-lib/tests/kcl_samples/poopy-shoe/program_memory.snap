@@ -500,6 +500,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           "tag": {
             "commentStart": 519,
             "end": 525,
+            "moduleId": 0,
             "start": 519,
             "type": "TagDeclarator",
             "value": "seg01"
@@ -599,7 +600,7 @@ description: Variables in memory after executing poopy-shoe.kcl
             ],
             "tag": null,
             "to": [
-              1.563,
+              1.5625,
               0.0
             ],
             "type": "ToPoint",
@@ -613,19 +614,20 @@ description: Variables in memory after executing poopy-shoe.kcl
               "sourceRange": []
             },
             "from": [
-              1.563,
+              1.5625,
               0.0
             ],
             "tag": {
               "commentStart": 519,
               "end": 525,
+              "moduleId": 0,
               "start": 519,
               "type": "TagDeclarator",
               "value": "seg01"
             },
             "to": [
               3.0,
-              2.49
+              2.4898230358802604
             ],
             "type": "ToPoint",
             "units": {
@@ -639,7 +641,7 @@ description: Variables in memory after executing poopy-shoe.kcl
             },
             "from": [
               3.0,
-              2.49
+              2.4898230358802604
             ],
             "tag": null,
             "to": [
@@ -682,7 +684,7 @@ description: Variables in memory after executing poopy-shoe.kcl
             "tag": null,
             "to": [
               2.875,
-              2.49
+              2.4898230358802604
             ],
             "type": "ToPoint",
             "units": {
@@ -696,12 +698,12 @@ description: Variables in memory after executing poopy-shoe.kcl
             },
             "from": [
               2.875,
-              2.49
+              2.4898230358802604
             ],
             "tag": null,
             "to": [
-              1.563,
-              0.217
+              1.5625,
+              0.21650635094610982
             ],
             "type": "ToPoint",
             "units": {
@@ -714,13 +716,13 @@ description: Variables in memory after executing poopy-shoe.kcl
               "sourceRange": []
             },
             "from": [
-              1.563,
-              0.217
+              1.5625,
+              0.21650635094610982
             ],
             "tag": null,
             "to": [
-              1.438,
-              0.217
+              1.4375,
+              0.21650635094610982
             ],
             "type": "ToPoint",
             "units": {
@@ -733,32 +735,13 @@ description: Variables in memory after executing poopy-shoe.kcl
               "sourceRange": []
             },
             "from": [
-              1.438,
-              0.217
+              1.4375,
+              0.21650635094610982
             ],
             "tag": null,
             "to": [
               0.125,
-              2.49
-            ],
-            "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.125,
-              2.49
-            ],
-            "tag": null,
-            "to": [
-              0.125,
-              5.125
+              2.4898230358802627
             ],
             "type": "ToPoint",
             "units": {
@@ -772,6 +755,25 @@ description: Variables in memory after executing poopy-shoe.kcl
             },
             "from": [
               0.125,
+              2.4898230358802627
+            ],
+            "tag": null,
+            "to": [
+              0.125,
+              5.125
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Inches"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              0.125,
               5.125
             ],
             "tag": null,
@@ -796,7 +798,7 @@ description: Variables in memory after executing poopy-shoe.kcl
             "tag": null,
             "to": [
               0.0,
-              2.49
+              2.4898230358802604
             ],
             "type": "ToPoint",
             "units": {
@@ -810,11 +812,11 @@ description: Variables in memory after executing poopy-shoe.kcl
             },
             "from": [
               0.0,
-              2.49
+              2.4898230358802604
             ],
             "tag": null,
             "to": [
-              1.437,
+              1.4374999999999987,
               0.0
             ],
             "type": "ToPoint",
@@ -828,7 +830,7 @@ description: Variables in memory after executing poopy-shoe.kcl
               "sourceRange": []
             },
             "from": [
-              1.437,
+              1.4374999999999987,
               0.0
             ],
             "tag": null,
@@ -948,7 +950,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           ],
           "tag": null,
           "to": [
-            1.563,
+            1.5625,
             0.0
           ],
           "type": "ToPoint",
@@ -962,19 +964,20 @@ description: Variables in memory after executing poopy-shoe.kcl
             "sourceRange": []
           },
           "from": [
-            1.563,
+            1.5625,
             0.0
           ],
           "tag": {
             "commentStart": 519,
             "end": 525,
+            "moduleId": 0,
             "start": 519,
             "type": "TagDeclarator",
             "value": "seg01"
           },
           "to": [
             3.0,
-            2.49
+            2.4898230358802604
           ],
           "type": "ToPoint",
           "units": {
@@ -988,7 +991,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           },
           "from": [
             3.0,
-            2.49
+            2.4898230358802604
           ],
           "tag": null,
           "to": [
@@ -1031,7 +1034,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           "tag": null,
           "to": [
             2.875,
-            2.49
+            2.4898230358802604
           ],
           "type": "ToPoint",
           "units": {
@@ -1045,12 +1048,12 @@ description: Variables in memory after executing poopy-shoe.kcl
           },
           "from": [
             2.875,
-            2.49
+            2.4898230358802604
           ],
           "tag": null,
           "to": [
-            1.563,
-            0.217
+            1.5625,
+            0.21650635094610982
           ],
           "type": "ToPoint",
           "units": {
@@ -1063,13 +1066,13 @@ description: Variables in memory after executing poopy-shoe.kcl
             "sourceRange": []
           },
           "from": [
-            1.563,
-            0.217
+            1.5625,
+            0.21650635094610982
           ],
           "tag": null,
           "to": [
-            1.438,
-            0.217
+            1.4375,
+            0.21650635094610982
           ],
           "type": "ToPoint",
           "units": {
@@ -1082,32 +1085,13 @@ description: Variables in memory after executing poopy-shoe.kcl
             "sourceRange": []
           },
           "from": [
-            1.438,
-            0.217
+            1.4375,
+            0.21650635094610982
           ],
           "tag": null,
           "to": [
             0.125,
-            2.49
-          ],
-          "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.125,
-            2.49
-          ],
-          "tag": null,
-          "to": [
-            0.125,
-            5.125
+            2.4898230358802627
           ],
           "type": "ToPoint",
           "units": {
@@ -1121,6 +1105,25 @@ description: Variables in memory after executing poopy-shoe.kcl
           },
           "from": [
             0.125,
+            2.4898230358802627
+          ],
+          "tag": null,
+          "to": [
+            0.125,
+            5.125
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Inches"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            0.125,
             5.125
           ],
           "tag": null,
@@ -1145,7 +1148,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           "tag": null,
           "to": [
             0.0,
-            2.49
+            2.4898230358802604
           ],
           "type": "ToPoint",
           "units": {
@@ -1159,11 +1162,11 @@ description: Variables in memory after executing poopy-shoe.kcl
           },
           "from": [
             0.0,
-            2.49
+            2.4898230358802604
           ],
           "tag": null,
           "to": [
-            1.437,
+            1.4374999999999987,
             0.0
           ],
           "type": "ToPoint",
@@ -1177,7 +1180,7 @@ description: Variables in memory after executing poopy-shoe.kcl
             "sourceRange": []
           },
           "from": [
-            1.437,
+            1.4374999999999987,
             0.0
           ],
           "tag": null,
@@ -1273,6 +1276,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           "tag": {
             "commentStart": 1286,
             "end": 1292,
+            "moduleId": 0,
             "start": 1286,
             "type": "TagDeclarator",
             "value": "seg02"
@@ -1372,7 +1376,7 @@ description: Variables in memory after executing poopy-shoe.kcl
             ],
             "tag": null,
             "to": [
-              1.563,
+              1.5625,
               0.0
             ],
             "type": "ToPoint",
@@ -1386,19 +1390,20 @@ description: Variables in memory after executing poopy-shoe.kcl
               "sourceRange": []
             },
             "from": [
-              1.563,
+              1.5625,
               0.0
             ],
             "tag": {
               "commentStart": 1286,
               "end": 1292,
+              "moduleId": 0,
               "start": 1286,
               "type": "TagDeclarator",
               "value": "seg02"
             },
             "to": [
               3.0,
-              2.49
+              2.4898230358802604
             ],
             "type": "ToPoint",
             "units": {
@@ -1412,7 +1417,7 @@ description: Variables in memory after executing poopy-shoe.kcl
             },
             "from": [
               3.0,
-              2.49
+              2.4898230358802604
             ],
             "tag": null,
             "to": [
@@ -1455,7 +1460,7 @@ description: Variables in memory after executing poopy-shoe.kcl
             "tag": null,
             "to": [
               2.875,
-              2.49
+              2.4898230358802604
             ],
             "type": "ToPoint",
             "units": {
@@ -1469,12 +1474,12 @@ description: Variables in memory after executing poopy-shoe.kcl
             },
             "from": [
               2.875,
-              2.49
+              2.4898230358802604
             ],
             "tag": null,
             "to": [
-              1.563,
-              0.217
+              1.5625,
+              0.21650635094610982
             ],
             "type": "ToPoint",
             "units": {
@@ -1487,13 +1492,13 @@ description: Variables in memory after executing poopy-shoe.kcl
               "sourceRange": []
             },
             "from": [
-              1.563,
-              0.217
+              1.5625,
+              0.21650635094610982
             ],
             "tag": null,
             "to": [
-              1.438,
-              0.217
+              1.4375,
+              0.21650635094610982
             ],
             "type": "ToPoint",
             "units": {
@@ -1506,32 +1511,13 @@ description: Variables in memory after executing poopy-shoe.kcl
               "sourceRange": []
             },
             "from": [
-              1.438,
-              0.217
+              1.4375,
+              0.21650635094610982
             ],
             "tag": null,
             "to": [
               0.125,
-              2.49
-            ],
-            "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.125,
-              2.49
-            ],
-            "tag": null,
-            "to": [
-              0.125,
-              5.125
+              2.4898230358802627
             ],
             "type": "ToPoint",
             "units": {
@@ -1545,6 +1531,25 @@ description: Variables in memory after executing poopy-shoe.kcl
             },
             "from": [
               0.125,
+              2.4898230358802627
+            ],
+            "tag": null,
+            "to": [
+              0.125,
+              5.125
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Inches"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              0.125,
               5.125
             ],
             "tag": null,
@@ -1569,7 +1574,7 @@ description: Variables in memory after executing poopy-shoe.kcl
             "tag": null,
             "to": [
               0.0,
-              2.49
+              2.4898230358802604
             ],
             "type": "ToPoint",
             "units": {
@@ -1583,11 +1588,11 @@ description: Variables in memory after executing poopy-shoe.kcl
             },
             "from": [
               0.0,
-              2.49
+              2.4898230358802604
             ],
             "tag": null,
             "to": [
-              1.437,
+              1.4374999999999987,
               0.0
             ],
             "type": "ToPoint",
@@ -1601,7 +1606,7 @@ description: Variables in memory after executing poopy-shoe.kcl
               "sourceRange": []
             },
             "from": [
-              1.437,
+              1.4374999999999987,
               0.0
             ],
             "tag": null,
@@ -1724,7 +1729,7 @@ description: Variables in memory after executing poopy-shoe.kcl
             },
             "ccw": true,
             "center": [
-              -0.0,
+              -0.00000000000000031381574228150926,
               5.125
             ],
             "from": [
@@ -1733,8 +1738,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             ],
             "tag": null,
             "to": [
-              4.438,
-              2.563
+              4.438380194395249,
+              2.5625000000000004
             ],
             "type": "TangentialArc",
             "units": {
@@ -1747,12 +1752,12 @@ description: Variables in memory after executing poopy-shoe.kcl
               "sourceRange": []
             },
             "from": [
-              4.438,
-              2.563
+              4.438380194395249,
+              2.5625000000000004
             ],
             "tag": null,
             "to": [
-              2.959,
+              2.958920129596832,
               0.0
             ],
             "type": "ToPoint",
@@ -1766,7 +1771,7 @@ description: Variables in memory after executing poopy-shoe.kcl
               "sourceRange": []
             },
             "from": [
-              2.959,
+              2.958920129596832,
               0.0
             ],
             "tag": null,
@@ -1785,7 +1790,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           "id": "[uuid]",
           "origin": {
             "x": 0.0,
-            "y": -1.438,
+            "y": -1.4375,
             "z": 0.0,
             "units": {
               "type": "Inches"
@@ -1934,6 +1939,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           "tag": {
             "commentStart": 2912,
             "end": 2918,
+            "moduleId": 0,
             "start": 2912,
             "type": "TagDeclarator",
             "value": "seg04"
@@ -1995,7 +2001,7 @@ description: Variables in memory after executing poopy-shoe.kcl
             "tag": null,
             "to": [
               0.125,
-              2.49
+              2.4898230358802604
             ],
             "type": "ToPoint",
             "units": {
@@ -2009,12 +2015,12 @@ description: Variables in memory after executing poopy-shoe.kcl
             },
             "from": [
               0.125,
-              2.49
+              2.4898230358802604
             ],
             "tag": null,
             "to": [
-              1.438,
-              0.217
+              1.4375,
+              0.2165063509461076
             ],
             "type": "ToPoint",
             "units": {
@@ -2027,13 +2033,13 @@ description: Variables in memory after executing poopy-shoe.kcl
               "sourceRange": []
             },
             "from": [
-              1.438,
-              0.217
+              1.4375,
+              0.2165063509461076
             ],
             "tag": null,
             "to": [
-              1.563,
-              0.217
+              1.5625,
+              0.2165063509461076
             ],
             "type": "ToPoint",
             "units": {
@@ -2046,13 +2052,13 @@ description: Variables in memory after executing poopy-shoe.kcl
               "sourceRange": []
             },
             "from": [
-              1.563,
-              0.217
+              1.5625,
+              0.2165063509461076
             ],
             "tag": null,
             "to": [
-              2.875,
-              2.49
+              2.875000000000001,
+              2.4898230358802604
             ],
             "type": "ToPoint",
             "units": {
@@ -2065,12 +2071,12 @@ description: Variables in memory after executing poopy-shoe.kcl
               "sourceRange": []
             },
             "from": [
-              2.875,
-              2.49
+              2.875000000000001,
+              2.4898230358802604
             ],
             "tag": null,
             "to": [
-              2.875,
+              2.875000000000001,
               5.125
             ],
             "type": "ToPoint",
@@ -2084,12 +2090,12 @@ description: Variables in memory after executing poopy-shoe.kcl
               "sourceRange": []
             },
             "from": [
-              2.875,
+              2.875000000000001,
               5.125
             ],
             "tag": null,
             "to": [
-              3.0,
+              3.000000000000001,
               5.125
             ],
             "type": "ToPoint",
@@ -2104,17 +2110,17 @@ description: Variables in memory after executing poopy-shoe.kcl
             },
             "ccw": false,
             "center": [
-              3.0,
-              3.124
+              3.000000000000001,
+              3.124053030303032
             ],
             "from": [
-              3.0,
+              3.000000000000001,
               5.125
             ],
             "tag": null,
             "to": [
               5.0,
-              3.063
+              3.0625
             ],
             "type": "TangentialArcTo",
             "units": {
@@ -2128,12 +2134,12 @@ description: Variables in memory after executing poopy-shoe.kcl
             },
             "ccw": true,
             "center": [
-              7.0,
-              3.001
+              6.999999999999999,
+              3.000946969696969
             ],
             "from": [
               5.0,
-              3.063
+              3.0625
             ],
             "tag": null,
             "to": [
@@ -2176,6 +2182,7 @@ description: Variables in memory after executing poopy-shoe.kcl
             "tag": {
               "commentStart": 2912,
               "end": 2918,
+              "moduleId": 0,
               "start": 2912,
               "type": "TagDeclarator",
               "value": "seg04"
@@ -2230,6 +2237,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                 "tag": {
                   "commentStart": 1286,
                   "end": 1292,
+                  "moduleId": 0,
                   "start": 1286,
                   "type": "TagDeclarator",
                   "value": "seg02"
@@ -2329,7 +2337,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                   ],
                   "tag": null,
                   "to": [
-                    1.563,
+                    1.5625,
                     0.0
                   ],
                   "type": "ToPoint",
@@ -2343,19 +2351,20 @@ description: Variables in memory after executing poopy-shoe.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    1.563,
+                    1.5625,
                     0.0
                   ],
                   "tag": {
                     "commentStart": 1286,
                     "end": 1292,
+                    "moduleId": 0,
                     "start": 1286,
                     "type": "TagDeclarator",
                     "value": "seg02"
                   },
                   "to": [
                     3.0,
-                    2.49
+                    2.4898230358802604
                   ],
                   "type": "ToPoint",
                   "units": {
@@ -2369,7 +2378,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                   },
                   "from": [
                     3.0,
-                    2.49
+                    2.4898230358802604
                   ],
                   "tag": null,
                   "to": [
@@ -2412,7 +2421,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "tag": null,
                   "to": [
                     2.875,
-                    2.49
+                    2.4898230358802604
                   ],
                   "type": "ToPoint",
                   "units": {
@@ -2426,12 +2435,12 @@ description: Variables in memory after executing poopy-shoe.kcl
                   },
                   "from": [
                     2.875,
-                    2.49
+                    2.4898230358802604
                   ],
                   "tag": null,
                   "to": [
-                    1.563,
-                    0.217
+                    1.5625,
+                    0.21650635094610982
                   ],
                   "type": "ToPoint",
                   "units": {
@@ -2444,13 +2453,13 @@ description: Variables in memory after executing poopy-shoe.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    1.563,
-                    0.217
+                    1.5625,
+                    0.21650635094610982
                   ],
                   "tag": null,
                   "to": [
-                    1.438,
-                    0.217
+                    1.4375,
+                    0.21650635094610982
                   ],
                   "type": "ToPoint",
                   "units": {
@@ -2463,32 +2472,13 @@ description: Variables in memory after executing poopy-shoe.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    1.438,
-                    0.217
+                    1.4375,
+                    0.21650635094610982
                   ],
                   "tag": null,
                   "to": [
                     0.125,
-                    2.49
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Inches"
-                  }
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    0.125,
-                    2.49
-                  ],
-                  "tag": null,
-                  "to": [
-                    0.125,
-                    5.125
+                    2.4898230358802627
                   ],
                   "type": "ToPoint",
                   "units": {
@@ -2502,6 +2492,25 @@ description: Variables in memory after executing poopy-shoe.kcl
                   },
                   "from": [
                     0.125,
+                    2.4898230358802627
+                  ],
+                  "tag": null,
+                  "to": [
+                    0.125,
+                    5.125
+                  ],
+                  "type": "ToPoint",
+                  "units": {
+                    "type": "Inches"
+                  }
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    0.125,
                     5.125
                   ],
                   "tag": null,
@@ -2526,7 +2535,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "tag": null,
                   "to": [
                     0.0,
-                    2.49
+                    2.4898230358802604
                   ],
                   "type": "ToPoint",
                   "units": {
@@ -2540,11 +2549,11 @@ description: Variables in memory after executing poopy-shoe.kcl
                   },
                   "from": [
                     0.0,
-                    2.49
+                    2.4898230358802604
                   ],
                   "tag": null,
                   "to": [
-                    1.437,
+                    1.4374999999999987,
                     0.0
                   ],
                   "type": "ToPoint",
@@ -2558,7 +2567,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    1.437,
+                    1.4374999999999987,
                     0.0
                   ],
                   "tag": null,
@@ -2725,6 +2734,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           "tag": {
             "commentStart": 3517,
             "end": 3523,
+            "moduleId": 0,
             "start": 3517,
             "type": "TagDeclarator",
             "value": "seg03"
@@ -2789,7 +2799,7 @@ description: Variables in memory after executing poopy-shoe.kcl
             "ccw": true,
             "center": [
               -3.0,
-              3.124
+              3.1240530303030303
             ],
             "from": [
               -3.0,
@@ -2798,7 +2808,7 @@ description: Variables in memory after executing poopy-shoe.kcl
             "tag": null,
             "to": [
               -5.0,
-              3.063
+              3.0625
             ],
             "type": "TangentialArcTo",
             "units": {
@@ -2813,11 +2823,11 @@ description: Variables in memory after executing poopy-shoe.kcl
             "ccw": false,
             "center": [
               -7.0,
-              3.001
+              3.0009469696969697
             ],
             "from": [
               -5.0,
-              3.063
+              3.0625
             ],
             "tag": null,
             "to": [
@@ -2841,6 +2851,7 @@ description: Variables in memory after executing poopy-shoe.kcl
             "tag": {
               "commentStart": 3517,
               "end": 3523,
+              "moduleId": 0,
               "start": 3517,
               "type": "TagDeclarator",
               "value": "seg03"
@@ -3121,6 +3132,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                 "tag": {
                   "commentStart": 3517,
                   "end": 3523,
+                  "moduleId": 0,
                   "start": 3517,
                   "type": "TagDeclarator",
                   "value": "seg03"
@@ -3185,7 +3197,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "ccw": true,
                   "center": [
                     -3.0,
-                    3.124
+                    3.1240530303030303
                   ],
                   "from": [
                     -3.0,
@@ -3194,7 +3206,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "tag": null,
                   "to": [
                     -5.0,
-                    3.063
+                    3.0625
                   ],
                   "type": "TangentialArcTo",
                   "units": {
@@ -3209,11 +3221,11 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "ccw": false,
                   "center": [
                     -7.0,
-                    3.001
+                    3.0009469696969697
                   ],
                   "from": [
                     -5.0,
-                    3.063
+                    3.0625
                   ],
                   "tag": null,
                   "to": [
@@ -3237,6 +3249,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "tag": {
                     "commentStart": 3517,
                     "end": 3523,
+                    "moduleId": 0,
                     "start": 3517,
                     "type": "TagDeclarator",
                     "value": "seg03"
@@ -3602,6 +3615,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                 "tag": {
                   "commentStart": 2912,
                   "end": 2918,
+                  "moduleId": 0,
                   "start": 2912,
                   "type": "TagDeclarator",
                   "value": "seg04"
@@ -3663,7 +3677,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "tag": null,
                   "to": [
                     0.125,
-                    2.49
+                    2.4898230358802604
                   ],
                   "type": "ToPoint",
                   "units": {
@@ -3677,12 +3691,12 @@ description: Variables in memory after executing poopy-shoe.kcl
                   },
                   "from": [
                     0.125,
-                    2.49
+                    2.4898230358802604
                   ],
                   "tag": null,
                   "to": [
-                    1.438,
-                    0.217
+                    1.4375,
+                    0.2165063509461076
                   ],
                   "type": "ToPoint",
                   "units": {
@@ -3695,13 +3709,13 @@ description: Variables in memory after executing poopy-shoe.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    1.438,
-                    0.217
+                    1.4375,
+                    0.2165063509461076
                   ],
                   "tag": null,
                   "to": [
-                    1.563,
-                    0.217
+                    1.5625,
+                    0.2165063509461076
                   ],
                   "type": "ToPoint",
                   "units": {
@@ -3714,13 +3728,13 @@ description: Variables in memory after executing poopy-shoe.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    1.563,
-                    0.217
+                    1.5625,
+                    0.2165063509461076
                   ],
                   "tag": null,
                   "to": [
-                    2.875,
-                    2.49
+                    2.875000000000001,
+                    2.4898230358802604
                   ],
                   "type": "ToPoint",
                   "units": {
@@ -3733,12 +3747,12 @@ description: Variables in memory after executing poopy-shoe.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    2.875,
-                    2.49
+                    2.875000000000001,
+                    2.4898230358802604
                   ],
                   "tag": null,
                   "to": [
-                    2.875,
+                    2.875000000000001,
                     5.125
                   ],
                   "type": "ToPoint",
@@ -3752,12 +3766,12 @@ description: Variables in memory after executing poopy-shoe.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    2.875,
+                    2.875000000000001,
                     5.125
                   ],
                   "tag": null,
                   "to": [
-                    3.0,
+                    3.000000000000001,
                     5.125
                   ],
                   "type": "ToPoint",
@@ -3772,17 +3786,17 @@ description: Variables in memory after executing poopy-shoe.kcl
                   },
                   "ccw": false,
                   "center": [
-                    3.0,
-                    3.124
+                    3.000000000000001,
+                    3.124053030303032
                   ],
                   "from": [
-                    3.0,
+                    3.000000000000001,
                     5.125
                   ],
                   "tag": null,
                   "to": [
                     5.0,
-                    3.063
+                    3.0625
                   ],
                   "type": "TangentialArcTo",
                   "units": {
@@ -3796,12 +3810,12 @@ description: Variables in memory after executing poopy-shoe.kcl
                   },
                   "ccw": true,
                   "center": [
-                    7.0,
-                    3.001
+                    6.999999999999999,
+                    3.000946969696969
                   ],
                   "from": [
                     5.0,
-                    3.063
+                    3.0625
                   ],
                   "tag": null,
                   "to": [
@@ -3844,6 +3858,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "tag": {
                     "commentStart": 2912,
                     "end": 2918,
+                    "moduleId": 0,
                     "start": 2912,
                     "type": "TagDeclarator",
                     "value": "seg04"
@@ -3898,6 +3913,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                       "tag": {
                         "commentStart": 1286,
                         "end": 1292,
+                        "moduleId": 0,
                         "start": 1286,
                         "type": "TagDeclarator",
                         "value": "seg02"
@@ -3997,7 +4013,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                         ],
                         "tag": null,
                         "to": [
-                          1.563,
+                          1.5625,
                           0.0
                         ],
                         "type": "ToPoint",
@@ -4011,19 +4027,20 @@ description: Variables in memory after executing poopy-shoe.kcl
                           "sourceRange": []
                         },
                         "from": [
-                          1.563,
+                          1.5625,
                           0.0
                         ],
                         "tag": {
                           "commentStart": 1286,
                           "end": 1292,
+                          "moduleId": 0,
                           "start": 1286,
                           "type": "TagDeclarator",
                           "value": "seg02"
                         },
                         "to": [
                           3.0,
-                          2.49
+                          2.4898230358802604
                         ],
                         "type": "ToPoint",
                         "units": {
@@ -4037,7 +4054,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                         },
                         "from": [
                           3.0,
-                          2.49
+                          2.4898230358802604
                         ],
                         "tag": null,
                         "to": [
@@ -4080,7 +4097,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                         "tag": null,
                         "to": [
                           2.875,
-                          2.49
+                          2.4898230358802604
                         ],
                         "type": "ToPoint",
                         "units": {
@@ -4094,12 +4111,12 @@ description: Variables in memory after executing poopy-shoe.kcl
                         },
                         "from": [
                           2.875,
-                          2.49
+                          2.4898230358802604
                         ],
                         "tag": null,
                         "to": [
-                          1.563,
-                          0.217
+                          1.5625,
+                          0.21650635094610982
                         ],
                         "type": "ToPoint",
                         "units": {
@@ -4112,13 +4129,13 @@ description: Variables in memory after executing poopy-shoe.kcl
                           "sourceRange": []
                         },
                         "from": [
-                          1.563,
-                          0.217
+                          1.5625,
+                          0.21650635094610982
                         ],
                         "tag": null,
                         "to": [
-                          1.438,
-                          0.217
+                          1.4375,
+                          0.21650635094610982
                         ],
                         "type": "ToPoint",
                         "units": {
@@ -4131,32 +4148,13 @@ description: Variables in memory after executing poopy-shoe.kcl
                           "sourceRange": []
                         },
                         "from": [
-                          1.438,
-                          0.217
+                          1.4375,
+                          0.21650635094610982
                         ],
                         "tag": null,
                         "to": [
                           0.125,
-                          2.49
-                        ],
-                        "type": "ToPoint",
-                        "units": {
-                          "type": "Inches"
-                        }
-                      },
-                      {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": []
-                        },
-                        "from": [
-                          0.125,
-                          2.49
-                        ],
-                        "tag": null,
-                        "to": [
-                          0.125,
-                          5.125
+                          2.4898230358802627
                         ],
                         "type": "ToPoint",
                         "units": {
@@ -4170,6 +4168,25 @@ description: Variables in memory after executing poopy-shoe.kcl
                         },
                         "from": [
                           0.125,
+                          2.4898230358802627
+                        ],
+                        "tag": null,
+                        "to": [
+                          0.125,
+                          5.125
+                        ],
+                        "type": "ToPoint",
+                        "units": {
+                          "type": "Inches"
+                        }
+                      },
+                      {
+                        "__geoMeta": {
+                          "id": "[uuid]",
+                          "sourceRange": []
+                        },
+                        "from": [
+                          0.125,
                           5.125
                         ],
                         "tag": null,
@@ -4194,7 +4211,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                         "tag": null,
                         "to": [
                           0.0,
-                          2.49
+                          2.4898230358802604
                         ],
                         "type": "ToPoint",
                         "units": {
@@ -4208,11 +4225,11 @@ description: Variables in memory after executing poopy-shoe.kcl
                         },
                         "from": [
                           0.0,
-                          2.49
+                          2.4898230358802604
                         ],
                         "tag": null,
                         "to": [
-                          1.437,
+                          1.4374999999999987,
                           0.0
                         ],
                         "type": "ToPoint",
@@ -4226,7 +4243,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                           "sourceRange": []
                         },
                         "from": [
-                          1.437,
+                          1.4374999999999987,
                           0.0
                         ],
                         "tag": null,

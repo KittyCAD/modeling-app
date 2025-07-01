@@ -11,10 +11,10 @@ use uuid::Uuid;
 use wasm_bindgen::prelude::*;
 
 use crate::{
+    SourceRange,
     engine::{AsyncTasks, EngineStats},
     errors::{KclError, KclErrorDetails},
-    execution::{ArtifactCommand, DefaultPlanes, IdGenerator},
-    SourceRange,
+    execution::{DefaultPlanes, IdGenerator},
 };
 
 #[wasm_bindgen(module = "/../../src/lang/std/engineConnection.ts")]
@@ -56,7 +56,6 @@ pub struct EngineConnection {
     response_context: Arc<ResponseContext>,
     batch: Arc<RwLock<Vec<(WebSocketRequest, SourceRange)>>>,
     batch_end: Arc<RwLock<IndexMap<uuid::Uuid, (WebSocketRequest, SourceRange)>>>,
-    artifact_commands: Arc<RwLock<Vec<ArtifactCommand>>>,
     ids_of_async_commands: Arc<RwLock<IndexMap<Uuid, SourceRange>>>,
     /// The default planes for the scene.
     default_planes: Arc<RwLock<Option<DefaultPlanes>>>,
@@ -129,7 +128,6 @@ impl EngineConnection {
             batch: Arc::new(RwLock::new(Vec::new())),
             batch_end: Arc::new(RwLock::new(IndexMap::new())),
             response_context,
-            artifact_commands: Arc::new(RwLock::new(Vec::new())),
             ids_of_async_commands: Arc::new(RwLock::new(IndexMap::new())),
             default_planes: Default::default(),
             stats: Default::default(),
@@ -275,10 +273,6 @@ impl crate::engine::EngineManager for EngineConnection {
 
     fn stats(&self) -> &EngineStats {
         &self.stats
-    }
-
-    fn artifact_commands(&self) -> Arc<RwLock<Vec<ArtifactCommand>>> {
-        self.artifact_commands.clone()
     }
 
     fn ids_of_async_commands(&self) -> Arc<RwLock<IndexMap<Uuid, SourceRange>>> {

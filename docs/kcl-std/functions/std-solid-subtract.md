@@ -27,7 +27,7 @@ and complex multi-body part modeling.
 |----------|------|-------------|----------|
 | `solids` | [`[Solid; 1+]`](/docs/kcl-std/types/std-types-Solid) | The solids to use as the base to subtract from. | Yes |
 | `tools` | [`[Solid]`](/docs/kcl-std/types/std-types-Solid) | The solids to subtract. | Yes |
-| `tolerance` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The tolerance to use for the subtraction operation. | No |
+| `tolerance` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters. | No |
 
 ### Returns
 
