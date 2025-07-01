@@ -235,7 +235,7 @@ To display logging (to the terminal or console) set `ZOO_LOG=1`. This will log s
 
 To enable memory metrics, build with `--features dhat-heap`.
 
-## Scripts
+## Running scripts
 
 There are multiple scripts under the folder path `./scripts` which can be used in various settings.
 
