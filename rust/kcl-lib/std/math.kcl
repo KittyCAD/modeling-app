@@ -475,3 +475,21 @@ export fn legAngY(
   /// The length of one of the triangle's legs (i.e. non-hypotenuse side).
   leg: number(Length),
 ): number(deg) {}
+
+/// Compute the cross product of two vectors.
+///
+/// ```kcl,no_run
+/// p = XY
+/// cross = crossProduct([planes::xAxis(p), planes::yAxis(p)])
+/// ```
+export fn crossProduct(
+  /// Returns the cross product of these two vectors.
+  @vectors: [Point3d; 2],
+): Point3d {
+  a = vectors[0]
+  b = vectors[1]
+  x = a[1] * b[2] - (a[2] * b[1])
+  y = a[2] * b[0] - (a[0] * b[2])
+  z = a[0] * b[1] - (a[1] * b[0])
+  return [x,y,z]
+}

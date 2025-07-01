@@ -92,6 +92,7 @@ pub const TEST_NAMES: &[&str] = &[
     "std-math-sin-0",
     "std-math-sqrt-0",
     "std-math-tan-0",
+    "std-math-crossProduct-0",
     "std-offsetPlane-0",
     "std-offsetPlane-1",
     "std-offsetPlane-2",
