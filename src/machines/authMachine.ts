@@ -1,5 +1,5 @@
 import type { Models } from '@kittycad/lib'
-import { VITE_KC_API_BASE_URL, VITE_KC_DEV_TOKEN } from '@src/env'
+import { VITE_KC_DEV_TOKEN } from '@src/env'
 import { assign, fromPromise, setup } from 'xstate'
 
 import { COOKIE_NAME, OAUTH2_DEVICE_CLIENT_ID } from '@src/lib/constants'
@@ -148,7 +148,7 @@ async function getUser(input: { token?: string }) {
   if (token) headers['Authorization'] = `Bearer ${token}`
 
   const userPromise = isDesktop()
-    ? getUserDesktop(token, VITE_KC_API_BASE_URL)
+    ? getUserDesktop(token)
     : fetch(url, {
         method: 'GET',
         credentials: 'include',
