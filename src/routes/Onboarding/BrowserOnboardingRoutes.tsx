@@ -25,12 +25,12 @@ import { systemIOActor, commandBarActor } from '@src/lib/singletons'
 import type { IndexLoaderData } from '@src/lib/types'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { useEffect, useState } from 'react'
-import { VITE_KC_SITE_BASE_URL } from '@src/env'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import {
   browserAxialFan,
   browserAxialFanAfterTextToCad,
 } from '@src/lib/exampleKcl'
+import {withSiteBaseURL} from "@src/lib/withBaseURL"
 
 type BrowserOnboaringRoute = RouteObject & {
   path: keyof typeof browserOnboardingPaths
@@ -461,7 +461,7 @@ function PromptToEditResult() {
 function OnboardingConclusion() {
   // Close the panes on mount, close on unmount
   useOnboardingPanes()
-  const downloadLink = `${VITE_KC_SITE_BASE_URL}/${APP_DOWNLOAD_PATH}`
+  const downloadLink = withSiteBaseURL(`/${APP_DOWNLOAD_PATH}`)
 
   return (
     <div className="cursor-not-allowed fixed inset-0 z-50 p-16 grid justify-center items-center">

@@ -6,7 +6,6 @@ import { Link } from 'react-router-dom'
 import { ActionButton } from '@src/components/ActionButton'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { Logo } from '@src/components/Logo'
-import { VITE_KC_SITE_BASE_URL } from '@src/env'
 import { APP_NAME } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
@@ -15,7 +14,7 @@ import { reportRejection } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
 import { authActor, useSettings } from '@src/lib/singletons'
 import { APP_VERSION, generateSignInUrl } from '@src/routes/utils'
-import { withAPIBaseURL } from '@src/lib/withBaseURL'
+import { withAPIBaseURL, withSiteBaseURL } from '@src/lib/withBaseURL'
 
 const subtleBorder =
   'border border-solid border-chalkboard-30 dark:border-chalkboard-80'
@@ -37,7 +36,7 @@ const SignIn = () => {
     app: { theme },
   } = useSettings()
   const signInUrl = generateSignInUrl()
-  const kclSampleUrl = `${VITE_KC_SITE_BASE_URL}/docs/kcl-samples/car-wheel-assembly`
+  const kclSampleUrl = withSiteBaseURL('/docs/kcl-samples/car-wheel-assembly')
 
   const getThemeText = useCallback(
     (shouldContrast = true) =>

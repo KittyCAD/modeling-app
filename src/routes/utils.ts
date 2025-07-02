@@ -1,10 +1,11 @@
-import { NODE_ENV, VITE_KC_SITE_BASE_URL } from '@src/env'
+import { NODE_ENV } from '@src/env'
 import { isDesktop } from '@src/lib/isDesktop'
 import {
   IS_PLAYWRIGHT_KEY,
   IMMEDIATE_SIGN_IN_IF_NECESSARY_QUERY_PARAM,
 } from '@src/lib/constants'
 import { PATHS } from '@src/lib/paths'
+import {withSiteBaseURL} from '@src/lib/withBaseURL'
 
 const isTestEnv = window?.localStorage.getItem(IS_PLAYWRIGHT_KEY) === 'true'
 
@@ -54,7 +55,5 @@ export function generateSignInUrl() {
       '?'
     )
 
-  return `${VITE_KC_SITE_BASE_URL}${
-    PATHS.SIGN_IN
-  }?callbackUrl=${encodeURIComponent(finalURL)}`
+  return withSiteBaseURL(`${PATHS.SIGN_IN}?callbackUrl=${encodeURIComponent(finalURL)}`)
 }

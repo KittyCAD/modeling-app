@@ -27,8 +27,8 @@ import {
   modifiedFanHousingBrowser,
   modifiedParametersDesktop,
 } from '@src/lib/exampleKcl'
-import { VITE_KC_SITE_BASE_URL } from '@src/env'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
+import {withSiteBaseURL} from '@src/lib/withBaseURL'
 
 type DesktopOnboardingRoute = RouteObject & {
   path: keyof typeof desktopOnboardingPaths
@@ -643,9 +643,9 @@ function OnboardingConclusion() {
           and advanced techniques,{' '}
           <a
             onClick={openExternalBrowserIfDesktop(
-              `${VITE_KC_SITE_BASE_URL}/docs`
+              withSiteBaseURL('/docs')
             )}
-            href={`${VITE_KC_SITE_BASE_URL}/docs`}
+            href={`${withSiteBaseURL('/docs')}`}
           >
             check out our docs
           </a>
