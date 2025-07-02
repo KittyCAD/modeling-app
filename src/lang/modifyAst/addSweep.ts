@@ -8,7 +8,11 @@ import {
   createVariableDeclaration,
   findUniqueName,
 } from '@src/lang/create'
-import { insertVariableAndOffsetPathToNode } from '@src/lang/modifyAst'
+import {
+  createPathToNodeForLastVariable,
+  createVariableExpressionsArray,
+  insertVariableAndOffsetPathToNode,
+} from '@src/lang/modifyAst'
 import {
   getEdgeTagCall,
   mutateAstWithTagForSketchSegment,
@@ -16,8 +20,6 @@ import {
 import {
   getNodeFromPath,
   getVariableExprsFromSelection,
-  createVariableExpressionsArray,
-  createPathToNodeForLastVariable,
   valueOrVariable,
 } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
