@@ -1214,6 +1214,9 @@ impl From<&BinaryPart> for Expr {
             BinaryPart::CallExpressionKw(call_expression) => Expr::CallExpressionKw(call_expression.clone()),
             BinaryPart::UnaryExpression(unary_expression) => Expr::UnaryExpression(unary_expression.clone()),
             BinaryPart::MemberExpression(member_expression) => Expr::MemberExpression(member_expression.clone()),
+            BinaryPart::ArrayExpression(e) => Expr::ArrayExpression(e.clone()),
+            BinaryPart::ArrayRangeExpression(e) => Expr::ArrayRangeExpression(e.clone()),
+            BinaryPart::ObjectExpression(e) => Expr::ObjectExpression(e.clone()),
             BinaryPart::IfExpression(e) => Expr::IfExpression(e.clone()),
             BinaryPart::AscribedExpression(e) => Expr::AscribedExpression(e.clone()),
         }
@@ -1281,6 +1284,9 @@ pub enum BinaryPart {
     CallExpressionKw(BoxNode<CallExpressionKw>),
     UnaryExpression(BoxNode<UnaryExpression>),
     MemberExpression(BoxNode<MemberExpression>),
+    ArrayExpression(BoxNode<ArrayExpression>),
+    ArrayRangeExpression(BoxNode<ArrayRangeExpression>),
+    ObjectExpression(BoxNode<ObjectExpression>),
     IfExpression(BoxNode<IfExpression>),
     AscribedExpression(BoxNode<AscribedExpression>),
 }
@@ -1307,6 +1313,9 @@ impl BinaryPart {
             BinaryPart::CallExpressionKw(call_expression) => call_expression.get_constraint_level(),
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.get_constraint_level(),
             BinaryPart::MemberExpression(member_expression) => member_expression.get_constraint_level(),
+            BinaryPart::ArrayExpression(e) => e.get_constraint_level(),
+            BinaryPart::ArrayRangeExpression(e) => e.get_constraint_level(),
+            BinaryPart::ObjectExpression(e) => e.get_constraint_level(),
             BinaryPart::IfExpression(e) => e.get_constraint_level(),
             BinaryPart::AscribedExpression(e) => e.expr.get_constraint_level(),
         }
@@ -1320,6 +1329,9 @@ impl BinaryPart {
             BinaryPart::CallExpressionKw(call_expression) => call_expression.replace_value(source_range, new_value),
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.replace_value(source_range, new_value),
             BinaryPart::MemberExpression(_) => {}
+            BinaryPart::ArrayExpression(e) => e.replace_value(source_range, new_value),
+            BinaryPart::ArrayRangeExpression(e) => e.replace_value(source_range, new_value),
+            BinaryPart::ObjectExpression(e) => e.replace_value(source_range, new_value),
             BinaryPart::IfExpression(e) => e.replace_value(source_range, new_value),
             BinaryPart::AscribedExpression(e) => e.expr.replace_value(source_range, new_value),
         }
@@ -1333,6 +1345,9 @@ impl BinaryPart {
             BinaryPart::CallExpressionKw(call_expression) => call_expression.start,
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.start,
             BinaryPart::MemberExpression(member_expression) => member_expression.start,
+            BinaryPart::ArrayExpression(e) => e.start,
+            BinaryPart::ArrayRangeExpression(e) => e.start,
+            BinaryPart::ObjectExpression(e) => e.start,
             BinaryPart::IfExpression(e) => e.start,
             BinaryPart::AscribedExpression(e) => e.start,
         }
@@ -1346,6 +1361,9 @@ impl BinaryPart {
             BinaryPart::CallExpressionKw(call_expression) => call_expression.end,
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.end,
             BinaryPart::MemberExpression(member_expression) => member_expression.end,
+            BinaryPart::ArrayExpression(e) => e.end,
+            BinaryPart::ArrayRangeExpression(e) => e.end,
+            BinaryPart::ObjectExpression(e) => e.end,
             BinaryPart::IfExpression(e) => e.end,
             BinaryPart::AscribedExpression(e) => e.end,
         }
@@ -1360,6 +1378,9 @@ impl BinaryPart {
             BinaryPart::CallExpressionKw(call_expression) => call_expression.rename_identifiers(old_name, new_name),
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.rename_identifiers(old_name, new_name),
             BinaryPart::MemberExpression(member_expression) => member_expression.rename_identifiers(old_name, new_name),
+            BinaryPart::ArrayExpression(e) => e.rename_identifiers(old_name, new_name),
+            BinaryPart::ArrayRangeExpression(e) => e.rename_identifiers(old_name, new_name),
+            BinaryPart::ObjectExpression(e) => e.rename_identifiers(old_name, new_name),
             BinaryPart::IfExpression(if_expression) => if_expression.rename_identifiers(old_name, new_name),
             BinaryPart::AscribedExpression(e) => e.expr.rename_identifiers(old_name, new_name),
         }
