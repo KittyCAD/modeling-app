@@ -1079,16 +1079,18 @@ export function getVariableExprsFromSelection(
           // Pointing to same variable case
           paths.push(nodeToEdit)
           exprs.push(createPipeSubstitution())
+          continue
         }
       }
       // Pointing to different variable case
       paths.push(sketchVariable.deepPath)
       exprs.push(createLocalName(name))
-    } else {
-      // No variable case
-      paths.push(sketchVariable.deepPath)
-      exprs.push(createPipeSubstitution())
+      continue
     }
+
+    // No variable case
+    paths.push(sketchVariable.deepPath)
+    exprs.push(createPipeSubstitution())
   }
 
   if (exprs.length === 0) {
