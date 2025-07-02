@@ -67,7 +67,7 @@ import {
   defaultGlobalStatusBarItems,
 } from '@src/components/StatusBar/defaultStatusBarItems'
 import { useSelector } from '@xstate/react'
-import {withSiteBaseURL} from '@src/lib/withBaseURL'
+import { withSiteBaseURL } from '@src/lib/withBaseURL'
 
 type ReadWriteProjectState = {
   value: boolean
