@@ -64,7 +64,7 @@ import { useModelingContext } from '@src/hooks/useModelingContext'
 import { xStateValueToString } from '@src/lib/xStateValueToString'
 import { getSelectionTypeDisplayText } from '@src/lib/selections'
 import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
-import {withSiteBaseURL} from '@src/lib/withBaseURL'
+import { withSiteBaseURL } from '@src/lib/withBaseURL'
 
 // CYCLIC REF
 sceneInfra.camControls.engineStreamActor = engineStreamActor

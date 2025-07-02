@@ -14,7 +14,7 @@ import { HelpMenu } from '@src/components/HelpMenu'
 import { isDesktop } from '@src/lib/isDesktop'
 import { APP_DOWNLOAD_PATH } from '@src/lib/constants'
 import { desktopAppPitchMessage } from '@src/components/DownloadAppToast'
-import { withSiteBaseURL} from '@src/lib/withBaseURL'
+import { withSiteBaseURL } from '@src/lib/withBaseURL'
 
 export const defaultGlobalStatusBarItems = ({
   location,

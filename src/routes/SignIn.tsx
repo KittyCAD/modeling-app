@@ -260,7 +260,7 @@ const SignIn = () => {
               <div className="flex gap-4 flex-wrap items-center">
                 <ActionButton
                   Element="externalLink"
-                  to="https://zoo.dev/docs/kcl-samples/pillow-block-bearing"
+                  to={withSiteBaseURL('/docs/kcl-samples/pillow-block-bearing')}
                   iconStart={{
                     icon: 'settings',
                     bgClassName: '!bg-transparent',
@@ -273,7 +273,7 @@ const SignIn = () => {
                 </ActionButton>
                 <ActionButton
                   Element="externalLink"
-                  to="https://zoo.dev/docs/zoo-design-studio/text-to-cad"
+                  to={withSiteBaseURL('/docs/zoo-design-studio/text-to-cad')}
                   iconStart={{
                     icon: 'sparkles',
                     bgClassName: '!bg-transparent',
@@ -296,7 +296,7 @@ const SignIn = () => {
               <div className="flex gap-4 flex-wrap items-center">
                 <ActionButton
                   Element="externalLink"
-                  to="https://zoo.dev/design-api"
+                  to={withSiteBaseURL('/design-api')}
                   iconStart={{ icon: 'sketch', bgClassName: '!bg-transparent' }}
                   className="!bg-primary !text-chalkboard-10 !border-transarent"
                 >
@@ -304,7 +304,7 @@ const SignIn = () => {
                 </ActionButton>
                 <ActionButton
                   Element="externalLink"
-                  to="https://zoo.dev/machine-learning-api"
+                  to={withSiteBaseURL('/machine-learning-api')}
                   iconStart={{
                     icon: 'elephant',
                     bgClassName: '!bg-transparent',
