@@ -452,12 +452,10 @@ const OperationItem = (props: {
     }
   }
 
-  function startSketchOnPlane() {
+  function startSketchOnOffsetPlane() {
     if (isOffsetPlane(props.item)) {
       const artifact = findOperationArtifact(props.item)
       if (artifact?.id) {
-        // TODO make sure there is no selection, otherwise existing sketch will be edited instead of a new one created
-
         sceneInfra.modelingSend({
           type: 'Enter sketch',
           data: { forceNewSketch: true },
@@ -515,7 +513,7 @@ const OperationItem = (props: {
         : []),
       ...(isOffsetPlane(props.item)
         ? [
-            <ContextMenuItem onClick={startSketchOnPlane}>
+            <ContextMenuItem onClick={startSketchOnOffsetPlane}>
               Start Sketch
             </ContextMenuItem>,
           ]

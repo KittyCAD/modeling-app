@@ -10,13 +10,18 @@ import {
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import type { AxisNames } from '@src/lib/constants'
 import { VIEW_NAMES_SEMANTIC } from '@src/lib/constants'
-import { sceneInfra } from '@src/lib/singletons'
+import { kclManager, sceneInfra } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import { useSettings } from '@src/lib/singletons'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
+import type { Selections } from '@src/lib/selections'
 
 export function useViewControlMenuItems() {
   const { state: modelingState, send: modelingSend } = useModelingContext()
+  const selectedPlaneId = getCurrentPlaneId(
+    modelingState.context.selectionRanges
+  )
+
   const settings = useSettings()
   const shouldLockView =
     modelingState.matches('Sketch') &&
@@ -56,9 +61,30 @@ export function useViewControlMenuItems() {
         Center view on selection
       </ContextMenuItem>,
       <ContextMenuDivider />,
+      <ContextMenuItem
+        onClick={() => {
+          if (selectedPlaneId) {
+            sceneInfra.modelingSend({
+              type: 'Enter sketch',
+              data: { forceNewSketch: true },
+            })
+
+            if (sceneInfra.selectDefaultSketchPlane(selectedPlaneId)) {
+              return
+            }
+
+            const artifact = kclManager.artifactGraph.get(selectedPlaneId)
+            void sceneInfra.selectOffsetSketchPlane(artifact)
+          }
+        }}
+        disabled={!selectedPlaneId}
+      >
+        Start sketch on selection
+      </ContextMenuItem>,
+      <ContextMenuDivider />,
       <ContextMenuItemRefresh />,
     ],
-    [VIEW_NAMES_SEMANTIC, shouldLockView]
+    [VIEW_NAMES_SEMANTIC, shouldLockView, selectedPlaneId]
   )
   return menuItems
 }
@@ -76,4 +102,22 @@ export function ViewControlContextMenu({
       {...props}
     />
   )
+}
+
+function getCurrentPlaneId(selectionRanges: Selections): string | null {
+  const defaultPlane = selectionRanges.otherSelections.find(
+    (selection) => typeof selection === 'object' && 'name' in selection
+  )
+  if (defaultPlane) {
+    return defaultPlane.id
+  }
+
+  const planeSelection = selectionRanges.graphSelections.find(
+    (selection) => selection.artifact?.type === 'plane'
+  )
+  if (planeSelection) {
+    return planeSelection.artifact?.id || null
+  }
+
+  return null
 }
