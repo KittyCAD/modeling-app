@@ -197,9 +197,9 @@ async function getAndSyncStoredToken(input: {
       ? input.token
       : getCookie(COOKIE_NAME) || localStorage?.getItem(TOKEN_PERSIST_KEY) || ''
   if (token) {
-    // has just logged in, update storage
-    localStorage.setItem(TOKEN_PERSIST_KEY, token)
     if (isDesktop()) {
+      // has just logged in, update storage
+      localStorage.setItem(TOKEN_PERSIST_KEY, token)
       await writeTokenFile(token)
     }
     return token
