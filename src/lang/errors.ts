@@ -371,54 +371,53 @@ export function kclErrorsToDiagnostics(
   sourceCode: string
 ): CodeMirrorDiagnostic[] {
   let nonFatal: CodeMirrorDiagnostic[] = []
-  const errs = errors
-    .flatMap((err) => {
-      const diagnostics: CodeMirrorDiagnostic[] = []
-      let message = err.msg
-      if (err.kclBacktrace.length > 0) {
-        // Show the backtrace in the error message.
-        const backtraceLines: Array<string> = []
-        for (let i = 0; i < err.kclBacktrace.length; i++) {
-          const item = err.kclBacktrace[i]
-          if (
-            i > 0 &&
-            isTopLevelModule(item.sourceRange) &&
-            !sourceRangeContains(item.sourceRange, err.sourceRange)
-          ) {
-            diagnostics.push({
-              from: toUtf16(item.sourceRange[0], sourceCode),
-              to: toUtf16(item.sourceRange[1], sourceCode),
-              message: 'Part of the error backtrace',
-              severity: 'hint',
-            })
-          }
-          if (i === err.kclBacktrace.length - 1 && !item.fnName) {
-            // The top-level doesn't have a name.
-            break
-          }
-          const name = item.fnName ? `${item.fnName}()` : '(anonymous)'
-          backtraceLines.push(name)
+  const errs = errors.flatMap((err) => {
+    const diagnostics: CodeMirrorDiagnostic[] = []
+    let message = err.msg
+    if (err.kclBacktrace.length > 0) {
+      // Show the backtrace in the error message.
+      const backtraceLines: Array<string> = []
+      for (let i = 0; i < err.kclBacktrace.length; i++) {
+        const item = err.kclBacktrace[i]
+        if (
+          i > 0 &&
+          isTopLevelModule(item.sourceRange) &&
+          !sourceRangeContains(item.sourceRange, err.sourceRange)
+        ) {
+          diagnostics.push({
+            from: toUtf16(item.sourceRange[0], sourceCode),
+            to: toUtf16(item.sourceRange[1], sourceCode),
+            message: 'Part of the error backtrace',
+            severity: 'hint',
+          })
         }
-        // If the backtrace is only one line, it's not helpful to show.
-        if (backtraceLines.length > 1) {
-          message += `\n\nBacktrace:\n${backtraceLines.join('\n')}`
+        if (i === err.kclBacktrace.length - 1 && !item.fnName) {
+          // The top-level doesn't have a name.
+          break
         }
+        const name = item.fnName ? `${item.fnName}()` : '(anonymous)'
+        backtraceLines.push(name)
       }
-      if (err.nonFatal.length > 0) {
-        nonFatal = nonFatal.concat(
-          compilationErrorsToDiagnostics(err.nonFatal, sourceCode)
-        )
+      // If the backtrace is only one line, it's not helpful to show.
+      if (backtraceLines.length > 1) {
+        message += `\n\nBacktrace:\n${backtraceLines.join('\n')}`
       }
-      if (isTopLevelModule(err.sourceRange)) {
-        diagnostics.push({
-          from: toUtf16(err.sourceRange[0], sourceCode),
-          to: toUtf16(err.sourceRange[1], sourceCode),
-          message,
-          severity: 'error',
-        })
-      }
-      return diagnostics
-    })
+    }
+    if (err.nonFatal.length > 0) {
+      nonFatal = nonFatal.concat(
+        compilationErrorsToDiagnostics(err.nonFatal, sourceCode)
+      )
+    }
+    if (isTopLevelModule(err.sourceRange)) {
+      diagnostics.push({
+        from: toUtf16(err.sourceRange[0], sourceCode),
+        to: toUtf16(err.sourceRange[1], sourceCode),
+        message,
+        severity: 'error',
+      })
+    }
+    return diagnostics
+  })
   return errs.concat(nonFatal)
 }
 
