@@ -1,4 +1,8 @@
-import { withAPIBaseURL, withSiteBaseURL, withWebSocketURL } from '@src/lib/withBaseURL'
+import {
+  withAPIBaseURL,
+  withSiteBaseURL,
+  withWebSocketURL,
+} from '@src/lib/withBaseURL'
 
 describe('withBaseURL', () => {
   /**
