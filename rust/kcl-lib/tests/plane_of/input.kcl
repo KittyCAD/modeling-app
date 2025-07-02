@@ -1,0 +1,13 @@
+@settings(defaultLengthUnit = yd)
+
+tri = startSketchOn(XY)
+  |> polygon(radius = 3, numSides = 3, center = [0, 0])
+  |> extrude(length = 2)
+
+// Get the plane which `tri` ends on.
+p0 = planeOf(tri, face = END)
+
+// Offset that plane by 2, then draw a square on it.
+startSketchOn(offsetPlane(p0, offset = 2))
+  |> polygon(radius = 2, numSides = 4, center = [0, 0])
+

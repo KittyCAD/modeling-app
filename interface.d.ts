@@ -79,7 +79,6 @@ export interface IElectronAPI {
       VITE_KC_API_BASE_URL: string
       VITE_KC_SITE_BASE_URL: string
       VITE_KC_SITE_APP_URL: string
-      VITE_KC_SKIP_AUTH: string
       VITE_KC_CONNECTION_TIMEOUT_MS: string
       VITE_KC_DEV_TOKEN: string
       NODE_ENV: string
