@@ -461,7 +461,6 @@ impl KclValue {
     /// Put the point into a KCL point.
     pub fn array_from_point3d(p: [f64; 3], ty: NumericType, meta: Vec<Metadata>) -> Self {
         let [x, y, z] = p;
-        eprintln!("Making HomArray");
         Self::HomArray {
             value: vec![
                 Self::Number {
