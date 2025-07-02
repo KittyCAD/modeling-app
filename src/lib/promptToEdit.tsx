@@ -341,7 +341,7 @@ export async function doPromptEdit({
   ;(window as any).process = {
     env: {
       ZOO_API_TOKEN: token,
-      ZOO_HOST: withAPIBaseURL('')
+      ZOO_HOST: withAPIBaseURL(''),
     },
   }
   try {
