@@ -1,4 +1,4 @@
-import { VITE_KC_API_BASE_URL, VITE_KC_SITE_APP_URL } from '@src/env'
+import { VITE_KITTYCAD_API_URL, VITE_KC_SITE_APP_URL } from '@src/env'
 import toast from 'react-hot-toast'
 
 import { stringToBase64 } from '@src/lib/base64'
@@ -96,7 +96,7 @@ export async function createShortlink(
   if (password) {
     body.password = password
   }
-  const response = await fetch(`${VITE_KC_API_BASE_URL}/user/shortlinks`, {
+  const response = await fetch(`${VITE_KITTYCAD_API_URL}/user/shortlinks`, {
     method: 'POST',
     headers: {
       'Content-type': 'application/json',

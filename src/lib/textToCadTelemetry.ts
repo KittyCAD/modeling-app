@@ -1,5 +1,5 @@
 import type { Models } from '@kittycad/lib/dist/types/src'
-import { VITE_KC_API_BASE_URL } from '@src/env'
+import { VITE_KITTYCAD_API_URL } from '@src/env'
 import crossPlatformFetch from '@src/lib/crossPlatformFetch'
 
 export async function sendTelemetry(
@@ -8,7 +8,7 @@ export async function sendTelemetry(
   token?: string
 ): Promise<void> {
   const url =
-    VITE_KC_API_BASE_URL + '/user/text-to-cad/' + id + '?feedback=' + feedback
+    VITE_KITTYCAD_API_URL + '/user/text-to-cad/' + id + '?feedback=' + feedback
   await crossPlatformFetch(
     url,
     {

@@ -1,5 +1,5 @@
 import type { Models } from '@kittycad/lib'
-import { VITE_KC_API_BASE_URL } from '@src/env'
+import { VITE_KITTYCAD_API_URL } from '@src/env'
 import toast from 'react-hot-toast'
 import type { NavigateFunction } from 'react-router-dom'
 import {
@@ -32,7 +32,7 @@ export async function submitTextToCadPrompt(
     kcl_version: kclManager.kclVersion,
   }
   // Glb has a smaller footprint than gltf, should we want to render it.
-  const url = VITE_KC_API_BASE_URL + '/ai/text-to-cad/glb?kcl=true'
+  const url = VITE_KITTYCAD_API_URL + '/ai/text-to-cad/glb?kcl=true'
   const data: Models['TextToCad_type'] | Error = await crossPlatformFetch(
     url,
     {
@@ -58,7 +58,7 @@ export async function getTextToCadResult(
   id: string,
   token?: string
 ): Promise<Models['TextToCad_type'] | Error> {
-  const url = VITE_KC_API_BASE_URL + '/user/text-to-cad/' + id
+  const url = VITE_KITTYCAD_API_URL + '/user/text-to-cad/' + id
   const data: Models['TextToCad_type'] | Error = await crossPlatformFetch(
     url,
     {

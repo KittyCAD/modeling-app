@@ -1,4 +1,4 @@
-import { VITE_KC_API_BASE_URL } from '@src/env'
+import { VITE_KITTYCAD_API_URL } from '@src/env'
 import { UAParser } from 'ua-parser-js'
 
 import type { OsInfo } from '@rust/kcl-lib/bindings/OsInfo'
@@ -35,7 +35,7 @@ export class CoreDumpManager {
   codeManager: CodeManager
   rustContext: RustContext
   token: string | undefined
-  baseUrl: string = VITE_KC_API_BASE_URL
+  baseUrl: string = VITE_KITTYCAD_API_URL
 
   constructor(
     engineCommandManager: EngineCommandManager,

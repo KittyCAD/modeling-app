@@ -1,5 +1,5 @@
 import type { Models } from '@kittycad/lib'
-import { VITE_KC_API_BASE_URL, VITE_KC_DEV_TOKEN } from '@src/env'
+import { VITE_KITTYCAD_API_URL, VITE_KITTYCAD_API_TOKEN } from '@src/env'
 import { assign, fromPromise, setup } from 'xstate'
 
 import { COOKIE_NAME, OAUTH2_DEVICE_CLIENT_ID } from '@src/lib/constants'
@@ -32,7 +32,7 @@ export type Events =
 
 export const TOKEN_PERSIST_KEY = 'TOKEN_PERSIST_KEY'
 export const persistedToken =
-  VITE_KC_DEV_TOKEN ||
+  VITE_KITTYCAD_API_TOKEN ||
   getCookie(COOKIE_NAME) ||
   localStorage?.getItem(TOKEN_PERSIST_KEY) ||
   ''
@@ -141,7 +141,7 @@ async function getUser(input: { token?: string }) {
   if (token) headers['Authorization'] = `Bearer ${token}`
 
   const userPromise = isDesktop()
-    ? getUserDesktop(token, VITE_KC_API_BASE_URL)
+    ? getUserDesktop(token, VITE_KITTYCAD_API_URL)
     : fetch(url, {
         method: 'GET',
         credentials: 'include',
@@ -190,7 +190,7 @@ async function getAndSyncStoredToken(input: {
   token?: string
 }): Promise<string> {
   // dev mode
-  if (VITE_KC_DEV_TOKEN) return VITE_KC_DEV_TOKEN
+  if (VITE_KITTYCAD_API_TOKEN) return VITE_KITTYCAD_API_TOKEN
 
   const token =
     input.token && input.token !== ''

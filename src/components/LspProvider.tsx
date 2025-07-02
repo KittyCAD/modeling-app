@@ -7,7 +7,7 @@ import {
   LanguageServerClient,
   LspWorkerEventType,
 } from '@kittycad/codemirror-lsp-client'
-import { TEST, VITE_KC_API_BASE_URL } from '@src/env'
+import { TEST, VITE_KITTYCAD_API_URL } from '@src/env'
 import React, { createContext, useContext, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import type * as LSP from 'vscode-languageserver-protocol'
@@ -85,7 +85,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
     const initEvent: KclWorkerOptions = {
       wasmUrl: wasmUrl(),
       token: token,
-      apiBaseUrl: VITE_KC_API_BASE_URL,
+      apiBaseUrl: VITE_KITTYCAD_API_URL,
     }
     lspWorker.postMessage({
       worker: LspWorker.Kcl,
@@ -178,7 +178,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
     const initEvent: CopilotWorkerOptions = {
       wasmUrl: wasmUrl(),
       token: token,
-      apiBaseUrl: VITE_KC_API_BASE_URL,
+      apiBaseUrl: VITE_KITTYCAD_API_URL,
     }
     lspWorker.postMessage({
       worker: LspWorker.Copilot,
