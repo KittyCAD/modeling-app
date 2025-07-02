@@ -48,11 +48,7 @@ import type {
   SegmentOverlayPayload,
 } from '@src/machines/modelingMachine'
 import { PROFILE_START } from '@src/clientSideScene/sceneConstants'
-import {
-  rustContext,
-  sceneEntitiesManager,
-  sceneInfra,
-} from '@src/lib/singletons'
+import { rustContext, sceneEntitiesManager } from '@src/lib/singletons'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import type { Artifact } from '@src/lang/wasm'
 
@@ -813,9 +809,9 @@ export class SceneInfra {
           ]
 
           // Get camera vector to determine which side of the plane we're viewing from
-          const camVector = sceneInfra.camControls.camera.position
+          const camVector = this.camControls.camera.position
             .clone()
-            .sub(sceneInfra.camControls.target)
+            .sub(this.camControls.target)
 
           // Determine the canonical (absolute) plane orientation
           const absZAxis: [number, number, number] = [
@@ -835,7 +831,7 @@ export class SceneInfra {
             // offset of the XZ is being weird, not sure if this is a camera bug
             negated = !negated
           }
-          sceneInfra.modelingSend({
+          this.modelingSend({
             type: 'Select sketch plane',
             data: {
               type: 'offsetPlane',
