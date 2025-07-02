@@ -72,6 +72,7 @@ import {
   ARG_P3,
   ARG_DIAMETER,
 } from '@src/lang/constants'
+import type { NumericType } from '@rust/kcl-lib/bindings/NumericType'
 
 /**
  * Retrieves a node from a given path within a Program node structure, optionally stopping at a specified node type.
@@ -323,6 +324,7 @@ export function traverse(
 export interface PrevVariable<T> {
   key: string
   value: T
+  ty: NumericType | undefined
 }
 
 export function findAllPreviousVariablesPath(
@@ -370,6 +372,7 @@ export function findAllPreviousVariablesPath(
     variables.push({
       key: varName,
       value: varValue.value,
+      ty: varValue.type === 'Number' ? varValue.ty : undefined,
     })
   })
 

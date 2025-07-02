@@ -153,11 +153,36 @@ variableBelowShouldNotBeIncluded = 3
       execState.variables,
       topLevelRange(rangeStart, rangeStart)
     )
+    const defaultTy = {
+      type: 'Default',
+      angle: {
+        type: 'Degrees',
+      },
+      len: {
+        type: 'Mm',
+      },
+    }
     expect(variables).toEqual([
-      { key: 'baseThick', value: 1 },
-      { key: 'armAngle', value: 60 },
-      { key: 'baseThickHalf', value: 0.5 },
-      { key: 'halfArmAngle', value: 30 },
+      {
+        key: 'baseThick',
+        value: 1,
+        ty: defaultTy,
+      },
+      {
+        key: 'armAngle',
+        value: 60,
+        ty: defaultTy,
+      },
+      {
+        key: 'baseThickHalf',
+        value: 0.5,
+        ty: defaultTy,
+      },
+      {
+        key: 'halfArmAngle',
+        value: 30,
+        ty: defaultTy,
+      },
       // no arrExpShouldNotBeIncluded, variableBelowShouldNotBeIncluded etc
     ])
     // there are 4 number variables and 2 non-number variables before the sketch var

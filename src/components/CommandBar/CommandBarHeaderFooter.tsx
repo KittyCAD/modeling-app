@@ -12,7 +12,7 @@ import type {
 } from '@src/lib/commandTypes'
 import type { Selections } from '@src/lib/selections'
 import { getSelectionTypeDisplayText } from '@src/lib/selections'
-import { roundOff } from '@src/lib/utils'
+import { roundOffWithUnits } from '@src/lib/utils'
 import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
 
 function CommandBarHeaderFooter({
@@ -163,10 +163,8 @@ function CommandBarHeaderFooter({
                         arg.inputType === 'selectionMixed' ? (
                           getSelectionTypeDisplayText(argValue as Selections)
                         ) : arg.inputType === 'kcl' ? (
-                          roundOff(
-                            Number(
-                              (argValue as KclCommandValue).valueCalculated
-                            ),
+                          roundOffWithUnits(
+                            (argValue as KclCommandValue).valueCalculated,
                             4
                           )
                         ) : arg.inputType === 'text' &&
