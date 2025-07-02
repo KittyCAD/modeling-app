@@ -97,7 +97,7 @@ export async function createShortlink(
   if (password) {
     body.password = password
   }
-    const response = await fetch(withAPIBaseURL('/user/shortlinks'), {
+  const response = await fetch(withAPIBaseURL('/user/shortlinks'), {
     method: 'POST',
     headers: {
       'Content-type': 'application/json',

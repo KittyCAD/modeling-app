@@ -28,6 +28,7 @@ import { uuidv4 } from '@src/lib/utils'
 import type { File as KittyCadLibFile } from '@kittycad/lib/dist/types/src/models'
 import type { FileMeta } from '@src/lib/types'
 import type { RequestedKCLFile } from '@src/machines/systemIO/utils'
+import { withAPIBaseURL } from '@src/lib/withBaseURL'
 
 type KclFileMetaMap = {
   [execStateFileNamesIndex: number]: Extract<FileMeta, { type: 'kcl' }>
@@ -77,7 +78,7 @@ async function submitTextToCadRequest(
   })
 
   const response = await fetch(
-    `${VITE_KC_API_BASE_URL}/ml/text-to-cad/multi-file/iteration`,
+    withAPIBaseURL('/ml/text-to-cad/multi-file/iteration'),
     {
       method: 'POST',
       headers: {
@@ -304,7 +305,7 @@ export async function getPromptToEditResult(
   id: string,
   token?: string
 ): Promise<Models['TextToCadMultiFileIteration_type'] | Error> {
-  const url = VITE_KC_API_BASE_URL + '/async/operations/' + id
+  const url = withAPIBaseURL(`/async/operations/${id}`)
   const data: Models['TextToCadMultiFileIteration_type'] | Error =
     await crossPlatformFetch(
       url,
@@ -340,7 +341,7 @@ export async function doPromptEdit({
   ;(window as any).process = {
     env: {
       ZOO_API_TOKEN: token,
-      ZOO_HOST: VITE_KC_API_BASE_URL,
+      ZOO_HOST: withAPIBaseURL('')
     },
   }
   try {
