@@ -921,6 +921,12 @@ impl Point3d {
             units: UnitLen::Unknown,
         }
     }
+
+    pub fn as_3_dims(&self) -> ([f64; 3], UnitLen) {
+        let p = [self.x, self.y, self.z];
+        let u = self.units;
+        (p, u)
+    }
 }
 
 impl From<[TyF64; 3]> for Point3d {

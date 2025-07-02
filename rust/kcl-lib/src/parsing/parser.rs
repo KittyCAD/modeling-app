@@ -624,9 +624,6 @@ fn operand(i: &mut TokenSlice) -> ModalResult<BinaryPart> {
                 Expr::FunctionExpression(_)
                 | Expr::PipeExpression(_)
                 | Expr::PipeSubstitution(_)
-                | Expr::ArrayExpression(_)
-                | Expr::ArrayRangeExpression(_)
-                | Expr::ObjectExpression(_)
                 | Expr::LabelledExpression(..) => return Err(CompilationError::fatal(source_range, TODO_783)),
                 Expr::None(_) => {
                     return Err(CompilationError::fatal(
@@ -652,6 +649,9 @@ fn operand(i: &mut TokenSlice) -> ModalResult<BinaryPart> {
                 Expr::BinaryExpression(x) => BinaryPart::BinaryExpression(x),
                 Expr::CallExpressionKw(x) => BinaryPart::CallExpressionKw(x),
                 Expr::MemberExpression(x) => BinaryPart::MemberExpression(x),
+                Expr::ArrayExpression(x) => BinaryPart::ArrayExpression(x),
+                Expr::ArrayRangeExpression(x) => BinaryPart::ArrayRangeExpression(x),
+                Expr::ObjectExpression(x) => BinaryPart::ObjectExpression(x),
                 Expr::IfExpression(x) => BinaryPart::IfExpression(x),
                 Expr::AscribedExpression(x) => BinaryPart::AscribedExpression(x),
             };
@@ -2115,6 +2115,8 @@ fn possible_operands(i: &mut TokenSlice) -> ModalResult<Expr> {
         literal.map(Expr::Literal),
         fn_call_kw.map(Box::new).map(Expr::CallExpressionKw),
         name.map(Box::new).map(Expr::Name),
+        array,
+        object.map(Box::new).map(Expr::ObjectExpression),
         binary_expr_in_parens.map(Box::new).map(Expr::BinaryExpression),
         unnecessarily_bracketed,
     ))
@@ -3396,6 +3398,27 @@ mod tests {
         let tokens = crate::parsing::token::lex("f(x = 1)", ModuleId::default()).unwrap();
         let tokens = tokens.as_slice();
         operand.parse(tokens).unwrap();
+    }
+
+    #[test]
+    fn parse_binary_operator_on_array() {
+        let tokens = crate::parsing::token::lex("[0] + 1", ModuleId::default()).unwrap();
+        let tokens = tokens.as_slice();
+        binary_expression.parse(tokens).unwrap();
+    }
+
+    #[test]
+    fn parse_binary_operator_on_object() {
+        let tokens = crate::parsing::token::lex("{ a = 1 } + 2", ModuleId::default()).unwrap();
+        let tokens = tokens.as_slice();
+        binary_expression.parse(tokens).unwrap();
+    }
+
+    #[test]
+    fn parse_call_array_operator() {
+        let tokens = crate::parsing::token::lex("f([0] + 1)", ModuleId::default()).unwrap();
+        let tokens = tokens.as_slice();
+        fn_call_kw.parse(tokens).unwrap();
     }
 
     #[test]
