@@ -864,6 +864,9 @@ impl BinaryPart {
             BinaryPart::CallExpressionKw(call_expression) => call_expression.execute(exec_state, ctx).await,
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.get_result(exec_state, ctx).await,
             BinaryPart::MemberExpression(member_expression) => member_expression.get_result(exec_state, ctx).await,
+            BinaryPart::ArrayExpression(e) => e.execute(exec_state, ctx).await,
+            BinaryPart::ArrayRangeExpression(e) => e.execute(exec_state, ctx).await,
+            BinaryPart::ObjectExpression(e) => e.execute(exec_state, ctx).await,
             BinaryPart::IfExpression(e) => e.get_result(exec_state, ctx).await,
             BinaryPart::AscribedExpression(e) => e.get_result(exec_state, ctx).await,
         }
