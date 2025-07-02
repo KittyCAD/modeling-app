@@ -10,9 +10,7 @@ import {
 } from '@src/lib/desktop'
 import { isDesktop } from '@src/lib/isDesktop'
 import { markOnce } from '@src/lib/performance'
-import {
-  withAPIBaseURL
-} from '@src/lib/withBaseURL'
+import { withAPIBaseURL } from '@src/lib/withBaseURL'
 import { ACTOR_IDS } from '@src/machines/machineConstants'
 
 export interface UserContext {

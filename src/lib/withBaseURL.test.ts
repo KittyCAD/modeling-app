@@ -1,6 +1,4 @@
-import {
-  withAPIBaseURL
-} from '@src/lib/withBaseURL'
+import { withAPIBaseURL } from '@src/lib/withBaseURL'
 
 describe('withBaseURL', () => {
   /**
@@ -18,7 +16,7 @@ describe('withBaseURL', () => {
       const actual = withAPIBaseURL('/users')
       expect(actual).toBe(expected)
     })
-    it ('should return a longer base url with /oauth2/token/revoke', () => {
+    it('should return a longer base url with /oauth2/token/revoke', () => {
       const expected = 'https://api.dev.zoo.dev/oauth2/token/revoke'
       const actual = withAPIBaseURL('/oauth2/token/revoke')
       expect(actual).toBe(expected)
@@ -27,8 +25,8 @@ describe('withBaseURL', () => {
       const expected = 'https://api.dev.zoo.dev'
       const actual = withAPIBaseURL('')
       expect(actual).toBe(expected)
-      const expectedEndsWith = expected[expected.length-1]
-      const actualEndsWith = actual[actual.length-1]
+      const expectedEndsWith = expected[expected.length - 1]
+      const actualEndsWith = actual[actual.length - 1]
       expect(actual).toBe(expected)
       expect(actualEndsWith).toBe(expectedEndsWith)
     })
