@@ -1,7 +1,7 @@
 import type { SelectionRange } from '@codemirror/state'
 import { EditorSelection, Transaction } from '@codemirror/state'
 import type { Models } from '@kittycad/lib'
-import { VITE_KC_API_BASE_URL, VITE_KC_SITE_BASE_URL } from '@src/env'
+import { VITE_KC_SITE_BASE_URL } from '@src/env'
 import { diffLines } from 'diff'
 import toast from 'react-hot-toast'
 import type { TextToCadMultiFileIteration_type } from '@kittycad/lib/dist/types/src/models'
