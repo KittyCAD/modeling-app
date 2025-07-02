@@ -21,6 +21,17 @@ export function useViewControlMenuItems() {
   const shouldLockView =
     modelingState.matches('Sketch') &&
     !settings.app.allowOrbitInSketchMode.current
+
+  // Check if there's a valid selection with source range for "View KCL source code"
+  const hasValidSelection = useMemo(() => {
+    const selections = modelingState.context.selectionRanges.graphSelections
+    return selections.length > 0 && selections.some(selection => {
+      return selection.codeRef?.range && 
+             selection.codeRef.range[0] !== undefined && 
+             selection.codeRef.range[1] !== undefined
+    })
+  }, [modelingState.context.selectionRanges.graphSelections])
+
   const menuItems = useMemo(
     () => [
       ...Object.entries(VIEW_NAMES_SEMANTIC).map(([axisName, axisSemantic]) => (
@@ -55,10 +66,48 @@ export function useViewControlMenuItems() {
       >
         Center view on selection
       </ContextMenuItem>,
+      <ContextMenuItem
+        onClick={() => {
+          // Get the first valid selection with a source range
+          const selection = modelingState.context.selectionRanges.graphSelections.find(sel => 
+            sel.codeRef?.range && 
+            sel.codeRef.range[0] !== undefined && 
+            sel.codeRef.range[1] !== undefined
+          )
+          
+          if (selection?.codeRef?.range) {
+            // First, open the code pane if it's not already open
+            if (!modelingState.context.store.openPanes.includes('code')) {
+              modelingSend({
+                type: 'Set context',
+                data: {
+                  openPanes: [...modelingState.context.store.openPanes, 'code'],
+                },
+              })
+            }
+            
+            // Navigate to the source code location
+            modelingSend({
+              type: 'Set selection',
+              data: {
+                selectionType: 'singleCodeCursor',
+                selection: {
+                  artifact: selection.artifact,
+                  codeRef: selection.codeRef,
+                },
+                scrollIntoView: true,
+              },
+            })
+          }
+        }}
+        disabled={!hasValidSelection}
+      >
+        View KCL source code
+      </ContextMenuItem>,
       <ContextMenuDivider />,
       <ContextMenuItemRefresh />,
     ],
-    [VIEW_NAMES_SEMANTIC, shouldLockView]
+    [VIEW_NAMES_SEMANTIC, shouldLockView, hasValidSelection, modelingState.context.selectionRanges.graphSelections, modelingState.context.store.openPanes]
   )
   return menuItems
 }
