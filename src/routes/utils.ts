@@ -5,7 +5,7 @@ import {
   IMMEDIATE_SIGN_IN_IF_NECESSARY_QUERY_PARAM,
 } from '@src/lib/constants'
 import { PATHS } from '@src/lib/paths'
-import {withSiteBaseURL} from '@src/lib/withBaseURL'
+import { withSiteBaseURL } from '@src/lib/withBaseURL'
 
 const isTestEnv = window?.localStorage.getItem(IS_PLAYWRIGHT_KEY) === 'true'
 
@@ -55,5 +55,7 @@ export function generateSignInUrl() {
       '?'
     )
 
-  return withSiteBaseURL(`${PATHS.SIGN_IN}?callbackUrl=${encodeURIComponent(finalURL)}`)
+  return withSiteBaseURL(
+    `${PATHS.SIGN_IN}?callbackUrl=${encodeURIComponent(finalURL)}`
+  )
 }

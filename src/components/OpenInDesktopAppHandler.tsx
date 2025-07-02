@@ -1,5 +1,4 @@
 import { Transition } from '@headlessui/react'
-import { VITE_KC_SITE_BASE_URL } from '@src/env'
 import { useSearchParams } from 'react-router-dom'
 import { base64ToString } from '@src/lib/base64'
 

@@ -28,7 +28,7 @@ import {
   modifiedParametersDesktop,
 } from '@src/lib/exampleKcl'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
-import {withSiteBaseURL} from '@src/lib/withBaseURL'
+import { withSiteBaseURL } from '@src/lib/withBaseURL'
 
 type DesktopOnboardingRoute = RouteObject & {
   path: keyof typeof desktopOnboardingPaths
@@ -642,9 +642,7 @@ function OnboardingConclusion() {
           project, click the Zoo button in the top left. To learn more detailed
           and advanced techniques,{' '}
           <a
-            onClick={openExternalBrowserIfDesktop(
-              withSiteBaseURL('/docs')
-            )}
+            onClick={openExternalBrowserIfDesktop(withSiteBaseURL('/docs'))}
             href={`${withSiteBaseURL('/docs')}`}
           >
             check out our docs

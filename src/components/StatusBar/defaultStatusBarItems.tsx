@@ -12,9 +12,9 @@ import { Popover } from '@headlessui/react'
 import Tooltip from '@src/components/Tooltip'
 import { HelpMenu } from '@src/components/HelpMenu'
 import { isDesktop } from '@src/lib/isDesktop'
-import { VITE_KC_SITE_BASE_URL } from '@src/env'
 import { APP_DOWNLOAD_PATH } from '@src/lib/constants'
 import { desktopAppPitchMessage } from '@src/components/DownloadAppToast'
+import { withSiteBaseURL} from '@src/lib/withBaseURL'
 
 export const defaultGlobalStatusBarItems = ({
   location,
@@ -37,7 +37,7 @@ export const defaultGlobalStatusBarItems = ({
         id: 'download-desktop-app',
         element: 'externalLink',
         label: 'Download the app',
-        href: `${VITE_KC_SITE_BASE_URL}/${APP_DOWNLOAD_PATH}`,
+        href: withSiteBaseURL(`/${APP_DOWNLOAD_PATH}`),
         icon: 'download',
         toolTip: {
           children: desktopAppPitchMessage,

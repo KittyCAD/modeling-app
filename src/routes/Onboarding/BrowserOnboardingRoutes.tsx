@@ -30,7 +30,7 @@ import {
   browserAxialFan,
   browserAxialFanAfterTextToCad,
 } from '@src/lib/exampleKcl'
-import {withSiteBaseURL} from "@src/lib/withBaseURL"
+import { withSiteBaseURL } from '@src/lib/withBaseURL'
 
 type BrowserOnboaringRoute = RouteObject & {
   path: keyof typeof browserOnboardingPaths

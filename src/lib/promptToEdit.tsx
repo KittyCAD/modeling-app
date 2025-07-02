@@ -1,7 +1,6 @@
 import type { SelectionRange } from '@codemirror/state'
 import { EditorSelection, Transaction } from '@codemirror/state'
 import type { Models } from '@kittycad/lib'
-import { VITE_KC_SITE_BASE_URL } from '@src/env'
 import { diffLines } from 'diff'
 import toast from 'react-hot-toast'
 import type { TextToCadMultiFileIteration_type } from '@kittycad/lib/dist/types/src/models'
@@ -28,7 +27,7 @@ import { uuidv4 } from '@src/lib/utils'
 import type { File as KittyCadLibFile } from '@kittycad/lib/dist/types/src/models'
 import type { FileMeta } from '@src/lib/types'
 import type { RequestedKCLFile } from '@src/machines/systemIO/utils'
-import { withAPIBaseURL } from '@src/lib/withBaseURL'
+import { withAPIBaseURL, withSiteBaseURL } from '@src/lib/withBaseURL'
 
 type KclFileMetaMap = {
   [execStateFileNamesIndex: number]: Extract<FileMeta, { type: 'kcl' }>
@@ -439,7 +438,7 @@ export async function promptToEditFlow({
     return Promise.reject(result)
   }
   const oldCodeWebAppOnly = codeManager.code
-  const downloadLink = `${VITE_KC_SITE_BASE_URL}/${APP_DOWNLOAD_PATH}`
+  const downloadLink = withSiteBaseURL(`/${APP_DOWNLOAD_PATH}`)
 
   if (!isDesktop() && Object.values(result.outputs).length > 1) {
     const toastId = uuidv4()
