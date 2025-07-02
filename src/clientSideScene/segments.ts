@@ -228,7 +228,11 @@ class StraightSegment implements SegmentUtils {
 
     // Check if segment is fully constrained (only if we have AST and code)
     const isFullyConstrained =
-      ast && code ? isSegmentFullyConstrained(pathToNode, ast, code) : false
+      callExpName === 'close'
+        ? true
+        : ast && code
+          ? isSegmentFullyConstrained(pathToNode, ast, code)
+          : false
 
     const color = getSegmentColor({
       theme,
@@ -338,11 +342,10 @@ class StraightSegment implements SegmentUtils {
     // Check if segment is fully constrained and update color if needed
     if (ast && code) {
       const pathToNode = group.userData.pathToNode
-      const isFullyConstrained = isSegmentFullyConstrained(
-        pathToNode,
-        ast,
-        code
-      )
+      const isFullyConstrained =
+        group.userData.callExpName === 'close'
+          ? true
+          : isSegmentFullyConstrained(pathToNode, ast, code)
       const color = getSegmentColor({
         theme: sceneInfra._theme,
         isSelected: group.userData.isSelected,
