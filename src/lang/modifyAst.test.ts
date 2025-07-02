@@ -25,12 +25,13 @@ import type { Artifact } from '@src/lang/std/artifactGraph'
 import { codeRefFromRange } from '@src/lang/std/artifactGraph'
 import { topLevelRange } from '@src/lang/util'
 import type { Identifier, Literal, LiteralValue } from '@src/lang/wasm'
-import { assertParse, recast } from '@src/lang/wasm'
+import { assertParse, recast, parse, resultIsOk } from '@src/lang/wasm'
 import { initPromise } from '@src/lang/wasmUtils'
 import { enginelessExecutor } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
 import { deleteFromSelection } from '@src/lang/modifyAst/deleteFromSelection'
 import { assertNotErr } from '@src/unitTestUtils'
+import { scaleProfiles } from '@src/clientSideScene/sceneEntities'
 
 beforeAll(async () => {
   await initPromise
@@ -915,5 +916,225 @@ extrude001 = extrude(part001, length = 5)
 
     const result = splitPipedProfile(ast, pathToPipe)
     expect(result instanceof Error).toBe(true)
+  })
+})
+
+describe('testing sketch scaling', () => {
+  it('can scale sketch by half simple case', async () => {
+    const basicSketch = `sketch002 = startSketchOn(XZ)
+  profile006 = startProfile(sketch002, at = [114.64, 124.18])
+    |> line(end = [173.02, 306.77])
+    |> line(end = [175.14, -282.35])
+    |> tangentialArc(end = [-52.01, -194.25])`
+    const ast = assertParse(basicSketch)
+    const result = await enginelessExecutor(ast)
+    const searchSnippet = 'startProfile(sketch002, at = [114.64, 124.18])'
+    const startIndex = basicSketch.indexOf(searchSnippet)
+    const range = topLevelRange(startIndex, startIndex + searchSnippet.length)
+    const pathToProfile = getNodePathFromSourceRange(ast, range)
+
+    if (err(result)) throw result
+    const scaledProfile = scaleProfiles({
+      ast,
+      factor: 0.5,
+      variables: result.variables,
+      pathsToProfile: [pathToProfile],
+    })
+    if (err(scaledProfile)) throw scaledProfile
+    const modifiedAst = scaledProfile.modifiedAst
+    const newCode = recast(modifiedAst)
+    if (err(newCode)) throw newCode
+
+    expect(newCode).toBe(`sketch002 = startSketchOn(XZ)
+profile006 = startProfile(sketch002, at = [57.32, 62.09])
+  |> line(end = [86.51, 153.39])
+  |> line(end = [87.57, -141.18])
+  |> tangentialArc(end = [-26, -97.12])
+`)
+  })
+  it('can scale sketch more complex', async () => {
+    let code = `sketch001 = startSketchOn(YZ)
+profile001 = startProfile(sketch001, at = [100, 101])
+  |> line(end = [102, 103])
+  |> line(endAbsolute = [104, 105])
+  |> angledLine(angle = 206, length = 106)
+  |> angledLine(angle = -208, lengthX = 107)
+  |> angledLine(angle = 210, lengthY = 108)
+  |> angledLine(angle = 212, endAbsoluteX = 109)
+  |> angledLine(angle = 214, endAbsoluteY = 110)
+  |> arc(interiorAbsolute = [111, 112], endAbsolute = [113, 114])
+  |> tangentialArc(end = [115, -116])
+  |> tangentialArc(endAbsolute = [117, 118])
+  |> tangentialArc(angle = 224, radius = 119)
+  |> tangentialArc(angle = 226, diameter = 120)
+
+profile002 = startProfile(sketch001, at = [-121, 122])
+  |> angledLine(angle = 130, length = 123, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 232, length = 124)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+profile003 = circle(sketch001, center = [-125, -126], radius = 127)
+profile004 = circleThreePoint(
+  sketch001,
+  p1 = [128, 129],
+  p2 = [130, 131],
+  p3 = [132, 133],
+)
+profile005 = circle(sketch001, center = [-134, -135], diameter = 136)`
+    let ast = assertParse(code)
+    const result = await enginelessExecutor(ast)
+    const searchSnippets = [
+      'startProfile(sketch001, at = [100, 101])',
+      'startProfile(sketch001, at = [-121, 122])',
+      'circle(sketch001, center = [-125, -126], radius = 127)',
+      'circleThreePoint(',
+      'circle(sketch001, center = [-134, -135], diameter = 136)',
+    ]
+    const ranges = searchSnippets.map((searchSnippet) => {
+      const startIndex = code.indexOf(searchSnippet)
+      return topLevelRange(startIndex, startIndex + searchSnippet.length)
+    })
+    const pathsToProfiles = ranges.map((range) =>
+      getNodePathFromSourceRange(ast, range)
+    )
+
+    if (err(result)) throw result
+    const scaledProfile = scaleProfiles({
+      ast,
+      factor: 0.5,
+      variables: result.variables,
+      pathsToProfile: pathsToProfiles,
+    })
+    if (err(scaledProfile)) throw scaledProfile
+    const pResult = parse(recast(scaledProfile.modifiedAst))
+    if (err(pResult) || !resultIsOk(pResult)) return
+    ast = pResult.program
+    const newCode = recast(ast)
+    if (err(newCode)) throw newCode
+
+    expect(newCode).toBe(`sketch001 = startSketchOn(YZ)
+profile001 = startProfile(sketch001, at = [50, 50.5])
+  |> line(end = [51, 51.5])
+  |> line(endAbsolute = [52, 52.5])
+  |> angledLine(angle = -154, length = 53)
+  |> angledLine(angle = 152, lengthX = 53.5)
+  |> angledLine(angle = -150, lengthY = 54)
+  |> angledLine(angle = 32, endAbsoluteX = 54.5)
+  |> angledLine(angle = -146, endAbsoluteY = 55)
+  |> arc(interiorAbsolute = [55.5, 56], endAbsolute = [56.5, 57])
+  |> tangentialArc(end = [57.5, -58])
+  |> tangentialArc(endAbsolute = [58.5, 59])
+  |> tangentialArc(angle = 224deg, radius = 59.5)
+  |> tangentialArc(angle = 226deg, diameter = 60)
+
+profile002 = startProfile(sketch001, at = [-60.5, 61])
+  |> angledLine(angle = 130, length = 61.5, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 232, length = 62)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+profile003 = circle(sketch001, center = [-62.5, -63], radius = 63.5)
+profile004 = circleThreePoint(
+  sketch001,
+  p1 = [64, 64.5],
+  p2 = [65, 65.5],
+  p3 = [66, 66.5],
+)
+profile005 = circle(sketch001, center = [-67, -67.5], diameter = 68)
+`)
+  })
+  it("make sure it doesn't stomp constraints", async () => {
+    let code = `sketch001 = startSketchOn(YZ)
+profile001 = startProfile(sketch001, at = [100 + 0, 101])
+  |> line(end = [102, 103 + 0])
+  |> line(endAbsolute = [104 + 0, 105])
+  |> angledLine(angle = 206, length = 106 + 0)
+  |> angledLine(angle = -208 + 0, lengthX = 107)
+  |> angledLine(angle = 210, lengthY = 108 + 0)
+  |> angledLine(angle = 212 + 0, endAbsoluteX = 109)
+  |> angledLine(angle = 214, endAbsoluteY = 110 + 0)
+  |> arc(interiorAbsolute = [111 + 0, 112], endAbsolute = [113, 114 + 0])
+  |> tangentialArc(end = [115, -116 + 0])
+  |> tangentialArc(endAbsolute = [117 + 0, 118])
+  |> tangentialArc(angle = 224, radius = 119 + 0)
+  |> tangentialArc(angle = 226 + 0, diameter = 120)
+
+profile002 = startProfile(sketch001, at = [-121 + 0, 122])
+  |> angledLine(angle = 130, length = 123 + 0, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 232, length = 124)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+profile003 = circle(sketch001, center = [-125 + 0, -126], radius = 127 + 0)
+profile004 = circleThreePoint(
+  sketch001,
+  p1 = [128, 129 + 0],
+  p2 = [130 + 0, 131],
+  p3 = [133, 132],
+)
+profile005 = circle(sketch001, center = [-134, -135 + 0], diameter = 136)
+`
+    let ast = assertParse(code)
+    const result = await enginelessExecutor(ast)
+    const searchSnippets = [
+      'startProfile(sketch001, at = [100 + 0, 101])',
+      'startProfile(sketch001, at = [-121 + 0, 122])',
+      'circle(sketch001, center = [-125 + 0, -126], radius = 127 + 0)',
+      'circleThreePoint(',
+      'circle(sketch001, center = [-134, -135 + 0], diameter = 136)',
+    ]
+    const ranges = searchSnippets.map((searchSnippet) => {
+      const startIndex = code.indexOf(searchSnippet)
+      return topLevelRange(startIndex, startIndex + searchSnippet.length)
+    })
+    const pathsToProfiles = ranges.map((range) =>
+      getNodePathFromSourceRange(ast, range)
+    )
+
+    if (err(result)) throw result
+    const scaledProfile = scaleProfiles({
+      ast,
+      factor: 0.5,
+      variables: result.variables,
+      pathsToProfile: pathsToProfiles,
+    })
+    if (err(scaledProfile)) throw scaledProfile
+    const pResult = parse(recast(scaledProfile.modifiedAst))
+    if (err(pResult) || !resultIsOk(pResult)) return
+    ast = pResult.program
+    const newCode = recast(ast)
+    if (err(newCode)) throw newCode
+
+    expect(newCode).toBe(`sketch001 = startSketchOn(YZ)
+profile001 = startProfile(sketch001, at = [100 + 0, 50.5])
+  |> line(end = [51, 103 + 0])
+  |> line(endAbsolute = [104 + 0, 52.5])
+  |> angledLine(angle = -154, length = 106 + 0)
+  |> angledLine(angle = -208 + 0, lengthX = 53.5)
+  |> angledLine(angle = -150, lengthY = 108 + 0)
+  |> angledLine(angle = 212 + 0, endAbsoluteX = 54.5)
+  |> angledLine(angle = -146, endAbsoluteY = 110 + 0)
+  |> arc(interiorAbsolute = [111 + 0, 56], endAbsolute = [56.5, 114 + 0])
+  |> tangentialArc(end = [57.5, -116 + 0])
+  |> tangentialArc(endAbsolute = [117 + 0, 59])
+  |> tangentialArc(angle = 224deg, radius = 119 + 0)
+  |> tangentialArc(angle = 226 + 0, diameter = 60)
+
+profile002 = startProfile(sketch001, at = [-121 + 0, 61])
+  |> angledLine(angle = 130, length = 123 + 0, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 232, length = 62)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+profile003 = circle(sketch001, center = [-125 + 0, -63], radius = 127 + 0)
+profile004 = circleThreePoint(
+  sketch001,
+  p1 = [64, 129 + 0],
+  p2 = [130 + 0, 65.5],
+  p3 = [66.5, 66],
+)
+profile005 = circle(sketch001, center = [-67, -135 + 0], diameter = 68)
+`)
   })
 })

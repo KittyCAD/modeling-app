@@ -24,6 +24,7 @@ import {
   ARG_TAG,
   DETERMINING_ARGS,
   ARG_INTERIOR_ABSOLUTE,
+  ARG_DIAMETER,
 } from '@src/lang/constants'
 import {
   createArrayExpression,
@@ -1424,13 +1425,27 @@ export const circle: SketchLineHelperKw = {
 
     const { node: callExpression } = nodeMeta
 
+    // All function arguments, except the tag
+    const functionArguments = callExpression.arguments
+      .map((arg) => arg.label?.name)
+      .filter((n) => n && n !== ARG_TAG)
+
     const newCenter = createArrayExpression([
       createLiteral(roundOff(center[0])),
       createLiteral(roundOff(center[1])),
     ])
     mutateKwArg(ARG_CIRCLE_CENTER, callExpression, newCenter)
-    const newRadius = createLiteral(roundOff(radius))
-    mutateKwArg(ARG_RADIUS, callExpression, newRadius)
+
+    // Check if the circle uses diameter or radius
+    const isDiameter = functionArguments.includes(ARG_DIAMETER)
+    if (isDiameter) {
+      const newDiameter = createLiteral(roundOff(radius * 2))
+      mutateKwArg(ARG_DIAMETER, callExpression, newDiameter)
+    } else {
+      const newRadius = createLiteral(roundOff(radius))
+      mutateKwArg(ARG_RADIUS, callExpression, newRadius)
+    }
+
     return {
       modifiedAst: _node,
       pathToNode,
@@ -4168,7 +4183,14 @@ const tangentialArcHelpers = {
       .map((arg) => arg.label?.name)
       .filter((n) => n && n !== ARG_TAG)
 
-    if (areArraysEqual(functionArguments, [ARG_ANGLE, ARG_RADIUS])) {
+    const isDiameter = areArraysEqual(functionArguments, [
+      ARG_ANGLE,
+      ARG_DIAMETER,
+    ])
+    if (
+      areArraysEqual(functionArguments, [ARG_ANGLE, ARG_RADIUS]) ||
+      isDiameter
+    ) {
       // Using length and radius -> convert "from", "to" to the matching length and radius
       const previousEndTangent = input.previousEndTangent
       if (previousEndTangent) {
@@ -4219,11 +4241,19 @@ const tangentialArcHelpers = {
 
           const radius = distance2d(center, from)
 
-          mutateKwArg(
-            ARG_RADIUS,
-            callExpression,
-            createLiteral(roundOff(radius, 2))
-          )
+          if (!isDiameter) {
+            mutateKwArg(
+              ARG_RADIUS,
+              callExpression,
+              createLiteral(roundOff(radius, 2))
+            )
+          } else {
+            mutateKwArg(
+              ARG_DIAMETER,
+              callExpression,
+              createLiteral(roundOff(radius * 2, 2))
+            )
+          }
           const angleValue = createLiteralMaybeSuffix({
             value: roundOff(angle, 2),
             suffix: 'Deg',

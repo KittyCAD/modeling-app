@@ -172,6 +172,7 @@ export type ModelingCommandSchema = {
       variableName: string
     }
     namedValue: KclCommandValue
+    scaleSketch?: boolean
   }
   'Prompt-to-edit': {
     prompt: string
