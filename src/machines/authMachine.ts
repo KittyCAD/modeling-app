@@ -31,11 +31,20 @@ export type Events =
     }
 
 export const TOKEN_PERSIST_KEY = 'TOKEN_PERSIST_KEY'
-export const persistedToken =
-  VITE_KC_DEV_TOKEN ||
-  getCookie(COOKIE_NAME) ||
-  localStorage?.getItem(TOKEN_PERSIST_KEY) ||
-  ''
+
+/**
+ * Determine which token do we have persisted to initialize the auth machine
+ */
+const persistedCookie = getCookie(COOKIE_NAME)
+const persistedLocalStorage = localStorage?.getItem(TOKEN_PERSIST_KEY) || ''
+const persistedDevToken = VITE_KC_DEV_TOKEN
+export const persistedToken = persistedDevToken || persistedCookie || persistedLocalStorage
+console.log('Initial persisted token')
+console.table([
+  ['cookie', !!persistedCookie],
+  ['local storage', !!persistedLocalStorage],
+  ['dev token', !!persistedDevToken]
+])
 
 export const authMachine = setup({
   types: {} as {
@@ -190,12 +199,26 @@ async function getAndSyncStoredToken(input: {
   token?: string
 }): Promise<string> {
   // dev mode
-  if (VITE_KC_DEV_TOKEN) return VITE_KC_DEV_TOKEN
+  if (VITE_KC_DEV_TOKEN) {
+    console.log('Token used for authentication')
+    console.table([
+      ['dev token', !!VITE_KC_DEV_TOKEN],
+    ])
+    return VITE_KC_DEV_TOKEN
+  }
 
-  const token =
-    input.token && input.token !== ''
-      ? input.token
-      : getCookie(COOKIE_NAME) || localStorage?.getItem(TOKEN_PERSIST_KEY) || ''
+  const inputToken = input.token && input.token !==  '' ? input.token : ''
+  const cookieToken = getCookie(COOKIE_NAME)
+  const localStorageToken = localStorage?.getItem(TOKEN_PERSIST_KEY) || ''
+  const token = inputToken || cookieToken || localStorageToken
+
+  console.log('Token used for authentication')
+  console.table([
+    ['persisted token', !!inputToken],
+    ['cookie', !!cookieToken],
+    ['local storage', !!localStorageToken],
+    ['dev token', !!VITE_KC_DEV_TOKEN]
+  ])
   if (token) {
     // has just logged in, update storage
     localStorage.setItem(TOKEN_PERSIST_KEY, token)
