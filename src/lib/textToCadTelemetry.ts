@@ -7,7 +7,7 @@ export async function sendTelemetry(
   feedback: Models['MlFeedback_type'],
   token?: string
 ): Promise<void> {
-  const url = withAPIBaseURL(`/user/text-to-cad/${id}/?feedback=${feedback}`)
+  const url = withAPIBaseURL(`/user/text-to-cad/${id}?feedback=${feedback}`)
   await crossPlatformFetch(
     url,
     {
