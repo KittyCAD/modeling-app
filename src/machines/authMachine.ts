@@ -11,8 +11,7 @@ import {
 import { isDesktop } from '@src/lib/isDesktop'
 import { markOnce } from '@src/lib/performance'
 import {
-  default as withBaseURL,
-  default as withBaseUrl,
+  withAPIBaseURL
 } from '@src/lib/withBaseURL'
 import { ACTOR_IDS } from '@src/machines/machineConstants'
 
@@ -38,12 +37,13 @@ export const TOKEN_PERSIST_KEY = 'TOKEN_PERSIST_KEY'
 const persistedCookie = getCookie(COOKIE_NAME)
 const persistedLocalStorage = localStorage?.getItem(TOKEN_PERSIST_KEY) || ''
 const persistedDevToken = VITE_KC_DEV_TOKEN
-export const persistedToken = persistedDevToken || persistedCookie || persistedLocalStorage
+export const persistedToken =
+  persistedDevToken || persistedCookie || persistedLocalStorage
 console.log('Initial persisted token')
 console.table([
   ['cookie', !!persistedCookie],
   ['local storage', !!persistedLocalStorage],
-  ['dev token', !!persistedDevToken]
+  ['dev token', !!persistedDevToken],
 ])
 
 export const authMachine = setup({
@@ -141,7 +141,7 @@ export const authMachine = setup({
 
 async function getUser(input: { token?: string }) {
   const token = await getAndSyncStoredToken(input)
-  const url = withBaseURL('/user')
+  const url = withAPIBaseURL('/user')
   const headers: { [key: string]: string } = {
     'Content-Type': 'application/json',
   }
@@ -201,13 +201,11 @@ async function getAndSyncStoredToken(input: {
   // dev mode
   if (VITE_KC_DEV_TOKEN) {
     console.log('Token used for authentication')
-    console.table([
-      ['dev token', !!VITE_KC_DEV_TOKEN],
-    ])
+    console.table([['dev token', !!VITE_KC_DEV_TOKEN]])
     return VITE_KC_DEV_TOKEN
   }
 
-  const inputToken = input.token && input.token !==  '' ? input.token : ''
+  const inputToken = input.token && input.token !== '' ? input.token : ''
   const cookieToken = getCookie(COOKIE_NAME)
   const localStorageToken = localStorage?.getItem(TOKEN_PERSIST_KEY) || ''
   const token = inputToken || cookieToken || localStorageToken
@@ -217,7 +215,7 @@ async function getAndSyncStoredToken(input: {
     ['persisted token', !!inputToken],
     ['cookie', !!cookieToken],
     ['local storage', !!localStorageToken],
-    ['dev token', !!VITE_KC_DEV_TOKEN]
+    ['dev token', !!VITE_KC_DEV_TOKEN],
   ])
   if (token) {
     // has just logged in, update storage
@@ -244,7 +242,7 @@ async function logout() {
 
       if (token) {
         try {
-          await fetch(withBaseUrl('/oauth2/token/revoke'), {
+          await fetch(withAPIBaseURL('/oauth2/token/revoke'), {
             method: 'POST',
             credentials: 'include',
             headers: {
@@ -267,7 +265,7 @@ async function logout() {
     }
   }
 
-  return fetch(withBaseUrl('/logout'), {
+  return fetch(withAPIBaseURL('/logout'), {
     method: 'POST',
     credentials: 'include',
   })
