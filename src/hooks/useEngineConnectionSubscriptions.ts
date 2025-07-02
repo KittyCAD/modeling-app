@@ -95,7 +95,12 @@ export function useEngineConnectionSubscriptions() {
               let planeOrFaceId = data.entity_id
               if (!planeOrFaceId) return
 
-              if (sceneInfra.selectDefaultSketchPlane(planeOrFaceId)) {
+              const defaultSketchPlaneSelected =
+                sceneInfra.selectDefaultSketchPlane(planeOrFaceId)
+              if (
+                !err(defaultSketchPlaneSelected) &&
+                defaultSketchPlaneSelected
+              ) {
                 return
               }
 

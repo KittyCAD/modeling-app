@@ -719,11 +719,10 @@ export class SceneInfra {
     this.isRenderingPaused = false
   }
 
-  selectDefaultSketchPlane(defaultPlaneId: string) {
+  selectDefaultSketchPlane(defaultPlaneId: string): Error | boolean {
     const defaultPlanes = rustContext.defaultPlanes
     if (!defaultPlanes) {
-      console.warn('No default planes defined in rustContext')
-      return false
+      return new Error('No default planes defined in rustContext')
     }
 
     if (

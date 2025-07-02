@@ -11,7 +11,7 @@ import { useModelingContext } from '@src/hooks/useModelingContext'
 import type { AxisNames } from '@src/lib/constants'
 import { VIEW_NAMES_SEMANTIC } from '@src/lib/constants'
 import { kclManager, sceneInfra } from '@src/lib/singletons'
-import { reportRejection } from '@src/lib/trap'
+import { err, reportRejection } from '@src/lib/trap'
 import { useSettings } from '@src/lib/singletons'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import type { Selections } from '@src/lib/selections'
@@ -69,7 +69,12 @@ export function useViewControlMenuItems() {
               data: { forceNewSketch: true },
             })
 
-            if (sceneInfra.selectDefaultSketchPlane(selectedPlaneId)) {
+            const defaultSketchPlaneSelected =
+              sceneInfra.selectDefaultSketchPlane(selectedPlaneId)
+            if (
+              !err(defaultSketchPlaneSelected) &&
+              defaultSketchPlaneSelected
+            ) {
               return
             }
 
