@@ -372,7 +372,6 @@ export function kclErrorsToDiagnostics(
 ): CodeMirrorDiagnostic[] {
   let nonFatal: CodeMirrorDiagnostic[] = []
   const errs = errors
-    ?.filter((err) => isTopLevelModule(err.sourceRange))
     .flatMap((err) => {
       const diagnostics: CodeMirrorDiagnostic[] = []
       let message = err.msg
@@ -410,12 +409,14 @@ export function kclErrorsToDiagnostics(
           compilationErrorsToDiagnostics(err.nonFatal, sourceCode)
         )
       }
-      diagnostics.push({
-        from: toUtf16(err.sourceRange[0], sourceCode),
-        to: toUtf16(err.sourceRange[1], sourceCode),
-        message,
-        severity: 'error',
-      })
+      if (isTopLevelModule(err.sourceRange)) {
+        diagnostics.push({
+          from: toUtf16(err.sourceRange[0], sourceCode),
+          to: toUtf16(err.sourceRange[1], sourceCode),
+          message,
+          severity: 'error',
+        })
+      }
       return diagnostics
     })
   return errs.concat(nonFatal)
