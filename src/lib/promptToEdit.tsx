@@ -77,8 +77,6 @@ async function submitTextToCadRequest(
     formData.append('files', file.data, file.name)
   })
 
-  console.log(env(), 'huh?')
-  console.log(new Error().stack)
   const response = await fetch(
     withAPIBaseURL('/ml/text-to-cad/multi-file/iteration'),
     {
