@@ -1247,3 +1247,45 @@ export function createPathToNodeForLastVariable(
 
   return pathToCall
 }
+
+export function setCallInAst(
+  ast: Node<Program>,
+  call: Node<CallExpressionKw>,
+  nodeToEdit?: PathToNode,
+  lastPathToNode?: PathToNode
+): Error | PathToNode {
+  let pathToNode: PathToNode | undefined
+  if (nodeToEdit) {
+    const result = getNodeFromPath<CallExpressionKw>(
+      ast,
+      nodeToEdit,
+      'CallExpressionKw'
+    )
+    if (err(result)) {
+      return result
+    }
+
+    Object.assign(result.node, call)
+    pathToNode = nodeToEdit
+  } else {
+    if (!call.unlabeled && lastPathToNode) {
+      const pipe = getNodeFromPath<PipeExpression>(
+        ast,
+        lastPathToNode,
+        'PipeExpression'
+      )
+      if (err(pipe)) {
+        return pipe
+      }
+      pipe.node.body.push(call)
+      pathToNode = lastPathToNode
+    } else {
+      const name = findUniqueName(ast, call.callee.name.name)
+      const declaration = createVariableDeclaration(name, call)
+      ast.body.push(declaration)
+      pathToNode = createPathToNodeForLastVariable(ast)
+    }
+  }
+
+  return pathToNode
+}

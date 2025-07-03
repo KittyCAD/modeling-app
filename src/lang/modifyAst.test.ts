@@ -2,7 +2,9 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 
 import {
   createArrayExpression,
+  createCallExpressionStdLibKw,
   createIdentifier,
+  createLabeledArg,
   createLiteral,
   createLiteralMaybeSuffix,
   createLocalName,
@@ -19,6 +21,7 @@ import {
   createVariableExpressionsArray,
   deleteSegmentFromPipeExpression,
   moveValueIntoNewVariable,
+  setCallInAst,
   sketchOnExtrudedFace,
   splitPipedProfile,
 } from '@src/lang/modifyAst'
@@ -1035,5 +1038,47 @@ extrude001 = extrude(profile001, length = 123)
     const startOfKwargIndex = circleProfileInVar.indexOf('123')
     expect(node.node.start).toEqual(startOfKwargIndex)
     expect(node.node.end).toEqual(startOfKwargIndex + 3)
+  })
+})
+
+describe('Testing setCallInAst', () => {
+  it('should push an extrude call with variable on variable profile', () => {
+    const code = `sketch001 = startSketchOn(XY)
+profile001 = circle(sketch001, center = [0, 0], radius = 1)
+`
+    const ast = assertParse(code)
+    const exprs = createVariableExpressionsArray([
+      createLocalName('profile001'),
+    ])
+    const call = createCallExpressionStdLibKw('extrude', exprs, [
+      createLabeledArg('length', createLiteral(5)),
+    ])
+    const pathToNode = setCallInAst(ast, call)
+    if (err(pathToNode)) {
+      throw pathToNode
+    }
+    const newCode = recast(ast)
+    expect(newCode).toContain(code)
+    expect(newCode).toContain(`extrude001 = extrude(profile001, length = 5)`)
+  })
+
+  it('should push an extrude call with variable on variable profile', () => {
+    const code = `startSketchOn(XY)
+  |> circle(sketch001, center = [0, 0], radius = 1)
+`
+    const ast = assertParse(code)
+    const exprs = createVariableExpressionsArray([
+      createLocalName('profile001'),
+    ])
+    const call = createCallExpressionStdLibKw('extrude', exprs, [
+      createLabeledArg('length', createLiteral(5)),
+    ])
+    const pathToNode = setCallInAst(ast, call)
+    if (err(pathToNode)) {
+      throw pathToNode
+    }
+    const newCode = recast(ast)
+    expect(newCode).toContain(code)
+    expect(newCode).toContain(`|> extrude(length = 5)`)
   })
 })

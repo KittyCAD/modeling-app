@@ -5,13 +5,11 @@ import {
   createLabeledArg,
   createLiteral,
   createLocalName,
-  createVariableDeclaration,
-  findUniqueName,
 } from '@src/lang/create'
 import {
-  createPathToNodeForLastVariable,
   createVariableExpressionsArray,
   insertVariableAndOffsetPathToNode,
+  setCallInAst,
 } from '@src/lang/modifyAst'
 import {
   getEdgeTagCall,
@@ -23,15 +21,8 @@ import {
   valueOrVariable,
 } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
-import type {
-  CallExpressionKw,
-  PathToNode,
-  PipeExpression,
-  Program,
-  VariableDeclaration,
-} from '@src/lang/wasm'
+import type { PathToNode, Program, VariableDeclaration } from '@src/lang/wasm'
 import type { KclCommandValue } from '@src/lib/commandTypes'
-import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import type { Selections } from '@src/lib/selections'
 import { err } from '@src/lib/trap'
 
@@ -116,42 +107,10 @@ export function addExtrude({
 
   // 3. If edit, we assign the new function call declaration to the existing node,
   // otherwise just push to the end
-  let pathToNode: PathToNode | undefined
-  if (nodeToEdit) {
-    const result = getNodeFromPath<CallExpressionKw>(
-      modifiedAst,
-      nodeToEdit,
-      'CallExpressionKw'
-    )
-    if (err(result)) {
-      return result
-    }
-
-    Object.assign(result.node, call)
-    pathToNode = nodeToEdit
-  } else {
-    const lastPathToNode: PathToNode | undefined =
-      variableExpressions.paths.pop()
-    if (sketchesExpr === null && lastPathToNode) {
-      const pipe = getNodeFromPath<PipeExpression>(
-        modifiedAst,
-        lastPathToNode,
-        'PipeExpression'
-      )
-      if (err(pipe)) {
-        return pipe
-      }
-      pipe.node.body.push(call)
-      pathToNode = lastPathToNode
-    } else {
-      const name = findUniqueName(
-        modifiedAst,
-        KCL_DEFAULT_CONSTANT_PREFIXES.EXTRUDE
-      )
-      const declaration = createVariableDeclaration(name, call)
-      modifiedAst.body.push(declaration)
-      pathToNode = createPathToNodeForLastVariable(modifiedAst)
-    }
+  const lastPath = variableExpressions.paths.pop() // TODO: check if this is correct
+  const pathToNode = setCallInAst(modifiedAst, call, nodeToEdit, lastPath)
+  if (err(pathToNode)) {
+    return pathToNode
   }
 
   return {
@@ -222,41 +181,10 @@ export function addSweep({
 
   // 3. If edit, we assign the new function call declaration to the existing node,
   // otherwise just push to the end
-  let pathToNode: PathToNode | undefined
-  if (nodeToEdit) {
-    const result = getNodeFromPath<CallExpressionKw>(
-      modifiedAst,
-      nodeToEdit,
-      'CallExpressionKw'
-    )
-    if (err(result)) {
-      return result
-    }
-
-    Object.assign(result.node, call)
-    pathToNode = nodeToEdit
-  } else {
-    const lastPathToNode: PathToNode | undefined = variableExprs.paths.pop()
-    if (sketchesExpr === null && lastPathToNode) {
-      const pipe = getNodeFromPath<PipeExpression>(
-        modifiedAst,
-        lastPathToNode,
-        'PipeExpression'
-      )
-      if (err(pipe)) {
-        return pipe
-      }
-      pipe.node.body.push(call)
-      pathToNode = lastPathToNode
-    } else {
-      const name = findUniqueName(
-        modifiedAst,
-        KCL_DEFAULT_CONSTANT_PREFIXES.SWEEP
-      )
-      const declaration = createVariableDeclaration(name, call)
-      modifiedAst.body.push(declaration)
-      pathToNode = createPathToNodeForLastVariable(modifiedAst)
-    }
+  const lastPath = variableExprs.paths.pop() // TODO: check if this is correct
+  const pathToNode = setCallInAst(modifiedAst, call, nodeToEdit, lastPath)
+  if (err(pathToNode)) {
+    return pathToNode
   }
 
   return {
@@ -312,42 +240,10 @@ export function addLoft({
 
   // 3. If edit, we assign the new function call declaration to the existing node,
   // otherwise just push to the end
-  let pathToNode: PathToNode | undefined
-  if (nodeToEdit) {
-    const result = getNodeFromPath<CallExpressionKw>(
-      modifiedAst,
-      nodeToEdit,
-      'CallExpressionKw'
-    )
-    if (err(result)) {
-      return result
-    }
-
-    Object.assign(result.node, call)
-    pathToNode = nodeToEdit
-  } else {
-    const lastPathToNode: PathToNode | undefined = variableExprs.paths.pop()
-    if (sketchesExpr === null && lastPathToNode) {
-      const pipe = getNodeFromPath<PipeExpression>(
-        modifiedAst,
-        lastPathToNode,
-        'PipeExpression'
-      )
-      if (err(pipe)) {
-        return pipe
-      }
-      pipe.node.body.push(call)
-      pathToNode = lastPathToNode
-    } else {
-      const name = findUniqueName(
-        modifiedAst,
-        KCL_DEFAULT_CONSTANT_PREFIXES.LOFT
-      )
-      const declaration = createVariableDeclaration(name, call)
-      modifiedAst.body.push(declaration)
-      const toFirstKwarg = !!vDegree
-      pathToNode = createPathToNodeForLastVariable(modifiedAst, toFirstKwarg)
-    }
+  const lastPath = variableExprs.paths.pop() // TODO: check if this is correct
+  const pathToNode = setCallInAst(modifiedAst, call, nodeToEdit, lastPath)
+  if (err(pathToNode)) {
+    return pathToNode
   }
 
   return {
@@ -447,41 +343,10 @@ export function addRevolve({
 
   // 3. If edit, we assign the new function call declaration to the existing node,
   // otherwise just push to the end
-  let pathToNode: PathToNode | undefined
-  if (nodeToEdit) {
-    const result = getNodeFromPath<CallExpressionKw>(
-      modifiedAst,
-      nodeToEdit,
-      'CallExpressionKw'
-    )
-    if (err(result)) {
-      return result
-    }
-
-    Object.assign(result.node, call)
-    pathToNode = nodeToEdit
-  } else {
-    const lastPathToNode: PathToNode | undefined = variableExprs.paths.pop()
-    if (sketchesExpr === null && lastPathToNode) {
-      const pipe = getNodeFromPath<PipeExpression>(
-        modifiedAst,
-        lastPathToNode,
-        'PipeExpression'
-      )
-      if (err(pipe)) {
-        return pipe
-      }
-      pipe.node.body.push(call)
-      pathToNode = lastPathToNode
-    } else {
-      const name = findUniqueName(
-        modifiedAst,
-        KCL_DEFAULT_CONSTANT_PREFIXES.REVOLVE
-      )
-      const declaration = createVariableDeclaration(name, call)
-      modifiedAst.body.push(declaration)
-      pathToNode = createPathToNodeForLastVariable(modifiedAst)
-    }
+  const lastPath = variableExprs.paths.pop() // TODO: check if this is correct
+  const pathToNode = setCallInAst(modifiedAst, call, nodeToEdit, lastPath)
+  if (err(pathToNode)) {
+    return pathToNode
   }
 
   return {
