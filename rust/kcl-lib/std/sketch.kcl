@@ -2026,13 +2026,13 @@ export fn conic(
   coefficients?: [number; 6],
   /// The tangent of the conic section at the start. If not provided the tangent of the previous path segment is used. Incompatible with `coefficients`.
   startTangent?: Point2d,
-  /// The tangent of the conic section at the end. Incompatible with `coefficients`. Incompatible with `coefficients`.
+  /// The tangent of the conic section at the end. Incompatible with `coefficients`.
   endTangent?: Point2d,
   /// Create a new tag which refers to this segment.
   tag?: tag,
   ): Sketch {}
 
-/// Add a parabolic segment to an existing skwtch.
+/// Add a parabolic segment to an existing sketch.
 ///
 /// ```kcl
 /// exampleSketch = startSketchOn(XY)

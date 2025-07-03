@@ -1825,8 +1825,8 @@ async fn inner_elliptic_point(
             Err(KclError::Type {
                 details: KclErrorDetails::new(
                     format!(
-                        "Invalid input. The y value, {}, cannot be larger than the major radius {}.",
-                        y.n, major_radius
+                        "Invalid input. The y value, {}, cannot be larger than the minor radius {}.",
+                        y.n, minor_radius
                     )
                     .to_owned(),
                     vec![args.source_range],
@@ -2416,7 +2416,8 @@ pub(crate) async fn inner_conic(
     {
         return Err(KclError::Type {
             details: KclErrorDetails::new(
-                "Invalid combination of arguments. Either provide coefficients or (startTangent, endTangent)".to_owned(),
+                "Invalid combination of arguments. Either provide coefficients or (startTangent, endTangent)"
+                    .to_owned(),
                 vec![args.source_range],
             ),
         });
