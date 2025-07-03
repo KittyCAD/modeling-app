@@ -462,6 +462,39 @@ impl PlaneInfo {
             z_axis: self.z_axis,
         })
     }
+
+    pub(crate) fn is_right_handed(&self) -> bool {
+        // Katie's formula:
+        // dot(cross(x, y), z) ~= sqrt(dot(x, x) * dot(y, y) * dot(z, z))
+        let lhs = self
+            .x_axis
+            .axes_cross_product(&self.y_axis)
+            .axes_dot_product(&self.z_axis);
+        let rhs_x = self.x_axis.axes_dot_product(&self.x_axis);
+        let rhs_y = self.y_axis.axes_dot_product(&self.y_axis);
+        let rhs_z = self.z_axis.axes_dot_product(&self.z_axis);
+        let rhs = (rhs_x * rhs_y * rhs_z).sqrt();
+        // Check LHS ~= RHS
+        (lhs - rhs).abs() <= 0.0001
+    }
+
+    #[cfg(test)]
+    pub(crate) fn is_left_handed(&self) -> bool {
+        !self.is_right_handed()
+    }
+
+    pub(crate) fn make_right_handed(self) -> Self {
+        if self.is_right_handed() {
+            return self;
+        }
+        // To make it right-handed, negate X, i.e. rotate the plane 180 degrees.
+        Self {
+            origin: self.origin,
+            x_axis: self.x_axis.negated(),
+            y_axis: self.y_axis,
+            z_axis: self.z_axis,
+        }
+    }
 }
 
 impl TryFrom<PlaneData> for PlaneInfo {
@@ -921,6 +954,17 @@ impl Point3d {
         }
     }
 
+    /// Calculate the dot product of this vector with another.
+    ///
+    /// This should only be applied to axes or other vectors which represent only a direction (and
+    /// no magnitude) since units are ignored.
+    pub fn axes_dot_product(&self, other: &Self) -> f64 {
+        let x = self.x * other.x;
+        let y = self.y * other.y;
+        let z = self.z * other.z;
+        x + y + z
+    }
+
     pub fn normalize(&self) -> Self {
         let len = f64::sqrt(self.x * self.x + self.y * self.y + self.z * self.z);
         Point3d {
@@ -935,6 +979,15 @@ impl Point3d {
         let p = [self.x, self.y, self.z];
         let u = self.units;
         (p, u)
+    }
+
+    pub(crate) fn negated(self) -> Self {
+        Self {
+            x: -self.x,
+            y: -self.y,
+            z: -self.z,
+            units: self.units,
+        }
     }
 }
 
