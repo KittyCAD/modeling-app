@@ -2,11 +2,7 @@ import type { FunctionExpression } from '@rust/kcl-lib/bindings/FunctionExpressi
 import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { TypeDeclaration } from '@rust/kcl-lib/bindings/TypeDeclaration'
-import {
-  createLocalName,
-  createPipeSubstitution,
-  createArrayExpression,
-} from '@src/lang/create'
+import { createLocalName, createPipeSubstitution } from '@src/lang/create'
 import type { ToolTip } from '@src/lang/langHelpers'
 import { splitPathAtLastIndex } from '@src/lang/modifyAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
@@ -1079,16 +1075,18 @@ export function getVariableExprsFromSelection(
           // Pointing to same variable case
           paths.push(nodeToEdit)
           exprs.push(createPipeSubstitution())
+          continue
         }
       }
       // Pointing to different variable case
       paths.push(sketchVariable.deepPath)
       exprs.push(createLocalName(name))
-    } else {
-      // No variable case
-      paths.push(sketchVariable.deepPath)
-      exprs.push(createPipeSubstitution())
+      continue
     }
+
+    // No variable case
+    paths.push(sketchVariable.deepPath)
+    exprs.push(createPipeSubstitution())
   }
 
   if (exprs.length === 0) {
@@ -1096,44 +1094,6 @@ export function getVariableExprsFromSelection(
   }
 
   return { exprs, paths }
-}
-
-// Create an array expression for variables,
-// or keep it null if all are PipeSubstitutions
-export function createVariableExpressionsArray(sketches: Expr[]) {
-  let sketchesExpr: Expr | null = null
-  if (sketches.every((s) => s.type === 'PipeSubstitution')) {
-    // Keeping null so we don't even put it the % sign
-  } else if (sketches.length === 1) {
-    sketchesExpr = sketches[0]
-  } else {
-    sketchesExpr = createArrayExpression(sketches)
-  }
-  return sketchesExpr
-}
-
-// Create a path to node to the last variable declaroator of an ast
-// Optionally, can point to the first kwarg of the CallExpressionKw
-export function createPathToNodeForLastVariable(
-  ast: Node<Program>,
-  toFirstKwarg = true
-): PathToNode {
-  const argIndex = 0 // first kwarg for all sweeps here
-  const pathToCall: PathToNode = [
-    ['body', ''],
-    [ast.body.length - 1, 'index'],
-    ['declaration', 'VariableDeclaration'],
-    ['init', 'VariableDeclarator'],
-  ]
-  if (toFirstKwarg) {
-    pathToCall.push(
-      ['arguments', 'CallExpressionKw'],
-      [argIndex, ARG_INDEX_FIELD],
-      ['arg', LABELED_ARG_FIELD]
-    )
-  }
-
-  return pathToCall
 }
 
 // Go from the sketches argument in a KCL sweep call declaration

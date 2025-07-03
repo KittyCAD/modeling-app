@@ -72,7 +72,7 @@ import {
   addRevolve,
   addSweep,
   getAxisExpressionAndIndex,
-} from '@src/lang/modifyAst/addSweep'
+} from '@src/lang/modifyAst/sweeps'
 import {
   applyIntersectFromTargetOperatorSelections,
   applySubtractFromTargetOperatorSelections,
