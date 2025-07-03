@@ -28,12 +28,12 @@ async function getAstAndSketchSelections(code: string) {
 }
 
 async function getKclCommandValue(value: string) {
-    const result = await stringToKclExpression(value)
-    if (err(result) || 'errors' in result) {
-      throw new Error(`Couldn't create kcl expression`)
-    }
+  const result = await stringToKclExpression(value)
+  if (err(result) || 'errors' in result) {
+    throw new Error(`Couldn't create kcl expression`)
+  }
 
-    return result
+  return result
 }
 
 describe('Testing addExtrude', () => {
@@ -80,5 +80,36 @@ profile001 = circle(sketch001, center = [0, 0], radius = 1)
     const newCode = recast(result.modifiedAst)
     expect(newCode).toContain(code)
     expect(newCode).toContain(`extrude001 = extrude(profile001, length = 3)`)
+  })
+
+  it('should push an extrude call with all optional args if asked', async () => {
+    const code = `sketch001 = startSketchOn(XY)
+profile001 = circle(sketch001, center = [0, 0], radius = 1)
+`
+    const { ast, sketches } = await getAstAndSketchSelections(code)
+    const length = await getKclCommandValue('10')
+    const symmetric = true
+    const bidirectionalLength = await getKclCommandValue('20')
+    const twistAngle = await getKclCommandValue('30')
+    const result = addExtrude({
+      ast,
+      sketches,
+      length,
+      symmetric,
+      bidirectionalLength,
+      twistAngle,
+    })
+    if (err(result)) {
+      return { reason: 'Error while adding extrude' }
+    }
+    const newCode = recast(result.modifiedAst)
+    expect(newCode).toContain(code)
+    expect(newCode).toContain(`extrude001 = extrude(
+  profile001,
+  length = 10,
+  symmetric = true,
+  bidirectionalLength = 20,
+  twistAngle = 30,
+)`)
   })
 })
