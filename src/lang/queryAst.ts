@@ -1079,7 +1079,7 @@ export function getVariableExprsFromSelection(
     } else {
       const directLookup = getNodeFromPath<VariableDeclaration>(
         ast,
-        s?.codeRef.pathToNode,
+        s.codeRef.pathToNode,
         'VariableDeclaration'
       )
       if (err(directLookup)) {
@@ -1110,6 +1110,14 @@ export function getVariableExprsFromSelection(
       // Pointing to different variable case
       paths.push(variable.deepPath)
       exprs.push(createLocalName(name))
+      continue
+    }
+
+    // import case
+    const importNodeAndAlias = findImportNodeAndAlias(ast, s.codeRef.pathToNode)
+    if (importNodeAndAlias) {
+      paths.push(s.codeRef.pathToNode)
+      exprs.push(createLocalName(importNodeAndAlias.alias))
       continue
     }
 

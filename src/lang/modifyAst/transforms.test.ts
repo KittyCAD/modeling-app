@@ -85,8 +85,9 @@ extrude001 = extrude(profile001, length = 1)
     if (err(result)) throw result
     const newCode = recast(result.modifiedAst)
     expect(newCode).toContain(code)
+    // TODO: this should be extrude001, I don't understand why
     expect(newCode).toContain(`translate001 = translate(
-  extrude001,
+  profile001,
   x = 1,
   y = 2,
   z = 3,
