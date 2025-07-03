@@ -464,7 +464,18 @@ impl PlaneInfo {
     }
 
     pub(crate) fn is_right_handed(&self) -> bool {
-        self.x_axis.axes_cross_product(&self.y_axis).normalize() == self.z_axis.normalize()
+        // Katie's formula:
+        // dot(cross(x, y), z) ~= sqrt(dot(x, x) * dot(y, y) * dot(z, z))
+        let lhs = self
+            .x_axis
+            .axes_cross_product(&self.y_axis)
+            .axes_dot_product(&self.z_axis);
+        let rhs_x = self.x_axis.axes_dot_product(&self.x_axis);
+        let rhs_y = self.y_axis.axes_dot_product(&self.y_axis);
+        let rhs_z = self.z_axis.axes_dot_product(&self.z_axis);
+        let rhs = (rhs_x * rhs_y * rhs_z).sqrt();
+        // Check LHS ~= RHS
+        (lhs - rhs).abs() <= 0.0001
     }
 
     #[cfg(test)]
@@ -941,6 +952,17 @@ impl Point3d {
             z: self.x * other.y - self.y * other.x,
             units: UnitLen::Unknown,
         }
+    }
+
+    /// Calculate the dot product of this vector with another.
+    ///
+    /// This should only be applied to axes or other vectors which represent only a direction (and
+    /// no magnitude) since units are ignored.
+    pub fn axes_dot_product(&self, other: &Self) -> f64 {
+        let x = self.x * other.x;
+        let y = self.y * other.y;
+        let z = self.z * other.z;
+        x + y + z
     }
 
     pub fn normalize(&self) -> Self {
