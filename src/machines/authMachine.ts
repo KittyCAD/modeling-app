@@ -41,7 +41,7 @@ console.log('Initial persisted token')
 console.table([
   ['cookie', !!persistedCookie],
   ['local storage', !!persistedLocalStorage],
-  ['dev token', !!persistedDevToken],
+  ['api token', !!persistedDevToken],
 ])
 
 export const authMachine = setup({
@@ -199,7 +199,7 @@ async function getAndSyncStoredToken(input: {
   // dev mode
   if (VITE_KC_DEV_TOKEN) {
     console.log('Token used for authentication')
-    console.table([['dev token', !!VITE_KC_DEV_TOKEN]])
+    console.table([['api token', !!VITE_KC_DEV_TOKEN]])
     return VITE_KC_DEV_TOKEN
   }
 
@@ -213,7 +213,7 @@ async function getAndSyncStoredToken(input: {
     ['persisted token', !!inputToken],
     ['cookie', !!cookieToken],
     ['local storage', !!localStorageToken],
-    ['dev token', !!VITE_KC_DEV_TOKEN],
+    ['api token', !!VITE_KC_DEV_TOKEN],
   ])
   if (token) {
     // has just logged in, update storage
