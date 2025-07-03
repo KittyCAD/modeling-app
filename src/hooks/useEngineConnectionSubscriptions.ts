@@ -14,7 +14,11 @@ import {
 import { isTopLevelModule } from '@src/lang/util'
 import type { CallExpressionKw, PathToNode } from '@src/lang/wasm'
 import { defaultSourceRange } from '@src/lang/sourceRange'
-import { getEventForSelectWithPoint } from '@src/lib/selections'
+import {
+  getEventForSelectWithPoint,
+  selectDefaultSketchPlane,
+  selectOffsetSketchPlane,
+} from '@src/lib/selections'
 import {
   editorManager,
   engineCommandManager,
@@ -96,7 +100,7 @@ export function useEngineConnectionSubscriptions() {
               if (!planeOrFaceId) return
 
               const defaultSketchPlaneSelected =
-                sceneInfra.selectDefaultSketchPlane(planeOrFaceId)
+                selectDefaultSketchPlane(planeOrFaceId)
               if (
                 !err(defaultSketchPlaneSelected) &&
                 defaultSketchPlaneSelected
@@ -105,7 +109,7 @@ export function useEngineConnectionSubscriptions() {
               }
 
               const artifact = kclManager.artifactGraph.get(planeOrFaceId)
-              if (await sceneInfra.selectOffsetSketchPlane(artifact)) {
+              if (await selectOffsetSketchPlane(artifact)) {
                 return
               }
 

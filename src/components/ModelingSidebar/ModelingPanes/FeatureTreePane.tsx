@@ -40,6 +40,10 @@ import {
   selectionEventSelector,
 } from '@src/machines/kclEditorMachine'
 import type { Plane } from '@rust/kcl-lib/bindings/Artifact'
+import {
+  selectDefaultSketchPlane,
+  selectOffsetSketchPlane,
+} from '@src/lib/selections'
 
 export const FeatureTreePane = () => {
   const isEditorMounted = useSelector(kclEditorActor, editorIsMountedSelector)
@@ -359,7 +363,7 @@ const OperationItem = (props: {
     if (props.sketchNoFace) {
       if (isOffsetPlane(props.item)) {
         const artifact = findOperationArtifact(props.item)
-        void sceneInfra.selectOffsetSketchPlane(artifact)
+        void selectOffsetSketchPlane(artifact)
       }
     } else {
       if (props.item.type === 'GroupEnd') {
@@ -461,7 +465,7 @@ const OperationItem = (props: {
           data: { forceNewSketch: true },
         })
 
-        void sceneInfra.selectOffsetSketchPlane(artifact)
+        void selectOffsetSketchPlane(artifact)
       }
     }
   }
@@ -614,7 +618,7 @@ const DefaultPlanes = () => {
   const sketchNoFace = modelingState.matches('Sketch no face')
 
   const onClickPlane = useCallback((planeId: string) => {
-    sceneInfra.selectDefaultSketchPlane(planeId)
+    selectDefaultSketchPlane(planeId)
   }, [])
 
   const startSketchOnDefaultPlane = useCallback((planeId: string) => {
@@ -623,7 +627,7 @@ const DefaultPlanes = () => {
       data: { forceNewSketch: true },
     })
 
-    sceneInfra.selectDefaultSketchPlane(planeId)
+    selectDefaultSketchPlane(planeId)
   }, [])
 
   const defaultPlanes = rustContext.defaultPlanes

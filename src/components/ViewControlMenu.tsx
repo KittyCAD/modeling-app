@@ -15,6 +15,10 @@ import { err, reportRejection } from '@src/lib/trap'
 import { useSettings } from '@src/lib/singletons'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import type { Selections } from '@src/lib/selections'
+import {
+  selectDefaultSketchPlane,
+  selectOffsetSketchPlane,
+} from '@src/lib/selections'
 
 export function useViewControlMenuItems() {
   const { state: modelingState, send: modelingSend } = useModelingContext()
@@ -70,7 +74,7 @@ export function useViewControlMenuItems() {
             })
 
             const defaultSketchPlaneSelected =
-              sceneInfra.selectDefaultSketchPlane(selectedPlaneId)
+              selectDefaultSketchPlane(selectedPlaneId)
             if (
               !err(defaultSketchPlaneSelected) &&
               defaultSketchPlaneSelected
@@ -79,7 +83,7 @@ export function useViewControlMenuItems() {
             }
 
             const artifact = kclManager.artifactGraph.get(selectedPlaneId)
-            void sceneInfra.selectOffsetSketchPlane(artifact)
+            void selectOffsetSketchPlane(artifact)
           }
         }}
         disabled={!selectedPlaneId}
