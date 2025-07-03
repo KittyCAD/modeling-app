@@ -1,4 +1,4 @@
-import { VITE_KC_API_BASE_URL } from '@src/env'
+import { withAPIBaseURL } from '@src/lib/withBaseURL'
 
 import EditorManager from '@src/editor/manager'
 import { KclManager } from '@src/lang/KclSingleton'
@@ -171,7 +171,7 @@ const appMachine = setup({
       systemId: BILLING,
       input: {
         ...BILLING_CONTEXT_DEFAULTS,
-        urlUserService: VITE_KC_API_BASE_URL,
+        urlUserService: withAPIBaseURL(''),
       },
     }),
   ],

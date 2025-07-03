@@ -1,5 +1,5 @@
 import { engineCommandManager, kclManager } from '@src/lib/singletons'
-import { VITE_KC_DEV_TOKEN } from '@src/env'
+import { VITE_KITTYCAD_API_TOKEN } from '@src/env'
 import { getModuleIdByFileName, isArray } from '@src/lib/utils'
 import { vi, inject } from 'vitest'
 import { assertParse } from '@src/lang/wasm'
@@ -355,10 +355,9 @@ cases.push(
 beforeAll(async () => {
   await initPromise
 
-  // THESE TEST WILL FAIL without VITE_KC_DEV_TOKEN set in .env.development.local
   await new Promise((resolve) => {
     engineCommandManager.start({
-      token: VITE_KC_DEV_TOKEN,
+      token: VITE_KITTYCAD_API_TOKEN,
       width: 256,
       height: 256,
       setMediaStream: () => {},
