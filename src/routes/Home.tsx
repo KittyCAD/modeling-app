@@ -368,7 +368,7 @@ const Home = () => {
             <li className="contents">
               <ActionButton
                 Element="externalLink"
-                to={withSiteBaseURL('/docs')}
+                to={withSiteBaseURL('/account')}
                 onClick={openExternalBrowserIfDesktop(
                   withSiteBaseURL('/account')
                 )}
