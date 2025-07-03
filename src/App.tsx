@@ -71,8 +71,8 @@ import { Toolbar } from '@src/Toolbar'
 sceneInfra.camControls.engineStreamActor = engineStreamActor
 
 maybeWriteToDisk()
-  .then(() => { })
-  .catch(() => { })
+  .then(() => {})
+  .catch(() => {})
 
 export function App() {
   const { state: modelingState } = useModelingContext()
@@ -277,18 +277,18 @@ export function App() {
         localItems={[
           ...(getSettings().app.showDebugPanel.current
             ? ([
-              {
-                id: 'modeling-state',
-                element: 'text',
-                label:
-                  modelingState.value instanceof Object
-                    ? (xStateValueToString(modelingState.value) ?? '')
-                    : modelingState.value,
-                toolTip: {
-                  children: 'The current state of the modeler',
+                {
+                  id: 'modeling-state',
+                  element: 'text',
+                  label:
+                    modelingState.value instanceof Object
+                      ? (xStateValueToString(modelingState.value) ?? '')
+                      : modelingState.value,
+                  toolTip: {
+                    children: 'The current state of the modeler',
+                  },
                 },
-              },
-            ] satisfies StatusBarItemType[])
+              ] satisfies StatusBarItemType[])
             : []),
           {
             id: 'selection',
