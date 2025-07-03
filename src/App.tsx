@@ -66,7 +66,6 @@ import { getSelectionTypeDisplayText } from '@src/lib/selections'
 import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
 import { Toolbar } from '@src/Toolbar'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
-import { UndoRedoButtons } from './components/UndoRedoButtons'
 
 // CYCLIC REF
 sceneInfra.camControls.engineStreamActor = engineStreamActor
