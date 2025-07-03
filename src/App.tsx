@@ -254,6 +254,12 @@ export function App() {
             project={{ project, file }}
             enableMenu={true}
             nativeFileMenuCreated={nativeFileMenuCreated}
+            projectMenuChildren={
+              <UndoRedoButtons
+                editorManager={editorManager}
+                className="flex items-center gap-1 px-1 border-x border-chalkboard-30 dark:border-chalkboard-80"
+              />
+            }
           >
             <CommandBarOpenButton />
             <ShareButton />
