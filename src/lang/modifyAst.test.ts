@@ -5,6 +5,7 @@ import {
   createIdentifier,
   createLiteral,
   createLiteralMaybeSuffix,
+  createLocalName,
   createObjectExpression,
   createPipeExpression,
   createPipeSubstitution,
@@ -14,6 +15,7 @@ import {
 } from '@src/lang/create'
 import {
   addSketchTo,
+  createVariableExpressionsArray,
   deleteSegmentFromPipeExpression,
   moveValueIntoNewVariable,
   sketchOnExtrudedFace,
@@ -915,5 +917,80 @@ extrude001 = extrude(part001, length = 5)
 
     const result = splitPipedProfile(ast, pathToPipe)
     expect(result instanceof Error).toBe(true)
+  })
+})
+
+describe('Testing createVariableExpressionsArray', () => {
+  it('should return null for any number of pipe substitutions', () => {
+    const onePipe = [createPipeSubstitution()]
+    const twoPipes = [createPipeSubstitution(), createPipeSubstitution()]
+    const threePipes = [
+      createPipeSubstitution(),
+      createPipeSubstitution(),
+      createPipeSubstitution(),
+    ]
+    expect(createVariableExpressionsArray(onePipe)).toBeNull()
+    expect(createVariableExpressionsArray(twoPipes)).toBeNull()
+    expect(createVariableExpressionsArray(threePipes)).toBeNull()
+  })
+
+  it('should create a variable expressions for one variable', () => {
+    const oneVariableName = [createLocalName('var1')]
+    const expr = createVariableExpressionsArray(oneVariableName)
+    if (expr?.type !== 'Name') {
+      throw new Error(`Expected Literal type, got ${expr?.type}`)
+    }
+
+    expect(expr.name.name).toBe('var1')
+  })
+
+  it('should create an array of variable expressions for two variables', () => {
+    const twoVariableNames = [createLocalName('var1'), createLocalName('var2')]
+    const exprs = createVariableExpressionsArray(twoVariableNames)
+    if (exprs?.type !== 'ArrayExpression') {
+      throw new Error('Expected ArrayExpression type')
+    }
+
+    expect(exprs.elements).toHaveLength(2)
+    if (
+      exprs.elements[0].type !== 'Name' ||
+      exprs.elements[1].type !== 'Name'
+    ) {
+      throw new Error(
+        `Expected elements to be of type Name, got ${exprs.elements[0].type} and ${exprs.elements[1].type}`
+      )
+    }
+    expect(exprs.elements[0].name.name).toBe('var1')
+    expect(exprs.elements[1].name.name).toBe('var2')
+  })
+
+  // This would catch the issue at https://github.com/KittyCAD/modeling-app/issues/7669
+  // TODO: fix function to get this test to pass
+  // it('should create one expr if the array of variable names are the same', () => {
+  //   const twoVariableNames = [createLocalName('var1'), createLocalName('var1')]
+  //   const expr = createVariableExpressionsArray(twoVariableNames)
+  //   if (expr?.type !== 'Name') {
+  //     throw new Error(`Expected Literal type, got ${expr?.type}`)
+  //   }
+
+  //   expect(expr.name.name).toBe('var1')
+  // })
+
+  it('should create an array of variable expressions for one variable and a pipe', () => {
+    const oneVarOnePipe = [createPipeSubstitution(), createLocalName('var1')]
+    const exprs = createVariableExpressionsArray(oneVarOnePipe)
+    if (exprs?.type !== 'ArrayExpression') {
+      throw new Error('Expected ArrayExpression type')
+    }
+
+    expect(exprs.elements).toHaveLength(2)
+    expect(exprs.elements[0].type).toBe('PipeSubstitution')
+    if (exprs.elements[1].type !== 'Name') {
+      throw new Error(
+        `Expected elements[1] to be of type Name, got ${exprs.elements[1].type}`
+      )
+    }
+
+    expect(exprs.elements[1].name.name).toBe('var1')
   })
 })
