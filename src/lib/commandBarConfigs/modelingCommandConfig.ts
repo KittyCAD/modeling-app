@@ -1085,12 +1085,11 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       objects: {
         // selectionMixed allows for feature tree selection of module imports
-        inputType: 'selectionMixed',
-        multiple: false,
-        required: true,
-        skip: true,
-        selectionTypes: ['path'],
+        inputType: 'selection',
+        selectionTypes: ['path', 'sweep'],
         selectionFilter: ['object'],
+        multiple: true,
+        required: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       x: {

@@ -56,6 +56,10 @@ import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import type { UnaryExpression } from 'typescript'
 import type { NumericType } from '@rust/kcl-lib/bindings/NumericType'
+import {
+  findAllChildrenAndOrderByPlaceInCode,
+  getLastVariable,
+} from '@src/lang/modifyAst/boolean'
 
 /**
  * Retrieves a node from a given path within a Program node structure, optionally stopping at a specified node type.
@@ -1045,32 +1049,57 @@ export const valueOrVariable = (variable: KclCommandValue) => {
 export function getVariableExprsFromSelection(
   selection: Selections,
   ast: Node<Program>,
-  nodeToEdit?: PathToNode
+  nodeToEdit?: PathToNode,
+  lastChildLookup = false,
+  artifactGraph?: ArtifactGraph
 ): Error | { exprs: Expr[]; paths: PathToNode[] } {
   const paths: PathToNode[] = []
   const exprs: Expr[] = []
   for (const s of selection.graphSelections) {
-    const sketchVariable = getNodeFromPath<VariableDeclarator>(
-      ast,
-      s?.codeRef.pathToNode,
-      'VariableDeclarator'
-    )
-    if (err(sketchVariable)) {
-      continue
+    let variable:
+      | {
+          node: VariableDeclaration
+          shallowPath: PathToNode
+          deepPath: PathToNode
+        }
+      | undefined
+    if (lastChildLookup && s.artifact && artifactGraph) {
+      console.log('we are looking for last child variable', s.artifact)
+      console.log('artifactGraph', artifactGraph)
+      const children = findAllChildrenAndOrderByPlaceInCode(
+        s.artifact,
+        artifactGraph
+      )
+      console.log('found children', children)
+      const lastChildVariable = getLastVariable(children, ast)
+      if (!lastChildVariable) {
+        continue
+      }
+      variable = lastChildVariable.variableDeclaration
+    } else {
+      const directLookup = getNodeFromPath<VariableDeclaration>(
+        ast,
+        s?.codeRef.pathToNode,
+        'VariableDeclaration'
+      )
+      if (err(directLookup)) {
+        continue
+      }
+      variable = directLookup
     }
 
-    if (sketchVariable.node.id) {
-      const name = sketchVariable.node?.id.name
+    if (variable.node.declaration?.id) {
+      const name = variable.node.declaration.id.name
       if (nodeToEdit) {
-        const result = getNodeFromPath<VariableDeclarator>(
+        const result = getNodeFromPath<VariableDeclaration>(
           ast,
           nodeToEdit,
-          'VariableDeclarator'
+          'VariableDeclaration'
         )
         if (
           !err(result) &&
-          result.node.type === 'VariableDeclarator' &&
-          name === result.node.id.name
+          result.node.type === 'VariableDeclaration' &&
+          name === result.node.declaration.id.name
         ) {
           // Pointing to same variable case
           paths.push(nodeToEdit)
@@ -1079,13 +1108,13 @@ export function getVariableExprsFromSelection(
         }
       }
       // Pointing to different variable case
-      paths.push(sketchVariable.deepPath)
+      paths.push(variable.deepPath)
       exprs.push(createLocalName(name))
       continue
     }
 
     // No variable case
-    paths.push(sketchVariable.deepPath)
+    paths.push(variable.deepPath)
     exprs.push(createPipeSubstitution())
   }
 

@@ -7,12 +7,8 @@ import {
   createLiteral,
   createLocalName,
   createPipeExpression,
-  createVariableDeclaration,
-  findUniqueName,
 } from '@src/lang/create'
 import {
-  createPathToNodeForLastVariable,
-  createVariableExpressionsArray,
   getNodeFromPath,
   getVariableExprsFromSelection,
   valueOrVariable,
@@ -33,12 +29,16 @@ import {
   getLastVariable,
 } from '@src/lang/modifyAst/boolean'
 import type { Selections } from '@src/lib/selections'
-import { KclCommandValue } from '@src/lib/commandTypes'
-import { insertVariableAndOffsetPathToNode } from '../modifyAst'
-import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
+import type { KclCommandValue } from '@src/lib/commandTypes'
+import {
+  createVariableExpressionsArray,
+  insertVariableAndOffsetPathToNode,
+  setCallInAst,
+} from '@src/lang/modifyAst'
 
-export function setTranslate({
+export function addTranslate({
   ast,
+  artifactGraph,
   objects,
   x,
   y,
@@ -47,12 +47,13 @@ export function setTranslate({
   nodeToEdit,
 }: {
   ast: Node<Program>
+  artifactGraph: ArtifactGraph
   objects: Selections
   x: KclCommandValue
   y: KclCommandValue
   z: KclCommandValue
   global?: boolean
-  nodeToEdit: PathToNode
+  nodeToEdit?: PathToNode
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   // 1. Clone the ast so we can edit it
   const modifiedAst = structuredClone(ast)
@@ -62,7 +63,9 @@ export function setTranslate({
   const variableExpressions = getVariableExprsFromSelection(
     objects,
     modifiedAst,
-    nodeToEdit
+    nodeToEdit,
+    true,
+    artifactGraph
   )
   if (err(variableExpressions)) {
     return variableExpressions
@@ -93,42 +96,10 @@ export function setTranslate({
 
   // 3. If edit, we assign the new function call declaration to the existing node,
   // otherwise just push to the end
-  let pathToNode: PathToNode | undefined
-  if (nodeToEdit) {
-    const result = getNodeFromPath<CallExpressionKw>(
-      modifiedAst,
-      nodeToEdit,
-      'CallExpressionKw'
-    )
-    if (err(result)) {
-      return result
-    }
-
-    Object.assign(result.node, call)
-    pathToNode = nodeToEdit
-  } else {
-    const lastPathToNode: PathToNode | undefined =
-      variableExpressions.paths.pop()
-    if (objectsExpr === null && lastPathToNode) {
-      const pipe = getNodeFromPath<PipeExpression>(
-        modifiedAst,
-        lastPathToNode,
-        'PipeExpression'
-      )
-      if (err(pipe)) {
-        return pipe
-      }
-      pipe.node.body.push(call)
-      pathToNode = lastPathToNode
-    } else {
-      const name = findUniqueName(
-        modifiedAst,
-        KCL_DEFAULT_CONSTANT_PREFIXES.TRANSLATE
-      )
-      const declaration = createVariableDeclaration(name, call)
-      modifiedAst.body.push(declaration)
-      pathToNode = createPathToNodeForLastVariable(modifiedAst)
-    }
+  const lastPath = variableExpressions.paths.pop() // TODO: check if this is correct
+  const pathToNode = setCallInAst(modifiedAst, call, nodeToEdit, lastPath)
+  if (err(pathToNode)) {
+    return pathToNode
   }
 
   return {

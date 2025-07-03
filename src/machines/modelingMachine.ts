@@ -84,12 +84,12 @@ import {
 } from '@src/lang/modifyAst/deleteSelection'
 import { setAppearance } from '@src/lang/modifyAst/setAppearance'
 import {
-  setTranslate,
+  addTranslate,
   setRotate,
   insertExpressionNode,
   retrievePathToNodeFromTransformSelection,
   setScale,
-} from '@src/lang/modifyAst/setTransform'
+} from '@src/lang/modifyAst/transforms'
 import {
   getNodeFromPath,
   findPipesWithImportAlias,
@@ -3319,9 +3319,11 @@ export const modelingMachine = setup({
         }
 
         const ast = kclManager.ast
-        const result = setTranslate({
+        const artifactGraph = kclManager.artifactGraph
+        const result = addTranslate({
           ...input,
           ast,
+          artifactGraph,
         })
         if (err(result)) {
           return Promise.reject(result)
