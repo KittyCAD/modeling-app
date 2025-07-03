@@ -185,6 +185,22 @@ export const interactionMap: Record<
         'Available when a file or folder is selected in the file tree.',
     },
   ],
+  Miscellaneous: [
+    {
+      name: 'undo',
+      sequence: `${PRIMARY}+Z`,
+      title: 'Undo',
+      description:
+        'Available while modeling and writing code. Currently only steps back in modeling history, or code history.',
+    },
+    {
+      name: 'redo',
+      sequence: `${PRIMARY}+Shift+Z`,
+      title: 'Redo',
+      description:
+        'Available while modeling and writing code. Currently only steps forward in modeling history, or code history.',
+    },
+  ],
 }
 
 /**
