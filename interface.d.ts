@@ -79,7 +79,6 @@ export interface IElectronAPI {
       VITE_KC_SITE_BASE_URL: string
       VITE_KC_SITE_APP_URL: string
       VITE_KC_CONNECTION_TIMEOUT_MS: string
-      VITE_KITTYCAD_API_TOKEN: string
       NODE_ENV: string
       PROD: string
       DEV: string
