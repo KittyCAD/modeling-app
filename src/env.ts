@@ -8,7 +8,7 @@ export const NODE_ENV = env.NODE_ENV as string | undefined
 export const VITE_KC_API_WS_MODELING_URL = env.VITE_KC_API_WS_MODELING_URL as
   | string
   | undefined
-export const VITE_KITTYCAD_API_URL = env.VITE_KITTYCAD_API_URL
+export const VITE_KITTYCAD_API_BASE_URL = env.VITE_KITTYCAD_API_BASE_URL
 export const VITE_KC_SITE_BASE_URL = env.VITE_KC_SITE_BASE_URL
 export const VITE_KC_SITE_APP_URL = env.VITE_KC_SITE_APP_URL
 export const VITE_KC_CONNECTION_TIMEOUT_MS =

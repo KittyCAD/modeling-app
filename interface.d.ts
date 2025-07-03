@@ -75,7 +75,7 @@ export interface IElectronAPI {
       IS_PLAYWRIGHT: string
       VITE_KITTYCAD_API_TOKEN: string
       VITE_KC_API_WS_MODELING_URL: string
-      VITE_KITTYCAD_API_URL: string
+      VITE_KITTYCAD_API_BASE_URL: string
       VITE_KC_SITE_BASE_URL: string
       VITE_KC_SITE_APP_URL: string
       VITE_KC_CONNECTION_TIMEOUT_MS: string
