@@ -13,6 +13,7 @@ import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
 import { authActor } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
+import { withSiteBaseURL } from '@src/lib/withBaseURL'
 
 type User = Models['User_type']
 
@@ -62,7 +63,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
         {
           id: 'account',
           Element: 'externalLink',
-          to: 'https://zoo.dev/account',
+          to: withSiteBaseURL('/account'),
           children: (
             <>
               <span className="flex-1">Manage account</span>

@@ -6,7 +6,6 @@ import { Link } from 'react-router-dom'
 import { ActionButton } from '@src/components/ActionButton'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { Logo } from '@src/components/Logo'
-import { VITE_KC_API_BASE_URL, VITE_KC_SITE_BASE_URL } from '@src/env'
 import { APP_NAME } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
@@ -15,6 +14,7 @@ import { reportRejection } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
 import { authActor, useSettings } from '@src/lib/singletons'
 import { APP_VERSION, generateSignInUrl } from '@src/routes/utils'
+import { withAPIBaseURL, withSiteBaseURL } from '@src/lib/withBaseURL'
 
 const subtleBorder =
   'border border-solid border-chalkboard-30 dark:border-chalkboard-80'
@@ -36,7 +36,7 @@ const SignIn = () => {
     app: { theme },
   } = useSettings()
   const signInUrl = generateSignInUrl()
-  const kclSampleUrl = `${VITE_KC_SITE_BASE_URL}/docs/kcl-samples/car-wheel-assembly`
+  const kclSampleUrl = withSiteBaseURL('/docs/kcl-samples/car-wheel-assembly')
 
   const getThemeText = useCallback(
     (shouldContrast = true) =>
@@ -54,7 +54,7 @@ const SignIn = () => {
   const signInDesktop = async () => {
     // We want to invoke our command to login via device auth.
     const userCodeToDisplay = await window.electron
-      .startDeviceFlow(VITE_KC_API_BASE_URL + location.search)
+      .startDeviceFlow(withAPIBaseURL(location.search))
       .catch(reportError)
     if (!userCodeToDisplay) {
       console.error('No user code received while trying to log in')
@@ -260,7 +260,7 @@ const SignIn = () => {
               <div className="flex gap-4 flex-wrap items-center">
                 <ActionButton
                   Element="externalLink"
-                  to="https://zoo.dev/docs/kcl-samples/pillow-block-bearing"
+                  to={withSiteBaseURL('/docs/kcl-samples/pillow-block-bearing')}
                   iconStart={{
                     icon: 'settings',
                     bgClassName: '!bg-transparent',
@@ -273,7 +273,7 @@ const SignIn = () => {
                 </ActionButton>
                 <ActionButton
                   Element="externalLink"
-                  to="https://zoo.dev/docs/zoo-design-studio/text-to-cad"
+                  to={withSiteBaseURL('/docs/zoo-design-studio/text-to-cad')}
                   iconStart={{
                     icon: 'sparkles',
                     bgClassName: '!bg-transparent',
@@ -296,7 +296,7 @@ const SignIn = () => {
               <div className="flex gap-4 flex-wrap items-center">
                 <ActionButton
                   Element="externalLink"
-                  to="https://zoo.dev/design-api"
+                  to={withSiteBaseURL('/design-api')}
                   iconStart={{ icon: 'sketch', bgClassName: '!bg-transparent' }}
                   className="!bg-primary !text-chalkboard-10 !border-transarent"
                 >
@@ -304,7 +304,7 @@ const SignIn = () => {
                 </ActionButton>
                 <ActionButton
                   Element="externalLink"
-                  to="https://zoo.dev/machine-learning-api"
+                  to={withSiteBaseURL('/machine-learning-api')}
                   iconStart={{
                     icon: 'elephant',
                     bgClassName: '!bg-transparent',
