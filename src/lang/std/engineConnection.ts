@@ -400,7 +400,7 @@ class EngineConnection extends EventTarget {
       this.send({
         type: 'headers',
         headers: {
-          Authorization: `Bearer ${env().VITE_KC_DEV_TOKEN}`,
+          Authorization: `Bearer ${env().VITE_KITTYCAD_API_TOKEN}`,
         },
       })
     }

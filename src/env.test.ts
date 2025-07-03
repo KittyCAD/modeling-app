@@ -8,20 +8,20 @@ describe('@src/env default export', () => {
     const expected = {
       NODE_ENV: 'test',
       VITE_KC_API_WS_MODELING_URL: 'wss://api.dev.zoo.dev/ws/modeling/commands',
-      VITE_KC_API_BASE_URL: 'https://api.dev.zoo.dev',
+      VITE_KITTYCAD_API_BASE_URL: 'https://api.dev.zoo.dev',
       VITE_KC_SITE_BASE_URL: 'https://dev.zoo.dev',
       VITE_KC_SITE_APP_URL: 'https://app.dev.zoo.dev',
       VITE_KC_CONNECTION_TIMEOUT_MS: '5000',
-      VITE_KC_DEV_TOKEN: 'redacted',
+      VITE_KITTYCAD_API_TOKEN: 'redacted',
       PROD: undefined,
       TEST: 'true',
       DEV: '1',
       CI: undefined,
     }
     const actual = env()
-    expect(typeof actual.VITE_KC_DEV_TOKEN).toBe('string')
+    expect(typeof actual.VITE_KITTYCAD_API_TOKEN).toBe('string')
     //@ts-ignore I do not want this token in our logs for any reason.
-    actual.VITE_KC_DEV_TOKEN = 'redacted'
+    actual.VITE_KITTYCAD_API_TOKEN = 'redacted'
     expect(actual).toStrictEqual(expected)
   })
   describe('viteEnv', () => {
@@ -32,12 +32,12 @@ describe('@src/env default export', () => {
       expect(typeof actual.NODE_ENV).toBe('string')
       // Not passed in during tests?
       expect(typeof actual.VITE_KC_WS_MODELING_URL).toBe('undefined')
-      expect(typeof actual.VITE_KC_API_BASE_URL).toBe('string')
+      expect(typeof actual.VITE_KITTYCAD_API_BASE_URL).toBe('string')
       expect(typeof actual.VITE_KC_SITE_BASE_URL).toBe('string')
       // Not passed in during tests?
       expect(typeof actual.VITE_KC_SITE_API_URL).toBe('undefined')
       expect(typeof actual.VITE_KC_CONNECTION_TIMEOUT_MS).toBe('string')
-      expect(typeof actual.VITE_KC_DEV_TOKEN).toBe('string')
+      expect(typeof actual.VITE_KITTYCAD_API_TOKEN).toBe('string')
       expect(typeof actual.PROD).toBe('boolean')
       expect(typeof actual.TEST).toBe('string')
       expect(typeof actual.DEV).toBe('boolean')
@@ -58,11 +58,11 @@ describe('@src/env default export', () => {
               NODE_ENV: 'test',
               VITE_KC_API_WS_MODELING_URL:
                 'wss://api.dev.zoo.dev/ws/modeling/commands',
-              VITE_KC_API_BASE_URL: 'https://api.dev.zoo.dev',
+              VITE_KITTYCAD_API_BASE_URL: 'https://api.dev.zoo.dev',
               VITE_KC_SITE_BASE_URL: 'https://dev.zoo.dev',
               VITE_KC_SITE_APP_URL: 'https://app.dev.zoo.dev',
               VITE_KC_CONNECTION_TIMEOUT_MS: '5000',
-              VITE_KC_DEV_TOKEN: 'redacted',
+              VITE_KITTYCAD_API_TOKEN: 'redacted',
               PROD: undefined,
               TEST: 'true',
               DEV: '1',
@@ -74,11 +74,11 @@ describe('@src/env default export', () => {
           NODE_ENV: 'test',
           VITE_KC_API_WS_MODELING_URL:
             'wss://api.dev.zoo.dev/ws/modeling/commands',
-          VITE_KC_API_BASE_URL: 'https://api.dev.zoo.dev',
+          VITE_KITTYCAD_API_BASE_URL: 'https://api.dev.zoo.dev',
           VITE_KC_SITE_BASE_URL: 'https://dev.zoo.dev',
           VITE_KC_SITE_APP_URL: 'https://app.dev.zoo.dev',
           VITE_KC_CONNECTION_TIMEOUT_MS: '5000',
-          VITE_KC_DEV_TOKEN: 'redacted',
+          VITE_KITTYCAD_API_TOKEN: 'redacted',
           PROD: undefined,
           TEST: 'true',
           DEV: '1',
@@ -106,12 +106,12 @@ describe('@src/env default export', () => {
       expect(typeof actual?.NODE_ENV).toBe('string')
       // Not passed in during tests?
       expect(typeof actual?.VITE_KC_WS_MODELING_URL).toBe('undefined')
-      expect(typeof actual?.VITE_KC_API_BASE_URL).toBe('string')
+      expect(typeof actual?.VITE_KITTYCAD_API_BASE_URL).toBe('string')
       expect(typeof actual?.VITE_KC_SITE_BASE_URL).toBe('string')
       // Not passed in during tests?
       expect(typeof actual?.VITE_KC_SITE_API_URL).toBe('undefined')
       expect(typeof actual?.VITE_KC_CONNECTION_TIMEOUT_MS).toBe('string')
-      expect(typeof actual?.VITE_KC_DEV_TOKEN).toBe('string')
+      expect(typeof actual?.VITE_KITTYCAD_API_TOKEN).toBe('string')
       expect(typeof actual?.PROD).toBe('string')
       expect(typeof actual?.TEST).toBe('string')
       expect(typeof actual?.DEV).toBe('string')

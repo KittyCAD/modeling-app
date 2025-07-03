@@ -29,10 +29,9 @@ import { removeSingleConstraintInfo } from '@src/lang/modifyAst'
 beforeAll(async () => {
   await initPromise
 
-  // THESE TEST WILL FAIL without VITE_KC_DEV_TOKEN set in .env.development.local
   await new Promise((resolve) => {
     engineCommandManager.start({
-      token: env().VITE_KC_DEV_TOKEN,
+      token: env().VITE_KITTYCAD_API_TOKEN,
       width: 256,
       height: 256,
       setMediaStream: () => {},
