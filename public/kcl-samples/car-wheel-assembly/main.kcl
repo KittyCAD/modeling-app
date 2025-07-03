@@ -15,14 +15,14 @@ import "car-tire.kcl" as carTire
 import * from "parameters.kcl"
 
 // Place the car rotor
-carRotor
+rotor = carRotor
   |> translate(x = 0, y = 0.5, z = 0)
 
 // Place the car wheel
 carWheel
 
 // Place the lug nuts
-lugNut
+lgnut = lugNut
   |> patternCircular3d(
        arcDegrees = 360,
        axis = [0, 1, 0],
@@ -32,8 +32,19 @@ lugNut
      )
 
 // Place the brake caliper
-brakeCaliper
+cal = brakeCaliper
   |> translate(x = 0, y = 0.5, z = 0)
 
 // Place the car tire
 carTire
+
+
+fn animate(step: number(_)) {
+  angle = 0.6deg
+  rotate(rotor, pitch = angle)
+  rotate(lgnut, pitch = angle)
+  rotate(cal, pitch = angle)
+  rotate(carWheel, pitch = angle)
+  rotate(carTire, pitch = angle)
+  return 0
+}
