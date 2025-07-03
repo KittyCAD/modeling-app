@@ -52,7 +52,6 @@ import {
   addOffsetPlane,
   addShell,
   insertNamedConstant,
-  insertVariableAndOffsetPathToNode,
   replaceValueAtNodePath,
 } from '@src/lang/modifyAst'
 import type {
@@ -85,15 +84,12 @@ import {
 import { setAppearance } from '@src/lang/modifyAst/setAppearance'
 import {
   addTranslate,
-  setRotate,
-  insertExpressionNode,
+  addRotate,
+  addScale,
   retrievePathToNodeFromTransformSelection,
-  setScale,
 } from '@src/lang/modifyAst/transforms'
 import {
   getNodeFromPath,
-  findPipesWithImportAlias,
-  findImportNodeAndAlias,
   isNodeSafeToReplacePath,
   stringifyPathToNode,
   updatePathToNodesAfterEdit,
@@ -3354,58 +3350,11 @@ export const modelingMachine = setup({
         }
 
         const ast = kclManager.ast
-        const modifiedAst = structuredClone(ast)
-        const { roll, pitch, yaw, global, nodeToEdit, selection } = input
-        let pathToNode = nodeToEdit
-        if (!(pathToNode && typeof pathToNode[1][0] === 'number')) {
-          const result = retrievePathToNodeFromTransformSelection(
-            selection,
-            kclManager.artifactGraph,
-            ast
-          )
-          if (err(result)) {
-            return Promise.reject(result)
-          }
-
-          pathToNode = result
-        }
-
-        // Look for the last pipe with the import alias and a call to rotate, with a fallback to translate.
-        // Otherwise create one
-        const importNodeAndAlias = findImportNodeAndAlias(ast, pathToNode)
-        if (importNodeAndAlias) {
-          const pipes = findPipesWithImportAlias(ast, pathToNode, 'rotate')
-          const lastPipe = pipes.at(-1)
-          if (lastPipe && lastPipe.pathToNode) {
-            pathToNode = lastPipe.pathToNode
-          } else {
-            const otherRelevantPipes = findPipesWithImportAlias(
-              ast,
-              pathToNode,
-              'translate'
-            )
-            const lastRelevantPipe = otherRelevantPipes.at(-1)
-            if (lastRelevantPipe && lastRelevantPipe.pathToNode) {
-              pathToNode = lastRelevantPipe.pathToNode
-            } else {
-              pathToNode = insertExpressionNode(
-                modifiedAst,
-                importNodeAndAlias.alias
-              )
-            }
-          }
-        }
-
-        insertVariableAndOffsetPathToNode(roll, modifiedAst, pathToNode)
-        insertVariableAndOffsetPathToNode(pitch, modifiedAst, pathToNode)
-        insertVariableAndOffsetPathToNode(yaw, modifiedAst, pathToNode)
-        const result = setRotate({
-          pathToNode,
-          modifiedAst,
-          roll: valueOrVariable(roll),
-          pitch: valueOrVariable(pitch),
-          yaw: valueOrVariable(yaw),
-          global,
+        const artifactGraph = kclManager.artifactGraph
+        const result = addRotate({
+          ...input,
+          ast,
+          artifactGraph,
         })
         if (err(result)) {
           return Promise.reject(result)
@@ -3436,58 +3385,11 @@ export const modelingMachine = setup({
         }
 
         const ast = kclManager.ast
-        const modifiedAst = structuredClone(ast)
-        const { x, y, z, global, nodeToEdit, selection } = input
-        let pathToNode = nodeToEdit
-        if (!(pathToNode && typeof pathToNode[1][0] === 'number')) {
-          const result = retrievePathToNodeFromTransformSelection(
-            selection,
-            kclManager.artifactGraph,
-            ast
-          )
-          if (err(result)) {
-            return Promise.reject(result)
-          }
-
-          pathToNode = result
-        }
-
-        // Look for the last pipe with the import alias and a call to translate, with a fallback to rotate.
-        // Otherwise create one
-        const importNodeAndAlias = findImportNodeAndAlias(ast, pathToNode)
-        if (importNodeAndAlias) {
-          const pipes = findPipesWithImportAlias(ast, pathToNode, 'translate')
-          const lastPipe = pipes.at(-1)
-          if (lastPipe && lastPipe.pathToNode) {
-            pathToNode = lastPipe.pathToNode
-          } else {
-            const otherRelevantPipes = findPipesWithImportAlias(
-              ast,
-              pathToNode,
-              'rotate'
-            )
-            const lastRelevantPipe = otherRelevantPipes.at(-1)
-            if (lastRelevantPipe && lastRelevantPipe.pathToNode) {
-              pathToNode = lastRelevantPipe.pathToNode
-            } else {
-              pathToNode = insertExpressionNode(
-                modifiedAst,
-                importNodeAndAlias.alias
-              )
-            }
-          }
-        }
-
-        insertVariableAndOffsetPathToNode(x, modifiedAst, pathToNode)
-        insertVariableAndOffsetPathToNode(y, modifiedAst, pathToNode)
-        insertVariableAndOffsetPathToNode(z, modifiedAst, pathToNode)
-        const result = setScale({
-          pathToNode,
-          modifiedAst,
-          x: valueOrVariable(x),
-          y: valueOrVariable(y),
-          z: valueOrVariable(z),
-          global,
+        const artifactGraph = kclManager.artifactGraph
+        const result = addScale({
+          ...input,
+          ast,
+          artifactGraph,
         })
         if (err(result)) {
           return Promise.reject(result)

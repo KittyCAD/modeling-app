@@ -2,27 +2,14 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 
 import {
   createCallExpressionStdLibKw,
-  createExpressionStatement,
   createLabeledArg,
   createLiteral,
-  createLocalName,
-  createPipeExpression,
 } from '@src/lang/create'
 import {
-  getNodeFromPath,
   getVariableExprsFromSelection,
   valueOrVariable,
 } from '@src/lang/queryAst'
-import type {
-  ArtifactGraph,
-  CallExpressionKw,
-  Expr,
-  ExpressionStatement,
-  PathToNode,
-  PipeExpression,
-  Program,
-  VariableDeclarator,
-} from '@src/lang/wasm'
+import type { ArtifactGraph, PathToNode, Program } from '@src/lang/wasm'
 import { err } from '@src/lib/trap'
 import {
   findAllChildrenAndOrderByPlaceInCode,
@@ -108,45 +95,70 @@ export function addTranslate({
   }
 }
 
-export function setRotate({
-  modifiedAst,
-  pathToNode,
+export function addRotate({
+  ast,
+  artifactGraph,
+  objects,
   roll,
   pitch,
   yaw,
   global,
+  nodeToEdit,
 }: {
-  modifiedAst: Node<Program>
-  pathToNode: PathToNode
-  roll: Expr
-  pitch: Expr
-  yaw: Expr
+  ast: Node<Program>
+  artifactGraph: ArtifactGraph
+  objects: Selections
+  roll: KclCommandValue
+  pitch: KclCommandValue
+  yaw: KclCommandValue
   global?: boolean
+  nodeToEdit?: PathToNode
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
+  // 1. Clone the ast so we can edit it
+  const modifiedAst = structuredClone(ast)
+
+  // 2. Prepare unlabeled and labeled arguments
+  // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
+  const variableExpressions = getVariableExprsFromSelection(
+    objects,
+    modifiedAst,
+    nodeToEdit,
+    true,
+    artifactGraph
+  )
+  if (err(variableExpressions)) {
+    return variableExpressions
+  }
+
   // Extra labeled args expression
   const globalExpr = global
     ? [createLabeledArg('global', createLiteral(global))]
     : []
-  const noPercentSign = null
-  const call = createCallExpressionStdLibKw('rotate', noPercentSign, [
-    createLabeledArg('roll', roll),
-    createLabeledArg('pitch', pitch),
-    createLabeledArg('yaw', yaw),
+  const objectsExpr = createVariableExpressionsArray(variableExpressions.exprs)
+  const call = createCallExpressionStdLibKw('rotate', objectsExpr, [
+    createLabeledArg('roll', valueOrVariable(roll)),
+    createLabeledArg('pitch', valueOrVariable(pitch)),
+    createLabeledArg('yaw', valueOrVariable(yaw)),
     ...globalExpr,
   ])
 
-  const potentialPipe = getNodeFromPath<PipeExpression>(
-    modifiedAst,
-    pathToNode,
-    ['PipeExpression']
-  )
-  if (!err(potentialPipe) && potentialPipe.node.type === 'PipeExpression') {
-    setTransformInPipe(potentialPipe.node, call)
-  } else {
-    const error = createPipeWithTransform(modifiedAst, pathToNode, call)
-    if (err(error)) {
-      return error
-    }
+  // Insert variables for labeled arguments if provided
+  if ('variableName' in roll && roll.variableName) {
+    insertVariableAndOffsetPathToNode(roll, modifiedAst, nodeToEdit)
+  }
+  if ('variableName' in roll && roll.variableName) {
+    insertVariableAndOffsetPathToNode(roll, modifiedAst, nodeToEdit)
+  }
+  if ('variableName' in roll && roll.variableName) {
+    insertVariableAndOffsetPathToNode(roll, modifiedAst, nodeToEdit)
+  }
+
+  // 3. If edit, we assign the new function call declaration to the existing node,
+  // otherwise just push to the end
+  const lastPath = variableExpressions.paths.pop() // TODO: check if this is correct
+  const pathToNode = setCallInAst(modifiedAst, call, nodeToEdit, lastPath)
+  if (err(pathToNode)) {
+    return pathToNode
   }
 
   return {
@@ -155,106 +167,76 @@ export function setRotate({
   }
 }
 
-export function setScale({
-  modifiedAst,
-  pathToNode,
+export function addScale({
+  ast,
+  artifactGraph,
+  objects,
   x,
   y,
   z,
   global,
+  nodeToEdit,
 }: {
-  modifiedAst: Node<Program>
-  pathToNode: PathToNode
-  x: Expr
-  y: Expr
-  z: Expr
+  ast: Node<Program>
+  artifactGraph: ArtifactGraph
+  objects: Selections
+  x: KclCommandValue
+  y: KclCommandValue
+  z: KclCommandValue
   global?: boolean
+  nodeToEdit?: PathToNode
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
+  // 1. Clone the ast so we can edit it
+  const modifiedAst = structuredClone(ast)
+
+  // 2. Prepare unlabeled and labeled arguments
+  // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
+  const variableExpressions = getVariableExprsFromSelection(
+    objects,
+    modifiedAst,
+    nodeToEdit,
+    true,
+    artifactGraph
+  )
+  if (err(variableExpressions)) {
+    return variableExpressions
+  }
+
   // Extra labeled args expression
   const globalExpr = global
     ? [createLabeledArg('global', createLiteral(global))]
     : []
-  const noPercentSign = null
-  const call = createCallExpressionStdLibKw('scale', noPercentSign, [
-    createLabeledArg('x', x),
-    createLabeledArg('y', y),
-    createLabeledArg('z', z),
+  const objectsExpr = createVariableExpressionsArray(variableExpressions.exprs)
+  const call = createCallExpressionStdLibKw('scale', objectsExpr, [
+    createLabeledArg('x', valueOrVariable(x)),
+    createLabeledArg('y', valueOrVariable(y)),
+    createLabeledArg('z', valueOrVariable(z)),
     ...globalExpr,
   ])
 
-  const potentialPipe = getNodeFromPath<PipeExpression>(
-    modifiedAst,
-    pathToNode,
-    ['PipeExpression']
-  )
-  if (!err(potentialPipe) && potentialPipe.node.type === 'PipeExpression') {
-    setTransformInPipe(potentialPipe.node, call)
-  } else {
-    const error = createPipeWithTransform(modifiedAst, pathToNode, call)
-    if (err(error)) {
-      return error
-    }
+  // Insert variables for labeled arguments if provided
+  if ('variableName' in x && x.variableName) {
+    insertVariableAndOffsetPathToNode(x, modifiedAst, nodeToEdit)
+  }
+  if ('variableName' in y && y.variableName) {
+    insertVariableAndOffsetPathToNode(y, modifiedAst, nodeToEdit)
+  }
+  if ('variableName' in z && z.variableName) {
+    insertVariableAndOffsetPathToNode(z, modifiedAst, nodeToEdit)
+  }
+
+  // 3. If edit, we assign the new function call declaration to the existing node,
+  // otherwise just push to the end
+  const lastPath = variableExpressions.paths.pop() // TODO: check if this is correct
+  const pathToNode = setCallInAst(modifiedAst, call, nodeToEdit, lastPath)
+  if (err(pathToNode)) {
+    return pathToNode
   }
 
   return {
     modifiedAst,
     pathToNode,
   }
-}
-
-function setTransformInPipe(
-  expression: PipeExpression,
-  call: Node<CallExpressionKw>
-) {
-  const existingIndex = expression.body.findIndex(
-    (v) =>
-      v.type === 'CallExpressionKw' &&
-      v.callee.type === 'Name' &&
-      v.callee.name.name === call.callee.name.name
-  )
-  if (existingIndex > -1) {
-    expression.body[existingIndex] = call
-  } else {
-    expression.body.push(call)
-  }
-}
-
-function createPipeWithTransform(
-  modifiedAst: Node<Program>,
-  pathToNode: PathToNode,
-  call: Node<CallExpressionKw>
-) {
-  const existingCall = getNodeFromPath<
-    VariableDeclarator | ExpressionStatement
-  >(modifiedAst, pathToNode, ['VariableDeclarator', 'ExpressionStatement'])
-  if (err(existingCall)) {
-    return new Error('Unsupported operation type.')
-  }
-
-  if (existingCall.node.type === 'ExpressionStatement') {
-    existingCall.node.expression = createPipeExpression([
-      existingCall.node.expression,
-      call,
-    ])
-  } else if (existingCall.node.type === 'VariableDeclarator') {
-    existingCall.node.init = createPipeExpression([
-      existingCall.node.init,
-      call,
-    ])
-  } else {
-    return new Error('Unsupported operation type.')
-  }
-}
-
-export function insertExpressionNode(ast: Node<Program>, alias: string) {
-  const expression = createExpressionStatement(createLocalName(alias))
-  ast.body.push(expression)
-  const pathToNode: PathToNode = [
-    ['body', ''],
-    [ast.body.length - 1, 'index'],
-    ['expression', 'Name'],
-  ]
-  return pathToNode
 }
 
 export function retrievePathToNodeFromTransformSelection(
