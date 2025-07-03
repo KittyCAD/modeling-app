@@ -215,8 +215,15 @@ pub fn common(
         z_axis: x_vec.axes_cross_product(&y_vec),
     };
 
+    let plane_equal_excluding_z = |plane: &&PlaneInfo, plane_info: &PlaneInfo| {
+        plane.origin == plane_info.origin && plane.x_axis == plane_info.x_axis && plane.y_axis == plane_info.y_axis
+    };
+
     // Return early if we have a default plane.
-    if let Some((name, _)) = DEFAULT_PLANE_INFO.iter().find(|(_, plane)| **plane == plane_info) {
+    if let Some((name, _)) = DEFAULT_PLANE_INFO
+        .iter()
+        .find(|(_, plane)| plane_equal_excluding_z(plane, &plane_info))
+    {
         return Ok(Some((call_source_range, *name, 0.0)));
     }
 
