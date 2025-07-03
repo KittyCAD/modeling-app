@@ -958,6 +958,7 @@ impl From<Point3d> for Point3D {
         Self { x: p.x, y: p.y, z: p.z }
     }
 }
+
 impl From<Point3d> for kittycad_modeling_cmds::shared::Point3d<LengthUnit> {
     fn from(p: Point3d) -> Self {
         Self {
@@ -1023,12 +1024,12 @@ pub struct BasePath {
 impl BasePath {
     pub fn get_to(&self) -> [TyF64; 2] {
         let ty: NumericType = self.units.into();
-        [TyF64::new(self.to[0], ty.clone()), TyF64::new(self.to[1], ty)]
+        [TyF64::new(self.to[0], ty), TyF64::new(self.to[1], ty)]
     }
 
     pub fn get_from(&self) -> [TyF64; 2] {
         let ty: NumericType = self.units.into();
-        [TyF64::new(self.from[0], ty.clone()), TyF64::new(self.from[1], ty)]
+        [TyF64::new(self.from[0], ty), TyF64::new(self.from[1], ty)]
     }
 }
 
@@ -1049,7 +1050,7 @@ pub struct GeoMeta {
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum Path {
-    /// A path that goes to a point.
+    /// A straight line which ends at the given point.
     ToPoint {
         #[serde(flatten)]
         base: BasePath,
@@ -1269,14 +1270,14 @@ impl Path {
     pub fn get_from(&self) -> [TyF64; 2] {
         let p = &self.get_base().from;
         let ty: NumericType = self.get_base().units.into();
-        [TyF64::new(p[0], ty.clone()), TyF64::new(p[1], ty)]
+        [TyF64::new(p[0], ty), TyF64::new(p[1], ty)]
     }
 
     /// Where does this path segment end?
     pub fn get_to(&self) -> [TyF64; 2] {
         let p = &self.get_base().to;
         let ty: NumericType = self.get_base().units.into();
-        [TyF64::new(p[0], ty.clone()), TyF64::new(p[1], ty)]
+        [TyF64::new(p[0], ty), TyF64::new(p[1], ty)]
     }
 
     /// The path segment start point and its type.

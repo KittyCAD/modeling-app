@@ -161,6 +161,9 @@ impl BinaryPart {
             BinaryPart::CallExpressionKw(ce) => ce.compute_digest(),
             BinaryPart::UnaryExpression(ue) => ue.compute_digest(),
             BinaryPart::MemberExpression(me) => me.compute_digest(),
+            BinaryPart::ArrayExpression(e) => e.compute_digest(),
+            BinaryPart::ArrayRangeExpression(e) => e.compute_digest(),
+            BinaryPart::ObjectExpression(e) => e.compute_digest(),
             BinaryPart::IfExpression(e) => e.compute_digest(),
             BinaryPart::AscribedExpression(e) => e.compute_digest(),
         }

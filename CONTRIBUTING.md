@@ -235,6 +235,47 @@ To display logging (to the terminal or console) set `ZOO_LOG=1`. This will log s
 
 To enable memory metrics, build with `--features dhat-heap`.
 
+## Running scripts
+
+There are multiple scripts under the folder path `./scripts` which can be used in various settings.
+
+### Pattern for a static file, npm run commands, and CI-CD checks
+
+If you want to implement a static checker follow this pattern. Two static checkers we have are circular dependency checks in our typescript code and url checker to see if any hard coded URL is the typescript application 404s. We have a set of known files in `./scripts/known/*.txt` which is the baseline.
+
+If you improve the baseline, run the overwrite command and commit the new smaller baseline. Try not to make the baseline bigger, the CI CD will complain.
+These baselines are to hold us to higher standards and help implement automated testing against the repository
+
+#### Output result to stdout
+- `npm run circular-deps`
+- `npm run url-checker`
+
+- create a `<name>.sh` file that will run the static checker then output the result to `stdout`
+
+#### Overwrite result to known .txt file on disk
+
+If the application needs to overwrite the known file on disk use this pattern. This known .txt file will be source controlled as the baseline
+
+- `npm run circular-deps:overwrite`
+- `npm run url-checker:overwrite`
+
+#### Diff baseline and current 
+
+These commands will write a /tmp/ file on disk and compare it to the known file in the repository. This command will also be used in the CI CD pipeline for automated checks
+
+- create a `diff-<name>.sh` file that is the script to diff your tmp file to the baseline
+e.g. `diff-url-checker.sh`
+```bash
+#!/bin/bash
+set -euo pipefail
+
+npm run url-checker > /tmp/urls.txt
+diff --ignore-blank-lines -w /tmp/urls.txt ./scripts/known/urls.txt
+```
+
+- `npm run circular-deps:diff`
+- `npm run url-checker:diff`
+
 ## Proposing changes
 
 Before you submit a contribution PR to this repo, please ensure that:

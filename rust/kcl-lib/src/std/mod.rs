@@ -288,6 +288,14 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::sketch::elliptic_point(e, a)),
             StdFnProps::default("std::sketch::ellipticPoint"),
         ),
+        ("sketch", "rectangle") => (
+            |e, a| Box::pin(crate::std::shapes::rectangle(e, a)),
+            StdFnProps::default("std::sketch::rectangle"),
+        ),
+        ("sketch", "planeOf") => (
+            |e, a| Box::pin(crate::std::planes::plane_of(e, a)),
+            StdFnProps::default("std::sketch::planeOf"),
+        ),
         ("sketch", "extrude") => (
             |e, a| Box::pin(crate::std::extrude::extrude(e, a)),
             StdFnProps::default("std::sketch::extrude").include_in_feature_tree(),

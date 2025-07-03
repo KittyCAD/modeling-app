@@ -8,6 +8,7 @@ import {
   isOverlap,
   onDragNumberCalculation,
   roundOff,
+  roundOffWithUnits,
   simulateOnMouseDragMatch,
 } from '@src/lib/utils'
 
@@ -40,6 +41,48 @@ describe('testing roundOff', () => {
   })
   it('rounds up ok', () => {
     expect(roundOff(1.273456789, 1)).toBe(1.3)
+  })
+})
+
+describe('roundOffWithUnits', () => {
+  it('works with no units', () => {
+    expect(roundOffWithUnits('1.23456789')).toBe('1.23')
+    expect(roundOffWithUnits('1.23456789', 3)).toBe('1.235')
+    expect(roundOffWithUnits('1.', 3)).toBe('1')
+    expect(roundOffWithUnits('-1.23456789')).toBe('-1.23')
+    expect(roundOffWithUnits('-1.23456789', 3)).toBe('-1.235')
+    expect(roundOffWithUnits('-1.', 3)).toBe('-1')
+  })
+  it('works with standard units', () => {
+    expect(roundOffWithUnits('1.23456789mm', 3)).toBe('1.235mm')
+    expect(roundOffWithUnits('1.23456789m', 3)).toBe('1.235m')
+    expect(roundOffWithUnits('1.23456789in', 3)).toBe('1.235in')
+    expect(roundOffWithUnits('1.23456789_', 3)).toBe('1.235_')
+    expect(roundOffWithUnits('1._', 3)).toBe('1_')
+    expect(roundOffWithUnits('-1.23456789mm', 3)).toBe('-1.235mm')
+    expect(roundOffWithUnits('-1.23456789m', 3)).toBe('-1.235m')
+    expect(roundOffWithUnits('-1.23456789in', 3)).toBe('-1.235in')
+    expect(roundOffWithUnits('-1.23456789_', 3)).toBe('-1.235_')
+    expect(roundOffWithUnits('-1._', 3)).toBe('-1_')
+    expect(roundOffWithUnits('1.23456789e3mm', 3)).toBe('1234.568mm')
+    expect(roundOffWithUnits('1.23456789e3m', 3)).toBe('1234.568m')
+    expect(roundOffWithUnits('1.23456789e3in', 3)).toBe('1234.568in')
+    expect(roundOffWithUnits('1.23456789e3_', 3)).toBe('1234.568_')
+    expect(roundOffWithUnits('1.e3_', 3)).toBe('1000_')
+    expect(roundOffWithUnits('1e3_', 3)).toBe('1000_')
+    expect(roundOffWithUnits('1.23456789e-3mm', 3)).toBe('0.001mm')
+    expect(roundOffWithUnits('1.23456789e-3m', 3)).toBe('0.001m')
+    expect(roundOffWithUnits('1.23456789e-3in', 3)).toBe('0.001in')
+    expect(roundOffWithUnits('1.23456789e-3_', 3)).toBe('0.001_')
+    expect(roundOffWithUnits('1.e-3_', 3)).toBe('0.001_')
+    expect(roundOffWithUnits('1e-3_', 3)).toBe('0.001_')
+  })
+  it('works with weird units', () => {
+    expect(roundOffWithUnits('1.23456789_?', 3)).toBe('1.235_?')
+    expect(roundOffWithUnits('-1.23456789_?', 3)).toBe('-1.235_?')
+  })
+  it('returns the original string when used with something not parsable as a number', () => {
+    expect(roundOffWithUnits('foo', 3)).toBe('foo')
   })
 })
 

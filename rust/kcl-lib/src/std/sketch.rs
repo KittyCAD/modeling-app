@@ -602,7 +602,7 @@ async fn inner_angled_line_of_x_length(
     }
 
     let to = get_y_component(Angle::from_degrees(angle_degrees), length.n);
-    let to = [TyF64::new(to[0], length.ty.clone()), TyF64::new(to[1], length.ty)];
+    let to = [TyF64::new(to[0], length.ty), TyF64::new(to[1], length.ty)];
 
     let new_sketch = straight_line(StraightLineParams::relative(to, sketch, tag), exec_state, args).await?;
 
@@ -669,7 +669,7 @@ async fn inner_angled_line_of_y_length(
     }
 
     let to = get_x_component(Angle::from_degrees(angle_degrees), length.n);
-    let to = [TyF64::new(to[0], length.ty.clone()), TyF64::new(to[1], length.ty)];
+    let to = [TyF64::new(to[0], length.ty), TyF64::new(to[1], length.ty)];
 
     let new_sketch = straight_line(StraightLineParams::relative(to, sketch, tag), exec_state, args).await?;
 
