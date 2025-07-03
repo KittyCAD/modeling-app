@@ -4,6 +4,8 @@
 
 URL  STATUS
 000  https://${BASE_URL}
+405  https://api.dev.zoo.dev/oauth2/token/revoke
+401  https://api.dev.zoo.dev/users
 301  https://discord.gg/JQEpHR7Nt2
 404  https://github.com/KittyCAD/engine/issues/3528
 404  https://github.com/KittyCAD/modeling-app/commit/${ref}

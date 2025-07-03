@@ -7,7 +7,7 @@ import {
   LanguageServerClient,
   LspWorkerEventType,
 } from '@kittycad/codemirror-lsp-client'
-import { TEST, VITE_KITTYCAD_API_URL } from '@src/env'
+import { TEST } from '@src/env'
 import React, { createContext, useContext, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import type * as LSP from 'vscode-languageserver-protocol'
@@ -28,6 +28,7 @@ import type { FileEntry } from '@src/lib/project'
 import { codeManager } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
 import { useToken } from '@src/lib/singletons'
+import { withAPIBaseURL } from '@src/lib/withBaseURL'
 
 function getWorkspaceFolders(): LSP.WorkspaceFolder[] {
   return []
@@ -85,7 +86,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
     const initEvent: KclWorkerOptions = {
       wasmUrl: wasmUrl(),
       token: token,
-      apiBaseUrl: VITE_KITTYCAD_API_URL,
+      apiBaseUrl: withAPIBaseURL(''),
     }
     lspWorker.postMessage({
       worker: LspWorker.Kcl,
@@ -178,7 +179,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
     const initEvent: CopilotWorkerOptions = {
       wasmUrl: wasmUrl(),
       token: token,
-      apiBaseUrl: VITE_KITTYCAD_API_URL,
+      apiBaseUrl: withAPIBaseURL(''),
     }
     lspWorker.postMessage({
       worker: LspWorker.Copilot,

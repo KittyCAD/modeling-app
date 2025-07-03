@@ -1,5 +1,5 @@
 import type { Models } from '@kittycad/lib'
-import { VITE_KITTYCAD_API_URL, VITE_KITTYCAD_API_TOKEN } from '@src/env'
+import { VITE_KITTYCAD_API_TOKEN } from '@src/env'
 import { assign, fromPromise, setup } from 'xstate'
 
 import { COOKIE_NAME, OAUTH2_DEVICE_CLIENT_ID } from '@src/lib/constants'
@@ -10,10 +10,7 @@ import {
 } from '@src/lib/desktop'
 import { isDesktop } from '@src/lib/isDesktop'
 import { markOnce } from '@src/lib/performance'
-import {
-  default as withBaseURL,
-  default as withBaseUrl,
-} from '@src/lib/withBaseURL'
+import { withAPIBaseURL } from '@src/lib/withBaseURL'
 import { ACTOR_IDS } from '@src/machines/machineConstants'
 
 export interface UserContext {
@@ -31,11 +28,21 @@ export type Events =
     }
 
 export const TOKEN_PERSIST_KEY = 'TOKEN_PERSIST_KEY'
+
+/**
+ * Determine which token do we have persisted to initialize the auth machine
+ */
+const persistedCookie = getCookie(COOKIE_NAME)
+const persistedLocalStorage = localStorage?.getItem(TOKEN_PERSIST_KEY) || ''
+const persistedDevToken = VITE_KITTYCAD_API_TOKEN
 export const persistedToken =
-  VITE_KITTYCAD_API_TOKEN ||
-  getCookie(COOKIE_NAME) ||
-  localStorage?.getItem(TOKEN_PERSIST_KEY) ||
-  ''
+  persistedDevToken || persistedCookie || persistedLocalStorage
+console.log('Initial persisted token')
+console.table([
+  ['cookie', !!persistedCookie],
+  ['local storage', !!persistedLocalStorage],
+  ['api token', !!persistedDevToken],
+])
 
 export const authMachine = setup({
   types: {} as {
@@ -132,7 +139,7 @@ export const authMachine = setup({
 
 async function getUser(input: { token?: string }) {
   const token = await getAndSyncStoredToken(input)
-  const url = withBaseURL('/user')
+  const url = withAPIBaseURL('/user')
   const headers: { [key: string]: string } = {
     'Content-Type': 'application/json',
   }
@@ -141,7 +148,7 @@ async function getUser(input: { token?: string }) {
   if (token) headers['Authorization'] = `Bearer ${token}`
 
   const userPromise = isDesktop()
-    ? getUserDesktop(token, VITE_KITTYCAD_API_URL)
+    ? getUserDesktop(token)
     : fetch(url, {
         method: 'GET',
         credentials: 'include',
@@ -190,12 +197,24 @@ async function getAndSyncStoredToken(input: {
   token?: string
 }): Promise<string> {
   // dev mode
-  if (VITE_KITTYCAD_API_TOKEN) return VITE_KITTYCAD_API_TOKEN
+  if (VITE_KITTYCAD_API_TOKEN) {
+    console.log('Token used for authentication')
+    console.table([['api token', !!VITE_KITTYCAD_API_TOKEN]])
+    return VITE_KITTYCAD_API_TOKEN
+  }
 
-  const token =
-    input.token && input.token !== ''
-      ? input.token
-      : getCookie(COOKIE_NAME) || localStorage?.getItem(TOKEN_PERSIST_KEY) || ''
+  const inputToken = input.token && input.token !== '' ? input.token : ''
+  const cookieToken = getCookie(COOKIE_NAME)
+  const localStorageToken = localStorage?.getItem(TOKEN_PERSIST_KEY) || ''
+  const token = inputToken || cookieToken || localStorageToken
+
+  console.log('Token used for authentication')
+  console.table([
+    ['persisted token', !!inputToken],
+    ['cookie', !!cookieToken],
+    ['local storage', !!localStorageToken],
+    ['api token', !!VITE_KITTYCAD_API_TOKEN],
+  ])
   if (token) {
     // has just logged in, update storage
     localStorage.setItem(TOKEN_PERSIST_KEY, token)
@@ -221,7 +240,7 @@ async function logout() {
 
       if (token) {
         try {
-          await fetch(withBaseUrl('/oauth2/token/revoke'), {
+          await fetch(withAPIBaseURL('/oauth2/token/revoke'), {
             method: 'POST',
             credentials: 'include',
             headers: {
@@ -244,7 +263,7 @@ async function logout() {
     }
   }
 
-  return fetch(withBaseUrl('/logout'), {
+  return fetch(withAPIBaseURL('/logout'), {
     method: 'POST',
     credentials: 'include',
   })
