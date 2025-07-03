@@ -1,4 +1,4 @@
-import { VITE_KC_DEV_TOKEN } from '@src/env'
+import env from '@src/env'
 
 import { createLiteral } from '@src/lang/create'
 import type {
@@ -43,7 +43,7 @@ beforeAll(async () => {
   // THESE TEST WILL FAIL without VITE_KC_DEV_TOKEN set in .env.development.local
   await new Promise((resolve) => {
     engineCommandManager.start({
-      token: VITE_KC_DEV_TOKEN,
+      token: env().VITE_KC_DEV_TOKEN,
       width: 256,
       height: 256,
       setMediaStream: () => {},

@@ -1,4 +1,4 @@
-import { NODE_ENV } from '@src/env'
+import env from '@src/env'
 import { isDesktop } from '@src/lib/isDesktop'
 import {
   IS_PLAYWRIGHT_KEY,
@@ -10,7 +10,7 @@ import { withSiteBaseURL } from '@src/lib/withBaseURL'
 const isTestEnv = window?.localStorage.getItem(IS_PLAYWRIGHT_KEY) === 'true'
 
 export const APP_VERSION =
-  isTestEnv && NODE_ENV === 'development'
+  isTestEnv && env().NODE_ENV === 'development'
     ? '11.22.33'
     : isDesktop()
       ? // @ts-ignore

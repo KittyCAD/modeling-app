@@ -1,5 +1,5 @@
 import type { Models } from '@kittycad/lib'
-import { VITE_KC_API_WS_MODELING_URL, VITE_KC_DEV_TOKEN } from '@src/env'
+import env from '@src/env'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { BSON } from 'bson'
 
@@ -387,7 +387,7 @@ class EngineConnection extends EventTarget {
 
   // SHOULD ONLY BE USED FOR VITESTS
   connectLite(callback: () => void) {
-    const url = `${VITE_KC_API_WS_MODELING_URL}?video_res_width=${256}&video_res_height=${256}`
+    const url = `${env().VITE_KC_API_WS_MODELING_URL}?video_res_width=${256}&video_res_height=${256}`
 
     this.websocket = new WebSocket(url, [])
     this.websocket.binaryType = 'arraybuffer'
@@ -400,7 +400,7 @@ class EngineConnection extends EventTarget {
       this.send({
         type: 'headers',
         headers: {
-          Authorization: `Bearer ${VITE_KC_DEV_TOKEN}`,
+          Authorization: `Bearer ${env().VITE_KC_DEV_TOKEN}`,
         },
       })
     }
@@ -1531,7 +1531,7 @@ export class EngineCommandManager extends EventTarget {
     additionalSettings +=
       '&show_grid=' + (this.settings.showScaleGrid ? 'true' : 'false')
     const pool = !this.settings.pool ? '' : `&pool=${this.settings.pool}`
-    const url = `${VITE_KC_API_WS_MODELING_URL}?video_res_width=${width}&video_res_height=${height}${additionalSettings}${pool}`
+    const url = `${env().VITE_KC_API_WS_MODELING_URL}?video_res_width=${width}&video_res_height=${height}${additionalSettings}${pool}`
     this.engineConnection = new EngineConnection({
       engineCommandManager: this,
       url,
