@@ -10,6 +10,7 @@ import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { kclManager } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import { commandBarActor, settingsActor } from '@src/lib/singletons'
+import { PauseKclExecutionButton } from '@src/components/PauseKclExecutionButton'
 
 import styles from './KclEditorMenu.module.css'
 
@@ -123,6 +124,11 @@ export const KclEditorMenu = ({ children }: PropsWithChildren) => {
                 />
               </small>
             </a>
+          </Menu.Item>
+          <Menu.Item>
+            <div className={styles.button + ' flex items-center justify-between'}>
+              <PauseKclExecutionButton />
+            </div>
           </Menu.Item>
         </Menu.Items>
       </div>
