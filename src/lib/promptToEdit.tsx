@@ -28,6 +28,7 @@ import type { File as KittyCadLibFile } from '@kittycad/lib/dist/types/src/model
 import type { FileMeta } from '@src/lib/types'
 import type { RequestedKCLFile } from '@src/machines/systemIO/utils'
 import { withAPIBaseURL, withSiteBaseURL } from '@src/lib/withBaseURL'
+import env from '@src/env'
 
 type KclFileMetaMap = {
   [execStateFileNamesIndex: number]: Extract<FileMeta, { type: 'kcl' }>
@@ -76,6 +77,8 @@ async function submitTextToCadRequest(
     formData.append('files', file.data, file.name)
   })
 
+  console.log(env(), 'huh?')
+  console.log(new Error().stack)
   const response = await fetch(
     withAPIBaseURL('/ml/text-to-cad/multi-file/iteration'),
     {
