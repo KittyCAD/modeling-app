@@ -568,7 +568,7 @@ async fn inner_ellipse(
     let units = ty.expect_length();
 
     let from = [center_u[0] + major_radius.to_length_units(units), center_u[1]];
-    let from_t = [TyF64::new(from[0], ty.clone()), TyF64::new(from[1], ty)];
+    let from_t = [TyF64::new(from[0], ty), TyF64::new(from[1], ty)];
 
     let sketch =
         crate::std::sketch::inner_start_profile(sketch_surface, from_t, None, exec_state, args.clone()).await?;
