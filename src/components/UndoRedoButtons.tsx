@@ -16,7 +16,7 @@ export function UndoRedoButtons({
       <button
         type="button"
         onClick={() => editorManager.undo()}
-        className="p-0 border-transparent dark:border-transparent focus-visible:border-chalkboard-100"
+        className="p-0 m-0 border-transparent dark:border-transparent focus-visible:border-chalkboard-100"
       >
         <CustomIcon name="arrowRotateLeft" className="w-6 h-6" />
         <Tooltip
@@ -32,7 +32,7 @@ export function UndoRedoButtons({
       <button
         type="button"
         onClick={() => editorManager.redo()}
-        className="p-0 border-transparent dark:border-transparent focus-visible:border-chalkboard-100"
+        className="p-0 m-0 border-transparent dark:border-transparent focus-visible:border-chalkboard-100"
       >
         <CustomIcon name="arrowRotateRight" className="w-6 h-6" />
         <Tooltip
