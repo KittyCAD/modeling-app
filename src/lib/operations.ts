@@ -5,6 +5,7 @@ import {
   getNodeFromPath,
   findPipesWithImportAlias,
   getSketchSelectionsFromOperation,
+  getObjectSelectionsFromOperation,
 } from '@src/lang/queryAst'
 import type { Artifact } from '@src/lang/std/artifactGraph'
 import {
@@ -1523,67 +1524,88 @@ export async function enterAppearanceFlow({
   )
 }
 
-async function prepareToEditTranslate({ operation }: EnterEditFlowProps) {
+async function prepareToEditTranslate({
+  operation,
+  artifact,
+}: EnterEditFlowProps) {
   const baseCommand = {
     name: 'Translate',
     groupId: 'modeling',
   }
-  const isModuleImport = operation.type === 'GroupBegin'
-  const isSupportedStdLibCall =
-    operation.type === 'StdLibCall' &&
-    stdLibMap[operation.name]?.supportsTransform
-  if (!isModuleImport && !isSupportedStdLibCall) {
-    return {
-      reason: 'Unsupported operation type. Please edit in the code editor.',
-    }
+  // const isModuleImport = operation.type === 'GroupBegin'
+  // const isSupportedStdLibCall =
+  //   operation.type === 'StdLibCall' &&
+  //   stdLibMap[operation.name]?.supportsTransform
+  // if (!isModuleImport && !isSupportedStdLibCall) {
+  //   return {
+  //     reason: 'Unsupported operation type. Please edit in the code editor.',
+  //   }
+  // }
+  if (operation.type !== 'StdLibCall') {
+    return { reason: 'Wrong operation type' }
   }
 
-  const nodeToEdit = pathToNodeFromRustNodePath(operation.nodePath)
-  let x: KclExpression | undefined = undefined
-  let y: KclExpression | undefined = undefined
-  let z: KclExpression | undefined = undefined
-  let global: boolean | undefined
-  const pipeLookupFromOperation = getNodeFromPath<PipeExpression>(
-    kclManager.ast,
-    nodeToEdit,
-    'PipeExpression'
+  // 1. Map the unlabeled arguments to solid2d selections
+  const objects = getObjectSelectionsFromOperation(
+    operation,
+    kclManager.artifactGraph
   )
-  let pipe: PipeExpression | undefined
-  const ast = kclManager.ast
-  if (
-    err(pipeLookupFromOperation) ||
-    pipeLookupFromOperation.node.type !== 'PipeExpression'
-  ) {
-    // Look for the last pipe with the import alias and a call to translate
-    const pipes = findPipesWithImportAlias(ast, nodeToEdit, 'translate')
-    pipe = pipes.at(-1)?.expression
-  } else {
-    pipe = pipeLookupFromOperation.node
+  if (err(objects)) {
+    return { reason: "Couldn't retrieve objects" }
   }
 
-  if (pipe) {
-    const translate = pipe.body.find(
-      (n) => n.type === 'CallExpressionKw' && n.callee.name.name === 'translate'
+  // 2. Convert the x y z arguments from a string to a KCL expression
+  const x = await stringToKclExpression(
+    codeManager.code.slice(
+      operation.labeledArgs.x?.sourceRange[0],
+      operation.labeledArgs.x?.sourceRange[1]
     )
-    if (translate?.type === 'CallExpressionKw') {
-      x = await retrieveArgFromPipedCallExpression(translate, 'x')
-      y = await retrieveArgFromPipedCallExpression(translate, 'y')
-      z = await retrieveArgFromPipedCallExpression(translate, 'z')
-
-      // optional global argument
-      const result = await retrieveArgFromPipedCallExpression(
-        translate,
-        'global'
-      )
-      if (result) {
-        global = result.valueText === 'true'
-      }
-    }
+  )
+  if (err(x) || 'errors' in x) {
+    return { reason: "Couldn't retrieve x argument" }
   }
 
-  // Won't be used since we provide nodeToEdit
-  const selection: Selections = { graphSelections: [], otherSelections: [] }
-  const argDefaultValues = { nodeToEdit, selection, x, y, z, global }
+  const y = await stringToKclExpression(
+    codeManager.code.slice(
+      operation.labeledArgs.y?.sourceRange[0],
+      operation.labeledArgs.y?.sourceRange[1]
+    )
+  )
+  if (err(y) || 'errors' in y) {
+    return { reason: "Couldn't retrieve y argument" }
+  }
+
+  const z = await stringToKclExpression(
+    codeManager.code.slice(
+      operation.labeledArgs.z?.sourceRange[0],
+      operation.labeledArgs.z?.sourceRange[1]
+    )
+  )
+  if (err(z) || 'errors' in z) {
+    return { reason: "Couldn't retrieve z argument" }
+  }
+
+  // symmetric argument from a string to boolean
+  let global: boolean | undefined
+  if ('global' in operation.labeledArgs && operation.labeledArgs.global) {
+    global =
+      codeManager.code.slice(
+        operation.labeledArgs.global.sourceRange[0],
+        operation.labeledArgs.global.sourceRange[1]
+      ) === 'true'
+  }
+
+  // 3. Assemble the default argument values for the command,
+  // with `nodeToEdit` set, which will let the actor know
+  // to edit the node that corresponds to the StdLibCall.
+  const argDefaultValues: ModelingCommandSchema['Translate'] = {
+    objects,
+    x,
+    y,
+    z,
+    global,
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
+  }
   return {
     ...baseCommand,
     argDefaultValues,

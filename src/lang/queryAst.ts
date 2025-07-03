@@ -9,6 +9,7 @@ import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import {
   codeRefFromRange,
   getArtifactOfTypes,
+  getCodeRefsByArtifactId,
 } from '@src/lang/std/artifactGraph'
 import { getArgForEnd } from '@src/lang/std/sketch'
 import { getSketchSegmentFromSourceRange } from '@src/lang/std/sketchConstraints'
@@ -1200,6 +1201,61 @@ export function getSketchSelectionsFromOperation(
     graphSelections,
     otherSelections: [],
   }
+}
+
+export function getObjectSelectionsFromOperation(
+  operation: Operation,
+  artifactGraph: ArtifactGraph
+): Error | Selections {
+  const error = new Error("Couldn't retrieve sketches from operation")
+  if (operation.type !== 'StdLibCall' || !operation.unlabeledArg) {
+    return error
+  }
+
+  let artifactIds: string[] = []
+  if (
+    operation.unlabeledArg.value.type === 'Solid' ||
+    operation.unlabeledArg.value.type === 'Sketch'
+  ) {
+    artifactIds = [operation.unlabeledArg.value.value.artifactId]
+  } else if (operation.unlabeledArg.value.type === 'ImportedGeometry') {
+    artifactIds = [operation.unlabeledArg.value.artifact_id]
+  } else if (operation.unlabeledArg.value.type === 'Array') {
+    artifactIds = operation.unlabeledArg.value.value
+      .filter((v) => v.type === 'Solid' || v.type === 'Sketch')
+      .map((v) => v.value.artifactId)
+  } else {
+    return error
+  }
+
+  const graphSelections: Selection[] = []
+  for (const artifactId of artifactIds) {
+    const artifact = artifactGraph.get(artifactId)
+    if (!artifact) {
+      continue
+    }
+
+    const codeRefs = getCodeRefsByArtifactId(artifactId, artifactGraph)
+    if (!codeRefs || codeRefs.length === 0) {
+      continue
+    }
+
+    graphSelections.push({
+      artifact,
+      codeRef: codeRefs[0], // TODO: figure out why two codeRefs could be possible?
+    })
+  }
+
+  if (graphSelections.length === 0) {
+    return error
+  }
+
+  const selections: Selections = {
+    graphSelections,
+    otherSelections: [],
+  }
+  console.log('massaged selections', selections)
+  return selections
 }
 
 export function locateVariableWithCallOrPipe(
