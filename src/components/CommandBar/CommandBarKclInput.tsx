@@ -33,6 +33,7 @@ import { useSettings } from '@src/lib/singletons'
 import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
 
 import styles from './CommandBarKclInput.module.css'
+import { useModelingContext } from '@src/hooks/useModelingContext'
 
 // TODO: remove the need for this selector once we decouple all actors from React
 const machineContextSelector = (snapshot?: SnapshotFrom<AnyStateMachine>) =>
@@ -55,6 +56,9 @@ function CommandBarKclInput({
     arg.name
   ] as KclCommandValue | undefined
   const settings = useSettings()
+  const {
+    context: { selectionRanges },
+  } = useModelingContext()
   const argMachineContext = useSelector(
     arg.machineActor,
     machineContextSelector
@@ -126,6 +130,7 @@ function CommandBarKclInput({
     value,
     initialVariableName,
     sourceRange: sourceRangeForPrevVariables,
+    selectionRanges,
   })
 
   const varMentionData: Completion[] = prevVariables.map((v) => {

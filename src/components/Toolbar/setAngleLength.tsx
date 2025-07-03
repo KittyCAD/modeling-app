@@ -143,6 +143,7 @@ export async function applyConstraintAngleLength({
       value: forceVal,
       valueName: angleOrLength === 'setAngle' ? 'angle' : 'length',
       shouldCreateVariable: true,
+      selectionRanges,
     })
   if (!isExprBinaryPart(valueNode))
     return Promise.reject('Invalid valueNode, is not a BinaryPart')
