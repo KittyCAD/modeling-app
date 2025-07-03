@@ -24,6 +24,11 @@ import {
 } from '@src/machines/systemIO/utils'
 import { fromPromise } from 'xstate'
 import type { AppMachineContext } from '@src/lib/types'
+import {
+  getProjectDirectoryFromKCLFilePath,
+  getStringAfterLastSeparator,
+  parentPathRelativeToProject,
+} from '@src/lib/paths'
 
 const sharedBulkCreateWorkflow = async ({
   input,
@@ -278,7 +283,7 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
         )
 
         return {
-          message: 'File created successfully',
+          message: 'Successfully created file.',
           fileName: newFileName,
           projectName: newProjectName,
           subRoute: input.requestedSubRoute || '',
@@ -395,6 +400,224 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           projectName: input.requestedProjectName,
           fileName: input.requestedFileNameWithExtension || '',
           subRoute: input.requestedSubRoute || '',
+        }
+      }
+    ),
+    [SystemIOMachineActors.renameFolder]: fromPromise(
+      async ({
+        input,
+      }: {
+        input: {
+          context: SystemIOContext
+          rootContext: AppMachineContext
+          requestedFolderName: string
+          folderName: string
+          absolutePathToParentDirectory: string
+          requestedProjectName?: string
+          requestedFileNameWithExtension?: string
+        }
+      }) => {
+        const {
+          folderName,
+          requestedFolderName,
+          absolutePathToParentDirectory,
+        } = input
+        const oldPath = window.electron.path.join(
+          absolutePathToParentDirectory,
+          folderName
+        )
+        const newPath = window.electron.path.join(
+          absolutePathToParentDirectory,
+          requestedFolderName
+        )
+
+        const requestedProjectName = input.requestedProjectName || ''
+        const requestedFileNameWithExtension =
+          input.requestedFileNameWithExtension || ''
+
+        // ignore the rename if the resulting paths are the same
+        if (oldPath === newPath) {
+          return {
+            message: `Old folder is the same as new.`,
+            folderName,
+            requestedFolderName,
+            requestedProjectName,
+            requestedFileNameWithExtension,
+          }
+        }
+
+        // if there are any siblings with the same name, report error.
+        const entries = await window.electron.readdir(
+          window.electron.path.dirname(newPath)
+        )
+
+        for (let entry of entries) {
+          if (entry === requestedFolderName) {
+            return Promise.reject(new Error('Folder name already exists.'))
+          }
+        }
+
+        window.electron.rename(oldPath, newPath)
+
+        return {
+          message: `Successfully renamed folder "${folderName}" to "${requestedFolderName}"`,
+          folderName,
+          requestedFolderName,
+          requestedProjectName,
+          requestedFileNameWithExtension,
+        }
+      }
+    ),
+    [SystemIOMachineActors.renameFile]: fromPromise(
+      async ({
+        input,
+      }: {
+        input: {
+          context: SystemIOContext
+          rootContext: AppMachineContext
+          requestedFileNameWithExtension: string
+          fileNameWithExtension: string
+          absolutePathToParentDirectory: string
+        }
+      }) => {
+        const {
+          fileNameWithExtension,
+          requestedFileNameWithExtension,
+          absolutePathToParentDirectory,
+        } = input
+
+        const oldPath = window.electron.path.join(
+          absolutePathToParentDirectory,
+          fileNameWithExtension
+        )
+        const newPath = window.electron.path.join(
+          absolutePathToParentDirectory,
+          requestedFileNameWithExtension
+        )
+
+        const projectDirectoryPath = input.context.projectDirectoryPath
+        const projectName = getProjectDirectoryFromKCLFilePath(
+          newPath,
+          projectDirectoryPath
+        )
+        const filePathWithExtensionRelativeToProject =
+          parentPathRelativeToProject(newPath, projectDirectoryPath)
+
+        // no-op
+        if (oldPath === newPath) {
+          return {
+            message: `Old file is the same as new.`,
+            projectName: projectName,
+            filePathWithExtensionRelativeToProject,
+          }
+        }
+
+        // if there are any siblings with the same name, report error.
+        const entries = await window.electron.readdir(
+          window.electron.path.dirname(newPath)
+        )
+
+        for (let entry of entries) {
+          if (entry === requestedFileNameWithExtension) {
+            return Promise.reject(new Error('Filename already exists.'))
+          }
+        }
+
+        window.electron.rename(oldPath, newPath)
+
+        return {
+          message: `Successfully renamed file "${fileNameWithExtension}" to "${requestedFileNameWithExtension}"`,
+          projectName: projectName,
+          filePathWithExtensionRelativeToProject,
+        }
+      }
+    ),
+    [SystemIOMachineActors.deleteFileOrFolder]: fromPromise(
+      async ({
+        input,
+      }: {
+        input: {
+          context: SystemIOContext
+          rootContext: AppMachineContext
+          requestedPath: string
+          requestedProjectName?: string | undefined
+        }
+      }) => {
+        await window.electron.rm(input.requestedPath, { recursive: true })
+        let response = {
+          message: 'File deleted successfully',
+          requestedPath: input.requestedPath,
+          requestedProjectName: input.requestedProjectName || '',
+        }
+        return response
+      }
+    ),
+    [SystemIOMachineActors.createBlankFile]: fromPromise(
+      async ({
+        input,
+      }: {
+        input: {
+          context: SystemIOContext
+          rootContext: AppMachineContext
+          requestedAbsolutePath: string
+        }
+      }) => {
+        const fileNameWithExtension = getStringAfterLastSeparator(
+          input.requestedAbsolutePath
+        )
+        try {
+          const result = await window.electron.stat(input.requestedAbsolutePath)
+          if (result) {
+            return Promise.reject(
+              new Error(`File ${fileNameWithExtension} already exists`)
+            )
+          }
+        } catch (e) {
+          console.error(e)
+        }
+        await window.electron.writeFile(input.requestedAbsolutePath, '')
+        return {
+          message: `File ${fileNameWithExtension} written successfully`,
+          requestedAbsolutePath: input.requestedAbsolutePath,
+        }
+      }
+    ),
+    [SystemIOMachineActors.createBlankFolder]: fromPromise(
+      async ({
+        input,
+      }: {
+        input: {
+          context: SystemIOContext
+          rootContext: AppMachineContext
+          requestedAbsolutePath: string
+        }
+      }) => {
+        const folderName = getStringAfterLastSeparator(
+          input.requestedAbsolutePath
+        )
+        try {
+          const result = await window.electron.stat(input.requestedAbsolutePath)
+          if (result) {
+            return Promise.reject(
+              new Error(`Folder ${folderName} already exists`)
+            )
+          }
+        } catch (e) {
+          if (e === 'ENOENT') {
+            console.warn(
+              `checking if folder is created, ${input.requestedAbsolutePath}`
+            )
+            console.warn(e)
+          } else {
+            console.error(e)
+          }
+        }
+        await window.electron.mkdir(input.requestedAbsolutePath, {
+          recursive: true,
+        })
+        return {
+          message: `Folder ${folderName} written successfully`,
+          requestedAbsolutePath: input.requestedAbsolutePath,
         }
       }
     ),

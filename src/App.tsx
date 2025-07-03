@@ -242,7 +242,6 @@ export function App() {
         .catch(reportRejection)
     }
   }, [])
-
   return (
     <div className="h-screen flex flex-col overflow-hidden select-none">
       <div className="relative flex flex-1 flex-col">
