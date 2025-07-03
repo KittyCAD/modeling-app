@@ -462,6 +462,28 @@ impl PlaneInfo {
             z_axis: self.z_axis,
         })
     }
+
+    pub(crate) fn is_right_handed(&self) -> bool {
+        self.x_axis.axes_cross_product(&self.y_axis).normalize() == self.z_axis.normalize()
+    }
+
+    #[cfg(test)]
+    pub(crate) fn is_left_handed(&self) -> bool {
+        !self.is_right_handed()
+    }
+
+    pub(crate) fn make_right_handed(self) -> Self {
+        if self.is_right_handed() {
+            return self;
+        }
+        // To make it right-handed, negate X, i.e. rotate the plane 180 degrees.
+        Self {
+            origin: self.origin,
+            x_axis: self.x_axis.negated(),
+            y_axis: self.y_axis,
+            z_axis: self.z_axis,
+        }
+    }
 }
 
 impl TryFrom<PlaneData> for PlaneInfo {
@@ -935,6 +957,15 @@ impl Point3d {
         let p = [self.x, self.y, self.z];
         let u = self.units;
         (p, u)
+    }
+
+    pub(crate) fn negated(self) -> Self {
+        Self {
+            x: -self.x,
+            y: -self.y,
+            z: -self.z,
+            units: self.units,
+        }
     }
 }
 
