@@ -75,6 +75,7 @@ async fn inner_plane_of(
             vec![args.source_range],
         )));
     };
+
     // Destructure engine's response to check if the face was on a plane.
     let not_planar: Result<_, KclError> = Err(KclError::new_semantic(KclErrorDetails::new(
         "The face you provided doesn't lie on any plane. It might be curved.".to_owned(),
@@ -112,6 +113,16 @@ async fn inner_plane_of(
         units: engine_units,
     };
 
+    // Planes should always be right-handed, but due to an engine bug sometimes they're not.
+    // Test for right-handedness: cross(X,Y) is Z
+    let plane_info = crate::execution::PlaneInfo {
+        origin,
+        x_axis,
+        y_axis,
+        z_axis,
+    };
+    let plane_info = plane_info.make_right_handed();
+
     // Engine doesn't send back an ID, so let's just make a new plane ID.
     let plane_id = exec_state.id_generator().next_uuid();
     Ok(Plane {
@@ -119,12 +130,7 @@ async fn inner_plane_of(
         id: plane_id,
         // Engine doesn't know about the ID we created, so set this to Uninit.
         value: PlaneType::Uninit,
-        info: crate::execution::PlaneInfo {
-            origin,
-            x_axis,
-            y_axis,
-            z_axis,
-        },
+        info: plane_info,
         meta: vec![Metadata {
             source_range: args.source_range,
         }],
@@ -197,4 +203,46 @@ async fn make_offset_plane_in_engine(plane: &Plane, exec_state: &mut ExecState, 
         .await?;
 
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::execution::{PlaneInfo, Point3d};
+
+    #[test]
+    fn fixes_left_handed_plane() {
+        let plane_info = PlaneInfo {
+            origin: Point3d {
+                x: 0.0,
+                y: 0.0,
+                z: 0.0,
+                units: UnitLen::Mm,
+            },
+            x_axis: Point3d {
+                x: 1.0,
+                y: 0.0,
+                z: 0.0,
+                units: UnitLen::Mm,
+            },
+            y_axis: Point3d {
+                x: 0.0,
+                y: 1.0,
+                z: 0.0,
+                units: UnitLen::Mm,
+            },
+            z_axis: Point3d {
+                x: 0.0,
+                y: 0.0,
+                z: -1.0,
+                units: UnitLen::Mm,
+            },
+        };
+
+        // This plane is NOT right-handed.
+        assert!(plane_info.is_left_handed());
+        // But we can make it right-handed:
+        let fixed = plane_info.make_right_handed();
+        assert!(fixed.is_right_handed());
+    }
 }
