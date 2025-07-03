@@ -70,12 +70,10 @@ dotenv.config({ path: [`.env.${NODE_ENV}.local`, `.env.${NODE_ENV}`] })
 
 // default vite values based on mode
 process.env.NODE_ENV ??= viteEnv.MODE
-process.env.BASE_URL ??= viteEnv.VITE_KC_API_BASE_URL
 process.env.VITE_KC_API_WS_MODELING_URL ??= viteEnv.VITE_KC_API_WS_MODELING_URL
 process.env.VITE_KC_API_BASE_URL ??= viteEnv.VITE_KC_API_BASE_URL
 process.env.VITE_KC_SITE_BASE_URL ??= viteEnv.VITE_KC_SITE_BASE_URL
 process.env.VITE_KC_SITE_APP_URL ??= viteEnv.VITE_KC_SITE_APP_URL
-process.env.VITE_KC_SKIP_AUTH ??= viteEnv.VITE_KC_SKIP_AUTH
 process.env.VITE_KC_CONNECTION_TIMEOUT_MS ??=
   viteEnv.VITE_KC_CONNECTION_TIMEOUT_MS
 
