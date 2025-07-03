@@ -83,7 +83,7 @@ export const ShareButton = memo(function ShareButton() {
     billingContext.tier === undefined
 
   return (
-    <Popover className="relative flex">
+    <Popover className="relative hidden sm:flex">
       <Popover.Button
         as="div"
         className="relative group border-0 w-fit min-w-max p-0 rounded-l-full focus-visible:outline-appForeground"
