@@ -299,6 +299,8 @@ pub struct PlaneInfo {
     pub x_axis: Point3d,
     /// What should the plane's Y axis be?
     pub y_axis: Point3d,
+    /// What should the plane's Z axis be?
+    pub z_axis: Point3d,
 }
 
 impl PlaneInfo {
@@ -327,6 +329,7 @@ impl PlaneInfo {
                             z: 0.0,
                             units: _,
                         },
+                    z_axis: _,
                 } => return PlaneData::XY,
                 Self {
                     origin:
@@ -350,6 +353,7 @@ impl PlaneInfo {
                             z: 0.0,
                             units: _,
                         },
+                    z_axis: _,
                 } => return PlaneData::NegXY,
                 Self {
                     origin:
@@ -373,6 +377,7 @@ impl PlaneInfo {
                             z: 1.0,
                             units: _,
                         },
+                    z_axis: _,
                 } => return PlaneData::XZ,
                 Self {
                     origin:
@@ -396,6 +401,7 @@ impl PlaneInfo {
                             z: 1.0,
                             units: _,
                         },
+                    z_axis: _,
                 } => return PlaneData::NegXZ,
                 Self {
                     origin:
@@ -419,6 +425,7 @@ impl PlaneInfo {
                             z: 1.0,
                             units: _,
                         },
+                    z_axis: _,
                 } => return PlaneData::YZ,
                 Self {
                     origin:
@@ -442,6 +449,7 @@ impl PlaneInfo {
                             z: 1.0,
                             units: _,
                         },
+                    z_axis: _,
                 } => return PlaneData::NegYZ,
                 _ => {}
             }
@@ -451,6 +459,7 @@ impl PlaneInfo {
             origin: self.origin,
             x_axis: self.x_axis,
             y_axis: self.y_axis,
+            z_axis: self.z_axis,
         })
     }
 }

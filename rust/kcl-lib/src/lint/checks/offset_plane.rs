@@ -212,6 +212,7 @@ pub fn common(
         origin,
         x_axis: x_vec,
         y_axis: y_vec,
+        z_axis: x_vec.axes_cross_product(&y_vec),
     };
 
     // Return early if we have a default plane.
