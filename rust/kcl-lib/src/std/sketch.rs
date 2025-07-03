@@ -2416,7 +2416,7 @@ pub(crate) async fn inner_conic(
     {
         return Err(KclError::Type {
             details: KclErrorDetails::new(
-                "Invalid combination of arguments. Either provide coefficients or interior".to_owned(),
+                "Invalid combination of arguments. Either provide coefficients or (startTangent, endTangent)".to_owned(),
                 vec![args.source_range],
             ),
         });
