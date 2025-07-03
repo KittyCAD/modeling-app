@@ -65,8 +65,7 @@ import { useModelingContext } from '@src/hooks/useModelingContext'
 import { xStateValueToString } from '@src/lib/xStateValueToString'
 import { getSelectionTypeDisplayText } from '@src/lib/selections'
 import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
-import { Toolbar } from './Toolbar'
-import { UndoRedoButtons } from './components/UndoRedoButtons'
+import { Toolbar } from '@src/Toolbar'
 
 // CYCLIC REF
 sceneInfra.camControls.engineStreamActor = engineStreamActor
