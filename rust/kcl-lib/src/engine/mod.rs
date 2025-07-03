@@ -70,10 +70,10 @@ lazy_static::lazy_static! {
             (
                 PlaneName::Xz,
                 PlaneInfo {
-                    origin: Point3d::new(0.0, 0.0, 0.0, UnitLen::Mm),
-                    x_axis: Point3d::new(1.0, 0.0, 0.0, UnitLen::Unknown),
-                    y_axis: Point3d::new(0.0, 0.0, 1.0, UnitLen::Unknown),
-                    z_axis: Point3d::new(1.0, 0.0, 0.0, UnitLen::Unknown),
+                    origin: Point3d::new(0.0,  0.0, 0.0, UnitLen::Mm),
+                    x_axis: Point3d::new(1.0,  0.0, 0.0, UnitLen::Unknown),
+                    y_axis: Point3d::new(0.0,  0.0, 1.0, UnitLen::Unknown),
+                    z_axis: Point3d::new(0.0, -1.0, 0.0, UnitLen::Unknown),
                 },
             ),
             (
@@ -82,7 +82,7 @@ lazy_static::lazy_static! {
                     origin: Point3d::new( 0.0, 0.0, 0.0, UnitLen::Mm),
                     x_axis: Point3d::new(-1.0, 0.0, 0.0, UnitLen::Unknown),
                     y_axis: Point3d::new( 0.0, 0.0, 1.0, UnitLen::Unknown),
-                    z_axis: Point3d::new(-1.0, 0.0, 0.0, UnitLen::Unknown),
+                    z_axis: Point3d::new( 0.0, 1.0, 0.0, UnitLen::Unknown),
                 },
             ),
             (
@@ -91,16 +91,16 @@ lazy_static::lazy_static! {
                     origin: Point3d::new(0.0, 0.0, 0.0, UnitLen::Mm),
                     x_axis: Point3d::new(0.0, 1.0, 0.0, UnitLen::Unknown),
                     y_axis: Point3d::new(0.0, 0.0, 1.0, UnitLen::Unknown),
-                    z_axis: Point3d::new(0.0, 1.0, 0.0, UnitLen::Unknown),
+                    z_axis: Point3d::new(1.0, 0.0, 0.0, UnitLen::Unknown),
                 },
             ),
             (
                 PlaneName::NegYz,
                 PlaneInfo {
-                    origin: Point3d::new(0.0,  0.0, 0.0, UnitLen::Mm),
-                    x_axis: Point3d::new(0.0, -1.0, 0.0, UnitLen::Unknown),
-                    y_axis: Point3d::new(0.0,  0.0, 1.0, UnitLen::Unknown),
-                    z_axis: Point3d::new(0.0, -1.0, 0.0, UnitLen::Unknown),
+                    origin: Point3d::new( 0.0,  0.0, 0.0, UnitLen::Mm),
+                    x_axis: Point3d::new( 0.0, -1.0, 0.0, UnitLen::Unknown),
+                    y_axis: Point3d::new( 0.0,  0.0, 1.0, UnitLen::Unknown),
+                    z_axis: Point3d::new(-1.0,  0.0, 0.0, UnitLen::Unknown),
                 },
             ),
         ]);
