@@ -25,7 +25,11 @@ import {
   sketchOnExtrudedFace,
   splitPipedProfile,
 } from '@src/lang/modifyAst'
-import { findUsesOfTagInPipe, getNodeFromPath } from '@src/lang/queryAst'
+import {
+  findUsesOfTagInPipe,
+  getNodeFromPath,
+  getVariableExprsFromSelection,
+} from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type { Artifact } from '@src/lang/std/artifactGraph'
 import { codeRefFromRange } from '@src/lang/std/artifactGraph'
@@ -37,6 +41,7 @@ import { enginelessExecutor } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
 import { deleteFromSelection } from '@src/lang/modifyAst/deleteFromSelection'
 import { assertNotErr } from '@src/unitTestUtils'
+import type { Selections } from '@src/lib/selections'
 
 beforeAll(async () => {
   await initPromise
@@ -1062,23 +1067,73 @@ profile001 = circle(sketch001, center = [0, 0], radius = 1)
     expect(newCode).toContain(`extrude001 = extrude(profile001, length = 5)`)
   })
 
-  it('should push an extrude call with variable on variable profile', () => {
+  it('should push an extrude call in pipe is selection was in variable-less pipe', async () => {
     const code = `startSketchOn(XY)
-  |> circle(sketch001, center = [0, 0], radius = 1)
+  |> circle(center = [0, 0], radius = 1)
 `
     const ast = assertParse(code)
-    const exprs = createVariableExpressionsArray([
-      createLocalName('profile001'),
-    ])
+    const { artifactGraph } = await enginelessExecutor(ast)
+    const artifact = artifactGraph.values().find((a) => a.type === 'path')
+    if (!artifact) {
+      throw new Error('Artifact not found in the graph')
+    }
+    const selections: Selections = {
+      graphSelections: [
+        {
+          codeRef: artifact.codeRef,
+          artifact,
+        },
+      ],
+      otherSelections: [],
+    }
+    const variableExprs = getVariableExprsFromSelection(selections, ast)
+    if (err(variableExprs)) throw variableExprs
+    const exprs = createVariableExpressionsArray(variableExprs.exprs)
     const call = createCallExpressionStdLibKw('extrude', exprs, [
       createLabeledArg('length', createLiteral(5)),
     ])
-    const pathToNode = setCallInAst(ast, call)
+    const lastPathToNode = variableExprs.paths.pop()
+    const pathToNode = setCallInAst(ast, call, undefined, lastPathToNode)
     if (err(pathToNode)) {
       throw pathToNode
     }
     const newCode = recast(ast)
     expect(newCode).toContain(code)
     expect(newCode).toContain(`|> extrude(length = 5)`)
+  })
+
+  it('should push an extrude call with variable if selection was in variable pipe', async () => {
+    const code = `profile001 = startSketchOn(XY)
+  |> circle(center = [0, 0], radius = 1)
+`
+    const ast = assertParse(code)
+    const { artifactGraph } = await enginelessExecutor(ast)
+    const artifact = artifactGraph.values().find((a) => a.type === 'path')
+    if (!artifact) {
+      throw new Error('Artifact not found in the graph')
+    }
+    const selections: Selections = {
+      graphSelections: [
+        {
+          codeRef: artifact.codeRef,
+          artifact,
+        },
+      ],
+      otherSelections: [],
+    }
+    const variableExprs = getVariableExprsFromSelection(selections, ast)
+    if (err(variableExprs)) throw variableExprs
+    const exprs = createVariableExpressionsArray(variableExprs.exprs)
+    const call = createCallExpressionStdLibKw('extrude', exprs, [
+      createLabeledArg('length', createLiteral(5)),
+    ])
+    const lastPathToNode = variableExprs.paths.pop()
+    const pathToNode = setCallInAst(ast, call, undefined, lastPathToNode)
+    if (err(pathToNode)) {
+      throw pathToNode
+    }
+    const newCode = recast(ast)
+    expect(newCode).toContain(code)
+    expect(newCode).toContain(`extrude001 = extrude(profile001, length = 5)`)
   })
 })
