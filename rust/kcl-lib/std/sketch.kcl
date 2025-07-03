@@ -2023,7 +2023,7 @@ export fn conic(
   /// Where should this segment end? This point is relative to the start point. Requires `interior`. Incompatible with `interiorAbsolute` or `endAbsolute`.
   end?: Point2d,
   /// The coefficients [a, b, c, d, e, f] of the generic conic equation ax^2 + by^2 + cxy + dx + ey + f = 0. If provided the start and end tangents will be calculated using this equation. Incompatible with `startTangent` and `endTangent`.
-  coefficients?: [number(Count); 6],
+  coefficients?: [number; 6],
   /// The tangent of the conic section at the start. If not provided the tangent of the previous path segment is used. Incompatible with `coefficients`.
   startTangent?: Point2d,
   /// The tangent of the conic section at the end. Incompatible with `coefficients`. Incompatible with `coefficients`.
@@ -2052,7 +2052,7 @@ export fn parabolic(
   /// Where should this segment end? Requires `interiorAbsolute`. Incompatible with `interior` or `end`.
   endAbsolute?: Point2d,
   /// The coefficients [a, b, c] of the parabolic equation y = ax^2 + bx + c. Incompatible with `interior`.
-  coefficients?: [number(Count); 3],
+  coefficients?: [number; 3],
   /// A point between the segment's start and end that lies on the parabola. Incompatible with `coefficients` or `interiorAbsolute` or `endAbsolute`.
   interior?: Point2d,
   /// Any point between the segment's start and end. Requires `endAbsolute`. Incompatible with `coefficients` or `interior` or `end`.
@@ -2072,7 +2072,7 @@ export fn parabolic(
 @(impl = std_rust)
 export fn parabolicPoint(
   /// The coefficients [a, b, c] of the parabolic equation y = ax^2 + bx + c.
-  coefficients: [number(Count); 3],
+  coefficients: [number; 3],
   /// The x value. Calculates y and returns (x, y). Incompatible with `y`.
   x?: number(Length),
   /// The y value. Calculates x and returns (x, y). Incompatible with `x`.
@@ -2120,9 +2120,9 @@ export fn hyperbolic(
 @(impl = std_rust)
 export fn hyperbolicPoint(
   /// The semi major value, a, of the hyperbolic equation x^2 / a ^ 2 - y^2 / b^2 = 1.
-  semiMajor: number(Count),
+  semiMajor: number,
   ///  The semi minor value, b, of the hyperbolic equation x^2 / a ^ 2 - y^2 / b^2 = 1.
-  semiMinor: number(Count),
+  semiMinor: number,
   /// The x value. Calculates y and returns (x, y). Incompatible with `y`.
   x?: number(Length),
   /// The y value. Calculates x and returns (x, y). Incompatible with `x`.
@@ -2176,9 +2176,9 @@ export fn elliptic(
 @(impl = std_rust)
 export fn ellipticPoint(
   /// The major radius, a, of the elliptic equation x^2 / a ^ 2 + y^2 / b^2 = 1.
-  majorRadius: number(Count),
+  majorRadius: number,
   ///  The minor radius, b, of the hyperbolic equation x^2 / a ^ 2 + y^2 / b^2 = 1.
-  minorRadius: number(Count),
+  minorRadius: number,
   /// The x value. Calculates y and returns (x, y). Incompatible with `y`.
   x?: number(Length),
   /// The y value. Calculates x and returns (x, y). Incompatible with `x`.
