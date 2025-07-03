@@ -15,13 +15,14 @@ import {
 } from '@src/lang/create'
 import {
   addSketchTo,
+  createPathToNodeForLastVariable,
   createVariableExpressionsArray,
   deleteSegmentFromPipeExpression,
   moveValueIntoNewVariable,
   sketchOnExtrudedFace,
   splitPipedProfile,
 } from '@src/lang/modifyAst'
-import { findUsesOfTagInPipe } from '@src/lang/queryAst'
+import { findUsesOfTagInPipe, getNodeFromPath } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type { Artifact } from '@src/lang/std/artifactGraph'
 import { codeRefFromRange } from '@src/lang/std/artifactGraph'
@@ -992,5 +993,47 @@ describe('Testing createVariableExpressionsArray', () => {
     }
 
     expect(exprs.elements[1].name.name).toBe('var1')
+  })
+})
+
+describe('Testing createPathToNodeForLastVariable', () => {
+  it('should create a path to the last variable in the array', () => {
+    const circleProfileInVar = `sketch001 = startSketchOn(XY)
+profile001 = circle(sketch001, center = [0, 0], radius = 1)
+extrude001 = extrude(profile001, length = 5)
+`
+    const ast = assertParse(circleProfileInVar)
+    const path = createPathToNodeForLastVariable(ast, false)
+    expect(path.length).toEqual(4)
+
+    // Verify we can get the right node
+    const node = getNodeFromPath<any>(ast, path)
+    if (err(node)) {
+      throw node
+    }
+    // With the expected range
+    const startOfExtrudeIndex = circleProfileInVar.indexOf('extrude(')
+    expect(node.node.start).toEqual(startOfExtrudeIndex)
+    expect(node.node.end).toEqual(circleProfileInVar.length - 1)
+  })
+
+  it('should create a path to the first kwarg in the last expression', () => {
+    const circleProfileInVar = `sketch001 = startSketchOn(XY)
+profile001 = circle(sketch001, center = [0, 0], radius = 1)
+extrude001 = extrude(profile001, length = 123)
+`
+    const ast = assertParse(circleProfileInVar)
+    const path = createPathToNodeForLastVariable(ast, true)
+    expect(path.length).toEqual(7)
+
+    // Verify we can get the right node
+    const node = getNodeFromPath<any>(ast, path)
+    if (err(node)) {
+      throw node
+    }
+    // With the expected range
+    const startOfKwargIndex = circleProfileInVar.indexOf('123')
+    expect(node.node.start).toEqual(startOfKwargIndex)
+    expect(node.node.end).toEqual(startOfKwargIndex + 3)
   })
 })
