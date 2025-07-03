@@ -18,12 +18,14 @@ describe('@src/env', () => {
         PROD: undefined,
         TEST: 'true',
         DEV: '1',
-        CI: undefined,
+        CI: 'true',
       }
       const actual = env()
       expect(typeof actual.VITE_KITTYCAD_API_TOKEN).toBe('string')
       //@ts-ignore I do not want this token in our logs for any reason.
       actual.VITE_KITTYCAD_API_TOKEN = 'redacted'
+      //@ts-ignore need to hard code this for localhost and CI
+      actual.CI = 'true'
       expect(actual).toStrictEqual(expected)
     })
   })
