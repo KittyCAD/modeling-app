@@ -2,27 +2,30 @@ import env from '@src/env'
 import { vi } from 'vitest'
 import { viteEnv, windowElectronProcessEnv, processEnv } from '@src/env'
 
-describe('@src/env default export', () => {
-  it('should run the process.env workflow', () => {
-    // vite > node.js
-    const expected = {
-      NODE_ENV: 'test',
-      VITE_KC_API_WS_MODELING_URL: 'wss://api.dev.zoo.dev/ws/modeling/commands',
-      VITE_KITTYCAD_API_BASE_URL: 'https://api.dev.zoo.dev',
-      VITE_KC_SITE_BASE_URL: 'https://dev.zoo.dev',
-      VITE_KC_SITE_APP_URL: 'https://app.dev.zoo.dev',
-      VITE_KC_CONNECTION_TIMEOUT_MS: '5000',
-      VITE_KITTYCAD_API_TOKEN: 'redacted',
-      PROD: undefined,
-      TEST: 'true',
-      DEV: '1',
-      CI: undefined,
-    }
-    const actual = env()
-    expect(typeof actual.VITE_KITTYCAD_API_TOKEN).toBe('string')
-    //@ts-ignore I do not want this token in our logs for any reason.
-    actual.VITE_KITTYCAD_API_TOKEN = 'redacted'
-    expect(actual).toStrictEqual(expected)
+describe('@src/env', () => {
+  describe('default export', () => {
+    it('should run the process.env workflow', () => {
+      // vite > node.js
+      const expected = {
+        NODE_ENV: 'test',
+        VITE_KC_API_WS_MODELING_URL:
+          'wss://api.dev.zoo.dev/ws/modeling/commands',
+        VITE_KITTYCAD_API_BASE_URL: 'https://api.dev.zoo.dev',
+        VITE_KC_SITE_BASE_URL: 'https://dev.zoo.dev',
+        VITE_KC_SITE_APP_URL: 'https://app.dev.zoo.dev',
+        VITE_KC_CONNECTION_TIMEOUT_MS: '5000',
+        VITE_KITTYCAD_API_TOKEN: 'redacted',
+        PROD: undefined,
+        TEST: 'true',
+        DEV: '1',
+        CI: undefined,
+      }
+      const actual = env()
+      expect(typeof actual.VITE_KITTYCAD_API_TOKEN).toBe('string')
+      //@ts-ignore I do not want this token in our logs for any reason.
+      actual.VITE_KITTYCAD_API_TOKEN = 'redacted'
+      expect(actual).toStrictEqual(expected)
+    })
   })
   describe('viteEnv', () => {
     it('should match the EnvironmentVariables key types*', () => {
