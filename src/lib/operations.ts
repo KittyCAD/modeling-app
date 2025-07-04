@@ -3,8 +3,7 @@ import type { OpKclValue, Operation } from '@rust/kcl-lib/bindings/Operation'
 import type { CustomIconName } from '@src/components/CustomIcon'
 import {
   getNodeFromPath,
-  getSketchSelectionsFromOperation,
-  getObjectSelectionsFromOperation,
+  retrieveSelectionsFromOpArg,
 } from '@src/lang/queryAst'
 import type { Artifact } from '@src/lang/std/artifactGraph'
 import {
@@ -112,8 +111,12 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({ operation }) => {
   }
 
   // 1. Map the unlabeled arguments to solid2d selections
-  const sketches = getSketchSelectionsFromOperation(
-    operation,
+  if (!operation.unlabeledArg) {
+    return { reason: `Couldn't retrieve operation arguments` }
+  }
+
+  const sketches = retrieveSelectionsFromOpArg(
+    operation.unlabeledArg,
     kclManager.artifactGraph
   )
   if (err(sketches)) {
@@ -210,8 +213,12 @@ const prepareToEditLoft: PrepareToEditCallback = async ({ operation }) => {
   }
 
   // 1. Map the unlabeled arguments to solid2d selections
-  const sketches = getSketchSelectionsFromOperation(
-    operation,
+  if (!operation.unlabeledArg) {
+    return { reason: `Couldn't retrieve operation arguments` }
+  }
+
+  const sketches = retrieveSelectionsFromOpArg(
+    operation.unlabeledArg,
     kclManager.artifactGraph
   )
   if (err(sketches)) {
@@ -558,8 +565,12 @@ const prepareToEditSweep: PrepareToEditCallback = async ({ operation }) => {
   }
 
   // 1. Map the unlabeled arguments to solid2d selections
-  const sketches = getSketchSelectionsFromOperation(
-    operation,
+  if (!operation.unlabeledArg) {
+    return { reason: `Couldn't retrieve operation arguments` }
+  }
+
+  const sketches = retrieveSelectionsFromOpArg(
+    operation.unlabeledArg,
     kclManager.artifactGraph
   )
   if (err(sketches)) {
@@ -925,8 +936,12 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
   }
 
   // 1. Map the unlabeled arguments to solid2d selections
-  const sketches = getSketchSelectionsFromOperation(
-    operation,
+  if (!operation.unlabeledArg) {
+    return { reason: `Couldn't retrieve operation arguments` }
+  }
+
+  const sketches = retrieveSelectionsFromOpArg(
+    operation.unlabeledArg,
     kclManager.artifactGraph
   )
   if (err(sketches)) {
@@ -1535,8 +1550,12 @@ async function prepareToEditTranslate({ operation }: EnterEditFlowProps) {
   }
 
   // 1. Map the unlabeled arguments to selections
-  const objects = getObjectSelectionsFromOperation(
-    operation,
+  if (!operation.unlabeledArg) {
+    return { reason: `Couldn't retrieve operation arguments` }
+  }
+
+  const objects = retrieveSelectionsFromOpArg(
+    operation.unlabeledArg,
     kclManager.artifactGraph
   )
   if (err(objects)) {
@@ -1627,13 +1646,18 @@ async function prepareToEditScale({ operation }: EnterEditFlowProps) {
   }
 
   // 1. Map the unlabeled arguments to selections
-  const objects = getObjectSelectionsFromOperation(
-    operation,
+  if (!operation.unlabeledArg) {
+    return { reason: `Couldn't retrieve operation arguments` }
+  }
+
+  const objects = retrieveSelectionsFromOpArg(
+    operation.unlabeledArg,
     kclManager.artifactGraph
   )
   if (err(objects)) {
     return { reason: "Couldn't retrieve objects" }
   }
+
 
   // 2. Convert the x y z arguments from a string to a KCL expression
   let x: KclCommandValue | undefined = undefined
@@ -1719,8 +1743,12 @@ async function prepareToEditRotate({ operation }: EnterEditFlowProps) {
   }
 
   // 1. Map the unlabeled arguments to selections
-  const objects = getObjectSelectionsFromOperation(
-    operation,
+  if (!operation.unlabeledArg) {
+    return { reason: `Couldn't retrieve operation arguments` }
+  }
+
+  const objects = retrieveSelectionsFromOpArg(
+    operation.unlabeledArg,
     kclManager.artifactGraph
   )
   if (err(objects)) {
