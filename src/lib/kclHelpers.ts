@@ -74,23 +74,3 @@ export async function stringToKclExpression(value: string) {
     valueText: value,
   } satisfies KclExpression
 }
-
-export async function retrieveArgFromPipedCallExpression(
-  callExpression: CallExpressionKw,
-  name: string
-): Promise<KclCommandValue | undefined> {
-  const arg = callExpression.arguments.find(
-    (a) => a.label?.type === 'Identifier' && a.label?.name === name
-  )
-  if (
-    arg?.type === 'LabeledArg' &&
-    (arg.arg.type === 'Name' || arg.arg.type === 'Literal')
-  ) {
-    const value = arg.arg.type === 'Name' ? arg.arg.name.name : arg.arg.raw
-    const result = await stringToKclExpression(value)
-    if (!(err(result) || 'errors' in result)) {
-      return result
-    }
-  }
-  return undefined
-}

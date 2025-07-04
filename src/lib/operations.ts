@@ -3,7 +3,6 @@ import type { OpKclValue, Operation } from '@rust/kcl-lib/bindings/Operation'
 import type { CustomIconName } from '@src/components/CustomIcon'
 import {
   getNodeFromPath,
-  findPipesWithImportAlias,
   getSketchSelectionsFromOperation,
   getObjectSelectionsFromOperation,
 } from '@src/lang/queryAst'
@@ -29,7 +28,6 @@ import type {
 import type { KclCommandValue, KclExpression } from '@src/lib/commandTypes'
 import {
   stringToKclExpression,
-  retrieveArgFromPipedCallExpression,
 } from '@src/lib/kclHelpers'
 import { isDefaultPlaneStr } from '@src/lib/planes'
 import type { Selection, Selections } from '@src/lib/selections'
