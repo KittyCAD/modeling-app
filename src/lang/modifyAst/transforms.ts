@@ -45,11 +45,12 @@ export function addTranslate({
 
   // 2. Prepare unlabeled and labeled arguments
   // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
+  const lastChildLookup = true
   const variableExpressions = getVariableExprsFromSelection(
     objects,
     modifiedAst,
     nodeToEdit,
-    true,
+    lastChildLookup,
     artifactGraph
   )
   if (err(variableExpressions)) {
@@ -119,11 +120,12 @@ export function addRotate({
 
   // 2. Prepare unlabeled and labeled arguments
   // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
+  const lastChildLookup = true
   const variableExpressions = getVariableExprsFromSelection(
     objects,
     modifiedAst,
     nodeToEdit,
-    true,
+    lastChildLookup,
     artifactGraph
   )
   if (err(variableExpressions)) {
@@ -220,11 +222,12 @@ export function addClone({
 
   // 2. Prepare unlabeled arguments
   // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
+  const lastChildLookup = true
   const variableExpressions = getVariableExprsFromSelection(
     objects,
     modifiedAst,
     nodeToEdit,
-    true,
+    lastChildLookup,
     artifactGraph
   )
   if (err(variableExpressions)) {
