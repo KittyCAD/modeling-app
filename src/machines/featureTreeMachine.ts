@@ -280,6 +280,7 @@ export const featureTreeMachine = setup({
       targetSourceRange: undefined,
     }),
     sendSelectionEvent: () => {},
+    sendTranslateCommand: () => {},
     openCodePane: () => {},
     scrollToError: () => {},
   },
@@ -312,8 +313,12 @@ export const featureTreeMachine = setup({
         },
 
         enterTranslateFlow: {
-          target: 'enteringTranslateFlow',
-          actions: ['saveTargetSourceRange', 'saveCurrentOperation'],
+          target: 'enteringTranslateFlow2',
+          actions: [
+            'saveTargetSourceRange',
+            'saveCurrentOperation',
+            'sendSelectionEvent',
+          ],
         },
 
         enterRotateFlow: {
@@ -386,6 +391,25 @@ export const featureTreeMachine = setup({
       },
 
       initial: 'selecting',
+    },
+
+    enteringTranslateFlow2: {
+      states: {
+        enteringTranslateFlow2: {
+          on: {
+            selected: 'done',
+          },
+
+          entry: 'sendTranslateCommand',
+        },
+
+        done: {
+          always: '#featureTree.idle',
+          entry: 'clearContext',
+        },
+      },
+
+      initial: 'enteringTranslateFlow2',
     },
 
     enteringEditFlow: {

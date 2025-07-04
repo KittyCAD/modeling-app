@@ -24,7 +24,12 @@ import {
   getOperationVariableName,
   stdLibMap,
 } from '@src/lib/operations'
-import { editorManager, kclManager, rustContext } from '@src/lib/singletons'
+import {
+  commandBarActor,
+  editorManager,
+  kclManager,
+  rustContext,
+} from '@src/lib/singletons'
 import {
   featureTreeMachine,
   featureTreeMachineDefaultContext,
@@ -58,6 +63,15 @@ export const FeatureTreePane = () => {
         },
         scrollToError: () => {
           editorManager.scrollToFirstErrorDiagnosticIfExists()
+        },
+        sendTranslateCommand: ({ context }) => {
+          commandBarActor.send({
+            type: 'Find and select command',
+            data: {
+              name: 'Translate',
+              groupId: 'modeling',
+            },
+          })
         },
         sendSelectionEvent: ({ context }) => {
           if (!context.targetSourceRange) {
@@ -354,10 +368,6 @@ const OperationItem = (props: {
     })
   }
 
-  /**
-   * For now we can only enter the "edit" flow for the startSketchOn operation.
-   * TODO: https://github.com/KittyCAD/modeling-app/issues/4442
-   */
   function enterEditFlow() {
     if (
       props.item.type === 'StdLibCall' ||

@@ -32,15 +32,17 @@ export function addTranslate({
   z,
   global,
   nodeToEdit,
+  callName,
 }: {
   ast: Node<Program>
   artifactGraph: ArtifactGraph
   objects: Selections
-  x: KclCommandValue
-  y: KclCommandValue
-  z: KclCommandValue
+  x?: KclCommandValue
+  y?: KclCommandValue
+  z?: KclCommandValue
   global?: boolean
   nodeToEdit?: PathToNode
+  callName?: string
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   // 1. Clone the ast so we can edit it
   const modifiedAst = structuredClone(ast)
@@ -58,26 +60,28 @@ export function addTranslate({
     return variableExpressions
   }
 
-  // Extra labeled args expression
+  const xExpr = x ? [createLabeledArg('x', valueOrVariable(x))] : []
+  const yExpr = y ? [createLabeledArg('y', valueOrVariable(y))] : []
+  const zExpr = z ? [createLabeledArg('z', valueOrVariable(z))] : []
   const globalExpr = global
     ? [createLabeledArg('global', createLiteral(global))]
     : []
+
   const objectsExpr = createVariableExpressionsArray(variableExpressions.exprs)
-  const call = createCallExpressionStdLibKw('translate', objectsExpr, [
-    createLabeledArg('x', valueOrVariable(x)),
-    createLabeledArg('y', valueOrVariable(y)),
-    createLabeledArg('z', valueOrVariable(z)),
-    ...globalExpr,
-  ])
+  const call = createCallExpressionStdLibKw(
+    callName ?? 'translate',
+    objectsExpr,
+    [...xExpr, ...yExpr, ...zExpr, ...globalExpr]
+  )
 
   // Insert variables for labeled arguments if provided
-  if ('variableName' in x && x.variableName) {
+  if (x && 'variableName' in x && x.variableName) {
     insertVariableAndOffsetPathToNode(x, modifiedAst, nodeToEdit)
   }
-  if ('variableName' in y && y.variableName) {
+  if (y && 'variableName' in y && y.variableName) {
     insertVariableAndOffsetPathToNode(y, modifiedAst, nodeToEdit)
   }
-  if ('variableName' in z && z.variableName) {
+  if (z && 'variableName' in z && z.variableName) {
     insertVariableAndOffsetPathToNode(z, modifiedAst, nodeToEdit)
   }
 
@@ -108,9 +112,9 @@ export function addRotate({
   ast: Node<Program>
   artifactGraph: ArtifactGraph
   objects: Selections
-  roll: KclCommandValue
-  pitch: KclCommandValue
-  yaw: KclCommandValue
+  roll?: KclCommandValue
+  pitch?: KclCommandValue
+  yaw?: KclCommandValue
   global?: boolean
   nodeToEdit?: PathToNode
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
@@ -130,27 +134,32 @@ export function addRotate({
     return variableExpressions
   }
 
-  // Extra labeled args expression
+  const rollExpr = roll ? [createLabeledArg('roll', valueOrVariable(roll))] : []
+  const pitchExpr = pitch
+    ? [createLabeledArg('pitch', valueOrVariable(pitch))]
+    : []
+  const yawExpr = yaw ? [createLabeledArg('yaw', valueOrVariable(yaw))] : []
   const globalExpr = global
     ? [createLabeledArg('global', createLiteral(global))]
     : []
+
   const objectsExpr = createVariableExpressionsArray(variableExpressions.exprs)
   const call = createCallExpressionStdLibKw('rotate', objectsExpr, [
-    createLabeledArg('roll', valueOrVariable(roll)),
-    createLabeledArg('pitch', valueOrVariable(pitch)),
-    createLabeledArg('yaw', valueOrVariable(yaw)),
+    ...rollExpr,
+    ...pitchExpr,
+    ...yawExpr,
     ...globalExpr,
   ])
 
   // Insert variables for labeled arguments if provided
-  if ('variableName' in roll && roll.variableName) {
+  if (roll && 'variableName' in roll && roll.variableName) {
     insertVariableAndOffsetPathToNode(roll, modifiedAst, nodeToEdit)
   }
-  if ('variableName' in roll && roll.variableName) {
-    insertVariableAndOffsetPathToNode(roll, modifiedAst, nodeToEdit)
+  if (pitch && 'variableName' in pitch && pitch.variableName) {
+    insertVariableAndOffsetPathToNode(pitch, modifiedAst, nodeToEdit)
   }
-  if ('variableName' in roll && roll.variableName) {
-    insertVariableAndOffsetPathToNode(roll, modifiedAst, nodeToEdit)
+  if (yaw && 'variableName' in yaw && yaw.variableName) {
+    insertVariableAndOffsetPathToNode(yaw, modifiedAst, nodeToEdit)
   }
 
   // 3. If edit, we assign the new function call declaration to the existing node,
@@ -180,63 +189,23 @@ export function addScale({
   ast: Node<Program>
   artifactGraph: ArtifactGraph
   objects: Selections
-  x: KclCommandValue
-  y: KclCommandValue
-  z: KclCommandValue
+  x?: KclCommandValue
+  y?: KclCommandValue
+  z?: KclCommandValue
   global?: boolean
   nodeToEdit?: PathToNode
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
-  // 1. Clone the ast so we can edit it
-  const modifiedAst = structuredClone(ast)
-
-  // 2. Prepare unlabeled and labeled arguments
-  // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
-  const variableExpressions = getVariableExprsFromSelection(
+  return addTranslate({
+    ast,
+    artifactGraph,
     objects,
-    modifiedAst,
+    x,
+    y,
+    z,
+    global,
     nodeToEdit,
-    true,
-    artifactGraph
-  )
-  if (err(variableExpressions)) {
-    return variableExpressions
-  }
-
-  // Extra labeled args expression
-  const globalExpr = global
-    ? [createLabeledArg('global', createLiteral(global))]
-    : []
-  const objectsExpr = createVariableExpressionsArray(variableExpressions.exprs)
-  const call = createCallExpressionStdLibKw('scale', objectsExpr, [
-    createLabeledArg('x', valueOrVariable(x)),
-    createLabeledArg('y', valueOrVariable(y)),
-    createLabeledArg('z', valueOrVariable(z)),
-    ...globalExpr,
-  ])
-
-  // Insert variables for labeled arguments if provided
-  if ('variableName' in x && x.variableName) {
-    insertVariableAndOffsetPathToNode(x, modifiedAst, nodeToEdit)
-  }
-  if ('variableName' in y && y.variableName) {
-    insertVariableAndOffsetPathToNode(y, modifiedAst, nodeToEdit)
-  }
-  if ('variableName' in z && z.variableName) {
-    insertVariableAndOffsetPathToNode(z, modifiedAst, nodeToEdit)
-  }
-
-  // 3. If edit, we assign the new function call declaration to the existing node,
-  // otherwise just push to the end
-  const lastPath = variableExpressions.paths.pop() // TODO: check if this is correct
-  const pathToNode = setCallInAst(modifiedAst, call, nodeToEdit, lastPath)
-  if (err(pathToNode)) {
-    return pathToNode
-  }
-
-  return {
-    modifiedAst,
-    pathToNode,
-  }
+    callName: 'scale',
+  })
 }
 
 export function retrievePathToNodeFromTransformSelection(

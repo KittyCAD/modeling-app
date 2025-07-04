@@ -187,25 +187,25 @@ export type ModelingCommandSchema = {
   Translate: {
     nodeToEdit?: PathToNode
     objects: Selections
-    x: KclCommandValue
-    y: KclCommandValue
-    z: KclCommandValue
+    x?: KclCommandValue
+    y?: KclCommandValue
+    z?: KclCommandValue
     global?: boolean
   }
   Rotate: {
     nodeToEdit?: PathToNode
     objects: Selections
-    roll: KclCommandValue
-    pitch: KclCommandValue
-    yaw: KclCommandValue
+    roll?: KclCommandValue
+    pitch?: KclCommandValue
+    yaw?: KclCommandValue
     global?: boolean
   }
   Scale: {
     nodeToEdit?: PathToNode
     objects: Selections
-    x: KclCommandValue
-    y: KclCommandValue
-    z: KclCommandValue
+    x?: KclCommandValue
+    y?: KclCommandValue
+    z?: KclCommandValue
     global?: boolean
   }
   Clone: {
