@@ -1658,7 +1658,6 @@ async function prepareToEditScale({ operation }: EnterEditFlowProps) {
     return { reason: "Couldn't retrieve objects" }
   }
 
-
   // 2. Convert the x y z arguments from a string to a KCL expression
   let x: KclCommandValue | undefined = undefined
   let y: KclCommandValue | undefined = undefined
