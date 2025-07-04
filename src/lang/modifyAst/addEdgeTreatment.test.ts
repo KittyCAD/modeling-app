@@ -1,4 +1,4 @@
-import { VITE_KC_DEV_TOKEN } from '@src/env'
+import { VITE_KITTYCAD_API_TOKEN } from '@src/env'
 
 import { createLiteral } from '@src/lang/create'
 import type {
@@ -40,10 +40,9 @@ import { isOverlap } from '@src/lib/utils'
 beforeAll(async () => {
   await initPromise
 
-  // THESE TEST WILL FAIL without VITE_KC_DEV_TOKEN set in .env.development.local
   await new Promise((resolve) => {
     engineCommandManager.start({
-      token: VITE_KC_DEV_TOKEN,
+      token: VITE_KITTYCAD_API_TOKEN,
       width: 256,
       height: 256,
       setMediaStream: () => {},

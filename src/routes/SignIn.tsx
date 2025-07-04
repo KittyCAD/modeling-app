@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom'
 import { ActionButton } from '@src/components/ActionButton'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { Logo } from '@src/components/Logo'
-import { VITE_KC_API_BASE_URL, VITE_KC_SITE_BASE_URL } from '@src/env'
+import { VITE_KC_SITE_BASE_URL } from '@src/env'
 import { APP_NAME } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
@@ -15,6 +15,7 @@ import { reportRejection } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
 import { authActor, useSettings } from '@src/lib/singletons'
 import { APP_VERSION, generateSignInUrl } from '@src/routes/utils'
+import { withAPIBaseURL } from '@src/lib/withBaseURL'
 
 const subtleBorder =
   'border border-solid border-chalkboard-30 dark:border-chalkboard-80'
@@ -54,7 +55,7 @@ const SignIn = () => {
   const signInDesktop = async () => {
     // We want to invoke our command to login via device auth.
     const userCodeToDisplay = await window.electron
-      .startDeviceFlow(VITE_KC_API_BASE_URL + location.search)
+      .startDeviceFlow(withAPIBaseURL(location.search))
       .catch(reportError)
     if (!userCodeToDisplay) {
       console.error('No user code received while trying to log in')
