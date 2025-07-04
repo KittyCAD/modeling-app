@@ -8,7 +8,7 @@ import { splitPathAtLastIndex } from '@src/lang/modifyAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import {
   codeRefFromRange,
-  getArtifactOfTypes,
+  getCodeRefsByArtifactId,
 } from '@src/lang/std/artifactGraph'
 import { getArgForEnd } from '@src/lang/std/sketch'
 import { getSketchSegmentFromSourceRange } from '@src/lang/std/sketchConstraints'
@@ -51,7 +51,7 @@ import type { KclSettingsAnnotation } from '@src/lib/settings/settingsTypes'
 import { err } from '@src/lib/trap'
 import { getAngle, isArray } from '@src/lib/utils'
 
-import type { OpKclValue, Operation } from '@rust/kcl-lib/bindings/Operation'
+import type { OpArg } from '@rust/kcl-lib/bindings/Operation'
 import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import type { UnaryExpression } from 'typescript'
@@ -1098,71 +1098,48 @@ export function getVariableExprsFromSelection(
 
 // Go from the sketches argument in a KCL sweep call declaration
 // to a list of graph selections, useful for edit flows.
-// Somewhat of an inverse of getSketchExprsFromSelection.
-export function getSketchSelectionsFromOperation(
-  operation: Operation,
+// Somewhat of an inverse of getVariableExprsFromSelection.
+export function retrieveSelectionsFromOpArg(
+  opArg: OpArg,
   artifactGraph: ArtifactGraph
 ): Error | Selections {
   const error = new Error("Couldn't retrieve sketches from operation")
-  if (operation.type !== 'StdLibCall') {
-    return error
-  }
-
-  let sketches: OpKclValue[] = []
-  if (operation.unlabeledArg?.value.type === 'Sketch') {
-    sketches = [operation.unlabeledArg.value]
-  } else if (operation.unlabeledArg?.value.type === 'Array') {
-    sketches = operation.unlabeledArg.value.value
+  let artifactIds: string[] = []
+  if (opArg.value.type === 'Solid' || opArg.value.type === 'Sketch') {
+    artifactIds = [opArg.value.value.artifactId]
+  } else if (opArg.value.type === 'ImportedGeometry') {
+    artifactIds = [opArg.value.artifact_id]
+  } else if (opArg.value.type === 'Array') {
+    artifactIds = opArg.value.value
+      .filter((v) => v.type === 'Solid' || v.type === 'Sketch')
+      .map((v) => v.value.artifactId)
   } else {
     return error
   }
 
-  const graphSelections: Selection[] = sketches.flatMap((sketch) => {
-    // We have to go a little roundabout to get from the original artifact
-    // to the solid2DId that we need to pass to the Extrude command.
-    if (sketch.type !== 'Sketch') {
-      return []
+  const graphSelections: Selection[] = []
+  for (const artifactId of artifactIds) {
+    const artifact = artifactGraph.get(artifactId)
+    if (!artifact) {
+      continue
     }
 
-    const pathArtifact = getArtifactOfTypes(
-      {
-        key: sketch.value.artifactId,
-        types: ['path'],
-      },
-      artifactGraph
-    )
-    if (
-      err(pathArtifact) ||
-      pathArtifact.type !== 'path' ||
-      !pathArtifact.solid2dId
-    ) {
-      return []
+    const codeRefs = getCodeRefsByArtifactId(artifactId, artifactGraph)
+    if (!codeRefs || codeRefs.length === 0) {
+      continue
     }
 
-    const solid2DArtifact = getArtifactOfTypes(
-      {
-        key: pathArtifact.solid2dId,
-        types: ['solid2d'],
-      },
-      artifactGraph
-    )
-    if (err(solid2DArtifact) || solid2DArtifact.type !== 'solid2d') {
-      return []
-    }
+    graphSelections.push({
+      artifact,
+      codeRef: codeRefs[0], // TODO: figure out why two codeRefs could be possible?
+    })
+  }
 
-    return {
-      artifact: solid2DArtifact,
-      codeRef: pathArtifact.codeRef,
-    }
-  })
   if (graphSelections.length === 0) {
     return error
   }
 
-  return {
-    graphSelections,
-    otherSelections: [],
-  }
+  return { graphSelections, otherSelections: [] } as Selections
 }
 
 export function locateVariableWithCallOrPipe(
