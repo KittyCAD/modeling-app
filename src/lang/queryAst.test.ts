@@ -15,6 +15,7 @@ import {
   findAllPreviousVariables,
   findUsesOfTagInPipe,
   getNodeFromPath,
+  getSketchSelectionsFromOperation,
   getVariableExprsFromSelection,
   hasSketchPipeBeenExtruded,
   isCursorInFunctionDefinition,
@@ -958,5 +959,67 @@ profile002 = circle(sketch001, center = [2, 2], radius = 1)
       ['declaration', 'VariableDeclaration'],
       ['init', ''],
     ])
+  })
+})
+
+// TODO: replace with more generic call
+describe('Testing getSketchSelectionsFromOperation', () => {
+
+  it('should find the profile selection from simple extrude op', async () => {
+    const circleProfileInVar = `sketch001 = startSketchOn(XY)
+profile001 = circle(sketch001, center = [0, 0], radius = 1)
+extrude001 = extrude(profile001, length = 1)
+`
+    const ast = assertParse(circleProfileInVar)
+    const { artifactGraph, operations } = await enginelessExecutor(ast)
+    console.log('operations', operations)
+    const operation = operations.find(
+      (op) => op.type === 'StdLibCall' && op.name === 'Extrude'
+    )
+    if (!operation) {
+      throw new Error('Operation not found in the graph')
+    }
+    const selections = getSketchSelectionsFromOperation(
+      operation,
+      artifactGraph
+    )
+    if (err(selections)) throw selections
+    expect(selections.graphSelections).toHaveLength(1)
+    const selection = selections.graphSelections[0]
+    if (!selection.artifact) {
+      throw new Error('Artifact not found in the selection')
+    }
+    expect(selection.artifact.type).toEqual('path')
+  })
+
+  it('should find two profile selections from multi-profile revolve op', async () => {
+    const circleProfileInVar = `sketch001 = startSketchOn(XY)
+profile001 = circle(sketch001, center = [3, 0], radius = 1)
+profile002 = circle(sketch001, center = [6, 0], radius = 1)
+revolve001 = revolve([profile001, profile002], axis = XY, angle = 180)
+`
+    const ast = assertParse(circleProfileInVar)
+    const { artifactGraph, operations } = await enginelessExecutor(ast)
+    console.log('operations', operations)
+    const operation = operations.find(
+      (op) => op.type === 'StdLibCall' && op.name === 'Revolve'
+    )
+    if (!operation) {
+      throw new Error('Operation not found in the graph')
+    }
+    const selections = getSketchSelectionsFromOperation(
+      operation,
+      artifactGraph
+    )
+    if (err(selections)) throw selections
+    expect(selections.graphSelections).toHaveLength(2)
+    if (
+      !selections.graphSelections[0].artifact ||
+      !selections.graphSelections[1].artifact
+    ) {
+      throw new Error('Artifact not found in the selection')
+    }
+    expect(selections.graphSelections[0].artifact.type).toEqual('path')
+    expect(selections.graphSelections[1].artifact.type).toEqual('path')
   })
 })
