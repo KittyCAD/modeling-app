@@ -14,7 +14,10 @@ import {
 import { updateModelingState } from '@src/lang/modelingWorkflows'
 import { getNodeFromPath } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
-import { getFaceCodeRef } from '@src/lang/std/artifactGraph'
+import {
+  getCodeRefsByArtifactId,
+  getFaceCodeRef,
+} from '@src/lang/std/artifactGraph'
 import type { EngineCommandManager } from '@src/lang/std/engineConnection'
 import type {
   Artifact,
@@ -159,8 +162,8 @@ export function findAllChildrenAndOrderByPlaceInCode(
     for (const id of stringIds) {
       const artifact = artifactGraph.get(id)
       if (artifact) {
-        const codeRef = getFaceCodeRef(artifact)
-        if (codeRef && codeRef.range[1] > 0) {
+        const codeRefs = getCodeRefsByArtifactId(id, artifactGraph)
+        if (codeRefs && codeRefs[0] && codeRefs[0].range[1] > 0) {
           artifactsWithCodeRefs.push(artifact)
         }
       }
@@ -175,13 +178,13 @@ export function findAllChildrenAndOrderByPlaceInCode(
     if (isArray(childrenIdOrIds)) {
       if (childrenIdOrIds.length) {
         stack.push(...childrenIdOrIds)
-        result.push(resultId)
       }
+      result.push(resultId)
     } else {
       if (childrenIdOrIds) {
         stack.push(childrenIdOrIds)
-        result.push(resultId)
       }
+      result.push(resultId)
     }
   }
 
@@ -214,7 +217,8 @@ export function findAllChildrenAndOrderByPlaceInCode(
     }
   }
 
-  const codeRefArtifacts = getArtifacts(result)
+  const resultSet = new Set(result)
+  const codeRefArtifacts = getArtifacts(Array.from(resultSet))
   const orderedByCodeRefDest = codeRefArtifacts.sort((a, b) => {
     const aCodeRef = getFaceCodeRef(a)
     const bCodeRef = getFaceCodeRef(b)

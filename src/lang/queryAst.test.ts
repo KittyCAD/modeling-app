@@ -961,9 +961,55 @@ profile002 = circle(sketch001, center = [2, 2], radius = 1)
       ['init', ''],
     ])
   })
+
+  it('should find the extrude variable expr on profile selection with child look up flag', async () => {
+    const circleProfileInVar = `sketch001 = startSketchOn(XY)
+profile001 = circle(sketch001, center = [0, 0], radius = 1)
+extrude001 = extrude(profile001, length = 1)
+`
+    const ast = assertParse(circleProfileInVar)
+    const { artifactGraph } = await enginelessExecutor(ast)
+    const artifact = artifactGraph.values().find((a) => a.type === 'path')
+    if (!artifact) {
+      throw new Error('Artifact not found in the graph')
+    }
+    const selections: Selections = {
+      graphSelections: [
+        {
+          codeRef: artifact.codeRef,
+          artifact,
+        },
+      ],
+      otherSelections: [],
+    }
+    const nodeToEdit = undefined // no node to edit, just want the variable exprs
+    const lastChildLookup = true // we want to look up the child of the profile variable
+    const variableExprs = getVariableExprsFromSelection(
+      selections,
+      ast,
+      nodeToEdit,
+      lastChildLookup,
+      artifactGraph
+    )
+    if (err(variableExprs)) throw variableExprs
+
+    expect(variableExprs.exprs).toHaveLength(1)
+    if (variableExprs.exprs[0].type !== 'Name') {
+      throw new Error(`Expected Name, got ${variableExprs.exprs[0].type}`)
+    }
+
+    expect(variableExprs.exprs[0].name.name).toEqual('extrude001')
+
+    expect(variableExprs.paths).toHaveLength(1)
+    expect(variableExprs.paths[0]).toEqual([
+      ['body', ''],
+      [2, 'index'],
+      ['declaration', 'VariableDeclaration'],
+      ['init', ''],
+    ])
+  })
 })
 
-// TODO: replace with more generic call
 describe('Testing retrieveSelectionsFromOpArg', () => {
   it('should find the profile selection from simple extrude op', async () => {
     const circleProfileInVar = `sketch001 = startSketchOn(XY)
