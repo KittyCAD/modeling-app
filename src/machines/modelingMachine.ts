@@ -2609,15 +2609,15 @@ export const modelingMachine = setup({
           insertIndex = nodeToEdit[1][0]
         }
 
-        // Extract the default plane from selection
-        const plane = selection.otherSelections[0]
-        if (!(plane && plane instanceof Object && 'name' in plane))
+        const selectedPlane = getSelectedPlane(selection)
+        if (!selectedPlane) {
           return trap('No plane selected')
+        }
 
         // Get the default plane name from the selection
         const offsetPlaneResult = addOffsetPlane({
           node: ast,
-          defaultPlane: plane.name,
+          plane: selectedPlane,
           offset:
             'variableName' in distance
               ? distance.variableIdentifierAst
@@ -5518,6 +5518,33 @@ export function isEditingExistingSketch({
         item.callee.name.name === 'circleThreePoint'
     )
   return (hasStartProfileAt && maybePipeExpression.body.length > 1) || hasCircle
+}
+
+const getSelectedPlane = (
+  selection: Selections
+): Node<Name> | Node<Literal> | undefined => {
+  const defaultPlane = selection.otherSelections[0]
+  if (
+    defaultPlane &&
+    defaultPlane instanceof Object &&
+    'name' in defaultPlane
+  ) {
+    return createLiteral(defaultPlane.name.toUpperCase())
+  }
+
+  const offsetPlane = selection.graphSelections[0]
+  if (offsetPlane.artifact?.type === 'plane') {
+    const artifactId = offsetPlane.artifact?.id
+    const variableName = Object.entries(kclManager.variables).find(
+      ([_, value]) => {
+        return value?.type === 'Plane' && value.value?.artifactId === artifactId
+      }
+    )
+    const offsetPlaneName = variableName?.[0]
+    return offsetPlaneName ? createLocalName(offsetPlaneName) : undefined
+  }
+
+  return undefined
 }
 
 export function pipeHasCircle({
