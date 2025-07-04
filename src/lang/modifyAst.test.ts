@@ -13,13 +13,13 @@ import {
   createPipeSubstitution,
   createVariableDeclaration,
   findUniqueName,
-  giveSketchFnCallTag,
 } from '@src/lang/create'
 import {
   addSketchTo,
   createPathToNodeForLastVariable,
   createVariableExpressionsArray,
   deleteSegmentFromPipeExpression,
+  giveSketchFnCallTag,
   moveValueIntoNewVariable,
   setCallInAst,
   sketchOnExtrudedFace,
