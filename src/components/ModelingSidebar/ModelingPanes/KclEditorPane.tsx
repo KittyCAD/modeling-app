@@ -35,7 +35,7 @@ import {
   rectangularSelection,
 } from '@codemirror/view'
 import interact from '@replit/codemirror-interact'
-import { TEST } from '@src/env'
+import env from '@src/env'
 import { useSelector } from '@xstate/react'
 import { useEffect, useMemo, useRef } from 'react'
 
@@ -149,7 +149,7 @@ export const KclEditorPane = () => {
     if (copilotLSP) extensions.push(copilotLSP)
 
     // These extensions have proven to mess with vitest
-    if (!TEST) {
+    if (!env().TEST) {
       extensions.push(
         lintGutter(),
         lineNumbers(),

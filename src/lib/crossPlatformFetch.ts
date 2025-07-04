@@ -1,4 +1,4 @@
-import { DEV } from '@src/env'
+import env from '@src/env'
 import isomorphicFetch from 'isomorphic-fetch'
 import { isDesktop } from '@src/lib/isDesktop'
 
@@ -28,7 +28,7 @@ export default async function crossPlatformFetch<T>(
     // Add credentials: 'include' to options
     // We send the token with the headers only in development mode, DO NOT
     // DO THIS IN PRODUCTION, as it is a security risk.
-    opts.headers = headers(DEV ? token : undefined)
+    opts.headers = headers(env().DEV ? token : undefined)
     opts.credentials = 'include'
     response = await fetch(url, opts)
   }
