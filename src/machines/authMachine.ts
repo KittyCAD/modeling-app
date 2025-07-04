@@ -1,5 +1,5 @@
 import type { Models } from '@kittycad/lib'
-import { VITE_KC_DEV_TOKEN } from '@src/env'
+import { VITE_KITTYCAD_API_TOKEN } from '@src/env'
 import { assign, fromPromise, setup } from 'xstate'
 
 import { COOKIE_NAME, OAUTH2_DEVICE_CLIENT_ID } from '@src/lib/constants'
@@ -34,7 +34,7 @@ export const TOKEN_PERSIST_KEY = 'TOKEN_PERSIST_KEY'
  */
 const persistedCookie = getCookie(COOKIE_NAME)
 const persistedLocalStorage = localStorage?.getItem(TOKEN_PERSIST_KEY) || ''
-const persistedDevToken = VITE_KC_DEV_TOKEN
+const persistedDevToken = VITE_KITTYCAD_API_TOKEN
 export const persistedToken =
   persistedDevToken || persistedCookie || persistedLocalStorage
 console.log('Initial persisted token')
@@ -197,10 +197,10 @@ async function getAndSyncStoredToken(input: {
   token?: string
 }): Promise<string> {
   // dev mode
-  if (VITE_KC_DEV_TOKEN) {
+  if (VITE_KITTYCAD_API_TOKEN) {
     console.log('Token used for authentication')
-    console.table([['api token', !!VITE_KC_DEV_TOKEN]])
-    return VITE_KC_DEV_TOKEN
+    console.table([['api token', !!VITE_KITTYCAD_API_TOKEN]])
+    return VITE_KITTYCAD_API_TOKEN
   }
 
   const inputToken = input.token && input.token !== '' ? input.token : ''
@@ -213,7 +213,7 @@ async function getAndSyncStoredToken(input: {
     ['persisted token', !!inputToken],
     ['cookie', !!cookieToken],
     ['local storage', !!localStorageToken],
-    ['api token', !!VITE_KC_DEV_TOKEN],
+    ['api token', !!VITE_KITTYCAD_API_TOKEN],
   ])
   if (token) {
     // has just logged in, update storage
