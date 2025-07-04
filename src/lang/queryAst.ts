@@ -1053,8 +1053,13 @@ export function getVariableExprsFromSelection(
   nodeToEdit?: PathToNode,
   lastChildLookup = false,
   artifactGraph?: ArtifactGraph
-): Error | { exprs: Expr[]; paths: PathToNode[] } {
-  const paths: PathToNode[] = []
+): Error | { exprs: Expr[]; pathIfPipe?: PathToNode } {
+  // Can only be set once as we loop through the selections.
+  let pathIfPipe: PathToNode | undefined
+  const multiplePipesErrors = new Error(
+    'Multiple pipe substitutions found, something is wrong.'
+  )
+
   const exprs: Expr[] = []
   for (const s of selection.graphSelections) {
     let variable:
@@ -1102,28 +1107,31 @@ export function getVariableExprsFromSelection(
           name === result.node.declaration.id.name
         ) {
           // Pointing to same variable case
-          paths.push(nodeToEdit)
           exprs.push(createPipeSubstitution())
+          if (pathIfPipe) return multiplePipesErrors
+          pathIfPipe = nodeToEdit
           continue
         }
       }
 
       // Pointing to different variable case
-      paths.push(variable.deepPath)
       exprs.push(createLocalName(name))
       continue
     }
 
+    // TODO: handle imported geometry case
+
     // No variable case
-    paths.push(s.codeRef.pathToNode)
     exprs.push(createPipeSubstitution())
+    if (pathIfPipe) return multiplePipesErrors
+    pathIfPipe = s.codeRef.pathToNode
   }
 
   if (exprs.length === 0) {
     return new Error("Couldn't map selections to program references")
   }
 
-  return { exprs, paths }
+  return { exprs, pathIfPipe }
 }
 
 // Go from the sketches argument in a KCL sweep call declaration
@@ -1161,7 +1169,7 @@ export function retrieveSelectionsFromOpArg(
 
     graphSelections.push({
       artifact,
-      codeRef: codeRefs[0], // TODO: figure out why two codeRefs could be possible?
+      codeRef: codeRefs[0],
     })
   }
 

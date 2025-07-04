@@ -974,7 +974,7 @@ describe('Testing createVariableExpressionsArray', () => {
   })
 
   // This would catch the issue at https://github.com/KittyCAD/modeling-app/issues/7669
-  // TODO: fix function to get this test to pass
+  // TODO: add uniqueness check to function to get this test to pass and bring boolean ops up to speed
   // it('should create one expr if the array of variable names are the same', () => {
   //   const twoVariableNames = [createLocalName('var1'), createLocalName('var1')]
   //   const expr = createVariableExpressionsArray(twoVariableNames)
@@ -1086,14 +1086,13 @@ profile001 = circle(sketch001, center = [0, 0], radius = 1)
       ],
       otherSelections: [],
     }
-    const variableExprs = getVariableExprsFromSelection(selections, ast)
-    if (err(variableExprs)) throw variableExprs
-    const exprs = createVariableExpressionsArray(variableExprs.exprs)
+    const vars = getVariableExprsFromSelection(selections, ast)
+    if (err(vars)) throw vars
+    const exprs = createVariableExpressionsArray(vars.exprs)
     const call = createCallExpressionStdLibKw('extrude', exprs, [
       createLabeledArg('length', createLiteral(5)),
     ])
-    const lastPathToNode = variableExprs.paths.pop()
-    const pathToNode = setCallInAst(ast, call, undefined, lastPathToNode)
+    const pathToNode = setCallInAst(ast, call, undefined, vars.pathIfPipe)
     if (err(pathToNode)) {
       throw pathToNode
     }
@@ -1121,14 +1120,13 @@ profile001 = circle(sketch001, center = [0, 0], radius = 1)
       ],
       otherSelections: [],
     }
-    const variableExprs = getVariableExprsFromSelection(selections, ast)
-    if (err(variableExprs)) throw variableExprs
-    const exprs = createVariableExpressionsArray(variableExprs.exprs)
+    const vars = getVariableExprsFromSelection(selections, ast)
+    if (err(vars)) throw vars
+    const exprs = createVariableExpressionsArray(vars.exprs)
     const call = createCallExpressionStdLibKw('extrude', exprs, [
       createLabeledArg('length', createLiteral(5)),
     ])
-    const lastPathToNode = variableExprs.paths.pop()
-    const pathToNode = setCallInAst(ast, call, undefined, lastPathToNode)
+    const pathToNode = setCallInAst(ast, call, undefined, vars.pathIfPipe)
     if (err(pathToNode)) {
       throw pathToNode
     }

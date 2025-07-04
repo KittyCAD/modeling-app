@@ -802,23 +802,16 @@ profile001 = circle(sketch001, center = [0, 0], radius = 1)
       ],
       otherSelections: [],
     }
-    const variableExprs = getVariableExprsFromSelection(selections, ast)
-    if (err(variableExprs)) throw variableExprs
+    const vars = getVariableExprsFromSelection(selections, ast)
+    if (err(vars)) throw vars
 
-    expect(variableExprs.exprs).toHaveLength(1)
-    if (variableExprs.exprs[0].type !== 'Name') {
-      throw new Error(`Expected Name, got ${variableExprs.exprs[0].type}`)
+    expect(vars.exprs).toHaveLength(1)
+    if (vars.exprs[0].type !== 'Name') {
+      throw new Error(`Expected Name, got ${vars.exprs[0].type}`)
     }
 
-    expect(variableExprs.exprs[0].name.name).toEqual('profile001')
-
-    expect(variableExprs.paths).toHaveLength(1)
-    expect(variableExprs.paths[0]).toEqual([
-      ['body', ''],
-      [1, 'index'],
-      ['declaration', 'VariableDeclaration'],
-      ['init', ''],
-    ])
+    expect(vars.exprs[0].name.name).toEqual('profile001')
+    expect(vars.pathIfPipe).toBeUndefined()
   })
 
   it('should return the pipe substitution symbol in a variable-less simple profile selection', async () => {
@@ -840,20 +833,47 @@ profile001 = circle(sketch001, center = [0, 0], radius = 1)
       ],
       otherSelections: [],
     }
-    const variableExprs = getVariableExprsFromSelection(selections, ast)
-    if (err(variableExprs)) throw variableExprs
+    const vars = getVariableExprsFromSelection(selections, ast)
+    if (err(vars)) throw vars
 
-    expect(variableExprs.exprs).toHaveLength(1)
-    expect(variableExprs.exprs[0].type).toEqual('PipeSubstitution')
+    expect(vars.exprs).toHaveLength(1)
+    expect(vars.exprs[0].type).toEqual('PipeSubstitution')
 
-    expect(variableExprs.paths).toHaveLength(1)
-    expect(variableExprs.paths[0]).toEqual([
+    expect(vars.pathIfPipe).toBeDefined()
+    expect(vars.pathIfPipe).toEqual([
       ['body', ''],
       [0, 'index'],
       ['expression', 'ExpressionStatement'],
       ['body', 'PipeExpression'],
       [1, 'index'],
     ])
+  })
+
+  it('should error on two selections leading to pipe substitution symbol', async () => {
+    const circleProfileInVar = `startSketchOn(XY)
+  |> circle(center = [0, 0], radius = 1)
+`
+    const ast = assertParse(circleProfileInVar)
+    const { artifactGraph } = await enginelessExecutor(ast)
+    const artifact = artifactGraph.values().find((a) => a.type === 'path')
+    if (!artifact) {
+      throw new Error('Artifact not found in the graph')
+    }
+    const selections: Selections = {
+      graphSelections: [
+        {
+          codeRef: artifact.codeRef,
+          artifact,
+        },
+        {
+          codeRef: artifact.codeRef,
+          artifact,
+        }, // same selection twice on purpose
+      ],
+      otherSelections: [],
+    }
+    const vars = getVariableExprsFromSelection(selections, ast)
+    expect(vars).toBeInstanceOf(Error)
   })
 
   it('should find the variable exprs in a multi profile selection ', async () => {
@@ -878,34 +898,21 @@ profile002 = circle(sketch001, center = [2, 2], radius = 1)
       }),
       otherSelections: [],
     }
-    const variableExprs = getVariableExprsFromSelection(selections, ast)
-    if (err(variableExprs)) throw variableExprs
+    const vars = getVariableExprsFromSelection(selections, ast)
+    if (err(vars)) throw vars
 
-    expect(variableExprs.exprs).toHaveLength(2)
-    if (variableExprs.exprs[0].type !== 'Name') {
-      throw new Error(`Expected Name, got ${variableExprs.exprs[0].type}`)
+    expect(vars.exprs).toHaveLength(2)
+    if (vars.exprs[0].type !== 'Name') {
+      throw new Error(`Expected Name, got ${vars.exprs[0].type}`)
     }
 
-    if (variableExprs.exprs[1].type !== 'Name') {
-      throw new Error(`Expected Name, got ${variableExprs.exprs[1].type}`)
+    if (vars.exprs[1].type !== 'Name') {
+      throw new Error(`Expected Name, got ${vars.exprs[1].type}`)
     }
 
-    expect(variableExprs.exprs[0].name.name).toEqual('profile001')
-    expect(variableExprs.exprs[1].name.name).toEqual('profile002')
-
-    expect(variableExprs.paths).toHaveLength(2)
-    expect(variableExprs.paths[0]).toEqual([
-      ['body', ''],
-      [1, 'index'],
-      ['declaration', 'VariableDeclaration'],
-      ['init', ''],
-    ])
-    expect(variableExprs.paths[1]).toEqual([
-      ['body', ''],
-      [2, 'index'],
-      ['declaration', 'VariableDeclaration'],
-      ['init', ''],
-    ])
+    expect(vars.exprs[0].name.name).toEqual('profile001')
+    expect(vars.exprs[1].name.name).toEqual('profile002')
+    expect(vars.pathIfPipe).toBeUndefined()
   })
 
   it('should return the pipe substitution symbol and a variable name in a complex multi profile selection', async () => {
@@ -930,35 +937,27 @@ profile002 = circle(sketch001, center = [2, 2], radius = 1)
       }),
       otherSelections: [],
     }
-    const variableExprs = getVariableExprsFromSelection(selections, ast)
-    if (err(variableExprs)) throw variableExprs
+    const vars = getVariableExprsFromSelection(selections, ast)
+    if (err(vars)) throw vars
 
-    expect(variableExprs.exprs).toHaveLength(2)
-    if (variableExprs.exprs[0].type !== 'PipeSubstitution') {
-      throw new Error(
-        `Expected PipeSubstitution, got ${variableExprs.exprs[0].type}`
-      )
+    expect(vars.exprs).toHaveLength(2)
+    if (vars.exprs[0].type !== 'PipeSubstitution') {
+      throw new Error(`Expected PipeSubstitution, got ${vars.exprs[0].type}`)
     }
 
-    if (variableExprs.exprs[1].type !== 'Name') {
-      throw new Error(`Expected Name, got ${variableExprs.exprs[1].type}`)
+    if (vars.exprs[1].type !== 'Name') {
+      throw new Error(`Expected Name, got ${vars.exprs[1].type}`)
     }
 
-    expect(variableExprs.exprs[1].name.name).toEqual('profile002')
+    expect(vars.exprs[1].name.name).toEqual('profile002')
 
-    expect(variableExprs.paths).toHaveLength(2)
-    expect(variableExprs.paths[0]).toEqual([
+    expect(vars.pathIfPipe).toBeDefined()
+    expect(vars.pathIfPipe).toEqual([
       ['body', ''],
       [0, 'index'],
       ['expression', 'ExpressionStatement'],
       ['body', 'PipeExpression'],
       [1, 'index'],
-    ])
-    expect(variableExprs.paths[1]).toEqual([
-      ['body', ''],
-      [1, 'index'],
-      ['declaration', 'VariableDeclaration'],
-      ['init', ''],
     ])
   })
 
@@ -984,29 +983,22 @@ extrude001 = extrude(profile001, length = 1)
     }
     const nodeToEdit = undefined // no node to edit, just want the variable exprs
     const lastChildLookup = true // we want to look up the child of the profile variable
-    const variableExprs = getVariableExprsFromSelection(
+    const vars = getVariableExprsFromSelection(
       selections,
       ast,
       nodeToEdit,
       lastChildLookup,
       artifactGraph
     )
-    if (err(variableExprs)) throw variableExprs
+    if (err(vars)) throw vars
 
-    expect(variableExprs.exprs).toHaveLength(1)
-    if (variableExprs.exprs[0].type !== 'Name') {
-      throw new Error(`Expected Name, got ${variableExprs.exprs[0].type}`)
+    expect(vars.exprs).toHaveLength(1)
+    if (vars.exprs[0].type !== 'Name') {
+      throw new Error(`Expected Name, got ${vars.exprs[0].type}`)
     }
 
-    expect(variableExprs.exprs[0].name.name).toEqual('extrude001')
-
-    expect(variableExprs.paths).toHaveLength(1)
-    expect(variableExprs.paths[0]).toEqual([
-      ['body', ''],
-      [2, 'index'],
-      ['declaration', 'VariableDeclaration'],
-      ['init', ''],
-    ])
+    expect(vars.exprs[0].name.name).toEqual('extrude001')
+    expect(vars.pathIfPipe).toBeUndefined()
   })
 })
 
@@ -1040,7 +1032,6 @@ extrude001 = extrude(profile001, length = 1)
     if (!selection.artifact) {
       throw new Error('Artifact not found in the selection')
     }
-    console.log('selection', selection)
     expect(selection.artifact.type).toEqual('path')
   })
 

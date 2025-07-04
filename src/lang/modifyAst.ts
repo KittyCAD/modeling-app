@@ -1250,7 +1250,7 @@ export function setCallInAst(
   ast: Node<Program>,
   call: Node<CallExpressionKw>,
   nodeToEdit?: PathToNode,
-  lastPathToNode?: PathToNode
+  pathIfPipe?: PathToNode
 ): Error | PathToNode {
   let pathToNode: PathToNode | undefined
   if (nodeToEdit) {
@@ -1266,17 +1266,17 @@ export function setCallInAst(
     Object.assign(result.node, call)
     pathToNode = nodeToEdit
   } else {
-    if (!call.unlabeled && lastPathToNode) {
+    if (!call.unlabeled && pathIfPipe) {
       const pipe = getNodeFromPath<PipeExpression>(
         ast,
-        lastPathToNode,
+        pathIfPipe,
         'PipeExpression'
       )
       if (err(pipe)) {
         return pipe
       }
       pipe.node.body.push(call)
-      pathToNode = lastPathToNode
+      pathToNode = pathIfPipe
     } else {
       const name = findUniqueName(ast, call.callee.name.name)
       const declaration = createVariableDeclaration(name, call)
