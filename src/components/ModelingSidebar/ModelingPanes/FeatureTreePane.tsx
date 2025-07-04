@@ -44,6 +44,7 @@ import {
   selectDefaultSketchPlane,
   selectOffsetSketchPlane,
 } from '@src/lib/selections'
+import type { DefaultPlaneStr } from '@src/lib/planes'
 
 export const FeatureTreePane = () => {
   const isEditorMounted = useSelector(kclEditorActor, editorIsMountedSelector)
@@ -617,9 +618,32 @@ const DefaultPlanes = () => {
   const { state: modelingState, send } = useModelingContext()
   const sketchNoFace = modelingState.matches('Sketch no face')
 
-  const onClickPlane = useCallback((planeId: string) => {
-    selectDefaultSketchPlane(planeId)
-  }, [])
+  const onClickPlane = useCallback(
+    (planeId: string) => {
+      if (sketchNoFace) {
+        selectDefaultSketchPlane(planeId)
+      } else {
+        const foundDefaultPlane =
+          rustContext.defaultPlanes !== null &&
+          Object.entries(rustContext.defaultPlanes).find(
+            ([, plane]) => plane === planeId
+          )
+        if (foundDefaultPlane) {
+          send({
+            type: 'Set selection',
+            data: {
+              selectionType: 'defaultPlaneSelection',
+              selection: {
+                name: foundDefaultPlane[0] as DefaultPlaneStr,
+                id: planeId,
+              },
+            },
+          })
+        }
+      }
+    },
+    [sketchNoFace]
+  )
 
   const startSketchOnDefaultPlane = useCallback((planeId: string) => {
     sceneInfra.modelingSend({
@@ -667,7 +691,7 @@ const DefaultPlanes = () => {
           icon={'plane'}
           name={plane.name}
           selectable={true}
-          onClick={sketchNoFace ? () => onClickPlane(plane.id) : undefined}
+          onClick={() => onClickPlane(plane.id)}
           menuItems={[
             <ContextMenuItem
               onClick={() => startSketchOnDefaultPlane(plane.id)}
