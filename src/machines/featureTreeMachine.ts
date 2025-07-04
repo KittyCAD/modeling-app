@@ -12,14 +12,7 @@ import type { Artifact } from '@src/lang/std/artifactGraph'
 import { getArtifactFromRange } from '@src/lang/std/artifactGraph'
 import type { SourceRange } from '@src/lang/wasm'
 import type { EnterEditFlowProps } from '@src/lib/operations'
-import {
-  enterAppearanceFlow,
-  enterCloneFlow,
-  enterEditFlow,
-  enterTranslateFlow,
-  enterRotateFlow,
-  enterScaleFlow,
-} from '@src/lib/operations'
+import { enterAppearanceFlow, enterEditFlow } from '@src/lib/operations'
 import { kclManager } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
 import { commandBarActor } from '@src/lib/singletons'
@@ -131,98 +124,6 @@ export const featureTreeMachine = setup({
         })
       }
     ),
-    prepareTranslateCommand: fromPromise(
-      ({
-        input,
-      }: {
-        input: EnterEditFlowProps & {
-          commandBarSend: (typeof commandBarActor)['send']
-        }
-      }) => {
-        return new Promise((resolve, reject) => {
-          const { commandBarSend, ...editFlowProps } = input
-          enterTranslateFlow(editFlowProps)
-            .then((result) => {
-              if (err(result)) {
-                reject(result)
-                return
-              }
-              input.commandBarSend(result)
-              resolve(result)
-            })
-            .catch(reject)
-        })
-      }
-    ),
-    prepareRotateCommand: fromPromise(
-      ({
-        input,
-      }: {
-        input: EnterEditFlowProps & {
-          commandBarSend: (typeof commandBarActor)['send']
-        }
-      }) => {
-        return new Promise((resolve, reject) => {
-          const { commandBarSend, ...editFlowProps } = input
-          enterRotateFlow(editFlowProps)
-            .then((result) => {
-              if (err(result)) {
-                reject(result)
-                return
-              }
-              input.commandBarSend(result)
-              resolve(result)
-            })
-            .catch(reject)
-        })
-      }
-    ),
-    prepareScaleCommand: fromPromise(
-      ({
-        input,
-      }: {
-        input: EnterEditFlowProps & {
-          commandBarSend: (typeof commandBarActor)['send']
-        }
-      }) => {
-        return new Promise((resolve, reject) => {
-          const { commandBarSend, ...editFlowProps } = input
-          enterScaleFlow(editFlowProps)
-            .then((result) => {
-              if (err(result)) {
-                reject(result)
-                return
-              }
-              input.commandBarSend(result)
-              resolve(result)
-            })
-            .catch(reject)
-        })
-      }
-    ),
-    prepareCloneCommand: fromPromise(
-      ({
-        input,
-      }: {
-        input: EnterEditFlowProps & {
-          commandBarSend: (typeof commandBarActor)['send']
-        }
-      }) => {
-        return new Promise((resolve, reject) => {
-          const { commandBarSend, ...editFlowProps } = input
-          enterCloneFlow(editFlowProps)
-            .then((result) => {
-              if (err(result)) {
-                reject(result)
-                return
-              }
-              input.commandBarSend(result)
-              resolve(result)
-            })
-            .catch(reject)
-        })
-      }
-    ),
     sendDeleteCommand: fromPromise(
       ({
         input,
@@ -281,6 +182,9 @@ export const featureTreeMachine = setup({
     }),
     sendSelectionEvent: () => {},
     sendTranslateCommand: () => {},
+    sendRotateCommand: () => {},
+    sendScaleCommand: () => {},
+    sendCloneCommand: () => {},
     openCodePane: () => {},
     scrollToError: () => {},
   },
@@ -313,7 +217,7 @@ export const featureTreeMachine = setup({
         },
 
         enterTranslateFlow: {
-          target: 'enteringTranslateFlow2',
+          target: 'enteringTranslateFlow',
           actions: [
             'saveTargetSourceRange',
             'saveCurrentOperation',
@@ -323,17 +227,29 @@ export const featureTreeMachine = setup({
 
         enterRotateFlow: {
           target: 'enteringRotateFlow',
-          actions: ['saveTargetSourceRange', 'saveCurrentOperation'],
+          actions: [
+            'saveTargetSourceRange',
+            'saveCurrentOperation',
+            'sendSelectionEvent',
+          ],
         },
 
         enterScaleFlow: {
           target: 'enteringScaleFlow',
-          actions: ['saveTargetSourceRange', 'saveCurrentOperation'],
+          actions: [
+            'saveTargetSourceRange',
+            'saveCurrentOperation',
+            'sendSelectionEvent',
+          ],
         },
 
         enterCloneFlow: {
           target: 'enteringCloneFlow',
-          actions: ['saveTargetSourceRange', 'saveCurrentOperation'],
+          actions: [
+            'saveTargetSourceRange',
+            'saveCurrentOperation',
+            'sendSelectionEvent',
+          ],
         },
 
         deleteOperation: {
@@ -393,9 +309,9 @@ export const featureTreeMachine = setup({
       initial: 'selecting',
     },
 
-    enteringTranslateFlow2: {
+    enteringTranslateFlow: {
       states: {
-        enteringTranslateFlow2: {
+        enteringTranslateFlow: {
           on: {
             selected: 'done',
           },
@@ -409,7 +325,64 @@ export const featureTreeMachine = setup({
         },
       },
 
-      initial: 'enteringTranslateFlow2',
+      initial: 'enteringTranslateFlow',
+    },
+
+    enteringRotateFlow: {
+      states: {
+        enteringRotateFlow: {
+          on: {
+            selected: 'done',
+          },
+
+          entry: 'sendRotateCommand',
+        },
+
+        done: {
+          always: '#featureTree.idle',
+          entry: 'clearContext',
+        },
+      },
+
+      initial: 'enteringRotateFlow',
+    },
+
+    enteringScaleFlow: {
+      states: {
+        enteringScaleFlow: {
+          on: {
+            selected: 'done',
+          },
+
+          entry: 'sendScaleCommand',
+        },
+
+        done: {
+          always: '#featureTree.idle',
+          entry: 'clearContext',
+        },
+      },
+
+      initial: 'enteringScaleFlow',
+    },
+
+    enteringCloneFlow: {
+      states: {
+        enteringCloneFlow: {
+          on: {
+            selected: 'done',
+          },
+
+          entry: 'sendCloneCommand',
+        },
+
+        done: {
+          always: '#featureTree.idle',
+          entry: 'clearContext',
+        },
+      },
+
+      initial: 'enteringCloneFlow',
     },
 
     enteringEditFlow: {
@@ -484,222 +457,6 @@ export const featureTreeMachine = setup({
         prepareAppearanceCommand: {
           invoke: {
             src: 'prepareAppearanceCommand',
-            input: ({ context }) => {
-              const artifact = context.targetSourceRange
-                ? (getArtifactFromRange(
-                    context.targetSourceRange,
-                    kclManager.artifactGraph
-                  ) ?? undefined)
-                : undefined
-              return {
-                // currentOperation is guaranteed to be defined here
-                operation: context.currentOperation!,
-                artifact,
-                commandBarSend: commandBarActor.send,
-              }
-            },
-            onDone: {
-              target: 'done',
-              reenter: true,
-            },
-            onError: {
-              target: 'done',
-              reenter: true,
-              actions: ({ event }) => {
-                if ('error' in event && err(event.error)) {
-                  toast.error(event.error.message)
-                }
-              },
-            },
-          },
-        },
-      },
-
-      initial: 'selecting',
-      entry: 'sendSelectionEvent',
-      exit: ['clearContext'],
-    },
-
-    enteringTranslateFlow: {
-      states: {
-        selecting: {
-          on: {
-            selected: {
-              target: 'prepareTranslateCommand',
-              reenter: true,
-            },
-          },
-        },
-
-        done: {
-          always: '#featureTree.idle',
-        },
-
-        prepareTranslateCommand: {
-          invoke: {
-            src: 'prepareTranslateCommand',
-            input: ({ context }) => {
-              const artifact = context.targetSourceRange
-                ? (getArtifactFromRange(
-                    context.targetSourceRange,
-                    kclManager.artifactGraph
-                  ) ?? undefined)
-                : undefined
-              return {
-                // currentOperation is guaranteed to be defined here
-                operation: context.currentOperation!,
-                artifact,
-                commandBarSend: commandBarActor.send,
-              }
-            },
-            onDone: {
-              target: 'done',
-              reenter: true,
-            },
-            onError: {
-              target: 'done',
-              reenter: true,
-              actions: ({ event }) => {
-                if ('error' in event && err(event.error)) {
-                  toast.error(event.error.message)
-                }
-              },
-            },
-          },
-        },
-      },
-
-      initial: 'selecting',
-      entry: 'sendSelectionEvent',
-      exit: ['clearContext'],
-    },
-
-    enteringRotateFlow: {
-      states: {
-        selecting: {
-          on: {
-            selected: {
-              target: 'prepareRotateCommand',
-              reenter: true,
-            },
-          },
-        },
-
-        done: {
-          always: '#featureTree.idle',
-        },
-
-        prepareRotateCommand: {
-          invoke: {
-            src: 'prepareRotateCommand',
-            input: ({ context }) => {
-              const artifact = context.targetSourceRange
-                ? (getArtifactFromRange(
-                    context.targetSourceRange,
-                    kclManager.artifactGraph
-                  ) ?? undefined)
-                : undefined
-              return {
-                // currentOperation is guaranteed to be defined here
-                operation: context.currentOperation!,
-                artifact,
-                commandBarSend: commandBarActor.send,
-              }
-            },
-            onDone: {
-              target: 'done',
-              reenter: true,
-            },
-            onError: {
-              target: 'done',
-              reenter: true,
-              actions: ({ event }) => {
-                if ('error' in event && err(event.error)) {
-                  toast.error(event.error.message)
-                }
-              },
-            },
-          },
-        },
-      },
-
-      initial: 'selecting',
-      entry: 'sendSelectionEvent',
-      exit: ['clearContext'],
-    },
-
-    enteringScaleFlow: {
-      states: {
-        selecting: {
-          on: {
-            selected: {
-              target: 'prepareScaleCommand',
-              reenter: true,
-            },
-          },
-        },
-
-        done: {
-          always: '#featureTree.idle',
-        },
-
-        prepareScaleCommand: {
-          invoke: {
-            src: 'prepareScaleCommand',
-            input: ({ context }) => {
-              const artifact = context.targetSourceRange
-                ? (getArtifactFromRange(
-                    context.targetSourceRange,
-                    kclManager.artifactGraph
-                  ) ?? undefined)
-                : undefined
-              return {
-                // currentOperation is guaranteed to be defined here
-                operation: context.currentOperation!,
-                artifact,
-                commandBarSend: commandBarActor.send,
-              }
-            },
-            onDone: {
-              target: 'done',
-              reenter: true,
-            },
-            onError: {
-              target: 'done',
-              reenter: true,
-              actions: ({ event }) => {
-                if ('error' in event && err(event.error)) {
-                  toast.error(event.error.message)
-                }
-              },
-            },
-          },
-        },
-      },
-
-      initial: 'selecting',
-      entry: 'sendSelectionEvent',
-      exit: ['clearContext'],
-    },
-
-    enteringCloneFlow: {
-      states: {
-        selecting: {
-          on: {
-            selected: {
-              target: 'prepareCloneCommand',
-              reenter: true,
-            },
-          },
-        },
-
-        done: {
-          always: '#featureTree.idle',
-        },
-
-        prepareCloneCommand: {
-          invoke: {
-            src: 'prepareCloneCommand',
             input: ({ context }) => {
               const artifact = context.targetSourceRange
                 ? (getArtifactFromRange(

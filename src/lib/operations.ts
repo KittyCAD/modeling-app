@@ -1525,11 +1525,10 @@ async function prepareToEditTranslate({ operation }: EnterEditFlowProps) {
     name: 'Translate',
     groupId: 'modeling',
   }
-  const isModuleImport = operation.type === 'GroupBegin'
   const isSupportedStdLibCall =
     operation.type === 'StdLibCall' &&
     stdLibMap[operation.name]?.supportsTransform
-  if (!isModuleImport && !isSupportedStdLibCall) {
+  if (!isSupportedStdLibCall) {
     return {
       reason: 'Unsupported operation type. Please edit in the code editor.',
     }
@@ -1549,53 +1548,51 @@ async function prepareToEditTranslate({ operation }: EnterEditFlowProps) {
   let y: KclCommandValue | undefined = undefined
   let z: KclCommandValue | undefined = undefined
   let global: boolean | undefined
-  if (isSupportedStdLibCall) {
-    if (operation.labeledArgs.x) {
-      const result = await stringToKclExpression(
-        codeManager.code.slice(
-          operation.labeledArgs.x.sourceRange[0],
-          operation.labeledArgs.x.sourceRange[1]
-        )
+  if (operation.labeledArgs.x) {
+    const result = await stringToKclExpression(
+      codeManager.code.slice(
+        operation.labeledArgs.x.sourceRange[0],
+        operation.labeledArgs.x.sourceRange[1]
       )
-      if (err(result) || 'errors' in result) {
-        return { reason: "Couldn't retrieve x argument" }
-      }
-      x = result
+    )
+    if (err(result) || 'errors' in result) {
+      return { reason: "Couldn't retrieve x argument" }
     }
+    x = result
+  }
 
-    if (operation.labeledArgs.y) {
-      const result = await stringToKclExpression(
-        codeManager.code.slice(
-          operation.labeledArgs.y.sourceRange[0],
-          operation.labeledArgs.y.sourceRange[1]
-        )
+  if (operation.labeledArgs.y) {
+    const result = await stringToKclExpression(
+      codeManager.code.slice(
+        operation.labeledArgs.y.sourceRange[0],
+        operation.labeledArgs.y.sourceRange[1]
       )
-      if (err(result) || 'errors' in result) {
-        return { reason: "Couldn't retrieve y argument" }
-      }
-      y = result
+    )
+    if (err(result) || 'errors' in result) {
+      return { reason: "Couldn't retrieve y argument" }
     }
+    y = result
+  }
 
-    if (operation.labeledArgs.z) {
-      const result = await stringToKclExpression(
-        codeManager.code.slice(
-          operation.labeledArgs.z.sourceRange[0],
-          operation.labeledArgs.z.sourceRange[1]
-        )
+  if (operation.labeledArgs.z) {
+    const result = await stringToKclExpression(
+      codeManager.code.slice(
+        operation.labeledArgs.z.sourceRange[0],
+        operation.labeledArgs.z.sourceRange[1]
       )
-      if (err(result) || 'errors' in result) {
-        return { reason: "Couldn't retrieve z argument" }
-      }
-      z = result
+    )
+    if (err(result) || 'errors' in result) {
+      return { reason: "Couldn't retrieve z argument" }
     }
+    z = result
+  }
 
-    if (operation.labeledArgs.global) {
-      global =
-        codeManager.code.slice(
-          operation.labeledArgs.global.sourceRange[0],
-          operation.labeledArgs.global.sourceRange[1]
-        ) === 'true'
-    }
+  if (operation.labeledArgs.global) {
+    global =
+      codeManager.code.slice(
+        operation.labeledArgs.global.sourceRange[0],
+        operation.labeledArgs.global.sourceRange[1]
+      ) === 'true'
   }
 
   // 3. Assemble the default argument values for the command,
@@ -1615,30 +1612,15 @@ async function prepareToEditTranslate({ operation }: EnterEditFlowProps) {
   }
 }
 
-export async function enterTranslateFlow({
-  operation,
-}: EnterEditFlowProps): Promise<Error | CommandBarMachineEvent> {
-  const data = await prepareToEditTranslate({ operation })
-  if ('reason' in data) {
-    return new Error(data.reason)
-  }
-
-  return {
-    type: 'Find and select command',
-    data,
-  }
-}
-
 async function prepareToEditScale({ operation }: EnterEditFlowProps) {
   const baseCommand = {
     name: 'Scale',
     groupId: 'modeling',
   }
-  const isModuleImport = operation.type === 'GroupBegin'
   const isSupportedStdLibCall =
     operation.type === 'StdLibCall' &&
     stdLibMap[operation.name]?.supportsTransform
-  if (!isModuleImport && !isSupportedStdLibCall) {
+  if (!isSupportedStdLibCall) {
     return {
       reason: 'Unsupported operation type. Please edit in the code editor.',
     }
@@ -1658,53 +1640,51 @@ async function prepareToEditScale({ operation }: EnterEditFlowProps) {
   let y: KclCommandValue | undefined = undefined
   let z: KclCommandValue | undefined = undefined
   let global: boolean | undefined
-  if (isSupportedStdLibCall) {
-    if (operation.labeledArgs.x) {
-      const result = await stringToKclExpression(
-        codeManager.code.slice(
-          operation.labeledArgs.x.sourceRange[0],
-          operation.labeledArgs.x.sourceRange[1]
-        )
+  if (operation.labeledArgs.x) {
+    const result = await stringToKclExpression(
+      codeManager.code.slice(
+        operation.labeledArgs.x.sourceRange[0],
+        operation.labeledArgs.x.sourceRange[1]
       )
-      if (err(result) || 'errors' in result) {
-        return { reason: "Couldn't retrieve x argument" }
-      }
-      x = result
+    )
+    if (err(result) || 'errors' in result) {
+      return { reason: "Couldn't retrieve x argument" }
     }
+    x = result
+  }
 
-    if (operation.labeledArgs.y) {
-      const result = await stringToKclExpression(
-        codeManager.code.slice(
-          operation.labeledArgs.y.sourceRange[0],
-          operation.labeledArgs.y.sourceRange[1]
-        )
+  if (operation.labeledArgs.y) {
+    const result = await stringToKclExpression(
+      codeManager.code.slice(
+        operation.labeledArgs.y.sourceRange[0],
+        operation.labeledArgs.y.sourceRange[1]
       )
-      if (err(result) || 'errors' in result) {
-        return { reason: "Couldn't retrieve y argument" }
-      }
-      y = result
+    )
+    if (err(result) || 'errors' in result) {
+      return { reason: "Couldn't retrieve y argument" }
     }
+    y = result
+  }
 
-    if (operation.labeledArgs.z) {
-      const result = await stringToKclExpression(
-        codeManager.code.slice(
-          operation.labeledArgs.z.sourceRange[0],
-          operation.labeledArgs.z.sourceRange[1]
-        )
+  if (operation.labeledArgs.z) {
+    const result = await stringToKclExpression(
+      codeManager.code.slice(
+        operation.labeledArgs.z.sourceRange[0],
+        operation.labeledArgs.z.sourceRange[1]
       )
-      if (err(result) || 'errors' in result) {
-        return { reason: "Couldn't retrieve z argument" }
-      }
-      z = result
+    )
+    if (err(result) || 'errors' in result) {
+      return { reason: "Couldn't retrieve z argument" }
     }
+    z = result
+  }
 
-    if (operation.labeledArgs.global) {
-      global =
-        codeManager.code.slice(
-          operation.labeledArgs.global.sourceRange[0],
-          operation.labeledArgs.global.sourceRange[1]
-        ) === 'true'
-    }
+  if (operation.labeledArgs.global) {
+    global =
+      codeManager.code.slice(
+        operation.labeledArgs.global.sourceRange[0],
+        operation.labeledArgs.global.sourceRange[1]
+      ) === 'true'
   }
 
   // 3. Assemble the default argument values for the command,
@@ -1724,30 +1704,15 @@ async function prepareToEditScale({ operation }: EnterEditFlowProps) {
   }
 }
 
-export async function enterScaleFlow({
-  operation,
-}: EnterEditFlowProps): Promise<Error | CommandBarMachineEvent> {
-  const data = await prepareToEditScale({ operation })
-  if ('reason' in data) {
-    return new Error(data.reason)
-  }
-
-  return {
-    type: 'Find and select command',
-    data,
-  }
-}
-
 async function prepareToEditRotate({ operation }: EnterEditFlowProps) {
   const baseCommand = {
     name: 'Rotate',
     groupId: 'modeling',
   }
-  const isModuleImport = operation.type === 'GroupBegin'
   const isSupportedStdLibCall =
     operation.type === 'StdLibCall' &&
     stdLibMap[operation.name]?.supportsTransform
-  if (!isModuleImport && !isSupportedStdLibCall) {
+  if (!isSupportedStdLibCall) {
     return {
       reason: 'Unsupported operation type. Please edit in the code editor.',
     }
@@ -1767,53 +1732,51 @@ async function prepareToEditRotate({ operation }: EnterEditFlowProps) {
   let pitch: KclCommandValue | undefined = undefined
   let yaw: KclCommandValue | undefined = undefined
   let global: boolean | undefined
-  if (isSupportedStdLibCall) {
-    if (operation.labeledArgs.roll) {
-      const result = await stringToKclExpression(
-        codeManager.code.slice(
-          operation.labeledArgs.roll.sourceRange[0],
-          operation.labeledArgs.roll.sourceRange[1]
-        )
+  if (operation.labeledArgs.roll) {
+    const result = await stringToKclExpression(
+      codeManager.code.slice(
+        operation.labeledArgs.roll.sourceRange[0],
+        operation.labeledArgs.roll.sourceRange[1]
       )
-      if (err(result) || 'errors' in result) {
-        return { reason: "Couldn't retrieve roll argument" }
-      }
-      roll = result
+    )
+    if (err(result) || 'errors' in result) {
+      return { reason: "Couldn't retrieve roll argument" }
     }
+    roll = result
+  }
 
-    if (operation.labeledArgs.pitch) {
-      const result = await stringToKclExpression(
-        codeManager.code.slice(
-          operation.labeledArgs.pitch.sourceRange[0],
-          operation.labeledArgs.pitch.sourceRange[1]
-        )
+  if (operation.labeledArgs.pitch) {
+    const result = await stringToKclExpression(
+      codeManager.code.slice(
+        operation.labeledArgs.pitch.sourceRange[0],
+        operation.labeledArgs.pitch.sourceRange[1]
       )
-      if (err(result) || 'errors' in result) {
-        return { reason: "Couldn't retrieve pitch argument" }
-      }
-      pitch = result
+    )
+    if (err(result) || 'errors' in result) {
+      return { reason: "Couldn't retrieve pitch argument" }
     }
+    pitch = result
+  }
 
-    if (operation.labeledArgs.yaw) {
-      const result = await stringToKclExpression(
-        codeManager.code.slice(
-          operation.labeledArgs.yaw.sourceRange[0],
-          operation.labeledArgs.yaw.sourceRange[1]
-        )
+  if (operation.labeledArgs.yaw) {
+    const result = await stringToKclExpression(
+      codeManager.code.slice(
+        operation.labeledArgs.yaw.sourceRange[0],
+        operation.labeledArgs.yaw.sourceRange[1]
       )
-      if (err(result) || 'errors' in result) {
-        return { reason: "Couldn't retrieve yaw argument" }
-      }
-      yaw = result
+    )
+    if (err(result) || 'errors' in result) {
+      return { reason: "Couldn't retrieve yaw argument" }
     }
+    yaw = result
+  }
 
-    if (operation.labeledArgs.global) {
-      global =
-        codeManager.code.slice(
-          operation.labeledArgs.global.sourceRange[0],
-          operation.labeledArgs.global.sourceRange[1]
-        ) === 'true'
-    }
+  if (operation.labeledArgs.global) {
+    global =
+      codeManager.code.slice(
+        operation.labeledArgs.global.sourceRange[0],
+        operation.labeledArgs.global.sourceRange[1]
+      ) === 'true'
   }
 
   // 3. Assemble the default argument values for the command,
@@ -1830,47 +1793,5 @@ async function prepareToEditRotate({ operation }: EnterEditFlowProps) {
   return {
     ...baseCommand,
     argDefaultValues,
-  }
-}
-
-export async function enterRotateFlow({
-  operation,
-}: EnterEditFlowProps): Promise<Error | CommandBarMachineEvent> {
-  const data = await prepareToEditRotate({ operation })
-  if ('reason' in data) {
-    return new Error(data.reason)
-  }
-
-  return {
-    type: 'Find and select command',
-    data,
-  }
-}
-
-export async function enterCloneFlow({
-  operation,
-}: EnterEditFlowProps): Promise<Error | CommandBarMachineEvent> {
-  const isModuleImport = operation.type === 'GroupBegin'
-  const isSupportedStdLibCall =
-    operation.type === 'StdLibCall' &&
-    stdLibMap[operation.name]?.supportsTransform
-  if (!isModuleImport && !isSupportedStdLibCall) {
-    return new Error(
-      'Unsupported operation type. Please edit in the code editor.'
-    )
-  }
-
-  const nodeToEdit = pathToNodeFromRustNodePath(operation.nodePath)
-
-  // Won't be used since we provide nodeToEdit
-  const selection: Selections = { graphSelections: [], otherSelections: [] }
-  const argDefaultValues = { nodeToEdit, selection }
-  return {
-    type: 'Find and select command',
-    data: {
-      name: 'Clone',
-      groupId: 'modeling',
-      argDefaultValues,
-    },
   }
 }

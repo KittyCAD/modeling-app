@@ -47,7 +47,6 @@ import { angleLengthInfo } from '@src/components/Toolbar/angleLengthInfo'
 import { createLiteral, createLocalName } from '@src/lang/create'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
 import {
-  addClone,
   addHelix,
   addOffsetPlane,
   addShell,
@@ -86,7 +85,7 @@ import {
   addTranslate,
   addRotate,
   addScale,
-  retrievePathToNodeFromTransformSelection,
+  addClone,
 } from '@src/lang/modifyAst/transforms'
 import {
   getNodeFromPath,
@@ -112,7 +111,6 @@ import type {
   Literal,
   Name,
   PathToNode,
-  PipeExpression,
   Program,
   VariableDeclaration,
   VariableDeclarator,
@@ -140,7 +138,6 @@ import {
 import type { ToolbarModeName } from '@src/lib/toolbar'
 import { err, reportRejection, trap } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
-import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 import { isDesktop } from '@src/lib/isDesktop'
 import {
   crossProduct,
@@ -3420,58 +3417,14 @@ export const modelingMachine = setup({
         }
 
         const ast = kclManager.ast
-        const { nodeToEdit, selection, variableName } = input
-        let pathToNode = nodeToEdit
-        if (!(pathToNode && typeof pathToNode[1][0] === 'number')) {
-          const result = retrievePathToNodeFromTransformSelection(
-            selection,
-            kclManager.artifactGraph,
-            ast
-          )
-          if (err(result)) {
-            return Promise.reject(result)
-          }
-
-          pathToNode = result
-        }
-
-        const returnEarly = true
-        const geometryNode = getNodeFromPath<
-          VariableDeclaration | ImportStatement | PipeExpression
-        >(
-          ast,
-          pathToNode,
-          ['VariableDeclaration', 'ImportStatement', 'PipeExpression'],
-          returnEarly
-        )
-        if (err(geometryNode)) {
-          return Promise.reject(
-            new Error("Couldn't find corresponding path to node")
-          )
-        }
-
-        let geometryName: string | undefined
-        if (geometryNode.node.type === 'VariableDeclaration') {
-          geometryName = geometryNode.node.declaration.id.name
-        } else if (
-          geometryNode.node.type === 'ImportStatement' &&
-          geometryNode.node.selector.type === 'None' &&
-          geometryNode.node.selector.alias
-        ) {
-          geometryName = geometryNode.node.selector.alias?.name
-        } else {
-          return Promise.reject(
-            new Error("Couldn't find corresponding geometry")
-          )
-        }
-
+        const artifactGraph = kclManager.artifactGraph
         const result = addClone({
+          ...input,
           ast,
-          geometryName,
-          variableName,
+          artifactGraph,
         })
         if (err(result)) {
-          return Promise.reject(err(result))
+          return Promise.reject(result)
         }
 
         await updateModelingState(

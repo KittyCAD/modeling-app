@@ -64,13 +64,28 @@ export const FeatureTreePane = () => {
         scrollToError: () => {
           editorManager.scrollToFirstErrorDiagnosticIfExists()
         },
-        sendTranslateCommand: ({ context }) => {
+        sendTranslateCommand: () => {
           commandBarActor.send({
             type: 'Find and select command',
-            data: {
-              name: 'Translate',
-              groupId: 'modeling',
-            },
+            data: { name: 'Translate', groupId: 'modeling' },
+          })
+        },
+        sendRotateCommand: () => {
+          commandBarActor.send({
+            type: 'Find and select command',
+            data: { name: 'Rotate', groupId: 'modeling' },
+          })
+        },
+        sendScaleCommand: () => {
+          commandBarActor.send({
+            type: 'Find and select command',
+            data: { name: 'Scale', groupId: 'modeling' },
+          })
+        },
+        sendCloneCommand: () => {
+          commandBarActor.send({
+            type: 'Find and select command',
+            data: { name: 'Clone', groupId: 'modeling' },
           })
         },
         sendSelectionEvent: ({ context }) => {
@@ -537,7 +552,7 @@ const OperationItem = (props: {
                 !stdLibMap[props.item.name]?.supportsTransform
               }
             >
-              Set translate
+              Translate
             </ContextMenuItem>,
             <ContextMenuItem
               onClick={enterRotateFlow}
@@ -547,7 +562,7 @@ const OperationItem = (props: {
                 !stdLibMap[props.item.name]?.supportsTransform
               }
             >
-              Set rotate
+              Rotate
             </ContextMenuItem>,
             <ContextMenuItem
               onClick={enterScaleFlow}
@@ -557,7 +572,7 @@ const OperationItem = (props: {
                 !stdLibMap[props.item.name]?.supportsTransform
               }
             >
-              Set scale
+              Scale
             </ContextMenuItem>,
             <ContextMenuItem
               onClick={enterCloneFlow}

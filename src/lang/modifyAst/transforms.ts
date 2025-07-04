@@ -11,10 +11,6 @@ import {
 } from '@src/lang/queryAst'
 import type { ArtifactGraph, PathToNode, Program } from '@src/lang/wasm'
 import { err } from '@src/lib/trap'
-import {
-  findAllChildrenAndOrderByPlaceInCode,
-  getLastVariable,
-} from '@src/lang/modifyAst/boolean'
 import type { Selections } from '@src/lib/selections'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import {
@@ -208,33 +204,53 @@ export function addScale({
   })
 }
 
-export function retrievePathToNodeFromTransformSelection(
-  selection: Selections,
-  artifactGraph: ArtifactGraph,
+export function addClone({
+  ast,
+  artifactGraph,
+  objects,
+  nodeToEdit,
+}: {
   ast: Node<Program>
-): PathToNode | Error {
-  const error = new Error(
-    "Couldn't retrieve selection. If you're trying to transform an import, use the feature tree."
-  )
-  const hasPathToNode = !!selection.graphSelections[0].codeRef.pathToNode.length
-  const artifact = selection.graphSelections[0].artifact
-  let pathToNode: PathToNode | undefined
-  if (hasPathToNode && artifact) {
-    const children = findAllChildrenAndOrderByPlaceInCode(
-      artifact,
-      artifactGraph
-    )
-    const variable = getLastVariable(children, ast)
-    if (!variable) {
-      return error
-    }
+  artifactGraph: ArtifactGraph
+  objects: Selections
+  nodeToEdit?: PathToNode
+}): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
+  // 1. Clone the ast so we can edit it
+  const modifiedAst = structuredClone(ast)
 
-    pathToNode = variable.pathToNode
-  } else if (hasPathToNode) {
-    pathToNode = selection.graphSelections[0].codeRef.pathToNode
-  } else {
-    return error
+  // 2. Prepare unlabeled arguments
+  // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
+  const variableExpressions = getVariableExprsFromSelection(
+    objects,
+    modifiedAst,
+    nodeToEdit,
+    true,
+    artifactGraph
+  )
+  if (err(variableExpressions)) {
+    return variableExpressions
   }
 
-  return pathToNode
+  const objectsExpr = createVariableExpressionsArray(variableExpressions.exprs)
+  const call = createCallExpressionStdLibKw('clone', objectsExpr, [])
+
+  // 3. If edit, we assign the new function call declaration to the existing node,
+  // otherwise just push to the end
+  const lastPath = variableExpressions.paths.pop() // TODO: check if this is correct
+  const toFirstKwarg = false
+  const pathToNode = setCallInAst(
+    modifiedAst,
+    call,
+    nodeToEdit,
+    lastPath,
+    toFirstKwarg
+  )
+  if (err(pathToNode)) {
+    return pathToNode
+  }
+
+  return {
+    modifiedAst,
+    pathToNode,
+  }
 }

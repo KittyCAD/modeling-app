@@ -1,11 +1,6 @@
 import { executeAstMock } from '@src/lang/langHelpers'
-import {
-  type CallExpressionKw,
-  formatNumberValue,
-  parse,
-  resultIsOk,
-} from '@src/lang/wasm'
-import type { KclCommandValue, KclExpression } from '@src/lib/commandTypes'
+import { formatNumberValue, parse, resultIsOk } from '@src/lang/wasm'
+import type { KclExpression } from '@src/lib/commandTypes'
 import { rustContext } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
 

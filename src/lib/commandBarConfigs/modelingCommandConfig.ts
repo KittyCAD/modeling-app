@@ -1,7 +1,6 @@
 import type { Models } from '@kittycad/lib'
 
 import { angleLengthInfo } from '@src/components/Toolbar/angleLengthInfo'
-import { findUniqueName } from '@src/lang/create'
 import { getNodeFromPath } from '@src/lang/queryAst'
 import { getVariableDeclaration } from '@src/lang/queryAst/getVariableDeclaration'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
@@ -19,7 +18,6 @@ import type {
 } from '@src/lib/commandTypes'
 import {
   IS_ML_EXPERIMENTAL,
-  KCL_DEFAULT_CONSTANT_PREFIXES,
   KCL_DEFAULT_DEGREE,
   KCL_DEFAULT_LENGTH,
   KCL_DEFAULT_TRANSFORM,
@@ -210,8 +208,7 @@ export type ModelingCommandSchema = {
   }
   Clone: {
     nodeToEdit?: PathToNode
-    selection: Selections
-    variableName: string
+    objects: Selections
   }
   'Boolean Subtract': {
     solids: Selections
@@ -1211,39 +1208,14 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       nodeToEdit: {
         ...nodeToEditProps,
       },
-      selection: {
+      objects: {
         // selectionMixed allows for feature tree selection of module imports
         inputType: 'selectionMixed',
-        multiple: false,
-        required: true,
-        skip: true,
-        selectionTypes: ['path'],
+        selectionTypes: ['path', 'sweep'],
         selectionFilter: ['object'],
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
-      },
-      variableName: {
-        inputType: 'string',
+        multiple: true,
         required: true,
-        defaultValue: () => {
-          return findUniqueName(
-            kclManager.ast,
-            KCL_DEFAULT_CONSTANT_PREFIXES.CLONE
-          )
-        },
-        validation: async ({
-          data,
-        }: {
-          data: string
-        }) => {
-          // Be conservative and error out if there is an item or module with the same name.
-          const variableExists =
-            kclManager.variables[data] || kclManager.variables['__mod_' + data]
-          if (variableExists) {
-            return 'This variable name is already in use.'
-          }
-
-          return true
-        },
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
     },
   },

@@ -656,39 +656,6 @@ export function addHelix({
 }
 
 /**
- * Add clone statement
- */
-export function addClone({
-  ast,
-  geometryName,
-  variableName,
-}: {
-  ast: Node<Program>
-  geometryName: string
-  variableName: string
-}): { modifiedAst: Node<Program>; pathToNode: PathToNode } {
-  const modifiedAst = structuredClone(ast)
-  const variable = createVariableDeclaration(
-    variableName,
-    createCallExpressionStdLibKw('clone', createLocalName(geometryName), [])
-  )
-
-  modifiedAst.body.push(variable)
-  const insertAt = modifiedAst.body.length - 1
-  const pathToNode: PathToNode = [
-    ['body', ''],
-    [insertAt, 'index'],
-    ['declaration', 'VariableDeclaration'],
-    ['init', 'VariableDeclarator'],
-  ]
-
-  return {
-    modifiedAst,
-    pathToNode,
-  }
-}
-
-/**
  * Return a modified clone of an AST with a named constant inserted into the body
  */
 export function insertNamedConstant({
@@ -1252,7 +1219,8 @@ export function setCallInAst(
   ast: Node<Program>,
   call: Node<CallExpressionKw>,
   nodeToEdit?: PathToNode,
-  lastPathToNode?: PathToNode
+  lastPathToNode?: PathToNode,
+  toFirstKwarg?: boolean
 ): Error | PathToNode {
   let pathToNode: PathToNode | undefined
   if (nodeToEdit) {
@@ -1283,7 +1251,7 @@ export function setCallInAst(
       const name = findUniqueName(ast, call.callee.name.name)
       const declaration = createVariableDeclaration(name, call)
       ast.body.push(declaration)
-      pathToNode = createPathToNodeForLastVariable(ast)
+      pathToNode = createPathToNodeForLastVariable(ast, toFirstKwarg)
     }
   }
 
