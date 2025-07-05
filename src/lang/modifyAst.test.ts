@@ -19,7 +19,6 @@ import {
   createPathToNodeForLastVariable,
   createVariableExpressionsArray,
   deleteSegmentFromPipeExpression,
-  giveSketchFnCallTag,
   moveValueIntoNewVariable,
   setCallInAst,
   sketchOnExtrudedFace,
@@ -42,6 +41,7 @@ import { err } from '@src/lib/trap'
 import { deleteFromSelection } from '@src/lang/modifyAst/deleteFromSelection'
 import { assertNotErr } from '@src/unitTestUtils'
 import type { Selections } from '@src/lib/selections'
+import { giveSketchFnCallTag } from '@src/lang/modifyAst/giveSketchFnCallTag'
 
 beforeAll(async () => {
   await initPromise
