@@ -11,6 +11,7 @@ import { err } from '@src/lib/trap'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import { addTranslate } from '@src/lang/modifyAst/transforms'
+import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
 
 async function getAstAndArtifactGraph(code: string) {
   const ast = assertParse(code)
@@ -85,9 +86,8 @@ extrude001 = extrude(profile001, length = 1)
     if (err(result)) throw result
     const newCode = recast(result.modifiedAst)
     expect(newCode).toContain(code)
-    // TODO: this should be extrude001, I don't understand why
     expect(newCode).toContain(`translate001 = translate(
-  profile001,
+  extrude001,
   x = 1,
   y = 2,
   z = 3,
@@ -122,6 +122,45 @@ extrude001 = extrude(profile001, length = 1)
   })
 
   // TODO: missing edit flow test
+  it('should edit a call with variable if og selection was a variable sweep', async () => {
+    const code = `sketch001 = startSketchOn(XY)
+profile001 = circle(sketch001, center = [0, 0], radius = 1)
+extrude001 = extrude(profile001, length = 1)
+translate001 = translate(
+  extrude001,
+  x = 1,
+  y = 2,
+  z = 3,
+  global = true,
+)
+`
+    const {
+      artifactGraph,
+      ast,
+      sketches: objects,
+    } = await getAstAndSketchSelections(code)
+    const result = addTranslate({
+      ast,
+      artifactGraph,
+      objects,
+      x: await getKclCommandValue('4'),
+      y: await getKclCommandValue('5'),
+      z: await getKclCommandValue('6'),
+      global: false,
+      nodeToEdit: createPathToNodeForLastVariable(ast),
+    })
+    if (err(result)) throw result
+    const newCode = recast(result.modifiedAst)
+    expect(newCode).toContain(`translate001 = translate(
+  extrude001,
+  x = 4,
+  y = 5,
+  z = 6,
+)`)
+    await runNewAstAndCheckForSweep(result.modifiedAst)
+  })
+
+  // TODO: missing rotate and scale tests
 
   // TODO: missing multi-objects test
 })
