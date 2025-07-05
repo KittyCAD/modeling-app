@@ -573,7 +573,7 @@ sketch_001 = startSketchOn(XY)
 
     await expect(page.locator('.cm-lint-marker-info')).toBeVisible()
 
-    // error in guter
+    // error in gutter
     await expect(page.locator('.cm-lint-marker-info').first()).toBeVisible()
 
     // error text on hover
