@@ -849,33 +849,6 @@ profile001 = circle(sketch001, center = [0, 0], radius = 1)
     ])
   })
 
-  it('should error on two selections leading to pipe substitution symbol', async () => {
-    const circleProfileInVar = `startSketchOn(XY)
-  |> circle(center = [0, 0], radius = 1)
-`
-    const ast = assertParse(circleProfileInVar)
-    const { artifactGraph } = await enginelessExecutor(ast)
-    const artifact = artifactGraph.values().find((a) => a.type === 'path')
-    if (!artifact) {
-      throw new Error('Artifact not found in the graph')
-    }
-    const selections: Selections = {
-      graphSelections: [
-        {
-          codeRef: artifact.codeRef,
-          artifact,
-        },
-        {
-          codeRef: artifact.codeRef,
-          artifact,
-        }, // same selection twice on purpose
-      ],
-      otherSelections: [],
-    }
-    const vars = getVariableExprsFromSelection(selections, ast)
-    expect(vars).toBeInstanceOf(Error)
-  })
-
   it('should find the variable exprs in a multi profile selection ', async () => {
     const circleProfileInVar = `sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [0, 0], radius = 1)

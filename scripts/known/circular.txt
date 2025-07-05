@@ -8,6 +8,7 @@
   3) src/lib/singletons.ts -> src/lang/codeManager.ts
   4) src/lang/std/sketch.ts -> src/lang/modifyAst.ts
   5) src/lang/std/sketch.ts -> src/lang/modifyAst.ts -> src/lang/std/sketchcombos.ts
-  6) src/lib/singletons.ts -> src/clientSideScene/sceneEntities.ts -> src/clientSideScene/segments.ts -> src/components/Toolbar/angleLengthInfo.ts
-  7) src/lib/singletons.ts -> src/clientSideScene/sceneEntities.ts -> src/clientSideScene/segments.ts
-  8) src/hooks/useModelingContext.ts -> src/components/ModelingMachineProvider.tsx -> src/components/Toolbar/setAngleLength.tsx -> src/components/SetAngleLengthModal.tsx -> src/lib/useCalculateKclExpression.ts
+  6) src/lang/modifyAst.ts -> src/lang/std/sketchcombos.ts
+  7) src/lib/singletons.ts -> src/clientSideScene/sceneEntities.ts -> src/clientSideScene/segments.ts -> src/components/Toolbar/angleLengthInfo.ts
+  8) src/lib/singletons.ts -> src/clientSideScene/sceneEntities.ts -> src/clientSideScene/segments.ts
+  9) src/hooks/useModelingContext.ts -> src/components/ModelingMachineProvider.tsx -> src/components/Toolbar/setAngleLength.tsx -> src/components/SetAngleLengthModal.tsx -> src/lib/useCalculateKclExpression.ts

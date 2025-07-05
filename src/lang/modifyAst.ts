@@ -1258,16 +1258,16 @@ export function insertVariableAndOffsetPathToNode(
 
 // Create an array expression for variables,
 // or keep it null if all are PipeSubstitutions
-export function createVariableExpressionsArray(sketches: Expr[]): Expr | null {
-  let exprs: Expr | null = null
-  if (sketches.every((s) => s.type === 'PipeSubstitution')) {
+export function createVariableExpressionsArray(exprs: Expr[]): Expr | null {
+  let expr: Expr | null = null
+  if (exprs.every((s) => s.type === 'PipeSubstitution')) {
     // Keeping null so we don't even put it the % sign
-  } else if (sketches.length === 1) {
-    exprs = sketches[0]
+  } else if (exprs.length === 1) {
+    expr = exprs[0]
   } else {
-    exprs = createArrayExpression(sketches)
+    expr = createArrayExpression(exprs)
   }
-  return exprs
+  return expr
 }
 
 // Create a path to node to the last variable declaroator of an ast
