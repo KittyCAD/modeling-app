@@ -1113,7 +1113,12 @@ export function getVariableExprsFromSelection(
       continue
     }
 
-    // TODO: handle imported geometry case
+    // import case
+    const importNodeAndAlias = findImportNodeAndAlias(ast, s.codeRef.pathToNode)
+    if (importNodeAndAlias) {
+      exprs.push(createLocalName(importNodeAndAlias.alias))
+      continue
+    }
 
     // No variable case
     exprs.push(createPipeSubstitution())

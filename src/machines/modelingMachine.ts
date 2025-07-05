@@ -47,12 +47,10 @@ import { angleLengthInfo } from '@src/components/Toolbar/angleLengthInfo'
 import { createLiteral, createLocalName } from '@src/lang/create'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
 import {
-  addClone,
   addHelix,
   addOffsetPlane,
   addShell,
   insertNamedConstant,
-  insertVariableAndOffsetPathToNode,
   replaceValueAtNodePath,
 } from '@src/lang/modifyAst'
 import type {
@@ -84,15 +82,13 @@ import {
 } from '@src/lang/modifyAst/deleteSelection'
 import { setAppearance } from '@src/lang/modifyAst/setAppearance'
 import {
-  setTranslate,
-  setRotate,
-  insertExpressionNode,
-  retrievePathToNodeFromTransformSelection,
-} from '@src/lang/modifyAst/setTransform'
+  addTranslate,
+  addRotate,
+  addScale,
+  addClone,
+} from '@src/lang/modifyAst/transforms'
 import {
   getNodeFromPath,
-  findPipesWithImportAlias,
-  findImportNodeAndAlias,
   isNodeSafeToReplacePath,
   stringifyPathToNode,
   updatePathToNodesAfterEdit,
@@ -115,7 +111,6 @@ import type {
   Literal,
   Name,
   PathToNode,
-  PipeExpression,
   Program,
   VariableDeclaration,
   VariableDeclarator,
@@ -143,7 +138,6 @@ import {
 import type { ToolbarModeName } from '@src/lib/toolbar'
 import { err, reportRejection, trap } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
-import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 import { isDesktop } from '@src/lib/isDesktop'
 import {
   crossProduct,
@@ -403,6 +397,7 @@ export type ModelingMachineEvent =
   | { type: 'Appearance'; data: ModelingCommandSchema['Appearance'] }
   | { type: 'Translate'; data: ModelingCommandSchema['Translate'] }
   | { type: 'Rotate'; data: ModelingCommandSchema['Rotate'] }
+  | { type: 'Scale'; data: ModelingCommandSchema['Scale'] }
   | { type: 'Clone'; data: ModelingCommandSchema['Clone'] }
   | {
       type:
@@ -3317,57 +3312,11 @@ export const modelingMachine = setup({
         }
 
         const ast = kclManager.ast
-        const modifiedAst = structuredClone(ast)
-        const { x, y, z, nodeToEdit, selection } = input
-        let pathToNode = nodeToEdit
-        if (!(pathToNode && typeof pathToNode[1][0] === 'number')) {
-          const result = retrievePathToNodeFromTransformSelection(
-            selection,
-            kclManager.artifactGraph,
-            ast
-          )
-          if (err(result)) {
-            return Promise.reject(result)
-          }
-
-          pathToNode = result
-        }
-
-        // Look for the last pipe with the import alias and a call to translate, with a fallback to rotate.
-        // Otherwise create one
-        const importNodeAndAlias = findImportNodeAndAlias(ast, pathToNode)
-        if (importNodeAndAlias) {
-          const pipes = findPipesWithImportAlias(ast, pathToNode, 'translate')
-          const lastPipe = pipes.at(-1)
-          if (lastPipe && lastPipe.pathToNode) {
-            pathToNode = lastPipe.pathToNode
-          } else {
-            const otherRelevantPipes = findPipesWithImportAlias(
-              ast,
-              pathToNode,
-              'rotate'
-            )
-            const lastRelevantPipe = otherRelevantPipes.at(-1)
-            if (lastRelevantPipe && lastRelevantPipe.pathToNode) {
-              pathToNode = lastRelevantPipe.pathToNode
-            } else {
-              pathToNode = insertExpressionNode(
-                modifiedAst,
-                importNodeAndAlias.alias
-              )
-            }
-          }
-        }
-
-        insertVariableAndOffsetPathToNode(x, modifiedAst, pathToNode)
-        insertVariableAndOffsetPathToNode(y, modifiedAst, pathToNode)
-        insertVariableAndOffsetPathToNode(z, modifiedAst, pathToNode)
-        const result = setTranslate({
-          pathToNode,
-          modifiedAst,
-          x: valueOrVariable(x),
-          y: valueOrVariable(y),
-          z: valueOrVariable(z),
+        const artifactGraph = kclManager.artifactGraph
+        const result = addTranslate({
+          ...input,
+          ast,
+          artifactGraph,
         })
         if (err(result)) {
           return Promise.reject(result)
@@ -3398,57 +3347,46 @@ export const modelingMachine = setup({
         }
 
         const ast = kclManager.ast
-        const modifiedAst = structuredClone(ast)
-        const { roll, pitch, yaw, nodeToEdit, selection } = input
-        let pathToNode = nodeToEdit
-        if (!(pathToNode && typeof pathToNode[1][0] === 'number')) {
-          const result = retrievePathToNodeFromTransformSelection(
-            selection,
-            kclManager.artifactGraph,
-            ast
-          )
-          if (err(result)) {
-            return Promise.reject(result)
-          }
-
-          pathToNode = result
+        const artifactGraph = kclManager.artifactGraph
+        const result = addRotate({
+          ...input,
+          ast,
+          artifactGraph,
+        })
+        if (err(result)) {
+          return Promise.reject(result)
         }
 
-        // Look for the last pipe with the import alias and a call to rotate, with a fallback to translate.
-        // Otherwise create one
-        const importNodeAndAlias = findImportNodeAndAlias(ast, pathToNode)
-        if (importNodeAndAlias) {
-          const pipes = findPipesWithImportAlias(ast, pathToNode, 'rotate')
-          const lastPipe = pipes.at(-1)
-          if (lastPipe && lastPipe.pathToNode) {
-            pathToNode = lastPipe.pathToNode
-          } else {
-            const otherRelevantPipes = findPipesWithImportAlias(
-              ast,
-              pathToNode,
-              'translate'
-            )
-            const lastRelevantPipe = otherRelevantPipes.at(-1)
-            if (lastRelevantPipe && lastRelevantPipe.pathToNode) {
-              pathToNode = lastRelevantPipe.pathToNode
-            } else {
-              pathToNode = insertExpressionNode(
-                modifiedAst,
-                importNodeAndAlias.alias
-              )
-            }
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          {
+            kclManager,
+            editorManager,
+            codeManager,
+          },
+          {
+            focusPath: [result.pathToNode],
           }
+        )
+      }
+    ),
+    scaleAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input: ModelingCommandSchema['Scale'] | undefined
+      }) => {
+        if (!input) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        insertVariableAndOffsetPathToNode(roll, modifiedAst, pathToNode)
-        insertVariableAndOffsetPathToNode(pitch, modifiedAst, pathToNode)
-        insertVariableAndOffsetPathToNode(yaw, modifiedAst, pathToNode)
-        const result = setRotate({
-          pathToNode,
-          modifiedAst,
-          roll: valueOrVariable(roll),
-          pitch: valueOrVariable(pitch),
-          yaw: valueOrVariable(yaw),
+        const ast = kclManager.ast
+        const artifactGraph = kclManager.artifactGraph
+        const result = addScale({
+          ...input,
+          ast,
+          artifactGraph,
         })
         if (err(result)) {
           return Promise.reject(result)
@@ -3479,58 +3417,14 @@ export const modelingMachine = setup({
         }
 
         const ast = kclManager.ast
-        const { nodeToEdit, selection, variableName } = input
-        let pathToNode = nodeToEdit
-        if (!(pathToNode && typeof pathToNode[1][0] === 'number')) {
-          const result = retrievePathToNodeFromTransformSelection(
-            selection,
-            kclManager.artifactGraph,
-            ast
-          )
-          if (err(result)) {
-            return Promise.reject(result)
-          }
-
-          pathToNode = result
-        }
-
-        const returnEarly = true
-        const geometryNode = getNodeFromPath<
-          VariableDeclaration | ImportStatement | PipeExpression
-        >(
-          ast,
-          pathToNode,
-          ['VariableDeclaration', 'ImportStatement', 'PipeExpression'],
-          returnEarly
-        )
-        if (err(geometryNode)) {
-          return Promise.reject(
-            new Error("Couldn't find corresponding path to node")
-          )
-        }
-
-        let geometryName: string | undefined
-        if (geometryNode.node.type === 'VariableDeclaration') {
-          geometryName = geometryNode.node.declaration.id.name
-        } else if (
-          geometryNode.node.type === 'ImportStatement' &&
-          geometryNode.node.selector.type === 'None' &&
-          geometryNode.node.selector.alias
-        ) {
-          geometryName = geometryNode.node.selector.alias?.name
-        } else {
-          return Promise.reject(
-            new Error("Couldn't find corresponding geometry")
-          )
-        }
-
+        const artifactGraph = kclManager.artifactGraph
         const result = addClone({
+          ...input,
           ast,
-          geometryName,
-          variableName,
+          artifactGraph,
         })
         if (err(result)) {
-          return Promise.reject(err(result))
+          return Promise.reject(result)
         }
 
         await updateModelingState(
@@ -3859,6 +3753,12 @@ export const modelingMachine = setup({
 
         Rotate: {
           target: 'Applying rotate',
+          reenter: true,
+          guard: 'no kcl errors',
+        },
+
+        Scale: {
+          target: 'Applying scale',
           reenter: true,
           guard: 'no kcl errors',
         },
@@ -5335,6 +5235,22 @@ export const modelingMachine = setup({
         id: 'rotateAstMod',
         input: ({ event }) => {
           if (event.type !== 'Rotate') return undefined
+          return event.data
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Applying scale': {
+      invoke: {
+        src: 'scaleAstMod',
+        id: 'scaleAstMod',
+        input: ({ event }) => {
+          if (event.type !== 'Scale') return undefined
           return event.data
         },
         onDone: ['idle'],

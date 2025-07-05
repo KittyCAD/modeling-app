@@ -433,6 +433,24 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             ],
           },
           {
+            id: 'scale',
+            onClick: () =>
+              commandBarActor.send({
+                type: 'Find and select command',
+                data: { name: 'Scale', groupId: 'modeling' },
+              }),
+            icon: 'scale',
+            status: 'available',
+            title: 'Scale',
+            description: 'Apply scaling to a solid or sketch.',
+            links: [
+              {
+                label: 'API docs',
+                url: 'https://zoo.dev/docs/kcl-std/functions/std-transform-scale',
+              },
+            ],
+          },
+          {
             id: 'clone',
             onClick: () =>
               commandBarActor.send({

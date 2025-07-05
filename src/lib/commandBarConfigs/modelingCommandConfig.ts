@@ -186,21 +186,31 @@ export type ModelingCommandSchema = {
   }
   Translate: {
     nodeToEdit?: PathToNode
-    selection: Selections
-    x: KclCommandValue
-    y: KclCommandValue
-    z: KclCommandValue
+    objects: Selections
+    x?: KclCommandValue
+    y?: KclCommandValue
+    z?: KclCommandValue
+    global?: boolean
   }
   Rotate: {
     nodeToEdit?: PathToNode
-    selection: Selections
-    roll: KclCommandValue
-    pitch: KclCommandValue
-    yaw: KclCommandValue
+    objects: Selections
+    roll?: KclCommandValue
+    pitch?: KclCommandValue
+    yaw?: KclCommandValue
+    global?: boolean
+  }
+  Scale: {
+    nodeToEdit?: PathToNode
+    objects: Selections
+    x?: KclCommandValue
+    y?: KclCommandValue
+    z?: KclCommandValue
+    global?: boolean
   }
   Clone: {
     nodeToEdit?: PathToNode
-    selection: Selections
+    objects: Selections
     variableName: string
   }
   'Boolean Subtract': {
@@ -750,14 +760,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         required: false,
         displayName: 'CounterClockWise',
         options: [
-          {
-            name: 'False',
-            value: false,
-          },
-          {
-            name: 'True',
-            value: true,
-          },
+          { name: 'False', value: false },
+          { name: 'True', value: true },
         ],
       },
     },
@@ -1079,30 +1083,37 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       nodeToEdit: {
         ...nodeToEditProps,
       },
-      selection: {
+      objects: {
         // selectionMixed allows for feature tree selection of module imports
         inputType: 'selectionMixed',
-        multiple: false,
-        required: true,
-        skip: true,
-        selectionTypes: ['path'],
+        selectionTypes: ['path', 'sweep', 'compositeSolid'],
         selectionFilter: ['object'],
+        multiple: true,
+        required: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       x: {
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_TRANSFORM,
-        required: true,
+        required: false,
       },
       y: {
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_TRANSFORM,
-        required: true,
+        required: false,
       },
       z: {
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_TRANSFORM,
-        required: true,
+        required: false,
+      },
+      global: {
+        inputType: 'options',
+        required: false,
+        options: [
+          { name: 'False', value: false },
+          { name: 'True', value: true },
+        ],
       },
     },
   },
@@ -1114,30 +1125,79 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       nodeToEdit: {
         ...nodeToEditProps,
       },
-      selection: {
+      objects: {
         // selectionMixed allows for feature tree selection of module imports
         inputType: 'selectionMixed',
-        multiple: false,
-        required: true,
-        skip: true,
-        selectionTypes: ['path'],
+        selectionTypes: ['path', 'sweep', 'compositeSolid'],
         selectionFilter: ['object'],
+        multiple: true,
+        required: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       roll: {
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_TRANSFORM,
-        required: true,
+        required: false,
       },
       pitch: {
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_TRANSFORM,
-        required: true,
+        required: false,
       },
       yaw: {
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_TRANSFORM,
+        required: false,
+      },
+      global: {
+        inputType: 'options',
+        required: false,
+        options: [
+          { name: 'False', value: false },
+          { name: 'True', value: true },
+        ],
+      },
+    },
+  },
+  Scale: {
+    description: 'Set scale on solid or sketch.',
+    icon: 'scale',
+    needsReview: true,
+    args: {
+      nodeToEdit: {
+        ...nodeToEditProps,
+      },
+      objects: {
+        // selectionMixed allows for feature tree selection of module imports
+        inputType: 'selectionMixed',
+        selectionTypes: ['path', 'sweep', 'compositeSolid'],
+        selectionFilter: ['object'],
+        multiple: true,
         required: true,
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+      },
+      x: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_TRANSFORM,
+        required: false,
+      },
+      y: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_TRANSFORM,
+        required: false,
+      },
+      z: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_TRANSFORM,
+        required: false,
+      },
+      global: {
+        inputType: 'options',
+        required: false,
+        options: [
+          { name: 'False', value: false },
+          { name: 'True', value: true },
+        ],
       },
     },
   },
@@ -1149,14 +1209,13 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       nodeToEdit: {
         ...nodeToEditProps,
       },
-      selection: {
+      objects: {
         // selectionMixed allows for feature tree selection of module imports
         inputType: 'selectionMixed',
-        multiple: false,
-        required: true,
-        skip: true,
-        selectionTypes: ['path'],
+        selectionTypes: ['path', 'sweep'],
         selectionFilter: ['object'],
+        multiple: false, // only one object can be cloned at this time
+        required: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       variableName: {
