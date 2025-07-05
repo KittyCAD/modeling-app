@@ -4,6 +4,7 @@ import {
   createCallExpressionStdLibKw,
   createLabeledArg,
   createLiteral,
+  createVariableDeclaration,
 } from '@src/lang/create'
 import {
   getVariableExprsFromSelection,
@@ -14,6 +15,7 @@ import { err } from '@src/lib/trap'
 import type { Selections } from '@src/lib/selections'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import {
+  createPathToNodeForLastVariable,
   createVariableExpressionsArray,
   insertVariableAndOffsetPathToNode,
   setCallInAst,
@@ -218,11 +220,13 @@ export function addClone({
   ast,
   artifactGraph,
   objects,
+  variableName,
   nodeToEdit,
 }: {
   ast: Node<Program>
   artifactGraph: ArtifactGraph
   objects: Selections
+  variableName: string
   nodeToEdit?: PathToNode
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   // 1. Clone the ast so we can edit it
@@ -247,12 +251,10 @@ export function addClone({
 
   // 3. If edit, we assign the new function call declaration to the existing node,
   // otherwise just push to the end
-  const pathToNode = setCallInAst(
-    modifiedAst,
-    call,
-    nodeToEdit,
-    vars.pathIfPipe
-  )
+  const declaration = createVariableDeclaration(variableName, call)
+  modifiedAst.body.push(declaration)
+  const toFirstKwarg = false
+  const pathToNode = createPathToNodeForLastVariable(ast, toFirstKwarg)
   if (err(pathToNode)) {
     return pathToNode
   }

@@ -12,6 +12,7 @@ import { err } from '@src/lib/trap'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import {
+  addClone,
   addRotate,
   addScale,
   addTranslate,
@@ -455,4 +456,30 @@ rotate001 = rotate(
   // TODO: missing multi-objects test
 })
 
-// TODO: add clone tests
+describe('Testing addClone', () => {
+  async function runAddCloneTest(code: string) {
+    const {
+      artifactGraph,
+      ast,
+      sketches: objects,
+    } = await getAstAndSketchSelections(code)
+    const result = addClone({
+      ast,
+      artifactGraph,
+      objects,
+      variableName: 'yoyoyo',
+    })
+    if (err(result)) throw result
+    await runNewAstAndCheckForSweep(result.modifiedAst)
+    return recast(result.modifiedAst)
+  }
+
+  it('should add a standalone call on sweep selection', async () => {
+    const code = `sketch001 = startSketchOn(XY)
+profile001 = circle(sketch001, center = [0, 0], radius = 1)
+extrude001 = extrude(profile001, length = 1)`
+    const expectedNewLine = `yoyoyo = clone(extrude001)`
+    const newCode = await runAddCloneTest(code)
+    expect(newCode).toContain(code + '\n' + expectedNewLine)
+  })
+})
