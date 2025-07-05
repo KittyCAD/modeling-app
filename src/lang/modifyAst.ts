@@ -1177,16 +1177,16 @@ export function insertVariableAndOffsetPathToNode(
 
 // Create an array expression for variables,
 // or keep it null if all are PipeSubstitutions
-export function createVariableExpressionsArray(sketches: Expr[]): Expr | null {
-  let exprs: Expr | null = null
-  if (sketches.every((s) => s.type === 'PipeSubstitution')) {
+export function createVariableExpressionsArray(exprs: Expr[]): Expr | null {
+  let expr: Expr | null = null
+  if (exprs.every((s) => s.type === 'PipeSubstitution')) {
     // Keeping null so we don't even put it the % sign
-  } else if (sketches.length === 1) {
-    exprs = sketches[0]
+  } else if (exprs.length === 1) {
+    expr = exprs[0]
   } else {
-    exprs = createArrayExpression(sketches)
+    expr = createArrayExpression(exprs)
   }
-  return exprs
+  return expr
 }
 
 // Create a path to node to the last variable declaroator of an ast
@@ -1217,8 +1217,7 @@ export function setCallInAst(
   ast: Node<Program>,
   call: Node<CallExpressionKw>,
   nodeToEdit?: PathToNode,
-  lastPathToNode?: PathToNode,
-  toFirstKwarg?: boolean
+  pathIfPipe?: PathToNode
 ): Error | PathToNode {
   let pathToNode: PathToNode | undefined
   if (nodeToEdit) {
@@ -1234,21 +1233,22 @@ export function setCallInAst(
     Object.assign(result.node, call)
     pathToNode = nodeToEdit
   } else {
-    if (!call.unlabeled && lastPathToNode) {
+    if (!call.unlabeled && pathIfPipe) {
       const pipe = getNodeFromPath<PipeExpression>(
         ast,
-        lastPathToNode,
+        pathIfPipe,
         'PipeExpression'
       )
       if (err(pipe)) {
         return pipe
       }
       pipe.node.body.push(call)
-      pathToNode = lastPathToNode
+      pathToNode = pathIfPipe
     } else {
       const name = findUniqueName(ast, call.callee.name.name)
       const declaration = createVariableDeclaration(name, call)
       ast.body.push(declaration)
+      const toFirstKwarg = call.arguments.length > 0
       pathToNode = createPathToNodeForLastVariable(ast, toFirstKwarg)
     }
   }

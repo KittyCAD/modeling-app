@@ -1044,16 +1044,17 @@ export const valueOrVariable = (variable: KclCommandValue) => {
     : variable.valueAst
 }
 
-// Go from a selection of sketches to a list of KCL expressions that
-// can be used to create KCL sweep call declarations.
+// Go from a selection to a list of KCL expressions that
+// can be used to create function calls in codemods.
+// lastChildLookup will look for the last child of the selection in the artifact graph
 export function getVariableExprsFromSelection(
   selection: Selections,
   ast: Node<Program>,
   nodeToEdit?: PathToNode,
   lastChildLookup = false,
   artifactGraph?: ArtifactGraph
-): Error | { exprs: Expr[]; paths: PathToNode[] } {
-  const paths: PathToNode[] = []
+): Error | { exprs: Expr[]; pathIfPipe?: PathToNode } {
+  let pathIfPipe: PathToNode | undefined
   const exprs: Expr[] = []
   for (const s of selection.graphSelections) {
     let variable:
@@ -1064,17 +1065,15 @@ export function getVariableExprsFromSelection(
         }
       | undefined
     if (lastChildLookup && s.artifact && artifactGraph) {
-      console.log('we are looking for last child variable', s.artifact)
-      console.log('artifactGraph', artifactGraph)
       const children = findAllChildrenAndOrderByPlaceInCode(
         s.artifact,
         artifactGraph
       )
-      console.log('found children', children)
       const lastChildVariable = getLastVariable(children, ast)
       if (!lastChildVariable) {
         continue
       }
+
       variable = lastChildVariable.variableDeclaration
     } else {
       const directLookup = getNodeFromPath<VariableDeclaration>(
@@ -1085,10 +1084,11 @@ export function getVariableExprsFromSelection(
       if (err(directLookup)) {
         continue
       }
+
       variable = directLookup
     }
 
-    if (variable.node.declaration?.id) {
+    if (variable?.node.declaration?.id) {
       const name = variable.node.declaration.id.name
       if (nodeToEdit) {
         const result = getNodeFromPath<VariableDeclaration>(
@@ -1102,13 +1102,13 @@ export function getVariableExprsFromSelection(
           name === result.node.declaration.id.name
         ) {
           // Pointing to same variable case
-          paths.push(nodeToEdit)
           exprs.push(createPipeSubstitution())
+          pathIfPipe = nodeToEdit
           continue
         }
       }
+
       // Pointing to different variable case
-      paths.push(variable.deepPath)
       exprs.push(createLocalName(name))
       continue
     }
@@ -1122,15 +1122,15 @@ export function getVariableExprsFromSelection(
     }
 
     // No variable case
-    paths.push(variable.deepPath)
     exprs.push(createPipeSubstitution())
+    pathIfPipe = s.codeRef.pathToNode
   }
 
   if (exprs.length === 0) {
     return new Error("Couldn't map selections to program references")
   }
 
-  return { exprs, paths }
+  return { exprs, pathIfPipe }
 }
 
 // Go from the sketches argument in a KCL sweep call declaration
@@ -1168,7 +1168,7 @@ export function retrieveSelectionsFromOpArg(
 
     graphSelections.push({
       artifact,
-      codeRef: codeRefs[0], // TODO: figure out why two codeRefs could be possible?
+      codeRef: codeRefs[0],
     })
   }
 
