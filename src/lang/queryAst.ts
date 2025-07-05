@@ -1116,7 +1116,6 @@ export function getVariableExprsFromSelection(
     // import case
     const importNodeAndAlias = findImportNodeAndAlias(ast, s.codeRef.pathToNode)
     if (importNodeAndAlias) {
-      paths.push(s.codeRef.pathToNode)
       exprs.push(createLocalName(importNodeAndAlias.alias))
       continue
     }

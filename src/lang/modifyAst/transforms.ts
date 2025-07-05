@@ -46,15 +46,15 @@ export function addTranslate({
   // 2. Prepare unlabeled and labeled arguments
   // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
   const lastChildLookup = true
-  const variableExpressions = getVariableExprsFromSelection(
+  const vars = getVariableExprsFromSelection(
     objects,
     modifiedAst,
     nodeToEdit,
     lastChildLookup,
     artifactGraph
   )
-  if (err(variableExpressions)) {
-    return variableExpressions
+  if (err(vars)) {
+    return vars
   }
 
   const xExpr = x ? [createLabeledArg('x', valueOrVariable(x))] : []
@@ -64,7 +64,7 @@ export function addTranslate({
     ? [createLabeledArg('global', createLiteral(global))]
     : []
 
-  const objectsExpr = createVariableExpressionsArray(variableExpressions.exprs)
+  const objectsExpr = createVariableExpressionsArray(vars.exprs)
   const call = createCallExpressionStdLibKw(
     callName ?? 'translate',
     objectsExpr,
@@ -84,8 +84,12 @@ export function addTranslate({
 
   // 3. If edit, we assign the new function call declaration to the existing node,
   // otherwise just push to the end
-  const lastPath = variableExpressions.paths.pop() // TODO: check if this is correct
-  const pathToNode = setCallInAst(modifiedAst, call, nodeToEdit, lastPath)
+  const pathToNode = setCallInAst(
+    modifiedAst,
+    call,
+    nodeToEdit,
+    vars.pathIfPipe
+  )
   if (err(pathToNode)) {
     return pathToNode
   }
@@ -121,15 +125,15 @@ export function addRotate({
   // 2. Prepare unlabeled and labeled arguments
   // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
   const lastChildLookup = true
-  const variableExpressions = getVariableExprsFromSelection(
+  const vars = getVariableExprsFromSelection(
     objects,
     modifiedAst,
     nodeToEdit,
     lastChildLookup,
     artifactGraph
   )
-  if (err(variableExpressions)) {
-    return variableExpressions
+  if (err(vars)) {
+    return vars
   }
 
   const rollExpr = roll ? [createLabeledArg('roll', valueOrVariable(roll))] : []
@@ -141,7 +145,7 @@ export function addRotate({
     ? [createLabeledArg('global', createLiteral(global))]
     : []
 
-  const objectsExpr = createVariableExpressionsArray(variableExpressions.exprs)
+  const objectsExpr = createVariableExpressionsArray(vars.exprs)
   const call = createCallExpressionStdLibKw('rotate', objectsExpr, [
     ...rollExpr,
     ...pitchExpr,
@@ -162,8 +166,12 @@ export function addRotate({
 
   // 3. If edit, we assign the new function call declaration to the existing node,
   // otherwise just push to the end
-  const lastPath = variableExpressions.paths.pop() // TODO: check if this is correct
-  const pathToNode = setCallInAst(modifiedAst, call, nodeToEdit, lastPath)
+  const pathToNode = setCallInAst(
+    modifiedAst,
+    call,
+    nodeToEdit,
+    vars.pathIfPipe
+  )
   if (err(pathToNode)) {
     return pathToNode
   }
@@ -223,30 +231,27 @@ export function addClone({
   // 2. Prepare unlabeled arguments
   // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
   const lastChildLookup = true
-  const variableExpressions = getVariableExprsFromSelection(
+  const vars = getVariableExprsFromSelection(
     objects,
     modifiedAst,
     nodeToEdit,
     lastChildLookup,
     artifactGraph
   )
-  if (err(variableExpressions)) {
-    return variableExpressions
+  if (err(vars)) {
+    return vars
   }
 
-  const objectsExpr = createVariableExpressionsArray(variableExpressions.exprs)
+  const objectsExpr = createVariableExpressionsArray(vars.exprs)
   const call = createCallExpressionStdLibKw('clone', objectsExpr, [])
 
   // 3. If edit, we assign the new function call declaration to the existing node,
   // otherwise just push to the end
-  const lastPath = variableExpressions.paths.pop() // TODO: check if this is correct
-  const toFirstKwarg = false
   const pathToNode = setCallInAst(
     modifiedAst,
     call,
     nodeToEdit,
-    lastPath,
-    toFirstKwarg
+    vars.pathIfPipe
   )
   if (err(pathToNode)) {
     return pathToNode

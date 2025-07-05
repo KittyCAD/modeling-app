@@ -1083,7 +1083,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       objects: {
         // selectionMixed allows for feature tree selection of module imports
         inputType: 'selectionMixed',
-        selectionTypes: ['path', 'sweep'],
+        selectionTypes: ['path', 'sweep', 'compositeSolid'],
         selectionFilter: ['object'],
         multiple: true,
         required: true,
@@ -1092,17 +1092,17 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       x: {
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_TRANSFORM,
-        required: true,
+        required: false,
       },
       y: {
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_TRANSFORM,
-        required: true,
+        required: false,
       },
       z: {
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_TRANSFORM,
-        required: true,
+        required: false,
       },
       global: {
         inputType: 'options',
@@ -1125,27 +1125,26 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       objects: {
         // selectionMixed allows for feature tree selection of module imports
         inputType: 'selectionMixed',
-        multiple: false,
-        required: true,
-        skip: true,
-        selectionTypes: ['path'],
+        selectionTypes: ['path', 'sweep', 'compositeSolid'],
         selectionFilter: ['object'],
+        multiple: true,
+        required: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       roll: {
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_TRANSFORM,
-        required: true,
+        required: false,
       },
       pitch: {
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_TRANSFORM,
-        required: true,
+        required: false,
       },
       yaw: {
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_TRANSFORM,
-        required: true,
+        required: false,
       },
       global: {
         inputType: 'options',
@@ -1168,27 +1167,26 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       objects: {
         // selectionMixed allows for feature tree selection of module imports
         inputType: 'selectionMixed',
-        multiple: false,
-        required: true,
-        skip: true,
-        selectionTypes: ['path'],
+        selectionTypes: ['path', 'sweep', 'compositeSolid'],
         selectionFilter: ['object'],
+        multiple: true,
+        required: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       x: {
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_TRANSFORM,
-        required: true,
+        required: false,
       },
       y: {
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_TRANSFORM,
-        required: true,
+        required: false,
       },
       z: {
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_TRANSFORM,
-        required: true,
+        required: false,
       },
       global: {
         inputType: 'options',
