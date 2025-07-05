@@ -367,123 +367,131 @@ const prepareToEditEdgeTreatment: PrepareToEditCallback = async ({
  * Gather up the argument values for the Shell command
  * to be used in the command bar edit flow.
  */
-const prepareToEditShell: PrepareToEditCallback =
-  async function prepareToEditShell({ operation }) {
-    const baseCommand = {
-      name: 'Shell',
-      groupId: 'modeling',
-    }
+const prepareToEditShell: PrepareToEditCallback = async ({ operation }) => {
+  const baseCommand = {
+    name: 'Shell',
+    groupId: 'modeling',
+  }
+  if (operation.type !== 'StdLibCall') {
+    return { reason: 'Wrong operation type' }
+  }
 
+  // 1. Map the unlabeled arguments to solid2d selections
+  if (!operation.unlabeledArg) {
+    return { reason: `Couldn't retrieve operation arguments` }
+  }
+
+  const solids = retrieveSelectionsFromOpArg(
+    operation.unlabeledArg,
+    kclManager.artifactGraph
+  )
+  if (err(solids)) {
+    return { reason: "Couldn't retrieve sketches" }
+  }
+
+  // 2. Convert the thickness argument from a string to a KCL expression
+  const thickness = await stringToKclExpression(
+    codeManager.code.slice(
+      operation.labeledArgs?.['thickness']?.sourceRange[0],
+      operation.labeledArgs?.['thickness']?.sourceRange[1]
+    )
+  )
+  if (err(thickness) || 'errors' in thickness) {
+    return { reason: "Couldn't retrieve thickness argument" }
+  }
+
+  // Mapping back the faces: this can probably be cleaned up
+  // Build an artifact map here of eligible artifacts corresponding to our current sweep
+  // that we can query in another loop later
+  let value
+  if (operation.unlabeledArg.value.type === 'Solid') {
+    value = operation.unlabeledArg.value.value
+  } else if (
+    operation.unlabeledArg.value.type === 'Array' &&
+    operation.unlabeledArg.value.value[0].type === 'Solid'
+  ) {
+    value = operation.unlabeledArg.value.value[0].value
+  } else {
+    return { reason: 'Unlabeled argument is not a Solid or Array of SOlid' }
+  }
+
+  const sweepId = value.artifactId
+  const candidates: Map<string, Selection> = new Map()
+  for (const artifact of kclManager.artifactGraph.values()) {
     if (
-      operation.type !== 'StdLibCall' ||
-      !operation.labeledArgs ||
-      !operation.unlabeledArg ||
-      !('thickness' in operation.labeledArgs) ||
-      !('faces' in operation.labeledArgs) ||
-      !operation.labeledArgs.thickness ||
-      !operation.labeledArgs.faces ||
-      operation.labeledArgs.faces.value.type !== 'Array'
+      artifact.type === 'cap' &&
+      artifact.sweepId === sweepId &&
+      artifact.subType
     ) {
-      return baseCommand
-    }
+      const codeRef = getCapCodeRef(artifact, kclManager.artifactGraph)
+      if (err(codeRef)) {
+        return baseCommand
+      }
 
-    let value
-    if (operation.unlabeledArg.value.type === 'Solid') {
-      value = operation.unlabeledArg.value.value
+      candidates.set(artifact.subType, {
+        artifact,
+        codeRef,
+      })
     } else if (
-      operation.unlabeledArg.value.type === 'Array' &&
-      operation.unlabeledArg.value.value[0].type === 'Solid'
+      artifact.type === 'wall' &&
+      artifact.sweepId === sweepId &&
+      artifact.segId
     ) {
-      value = operation.unlabeledArg.value.value[0].value
+      const segArtifact = getArtifactOfTypes(
+        { key: artifact.segId, types: ['segment'] },
+        kclManager.artifactGraph
+      )
+      if (err(segArtifact)) {
+        return baseCommand
+      }
+
+      const { codeRef } = segArtifact
+      candidates.set(artifact.segId, {
+        artifact,
+        codeRef,
+      })
+    }
+  }
+
+  // Loop over face value to retrieve the corresponding artifacts and build the graphSelections
+  // TODO: check on non array values
+  if (
+    !operation.labeledArgs.faces ||
+    operation.labeledArgs.faces.value.type !== 'Array'
+  ) {
+    return { reason: 'No faces argument found in operation' }
+  }
+  const faceValues = operation.labeledArgs.faces.value.value
+  const graphSelections: Selection[] = []
+  for (const v of faceValues) {
+    if (v.type === 'String' && v.value && candidates.has(v.value)) {
+      graphSelections.push(candidates.get(v.value)!)
+    } else if (
+      v.type === 'TagIdentifier' &&
+      v.artifact_id &&
+      candidates.has(v.artifact_id)
+    ) {
+      graphSelections.push(candidates.get(v.artifact_id)!)
     } else {
       return baseCommand
     }
-
-    // Build an artifact map here of eligible artifacts corresponding to our current sweep
-    // that we can query in another loop later
-    const sweepId = value.artifactId
-    const candidates: Map<string, Selection> = new Map()
-    for (const artifact of kclManager.artifactGraph.values()) {
-      if (
-        artifact.type === 'cap' &&
-        artifact.sweepId === sweepId &&
-        artifact.subType
-      ) {
-        const codeRef = getCapCodeRef(artifact, kclManager.artifactGraph)
-        if (err(codeRef)) {
-          return baseCommand
-        }
-
-        candidates.set(artifact.subType, {
-          artifact,
-          codeRef,
-        })
-      } else if (
-        artifact.type === 'wall' &&
-        artifact.sweepId === sweepId &&
-        artifact.segId
-      ) {
-        const segArtifact = getArtifactOfTypes(
-          { key: artifact.segId, types: ['segment'] },
-          kclManager.artifactGraph
-        )
-        if (err(segArtifact)) {
-          return baseCommand
-        }
-
-        const { codeRef } = segArtifact
-        candidates.set(artifact.segId, {
-          artifact,
-          codeRef,
-        })
-      }
-    }
-
-    // Loop over face value to retrieve the corresponding artifacts and build the graphSelections
-    const faceValues = operation.labeledArgs.faces.value.value
-    const graphSelections: Selection[] = []
-    for (const v of faceValues) {
-      if (v.type === 'String' && v.value && candidates.has(v.value)) {
-        graphSelections.push(candidates.get(v.value)!)
-      } else if (
-        v.type === 'TagIdentifier' &&
-        v.artifact_id &&
-        candidates.has(v.artifact_id)
-      ) {
-        graphSelections.push(candidates.get(v.artifact_id)!)
-      } else {
-        return baseCommand
-      }
-    }
-
-    // Convert the thickness argument from a string to a KCL expression
-    const thickness = await stringToKclExpression(
-      codeManager.code.slice(
-        operation.labeledArgs?.['thickness']?.sourceRange[0],
-        operation.labeledArgs?.['thickness']?.sourceRange[1]
-      )
-    )
-
-    if (err(thickness) || 'errors' in thickness) {
-      return baseCommand
-    }
-
-    // Assemble the default argument values for the Shell command,
-    // with `nodeToEdit` set, which will let the Extrude actor know
-    // to edit the node that corresponds to the StdLibCall.
-    const argDefaultValues: ModelingCommandSchema['Shell'] = {
-      thickness,
-      selection: {
-        graphSelections,
-        otherSelections: [],
-      },
-      nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
-    }
-    return {
-      ...baseCommand,
-      argDefaultValues,
-    }
   }
+  const faces: Selections = { graphSelections, otherSelections: [] }
+
+  // 3. Assemble the default argument values for the command,
+  // with `nodeToEdit` set, which will let the actor know
+  // to edit the node that corresponds to the StdLibCall.
+  const argDefaultValues: ModelingCommandSchema['Shell'] = {
+    solids,
+    faces,
+    thickness,
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
+  }
+  return {
+    ...baseCommand,
+    argDefaultValues,
+  }
+}
 
 const prepareToEditOffsetPlane: PrepareToEditCallback = async ({
   operation,
