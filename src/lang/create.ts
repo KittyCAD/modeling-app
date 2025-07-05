@@ -7,10 +7,6 @@ import type { TagDeclarator } from '@rust/kcl-lib/bindings/TagDeclarator'
 import type { ImportPath } from '@rust/kcl-lib/bindings/ImportPath'
 import type { ImportSelector } from '@rust/kcl-lib/bindings/ImportSelector'
 import type { ItemVisibility } from '@rust/kcl-lib/bindings/ItemVisibility'
-import { ARG_TAG } from '@src/lang/constants'
-import { getNodeFromPath } from '@src/lang/queryAst'
-import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
-import { findKwArg } from '@src/lang/util'
 import type {
   ArrayExpression,
   BinaryExpression,
@@ -22,11 +18,9 @@ import type {
   Literal,
   LiteralValue,
   ObjectExpression,
-  PathToNode,
   PipeExpression,
   PipeSubstitution,
   Program,
-  SourceRange,
   UnaryExpression,
   VariableDeclaration,
   VariableDeclarator,
@@ -396,52 +390,6 @@ export function findUniqueName(
 
   // recursive case: name is not unique and does not end in digits
   return findUniqueName(searchStr, name, pad, index + 1)
-}
-
-export function giveSketchFnCallTag(
-  ast: Node<Program>,
-  range: SourceRange,
-  tag?: string
-):
-  | {
-      modifiedAst: Node<Program>
-      tag: string
-      isTagExisting: boolean
-      pathToNode: PathToNode
-    }
-  | Error {
-  const path = getNodePathFromSourceRange(ast, range)
-  const maybeTag = (() => {
-    const callNode = getNodeFromPath<CallExpressionKw>(ast, path, [
-      'CallExpressionKw',
-    ])
-    if (err(callNode)) {
-      return callNode
-    }
-    const { node: primaryCallExp } = callNode
-    const existingTag = findKwArg(ARG_TAG, primaryCallExp)
-    const tagDeclarator =
-      existingTag || createTagDeclarator(tag || findUniqueName(ast, 'seg', 2))
-    const isTagExisting = !!existingTag
-    if (!isTagExisting) {
-      callNode.node.arguments.push(createLabeledArg(ARG_TAG, tagDeclarator))
-    }
-    return { tagDeclarator, isTagExisting }
-  })()
-
-  if (err(maybeTag)) return maybeTag
-  const { tagDeclarator, isTagExisting } = maybeTag
-  if ('value' in tagDeclarator) {
-    // Now TypeScript knows tagDeclarator has a value property
-    return {
-      modifiedAst: ast,
-      tag: String(tagDeclarator.value),
-      isTagExisting,
-      pathToNode: path,
-    }
-  } else {
-    return new Error('Unable to assign tag without value')
-  }
 }
 
 export const createLabeledArg = (label: string, arg: Expr): LabeledArg => {
