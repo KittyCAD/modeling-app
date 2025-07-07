@@ -1,6 +1,5 @@
 import type { Name } from '@rust/kcl-lib/bindings/Name'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
-import type { OpArg } from '@rust/kcl-lib/bindings/Operation'
 import type { Program } from '@rust/kcl-lib/bindings/Program'
 
 import { ARG_END_ABSOLUTE } from '@src/lang/constants'
@@ -982,23 +981,18 @@ profile001 = circle(sketch001, center = [0, 0], radius = 1)
 extrude001 = extrude(profile001, length = 1)
 `
     const ast = assertParse(circleProfileInVar)
-    const { artifactGraph } = await enginelessExecutor(ast)
-    const profileArtifact = artifactGraph
-      .values()
-      .find((a) => a.type === 'path')
-    if (!profileArtifact) {
-      throw new Error('Artifact not found in the graph')
+    const { artifactGraph, operations } = await enginelessExecutor(ast)
+    const op = operations.find(
+      (o) => o.type === 'StdLibCall' && o.name === 'extrude'
+    )
+    if (!op || op.type !== 'StdLibCall' || !op.unlabeledArg) {
+      throw new Error('Extrude operation not found')
     }
 
-    // Have to resort to a mock here since execState.operations is empty?
-    const unlabeledArg: OpArg = {
-      value: {
-        type: 'Sketch',
-        value: { artifactId: profileArtifact.id },
-      },
-      sourceRange: [111, 121, 0],
-    }
-    const selections = retrieveSelectionsFromOpArg(unlabeledArg, artifactGraph)
+    const selections = retrieveSelectionsFromOpArg(
+      op.unlabeledArg,
+      artifactGraph
+    )
     if (err(selections)) throw selections
     expect(selections.graphSelections).toHaveLength(1)
     const selection = selections.graphSelections[0]
@@ -1015,39 +1009,18 @@ profile002 = circle(sketch001, center = [6, 0], radius = 1)
 revolve001 = revolve([profile001, profile002], axis = X, angle = 180)
 `
     const ast = assertParse(circleProfileInVar)
-    const { artifactGraph } = await enginelessExecutor(ast)
-    const profile1Artifact = artifactGraph
-      .values()
-      .find((a) => a.type === 'path')
-    const profile2Artifact = [...artifactGraph.values()].findLast(
-      (a) => a.type === 'path'
+    const { artifactGraph, operations } = await enginelessExecutor(ast)
+    const op = operations.find(
+      (o) => o.type === 'StdLibCall' && o.name === 'revolve'
     )
-    if (!profile1Artifact || !profile2Artifact) {
-      throw new Error('Artifact not found in the graph')
+    if (!op || op.type !== 'StdLibCall' || !op.unlabeledArg) {
+      throw new Error('Revolve operation not found')
     }
 
-    // Have to resort to a mock here since execState.operations is empty?
-    const unlabeledArg: OpArg = {
-      value: {
-        type: 'Array',
-        value: [
-          {
-            type: 'Sketch',
-            value: {
-              artifactId: profile1Artifact.id,
-            },
-          },
-          {
-            type: 'Sketch',
-            value: {
-              artifactId: profile2Artifact.id,
-            },
-          },
-        ],
-      },
-      sourceRange: [171, 195, 0],
-    }
-    const selections = retrieveSelectionsFromOpArg(unlabeledArg, artifactGraph)
+    const selections = retrieveSelectionsFromOpArg(
+      op.unlabeledArg,
+      artifactGraph
+    )
     if (err(selections)) throw selections
     expect(selections.graphSelections).toHaveLength(2)
     if (
