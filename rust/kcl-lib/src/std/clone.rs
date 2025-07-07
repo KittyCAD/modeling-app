@@ -80,11 +80,6 @@ async fn inner_clone(
         return Ok(new_geometry);
     }
 
-    if let GeometryWithImportedGeometry::Solid(solids) = geometry {
-        args.flush_batch_for_solids(exec_state, vec![solids].as_slice()).await?;
-    }
-    println!("just did the flush thing");
-
     exec_state
         .batch_modeling_cmd(
             ModelingCmdMeta::from_args_id(&args, new_id),
