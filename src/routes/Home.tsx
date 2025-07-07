@@ -67,6 +67,7 @@ import {
   defaultGlobalStatusBarItems,
 } from '@src/components/StatusBar/defaultStatusBarItems'
 import { useSelector } from '@xstate/react'
+import { withSiteBaseURL } from '@src/lib/withBaseURL'
 
 type ReadWriteProjectState = {
   value: boolean
@@ -364,9 +365,9 @@ const Home = () => {
             <li className="contents">
               <ActionButton
                 Element="externalLink"
-                to="https://zoo.dev/docs"
+                to={withSiteBaseURL('/account')}
                 onClick={openExternalBrowserIfDesktop(
-                  'https://zoo.dev/account'
+                  withSiteBaseURL('/account')
                 )}
                 className={sidebarButtonClasses}
                 iconStart={{
@@ -381,8 +382,8 @@ const Home = () => {
             <li className="contents">
               <ActionButton
                 Element="externalLink"
-                to="https://zoo.dev/blog"
-                onClick={openExternalBrowserIfDesktop('https://zoo.dev/blog')}
+                to={withSiteBaseURL('/blog')}
+                onClick={openExternalBrowserIfDesktop(withSiteBaseURL('/blog'))}
                 className={sidebarButtonClasses}
                 iconStart={{
                   icon: 'glasses',

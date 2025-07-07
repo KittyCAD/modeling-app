@@ -26,6 +26,7 @@ import { err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import { getInVariableCase } from '@src/lib/utils'
 import { IS_STAGING } from '@src/routes/utils'
+import { withAPIBaseURL } from '@src/lib/withBaseURL'
 
 export async function renameProjectDirectory(
   projectPath: string,
@@ -697,7 +698,9 @@ export const readTokenFile = async () => {
 export const writeTokenFile = async (token: string) => {
   const tokenFilePath = await getTokenFilePath()
   if (err(token)) return Promise.reject(token)
-  return window.electron.writeFile(tokenFilePath, token)
+  const result = window.electron.writeFile(tokenFilePath, token)
+  console.log('token written to disk')
+  return result
 }
 
 export const writeTelemetryFile = async (content: string) => {
@@ -722,12 +725,9 @@ export const setState = async (state: Project | undefined): Promise<void> => {
   appStateStore = state
 }
 
-export const getUser = async (
-  token: string,
-  hostname: string
-): Promise<Models['User_type']> => {
+export const getUser = async (token: string): Promise<Models['User_type']> => {
   try {
-    const user = await fetch(`${hostname}/users/me`, {
+    const user = await fetch(withAPIBaseURL('/users/me'), {
       headers: new Headers({
         Authorization: `Bearer ${token}`,
       }),

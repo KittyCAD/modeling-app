@@ -1,4 +1,4 @@
-import { DEV } from '@src/env'
+import env from '@src/env'
 import type {
   Actor,
   AnyStateMachine,
@@ -89,7 +89,8 @@ export function createMachineCommand<
   } else if ('status' in commandConfig) {
     const { status } = commandConfig
     if (status === 'inactive') return null
-    if (status === 'development' && !(DEV || IS_STAGING_OR_DEBUG)) return null
+    if (status === 'development' && !(env().DEV || IS_STAGING_OR_DEBUG))
+      return null
   }
 
   const icon = ('icon' in commandConfig && commandConfig.icon) || undefined

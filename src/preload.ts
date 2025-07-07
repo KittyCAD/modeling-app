@@ -289,11 +289,11 @@ contextBridge.exposeInMainWorld('electron', {
       exposeProcessEnvs([
         'NODE_ENV',
         'VITE_KC_API_WS_MODELING_URL',
-        'VITE_KC_API_BASE_URL',
+        'VITE_KITTYCAD_API_BASE_URL',
         'VITE_KC_SITE_BASE_URL',
         'VITE_KC_SITE_APP_URL',
         'VITE_KC_CONNECTION_TIMEOUT_MS',
-        'VITE_KC_DEV_TOKEN',
+        'VITE_KITTYCAD_API_TOKEN',
 
         'IS_PLAYWRIGHT',
 

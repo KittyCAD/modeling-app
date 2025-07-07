@@ -1,4 +1,3 @@
-import { VITE_KC_API_BASE_URL } from '@src/env'
 import { UAParser } from 'ua-parser-js'
 
 import type { OsInfo } from '@rust/kcl-lib/bindings/OsInfo'
@@ -11,6 +10,7 @@ import { isDesktop } from '@src/lib/isDesktop'
 import type RustContext from '@src/lib/rustContext'
 import screenshot from '@src/lib/screenshot'
 import { APP_VERSION } from '@src/routes/utils'
+import { withAPIBaseURL } from '@src/lib/withBaseURL'
 
 /* eslint-disable suggest-no-throw/suggest-no-throw --
  * All the throws in CoreDumpManager are intentional and should be caught and handled properly
@@ -35,7 +35,7 @@ export class CoreDumpManager {
   codeManager: CodeManager
   rustContext: RustContext
   token: string | undefined
-  baseUrl: string = VITE_KC_API_BASE_URL
+  baseUrl: string = withAPIBaseURL('')
 
   constructor(
     engineCommandManager: EngineCommandManager,

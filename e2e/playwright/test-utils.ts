@@ -17,7 +17,7 @@ import dotenv from 'dotenv'
 
 const NODE_ENV = process.env.NODE_ENV || 'development'
 dotenv.config({ path: [`.env.${NODE_ENV}.local`, `.env.${NODE_ENV}`] })
-export const token = process.env.token || ''
+export const token = process.env.VITE_KITTYCAD_API_TOKEN || ''
 
 import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
 

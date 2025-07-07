@@ -13,4 +13,4 @@ p0 = planeOf(tri, face = END)
 
 // Offset that plane by 2, then draw a square on it.
 startSketchOn(offsetPlane(p0, offset = 2))
-  |> polygon(radius = 2, numSides = 4, center = [0, 0])
+  |> polygon(radius = 4, numSides = 4, center = [0, 0])

@@ -15,6 +15,7 @@ import {
 import { onboardingStartPath } from '@src/lib/onboardingPaths'
 import { reportRejection } from '@src/lib/trap'
 import { isDesktop } from '@src/lib/isDesktop'
+import { withSiteBaseURL } from '@src/lib/withBaseURL'
 
 const HelpMenuDivider = () => (
   <div className="h-[1px] bg-chalkboard-110 dark:bg-chalkboard-80" />
@@ -89,7 +90,7 @@ export function HelpMenu() {
             <HelpMenuDivider />
             <HelpMenuItem
               as="a"
-              href="https://zoo.dev/docs/kcl-samples"
+              href={withSiteBaseURL('/docs/kcl-samples')}
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -97,7 +98,7 @@ export function HelpMenu() {
             </HelpMenuItem>
             <HelpMenuItem
               as="a"
-              href="https://zoo.dev/docs/kcl-lang"
+              href={withSiteBaseURL('/docs/kcl-lang')}
               target="_blank"
               rel="noopener noreferrer"
             >

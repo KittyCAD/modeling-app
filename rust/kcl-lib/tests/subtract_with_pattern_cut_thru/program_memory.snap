@@ -167,6 +167,14 @@ description: Variables in memory after executing subtract_with_pattern_cut_thru.
             "units": {
               "type": "Unknown"
             }
+          },
+          "zAxis": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 1.0,
+            "units": {
+              "type": "Unknown"
+            }
           }
         },
         "start": {
@@ -272,6 +280,14 @@ description: Variables in memory after executing subtract_with_pattern_cut_thru.
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
+            "units": {
+              "type": "Unknown"
+            }
+          },
+          "zAxis": {
+            "x": 0.0,
+            "y": -1.0,
+            "z": 0.0,
             "units": {
               "type": "Unknown"
             }
@@ -386,219 +402,11 @@ description: Variables in memory after executing subtract_with_pattern_cut_thru.
                 "units": {
                   "type": "Unknown"
                 }
-              }
-            },
-            "start": {
-              "from": [
-                47.66,
-                42.02
-              ],
-              "to": [
-                47.66,
-                42.02
-              ],
-              "units": {
-                "type": "Mm"
               },
-              "tag": null,
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              }
-            },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "height": 50.0,
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
-          "sectional": false
-        }
-      },
-      {
-        "type": "Solid",
-        "value": {
-          "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudeArc"
-            }
-          ],
-          "sketch": {
-            "type": "Sketch",
-            "id": "[uuid]",
-            "paths": [
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "ccw": true,
-                "center": [
-                  17.5,
-                  42.02
-                ],
-                "from": [
-                  47.66,
-                  42.02
-                ],
-                "radius": 30.16,
-                "tag": null,
-                "to": [
-                  47.66,
-                  42.02
-                ],
-                "type": "Circle",
-                "units": {
-                  "type": "Mm"
-                }
-              }
-            ],
-            "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
-              "origin": {
+              "zAxis": {
                 "x": 0.0,
-                "y": 0.0,
+                "y": -1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "type": "plane",
-              "value": "XZ",
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
-              }
-            },
-            "start": {
-              "from": [
-                47.66,
-                42.02
-              ],
-              "to": [
-                47.66,
-                42.02
-              ],
-              "units": {
-                "type": "Mm"
-              },
-              "tag": null,
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              }
-            },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "height": 50.0,
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
-          "sectional": false
-        }
-      },
-      {
-        "type": "Solid",
-        "value": {
-          "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudeArc"
-            }
-          ],
-          "sketch": {
-            "type": "Sketch",
-            "id": "[uuid]",
-            "paths": [
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "ccw": true,
-                "center": [
-                  17.5,
-                  42.02
-                ],
-                "from": [
-                  47.66,
-                  42.02
-                ],
-                "radius": 30.16,
-                "tag": null,
-                "to": [
-                  47.66,
-                  42.02
-                ],
-                "type": "Circle",
-                "units": {
-                  "type": "Mm"
-                }
-              }
-            ],
-            "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
-              "origin": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "type": "plane",
-              "value": "XZ",
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
                 "units": {
                   "type": "Unknown"
                 }
@@ -710,6 +518,14 @@ description: Variables in memory after executing subtract_with_pattern_cut_thru.
                 "units": {
                   "type": "Unknown"
                 }
+              },
+              "zAxis": {
+                "x": 0.0,
+                "y": -1.0,
+                "z": 0.0,
+                "units": {
+                  "type": "Unknown"
+                }
               }
             },
             "start": {
@@ -815,6 +631,246 @@ description: Variables in memory after executing subtract_with_pattern_cut_thru.
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
+                "units": {
+                  "type": "Unknown"
+                }
+              },
+              "zAxis": {
+                "x": 0.0,
+                "y": -1.0,
+                "z": 0.0,
+                "units": {
+                  "type": "Unknown"
+                }
+              }
+            },
+            "start": {
+              "from": [
+                47.66,
+                42.02
+              ],
+              "to": [
+                47.66,
+                42.02
+              ],
+              "units": {
+                "type": "Mm"
+              },
+              "tag": null,
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": []
+              }
+            },
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          "height": 50.0,
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
+          "units": {
+            "type": "Mm"
+          },
+          "sectional": false
+        }
+      },
+      {
+        "type": "Solid",
+        "value": {
+          "type": "Solid",
+          "id": "[uuid]",
+          "artifactId": "[uuid]",
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            }
+          ],
+          "sketch": {
+            "type": "Sketch",
+            "id": "[uuid]",
+            "paths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  17.5,
+                  42.02
+                ],
+                "from": [
+                  47.66,
+                  42.02
+                ],
+                "radius": 30.16,
+                "tag": null,
+                "to": [
+                  47.66,
+                  42.02
+                ],
+                "type": "Circle",
+                "units": {
+                  "type": "Mm"
+                }
+              }
+            ],
+            "on": {
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
+              "origin": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              "type": "plane",
+              "value": "XZ",
+              "xAxis": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0,
+                "units": {
+                  "type": "Unknown"
+                }
+              },
+              "yAxis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0,
+                "units": {
+                  "type": "Unknown"
+                }
+              },
+              "zAxis": {
+                "x": 0.0,
+                "y": -1.0,
+                "z": 0.0,
+                "units": {
+                  "type": "Unknown"
+                }
+              }
+            },
+            "start": {
+              "from": [
+                47.66,
+                42.02
+              ],
+              "to": [
+                47.66,
+                42.02
+              ],
+              "units": {
+                "type": "Mm"
+              },
+              "tag": null,
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": []
+              }
+            },
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          "height": 50.0,
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
+          "units": {
+            "type": "Mm"
+          },
+          "sectional": false
+        }
+      },
+      {
+        "type": "Solid",
+        "value": {
+          "type": "Solid",
+          "id": "[uuid]",
+          "artifactId": "[uuid]",
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            }
+          ],
+          "sketch": {
+            "type": "Sketch",
+            "id": "[uuid]",
+            "paths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  17.5,
+                  42.02
+                ],
+                "from": [
+                  47.66,
+                  42.02
+                ],
+                "radius": 30.16,
+                "tag": null,
+                "to": [
+                  47.66,
+                  42.02
+                ],
+                "type": "Circle",
+                "units": {
+                  "type": "Mm"
+                }
+              }
+            ],
+            "on": {
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
+              "origin": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              "type": "plane",
+              "value": "XZ",
+              "xAxis": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0,
+                "units": {
+                  "type": "Unknown"
+                }
+              },
+              "yAxis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0,
+                "units": {
+                  "type": "Unknown"
+                }
+              },
+              "zAxis": {
+                "x": 0.0,
+                "y": -1.0,
+                "z": 0.0,
                 "units": {
                   "type": "Unknown"
                 }
@@ -985,6 +1041,14 @@ description: Variables in memory after executing subtract_with_pattern_cut_thru.
           "units": {
             "type": "Unknown"
           }
+        },
+        "zAxis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0,
+          "units": {
+            "type": "Unknown"
+          }
         }
       },
       "start": {
@@ -1069,6 +1133,14 @@ description: Variables in memory after executing subtract_with_pattern_cut_thru.
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
+          "units": {
+            "type": "Unknown"
+          }
+        },
+        "zAxis": {
+          "x": 0.0,
+          "y": -1.0,
+          "z": 0.0,
           "units": {
             "type": "Unknown"
           }
@@ -1263,6 +1335,14 @@ description: Variables in memory after executing subtract_with_pattern_cut_thru.
             "units": {
               "type": "Unknown"
             }
+          },
+          "zAxis": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 1.0,
+            "units": {
+              "type": "Unknown"
+            }
           }
         },
         "start": {
@@ -1327,6 +1407,14 @@ description: Variables in memory after executing subtract_with_pattern_cut_thru.
         "units": {
           "type": "Unknown"
         }
+      },
+      "zAxis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0,
+        "units": {
+          "type": "Unknown"
+        }
       }
     }
   },
@@ -1356,6 +1444,14 @@ description: Variables in memory after executing subtract_with_pattern_cut_thru.
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
+        "units": {
+          "type": "Unknown"
+        }
+      },
+      "zAxis": {
+        "x": 0.0,
+        "y": -1.0,
+        "z": 0.0,
         "units": {
           "type": "Unknown"
         }

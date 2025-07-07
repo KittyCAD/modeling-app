@@ -7,7 +7,7 @@ import {
   LanguageServerClient,
   LspWorkerEventType,
 } from '@kittycad/codemirror-lsp-client'
-import { TEST, VITE_KC_API_BASE_URL } from '@src/env'
+import env from '@src/env'
 import React, { createContext, useContext, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import type * as LSP from 'vscode-languageserver-protocol'
@@ -28,6 +28,7 @@ import type { FileEntry } from '@src/lib/project'
 import { codeManager } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
 import { useToken } from '@src/lib/singletons'
+import { withAPIBaseURL } from '@src/lib/withBaseURL'
 
 function getWorkspaceFolders(): LSP.WorkspaceFolder[] {
   return []
@@ -77,7 +78,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
   // But the server happens async so we break this into two parts.
   // Below is the client and server promise.
   const { lspClient: kclLspClient } = useMemo(() => {
-    if (!token || token === '' || TEST) {
+    if (!token || token === '' || env().TEST) {
       return { lspClient: null }
     }
 
@@ -85,7 +86,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
     const initEvent: KclWorkerOptions = {
       wasmUrl: wasmUrl(),
       token: token,
-      apiBaseUrl: VITE_KC_API_BASE_URL,
+      apiBaseUrl: withAPIBaseURL(''),
     }
     lspWorker.postMessage({
       worker: LspWorker.Kcl,
@@ -136,7 +137,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
   // We do not want to restart the server, its just wasteful.
   const kclLSP = useMemo(() => {
     let plugin = null
-    if (isKclLspReady && !TEST && kclLspClient) {
+    if (isKclLspReady && !env().TEST && kclLspClient) {
       // Set up the lsp plugin.
       const lsp = kcl({
         documentUri: `file:///${PROJECT_ENTRYPOINT}`,
@@ -170,7 +171,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
   }, [kclLspClient, isKclLspReady])
 
   const { lspClient: copilotLspClient } = useMemo(() => {
-    if (!token || token === '' || TEST) {
+    if (!token || token === '' || env().TEST) {
       return { lspClient: null }
     }
 
@@ -178,7 +179,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
     const initEvent: CopilotWorkerOptions = {
       wasmUrl: wasmUrl(),
       token: token,
-      apiBaseUrl: VITE_KC_API_BASE_URL,
+      apiBaseUrl: withAPIBaseURL(''),
     }
     lspWorker.postMessage({
       worker: LspWorker.Copilot,
@@ -212,7 +213,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
   // We do not want to restart the server, its just wasteful.
   const copilotLSP = useMemo(() => {
     let plugin = null
-    if (isCopilotLspReady && !TEST && copilotLspClient) {
+    if (isCopilotLspReady && !env().TEST && copilotLspClient) {
       // Set up the lsp plugin.
       const lsp = copilotPlugin({
         documentUri: `file:///${PROJECT_ENTRYPOINT}`,

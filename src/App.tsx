@@ -53,7 +53,6 @@ import {
   WASM_INIT_FAILED_TOAST_ID,
 } from '@src/lib/constants'
 import { isPlaywright } from '@src/lib/isPlaywright'
-import { VITE_KC_SITE_BASE_URL } from '@src/env'
 import { useNetworkHealthStatus } from '@src/components/NetworkHealthIndicator'
 import { useNetworkMachineStatus } from '@src/components/NetworkMachineIndicator'
 import {
@@ -66,6 +65,7 @@ import { xStateValueToString } from '@src/lib/xStateValueToString'
 import { getSelectionTypeDisplayText } from '@src/lib/selections'
 import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
 import { Toolbar } from '@src/Toolbar'
+import { withSiteBaseURL } from '@src/lib/withBaseURL'
 
 // CYCLIC REF
 sceneInfra.camControls.engineStreamActor = engineStreamActor
@@ -190,7 +190,8 @@ export function App() {
         () =>
           DownloadAppToast({
             onAccept: () => {
-              openWindow(`${VITE_KC_SITE_BASE_URL}/${APP_DOWNLOAD_PATH}`)
+              const url = withSiteBaseURL(`/${APP_DOWNLOAD_PATH}`)
+              openWindow(url)
                 .then(() => {
                   toast.dismiss(DOWNLOAD_APP_TOAST_ID)
                 })

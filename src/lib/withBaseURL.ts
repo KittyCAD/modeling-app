@@ -1,5 +1,9 @@
-import { VITE_KC_API_BASE_URL } from '@src/env'
+import env from '@src/env'
 
-export default function withBaseUrl(path: string): string {
-  return VITE_KC_API_BASE_URL + path
+export function withAPIBaseURL(path: string): string {
+  return env().VITE_KITTYCAD_API_BASE_URL + path
+}
+
+export function withSiteBaseURL(path: string): string {
+  return env().VITE_KC_SITE_BASE_URL + path
 }

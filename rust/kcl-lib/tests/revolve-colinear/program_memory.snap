@@ -141,6 +141,14 @@ description: Variables in memory after executing revolve-colinear.kcl
             "units": {
               "type": "Unknown"
             }
+          },
+          "zAxis": {
+            "x": 0.0,
+            "y": -1.0,
+            "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
           }
         },
         "start": {

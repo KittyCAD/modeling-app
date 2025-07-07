@@ -212,21 +212,29 @@ pub fn common(
         origin,
         x_axis: x_vec,
         y_axis: y_vec,
+        z_axis: x_vec.axes_cross_product(&y_vec),
+    };
+
+    let plane_equal_excluding_z = |plane: &&PlaneInfo, plane_info: &PlaneInfo| {
+        plane.origin == plane_info.origin && plane.x_axis == plane_info.x_axis && plane.y_axis == plane_info.y_axis
     };
 
     // Return early if we have a default plane.
-    if let Some((name, _)) = DEFAULT_PLANE_INFO.iter().find(|(_, plane)| **plane == plane_info) {
+    if let Some((name, _)) = DEFAULT_PLANE_INFO
+        .iter()
+        .find(|(_, plane)| plane_equal_excluding_z(plane, &plane_info))
+    {
         return Ok(Some((call_source_range, *name, 0.0)));
     }
 
     let normalized_plane_info = normalize_plane_info(&plane_info);
 
-    println!("normalized plane info: {:?}", normalized_plane_info);
+    println!("normalized plane info: {:#?}", normalized_plane_info);
 
     // Check our default planes.
     let Some((matched_plane_name, _)) = DEFAULT_PLANE_INFO
         .iter()
-        .find(|(_, plane)| **plane == normalized_plane_info)
+        .find(|(_, plane)| plane_equal_excluding_z(plane, &normalized_plane_info))
     else {
         return Ok(None);
     };
@@ -271,6 +279,7 @@ mod tests {
     use super::{Z0003, lint_should_be_offset_plane};
     use crate::lint::rule::{test_finding, test_no_finding};
 
+    // Both axes here are normalized.
     test_finding!(
         z0003_bad_sketch_on,
         lint_should_be_offset_plane,
@@ -285,6 +294,30 @@ startSketchOn({
 ",
         "custom plane in startSketchOn; offsetPlane from XZ would work here",
         Some("offsetPlane(XZ, offset = -14.3)".to_string())
+    );
+
+    // This test uses a Y axis that isn't normalized, to check the normalization code doesn't
+    // stop this lint from firing.
+    test_finding!(
+        z0003_bad_sketch_on_not_normalized_axes,
+        lint_should_be_offset_plane,
+        Z0003,
+        "\
+a1 = startSketchOn({
+       origin = { x = 0, y = 0, z = 0 },
+       xAxis = { x = 1, y = 0, z = 0 },
+       yAxis = { x = 0, y = 12, z = 0 },
+     })
+  |> startProfile(at = [0, 0])
+  |> line(end = [100.0, 0])
+  |> yLine(length = -100.0)
+  |> xLine(length = -100.0)
+  |> yLine(length = 100.0)
+  |> close()
+  |> extrude(length = 3.14)
+",
+        "custom plane in startSketchOn; offsetPlane from XY would work here",
+        Some("offsetPlane(XY, offset = 12)".to_string())
     );
 
     test_no_finding!(
