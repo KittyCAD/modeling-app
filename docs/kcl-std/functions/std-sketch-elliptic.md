@@ -1,11 +1,11 @@
 ---
 title: "elliptic"
 subtitle: "Function in std::sketch"
-excerpt: "Add a parabolic section to an existing sketch."
+excerpt: "Add an elliptic section to an existing sketch."
 layout: manual
 ---
 
-Add a parabolic section to an existing sketch.
+Add an elliptic section to an existing sketch.
 
 ```kcl
 elliptic(
