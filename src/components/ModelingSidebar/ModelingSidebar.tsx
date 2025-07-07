@@ -14,7 +14,10 @@ import type {
   SidebarPane,
   SidebarType,
 } from '@src/components/ModelingSidebar/ModelingPanes'
-import { sidebarPanesLeft, sidebarPanesRight } from '@src/components/ModelingSidebar/ModelingPanes'
+import {
+  sidebarPanesLeft,
+  sidebarPanesRight,
+} from '@src/components/ModelingSidebar/ModelingPanes'
 import Tooltip from '@src/components/Tooltip'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
@@ -129,24 +132,28 @@ export function ModelingSidebarLeft() {
     },
   ]
 
-  return <ModelingSidebar
-    sidebarPanes={sidebarPanesLeft}
-    sidebarActions={sidebarActions}
-    settings={settings}
-    align={Alignment.Left}
-  />
+  return (
+    <ModelingSidebar
+      sidebarPanes={sidebarPanesLeft}
+      sidebarActions={sidebarActions}
+      settings={settings}
+      align={Alignment.Left}
+    />
+  )
 }
 
 export function ModelingSidebarRight() {
   const settings = useSettings()
   // Prevents rerenders because new array is a new ref.
   const sidebarActions: Ref<SidebarAction[]> = useRef([])
-  return <ModelingSidebar
-    sidebarPanes={sidebarPanesRight}
-    sidebarActions={sidebarActions.current}
-    settings={settings}
-    align={Alignment.Right}
-  />
+  return (
+    <ModelingSidebar
+      sidebarPanes={sidebarPanesRight}
+      sidebarActions={sidebarActions.current}
+      settings={settings}
+      align={Alignment.Right}
+    />
+  )
 }
 
 interface ModelingSidebarProps {
@@ -253,7 +260,8 @@ export function ModelingSidebar(props: ModelingSidebarProps) {
   )
 
   const css = {
-    handle:  (context.store?.openPanes.length === 0 ? 'hidden ' : 'block ') +
+    handle:
+      (context.store?.openPanes.length === 0 ? 'hidden ' : 'block ') +
       'translate-x-1/2 hover:bg-chalkboard-10 hover:dark:bg-chalkboard-110 bg-transparent transition-colors duration-75 transition-ease-out delay-100 ',
     paneAlign: {
       [Alignment.Left]: 'flex-row',
@@ -280,12 +288,8 @@ export function ModelingSidebar(props: ModelingSidebarProps) {
       maxWidth={window.innerWidth - 10}
       handleWrapperClass="sidebar-resize-handles"
       handleClasses={{
-        right: props.align !== Alignment.Right
-          ? 'hidden'
-          :  css.handle,
-        left: props.align !== Alignment.Left
-          ? 'hidden'
-          : css.handle,
+        right: props.align !== Alignment.Right ? 'hidden' : css.handle,
+        left: props.align !== Alignment.Left ? 'hidden' : css.handle,
         top: 'hidden',
         topLeft: 'hidden',
         topRight: 'hidden',
@@ -294,10 +298,15 @@ export function ModelingSidebar(props: ModelingSidebarProps) {
         bottomRight: 'hidden',
       }}
     >
-      <div id="app-sidebar" className={`flex h-full ${css.paneAlign[props.align]}`}>
+      <div
+        id="app-sidebar"
+        className={`flex h-full ${css.paneAlign[props.align]}`}
+      >
         <ul
           className={
-            (context.store?.openPanes.length === 0 ? (css.roundedSide[props.align] + ' ') : '') +
+            (context.store?.openPanes.length === 0
+              ? css.roundedSide[props.align] + ' '
+              : '') +
             'relative z-[2] pointer-events-auto p-0 col-start-1 col-span-1 h-fit w-fit flex flex-col ' +
             'bg-chalkboard-10 border border-solid border-chalkboard-30 dark:bg-chalkboard-90 dark:border-chalkboard-80 group-focus-within:border-primary dark:group-focus-within:border-chalkboard-50 shadow-sm '
           }
@@ -306,13 +315,19 @@ export function ModelingSidebar(props: ModelingSidebarProps) {
             id="pane-buttons-section"
             className={
               'w-fit p-2 flex flex-col gap-2 ' +
-              (context.store?.openPanes.length >= 1 ? 'p' + css.tailwindDir[props.align] + '0.5' : '')
+              (context.store?.openPanes.length >= 1
+                ? 'p' + css.tailwindDir[props.align] + '0.5'
+                : '')
             }
           >
             {filteredPanes.map((pane) => (
               <ModelingPaneButton
                 key={pane.id}
-                align={props.align === Alignment.Right ? Alignment.Left : Alignment.Right }
+                align={
+                  props.align === Alignment.Right
+                    ? Alignment.Left
+                    : Alignment.Right
+                }
                 paneConfig={pane}
                 paneIsOpen={context.store?.openPanes.includes(pane.id)}
                 onClick={() => togglePane(pane.id)}

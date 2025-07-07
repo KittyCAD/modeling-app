@@ -253,7 +253,6 @@ export const sidebarPanesLeft: SidebarPane[] = [
   },
 ]
 
-
 export const sidebarPanesRight: SidebarPane[] = [
   {
     id: 'text-to-cad',
@@ -263,14 +262,14 @@ export const sidebarPanesRight: SidebarPane[] = [
     Content: (props) => {
       return (
         <>
-            <ModelingPaneHeader
-              id={props.id}
-              icon="sparkles"
-              title="Text-to-CAD"
-              Menu={null}
-              onClose={props.onClose}
-            />
-            <MlEphantConversationPane />
+          <ModelingPaneHeader
+            id={props.id}
+            icon="sparkles"
+            title="Text-to-CAD"
+            Menu={null}
+            onClose={props.onClose}
+          />
+          <MlEphantConversationPane />
         </>
       )
     },

@@ -12,7 +12,7 @@ export interface MlEphantConversationProps {
 
 interface MlEphantConversationInputProps {
   onProcess: (requestedPrompt: string) => void
-  hasSelection: MlEphantConversationProps["hasSelection"]
+  hasSelection: MlEphantConversationProps['hasSelection']
   disabled?: boolean
 }
 
@@ -36,25 +36,39 @@ const Clone = (props) => {
     refDiv.current.focus()
   }, [props.xref.current, refDiv.current])
 
-  return <div ref={refDiv} className={props.className}>
-    { props.children }
-  </div>
+  return (
+    <div ref={refDiv} className={props.className}>
+      {props.children}
+    </div>
+  )
 }
 
-export const MlEphantConversationInput = (props: MlEphantConversationInputProps) => {
+export const MlEphantConversationInput = (
+  props: MlEphantConversationInputProps
+) => {
   const refTextarea = useRef<HTMLTextArea>(null)
   const [value, setValue] = useState('')
-  const [lettersForAnimation, setLettersForAnimation] = useState<ReactNode[]>([])
+  const [lettersForAnimation, setLettersForAnimation] = useState<ReactNode[]>(
+    []
+  )
   const [isAnimating, setAnimating] = useState(false)
 
-  const onClick =  () => {
+  const onClick = () => {
     if (!value) return
     props.onProcess(value)
-    setLettersForAnimation(value.split('').map(
-      (c, index) => <span key={index} style={{ display: "inline-block", animation: `${Math.random() * 2}s linear 0s 1 normal forwards running send-up` }}>
-        {c}
-      </span>
-    ))
+    setLettersForAnimation(
+      value.split('').map((c, index) => (
+        <span
+          key={index}
+          style={{
+            display: 'inline-block',
+            animation: `${Math.random() * 2}s linear 0s 1 normal forwards running send-up`,
+          }}
+        >
+          {c}
+        </span>
+      ))
+    )
     setAnimating(true)
     setValue('')
 
@@ -69,20 +83,35 @@ export const MlEphantConversationInput = (props: MlEphantConversationInputProps)
     }
   }, [isAnimating])
 
-
-  return <div className="flex flex-col p-4 gap-2">
-    <div className="text-sm text-chalkboard-60">Enter a prompt</div>
-    <div className="flex flex-row gap-2 items-start">
-      <textarea ref={refTextarea} value={value} onChange={e => setValue(e.target.value)} className={`w-full p-2 ${isAnimating ? 'hidden' : ''}`} placeholder="Help get me started on...">
-      </textarea>
-      <Clone xref={refTextarea} className={`${isAnimating ? '' : 'hidden'} w-full p-2`}>
-        { lettersForAnimation }
-      </Clone>
-      <div className="flex items-start">
-        <button disabled={props.disabled} onClick={onClick} className="w-20 m-0 bg-ml-green p-2">{ props.hasSelection ? 'Edit' : 'Submit' }</button>
+  return (
+    <div className="flex flex-col p-4 gap-2">
+      <div className="text-sm text-chalkboard-60">Enter a prompt</div>
+      <div className="flex flex-row gap-2 items-start">
+        <textarea
+          ref={refTextarea}
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          className={`w-full p-2 ${isAnimating ? 'hidden' : ''}`}
+          placeholder="Help get me started on..."
+        ></textarea>
+        <Clone
+          xref={refTextarea}
+          className={`${isAnimating ? '' : 'hidden'} w-full p-2`}
+        >
+          {lettersForAnimation}
+        </Clone>
+        <div className="flex items-start">
+          <button
+            disabled={props.disabled}
+            onClick={onClick}
+            className="w-20 m-0 bg-ml-green p-2"
+          >
+            {props.hasSelection ? 'Edit' : 'Submit'}
+          </button>
+        </div>
       </div>
     </div>
-  </div>
+  )
 }
 
 export const MlEphantConversation = (props: MlEphantConversationProps) => {
@@ -93,7 +122,9 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
 
   useEffect(() => {
     if (refScroll.current) {
-      refScroll.current.children[refScroll.current.children.length - 1].scrollIntoView()
+      refScroll.current.children[
+        refScroll.current.children.length - 1
+      ].scrollIntoView()
     }
   }, [props.prompts.length])
 
@@ -111,13 +142,15 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
     }
   }
 
-  const promptCards = props.prompts.map((prompt) => <PromptCard
-    key={prompt.id}
-    {...prompt}
-    disabled={prompt.status !== 'completed'}
-    onDelete={onDelete}
-    onFeedback={onFeedback}
-  />)
+  const promptCards = props.prompts.map((prompt) => (
+    <PromptCard
+      key={prompt.id}
+      {...prompt}
+      disabled={prompt.status !== 'completed'}
+      onDelete={onDelete}
+      onFeedback={onFeedback}
+    />
+  ))
   return (
     <div className="relative">
       <div className="absolute inset-0">
@@ -127,7 +160,7 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
               <div className="text-center p-4 text-chalkboard-60 text-md">
                 The beginning of this project's Text-to-CAD history.
               </div>
-              { promptCards }
+              {promptCards}
             </div>
           </div>
           <div className="border-t">

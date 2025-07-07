@@ -228,9 +228,12 @@ const Home = () => {
   })
 
   // Trigger a rerender for the Prompts tab when prompts change state.
-  const promptsInProgressToCompleted = useSelector(mlEphantManagerActor, (actor) => {
-    return actor.context.promptsInProgressToCompleted
-  })
+  const promptsInProgressToCompleted = useSelector(
+    mlEphantManagerActor,
+    (actor) => {
+      return actor.context.promptsInProgressToCompleted
+    }
+  )
 
   const [tabSelected, setTabSelected] = useState<HomeTabKeys>(
     HomeTabKeys.Projects
@@ -266,7 +269,12 @@ const Home = () => {
       default:
         const _ex: never = tabSelected
     }
-  }, [tabSelected, promptsToSeedProjects, promptsInProgressToCompleted, projects])
+  }, [
+    tabSelected,
+    promptsToSeedProjects,
+    promptsInProgressToCompleted,
+    projects,
+  ])
 
   useEffect(() => {
     searchAgainst(items)('')
