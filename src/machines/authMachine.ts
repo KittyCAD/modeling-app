@@ -217,9 +217,9 @@ async function getAndSyncStoredToken(input: {
     ['api token', !!VITE_KITTYCAD_API_TOKEN],
   ])
   if (token) {
-    // has just logged in, update storage
-    localStorage.setItem(TOKEN_PERSIST_KEY, token)
     if (isDesktop()) {
+      // has just logged in, update storage
+      localStorage.setItem(TOKEN_PERSIST_KEY, token)
       await writeTokenFile(token)
     }
     return token
