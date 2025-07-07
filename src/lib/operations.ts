@@ -1112,6 +1112,18 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     prepareToEdit: prepareToEditEdgeTreatment,
     // modelingEvent: 'Chamfer',
   },
+  conic: {
+    label: 'Conic',
+    icon: 'conic',
+  },
+  ellipse: {
+    label: 'Ellipse',
+    icon: 'ellipse',
+  },
+  elliptic: {
+    label: 'Elliptic',
+    icon: 'elliptic',
+  },
   extrude: {
     label: 'Extrude',
     icon: 'extrude',
@@ -1132,6 +1144,10 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   subtract2d: {
     label: 'Subtract 2D',
     icon: 'hole',
+  },
+  hyperbolic: {
+    label: 'Hyperbolic',
+    icon: 'conic',
   },
   hollow: {
     label: 'Hollow',
@@ -1162,6 +1178,10 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     label: 'Offset Plane',
     icon: 'plane',
     prepareToEdit: prepareToEditOffsetPlane,
+  },
+  parabolic: {
+    label: 'Parabolic',
+    icon: 'conic',
   },
   patternCircular2d: {
     label: 'Circular Pattern',
