@@ -12,6 +12,8 @@ import {
 import { initPromise, relevantFileExtensions } from '@src/lang/wasmUtils'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
+  ENVIRONMENT_FILE_NAME,
+  EnvironmentName,
   PROJECT_ENTRYPOINT,
   PROJECT_FOLDER,
   PROJECT_IMAGE_NAME,
@@ -519,6 +521,27 @@ const getTokenFilePath = async () => {
   return window.electron.path.join(fullPath, TOKEN_FILE_NAME)
 }
 
+const getEnvironmentFilePath = async () => {
+  const isTestEnv = window.electron.process.env.IS_PLAYWRIGHT === 'true'
+  const testSettingsPath = await window.electron.getAppTestProperty(
+    'TEST_SETTINGS_FILE_KEY'
+  )
+
+  const appConfig = await window.electron.getPath('appData')
+  const fullPath = isTestEnv
+    ? window.electron.path.resolve(testSettingsPath, '..')
+    : window.electron.path.join(appConfig, getAppFolderName())
+  try {
+    await window.electron.stat(fullPath)
+  } catch (e) {
+    // File/path doesn't exist
+    if (e === 'ENOENT') {
+      await window.electron.mkdir(fullPath, { recursive: true })
+    }
+  }
+  return window.electron.path.join(fullPath, ENVIRONMENT_FILE_NAME)
+}
+
 const getTelemetryFilePath = async () => {
   const isTestEnv = window.electron.process.env.IS_PLAYWRIGHT === 'true'
   const testSettingsPath = await window.electron.getAppTestProperty(
@@ -700,6 +723,28 @@ export const writeTokenFile = async (token: string) => {
   if (err(token)) return Promise.reject(token)
   const result = window.electron.writeFile(tokenFilePath, token)
   console.log('token written to disk')
+  return result
+}
+
+export const readEnvironmentFile = async () : EnvironmentName | null=> {
+  let environmentFilePath = await getEnvironmentFilePath()
+
+  if (window.electron.exists(environmentFilePath)) {
+    const environment: string = await window.electron.readFile(environmentFilePath, {
+      encoding: 'utf-8',
+    })
+    if (!environment) return null
+
+    return environment
+  }
+  return null
+}
+
+export const writeEnvironmentFile = async (environment: EnvironmentName) => {
+  const environmentFilePath = await getEnvironmentFilePath()
+  if (err(environment)) return Promise.reject(environment)
+  const result = window.electron.writeFile(environmentFilePath, environment)
+  console.log('environment written to disk')
   return result
 }
 

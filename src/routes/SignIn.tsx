@@ -16,6 +16,7 @@ import { authActor, useSettings } from '@src/lib/singletons'
 import { APP_VERSION, generateSignInUrl } from '@src/routes/utils'
 import { withAPIBaseURL, withSiteBaseURL } from '@src/lib/withBaseURL'
 import { getEnvironment, updateEnvironment } from '@src/env'
+import { writeEnvironmentFile } from '@src/lib/desktop'
 
 const subtleBorder =
   'border border-solid border-chalkboard-30 dark:border-chalkboard-80'
@@ -61,8 +62,8 @@ const SignIn = () => {
 
     // We want to invoke our command to login via device auth.
     const userCodeToDisplay = await window.electron
-      .startDeviceFlow(withAPIBaseURL(location.search))
-      .catch(reportError)
+                                          .startDeviceFlow(withAPIBaseURL(location.search))
+                                          .catch(reportError)
     if (!userCodeToDisplay) {
       console.error('No user code received while trying to log in')
       toast.error('Error while trying to log in')
@@ -75,8 +76,11 @@ const SignIn = () => {
     if (!token) {
       console.error('No token received while trying to log in')
       toast.error('Error while trying to log in')
+      writeEnvironmentFile('')
       return
     }
+
+    writeEnvironmentFile(environmentName)
     authActor.send({ type: 'Log in', token })
   }
 

@@ -72,6 +72,7 @@ export const PROJECT_SETTINGS_FILE_NAME = 'project.toml'
 export const COOKIE_NAME = '__Secure-next-auth.session-token'
 export const TELEMETRY_FILE_NAME = 'boot.txt'
 export const TELEMETRY_RAW_FILE_NAME = 'raw-metrics.txt'
+export const ENVIRONMENT_FILE_NAME = 'environment.txt'
 
 /** localStorage key to determine if we're in Playwright tests */
 export const PLAYWRIGHT_KEY = 'playwright'
@@ -234,6 +235,7 @@ export type Environment = {
   API_URL: string
   SITE_URL: string
   WEBSOCKET_URL: string
+  name: string
 }
 export const SUPPORTED_ENVIRONMENTS: { [key in EnvironmentName]: Environment } =
   {
@@ -241,15 +243,18 @@ export const SUPPORTED_ENVIRONMENTS: { [key in EnvironmentName]: Environment } =
       API_URL: 'https://api.dev.zoo.dev',
       SITE_URL: 'https://dev.zoo.dev',
       WEBSOCKET_URL: 'wss://api.dev.zoo.dev/ws/modeling/commands',
+      name: 'Development'
     },
     production: {
       API_URL: 'https://api.zoo.dev',
       SITE_URL: 'https://zoo.dev',
       WEBSOCKET_URL: 'wss://api.zoo.dev/ws/modeling/commands',
+      name: 'Production'
     },
     'production-us': {
       API_URL: 'https://api.dev.zoo.dev',
       SITE_URL: 'https://dev.zoo.dev',
       WEBSOCKET_URL: 'wss://api.dev.zoo.dev/ws/modeling/commands',
+      name:'Production US (regulated)'
     },
   }

@@ -23,6 +23,7 @@ let ENVIRONMENT: Environment | null = null
 
 export const updateEnvironment = (environment: EnvironmentName) => {
   ENVIRONMENT = SUPPORTED_ENVIRONMENTS[environment]
+  console.log('updating environment', environment)
 }
 
 export const getEnvironment = () => {

@@ -1,11 +1,13 @@
 import type { Models } from '@kittycad/lib'
-import env from '@src/env'
+import env, { updateEnvironment } from '@src/env'
 import { assign, fromPromise, setup } from 'xstate'
 
 import { COOKIE_NAME, OAUTH2_DEVICE_CLIENT_ID } from '@src/lib/constants'
 import {
   getUser as getUserDesktop,
+  readEnvironmentFile,
   readTokenFile,
+  writeEnvironmentFile,
   writeTokenFile,
 } from '@src/lib/desktop'
 import { isDesktop } from '@src/lib/isDesktop'
@@ -139,6 +141,8 @@ export const authMachine = setup({
 
 async function getUser(input: { token?: string }) {
   const token = await getAndSyncStoredToken(input)
+  const environment = await readEnvironmentFile()
+  updateEnvironment(environment)
   const url = withAPIBaseURL('/user')
   const headers: { [key: string]: string } = {
     'Content-Type': 'application/json',
@@ -257,6 +261,7 @@ async function logout() {
         }
 
         await writeTokenFile('')
+        await writeEnvironmentFile('')
         return Promise.resolve(null)
       }
     } catch (e) {
