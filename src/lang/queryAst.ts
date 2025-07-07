@@ -51,11 +51,16 @@ import type { KclSettingsAnnotation } from '@src/lib/settings/settingsTypes'
 import { err } from '@src/lib/trap'
 import { getAngle, isArray } from '@src/lib/utils'
 
-import type { OpKclValue, Operation } from '@rust/kcl-lib/bindings/Operation'
+import type {
+  OpKclValue,
+  Operation,
+  StdLibCallOp,
+} from '@rust/kcl-lib/bindings/Operation'
 import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import type { UnaryExpression } from 'typescript'
 import type { NumericType } from '@rust/kcl-lib/bindings/NumericType'
+import type { Plane } from '@rust/kcl-lib/bindings/Artifact'
 
 /**
  * Retrieves a node from a given path within a Program node structure, optionally stopping at a specified node type.
@@ -1156,6 +1161,17 @@ export function getSketchSelectionsFromOperation(
     graphSelections,
     otherSelections: [],
   }
+}
+
+export function findOperationArtifact(
+  item: StdLibCallOp,
+  artifactGraph: ArtifactGraph
+) {
+  const nodePath = JSON.stringify(item.nodePath)
+  const artifact = [...artifactGraph.values()].find(
+    (a) => JSON.stringify((a as Plane).codeRef?.nodePath) === nodePath
+  )
+  return artifact
 }
 
 export function locateVariableWithCallOrPipe(

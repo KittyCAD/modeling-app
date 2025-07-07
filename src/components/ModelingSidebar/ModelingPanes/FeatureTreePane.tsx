@@ -4,7 +4,11 @@ import type { ComponentProps } from 'react'
 import { useCallback, useEffect, useMemo, useRef } from 'react'
 import type { Actor, Prop } from 'xstate'
 
-import type { Operation, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
+import type {
+  Operation,
+  OpKclValue,
+  StdLibCallOp,
+} from '@rust/kcl-lib/bindings/Operation'
 
 import { ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
 import type { CustomIconName } from '@src/components/CustomIcon'
@@ -39,12 +43,12 @@ import {
   kclEditorActor,
   selectionEventSelector,
 } from '@src/machines/kclEditorMachine'
-import type { Plane } from '@rust/kcl-lib/bindings/Artifact'
 import {
   selectDefaultSketchPlane,
   selectOffsetSketchPlane,
 } from '@src/lib/selections'
 import type { DefaultPlaneStr } from '@src/lib/planes'
+import { findOperationArtifact } from '@src/lang/queryAst'
 
 export const FeatureTreePane = () => {
   const isEditorMounted = useSelector(kclEditorActor, editorIsMountedSelector)
@@ -363,7 +367,10 @@ const OperationItem = (props: {
   function selectOperation() {
     if (props.sketchNoFace) {
       if (isOffsetPlane(props.item)) {
-        const artifact = findOperationArtifact(props.item)
+        const artifact = findOperationArtifact(
+          props.item,
+          kclManager.artifactGraph
+        )
         void selectOffsetSketchPlane(artifact)
       }
     } else {
@@ -459,7 +466,10 @@ const OperationItem = (props: {
 
   function startSketchOnOffsetPlane() {
     if (isOffsetPlane(props.item)) {
-      const artifact = findOperationArtifact(props.item)
+      const artifact = findOperationArtifact(
+        props.item,
+        kclManager.artifactGraph
+      )
       if (artifact?.id) {
         sceneInfra.modelingSend({
           type: 'Enter sketch',
@@ -716,16 +726,6 @@ const DefaultPlanes = () => {
   )
 }
 
-type StdLibCallOp = Extract<Operation, { type: 'StdLibCall' }>
-
 const isOffsetPlane = (item: Operation): item is StdLibCallOp => {
   return item.type === 'StdLibCall' && item.name === 'offsetPlane'
-}
-
-const findOperationArtifact = (item: StdLibCallOp) => {
-  const nodePath = JSON.stringify(item.nodePath)
-  const artifact = [...kclManager.artifactGraph.values()].find(
-    (a) => JSON.stringify((a as Plane).codeRef?.nodePath) === nodePath
-  )
-  return artifact
 }
