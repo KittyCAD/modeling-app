@@ -2374,7 +2374,7 @@ profile001 = startProfile(sketch001, at = [0, 0])
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let mock_program = crate::Program::parse_no_errs(code).unwrap();
         let mock_result = mock_ctx.run_mock(mock_program, true).await.unwrap();
-        assert_eq!(mock_result.operations.len(), 0);
+        assert_eq!(mock_result.operations.len(), 1);
 
         let code2 = code.to_owned()
             + r#"
