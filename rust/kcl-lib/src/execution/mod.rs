@@ -587,7 +587,7 @@ impl ExecutorContext {
 
         let mut mem = exec_state.stack().clone();
         let module_infos = exec_state.global.module_infos.clone();
-        let outcome = exec_state.into_mock_exec_outcome(result.0, self).await;
+        let outcome = exec_state.into_exec_outcome(result.0, self).await;
 
         mem.squash_env(result.0);
         cache::write_old_memory((mem, module_infos)).await;
