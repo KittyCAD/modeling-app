@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom'
 import { ActionButton } from '@src/components/ActionButton'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { Logo } from '@src/components/Logo'
-import { APP_NAME } from '@src/lib/constants'
+import { APP_NAME, EnvironmentName } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { Themes, getSystemTheme } from '@src/lib/theme'
@@ -15,6 +15,7 @@ import { toSync } from '@src/lib/utils'
 import { authActor, useSettings } from '@src/lib/singletons'
 import { APP_VERSION, generateSignInUrl } from '@src/routes/utils'
 import { withAPIBaseURL, withSiteBaseURL } from '@src/lib/withBaseURL'
+import { getEnvironment, updateEnvironment } from '@src/env'
 
 const subtleBorder =
   'border border-solid border-chalkboard-30 dark:border-chalkboard-80'
@@ -51,7 +52,13 @@ const SignIn = () => {
     [theme.current]
   )
 
-  const signInDesktop = async () => {
+  const signInDesktop = async (environmentName: EnvironmentName) => {
+    updateEnvironment(environmentName)
+    const environment = getEnvironment()
+    if (!environment) {
+      throw new Error('Unable to login, failed to fetch environment.')
+    }
+
     // We want to invoke our command to login via device auth.
     const userCodeToDisplay = await window.electron
       .startDeviceFlow(withAPIBaseURL(location.search))
@@ -76,6 +83,18 @@ const SignIn = () => {
   const cancelSignIn = async () => {
     authActor.send({ type: 'Log out' })
     setUserCode('')
+  }
+
+  const signInDesktopDevelopment = async () => {
+    return signInDesktop('development')
+  }
+
+  const signInDesktopProduction = async () => {
+    return signInDesktop('production')
+  }
+
+  const signInDesktopProductionUS = async () => {
+    return signInDesktop('production-us')
   }
 
   return (
@@ -163,6 +182,39 @@ const SignIn = () => {
                     </button>
                   </>
                 )}
+                <button
+                  onClick={toSync(signInDesktopDevelopment, reportRejection)}
+                  className={
+                    'm-0 mt-8 w-fit flex gap-4 items-center px-3 py-1 ' +
+                    '!border-transparent !text-lg !text-chalkboard-10 !bg-primary hover:hue-rotate-15'
+                  }
+                  data-testid="sign-in-button"
+                >
+                  Development
+                  <CustomIcon name="arrowRight" className="w-6 h-6" />
+                </button>
+                <button
+                  onClick={toSync(signInDesktopProduction, reportRejection)}
+                  className={
+                    'm-0 mt-8 w-fit flex gap-4 items-center px-3 py-1 ' +
+                    '!border-transparent !text-lg !text-chalkboard-10 !bg-primary hover:hue-rotate-15'
+                  }
+                  data-testid="sign-in-button"
+                >
+                  Production
+                  <CustomIcon name="arrowRight" className="w-6 h-6" />
+                </button>
+                <button
+                  onClick={toSync(signInDesktopProductionUS, reportRejection)}
+                  className={
+                    'm-0 mt-8 w-fit flex gap-4 items-center px-3 py-1 ' +
+                    '!border-transparent !text-lg !text-chalkboard-10 !bg-primary hover:hue-rotate-15'
+                  }
+                  data-testid="sign-in-button"
+                >
+                  Production US (Regulated)
+                  <CustomIcon name="arrowRight" className="w-6 h-6" />
+                </button>
               </div>
             ) : (
               <>

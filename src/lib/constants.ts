@@ -225,3 +225,31 @@ export const IMMEDIATE_SIGN_IN_IF_NECESSARY_QUERY_PARAM =
 
 // Only used by the desktop app
 export const OAUTH2_DEVICE_CLIENT_ID = '2af127fb-e14e-400a-9c57-a9ed08d1a5b7'
+
+
+/** Names of supported environments */
+export type EnvironmentName = 'development' | 'production' | 'production-us'
+
+/** Environments to login and connect to the environment's deployed engine and website*/
+export type Environment = {
+  API_URL: string
+  SITE_URL: string
+  WEBSOCKET_URL: string
+}
+export const SUPPORTED_ENVIRONMENTS : {[key in EnvironmentName]:Environment}= {
+  'development': {
+    API_URL: 'https://api.dev.zoo.dev',
+    SITE_URL: 'https://dev.zoo.dev',
+    WEBSOCKET_URL: 'wss://api.dev.zoo.dev/ws/modeling/commands'
+  },
+  'production': {
+    API_URL: 'https://api.zoo.dev',
+    SITE_URL: 'https://zoo.dev',
+    WEBSOCKET_URL: 'wss://api.zoo.dev/ws/modeling/commands'
+  },
+  'production-us': {
+    API_URL: 'https://api.dev.zoo.dev',
+    SITE_URL: 'https://dev.zoo.dev',
+    WEBSOCKET_URL: 'wss://api.dev.zoo.dev/ws/modeling/commands'
+  },
+}

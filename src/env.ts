@@ -1,3 +1,6 @@
+import { Environment, EnvironmentName, SUPPORTED_ENVIRONMENTS } from "@src/lib/constants"
+import { isDesktop } from "@src/lib/isDesktop"
+
 type EnvironmentVariables = {
   readonly NODE_ENV: string | undefined
   readonly VITE_KC_API_WS_MODELING_URL: string | undefined
@@ -10,6 +13,19 @@ type EnvironmentVariables = {
   readonly TEST: string | undefined
   readonly DEV: string | undefined
   readonly CI: string | undefined
+}
+
+let ENVIRONMENT : Environment | null = null
+
+export const updateEnvironment = (environment: EnvironmentName) => {
+  ENVIRONMENT = SUPPORTED_ENVIRONMENTS[environment]
+}
+
+export const getEnvironment = () => {
+  // if (ENVIRONMENT === null) {
+  //   throw new Error('Unable to pick environment to login.')
+  // }
+  return ENVIRONMENT
 }
 
 export const viteEnv = () => {
@@ -67,13 +83,38 @@ export default (): EnvironmentVariables => {
   if (typeof DEV === 'boolean') {
     DEV = Number(DEV).toString()
   }
+
+
+  /**
+   * Resolve the API, Site, and Websocket URL
+   * This is computed during runtime for Desktop.
+   * Web will have hard coded values from the VITE .env
+   * electron will get this from the sign in page and the local disk cache
+   *
+   *
+   * catch 22: If you are in the sign in page and there are URLs, they should
+   * point to the VITE .env file for that build
+   *
+   * e.g. View this sample -> button would be pointing to production if built with the production .env
+   */
+  let API_URL = env.VITE_KITTYCAD_API_BASE_URL
+  let SITE_URL = env.VITE_KC_SITE_BASE_URL
+  let WEBSOCKET_URL = env.VITE_KC_API_WS_MODELING_URL
+
+  const environment = getEnvironment()
+  if (isDesktop() && environment) {
+    API_URL = environment.API_URL
+    SITE_URL = environment.SITE_URL
+    WEBSOCKET_URL = environment.WEBSOCKET_URL
+  }
+
   const environmentVariables: EnvironmentVariables = {
     NODE_ENV: (env.NODE_ENV as string) || undefined,
     VITE_KC_API_WS_MODELING_URL:
-      (env.VITE_KC_API_WS_MODELING_URL as string) || undefined,
+      (WEBSOCKET_URL as string) || undefined,
     VITE_KITTYCAD_API_BASE_URL:
-      (env.VITE_KITTYCAD_API_BASE_URL as string) || undefined,
-    VITE_KC_SITE_BASE_URL: (env.VITE_KC_SITE_BASE_URL as string) || undefined,
+      (API_URL as string) || undefined,
+    VITE_KC_SITE_BASE_URL: (SITE_URL as string) || undefined,
     VITE_KC_SITE_APP_URL: (env.VITE_KC_SITE_APP_URL as string) || undefined,
     VITE_KC_CONNECTION_TIMEOUT_MS:
       (env.VITE_KC_CONNECTION_TIMEOUT_MS as string) || undefined,
