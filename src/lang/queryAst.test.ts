@@ -789,7 +789,7 @@ profile001 = circle(sketch001, center = [0, 0], radius = 1)
 `
     const ast = assertParse(circleProfileInVar)
     const { artifactGraph } = await enginelessExecutor(ast)
-    const artifact = artifactGraph.values().find((a) => a.type === 'path')
+    const artifact = [...artifactGraph.values()].find((a) => a.type === 'path')
     if (!artifact) {
       throw new Error('Artifact not found in the graph')
     }
@@ -820,7 +820,7 @@ profile001 = circle(sketch001, center = [0, 0], radius = 1)
 `
     const ast = assertParse(circleProfileInVar)
     const { artifactGraph } = await enginelessExecutor(ast)
-    const artifact = artifactGraph.values().find((a) => a.type === 'path')
+    const artifact = [...artifactGraph.values()].find((a) => a.type === 'path')
     if (!artifact) {
       throw new Error('Artifact not found in the graph')
     }
@@ -941,7 +941,7 @@ extrude001 = extrude(profile001, length = 1)
 `
     const ast = assertParse(circleProfileInVar)
     const { artifactGraph } = await enginelessExecutor(ast)
-    const artifact = artifactGraph.values().find((a) => a.type === 'path')
+    const artifact = [...artifactGraph.values()].find((a) => a.type === 'path')
     if (!artifact) {
       throw new Error('Artifact not found in the graph')
     }
