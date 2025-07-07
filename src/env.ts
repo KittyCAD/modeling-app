@@ -33,7 +33,7 @@ export const processEnv = () => {
   } else if (
     typeof process !== 'undefined' &&
     typeof window !== 'undefined' &&
-    process.env.TEST === 'false'
+    process.env.TEST !== 'true'
   ) {
     // Web, you made window.process, why :(, need process.env.TEST to make sure the frontend gets evaluated.
     // The frontend can spoof this too :(
