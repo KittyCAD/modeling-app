@@ -11,7 +11,7 @@ import {
   engineCommandManager,
   kclManager,
 } from '@src/lib/singletons'
-import { VITE_KITTYCAD_API_TOKEN } from '@src/env'
+import env from '@src/env'
 import { getConstraintInfoKw } from '@src/lang/std/sketch'
 import { getNodeFromPath } from '@src/lang/queryAst'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
@@ -31,7 +31,7 @@ beforeAll(async () => {
 
   await new Promise((resolve) => {
     engineCommandManager.start({
-      token: VITE_KITTYCAD_API_TOKEN,
+      token: env().VITE_KITTYCAD_API_TOKEN,
       width: 256,
       height: 256,
       setMediaStream: () => {},
