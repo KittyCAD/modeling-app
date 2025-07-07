@@ -335,6 +335,7 @@ export async function doPromptEdit({
   const toastId = toast.loading('Submitting to Text-to-CAD API...')
 
   let submitResult
+
   try {
     submitResult = await submitPromptToEditToQueue({
       prompt,
