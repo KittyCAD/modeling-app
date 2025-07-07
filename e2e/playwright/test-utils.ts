@@ -88,10 +88,9 @@ async function waitForPageLoad(page: Page) {
 }
 
 async function removeCurrentCode(page: Page) {
-  const codeElem = page.locator('.cm-content')
   // First, hover the element in case the current mouse position is in the way
-  await codeElem.hover()
-  await codeElem.click({ delay: 50 })
+  await page.mouse.move(0, 0)
+  await page.locator('.cm-content').click({ delay: 50 })
   await page.keyboard.down('ControlOrMeta')
   await page.keyboard.press('a')
   await page.keyboard.up('ControlOrMeta')

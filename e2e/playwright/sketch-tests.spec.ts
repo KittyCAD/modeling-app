@@ -1998,19 +1998,19 @@ profile003 = startProfile(sketch001, at = [206.63, -56.73])
     await page.waitForTimeout(600)
     await editor.expectEditor.toContain(`sketch001 = startSketchOn(XZ)`)
 
-    const [startProfile1] = scene.makeMouseHelpers(568, 70)
-    const [segment1Clk] = scene.makeMouseHelpers(701, 78)
+    const [startProfile1] = scene.makeMouseHelpers(568, 110)
+    const [segment1Clk] = scene.makeMouseHelpers(701, 118)
     const [segment2Clk] = scene.makeMouseHelpers(745, 189)
 
     await test.step('add two segments', async () => {
       await startProfile1()
       await editor.expectEditor.toContain(
-        `profile001 = startProfile(sketch001, at = [4.61, 12.21])`
+        `profile001 = startProfile(sketch001, at = [4.61, 9.49])`
       )
       await segment1Clk()
       await editor.expectEditor.toContain(`|> line(end`)
       await segment2Clk()
-      await editor.expectEditor.toContain(`|> line(end = [2.98, -7.52])`)
+      await editor.expectEditor.toContain(`|> line(end = [2.98, -4.81])`)
     })
 
     await test.step('delete all profiles', async () => {
