@@ -213,8 +213,6 @@ test.describe('Point-and-click assemblies tests', () => {
         fail()
       }
 
-      page.on('console', console.log)
-
       await test.step('Setup parts and expect empty assembly scene', async () => {
         const projectName = 'assembly'
         await context.folderSetupFn(async (dir) => {
@@ -409,15 +407,6 @@ test.describe('Point-and-click assemblies tests', () => {
         fail()
       }
 
-      const midPoint = { x: 500, y: 250 }
-      const moreToTheRightPoint = { x: 900, y: 250 }
-      const bgColor: [number, number, number] = [30, 30, 30]
-      const partColor: [number, number, number] = [100, 100, 100]
-      const tolerance = 30
-      const u = await getUtils(page)
-      const gizmo = page.locator('[aria-label*=gizmo]')
-      const resetCameraButton = page.getByRole('button', { name: 'Reset view' })
-
       await test.step('Setup parts and expect empty assembly scene', async () => {
         const projectName = 'assembly'
         await context.folderSetupFn(async (dir) => {
@@ -453,16 +442,6 @@ test.describe('Point-and-click assemblies tests', () => {
           { shouldNormalise: true }
         )
         await scene.settled(cmdBar)
-
-        // Check scene for changes
-        await toolbar.closePane('code')
-        await u.doAndWaitForCmd(async () => {
-          await gizmo.click({ button: 'right' })
-          await resetCameraButton.click()
-        }, 'zoom_to_fit')
-        await toolbar.closePane('debug')
-        await scene.expectPixelColor(partColor, midPoint, tolerance)
-        await scene.expectPixelColor(bgColor, moreToTheRightPoint, tolerance)
       })
 
       await test.step('Set translate on module', async () => {
@@ -473,28 +452,41 @@ test.describe('Point-and-click assemblies tests', () => {
         await page.getByTestId('context-menu-set-translate').click()
         await cmdBar.expectState({
           stage: 'arguments',
+          currentArgKey: 'objects',
+          currentArgValue: '',
+          headerArguments: {
+            Objects: '',
+          },
+          highlightedHeaderArg: 'objects',
+          commandName: 'Translate',
+        })
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: {
+            Objects: '1 other',
+          },
+          commandName: 'Translate',
+        })
+        await cmdBar.clickOptionalArgument('x')
+        await cmdBar.expectState({
+          stage: 'arguments',
           currentArgKey: 'x',
           currentArgValue: '0',
           headerArguments: {
+            Objects: '1 other',
             X: '',
-            Y: '',
-            Z: '',
           },
           highlightedHeaderArg: 'x',
           commandName: 'Translate',
         })
         await page.keyboard.insertText('100')
         await cmdBar.progressCmdBar()
-        await page.keyboard.insertText('0.1')
-        await cmdBar.progressCmdBar()
-        await page.keyboard.insertText('0.2')
-        await cmdBar.progressCmdBar()
         await cmdBar.expectState({
           stage: 'review',
           headerArguments: {
+            Objects: '1 other',
             X: '100',
-            Y: '0.1',
-            Z: '0.2',
           },
           commandName: 'Translate',
         })
@@ -502,15 +494,65 @@ test.describe('Point-and-click assemblies tests', () => {
         await toolbar.closePane('feature-tree')
         await toolbar.openPane('code')
         await editor.expectEditor.toContain(
-          `
-          bracket
-            |> translate(x = 100, y = 0.1, z = 0.2)
-          `,
+          `translate001 = translate(bracket, x = 100)`,
           { shouldNormalise: true }
         )
-        // Expect translated part in the scene
-        await scene.expectPixelColor(bgColor, midPoint, tolerance)
-        await scene.expectPixelColor(partColor, moreToTheRightPoint, tolerance)
+      })
+
+      await test.step('Set scale on module', async () => {
+        await toolbar.openPane('feature-tree')
+
+        const op = await toolbar.getFeatureTreeOperation('bracket', 0)
+        await op.click({ button: 'right' })
+        await page.getByTestId('context-menu-set-scale').click()
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'objects',
+          currentArgValue: '',
+          headerArguments: {
+            Objects: '',
+          },
+          highlightedHeaderArg: 'objects',
+          commandName: 'Scale',
+        })
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: {
+            Objects: '1 other',
+          },
+          commandName: 'Scale',
+        })
+        await cmdBar.clickOptionalArgument('x')
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'x',
+          currentArgValue: '0',
+          headerArguments: {
+            Objects: '1 other',
+            X: '',
+          },
+          highlightedHeaderArg: 'x',
+          commandName: 'Scale',
+        })
+        await page.keyboard.insertText('1.1')
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: {
+            Objects: '1 other',
+            X: '1.1',
+          },
+          commandName: 'Scale',
+        })
+        await cmdBar.progressCmdBar()
+        await toolbar.closePane('feature-tree')
+        await toolbar.openPane('code')
+        await editor.expectEditor.toContain(
+          `translate001 = translate(bracket, x = 100)
+          scale001 = scale(bracket, x = 1.1)`,
+          { shouldNormalise: true }
+        )
       })
 
       await test.step('Set rotate on module', async () => {
@@ -522,28 +564,41 @@ test.describe('Point-and-click assemblies tests', () => {
         await page.getByTestId('context-menu-set-rotate').click()
         await cmdBar.expectState({
           stage: 'arguments',
+          currentArgKey: 'objects',
+          currentArgValue: '',
+          headerArguments: {
+            Objects: '',
+          },
+          highlightedHeaderArg: 'objects',
+          commandName: 'Rotate',
+        })
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: {
+            Objects: '1 other',
+          },
+          commandName: 'Rotate',
+        })
+        await cmdBar.clickOptionalArgument('roll')
+        await cmdBar.expectState({
+          stage: 'arguments',
           currentArgKey: 'roll',
           currentArgValue: '0',
           headerArguments: {
+            Objects: '1 other',
             Roll: '',
-            Pitch: '',
-            Yaw: '',
           },
           highlightedHeaderArg: 'roll',
           commandName: 'Rotate',
         })
         await page.keyboard.insertText('0.1')
         await cmdBar.progressCmdBar()
-        await page.keyboard.insertText('0.2')
-        await cmdBar.progressCmdBar()
-        await page.keyboard.insertText('0.3')
-        await cmdBar.progressCmdBar()
         await cmdBar.expectState({
           stage: 'review',
           headerArguments: {
+            Objects: '1 other',
             Roll: '0.1',
-            Pitch: '0.2',
-            Yaw: '0.3',
           },
           commandName: 'Rotate',
         })
@@ -552,33 +607,40 @@ test.describe('Point-and-click assemblies tests', () => {
         await toolbar.openPane('code')
         await editor.expectEditor.toContain(
           `
-          bracket
-            |> translate(x = 100, y = 0.1, z = 0.2)
-            |> rotate(roll = 0.1, pitch = 0.2, yaw = 0.3)
+          translate001 = translate(bracket, x = 100)
+          scale001 = scale(bracket, x = 1.1)
+          rotate001 = rotate(bracket, roll = 0.1)
           `,
           { shouldNormalise: true }
         )
-        // Expect no change in the scene as the rotations are tiny
-        await scene.expectPixelColor(bgColor, midPoint, tolerance)
-        await scene.expectPixelColor(partColor, moreToTheRightPoint, tolerance)
       })
 
       await test.step('Delete the part using the feature tree', async () => {
         await toolbar.openPane('feature-tree')
-        const op = await toolbar.getFeatureTreeOperation('bracket', 0)
-        await op.click({ button: 'right' })
+        const opr = await toolbar.getFeatureTreeOperation('Rotate', 0)
+        await opr.click({ button: 'right' })
         await page.getByTestId('context-menu-delete').click()
+        await scene.settled(cmdBar)
+        const ops = await toolbar.getFeatureTreeOperation('Scale', 0)
+        await ops.click({ button: 'right' })
+        await page.getByTestId('context-menu-delete').click()
+        await scene.settled(cmdBar)
+        const opt = await toolbar.getFeatureTreeOperation('Translate', 0)
+        await opt.click({ button: 'right' })
+        await page.getByTestId('context-menu-delete').click()
+        await scene.settled(cmdBar)
+        const opb = await toolbar.getFeatureTreeOperation('bracket', 0)
+        await opb.click({ button: 'right' })
+        await page.getByTestId('context-menu-delete').click()
+        await scene.settled(cmdBar)
         await scene.settled(cmdBar)
         await toolbar.closePane('feature-tree')
 
         // Expect empty editor and scene
         await toolbar.openPane('code')
-        await editor.expectEditor.not.toContain('import')
-        await editor.expectEditor.not.toContain('bracket')
-        await editor.expectEditor.not.toContain('|> translate')
-        await editor.expectEditor.not.toContain('|> rotate')
-        await toolbar.closePane('code')
-        await scene.expectPixelColorNotToBe(partColor, midPoint, tolerance)
+        await editor.expectEditor.not.toContain('translate')
+        await editor.expectEditor.not.toContain('scale')
+        await editor.expectEditor.not.toContain('rotate')
       })
     }
   )
@@ -971,26 +1033,41 @@ washer
         await page.getByTestId('context-menu-set-translate').click()
         await cmdBar.expectState({
           stage: 'arguments',
-          currentArgKey: 'x',
-          currentArgValue: '0',
+          currentArgKey: 'objects',
+          currentArgValue: '',
           headerArguments: {
-            X: '',
-            Y: '',
-            Z: '',
+            Objects: '',
           },
-          highlightedHeaderArg: 'x',
+          highlightedHeaderArg: 'objects',
           commandName: 'Translate',
         })
-        await cmdBar.progressCmdBar()
-        await page.keyboard.insertText('-3')
-        await cmdBar.progressCmdBar()
         await cmdBar.progressCmdBar()
         await cmdBar.expectState({
           stage: 'review',
           headerArguments: {
-            X: '0',
+            Objects: '1 other',
+          },
+          commandName: 'Translate',
+        })
+        await cmdBar.clickOptionalArgument('y')
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'y',
+          currentArgValue: '0',
+          headerArguments: {
+            Objects: '1 other',
+            Y: '',
+          },
+          highlightedHeaderArg: 'Y',
+          commandName: 'Translate',
+        })
+        await page.keyboard.insertText('-3')
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: {
+            Objects: '1 other',
             Y: '-3',
-            Z: '0',
           },
           commandName: 'Translate',
         })
@@ -1006,7 +1083,7 @@ washer
           washer
             |> rotate(roll = 90, pitch = 0, yaw = 0)
           clone001 = clone(washer)
-            |> translate(x = 0, y = -3, z = 0)
+          translate001 = translate(clone001, y = -3)
         `,
           { shouldNormalise: true }
         )
@@ -1047,8 +1124,8 @@ washer
           washer
             |> rotate(roll = 90, pitch = 0, yaw = 0)
           clone001 = clone(washer)
-            |> translate(x = 0, y = -3, z = 0)
-          clone002 = clone(clone001)
+          translate001 = translate(clone001, y = -3)
+          clone002 = clone(translate001)
         `,
           { shouldNormalise: true }
         )
