@@ -69,21 +69,21 @@ export const PromptCardActionButton = (props: {
 export const PromptCardStatus = (props: {
   status: Prompt['status']
 }) => {
-  const loading = <Loading isCompact={true} isDummy={true}>In progress</Loading>
-  const status: {[key: Prompt['status']]: ReactNode } = {
-    'completed':  null,
-    'in_progress': loading,
-    'queued':  loading,
-    'uploaded':  loading,
+  const loading = (
+    <Loading isCompact={true} isDummy={true}>
+      In progress
+    </Loading>
+  )
+  const status: { [key: Prompt['status']]: ReactNode } = {
+    completed: null,
+    in_progress: loading,
+    queued: loading,
+    uploaded: loading,
     // A bit less harsh wording
-    'failed':  <>Unsuccessful</>,
+    failed: <>Unsuccessful</>,
   }[props.status]
 
-  return (
-    <div className="select-none text-sm text-chalkboard-70">
-      { status }
-    </div>
-  )
+  return <div className="select-none text-sm text-chalkboard-70">{status}</div>
 }
 
 export const PromptCard = (props: PromptCardProps) => {
@@ -121,11 +121,13 @@ export const PromptCard = (props: PromptCardProps) => {
       </div>
       <div className="flex flex-row justify-between">
         <div className="flex flex-row gap-2">
-          { props.onAction !== undefined && <PromptCardActionButton
-            status={props.status}
-            disabled={props.disabled}
-            onClick={() => props.onAction?.(props.id, props.prompt)}
-          /> }
+          {props.onAction !== undefined && (
+            <PromptCardActionButton
+              status={props.status}
+              disabled={props.disabled}
+              onClick={() => props.onAction?.(props.id, props.prompt)}
+            />
+          )}
           <PromptCardStatus status={props.status} />
         </div>
         <div className="text-sm text-chalkboard-70">
