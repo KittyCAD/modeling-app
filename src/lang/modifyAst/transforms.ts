@@ -254,7 +254,7 @@ export function addClone({
   const declaration = createVariableDeclaration(variableName, call)
   modifiedAst.body.push(declaration)
   const toFirstKwarg = false
-  const pathToNode = createPathToNodeForLastVariable(ast, toFirstKwarg)
+  const pathToNode = createPathToNodeForLastVariable(modifiedAst, toFirstKwarg)
   if (err(pathToNode)) {
     return pathToNode
   }

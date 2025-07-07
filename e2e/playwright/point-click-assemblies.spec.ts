@@ -11,6 +11,7 @@ import {
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { Page } from '@playwright/test'
+import { clone } from 'happy-dom/lib/PropertySymbol'
 
 async function insertPartIntoAssembly(
   path: string,
@@ -904,8 +905,7 @@ foreign
       }
 
       const projectName = 'assembly'
-      const midPoint = { x: 500, y: 250 }
-      const [clickMidPoint] = scene.makeMouseHelpers(midPoint.x, midPoint.y)
+      const cloneLine = `clone001 = clone(washer)`
 
       await test.step('Setup parts and expect imported model', async () => {
         await context.folderSetupFn(async (dir) => {
@@ -916,21 +916,9 @@ foreign
               path.join('public', 'kcl-samples', 'washer', 'main.kcl'),
               path.join(projectDir, 'washer.kcl')
             ),
-            fsp.copyFile(
-              path.join(
-                'public',
-                'kcl-samples',
-                'socket-head-cap-screw',
-                'main.kcl'
-              ),
-              path.join(projectDir, 'screw.kcl')
-            ),
             fsp.writeFile(
               path.join(projectDir, 'main.kcl'),
-              `
-import "washer.kcl" as washer
-import "screw.kcl" as screw
-rotate001 = rotate(roll = 90, pitch = 0, yaw = 0)`
+              `import "washer.kcl" as washer`
             ),
           ])
         })
@@ -948,7 +936,7 @@ rotate001 = rotate(roll = 90, pitch = 0, yaw = 0)`
         await cmdBar.expectState({
           stage: 'arguments',
           currentArgKey: 'objects',
-          currentArgValue: '1 other',
+          currentArgValue: '',
           headerArguments: {
             Objects: '',
             VariableName: '',
@@ -960,7 +948,7 @@ rotate001 = rotate(roll = 90, pitch = 0, yaw = 0)`
         await cmdBar.expectState({
           stage: 'arguments',
           currentArgKey: 'variableName',
-          currentArgValue: 'clone001',
+          currentArgValue: '',
           headerArguments: {
             Objects: '1 other',
             VariableName: '',
@@ -977,20 +965,31 @@ rotate001 = rotate(roll = 90, pitch = 0, yaw = 0)`
           },
           commandName: 'Clone',
         })
-        await cmdBar.progressCmdBar()
+        await cmdBar.submit()
         await scene.settled(cmdBar)
         await toolbar.closePane('feature-tree')
 
         // Expect changes
         await toolbar.openPane('code')
-        await editor.expectEditor.toContain(
-          `
-        rotate001 = rotate(washer, roll = 90, pitch = 0, yaw = 0)
-        clone001 = clone(rotate001)
-        `,
-          { shouldNormalise: true }
-        )
+        await editor.expectEditor.toContain(cloneLine, {
+          shouldNormalise: true,
+        })
         await toolbar.closePane('code')
+      })
+
+      await test.step('Delete clone using the feature tree', async () => {
+        await toolbar.openPane('feature-tree')
+        const op = await toolbar.getFeatureTreeOperation('Clone', 0)
+        await op.click({ button: 'right' })
+        await page.getByTestId('context-menu-delete').click()
+        await scene.settled(cmdBar)
+        await toolbar.closePane('feature-tree')
+
+        // Expect empty editor and scene
+        await toolbar.openPane('code')
+        await editor.expectEditor.not.toContain(cloneLine, {
+          shouldNormalise: true,
+        })
       })
     }
   )
