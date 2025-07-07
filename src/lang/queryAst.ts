@@ -1054,12 +1054,7 @@ export function getVariableExprsFromSelection(
   lastChildLookup = false,
   artifactGraph?: ArtifactGraph
 ): Error | { exprs: Expr[]; pathIfPipe?: PathToNode } {
-  // Can only be set once as we loop through the selections.
   let pathIfPipe: PathToNode | undefined
-  const multiplePipesErrors = new Error(
-    'Multiple pipe substitutions found, something is wrong.'
-  )
-
   const exprs: Expr[] = []
   for (const s of selection.graphSelections) {
     let variable:
@@ -1108,7 +1103,6 @@ export function getVariableExprsFromSelection(
         ) {
           // Pointing to same variable case
           exprs.push(createPipeSubstitution())
-          if (pathIfPipe) return multiplePipesErrors
           pathIfPipe = nodeToEdit
           continue
         }
@@ -1123,7 +1117,6 @@ export function getVariableExprsFromSelection(
 
     // No variable case
     exprs.push(createPipeSubstitution())
-    if (pathIfPipe) return multiplePipesErrors
     pathIfPipe = s.codeRef.pathToNode
   }
 

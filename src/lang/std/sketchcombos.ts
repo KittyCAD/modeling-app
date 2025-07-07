@@ -83,7 +83,7 @@ import {
   normaliseAngle,
   roundOff,
 } from '@src/lib/utils'
-import { giveSketchFnCallTag } from '@src/lang/modifyAst'
+import { giveSketchFnCallTag } from '@src/lang/modifyAst/giveSketchFnCallTag'
 
 export type LineInputsType =
   | 'xAbsolute'

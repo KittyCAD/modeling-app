@@ -267,8 +267,8 @@ export function addRevolve({
   sketches: Selections
   angle: KclCommandValue
   axisOrEdge: 'Axis' | 'Edge'
-  axis: string | undefined
-  edge: Selections | undefined
+  axis?: string
+  edge?: Selections
   symmetric?: boolean
   bidirectionalAngle?: KclCommandValue
   nodeToEdit?: PathToNode

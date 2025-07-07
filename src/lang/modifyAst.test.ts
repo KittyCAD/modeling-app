@@ -19,7 +19,6 @@ import {
   createPathToNodeForLastVariable,
   createVariableExpressionsArray,
   deleteSegmentFromPipeExpression,
-  giveSketchFnCallTag,
   moveValueIntoNewVariable,
   setCallInAst,
   sketchOnExtrudedFace,
@@ -42,6 +41,7 @@ import { err } from '@src/lib/trap'
 import { deleteFromSelection } from '@src/lang/modifyAst/deleteFromSelection'
 import { assertNotErr } from '@src/unitTestUtils'
 import type { Selections } from '@src/lib/selections'
+import { giveSketchFnCallTag } from '@src/lang/modifyAst/giveSketchFnCallTag'
 
 beforeAll(async () => {
   await initPromise
@@ -1073,7 +1073,7 @@ profile001 = circle(sketch001, center = [0, 0], radius = 1)
 `
     const ast = assertParse(code)
     const { artifactGraph } = await enginelessExecutor(ast)
-    const artifact = artifactGraph.values().find((a) => a.type === 'path')
+    const artifact = [...artifactGraph.values()].find((a) => a.type === 'path')
     if (!artifact) {
       throw new Error('Artifact not found in the graph')
     }
@@ -1107,7 +1107,7 @@ profile001 = circle(sketch001, center = [0, 0], radius = 1)
 `
     const ast = assertParse(code)
     const { artifactGraph } = await enginelessExecutor(ast)
-    const artifact = artifactGraph.values().find((a) => a.type === 'path')
+    const artifact = [...artifactGraph.values()].find((a) => a.type === 'path')
     if (!artifact) {
       throw new Error('Artifact not found in the graph')
     }

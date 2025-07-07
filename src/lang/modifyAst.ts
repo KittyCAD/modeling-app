@@ -13,7 +13,6 @@ import {
   createLiteral,
   createLocalName,
   createPipeExpression,
-  createTagDeclarator,
   createUnaryExpression,
   createVariableDeclaration,
   findUniqueName,
@@ -68,8 +67,7 @@ import type { DefaultPlaneStr } from '@src/lib/planes'
 import { err, trap } from '@src/lib/trap'
 import { isArray, isOverlap, roundOff } from '@src/lib/utils'
 import type { ExtrudeFacePlane } from '@src/machines/modelingMachine'
-import { ARG_AT, ARG_TAG } from '@src/lang/constants'
-import { findKwArg } from '@src/lang/util'
+import { ARG_AT } from '@src/lang/constants'
 
 export function startSketchOnDefault(
   node: Node<Program>,
@@ -419,52 +417,6 @@ export function sketchOnExtrudedFace(
   return {
     modifiedAst: _node,
     pathToNode: newpathToNode,
-  }
-}
-
-export function giveSketchFnCallTag(
-  ast: Node<Program>,
-  range: SourceRange,
-  tag?: string
-):
-  | {
-      modifiedAst: Node<Program>
-      tag: string
-      isTagExisting: boolean
-      pathToNode: PathToNode
-    }
-  | Error {
-  const path = getNodePathFromSourceRange(ast, range)
-  const maybeTag = (() => {
-    const callNode = getNodeFromPath<CallExpressionKw>(ast, path, [
-      'CallExpressionKw',
-    ])
-    if (err(callNode)) {
-      return callNode
-    }
-    const { node: primaryCallExp } = callNode
-    const existingTag = findKwArg(ARG_TAG, primaryCallExp)
-    const tagDeclarator =
-      existingTag || createTagDeclarator(tag || findUniqueName(ast, 'seg', 2))
-    const isTagExisting = !!existingTag
-    if (!isTagExisting) {
-      callNode.node.arguments.push(createLabeledArg(ARG_TAG, tagDeclarator))
-    }
-    return { tagDeclarator, isTagExisting }
-  })()
-
-  if (err(maybeTag)) return maybeTag
-  const { tagDeclarator, isTagExisting } = maybeTag
-  if ('value' in tagDeclarator) {
-    // Now TypeScript knows tagDeclarator has a value property
-    return {
-      modifiedAst: ast,
-      tag: String(tagDeclarator.value),
-      isTagExisting,
-      pathToNode: path,
-    }
-  } else {
-    return new Error('Unable to assign tag without value')
   }
 }
 
@@ -1200,16 +1152,16 @@ export function insertVariableAndOffsetPathToNode(
 
 // Create an array expression for variables,
 // or keep it null if all are PipeSubstitutions
-export function createVariableExpressionsArray(sketches: Expr[]): Expr | null {
-  let exprs: Expr | null = null
-  if (sketches.every((s) => s.type === 'PipeSubstitution')) {
+export function createVariableExpressionsArray(exprs: Expr[]): Expr | null {
+  let expr: Expr | null = null
+  if (exprs.every((s) => s.type === 'PipeSubstitution')) {
     // Keeping null so we don't even put it the % sign
-  } else if (sketches.length === 1) {
-    exprs = sketches[0]
+  } else if (exprs.length === 1) {
+    expr = exprs[0]
   } else {
-    exprs = createArrayExpression(sketches)
+    expr = createArrayExpression(exprs)
   }
-  return exprs
+  return expr
 }
 
 // Create a path to node to the last variable declaroator of an ast
