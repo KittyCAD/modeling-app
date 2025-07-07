@@ -223,8 +223,13 @@ const Home = () => {
     }
   )
   const projects = useFolders()
-  const prompts = useSelector(mlEphantManagerActor, (actor) => {
-    return actor.context.promptsThatCreatedProjects
+  const promptsToSeedProjects = useSelector(mlEphantManagerActor, (actor) => {
+    return actor.context.promptsToSeedProjects
+  })
+
+  // Trigger a rerender for the Prompts tab when prompts change state.
+  const promptsInProgressToCompleted = useSelector(mlEphantManagerActor, (actor) => {
+    return actor.context.promptsInProgressToCompleted
   })
 
   const [tabSelected, setTabSelected] = useState<HomeTabKeys>(
@@ -248,12 +253,20 @@ const Home = () => {
         // Lessons hard learned: VERY important to do this here, and not within
         // the useSelector. React will think it's a new value every time, and
         // cause this useEffect to fire indefinitely.
-        setItems(Array.from(prompts.values()))
+        const context = mlEphantManagerActor.getSnapshot().context
+        setItems(
+          Array.from(
+            promptsToSeedProjects
+              .values()
+              .map((promptId) => context.promptsPool.get(promptId))
+              .filter((prompt) => prompt !== undefined)
+          )
+        )
         break
       default:
         const _ex: never = tabSelected
     }
-  }, [tabSelected, prompts, projects])
+  }, [tabSelected, promptsToSeedProjects, promptsInProgressToCompleted, projects])
 
   useEffect(() => {
     searchAgainst(items)('')
@@ -717,10 +730,7 @@ function ResultGridPrompts(props: ResultGridPromptsProps) {
           <PromptCard
             key={prompt.id}
             {...prompt}
-            disabled={
-              mlEphantManagerSnapshot.matches(MlEphantManagerStates.Pending) ||
-              prompt.status !== 'completed'
-            }
+            disabled={prompt.status !== 'completed'}
             onAction={onAction}
             onDelete={onDelete}
             onFeedback={onFeedback}
