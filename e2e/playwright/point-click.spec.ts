@@ -1618,26 +1618,42 @@ extrude001 = extrude(profile001, length = 100)
     context,
     page,
     homePage,
+    scene,
     editor,
     toolbar,
     cmdBar,
   }) => {
-    const circle1 = `profile001 = circle(sketch001, center = [0, 0], radius = 30)`
-    const circle2 = `profile002 = circle(sketch002, center = [0, 0], radius = 20)`
     const initialCode = `sketch001 = startSketchOn(XZ)
-${circle1}
+  |> circle(center = [0, 0], radius = 30)
 plane001 = offsetPlane(XZ, offset = 50)
 sketch002 = startSketchOn(plane001)
-${circle2}`
-    const loftDeclaration = 'loft001 = loft([sketch001, sketch002])'
-    const editedLoftDeclaration =
-      'loft001 = loft([sketch001, sketch002], vDegree = 3)'
-
+  |> circle(center = [0, 0], radius = 20)
+      `
     await context.addInitScript((initialCode) => {
       localStorage.setItem('persistCode', initialCode)
     }, initialCode)
     await page.setBodyDimensions({ width: 1000, height: 500 })
     await homePage.goToModelingScene()
+
+    // One dumb hardcoded screen pixel value,
+    // can't think of another way to select two profiles, tried multi-cursor
+    // but it didn't work
+    const testPoint = { x: 575, y: 200 }
+    const [clickOnSketch1] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
+    const [clickOnSketch2] = scene.makeMouseHelpers(
+      testPoint.x,
+      testPoint.y + 80
+    )
+    const loftDeclaration = 'loft001 = loft([sketch001, sketch002])'
+    const editedLoftDeclaration =
+      'loft001 = loft([sketch001, sketch002], vDegree = 3)'
+    async function selectSketches() {
+      await clickOnSketch1()
+      await page.keyboard.down('Shift')
+      await clickOnSketch2()
+      await page.waitForTimeout(500)
+      await page.keyboard.up('Shift')
+    }
 
     await test.step(`Go through the command bar flow without preselected sketches`, async () => {
       await toolbar.loftButton.click()
@@ -1652,9 +1668,7 @@ ${circle2}`
         highlightedHeaderArg: 'Profiles',
         commandName: 'Loft',
       })
-      await editor.selectText(circle1)
-      await page.keyboard.press('Shift')
-      await editor.selectText(circle2)
+      await selectSketches()
       await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         stage: 'review',

@@ -69,10 +69,9 @@ async function runNewAstAndCheckForSweep(ast: Node<Program>) {
   expect(sweepArtifact).toBeDefined()
 }
 
-describe('Testing addExtrude', () => {
-  const circleProfileCode = `sketch001 = startSketchOn(XY)
+const circleProfileCode = `sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [0, 0], radius = 1)`
-  const circleAndRectProfilesCode = `sketch001 = startSketchOn(XY)
+const circleAndRectProfilesCode = `sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [0, 0], radius = 1)
 profile002 = rectangle(
   sketch001,
@@ -81,6 +80,7 @@ profile002 = rectangle(
   height = 2,
 )`
 
+describe('Testing addExtrude', () => {
   it('should add a basic extrude call', async () => {
     const { ast, sketches } = await getAstAndSketchSelections(circleProfileCode)
     const length = await getKclCommandValue('1')
@@ -377,6 +377,29 @@ profile001 = circle(sketch001, center = [3, 0], radius = 1)`
 )`)
   })
 
+  it('should add a basic multi-profile revolve call', async () => {
+    const { ast, sketches } = await getAstAndSketchSelections(
+      circleAndRectProfilesCode
+    )
+    const angle = await getKclCommandValue('10')
+    const axisOrEdge = 'Axis'
+    const axis = 'X'
+    const result = addRevolve({
+      ast,
+      sketches,
+      angle,
+      axisOrEdge,
+      axis,
+    })
+    if (err(result)) throw result
+    const newCode = recast(result.modifiedAst)
+    expect(newCode).toContain(circleProfileCode)
+    expect(newCode).toContain(
+      `revolve001 = revolve([profile001, profile002], angle = 10, axis = X)`
+    )
+    await runNewAstAndCheckForSweep(result.modifiedAst)
+  })
+
   it('should add revolve call around edge', async () => {
     const code = `sketch001 = startSketchOn(XZ)
   |> startProfile(at = [-102.57, 101.72])
@@ -409,10 +432,7 @@ sketch002 = startSketchOn(extrude001, face = rectangleSegmentA001)
   })
 
   it('should add revolve call around line segment from sketch', async () => {
-    const code = `sketch002 = startSketchOn(XY)
-  |> startProfile(at = [-2.02, 1.79])
-  |> xLine(length = 2.6)
-sketch001 = startSketchOn(-XY)
+    const code = `sketch001 = startSketchOn(-XY)
   |> startProfile(at = [-0.48, 1.25])
   |> angledLine(angle = 0, length = 2.38, tag = $rectangleSegmentA001)
   |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 2.4, tag = $rectangleSegmentB001)
@@ -420,11 +440,11 @@ sketch001 = startSketchOn(-XY)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude001 = extrude(sketch001, length = 5)
-sketch003 = startSketchOn(extrude001, face = 'START')
-  |> circle(
-    center = [-0.69, 0.56],
-    radius = 0.28
-  )`
+sketch003 = startSketchOn(extrude001, face = START)
+  |> circle(center = [-0.69, 0.56], radius = 0.28)
+sketch002 = startSketchOn(XY)
+  |> startProfile(at = [-2.02, 1.79])
+  |> xLine(length = 2.6)`
     const { ast, artifactGraph } = await getAstAndArtifactGraph(code)
     const artifacts = [...artifactGraph.values()]
     const circleArtifact = artifacts.findLast((a) => a.type === 'path')
@@ -439,15 +459,20 @@ sketch003 = startSketchOn(extrude001, face = 'START')
     if (err(result)) throw result
     await runNewAstAndCheckForSweep(result.modifiedAst)
     const newCode = recast(result.modifiedAst)
-    expect(newCode).toContain(code)
-    expect(newCode).toContain(
-      `revolve001 = revolve(sketch003, angle = 360, axis = seg01)`
-    )
+    expect(
+      newCode
+    ).toContain(`sketch003 = startSketchOn(extrude001, face = START)
+  |> circle(center = [-0.69, 0.56], radius = 0.28)
+sketch002 = startSketchOn(XY)
+  |> startProfile(at = [-2.02, 1.79])
+  |> xLine(length = 2.6, tag = $seg01)
+revolve001 = revolve(sketch002, angle = 360, axis = seg01)`)
   })
 
-  // TODO: add edit test, this isn't working yet
-  it('should edit revolve call, changing axis and setting both lenghts', async () => {
-    const { ast, sketches } = await getAstAndSketchSelections(circleCode)
+  it('should edit revolve call, changing axis and setting both lengths', async () => {
+    const code = `${circleCode}
+revolve001 = revolve(profile001, angle = 10, axis = X)`
+    const { ast, sketches } = await getAstAndSketchSelections(code)
     expect(sketches.graphSelections).toHaveLength(1)
     const angle = await getKclCommandValue('20')
     const bidirectionalAngle = await getKclCommandValue('30')
@@ -467,10 +492,11 @@ sketch003 = startSketchOn(extrude001, face = 'START')
     await runNewAstAndCheckForSweep(result.modifiedAst)
     const newCode = recast(result.modifiedAst)
     expect(newCode).toContain(circleCode)
-    expect(newCode).toContain(
-      `revolve001 = revolve(profile001, angle = 20, axis = Y, bidirectionalAngle = 30)`
-    )
+    expect(newCode).toContain(`revolve001 = revolve(
+  profile001,
+  angle = 20,
+  axis = Y,
+  bidirectionalAngle = 30,
+)`)
   })
-
-  // TODO: missing multi-profile test
 })
