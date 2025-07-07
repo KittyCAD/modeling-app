@@ -1,5 +1,8 @@
 import ms from 'ms'
 import type { Prompt } from '@src/lib/prompt'
+import { useEffect, useState, useRef, useLayoutEffect } from 'react'
+import type { ReactNode } from 'react'
+import Loading from '@src/components/Loading'
 
 export interface PromptCardProps extends Prompt {
   disabled?: boolean
@@ -24,7 +27,7 @@ export const PromptFeedback = (props: {
       : 'border-red-100 text-chalkboard-60'
 
   return (
-    <div className="flex flex-row gap-2">
+    <div className="flex flex-row gap-2 select-none">
       <button
         onClick={() => props.onFeedback(props.id, 'thumbs_up')}
         disabled={props.disabled}
@@ -50,7 +53,7 @@ export const PromptCardActionButton = (props: {
 }) => {
   return (
     <button
-      className="rounded-full bg-gray-100"
+      className="rounded-full bg-gray-100 select-none"
       onClick={props.onClick}
       disabled={
         props.disabled ||
@@ -58,16 +61,51 @@ export const PromptCardActionButton = (props: {
         props.status === 'in_progress'
       }
     >
-      {props.status === 'completed' ? 'Create' : 'Pending'}
+      Create
     </button>
   )
 }
 
-export const PromptCard = (props: PromptCardProps) => {
-  const cssCard = 'flex flex-col border rounded-md p-2 gap-2 justify-between'
+export const PromptCardStatus = (props: {
+  status: Prompt['status']
+}) => {
+  const loading = <Loading isCompact={true} isDummy={true}>In progress</Loading>
+  const status: {[key: Prompt['status']]: ReactNode } = {
+    'completed':  null,
+    'in_progress': loading,
+    'queued':  loading,
+    'uploaded':  loading,
+    // A bit less harsh wording
+    'failed':  <>Unsuccessful</>,
+  }[props.status]
 
   return (
-    <div className={`${cssCard} ${props.disabled ? 'text-chalkboard-60' : ''}`}>
+    <div className="select-none text-sm text-chalkboard-70">
+      { status }
+    </div>
+  )
+}
+
+export const PromptCard = (props: PromptCardProps) => {
+  const refCard = useRef<HTMLDivElement>(null)
+  const refHeight = useRef<number>(0)
+  const [style, setStyle] = useState({})
+  const cssCard = `flex flex-col border rounded-md p-2 gap-2 justify-between
+    transition-height duration-500 overflow-hidden
+    ${props.disabled ? 'text-chalkboard-60' : ''}
+    ${props.status === 'in_progress' || props.status === 'queued' ? 'animate-pulse' : ''}
+  `
+  useLayoutEffect(() => {
+    refHeight.current = refCard.current.getBoundingClientRect().height
+    refCard.current.style.height = 0
+  }, [])
+
+  useEffect(() => {
+    setStyle({ height: refHeight.current })
+  }, [])
+
+  return (
+    <div ref={refCard} className={cssCard} style={style}>
       <div className="flex flex-row justify-between gap-2">
         <div>{props.prompt}</div>
         <div className="w-fit flex flex-col items-end">
@@ -82,12 +120,15 @@ export const PromptCard = (props: PromptCardProps) => {
         </div>
       </div>
       <div className="flex flex-row justify-between">
-        <PromptCardActionButton
-          status={props.status}
-          disabled={props.disabled}
-          onClick={() => props.onAction?.(props.id, props.prompt)}
-        />
-        <div>
+        <div className="flex flex-row gap-2">
+          { props.onAction !== undefined && <PromptCardActionButton
+            status={props.status}
+            disabled={props.disabled}
+            onClick={() => props.onAction?.(props.id, props.prompt)}
+          /> }
+          <PromptCardStatus status={props.status} />
+        </div>
+        <div className="text-sm text-chalkboard-70">
           {ms(new Date(props.created_at).getTime(), { long: true })} ago
         </div>
       </div>

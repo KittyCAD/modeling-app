@@ -13,7 +13,8 @@ import { AppHeader } from '@src/components/AppHeader'
 import { EngineStream } from '@src/components/EngineStream'
 import Gizmo from '@src/components/Gizmo'
 import { useLspContext } from '@src/components/LspProvider'
-import { ModelingSidebar } from '@src/components/ModelingSidebar/ModelingSidebar'
+import { ModelingSidebarLeft, ModelingSidebarRight } from '@src/components/ModelingSidebar/ModelingSidebar'
+import { MlEphantConversation } from '@src/components/MlEphantConversation'
 import { UnitsMenu } from '@src/components/UnitsMenu'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import { useQueryParamEffects } from '@src/hooks/useQueryParamEffects'
@@ -272,7 +273,10 @@ export function App() {
           <Toolbar />
         </div>
         <ModalContainer />
-        <ModelingSidebar />
+        <div className="flex flex-row justify-between w-full h-full">
+          <ModelingSidebarLeft />
+          <ModelingSidebarRight />
+        </div>
         <EngineStream pool={pool} authToken={authToken} />
         {/* <CamToggle /> */}
         <section className="absolute bottom-2 right-2 flex flex-col items-end gap-3 pointer-events-none">

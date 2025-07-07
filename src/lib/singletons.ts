@@ -247,6 +247,8 @@ export const mlEphantManagerActor = appActor.system.get(
   MLEPHANT_MANAGER
 ) as ActorRefFrom<(typeof appMachineActors)[typeof MLEPHANT_MANAGER]>
 
+window.mlEphantManagerActor = mlEphantManagerActor
+
 export const commandBarActor = appActor.system.get(COMMAND_BAR) as ActorRefFrom<
   (typeof appMachineActors)[typeof COMMAND_BAR]
 >

@@ -1,3 +1,7 @@
+import { joinOSPaths } from '@src/lib/paths'
+import { getUniqueProjectName } from '@src/lib/desktopFS'
+import { getAllSubDirectoriesAtProjectRoot } from '@src/machines/systemIO/snapshotContext'
+import { isDesktop } from '@src/lib/isDesktop'
 import type { Project } from '@src/lib/project'
 import type { ActorRefFrom } from 'xstate'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
@@ -167,4 +171,35 @@ export const waitForIdleState = async ({
     })
   })
   return waitForIdlePromise
+}
+
+export const determineProjectFilePathFromPrompt = (args: {
+  requestedPrompt: string
+  existingProjectName?: string
+}) => {
+  const TRUNCATED_PROMPT_LENGTH = 24
+  // Only add the prompt name if it is a preexisting project
+  const promptNameAsDirectory = `${args.requestedPrompt
+    .slice(0, TRUNCATED_PROMPT_LENGTH)
+    .replace(/\s/gi, '-')
+    .replace(/\W/gi, '-')
+    .toLowerCase()}`
+
+  let finalPath = promptNameAsDirectory
+
+  if (isDesktop()) {
+    // If it's not a new project, create a subdir in the current one.
+    if (args.existingProjectName) {
+      const firstLevelDirectories = getAllSubDirectoriesAtProjectRoot({
+        projectFolderName: args.existingProjectName,
+      })
+      const uniqueSubDirectoryName = getUniqueProjectName(
+        promptNameAsDirectory,
+        firstLevelDirectories
+      )
+      finalPath = joinOSPaths(args.existingProjectName, uniqueSubDirectoryName)
+    }
+  }
+
+  return finalPath
 }

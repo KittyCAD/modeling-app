@@ -13,9 +13,14 @@ import {
   useSettings,
   useToken,
   kclManager,
+  mlEphantManagerActor,
   engineCommandManager,
 } from '@src/lib/singletons'
 import { BillingTransition } from '@src/machines/billingMachine'
+import {
+  MlEphantManagerStates,
+  MlEphantManagerTransitions,
+} from '@src/machines/mlEphantManagerMachine'
 import {
   useHasListedProjects,
   useProjectDirectoryPath,
@@ -36,7 +41,10 @@ import { getUniqueProjectName } from '@src/lib/desktopFS'
 import { useLspContext } from '@src/components/LspProvider'
 import { useLocation } from 'react-router-dom'
 import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
-import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from '@src/lib/constants'
+import {
+  EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
+  PROJECT_ENTRYPOINT,
+} from '@src/lib/constants'
 
 export function SystemIOMachineLogicListenerDesktop() {
   const requestedProjectName = useRequestedProjectName()
@@ -263,6 +271,48 @@ export function SystemIOMachineLogicListenerDesktop() {
       // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
     }, [requestedTextToCadGeneration])
   }
+
+  const createCorrespondingFileForPromptWithId =
+    (context: MlEphantManagerContext) => (promptId: Prompt['id']) => {
+      const prompt = context.promptsPool.get(promptId)
+      if (prompt === undefined) return
+      const promptProjectName = context.promptsMeta.get(promptId)?.projectPath
+      if (promptProjectName === undefined) {
+        console.warn('No associated project path for this prompt, ignoring')
+        return
+      }
+
+      systemIOActor.send({
+        type: SystemIOMachineEvents.importFileFromURL,
+        data: {
+          requestedProjectName: promptProjectName,
+          requestedCode: prompt.code,
+          requestedFileNameWithExtension: PROJECT_ENTRYPOINT,
+        },
+      })
+    }
+
+  useEffect(() => {
+    const subscription = mlEphantManagerActor.subscribe((next) => {
+      console.log(next.value?.ready)
+      if (
+        next.matches(
+          MlEphantManagerStates.Ready +
+            '.' +
+          MlEphantManagerStates.Background +
+            '.' +
+          MlEphantManagerTransitions.GetPromptsPendingStatuses
+        )
+      ) {
+        next.context.promptsInProgressToCompleted.promptsBelongingToProject.forEach(
+          createCorrespondingFileForPromptWithId(next.context)
+        )
+      }
+    })
+    return () => {
+      subscription.unsubscribe()
+    }
+  }, [])
 
   useGlobalProjectNavigation()
   useGlobalFileNavigation()

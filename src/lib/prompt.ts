@@ -95,7 +95,28 @@ const PROMPTS = [
 ]
 
 export const generateFakeSubmittedPrompt = () => ({
-  code: Math.random().toString(),
+  code: `
+  sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [-400.87, 125.73])
+  |> line(end = [46.16, -415.45])
+  |> line(end = [268.46, 201.65])
+  |> line(end = [-215.01, -81.39])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+profile002 = startProfile(sketch001, at = [-36.44, 231.41])
+  |> line(end = [-57.1, -211.37])
+  |> line(end = [240.52, -128.76])
+  |> line(end = [43.73, 219.87])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+profile003 = startProfile(sketch001, at = [267.24, 333.45])
+  |> line(end = [35.23, -523.56])
+  |> line(end = [155.49, 269.68])
+  |> line(end = [-127.55, -109.33])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude([profile002, profile003, profile001], length = 5)
+`,
   completed_at: Math.random().toString(),
   created_at: new Date(Math.random() * 100000000).toISOString(),
   error: Math.random().toString(),
@@ -114,7 +135,9 @@ export const generateFakeSubmittedPrompt = () => ({
   prompt: PROMPTS[parseInt((Math.random() * 10).toString()[0])],
   started_at: new Date(Math.random()).toISOString(),
   // declare type ApiCallStatus_type = 'queued' | 'uploaded' | 'in_progress' | 'completed' | 'failed';
-  status: 'completed' as Prompt['status'],
+  status: ['completed', 'in_progress'][
+    Math.trunc((Math.random() * 100) % 2)
+  ] as Prompt['status'],
   updated_at: Math.random().toString(),
   // declare type ApiTokenUuid_type = string;
   user_id: Math.random().toString(),
