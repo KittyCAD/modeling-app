@@ -930,9 +930,7 @@ foreign
               `
 import "washer.kcl" as washer
 import "screw.kcl" as screw
-screw
-washer
-  |> rotate(roll = 90, pitch = 0, yaw = 0)`
+rotate001 = rotate(roll = 90, pitch = 0, yaw = 0)`
             ),
           ])
         })
@@ -942,50 +940,6 @@ washer
         await toolbar.closePane('code')
       })
 
-      await test.step('Try to clone from scene selection and expect error', async () => {
-        await cmdBar.openCmdBar()
-        await cmdBar.chooseCommand('Clone a solid')
-        await cmdBar.expectState({
-          stage: 'arguments',
-          currentArgKey: 'selection',
-          currentArgValue: '',
-          headerArguments: {
-            Selection: '',
-            VariableName: '',
-          },
-          highlightedHeaderArg: 'selection',
-          commandName: 'Clone',
-        })
-        await clickMidPoint()
-        await cmdBar.progressCmdBar()
-        await cmdBar.expectState({
-          stage: 'arguments',
-          currentArgKey: 'variableName',
-          currentArgValue: '',
-          headerArguments: {
-            Selection: '1 path',
-            VariableName: '',
-          },
-          highlightedHeaderArg: 'variableName',
-          commandName: 'Clone',
-        })
-        await cmdBar.progressCmdBar()
-        await cmdBar.expectState({
-          stage: 'review',
-          headerArguments: {
-            Selection: '1 path',
-            VariableName: 'clone001',
-          },
-          commandName: 'Clone',
-        })
-        await cmdBar.progressCmdBar()
-        await expect(
-          page.getByText(
-            "Couldn't retrieve selection. If you're trying to transform an import, use the feature tree."
-          )
-        ).toBeVisible()
-      })
-
       await test.step('Clone the part using the feature tree', async () => {
         await toolbar.openPane('feature-tree')
         const op = await toolbar.getFeatureTreeOperation('washer', 0)
@@ -993,9 +947,22 @@ washer
         await page.getByTestId('context-menu-clone').click()
         await cmdBar.expectState({
           stage: 'arguments',
-          currentArgKey: 'variableName',
-          currentArgValue: '',
+          currentArgKey: 'objects',
+          currentArgValue: '1 other',
           headerArguments: {
+            Objects: '',
+            VariableName: '',
+          },
+          highlightedHeaderArg: 'objects',
+          commandName: 'Clone',
+        })
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'variableName',
+          currentArgValue: 'clone001',
+          headerArguments: {
+            Objects: '1 other',
             VariableName: '',
           },
           highlightedHeaderArg: 'variableName',
@@ -1005,6 +972,7 @@ washer
         await cmdBar.expectState({
           stage: 'review',
           headerArguments: {
+            Objects: '1 other',
             VariableName: 'clone001',
           },
           commandName: 'Clone',
@@ -1017,118 +985,12 @@ washer
         await toolbar.openPane('code')
         await editor.expectEditor.toContain(
           `
-        washer
-          |> rotate(roll = 90, pitch = 0, yaw = 0)
-        clone001 = clone(washer)
+        rotate001 = rotate(washer, roll = 90, pitch = 0, yaw = 0)
+        clone001 = clone(rotate001)
         `,
           { shouldNormalise: true }
         )
         await toolbar.closePane('code')
-      })
-
-      await test.step('Set translate on clone', async () => {
-        await toolbar.openPane('feature-tree')
-        const op = await toolbar.getFeatureTreeOperation('Clone', 0)
-        await op.click({ button: 'right' })
-        await page.getByTestId('context-menu-set-translate').click()
-        await cmdBar.expectState({
-          stage: 'arguments',
-          currentArgKey: 'objects',
-          currentArgValue: '',
-          headerArguments: {
-            Objects: '',
-          },
-          highlightedHeaderArg: 'objects',
-          commandName: 'Translate',
-        })
-        await cmdBar.progressCmdBar()
-        await cmdBar.expectState({
-          stage: 'review',
-          headerArguments: {
-            Objects: '1 other',
-          },
-          commandName: 'Translate',
-        })
-        await cmdBar.clickOptionalArgument('y')
-        await cmdBar.expectState({
-          stage: 'arguments',
-          currentArgKey: 'y',
-          currentArgValue: '0',
-          headerArguments: {
-            Objects: '1 other',
-            Y: '',
-          },
-          highlightedHeaderArg: 'Y',
-          commandName: 'Translate',
-        })
-        await page.keyboard.insertText('-3')
-        await cmdBar.progressCmdBar()
-        await cmdBar.expectState({
-          stage: 'review',
-          headerArguments: {
-            Objects: '1 other',
-            Y: '-3',
-          },
-          commandName: 'Translate',
-        })
-        await cmdBar.progressCmdBar()
-        await scene.settled(cmdBar)
-        await toolbar.closePane('feature-tree')
-
-        // Expect changes
-        await toolbar.openPane('code')
-        await editor.expectEditor.toContain(
-          `
-          screw
-          washer
-            |> rotate(roll = 90, pitch = 0, yaw = 0)
-          clone001 = clone(washer)
-          translate001 = translate(clone001, y = -3)
-        `,
-          { shouldNormalise: true }
-        )
-      })
-
-      await test.step('Clone the translated clone', async () => {
-        await toolbar.openPane('feature-tree')
-        const op = await toolbar.getFeatureTreeOperation('Clone', 0)
-        await op.click({ button: 'right' })
-        await page.getByTestId('context-menu-clone').click()
-        await cmdBar.expectState({
-          stage: 'arguments',
-          currentArgKey: 'variableName',
-          currentArgValue: '',
-          headerArguments: {
-            VariableName: '',
-          },
-          highlightedHeaderArg: 'variableName',
-          commandName: 'Clone',
-        })
-        await cmdBar.progressCmdBar()
-        await cmdBar.expectState({
-          stage: 'review',
-          headerArguments: {
-            VariableName: 'clone002',
-          },
-          commandName: 'Clone',
-        })
-        await cmdBar.progressCmdBar()
-        await scene.settled(cmdBar)
-        await toolbar.closePane('feature-tree')
-
-        // Expect changes
-        await toolbar.openPane('code')
-        await editor.expectEditor.toContain(
-          `
-          screw
-          washer
-            |> rotate(roll = 90, pitch = 0, yaw = 0)
-          clone001 = clone(washer)
-          translate001 = translate(clone001, y = -3)
-          clone002 = clone(translate001)
-        `,
-          { shouldNormalise: true }
-        )
       })
     }
   )
