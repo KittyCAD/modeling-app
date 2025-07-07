@@ -229,6 +229,15 @@ code {
   }
 }
 
+@keyframes send-up {
+  from {
+    transform: translateY(0px);
+  }
+  to {
+    transform: translateY(-1000px);
+  }
+}
+
 .react-json-view {
   @apply bg-transparent !important;
 }
