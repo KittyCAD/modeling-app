@@ -4,11 +4,7 @@ import type { ComponentProps } from 'react'
 import { useCallback, useEffect, useMemo, useRef } from 'react'
 import type { Actor, Prop } from 'xstate'
 
-import type {
-  Operation,
-  OpKclValue,
-  StdLibCallOp,
-} from '@rust/kcl-lib/bindings/Operation'
+import type { Operation, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
 
 import { ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
 import type { CustomIconName } from '@src/components/CustomIcon'
@@ -48,7 +44,7 @@ import {
   selectOffsetSketchPlane,
 } from '@src/lib/selections'
 import type { DefaultPlaneStr } from '@src/lib/planes'
-import { findOperationArtifact } from '@src/lang/queryAst'
+import { findOperationArtifact, isOffsetPlane } from '@src/lang/queryAst'
 
 export const FeatureTreePane = () => {
   const isEditorMounted = useSelector(kclEditorActor, editorIsMountedSelector)
@@ -724,8 +720,4 @@ const DefaultPlanes = () => {
       <div className="h-px bg-chalkboard-50/20 my-2" />
     </div>
   )
-}
-
-const isOffsetPlane = (item: Operation): item is StdLibCallOp => {
-  return item.type === 'StdLibCall' && item.name === 'offsetPlane'
 }

@@ -13,11 +13,13 @@ import {
   doesSceneHaveExtrudedSketch,
   doesSceneHaveSweepableSketch,
   findAllPreviousVariables,
+  findOperationArtifact,
   findUsesOfTagInPipe,
   getNodeFromPath,
   hasSketchPipeBeenExtruded,
   isCursorInFunctionDefinition,
   isNodeSafeToReplace,
+  isOffsetPlane,
   traverse,
 } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
@@ -30,6 +32,7 @@ import { initPromise } from '@src/lang/wasmUtils'
 import { type Selection } from '@src/lib/selections'
 import { enginelessExecutor } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
+import { kclManager } from '@src/lib/singletons'
 
 beforeAll(async () => {
   await initPromise
@@ -776,5 +779,58 @@ describe('Testing specific sketch getNodeFromPath workflow', () => {
     }
     const result = isCursorInFunctionDefinition(ast, selectionRange)
     expect(result).toEqual(false)
+  })
+})
+
+describe('Testing findOperationArtifact', () => {
+  it('should find the correct artifact for a given operation', async () => {
+    const code = `sketch001 = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(end = [10, 0])
+  |> line(end = [10, 10])
+  |> line(end = [0, 10])
+  |> close()
+
+plane001 = offsetPlane(YZ, offset = 10)
+part001 = startSketchOn(plane001)
+  |> startProfile(at = [0, 0])
+  |> line(end = [5, 0])
+  |> line(end = [5, 5])
+  |> line(end = [0, 5])
+  |> close()
+`
+
+    // const ast = assertParse(code)
+    // await kclManager.executeAst({ ast })
+    // const operations = kclManager.lastSuccessfulOperations
+
+    const ast = assertParse(code)
+    const execState = await enginelessExecutor(ast, false)
+    const operations = execState.operations
+
+    //expect(kclManager.errors).toEqual([])
+
+    expect(operations).toBeTruthy()
+    expect(operations.length).toBeGreaterThan(0)
+
+    // Find an offsetPlane operation
+    const offsetPlaneOp = operations.find(
+      (op) => op.type === 'StdLibCall' && op.name === 'offsetPlane'
+    )
+    expect(offsetPlaneOp).toBeTruthy()
+
+    if (offsetPlaneOp && isOffsetPlane(offsetPlaneOp)) {
+      const artifact = findOperationArtifact(
+        offsetPlaneOp,
+        kclManager.artifactGraph
+      )
+
+      expect(artifact).toBeTruthy()
+      expect(artifact?.type).toBe('plane')
+
+      // const artifactNodePath = JSON.stringify(artifact?.codeRef?.nodePath)
+      // const operationNodePath = JSON.stringify(offsetPlaneOp.nodePath)
+      // expect(artifactNodePath).toBe(operationNodePath)
+    }
   })
 })

@@ -1174,6 +1174,10 @@ export function findOperationArtifact(
   return artifact
 }
 
+export function isOffsetPlane(item: Operation): item is StdLibCallOp {
+  return item.type === 'StdLibCall' && item.name === 'offsetPlane'
+}
+
 export function locateVariableWithCallOrPipe(
   ast: Program,
   pathToNode: PathToNode
