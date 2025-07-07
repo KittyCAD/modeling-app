@@ -1,4 +1,4 @@
-import { VITE_KC_SITE_APP_URL } from '@src/env'
+import env from '@src/env'
 import toast from 'react-hot-toast'
 
 import { stringToBase64 } from '@src/lib/base64'
@@ -58,7 +58,7 @@ export async function copyFileShareLink(
  * open the URL in the desktop app.
  */
 export function createCreateFileUrl({ code, name }: FileLinkParams) {
-  let origin = VITE_KC_SITE_APP_URL
+  let origin = env().VITE_KC_SITE_APP_URL
   const searchParams = new URLSearchParams({
     [CREATE_FILE_URL_PARAM]: String(true),
     name,
