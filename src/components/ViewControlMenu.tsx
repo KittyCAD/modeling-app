@@ -203,8 +203,35 @@ export function useViewControlMenuItems() {
         View KCL source code
       </ContextMenuItem>,
       <ContextMenuDivider />,
+      <ContextMenuItem
+        onClick={() => {
+          if (selectedPlaneId) {
+            sceneInfra.modelingSend({
+              type: 'Enter sketch',
+              data: { forceNewSketch: true },
+            })
+
+            const defaultSketchPlaneSelected =
+              selectDefaultSketchPlane(selectedPlaneId)
+            if (
+              !err(defaultSketchPlaneSelected) &&
+              defaultSketchPlaneSelected
+            ) {
+              return
+            }
+
+            const artifact = kclManager.artifactGraph.get(selectedPlaneId)
+            void selectOffsetSketchPlane(artifact)
+          }
+        }}
+        disabled={!selectedPlaneId}
+      >
+        Start sketch on selection
+      </ContextMenuItem>,
+      <ContextMenuDivider />,
       <ContextMenuItemRefresh />,
     ],
+
     [
       VIEW_NAMES_SEMANTIC,
       shouldLockView,
