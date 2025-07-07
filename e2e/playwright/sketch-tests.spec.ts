@@ -187,6 +187,68 @@ sketch001 = startProfile(sketch002, at = [12.34, -12.34])
       page.getByRole('button', { name: 'Start Sketch' })
     ).toBeVisible()
   })
+
+  test('Can select planes in Feature Tree after Start Sketch', async ({
+    page,
+    homePage,
+    toolbar,
+    editor,
+  }) => {
+    // Load the app with empty code
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `plane001 = offsetPlane(XZ, offset = 5)`
+      )
+    })
+
+    await page.setBodyDimensions({ width: 1200, height: 500 })
+
+    await homePage.goToModelingScene()
+
+    await test.step('Click Start Sketch button', async () => {
+      await page.getByRole('button', { name: 'Start Sketch' }).click()
+      await expect(
+        page.getByRole('button', { name: 'Exit Sketch' })
+      ).toBeVisible()
+      await expect(page.getByText('select a plane or face')).toBeVisible()
+    })
+
+    await test.step('Open feature tree and select Front plane (XZ)', async () => {
+      await toolbar.openFeatureTreePane()
+
+      await page.getByRole('button', { name: 'Front plane' }).click()
+
+      await page.waitForTimeout(600)
+
+      await expect(toolbar.lineBtn).toBeEnabled()
+      await editor.expectEditor.toContain('startSketchOn(XZ)')
+
+      await page.getByRole('button', { name: 'Exit Sketch' }).click()
+      await expect(
+        page.getByRole('button', { name: 'Start Sketch' })
+      ).toBeVisible()
+    })
+
+    await test.step('Click Start Sketch button again', async () => {
+      await page.getByRole('button', { name: 'Start Sketch' }).click()
+      await expect(
+        page.getByRole('button', { name: 'Exit Sketch' })
+      ).toBeVisible()
+    })
+
+    await test.step('Select the offset plane', async () => {
+      await toolbar.openFeatureTreePane()
+
+      await page.getByRole('button', { name: 'Offset plane' }).click()
+
+      await page.waitForTimeout(600)
+
+      await expect(toolbar.lineBtn).toBeEnabled()
+      await editor.expectEditor.toContain('startSketchOn(plane001)')
+    })
+  })
+
   test('Can edit segments by dragging their handles', () => {
     const doEditSegmentsByDraggingHandle = async (
       page: Page,

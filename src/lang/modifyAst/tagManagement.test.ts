@@ -4,16 +4,15 @@ import { initPromise } from '@src/lang/wasmUtils'
 import { err } from '@src/lib/trap'
 import type { Selection } from '@src/lib/selections'
 import { engineCommandManager, kclManager } from '@src/lib/singletons'
-import { VITE_KC_DEV_TOKEN } from '@src/env'
+import { VITE_KITTYCAD_API_TOKEN } from '@src/env'
 import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
 
 beforeAll(async () => {
   await initPromise
 
-  // THESE TEST WILL FAIL without VITE_KC_DEV_TOKEN set in .env.development.local
   await new Promise((resolve) => {
     engineCommandManager.start({
-      token: VITE_KC_DEV_TOKEN,
+      token: VITE_KITTYCAD_API_TOKEN,
       width: 256,
       height: 256,
       setMediaStream: () => {},

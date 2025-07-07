@@ -483,13 +483,13 @@ export function sketchOnExtrudedFace(
  */
 export function addOffsetPlane({
   node,
-  defaultPlane,
+  plane,
   insertIndex,
   offset,
   planeName,
 }: {
   node: Node<Program>
-  defaultPlane: DefaultPlaneStr
+  plane: Node<Literal> | Node<Name> // Can be DefaultPlaneStr or string for offsetPlanes
   insertIndex?: number
   offset: Expr
   planeName?: string
@@ -500,11 +500,9 @@ export function addOffsetPlane({
 
   const newPlane = createVariableDeclaration(
     newPlaneName,
-    createCallExpressionStdLibKw(
-      'offsetPlane',
-      createLiteral(defaultPlane.toUpperCase()),
-      [createLabeledArg('offset', offset)]
-    )
+    createCallExpressionStdLibKw('offsetPlane', plane, [
+      createLabeledArg('offset', offset),
+    ])
   )
 
   const insertAt =
