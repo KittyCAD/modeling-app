@@ -299,9 +299,9 @@ export function SystemIOMachineLogicListenerDesktop() {
         next.matches(
           MlEphantManagerStates.Ready +
             '.' +
-          MlEphantManagerStates.Background +
+            MlEphantManagerStates.Background +
             '.' +
-          MlEphantManagerTransitions.GetPromptsPendingStatuses
+            MlEphantManagerTransitions.GetPromptsPendingStatuses
         )
       ) {
         next.context.promptsInProgressToCompleted.promptsBelongingToProject.forEach(

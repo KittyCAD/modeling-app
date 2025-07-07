@@ -128,9 +128,7 @@ export const mlEphantManagerMachine = setup({
               .map(generateFakeSubmittedPrompt)
 
             const promptsPool = context.promptsPool
-            const promptsToSeedProjects = new Set(
-              context.promptsToSeedProjects
-            )
+            const promptsToSeedProjects = new Set(context.promptsToSeedProjects)
 
             results.forEach((result) => {
               promptsPool.set(result.id, result)
