@@ -25,6 +25,7 @@ import {
 } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
 import { binaryToUuid, isArray, uuidv4 } from '@src/lib/utils'
+import { withWebSocketURL } from '@src/lib/withBaseURL'
 
 const pingIntervalMs = 1_000
 
@@ -387,8 +388,9 @@ class EngineConnection extends EventTarget {
 
   // SHOULD ONLY BE USED FOR VITESTS
   connectLite(callback: () => void) {
-    const url = `${env().VITE_KC_API_WS_MODELING_URL}?video_res_width=${256}&video_res_height=${256}`
-
+    const url = withWebSocketURL(
+      `?video_res_width=${256}&video_res_height=${256}`
+    )
     this.websocket = new WebSocket(url, [])
     this.websocket.binaryType = 'arraybuffer'
 
@@ -1531,7 +1533,9 @@ export class EngineCommandManager extends EventTarget {
     additionalSettings +=
       '&show_grid=' + (this.settings.showScaleGrid ? 'true' : 'false')
     const pool = !this.settings.pool ? '' : `&pool=${this.settings.pool}`
-    const url = `${env().VITE_KC_API_WS_MODELING_URL}?video_res_width=${width}&video_res_height=${height}${additionalSettings}${pool}`
+    const url = withWebSocketURL(
+      `?video_res_width=${width}&video_res_height=${height}${additionalSettings}${pool}`
+    )
     this.engineConnection = new EngineConnection({
       engineCommandManager: this,
       url,
