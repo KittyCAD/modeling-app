@@ -9,6 +9,7 @@ import {
   createLabeledArg,
   createPipeSubstitution,
 } from '@src/lang/create'
+import type { StdLibCallOp } from '@src/lang/queryAst'
 import {
   doesSceneHaveExtrudedSketch,
   doesSceneHaveSweepableSketch,
@@ -32,7 +33,7 @@ import { initPromise } from '@src/lang/wasmUtils'
 import { type Selection } from '@src/lib/selections'
 import { enginelessExecutor } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
-import { kclManager } from '@src/lib/singletons'
+import type { Plane } from '@rust/kcl-lib/bindings/Artifact'
 
 beforeAll(async () => {
   await initPromise
@@ -800,15 +801,9 @@ part001 = startSketchOn(plane001)
   |> close()
 `
 
-    // const ast = assertParse(code)
-    // await kclManager.executeAst({ ast })
-    // const operations = kclManager.lastSuccessfulOperations
-
     const ast = assertParse(code)
     const execState = await enginelessExecutor(ast, false)
-    const operations = execState.operations
-
-    //expect(kclManager.errors).toEqual([])
+    const { operations, artifactGraph } = execState
 
     expect(operations).toBeTruthy()
     expect(operations.length).toBeGreaterThan(0)
@@ -820,17 +815,18 @@ part001 = startSketchOn(plane001)
     expect(offsetPlaneOp).toBeTruthy()
 
     if (offsetPlaneOp && isOffsetPlane(offsetPlaneOp)) {
-      const artifact = findOperationArtifact(
-        offsetPlaneOp,
-        kclManager.artifactGraph
-      )
+      const artifact = findOperationArtifact(offsetPlaneOp, artifactGraph)
 
       expect(artifact).toBeTruthy()
       expect(artifact?.type).toBe('plane')
 
-      // const artifactNodePath = JSON.stringify(artifact?.codeRef?.nodePath)
-      // const operationNodePath = JSON.stringify(offsetPlaneOp.nodePath)
-      // expect(artifactNodePath).toBe(operationNodePath)
+      const artifactNodePath = JSON.stringify(
+        (artifact as Plane)?.codeRef?.nodePath
+      )
+      const operationNodePath = JSON.stringify(
+        (offsetPlaneOp as StdLibCallOp).nodePath
+      )
+      expect(artifactNodePath).toBe(operationNodePath)
     }
   })
 })

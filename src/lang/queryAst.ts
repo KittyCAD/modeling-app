@@ -51,11 +51,7 @@ import type { KclSettingsAnnotation } from '@src/lib/settings/settingsTypes'
 import { err } from '@src/lib/trap'
 import { getAngle, isArray } from '@src/lib/utils'
 
-import type {
-  OpKclValue,
-  Operation,
-  StdLibCallOp,
-} from '@rust/kcl-lib/bindings/Operation'
+import type { OpKclValue, Operation } from '@rust/kcl-lib/bindings/Operation'
 import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import type { UnaryExpression } from 'typescript'
@@ -1177,6 +1173,8 @@ export function findOperationArtifact(
 export function isOffsetPlane(item: Operation): item is StdLibCallOp {
   return item.type === 'StdLibCall' && item.name === 'offsetPlane'
 }
+
+export type StdLibCallOp = Extract<Operation, { type: 'StdLibCall' }>
 
 export function locateVariableWithCallOrPipe(
   ast: Program,
