@@ -1802,7 +1802,7 @@ async fn inner_elliptic_point(
     let major_radius = major_radius.n;
     let minor_radius = minor_radius.n;
     if let Some(x) = x {
-        if x.n > major_radius {
+        if x.n.abs() > major_radius {
             Err(KclError::Type {
                 details: KclErrorDetails::new(
                     format!(
@@ -1972,7 +1972,7 @@ async fn inner_hyperbolic_point(
     let semi_major = semi_major.n;
     let semi_minor = semi_minor.n;
     if let Some(x) = x {
-        if x.n < semi_major {
+        if x.n.abs() < semi_major {
             Err(KclError::Type {
                 details: KclErrorDetails::new(
                     format!(
