@@ -5,6 +5,7 @@ import UserSidebarMenu from '@src/components/UserSidebarMenu'
 import { isDesktop } from '@src/lib/isDesktop'
 import { type IndexLoaderData } from '@src/lib/types'
 import { useUser } from '@src/lib/singletons'
+import {EnvironmentBannerDevelopment} from '@src/components/environment/Banner'
 
 import styles from './AppHeader.module.css'
 
@@ -59,6 +60,7 @@ export const AppHeader = ({
         {children || <CommandBarOpenButton />}
         <UserSidebarMenu user={user} />
       </div>
+      <EnvironmentBannerDevelopment />
     </header>
   )
 }

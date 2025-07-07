@@ -1,5 +1,9 @@
-import { Environment, EnvironmentName, SUPPORTED_ENVIRONMENTS } from "@src/lib/constants"
-import { isDesktop } from "@src/lib/isDesktop"
+import {
+  Environment,
+  EnvironmentName,
+  SUPPORTED_ENVIRONMENTS,
+} from '@src/lib/constants'
+import { isDesktop } from '@src/lib/isDesktop'
 
 type EnvironmentVariables = {
   readonly NODE_ENV: string | undefined
@@ -15,7 +19,7 @@ type EnvironmentVariables = {
   readonly CI: string | undefined
 }
 
-let ENVIRONMENT : Environment | null = null
+let ENVIRONMENT: Environment | null = null
 
 export const updateEnvironment = (environment: EnvironmentName) => {
   ENVIRONMENT = SUPPORTED_ENVIRONMENTS[environment]
@@ -84,7 +88,6 @@ export default (): EnvironmentVariables => {
     DEV = Number(DEV).toString()
   }
 
-
   /**
    * Resolve the API, Site, and Websocket URL
    * This is computed during runtime for Desktop.
@@ -110,10 +113,8 @@ export default (): EnvironmentVariables => {
 
   const environmentVariables: EnvironmentVariables = {
     NODE_ENV: (env.NODE_ENV as string) || undefined,
-    VITE_KC_API_WS_MODELING_URL:
-      (WEBSOCKET_URL as string) || undefined,
-    VITE_KITTYCAD_API_BASE_URL:
-      (API_URL as string) || undefined,
+    VITE_KC_API_WS_MODELING_URL: (WEBSOCKET_URL as string) || undefined,
+    VITE_KITTYCAD_API_BASE_URL: (API_URL as string) || undefined,
     VITE_KC_SITE_BASE_URL: (SITE_URL as string) || undefined,
     VITE_KC_SITE_APP_URL: (env.VITE_KC_SITE_APP_URL as string) || undefined,
     VITE_KC_CONNECTION_TIMEOUT_MS:
