@@ -51,6 +51,7 @@ async fn inner_plane_of(
                 origin: Default::default(),
                 x_axis: Default::default(),
                 y_axis: Default::default(),
+                z_axis: Default::default(),
             },
             meta: vec![Metadata {
                 source_range: args.source_range,
@@ -81,6 +82,7 @@ async fn inner_plane_of(
     )));
     let Some(x_axis) = planar.x_axis else { return not_planar };
     let Some(y_axis) = planar.y_axis else { return not_planar };
+    let Some(z_axis) = planar.z_axis else { return not_planar };
     let Some(origin) = planar.origin else { return not_planar };
 
     // Engine always returns measurements in mm.
@@ -97,6 +99,12 @@ async fn inner_plane_of(
         z: y_axis.z,
         units: engine_units,
     };
+    let z_axis = crate::execution::Point3d {
+        x: z_axis.x,
+        y: z_axis.y,
+        z: z_axis.z,
+        units: engine_units,
+    };
     let origin = crate::execution::Point3d {
         x: origin.x.0,
         y: origin.y.0,
@@ -111,7 +119,12 @@ async fn inner_plane_of(
         id: plane_id,
         // Engine doesn't know about the ID we created, so set this to Uninit.
         value: PlaneType::Uninit,
-        info: crate::execution::PlaneInfo { origin, x_axis, y_axis },
+        info: crate::execution::PlaneInfo {
+            origin,
+            x_axis,
+            y_axis,
+            z_axis,
+        },
         meta: vec![Metadata {
             source_range: args.source_range,
         }],

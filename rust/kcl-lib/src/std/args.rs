@@ -674,6 +674,7 @@ impl<'a> FromKclValue<'a> for super::sketch::PlaneData {
                 origin: value.info.origin,
                 x_axis: value.info.x_axis,
                 y_axis: value.info.y_axis,
+                z_axis: value.info.z_axis,
             }));
         }
         // Case 1: predefined plane
@@ -692,9 +693,15 @@ impl<'a> FromKclValue<'a> for super::sketch::PlaneData {
         let obj = arg.as_object()?;
         let_field_of!(obj, plane, &KclObjectFields);
         let origin = plane.get("origin").and_then(FromKclValue::from_kcl_val)?;
-        let x_axis = plane.get("xAxis").and_then(FromKclValue::from_kcl_val)?;
+        let x_axis: crate::execution::Point3d = plane.get("xAxis").and_then(FromKclValue::from_kcl_val)?;
         let y_axis = plane.get("yAxis").and_then(FromKclValue::from_kcl_val)?;
-        Some(Self::Plane(PlaneInfo { origin, x_axis, y_axis }))
+        let z_axis = x_axis.axes_cross_product(&y_axis);
+        Some(Self::Plane(PlaneInfo {
+            origin,
+            x_axis,
+            y_axis,
+            z_axis,
+        }))
     }
 }
 
