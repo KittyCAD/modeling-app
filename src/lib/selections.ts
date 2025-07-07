@@ -34,6 +34,7 @@ import {
   kclManager,
   rustContext,
   sceneEntitiesManager,
+  sceneInfra,
 } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
 import {
@@ -802,4 +803,157 @@ export function getSemanticSelectionType(selectionType: Artifact['type'][]) {
   }
 
   return Array.from(semanticSelectionType)
+}
+
+export function selectDefaultSketchPlane(
+  defaultPlaneId: string
+): Error | boolean {
+  const defaultPlanes = rustContext.defaultPlanes
+  if (!defaultPlanes) {
+    return new Error('No default planes defined in rustContext')
+  }
+
+  if (
+    ![
+      defaultPlanes.xy,
+      defaultPlanes.xz,
+      defaultPlanes.yz,
+      defaultPlanes.negXy,
+      defaultPlanes.negXz,
+      defaultPlanes.negYz,
+    ].includes(defaultPlaneId)
+  ) {
+    // Supplied defaultPlaneId is not a valid default plane id
+    return false
+  }
+
+  const camVector = sceneInfra.camControls.camera.position
+    .clone()
+    .sub(sceneInfra.camControls.target)
+
+  // TODO can we get this information from rust land when it creates the default planes?
+  // maybe returned from make_default_planes (src/wasm-lib/src/wasm.rs)
+  let zAxis: [number, number, number] = [0, 0, 1]
+  let yAxis: [number, number, number] = [0, 1, 0]
+
+  if (defaultPlanes?.xy === defaultPlaneId) {
+    zAxis = [0, 0, 1]
+    yAxis = [0, 1, 0]
+    if (camVector.z < 0) {
+      zAxis = [0, 0, -1]
+      defaultPlaneId = defaultPlanes?.negXy || ''
+    }
+  } else if (defaultPlanes?.yz === defaultPlaneId) {
+    zAxis = [1, 0, 0]
+    yAxis = [0, 0, 1]
+    if (camVector.x < 0) {
+      zAxis = [-1, 0, 0]
+      defaultPlaneId = defaultPlanes?.negYz || ''
+    }
+  } else if (defaultPlanes?.xz === defaultPlaneId) {
+    zAxis = [0, 1, 0]
+    yAxis = [0, 0, 1]
+    defaultPlaneId = defaultPlanes?.negXz || ''
+    if (camVector.y < 0) {
+      zAxis = [0, -1, 0]
+      defaultPlaneId = defaultPlanes?.xz || ''
+    }
+  }
+
+  const defaultPlaneStrMap: Record<string, DefaultPlaneStr> = {
+    [defaultPlanes.xy]: 'XY',
+    [defaultPlanes.xz]: 'XZ',
+    [defaultPlanes.yz]: 'YZ',
+    [defaultPlanes.negXy]: '-XY',
+    [defaultPlanes.negXz]: '-XZ',
+    [defaultPlanes.negYz]: '-YZ',
+  }
+
+  sceneInfra.modelingSend({
+    type: 'Select sketch plane',
+    data: {
+      type: 'defaultPlane',
+      planeId: defaultPlaneId,
+      plane: defaultPlaneStrMap[defaultPlaneId],
+      zAxis,
+      yAxis,
+    },
+  })
+
+  return true
+}
+
+export async function selectOffsetSketchPlane(artifact: Artifact | undefined) {
+  return new Promise((resolve) => {
+    if (artifact?.type === 'plane') {
+      const planeId = artifact.id
+      void sceneEntitiesManager
+        .getFaceDetails(planeId)
+        .then((planeInfo) => {
+          // Apply camera-based orientation logic similar to default planes
+          let zAxis: [number, number, number] = [
+            planeInfo.z_axis.x,
+            planeInfo.z_axis.y,
+            planeInfo.z_axis.z,
+          ]
+          let yAxis: [number, number, number] = [
+            planeInfo.y_axis.x,
+            planeInfo.y_axis.y,
+            planeInfo.y_axis.z,
+          ]
+
+          // Get camera vector to determine which side of the plane we're viewing from
+          const camVector = sceneInfra.camControls.camera.position
+            .clone()
+            .sub(sceneInfra.camControls.target)
+
+          // Determine the canonical (absolute) plane orientation
+          const absZAxis: [number, number, number] = [
+            Math.abs(zAxis[0]),
+            Math.abs(zAxis[1]),
+            Math.abs(zAxis[2]),
+          ]
+
+          // Find the dominant axis (like default planes do)
+          const maxComponent = Math.max(...absZAxis)
+          const dominantAxisIndex = absZAxis.indexOf(maxComponent)
+
+          // Check camera position against canonical orientation (like default planes)
+          const cameraComponents = [camVector.x, camVector.y, camVector.z]
+          let negated = cameraComponents[dominantAxisIndex] < 0
+          if (dominantAxisIndex === 1) {
+            // offset of the XZ is being weird, not sure if this is a camera bug
+            negated = !negated
+          }
+          sceneInfra.modelingSend({
+            type: 'Select sketch plane',
+            data: {
+              type: 'offsetPlane',
+              zAxis,
+              yAxis,
+              position: [
+                planeInfo.origin.x,
+                planeInfo.origin.y,
+                planeInfo.origin.z,
+              ].map((num) => num / sceneInfra._baseUnitMultiplier) as [
+                number,
+                number,
+                number,
+              ],
+              planeId,
+              pathToNode: artifact.codeRef.pathToNode,
+              negated,
+            },
+          })
+          resolve(true)
+        })
+        .catch((error) => {
+          console.error('Error getting face details:', error)
+          resolve(false)
+        })
+    } else {
+      // selectOffsetSketchPlane called with an invalid artifact type',
+      resolve(false)
+    }
+  })
 }

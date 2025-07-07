@@ -994,6 +994,39 @@ impl Node<MemberExpression> {
 
         // Check the property and object match -- e.g. ints for arrays, strs for objects.
         match (object, property, self.computed) {
+            (KclValue::Plane { value: plane }, Property::String(property), false) => match property.as_str() {
+                "yAxis" => {
+                    let (p, u) = plane.info.y_axis.as_3_dims();
+                    Ok(KclValue::array_from_point3d(
+                        p,
+                        NumericType::Known(crate::exec::UnitType::Length(u)),
+                        vec![meta],
+                    ))
+                }
+                "xAxis" => {
+                    let (p, u) = plane.info.x_axis.as_3_dims();
+                    Ok(KclValue::array_from_point3d(
+                        p,
+                        NumericType::Known(crate::exec::UnitType::Length(u)),
+                        vec![meta],
+                    ))
+                }
+                "origin" => {
+                    let (p, u) = plane.info.origin.as_3_dims();
+                    Ok(KclValue::array_from_point3d(
+                        p,
+                        NumericType::Known(crate::exec::UnitType::Length(u)),
+                        vec![meta],
+                    ))
+                }
+                other => Err(KclError::new_undefined_value(
+                    KclErrorDetails::new(
+                        format!("Property '{other}' not found in plane"),
+                        vec![self.clone().into()],
+                    ),
+                    None,
+                )),
+            },
             (KclValue::Object { value: map, meta: _ }, Property::String(property), false) => {
                 if let Some(value) = map.get(&property) {
                     Ok(value.to_owned())
@@ -1013,7 +1046,22 @@ impl Node<MemberExpression> {
                     vec![self.clone().into()],
                 )))
             }
-            (KclValue::Object { .. }, p, _) => {
+            (KclValue::Object { value: map, .. }, p @ Property::UInt(i), _) => {
+                if i == 0
+                    && let Some(value) = map.get("x")
+                {
+                    return Ok(value.to_owned());
+                }
+                if i == 1
+                    && let Some(value) = map.get("y")
+                {
+                    return Ok(value.to_owned());
+                }
+                if i == 2
+                    && let Some(value) = map.get("z")
+                {
+                    return Ok(value.to_owned());
+                }
                 let t = p.type_name();
                 let article = article_for(t);
                 Err(KclError::new_semantic(KclErrorDetails::new(
@@ -2204,5 +2252,13 @@ z = x[y]
 y = x[0mm + 1]
 "#;
         parse_execute(ast).await.unwrap_err();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn getting_property_of_plane() {
+        // let ast = include_str!("../../tests/inputs/planestuff.kcl");
+        let ast = std::fs::read_to_string("tests/inputs/planestuff.kcl").unwrap();
+
+        parse_execute(&ast).await.unwrap();
     }
 }

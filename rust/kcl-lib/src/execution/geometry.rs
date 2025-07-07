@@ -299,6 +299,8 @@ pub struct PlaneInfo {
     pub x_axis: Point3d,
     /// What should the plane's Y axis be?
     pub y_axis: Point3d,
+    /// What should the plane's Z axis be?
+    pub z_axis: Point3d,
 }
 
 impl PlaneInfo {
@@ -327,6 +329,7 @@ impl PlaneInfo {
                             z: 0.0,
                             units: _,
                         },
+                    z_axis: _,
                 } => return PlaneData::XY,
                 Self {
                     origin:
@@ -350,6 +353,7 @@ impl PlaneInfo {
                             z: 0.0,
                             units: _,
                         },
+                    z_axis: _,
                 } => return PlaneData::NegXY,
                 Self {
                     origin:
@@ -373,6 +377,7 @@ impl PlaneInfo {
                             z: 1.0,
                             units: _,
                         },
+                    z_axis: _,
                 } => return PlaneData::XZ,
                 Self {
                     origin:
@@ -396,6 +401,7 @@ impl PlaneInfo {
                             z: 1.0,
                             units: _,
                         },
+                    z_axis: _,
                 } => return PlaneData::NegXZ,
                 Self {
                     origin:
@@ -419,6 +425,7 @@ impl PlaneInfo {
                             z: 1.0,
                             units: _,
                         },
+                    z_axis: _,
                 } => return PlaneData::YZ,
                 Self {
                     origin:
@@ -442,6 +449,7 @@ impl PlaneInfo {
                             z: 1.0,
                             units: _,
                         },
+                    z_axis: _,
                 } => return PlaneData::NegYZ,
                 _ => {}
             }
@@ -451,7 +459,41 @@ impl PlaneInfo {
             origin: self.origin,
             x_axis: self.x_axis,
             y_axis: self.y_axis,
+            z_axis: self.z_axis,
         })
+    }
+
+    pub(crate) fn is_right_handed(&self) -> bool {
+        // Katie's formula:
+        // dot(cross(x, y), z) ~= sqrt(dot(x, x) * dot(y, y) * dot(z, z))
+        let lhs = self
+            .x_axis
+            .axes_cross_product(&self.y_axis)
+            .axes_dot_product(&self.z_axis);
+        let rhs_x = self.x_axis.axes_dot_product(&self.x_axis);
+        let rhs_y = self.y_axis.axes_dot_product(&self.y_axis);
+        let rhs_z = self.z_axis.axes_dot_product(&self.z_axis);
+        let rhs = (rhs_x * rhs_y * rhs_z).sqrt();
+        // Check LHS ~= RHS
+        (lhs - rhs).abs() <= 0.0001
+    }
+
+    #[cfg(test)]
+    pub(crate) fn is_left_handed(&self) -> bool {
+        !self.is_right_handed()
+    }
+
+    pub(crate) fn make_right_handed(self) -> Self {
+        if self.is_right_handed() {
+            return self;
+        }
+        // To make it right-handed, negate X, i.e. rotate the plane 180 degrees.
+        Self {
+            origin: self.origin,
+            x_axis: self.x_axis.negated(),
+            y_axis: self.y_axis,
+            z_axis: self.z_axis,
+        }
     }
 }
 
@@ -663,8 +705,21 @@ impl SketchSurface {
 #[derive(Debug, Clone)]
 pub(crate) enum GetTangentialInfoFromPathsResult {
     PreviousPoint([f64; 2]),
-    Arc { center: [f64; 2], ccw: bool },
-    Circle { center: [f64; 2], ccw: bool, radius: f64 },
+    Arc {
+        center: [f64; 2],
+        ccw: bool,
+    },
+    Circle {
+        center: [f64; 2],
+        ccw: bool,
+        radius: f64,
+    },
+    Ellipse {
+        center: [f64; 2],
+        ccw: bool,
+        major_radius: f64,
+        _minor_radius: f64,
+    },
 }
 
 impl GetTangentialInfoFromPathsResult {
@@ -679,6 +734,12 @@ impl GetTangentialInfoFromPathsResult {
             GetTangentialInfoFromPathsResult::Circle {
                 center, radius, ccw, ..
             } => [center[0] + radius, center[1] + if *ccw { -1.0 } else { 1.0 }],
+            GetTangentialInfoFromPathsResult::Ellipse {
+                center,
+                major_radius,
+                ccw,
+                ..
+            } => [center[0] + major_radius, center[1] + if *ccw { -1.0 } else { 1.0 }],
         }
     }
 }
@@ -912,6 +973,17 @@ impl Point3d {
         }
     }
 
+    /// Calculate the dot product of this vector with another.
+    ///
+    /// This should only be applied to axes or other vectors which represent only a direction (and
+    /// no magnitude) since units are ignored.
+    pub fn axes_dot_product(&self, other: &Self) -> f64 {
+        let x = self.x * other.x;
+        let y = self.y * other.y;
+        let z = self.z * other.z;
+        x + y + z
+    }
+
     pub fn normalize(&self) -> Self {
         let len = f64::sqrt(self.x * self.x + self.y * self.y + self.z * self.z);
         Point3d {
@@ -919,6 +991,21 @@ impl Point3d {
             y: self.y / len,
             z: self.z / len,
             units: UnitLen::Unknown,
+        }
+    }
+
+    pub fn as_3_dims(&self) -> ([f64; 3], UnitLen) {
+        let p = [self.x, self.y, self.z];
+        let u = self.units;
+        (p, u)
+    }
+
+    pub(crate) fn negated(self) -> Self {
+        Self {
+            x: -self.x,
+            y: -self.y,
+            z: -self.z,
+            units: self.units,
         }
     }
 }
@@ -1128,6 +1215,19 @@ pub enum Path {
         /// True if the arc is counterclockwise.
         ccw: bool,
     },
+    Ellipse {
+        #[serde(flatten)]
+        base: BasePath,
+        center: [f64; 2],
+        major_radius: f64,
+        minor_radius: f64,
+        ccw: bool,
+    },
+    //TODO: (bc) figure this out
+    Conic {
+        #[serde(flatten)]
+        base: BasePath,
+    },
 }
 
 /// What kind of path is this?
@@ -1142,6 +1242,8 @@ enum PathType {
     Horizontal,
     AngledLineTo,
     Arc,
+    Ellipse,
+    Conic,
 }
 
 impl From<&Path> for PathType {
@@ -1157,6 +1259,8 @@ impl From<&Path> for PathType {
             Path::Base { .. } => Self::Base,
             Path::Arc { .. } => Self::Arc,
             Path::ArcThreePoint { .. } => Self::Arc,
+            Path::Ellipse { .. } => Self::Ellipse,
+            Path::Conic { .. } => Self::Conic,
         }
     }
 }
@@ -1174,6 +1278,8 @@ impl Path {
             Path::CircleThreePoint { base, .. } => base.geo_meta.id,
             Path::Arc { base, .. } => base.geo_meta.id,
             Path::ArcThreePoint { base, .. } => base.geo_meta.id,
+            Path::Ellipse { base, .. } => base.geo_meta.id,
+            Path::Conic { base, .. } => base.geo_meta.id,
         }
     }
 
@@ -1189,6 +1295,8 @@ impl Path {
             Path::CircleThreePoint { base, .. } => base.geo_meta.id = id,
             Path::Arc { base, .. } => base.geo_meta.id = id,
             Path::ArcThreePoint { base, .. } => base.geo_meta.id = id,
+            Path::Ellipse { base, .. } => base.geo_meta.id = id,
+            Path::Conic { base, .. } => base.geo_meta.id = id,
         }
     }
 
@@ -1204,6 +1312,8 @@ impl Path {
             Path::CircleThreePoint { base, .. } => base.tag.clone(),
             Path::Arc { base, .. } => base.tag.clone(),
             Path::ArcThreePoint { base, .. } => base.tag.clone(),
+            Path::Ellipse { base, .. } => base.tag.clone(),
+            Path::Conic { base, .. } => base.tag.clone(),
         }
     }
 
@@ -1219,6 +1329,8 @@ impl Path {
             Path::CircleThreePoint { base, .. } => base,
             Path::Arc { base, .. } => base,
             Path::ArcThreePoint { base, .. } => base,
+            Path::Ellipse { base, .. } => base,
+            Path::Conic { base, .. } => base,
         }
     }
 
@@ -1250,11 +1362,12 @@ impl Path {
         (*p, ty)
     }
 
-    /// Length of this path segment, in cartesian plane.
-    pub fn length(&self) -> TyF64 {
+    /// Length of this path segment, in cartesian plane. Not all segment types
+    /// are supported.
+    pub fn length(&self) -> Option<TyF64> {
         let n = match self {
             Self::ToPoint { .. } | Self::Base { .. } | Self::Horizontal { .. } | Self::AngledLineTo { .. } => {
-                linear_distance(&self.get_base().from, &self.get_base().to)
+                Some(linear_distance(&self.get_base().from, &self.get_base().to))
             }
             Self::TangentialArc {
                 base: _,
@@ -1271,9 +1384,9 @@ impl Path {
                 let radius = linear_distance(&self.get_base().from, center);
                 debug_assert_eq!(radius, linear_distance(&self.get_base().to, center));
                 // TODO: Call engine utils to figure this out.
-                linear_distance(&self.get_base().from, &self.get_base().to)
+                Some(linear_distance(&self.get_base().from, &self.get_base().to))
             }
-            Self::Circle { radius, .. } => 2.0 * std::f64::consts::PI * radius,
+            Self::Circle { radius, .. } => Some(2.0 * std::f64::consts::PI * radius),
             Self::CircleThreePoint { .. } => {
                 let circle_center = crate::std::utils::calculate_circle_from_3_points([
                     self.get_base().from,
@@ -1284,18 +1397,26 @@ impl Path {
                     &[circle_center.center[0], circle_center.center[1]],
                     &self.get_base().from,
                 );
-                2.0 * std::f64::consts::PI * radius
+                Some(2.0 * std::f64::consts::PI * radius)
             }
             Self::Arc { .. } => {
                 // TODO: Call engine utils to figure this out.
-                linear_distance(&self.get_base().from, &self.get_base().to)
+                Some(linear_distance(&self.get_base().from, &self.get_base().to))
             }
             Self::ArcThreePoint { .. } => {
                 // TODO: Call engine utils to figure this out.
-                linear_distance(&self.get_base().from, &self.get_base().to)
+                Some(linear_distance(&self.get_base().from, &self.get_base().to))
+            }
+            Self::Ellipse { .. } => {
+                // Not supported.
+                None
+            }
+            Self::Conic { .. } => {
+                // Not supported.
+                None
             }
         };
-        TyF64::new(n, self.get_base().units.into())
+        n.map(|n| TyF64::new(n, self.get_base().units.into()))
     }
 
     pub fn get_base_mut(&mut self) -> Option<&mut BasePath> {
@@ -1310,6 +1431,8 @@ impl Path {
             Path::CircleThreePoint { base, .. } => Some(base),
             Path::Arc { base, .. } => Some(base),
             Path::ArcThreePoint { base, .. } => Some(base),
+            Path::Ellipse { base, .. } => Some(base),
+            Path::Conic { base, .. } => Some(base),
         }
     }
 
@@ -1345,7 +1468,24 @@ impl Path {
                     radius: circle.radius,
                 }
             }
-            Path::ToPoint { .. } | Path::Horizontal { .. } | Path::AngledLineTo { .. } | Path::Base { .. } => {
+            // TODO: (bc) fix me
+            Path::Ellipse {
+                center,
+                major_radius,
+                minor_radius,
+                ccw,
+                ..
+            } => GetTangentialInfoFromPathsResult::Ellipse {
+                center: *center,
+                major_radius: *major_radius,
+                _minor_radius: *minor_radius,
+                ccw: *ccw,
+            },
+            Path::Conic { .. }
+            | Path::ToPoint { .. }
+            | Path::Horizontal { .. }
+            | Path::AngledLineTo { .. }
+            | Path::Base { .. } => {
                 let base = self.get_base();
                 GetTangentialInfoFromPathsResult::PreviousPoint(base.from)
             }

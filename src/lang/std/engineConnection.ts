@@ -1,5 +1,5 @@
 import type { Models } from '@kittycad/lib'
-import { VITE_KC_DEV_TOKEN } from '@src/env'
+import env from '@src/env'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { BSON } from 'bson'
 
@@ -402,7 +402,7 @@ class EngineConnection extends EventTarget {
       this.send({
         type: 'headers',
         headers: {
-          Authorization: `Bearer ${VITE_KC_DEV_TOKEN}`,
+          Authorization: `Bearer ${env().VITE_KITTYCAD_API_TOKEN}`,
         },
       })
     }

@@ -76,6 +76,14 @@ description: Variables in memory after executing subtract_regression03.kcl
             "units": {
               "type": "Unknown"
             }
+          },
+          "zAxis": {
+            "x": 0.6687257877094245,
+            "y": -0.7435091262737867,
+            "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
           }
         },
         "start": {
@@ -249,6 +257,14 @@ description: Variables in memory after executing subtract_regression03.kcl
             "units": {
               "type": "Unknown"
             }
+          },
+          "zAxis": {
+            "x": -0.6687257877094245,
+            "y": -0.7435091262737867,
+            "z": -0.0,
+            "units": {
+              "type": "Unknown"
+            }
           }
         },
         "start": {
@@ -354,6 +370,14 @@ description: Variables in memory after executing subtract_regression03.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
+            "units": {
+              "type": "Unknown"
+            }
+          },
+          "zAxis": {
+            "x": 0.6687257877094245,
+            "y": -0.7435091262737867,
+            "z": 0.0,
             "units": {
               "type": "Unknown"
             }
@@ -527,6 +551,14 @@ description: Variables in memory after executing subtract_regression03.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
+            "units": {
+              "type": "Unknown"
+            }
+          },
+          "zAxis": {
+            "x": -0.7980581665924197,
+            "y": 0.6025804201392091,
+            "z": 0.0,
             "units": {
               "type": "Unknown"
             }
@@ -1137,6 +1169,14 @@ description: Variables in memory after executing subtract_regression03.kcl
         "units": {
           "type": "Unknown"
         }
+      },
+      "zAxis": {
+        "x": 0.6687257877094245,
+        "y": -0.7435091262737867,
+        "z": 0.0,
+        "units": {
+          "type": "Unknown"
+        }
       }
     }
   },
@@ -1200,6 +1240,14 @@ description: Variables in memory after executing subtract_regression03.kcl
           "units": {
             "type": "Unknown"
           }
+        },
+        "zAxis": {
+          "x": 0.6687257877094245,
+          "y": -0.7435091262737867,
+          "z": 0.0,
+          "units": {
+            "type": "Unknown"
+          }
         }
       },
       "start": {
@@ -1253,6 +1301,14 @@ description: Variables in memory after executing subtract_regression03.kcl
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
+        "units": {
+          "type": "Unknown"
+        }
+      },
+      "zAxis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0,
         "units": {
           "type": "Unknown"
         }
@@ -1445,6 +1501,14 @@ description: Variables in memory after executing subtract_regression03.kcl
           "units": {
             "type": "Unknown"
           }
+        },
+        "zAxis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0,
+          "units": {
+            "type": "Unknown"
+          }
         }
       },
       "start": {
@@ -1498,6 +1562,14 @@ description: Variables in memory after executing subtract_regression03.kcl
         "x": 0.0,
         "y": 0.0,
         "z": -1.0,
+        "units": {
+          "type": "Unknown"
+        }
+      },
+      "zAxis": {
+        "x": -0.6687257877094245,
+        "y": -0.7435091262737867,
+        "z": -0.0,
         "units": {
           "type": "Unknown"
         }
@@ -1615,6 +1687,14 @@ description: Variables in memory after executing subtract_regression03.kcl
           "units": {
             "type": "Unknown"
           }
+        },
+        "zAxis": {
+          "x": -0.6687257877094245,
+          "y": -0.7435091262737867,
+          "z": -0.0,
+          "units": {
+            "type": "Unknown"
+          }
         }
       },
       "start": {
@@ -1668,6 +1748,14 @@ description: Variables in memory after executing subtract_regression03.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
+        "units": {
+          "type": "Unknown"
+        }
+      },
+      "zAxis": {
+        "x": -0.7980581665924197,
+        "y": 0.6025804201392091,
+        "z": 0.0,
         "units": {
           "type": "Unknown"
         }
@@ -1785,6 +1873,14 @@ description: Variables in memory after executing subtract_regression03.kcl
           "units": {
             "type": "Unknown"
           }
+        },
+        "zAxis": {
+          "x": -0.7980581665924197,
+          "y": 0.6025804201392091,
+          "z": 0.0,
+          "units": {
+            "type": "Unknown"
+          }
         }
       },
       "start": {
@@ -1882,6 +1978,14 @@ description: Variables in memory after executing subtract_regression03.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
+            "units": {
+              "type": "Unknown"
+            }
+          },
+          "zAxis": {
+            "x": 0.6687257877094245,
+            "y": -0.7435091262737867,
+            "z": 0.0,
             "units": {
               "type": "Unknown"
             }

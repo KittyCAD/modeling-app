@@ -62,7 +62,7 @@ jobs:
         if: ${{ github.event_name != 'release' && github.event_name != 'schedule' }}
         run: xvfb-run -a npm run test:unit
         env:
-          VITE_KC_DEV_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
+          VITE_KITTYCAD_API_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
 
       - name: Check for changes
         if: ${{ github.event_name != 'release' && github.event_name != 'schedule' }}

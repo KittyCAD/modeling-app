@@ -336,13 +336,6 @@ export async function doPromptEdit({
 
   let submitResult
 
-  // work around for @kittycad/lib not really being built for the browser
-  ;(window as any).process = {
-    env: {
-      ZOO_API_TOKEN: token,
-      ZOO_HOST: withAPIBaseURL(''),
-    },
-  }
   try {
     submitResult = await submitPromptToEditToQueue({
       prompt,
