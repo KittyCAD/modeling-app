@@ -823,9 +823,7 @@ part001 = startSketchOn(plane001)
       const artifactNodePath = JSON.stringify(
         (artifact as Plane)?.codeRef?.nodePath
       )
-      const operationNodePath = JSON.stringify(
-        (offsetPlaneOp as StdLibCallOp).nodePath
-      )
+      const operationNodePath = JSON.stringify(offsetPlaneOp.nodePath)
       expect(artifactNodePath).toBe(operationNodePath)
     }
   })
