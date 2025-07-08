@@ -258,4 +258,8 @@ pub const TEST_NAMES: &[&str] = &[
     "std-transform-scale-2",
     "std-units-toDegrees-0",
     "std-units-toRadians-0",
+    "std-vector-add-0",
+    "std-vector-sub-0",
+    "std-vector-mul-0",
+    "std-vector-div-0",
 ];

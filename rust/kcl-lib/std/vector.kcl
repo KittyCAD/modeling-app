@@ -1,0 +1,87 @@
+/// Adds every element of v0 to its corresponding element in v1.
+/// Both vectors must have the same length. Returns a new vector of the same length.
+/// In other words, component-wise addition.
+/// ```kcl
+/// v0 = [1, 2, 3]
+/// v1 = [10, 10, 10]
+/// v2 = vector::add(v0, v1)
+/// assert(v2[0], isEqualTo = 11)
+/// assert(v2[1], isEqualTo = 12)
+/// assert(v2[2], isEqualTo = 13)
+/// ```
+export fn add(@v0: [number], v1: [number]): [number] {
+  l0 = reduce(v0, initial = 0, f = fn(@i, accum) { return accum + 1})
+  l1 = reduce(v1, initial = 0, f = fn(@i, accum) { return accum + 1})
+  assert(l0, isEqualTo = l1, error = "The two input vectors must be the same length")
+  arrayRange = [0..<l0]
+  return reduce(arrayRange, initial = [], f = fn(@i, accum) {
+    return push(accum, item = v0[i] + v1[i])
+  })
+}
+
+/// Subtracts from every element of v0 its corresponding element in v1.
+/// Both vectors must have the same length. Returns a new vector of the same length.
+/// In other words, component-wise subtraction.
+/// ```kcl
+/// v0 = [10, 10, 10]
+/// v1 = [1, 2, 3]
+/// v2 = vector::sub(v0, v1)
+/// assert(v2[0], isEqualTo = 9)
+/// assert(v2[1], isEqualTo = 8)
+/// assert(v2[2], isEqualTo = 7)
+/// ```
+export fn sub(@v0: [number], v1: [number]): [number] {
+  l0 = reduce(v0, initial = 0, f = fn(@i, accum) { return accum + 1})
+  l1 = reduce(v1, initial = 0, f = fn(@i, accum) { return accum + 1})
+  assert(l0, isEqualTo = l1, error = "The two input vectors must be the same length")
+  arrayRange = [0..<l0]
+  return reduce(arrayRange, initial = [], f = fn(@i, accum) {
+    return push(accum, item = v0[i] - v1[i])
+  })
+}
+
+
+/// Multiplies every element of v0 by its corresponding element in v1.
+/// Both vectors must have the same length. Returns a new vector of the same length.
+/// In other words, component-wise multiplication.
+/// ```kcl
+/// v0 = [10, 10, 10]
+/// v1 = [1, 2, 3]
+/// v2 = vector::mul(v0, v1)
+/// assert(v2[0], isEqualTo = 10)
+/// assert(v2[1], isEqualTo = 20)
+/// assert(v2[2], isEqualTo = 30)
+/// ```
+export fn mul(@v0: [number], v1: [number]): [number] {
+  l0 = reduce(v0, initial = 0, f = fn(@i, accum) { return accum + 1})
+  l1 = reduce(v1, initial = 0, f = fn(@i, accum) { return accum + 1})
+  assert(l0, isEqualTo = l1, error = "The two input vectors must be the same length")
+  arrayRange = [0..<l0]
+  return reduce(arrayRange, initial = [], f = fn(@i, accum) {
+    return push(accum, item = v0[i] * v1[i])
+  })
+}
+
+
+/// Divides every element of v0 by its corresponding element in v1.
+/// Both vectors must have the same length. Returns a new vector of the same length.
+/// In other words, component-wise division.
+/// ```kcl
+/// v0 = [10, 10, 10]
+/// v1 = [1, 2, 3]
+/// v2 = vector::div(v0, v1)
+/// assert(v2[0], isEqualTo = 10)
+/// assert(v2[1], isEqualTo = 5)
+/// assert(v2[2], isEqualTo = 3.333, tolerance = 0.01)
+/// ```
+export fn div(@v0: [number], v1: [number]): [number] {
+  l0 = reduce(v0, initial = 0, f = fn(@i, accum) { return accum + 1})
+  l1 = reduce(v1, initial = 0, f = fn(@i, accum) { return accum + 1})
+  assert(l0, isEqualTo = l1, error = "The two input vectors must be the same length")
+  arrayRange = [0..<l0]
+  return reduce(arrayRange, initial = [], f = fn(@i, accum) {
+    return push(accum, item = v0[i] / v1[i])
+  })
+}
+
+

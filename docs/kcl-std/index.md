@@ -125,6 +125,11 @@ layout: manual
   * [`units::toMillimeters`](/docs/kcl-std/functions/std-units-toMillimeters)
   * [`units::toRadians`](/docs/kcl-std/functions/std-units-toRadians)
   * [`units::toYards`](/docs/kcl-std/functions/std-units-toYards)
+* [**std::vector**](/docs/kcl-std/modules/std-vector)
+  * [`vector::add`](/docs/kcl-std/functions/std-vector-add)
+  * [`vector::div`](/docs/kcl-std/functions/std-vector-div)
+  * [`vector::mul`](/docs/kcl-std/functions/std-vector-mul)
+  * [`vector::sub`](/docs/kcl-std/functions/std-vector-sub)
 
 ### Constants
 
