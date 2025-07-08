@@ -8,8 +8,8 @@ import { init, reloadModule } from '@src/lib/wasm_lib_wrapper'
 export const wasmUrl = () => {
   const wasmFile = '/kcl_wasm_lib_bg.wasm'
   // Check for test environment override
-  if (typeof process !== 'undefined' && process.env?.VITE_WASM_URL) {
-    return process.env.VITE_WASM_URL + wasmFile
+  if (typeof process !== 'undefined' && process.env?.VITE_WASM_BASE_URL) {
+    return process.env.VITE_WASM_BASE_URL + wasmFile
   }
 
   // For when we're in electron (file based) or web server (network based)
