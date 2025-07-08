@@ -288,16 +288,14 @@ contextBridge.exposeInMainWorld('electron', {
       {},
       exposeProcessEnvs([
         'NODE_ENV',
-        'VITE_KC_API_WS_MODELING_URL',
         'VITE_KITTYCAD_API_BASE_URL',
-        'VITE_KC_SITE_BASE_URL',
-        'VITE_KC_SITE_APP_URL',
-        'VITE_KC_CONNECTION_TIMEOUT_MS',
+        'VITE_KITTYCAD_API_WEBSOCKET_URL',
         'VITE_KITTYCAD_API_TOKEN',
+        'VITE_KITTYCAD_SITE_BASE_URL',
+        'VITE_KITTYCAD_SITE_APP_URL',
+        'VITE_KITTYCAD_CONNECTION_TIMEOUT_MS',
         'VITE_KITTYCAD_RUN_LOCALLY',
-
         'IS_PLAYWRIGHT',
-
         // Really we shouldn't use these and our code should use NODE_ENV
         'DEV',
         'PROD',
