@@ -1,16 +1,16 @@
 ---
 title: "vector::mul"
 subtitle: "Function in std::vector"
-excerpt: "Multiplies every element of v0 by its corresponding element in v1. Both vectors must have the same length. Returns a new vector of the same length. In other words, component-wise multiplication."
+excerpt: "Multiplies every element of u by its corresponding element in v. Both vectors must have the same length. Returns a new vector of the same length. In other words, component-wise multiplication."
 layout: manual
 ---
 
-Multiplies every element of v0 by its corresponding element in v1. Both vectors must have the same length. Returns a new vector of the same length. In other words, component-wise multiplication.
+Multiplies every element of u by its corresponding element in v. Both vectors must have the same length. Returns a new vector of the same length. In other words, component-wise multiplication.
 
 ```kcl
 vector::mul(
-  @v0: [number],
-  v1: [number],
+  @u: [number],
+  v: [number],
 ): [number]
 ```
 
@@ -20,8 +20,8 @@ vector::mul(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `v0` | [`[number]`](/docs/kcl-std/types/std-types-number) |  | Yes |
-| `v1` | [`[number]`](/docs/kcl-std/types/std-types-number) |  | Yes |
+| `u` | [`[number]`](/docs/kcl-std/types/std-types-number) |  | Yes |
+| `v` | [`[number]`](/docs/kcl-std/types/std-types-number) |  | Yes |
 
 ### Returns
 
@@ -31,9 +31,9 @@ vector::mul(
 ### Examples
 
 ```kcl
-v0 = [10, 10, 10]
-v1 = [1, 2, 3]
-v2 = vector::mul(v0, v1)
+u = [10, 10, 10]
+v = [1, 2, 3]
+v2 = vector::mul(u, v)
 assert(v2[0], isEqualTo = 10)
 assert(v2[1], isEqualTo = 20)
 assert(v2[2], isEqualTo = 30)

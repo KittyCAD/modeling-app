@@ -8,7 +8,10 @@ layout: manual
 Find the cross product of two 3D points or vectors.
 
 ```kcl
-vector::cross(@vectors: [Point3d; 2])
+vector::cross(
+  @u: Point3d,
+  v: Point3d,
+)
 ```
 
 
@@ -17,7 +20,8 @@ vector::cross(@vectors: [Point3d; 2])
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `vectors` | `[Point3d; 2]` |  | Yes |
+| `u` | [`Point3d`](/docs/kcl-std/types/std-types-Point3d) | A point in three dimensional space. | Yes |
+| `v` | [`Point3d`](/docs/kcl-std/types/std-types-Point3d) | A point in three dimensional space. | Yes |
 
 
 ### Examples
@@ -25,7 +29,7 @@ vector::cross(@vectors: [Point3d; 2])
 ```kcl
 vx = [1, 0, 0]
 vy = [0, 1, 0]
-vz = vector::cross([vx, vy])
+vz = vector::cross(vx, v = vy)
 assert(vz[0], isEqualTo = 0)
 assert(vz[1], isEqualTo = 0)
 assert(vz[2], isEqualTo = 1)

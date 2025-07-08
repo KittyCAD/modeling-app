@@ -1,16 +1,16 @@
 ---
 title: "vector::sub"
 subtitle: "Function in std::vector"
-excerpt: "Subtracts from every element of v0 its corresponding element in v1. Both vectors must have the same length. Returns a new vector of the same length. In other words, component-wise subtraction."
+excerpt: "Subtracts from every element of u its corresponding element in v. Both vectors must have the same length. Returns a new vector of the same length. In other words, component-wise subtraction."
 layout: manual
 ---
 
-Subtracts from every element of v0 its corresponding element in v1. Both vectors must have the same length. Returns a new vector of the same length. In other words, component-wise subtraction.
+Subtracts from every element of u its corresponding element in v. Both vectors must have the same length. Returns a new vector of the same length. In other words, component-wise subtraction.
 
 ```kcl
 vector::sub(
-  @v0: [number],
-  v1: [number],
+  @u: [number],
+  v: [number],
 ): [number]
 ```
 
@@ -20,8 +20,8 @@ vector::sub(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `v0` | [`[number]`](/docs/kcl-std/types/std-types-number) |  | Yes |
-| `v1` | [`[number]`](/docs/kcl-std/types/std-types-number) |  | Yes |
+| `u` | [`[number]`](/docs/kcl-std/types/std-types-number) |  | Yes |
+| `v` | [`[number]`](/docs/kcl-std/types/std-types-number) |  | Yes |
 
 ### Returns
 
@@ -31,9 +31,9 @@ vector::sub(
 ### Examples
 
 ```kcl
-v0 = [10, 10, 10]
-v1 = [1, 2, 3]
-v2 = vector::sub(v0, v1)
+u = [10, 10, 10]
+v = [1, 2, 3]
+v2 = vector::sub(u, v)
 assert(v2[0], isEqualTo = 9)
 assert(v2[1], isEqualTo = 8)
 assert(v2[2], isEqualTo = 7)

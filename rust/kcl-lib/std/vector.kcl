@@ -1,86 +1,86 @@
-/// Adds every element of v0 to its corresponding element in v1.
+/// Adds every element of u to its corresponding element in v.
 /// Both vectors must have the same length. Returns a new vector of the same length.
 /// In other words, component-wise addition.
 /// ```kcl
-/// v0 = [1, 2, 3]
-/// v1 = [10, 10, 10]
-/// v2 = vector::add(v0, v1)
+/// u = [1, 2, 3]
+/// v = [10, 10, 10]
+/// v2 = vector::add(u, v)
 /// assert(v2[0], isEqualTo = 11)
 /// assert(v2[1], isEqualTo = 12)
 /// assert(v2[2], isEqualTo = 13)
 /// ```
-export fn add(@v0: [number], v1: [number]): [number] {
-  l0 = count(v0)
-  l1 = count(v1)
+export fn add(@u: [number], v: [number]): [number] {
+  l0 = count(u)
+  l1 = count(v)
   assert(l0, isEqualTo = l1, error = "The two input vectors must be the same length")
   arrayRange = [0..<l0]
   return reduce(arrayRange, initial = [], f = fn(@i, accum) {
-    return push(accum, item = v0[i] + v1[i])
+    return push(accum, item = u[i] + v[i])
   })
 }
 
-/// Subtracts from every element of v0 its corresponding element in v1.
+/// Subtracts from every element of u its corresponding element in v.
 /// Both vectors must have the same length. Returns a new vector of the same length.
 /// In other words, component-wise subtraction.
 /// ```kcl
-/// v0 = [10, 10, 10]
-/// v1 = [1, 2, 3]
-/// v2 = vector::sub(v0, v1)
+/// u = [10, 10, 10]
+/// v = [1, 2, 3]
+/// v2 = vector::sub(u, v)
 /// assert(v2[0], isEqualTo = 9)
 /// assert(v2[1], isEqualTo = 8)
 /// assert(v2[2], isEqualTo = 7)
 /// ```
-export fn sub(@v0: [number], v1: [number]): [number] {
-  l0 = count(v0)
-  l1 = count(v1)
+export fn sub(@u: [number], v: [number]): [number] {
+  l0 = count(u)
+  l1 = count(v)
   assert(l0, isEqualTo = l1, error = "The two input vectors must be the same length")
   arrayRange = [0..<l0]
   return reduce(arrayRange, initial = [], f = fn(@i, accum) {
-    return push(accum, item = v0[i] - v1[i])
+    return push(accum, item = u[i] - v[i])
   })
 }
 
 
-/// Multiplies every element of v0 by its corresponding element in v1.
+/// Multiplies every element of u by its corresponding element in v.
 /// Both vectors must have the same length. Returns a new vector of the same length.
 /// In other words, component-wise multiplication.
 /// ```kcl
-/// v0 = [10, 10, 10]
-/// v1 = [1, 2, 3]
-/// v2 = vector::mul(v0, v1)
+/// u = [10, 10, 10]
+/// v = [1, 2, 3]
+/// v2 = vector::mul(u, v)
 /// assert(v2[0], isEqualTo = 10)
 /// assert(v2[1], isEqualTo = 20)
 /// assert(v2[2], isEqualTo = 30)
 /// ```
-export fn mul(@v0: [number], v1: [number]): [number] {
-  l0 = count(v0)
-  l1 = count(v1)
+export fn mul(@u: [number], v: [number]): [number] {
+  l0 = count(u)
+  l1 = count(v)
   assert(l0, isEqualTo = l1, error = "The two input vectors must be the same length")
   arrayRange = [0..<l0]
   return reduce(arrayRange, initial = [], f = fn(@i, accum) {
-    return push(accum, item = v0[i] * v1[i])
+    return push(accum, item = u[i] * v[i])
   })
 }
 
 
-/// Divides every element of v0 by its corresponding element in v1.
+/// Divides every element of u by its corresponding element in v.
 /// Both vectors must have the same length. Returns a new vector of the same length.
 /// In other words, component-wise division.
 /// ```kcl
-/// v0 = [10, 10, 10]
-/// v1 = [1, 2, 3]
-/// v2 = vector::div(v0, v1)
+/// u = [10, 10, 10]
+/// v = [1, 2, 3]
+/// v2 = vector::div(u, v)
 /// assert(v2[0], isEqualTo = 10)
 /// assert(v2[1], isEqualTo = 5)
 /// assert(v2[2], isEqualTo = 3.333, tolerance = 0.01)
 /// ```
-export fn div(@v0: [number], v1: [number]): [number] {
-  l0 = count(v0)
-  l1 = count(v1)
+export fn div(@u: [number], v: [number]): [number] {
+  l0 = count(u)
+  l1 = count(v)
   assert(l0, isEqualTo = l1, error = "The two input vectors must be the same length")
   arrayRange = [0..<l0]
   return reduce(arrayRange, initial = [], f = fn(@i, accum) {
-    return push(accum, item = v0[i] / v1[i])
+    return push(accum, item = u[i] / v[i])
   })
 }
 
@@ -88,39 +88,35 @@ export fn div(@v0: [number], v1: [number]): [number] {
 /// ```kcl
 /// vx = [1, 0, 0]
 /// vy = [0, 1, 0]
-/// vz = vector::cross([vx, vy])
+/// vz = vector::cross(vx, v = vy)
 /// assert(vz[0], isEqualTo = 0)
 /// assert(vz[1], isEqualTo = 0)
 /// assert(vz[2], isEqualTo = 1)
 /// ```
-export fn cross(@vectors: [Point3d; 2]) {
-  v0 = vectors[0]
-  v1 = vectors[1]
+export fn cross(@u: Point3d, v: Point3d) {
   return [
-    v0[1] * v1[2] - (v0[2] * v1[1]),
-    v0[2] * v1[0] - (v0[0] * v1[2]),
-    v0[0] * v1[1] - (v0[1] * v1[0])
+    u[1] * v[2] - (u[2] * v[1]),
+    u[2] * v[0] - (u[0] * v[2]),
+    u[0] * v[1] - (u[1] * v[0])
   ]
 }
 
 /// Find the dot product of two points or vectors of any dimension.
 /// ```kcl
-/// v0 = [1, 2, 3]
-/// v1 = [4, -5, 6]
-/// dotprod = vector::dot([v0, v1])
+/// u = [1, 2, 3]
+/// v = [4, -5, 6]
+/// dotprod = vector::dot(u, v)
 /// assert(dotprod, isEqualTo = 12)
 /// ```
-export fn dot(@vectors: [[number]; 2]): number {
-  v0 = vectors[0]
-  v1 = vectors[1]
-  l0 = count(v0)
-  l1 = count(v1)
+export fn dot(@u: [number], v: [number]): number {
+  l0 = count(u)
+  l1 = count(v)
   assert(l0, isEqualTo = l1, error = "The two input vectors must be the same length")
   return reduce(
     [0..<l0],
     initial = 0,
     f = fn(@i, accum) {
-      item = v0[i] * v1[i]
+      item = u[i] * v[i]
       return accum + item
     },
   )

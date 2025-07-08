@@ -8,7 +8,10 @@ layout: manual
 Find the dot product of two points or vectors of any dimension.
 
 ```kcl
-vector::dot(@vectors: [[number]; 2]): number
+vector::dot(
+  @u: [number],
+  v: [number],
+): number
 ```
 
 
@@ -17,7 +20,8 @@ vector::dot(@vectors: [[number]; 2]): number
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `vectors` | `[[number]; 2]` |  | Yes |
+| `u` | [`[number]`](/docs/kcl-std/types/std-types-number) |  | Yes |
+| `v` | [`[number]`](/docs/kcl-std/types/std-types-number) |  | Yes |
 
 ### Returns
 
@@ -27,9 +31,9 @@ vector::dot(@vectors: [[number]; 2]): number
 ### Examples
 
 ```kcl
-v0 = [1, 2, 3]
-v1 = [4, -5, 6]
-dotprod = vector::dot([v0, v1])
+u = [1, 2, 3]
+v = [4, -5, 6]
+dotprod = vector::dot(u, v)
 assert(dotprod, isEqualTo = 12)
 
 ```

@@ -1,16 +1,16 @@
 ---
 title: "vector::add"
 subtitle: "Function in std::vector"
-excerpt: "Adds every element of v0 to its corresponding element in v1. Both vectors must have the same length. Returns a new vector of the same length. In other words, component-wise addition."
+excerpt: "Adds every element of u to its corresponding element in v. Both vectors must have the same length. Returns a new vector of the same length. In other words, component-wise addition."
 layout: manual
 ---
 
-Adds every element of v0 to its corresponding element in v1. Both vectors must have the same length. Returns a new vector of the same length. In other words, component-wise addition.
+Adds every element of u to its corresponding element in v. Both vectors must have the same length. Returns a new vector of the same length. In other words, component-wise addition.
 
 ```kcl
 vector::add(
-  @v0: [number],
-  v1: [number],
+  @u: [number],
+  v: [number],
 ): [number]
 ```
 
@@ -20,8 +20,8 @@ vector::add(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `v0` | [`[number]`](/docs/kcl-std/types/std-types-number) |  | Yes |
-| `v1` | [`[number]`](/docs/kcl-std/types/std-types-number) |  | Yes |
+| `u` | [`[number]`](/docs/kcl-std/types/std-types-number) |  | Yes |
+| `v` | [`[number]`](/docs/kcl-std/types/std-types-number) |  | Yes |
 
 ### Returns
 
@@ -31,9 +31,9 @@ vector::add(
 ### Examples
 
 ```kcl
-v0 = [1, 2, 3]
-v1 = [10, 10, 10]
-v2 = vector::add(v0, v1)
+u = [1, 2, 3]
+v = [10, 10, 10]
+v2 = vector::add(u, v)
 assert(v2[0], isEqualTo = 11)
 assert(v2[1], isEqualTo = 12)
 assert(v2[2], isEqualTo = 13)
