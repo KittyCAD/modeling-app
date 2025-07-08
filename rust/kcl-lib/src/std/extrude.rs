@@ -13,7 +13,7 @@ use kcmc::{
 };
 use kittycad_modeling_cmds::{
     self as kcmc,
-    shared::{Angle, Point2d},
+    shared::{Angle, ExtrudeMethod, Point2d},
 };
 use uuid::Uuid;
 
@@ -41,6 +41,7 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     let twist_angle_step: Option<TyF64> = args.get_kw_arg_opt("twistAngleStep", &RuntimeType::degrees(), exec_state)?;
     let twist_center: Option<[TyF64; 2]> = args.get_kw_arg_opt("twistCenter", &RuntimeType::point2d(), exec_state)?;
     let tolerance: Option<TyF64> = args.get_kw_arg_opt("tolerance", &RuntimeType::length(), exec_state)?;
+    let method: Option<TyF64> = args.get_kw_arg_opt("method", &RuntimeType::count(), exec_state)?;
 
     let result = inner_extrude(
         sketches,
@@ -53,6 +54,7 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         twist_angle_step,
         twist_center,
         tolerance,
+        method,
         exec_state,
         args,
     )
@@ -73,12 +75,23 @@ async fn inner_extrude(
     twist_angle_step: Option<TyF64>,
     twist_center: Option<[TyF64; 2]>,
     tolerance: Option<TyF64>,
+    method: Option<TyF64>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Solid>, KclError> {
     // Extrude the element(s).
     let mut solids = Vec::new();
     let tolerance = LengthUnit(tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM));
+
+    let extrude_method = if let Some(method) = method {
+        if method.n == 0.0 {
+            ExtrudeMethod::New
+        } else {
+            ExtrudeMethod::Merge
+        }
+    } else {
+        ExtrudeMethod::Merge
+    };
 
     if symmetric.unwrap_or(false) && bidirectional_length.is_some() {
         return Err(KclError::new_semantic(KclErrorDetails::new(
@@ -120,6 +133,7 @@ async fn inner_extrude(
                 distance: LengthUnit(length.to_mm()),
                 faces: Default::default(),
                 opposite: opposite.clone(),
+                extrude_method,
             }),
         };
         let cmds = sketch.build_sketch_mode_cmds(exec_state, ModelingCmdReq { cmd_id: id.into(), cmd });

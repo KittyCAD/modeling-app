@@ -447,6 +447,8 @@ export fn extrude(
   /// Only used if `twistAngle` is given, defaults to [0, 0] i.e. sketch's center.
   @(snippetArray = ["0", "0"])
   twistCenter?: Point2d,
+  /// The method used during extrusion, i.e. create a NEW object or MERGE the extruded objects together.
+  method?: number(Count),
 ): [Solid; 1+] {}
 
 /// Rotate a sketch around some provided axis, creating a solid from its extent.
