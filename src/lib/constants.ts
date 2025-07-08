@@ -228,7 +228,7 @@ export const IMMEDIATE_SIGN_IN_IF_NECESSARY_QUERY_PARAM =
 export const OAUTH2_DEVICE_CLIENT_ID = '2af127fb-e14e-400a-9c57-a9ed08d1a5b7'
 
 /** Names of supported environments */
-const environmentNames = ['development', 'production', 'production-us'] as const
+const environmentNames = ['development', 'production'] as const
 export type EnvironmentName = (typeof environmentNames)[number]
 export const isEnvironmentName = (x: any): x is EnvironmentName =>
   environmentNames.includes(x)
@@ -253,11 +253,5 @@ export const SUPPORTED_ENVIRONMENTS: { [key in EnvironmentName]: Environment } =
       SITE_URL: 'https://zoo.dev',
       WEBSOCKET_URL: 'wss://api.zoo.dev/ws/modeling/commands',
       name: 'Production',
-    },
-    'production-us': {
-      API_URL: 'https://api.dev.zoo.dev',
-      SITE_URL: 'https://dev.zoo.dev',
-      WEBSOCKET_URL: 'wss://api.dev.zoo.dev/ws/modeling/commands',
-      name: 'Production US (regulated)',
     },
   }
