@@ -1,14 +1,13 @@
-import {isEnvironmentName, SUPPORTED_ENVIRONMENTS} from '@src/lib/constants'
-
+import { isEnvironmentName, SUPPORTED_ENVIRONMENTS } from '@src/lib/constants'
 
 describe('src/lib/constants', () => {
   describe('isEnvironmentName', () => {
-    it ('should detect development', ()=>{
+    it('should detect development', () => {
       const expected = true
       const actual = isEnvironmentName('development')
       expect(actual).toBe(expected)
     })
-    it ('should detect production', ()=>{
+    it('should detect production', () => {
       const expected = true
       const actual = isEnvironmentName('production')
       expect(actual).toBe(expected)
@@ -24,7 +23,7 @@ describe('src/lib/constants', () => {
   describe('SUPPORTED_ENVIRONMENTS', () => {
     it('should map to the following object to double check the contents', () => {
       const actual = SUPPORTED_ENVIRONMENTS
-      const expected =  {
+      const expected = {
         development: {
           API_URL: 'https://api.dev.zoo.dev',
           SITE_URL: 'https://dev.zoo.dev',
@@ -36,7 +35,7 @@ describe('src/lib/constants', () => {
           SITE_URL: 'https://zoo.dev',
           WEBSOCKET_URL: 'wss://api.zoo.dev/ws/modeling/commands',
           name: 'Production',
-        }
+        },
       }
       expect(actual).toStrictEqual(expected)
     })
