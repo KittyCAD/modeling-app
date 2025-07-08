@@ -2,7 +2,11 @@ import type { FunctionExpression } from '@rust/kcl-lib/bindings/FunctionExpressi
 import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { TypeDeclaration } from '@rust/kcl-lib/bindings/TypeDeclaration'
-import { createLocalName, createPipeSubstitution } from '@src/lang/create'
+import {
+  createLiteral,
+  createLocalName,
+  createPipeSubstitution,
+} from '@src/lang/create'
 import type { ToolTip } from '@src/lang/langHelpers'
 import { splitPathAtLastIndex } from '@src/lang/modifyAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
@@ -57,6 +61,7 @@ import type { KclCommandValue } from '@src/lib/commandTypes'
 import type { UnaryExpression } from 'typescript'
 import type { NumericType } from '@rust/kcl-lib/bindings/NumericType'
 import type { Plane } from '@rust/kcl-lib/bindings/Artifact'
+import { kclManager } from '@src/lib/singletons'
 
 /**
  * Retrieves a node from a given path within a Program node structure, optionally stopping at a specified node type.
@@ -1195,6 +1200,33 @@ export function getSelectedPlaneId(selectionRanges: Selections): string | null {
   }
 
   return null
+}
+
+export function getSelectedPlane(
+  selection: Selections
+): Node<Name> | Node<Literal> | undefined {
+  const defaultPlane = selection.otherSelections[0]
+  if (
+    defaultPlane &&
+    defaultPlane instanceof Object &&
+    'name' in defaultPlane
+  ) {
+    return createLiteral(defaultPlane.name.toUpperCase())
+  }
+
+  const offsetPlane = selection.graphSelections[0]
+  if (offsetPlane.artifact?.type === 'plane') {
+    const artifactId = offsetPlane.artifact?.id
+    const variableName = Object.entries(kclManager.variables).find(
+      ([_, value]) => {
+        return value?.type === 'Plane' && value.value?.artifactId === artifactId
+      }
+    )
+    const offsetPlaneName = variableName?.[0]
+    return offsetPlaneName ? createLocalName(offsetPlaneName) : undefined
+  }
+
+  return undefined
 }
 
 export function locateVariableWithCallOrPipe(
