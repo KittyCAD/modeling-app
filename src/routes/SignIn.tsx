@@ -99,11 +99,6 @@ const SignIn = () => {
   const signInDesktopProduction = async () => {
     return signInDesktop('production')
   }
-
-  const signInDesktopProductionUS = async () => {
-    return signInDesktop('production-us')
-  }
-
   return (
     <main
       className="bg-primary h-screen grid place-items-stretch m-0 p-2"
@@ -209,17 +204,6 @@ const SignIn = () => {
                   data-testid="sign-in-button"
                 >
                   Production
-                  <CustomIcon name="arrowRight" className="w-6 h-6" />
-                </button>
-                <button
-                  onClick={toSync(signInDesktopProductionUS, reportRejection)}
-                  className={
-                    'm-0 mt-8 w-fit flex gap-4 items-center px-3 py-1 ' +
-                    '!border-transparent !text-lg !text-chalkboard-10 !bg-primary hover:hue-rotate-15'
-                  }
-                  data-testid="sign-in-button"
-                >
-                  Production US (Regulated)
                   <CustomIcon name="arrowRight" className="w-6 h-6" />
                 </button>
               </div>
