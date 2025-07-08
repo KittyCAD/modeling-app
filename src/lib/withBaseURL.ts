@@ -5,9 +5,9 @@ export function withAPIBaseURL(path: string): string {
 }
 
 export function withSiteBaseURL(path: string): string {
-  return env().VITE_KC_SITE_BASE_URL + path
+  return env().VITE_KITTYCAD_SITE_BASE_URL + path
 }
 
 export function withWebSocketURL(path: string): string {
-  return env().VITE_KC_API_WS_MODELING_URL + path
+  return env().VITE_KITTYCAD_API_WEBSOCKET_URL + path
 }
