@@ -10,7 +10,7 @@ Combine two arrays into one by concatenating them.
 ```kcl
 concat(
   @array: [any],
-  other: [any],
+  items: [any],
 ): [any]
 ```
 
@@ -21,7 +21,7 @@ Returns a new array with the all the elements of the first array followed by all
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `array` | [`[any]`](/docs/kcl-std/types/std-types-any) | The array of starting elements. | Yes |
-| `other` | [`[any]`](/docs/kcl-std/types/std-types-any) | The array of ending elements. | Yes |
+| `items` | [`[any]`](/docs/kcl-std/types/std-types-any) | The array of ending elements. | Yes |
 
 ### Returns
 
@@ -33,7 +33,7 @@ Returns a new array with the all the elements of the first array followed by all
 ```kcl
 arr1 = [10, 20, 30]
 arr2 = [40, 50, 60]
-new_arr = concat(arr1, other = arr2)
+new_arr = concat(arr1, items = arr2)
 assert(new_arr[0], isEqualTo = 10, tolerance = 0.00001)
 assert(new_arr[1], isEqualTo = 20, tolerance = 0.00001)
 assert(new_arr[2], isEqualTo = 30, tolerance = 0.00001)
@@ -47,7 +47,7 @@ assert(new_arr[5], isEqualTo = 60, tolerance = 0.00001)
 
 ```kcl
 // Concatenating an empty array has no effect.
-new_arr = concat([10, 20, 30], other = [])
+new_arr = concat([10, 20, 30], items = [])
 assert(new_arr[0], isEqualTo = 10, tolerance = 0.00001)
 assert(new_arr[1], isEqualTo = 20, tolerance = 0.00001)
 assert(new_arr[2], isEqualTo = 30, tolerance = 0.00001)
