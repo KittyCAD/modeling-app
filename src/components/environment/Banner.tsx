@@ -1,4 +1,4 @@
-import { getEnvironment } from "@src/env"
+import { getEnvironment } from '@src/env'
 
 export function EnvironmentBannerDevelopment() {
   const environment = getEnvironment()

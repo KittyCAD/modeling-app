@@ -23,7 +23,7 @@ export function StatusBar({
         ))}
       </menu>
       <menu id="statusbar-locals" className="flex items-stretch">
-        <EnvironmentChipDevelopment className=""></EnvironmentChipDevelopment>
+        <EnvironmentChipDevelopment></EnvironmentChipDevelopment>
         {localItems.map((item) => (
           <StatusBarItem key={item.id} {...item} position="right" />
         ))}

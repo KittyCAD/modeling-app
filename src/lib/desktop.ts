@@ -10,10 +10,10 @@ import {
   parseProjectSettings,
 } from '@src/lang/wasm'
 import { initPromise, relevantFileExtensions } from '@src/lang/wasmUtils'
+import type { EnvironmentName } from '@src/lib/constants'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
   ENVIRONMENT_FILE_NAME,
-  EnvironmentName,
   PROJECT_ENTRYPOINT,
   PROJECT_FOLDER,
   PROJECT_IMAGE_NAME,
@@ -726,21 +726,25 @@ export const writeTokenFile = async (token: string) => {
   return result
 }
 
-export const readEnvironmentFile = async () : EnvironmentName | null=> {
+export const readEnvironmentFile = async () => {
   let environmentFilePath = await getEnvironmentFilePath()
 
   if (window.electron.exists(environmentFilePath)) {
-    const environment: string = await window.electron.readFile(environmentFilePath, {
-      encoding: 'utf-8',
-    })
-    if (!environment) return null
-
+    const environment: string = await window.electron.readFile(
+      environmentFilePath,
+      {
+        encoding: 'utf-8',
+      }
+    )
+    if (!environment) return ''
     return environment
   }
-  return null
+  return ''
 }
 
-export const writeEnvironmentFile = async (environment: EnvironmentName) => {
+export const writeEnvironmentFile = async (
+  environment: EnvironmentName | ''
+) => {
   const environmentFilePath = await getEnvironmentFilePath()
   if (err(environment)) return Promise.reject(environment)
   const result = window.electron.writeFile(environmentFilePath, environment)

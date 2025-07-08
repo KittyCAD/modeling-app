@@ -58,7 +58,7 @@ export const BILLING_CONTEXT_DEFAULTS: BillingContext = Object.freeze({
   error: undefined,
   tier: undefined,
   subscriptionsOrError: undefined,
-  urlUserService: '',
+  urlUserService: () => '',
   lastFetch: undefined,
 })
 
@@ -116,7 +116,7 @@ export const billingMachine = setup({
           | Models['ZooProductSubscriptions_type']
           | number
           | Error = await crossPlatformFetch(
-            `${input.context.urlUserService()}/user/payment/subscriptions`,
+          `${input.context.urlUserService()}/user/payment/subscriptions`,
           { method: 'GET' },
           input.event.apiToken
         )

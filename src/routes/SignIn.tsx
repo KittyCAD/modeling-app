@@ -6,7 +6,8 @@ import { Link } from 'react-router-dom'
 import { ActionButton } from '@src/components/ActionButton'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { Logo } from '@src/components/Logo'
-import { APP_NAME, EnvironmentName } from '@src/lib/constants'
+import type { EnvironmentName } from '@src/lib/constants'
+import { APP_NAME } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { Themes, getSystemTheme } from '@src/lib/theme'
@@ -57,13 +58,15 @@ const SignIn = () => {
     updateEnvironment(environmentName)
     const environment = getEnvironment()
     if (!environment) {
-      throw new Error('Unable to login, failed to fetch environment.')
+      console.error('Unable to login, failed to fetch environment.')
+      toast.error('Unable to login, failed to fetch environment.')
+      return
     }
 
     // We want to invoke our command to login via device auth.
     const userCodeToDisplay = await window.electron
-                                          .startDeviceFlow(withAPIBaseURL(location.search))
-                                          .catch(reportError)
+      .startDeviceFlow(withAPIBaseURL(location.search))
+      .catch(reportError)
     if (!userCodeToDisplay) {
       console.error('No user code received while trying to log in')
       toast.error('Error while trying to log in')
@@ -76,11 +79,11 @@ const SignIn = () => {
     if (!token) {
       console.error('No token received while trying to log in')
       toast.error('Error while trying to log in')
-      writeEnvironmentFile('')
+      await writeEnvironmentFile('')
       return
     }
 
-    writeEnvironmentFile(environmentName)
+    await writeEnvironmentFile(environmentName)
     authActor.send({ type: 'Log in', token })
   }
 

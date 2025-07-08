@@ -2,7 +2,11 @@ import type { Models } from '@kittycad/lib'
 import env, { updateEnvironment } from '@src/env'
 import { assign, fromPromise, setup } from 'xstate'
 
-import { COOKIE_NAME, OAUTH2_DEVICE_CLIENT_ID } from '@src/lib/constants'
+import {
+  COOKIE_NAME,
+  isEnvironmentName,
+  OAUTH2_DEVICE_CLIENT_ID,
+} from '@src/lib/constants'
 import {
   getUser as getUserDesktop,
   readEnvironmentFile,
@@ -142,7 +146,13 @@ export const authMachine = setup({
 async function getUser(input: { token?: string }) {
   const token = await getAndSyncStoredToken(input)
   const environment = await readEnvironmentFile()
-  updateEnvironment(environment)
+  if (isEnvironmentName(environment)) {
+    updateEnvironment(environment)
+  } else {
+    return Promise.reject(
+      new Error('Unable to update environment from disk cache')
+    )
+  }
   const url = withAPIBaseURL('/user')
   const headers: { [key: string]: string } = {
     'Content-Type': 'application/json',

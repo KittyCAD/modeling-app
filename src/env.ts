@@ -1,8 +1,5 @@
-import {
-  Environment,
-  EnvironmentName,
-  SUPPORTED_ENVIRONMENTS,
-} from '@src/lib/constants'
+import type { Environment, EnvironmentName } from '@src/lib/constants'
+import { SUPPORTED_ENVIRONMENTS } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 
 type EnvironmentVariables = {
@@ -19,17 +16,17 @@ type EnvironmentVariables = {
   readonly CI: string | undefined
 }
 
+/** Store the environment in memory to be accessed during runtime */
 let ENVIRONMENT: Environment | null = null
 
+/** Update the runtime environment */
 export const updateEnvironment = (environment: EnvironmentName) => {
   ENVIRONMENT = SUPPORTED_ENVIRONMENTS[environment]
   console.log('updating environment', environment)
 }
 
+/** Get the runtime environment */
 export const getEnvironment = () => {
-  // if (ENVIRONMENT === null) {
-  //   throw new Error('Unable to pick environment to login.')
-  // }
   return ENVIRONMENT
 }
 
@@ -105,6 +102,11 @@ export default (): EnvironmentVariables => {
   let SITE_URL = env.VITE_KC_SITE_BASE_URL
   let WEBSOCKET_URL = env.VITE_KC_API_WS_MODELING_URL
 
+  /**
+   * If you are desktop, see if you have any runtime environment which can be read from disk and
+   * populated during the sign in workflow.
+   * A built binary will allow the user to sign into different environments on the desktop
+   */
   const environment = getEnvironment()
   if (isDesktop() && environment) {
     API_URL = environment.API_URL
