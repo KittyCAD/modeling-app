@@ -26,7 +26,7 @@ description: Result of parsing array_concat_non_array.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "other",
+                  "name": "items",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -281,7 +281,7 @@ description: Result of parsing array_concat_non_array.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "other",
+                  "name": "items",
                   "start": 0,
                   "type": "Identifier"
                 },
