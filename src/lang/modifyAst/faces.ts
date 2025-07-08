@@ -1,7 +1,6 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
 import {
-  createArrayExpression,
   createCallExpressionStdLibKw,
   createLabeledArg,
   createLiteral,
@@ -66,8 +65,13 @@ export function addShell({
     faces,
     artifactGraph
   )
+  const facesExpr = createVariableExpressionsArray(facesExprs)
+  if (!facesExpr) {
+    return new Error('No faces found in the selection')
+  }
+
   const call = createCallExpressionStdLibKw('shell', sketchesExpr, [
-    createLabeledArg('faces', createArrayExpression(facesExprs)),
+    createLabeledArg('faces', facesExpr),
     createLabeledArg('thickness', valueOrVariable(thickness)),
   ])
 

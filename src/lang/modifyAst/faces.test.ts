@@ -88,7 +88,7 @@ extrude001 = extrude(profile001, length = 10)
     const newCode = recast(result.modifiedAst)
     expect(newCode).toContain(code)
     expect(newCode).toContain(
-      `shell001 = shell(extrude001, faces = [END], thickness = 1)`
+      `shell001 = shell(extrude001, faces = END, thickness = 1)`
     )
     await enginelessExecutor(ast)
   })
@@ -128,7 +128,46 @@ shell001 = shell(extrude001, faces = [seg01, seg02], thickness = 1)
     await enginelessExecutor(ast)
   })
 
-  // TODO: missing multi solid test
+  it('should add a shell on two related sweeps end faces', async () => {
+    // Code from https://github.com/KittyCAD/modeling-app/blob/21f11c369e1e4bcb6d2514d1150ba5e13138fe32/docs/kcl-std/functions/std-solid-shell.md#L154-L155
+    const code = `size = 100
+case = startSketchOn(XY)
+  |> startProfile(at = [-size, -size])
+  |> line(end = [2 * size, 0])
+  |> line(end = [0, 2 * size])
+  |> tangentialArc(endAbsolute = [-size, size])
+  |> close()
+  |> extrude(length = 65)
+
+thing1 = startSketchOn(case, face = END)
+  |> circle(center = [-size / 2, -size / 2], radius = 25)
+  |> extrude(length = 50)
+
+thing2 = startSketchOn(case, face = END)
+  |> circle(center = [size / 2, -size / 2], radius = 25)
+  |> extrude(length = 50)`
+    const { ast, artifactGraph } = await getAstAndArtifactGraph(code)
+    const lastTwoSweeps = [...artifactGraph.values()]
+      .filter((a) => a.type === 'sweep')
+      .slice(-2)
+    const solids = createSelectionFromArtifacts(lastTwoSweeps, artifactGraph)
+    const twoCaps = [...artifactGraph.values()]
+      .filter((a) => a.type === 'cap' && a.subType === 'end')
+      .slice(0, 2)
+    const faces = createSelectionFromArtifacts(twoCaps, artifactGraph)
+    const thickness = await getKclCommandValue('5')
+    const result = addShell({ ast, artifactGraph, solids, faces, thickness })
+    if (err(result)) {
+      throw result
+    }
+
+    const newCode = recast(result.modifiedAst)
+    expect(newCode).toContain(code)
+    expect(newCode).toContain(`
+shell001 = shell([thing1, thing2], faces = [END, END], thickness = 5)
+`)
+    await enginelessExecutor(ast)
+  })
 
   // TODO: missing edit flow test
 })
