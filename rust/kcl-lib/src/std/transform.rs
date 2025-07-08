@@ -131,22 +131,27 @@ pub async fn translate(exec_state: &mut ExecState, args: Args) -> Result<KclValu
     let translate_x: Option<TyF64> = args.get_kw_arg_opt("x", &RuntimeType::length(), exec_state)?;
     let translate_y: Option<TyF64> = args.get_kw_arg_opt("y", &RuntimeType::length(), exec_state)?;
     let translate_z: Option<TyF64> = args.get_kw_arg_opt("z", &RuntimeType::length(), exec_state)?;
+    let xyz: Option<[TyF64; 3]> = args.get_kw_arg_opt("xyz", &RuntimeType::point3d(), exec_state)?;
     let global = args.get_kw_arg_opt("global", &RuntimeType::bool(), exec_state)?;
 
-    // Ensure at least one translation value is provided.
-    if translate_x.is_none() && translate_y.is_none() && translate_z.is_none() {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            "Expected `x`, `y`, or `z` to be provided.".to_string(),
-            vec![args.source_range],
-        )));
-    }
-
-    let objects = inner_translate(objects, translate_x, translate_y, translate_z, global, exec_state, args).await?;
+    let objects = inner_translate(
+        objects,
+        xyz,
+        translate_x,
+        translate_y,
+        translate_z,
+        global,
+        exec_state,
+        args,
+    )
+    .await?;
     Ok(objects.into())
 }
 
+#[allow(clippy::too_many_arguments)]
 async fn inner_translate(
     objects: SolidOrSketchOrImportedGeometry,
+    xyz: Option<[TyF64; 3]>,
     x: Option<TyF64>,
     y: Option<TyF64>,
     z: Option<TyF64>,
@@ -154,6 +159,26 @@ async fn inner_translate(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<SolidOrSketchOrImportedGeometry, KclError> {
+    let (x, y, z) = match (xyz, x, y, z) {
+        (None, None, None, None) => {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "Expected `x`, `y`, or `z` to be provided.".to_string(),
+                vec![args.source_range],
+            )));
+        }
+        (Some(xyz), None, None, None) => {
+            let [x, y, z] = xyz;
+            (Some(x), Some(y), Some(z))
+        }
+        (None, x, y, z) => (x, y, z),
+        (Some(_), _, _, _) => {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "If you provide all 3 distances via the `xyz` arg, you cannot provide them separately via the `x`, `y` or `z` args."
+                    .to_string(),
+                vec![args.source_range],
+            )));
+        }
+    };
     // If we have a solid, flush the fillets and chamfers.
     // Only transforms needs this, it is very odd, see: https://github.com/KittyCAD/modeling-app/issues/5880
     if let SolidOrSketchOrImportedGeometry::SolidSet(solids) = &objects {
