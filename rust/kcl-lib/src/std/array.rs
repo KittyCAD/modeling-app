@@ -152,7 +152,6 @@ pub async fn concat(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
     let right_value: KclValue = args.get_kw_arg("other", &RuntimeType::any_array(), exec_state)?;
 
     match right_value {
-        // Note: Single values should have already been coerced to arrays.
         KclValue::HomArray {
             value: right,
             ty: right_el_ty,
@@ -162,13 +161,9 @@ pub async fn concat(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
             // Tuples are treated as arrays for concatenation.
             Ok(inner_concat(&left, &left_el_ty, &right, &RuntimeType::any()))
         }
-        _ => Err(KclError::new_semantic(KclErrorDetails::new(
-            format!(
-                "Expected an array for concatenation but found {}",
-                right_value.human_friendly_type()
-            ),
-            vec![args.source_range],
-        ))),
+        // Any single value is a subtype of an array, so we can treat it as a
+        // single-element array.
+        _ => Ok(inner_concat(&left, &left_el_ty, &[right_value], &RuntimeType::any())),
     }
 }
 
