@@ -149,7 +149,7 @@ pub async fn pop(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 
 pub async fn concat(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (left, left_el_ty) = args.get_unlabeled_kw_arg_array_and_type("array", exec_state)?;
-    let right_value: KclValue = args.get_kw_arg("other", &RuntimeType::any_array(), exec_state)?;
+    let right_value: KclValue = args.get_kw_arg("items", &RuntimeType::any_array(), exec_state)?;
 
     match right_value {
         KclValue::HomArray {
