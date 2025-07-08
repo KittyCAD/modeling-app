@@ -150,8 +150,8 @@ async function getUser(input: { token?: string }) {
    */
   if (env().DEV && env().VITE_KITTYCAD_API_TOKEN === 'localhost') {
     return {
-      user: {},
-      token: '',
+      user: undefined,
+      token: 'localhost',
     }
   }
 
