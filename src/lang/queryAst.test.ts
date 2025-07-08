@@ -9,7 +9,6 @@ import {
   createLabeledArg,
   createPipeSubstitution,
 } from '@src/lang/create'
-import type { StdLibCallOp } from '@src/lang/queryAst'
 import {
   doesSceneHaveExtrudedSketch,
   doesSceneHaveSweepableSketch,
