@@ -1160,10 +1160,10 @@ export function getSketchSelectionsFromOperation(
 }
 
 export function findOperationArtifact(
-  item: StdLibCallOp,
+  operation: StdLibCallOp,
   artifactGraph: ArtifactGraph
 ) {
-  const nodePath = JSON.stringify(item.nodePath)
+  const nodePath = JSON.stringify(operation.nodePath)
   const artifact = [...artifactGraph.values()].find(
     (a) => JSON.stringify((a as Plane).codeRef?.nodePath) === nodePath
   )
@@ -1175,6 +1175,27 @@ export function isOffsetPlane(item: Operation): item is StdLibCallOp {
 }
 
 export type StdLibCallOp = Extract<Operation, { type: 'StdLibCall' }>
+
+// Returns the id of the currently selected plane, either a default plane or an offset plane, or null if no planes are selected.
+export function getSelectedPlaneId(selectionRanges: Selections): string | null {
+  const defaultPlane = selectionRanges.otherSelections.find(
+    (selection) => typeof selection === 'object' && 'name' in selection
+  )
+  if (defaultPlane) {
+    // Found a default plane in the selection
+    return defaultPlane.id
+  }
+
+  const planeSelection = selectionRanges.graphSelections.find(
+    (selection) => selection.artifact?.type === 'plane'
+  )
+  if (planeSelection) {
+    // Found an offset plane in the selection
+    return planeSelection.artifact?.id || null
+  }
+
+  return null
+}
 
 export function locateVariableWithCallOrPipe(
   ast: Program,
