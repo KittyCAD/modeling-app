@@ -15,6 +15,7 @@ import {
   engineCommandManagerStartPromise,
   getKclCommandValue,
 } from '@src/lang/modifyAst/utils.test'
+import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
 
 // Unfortunately, we need the real engine here it seems to get sweep faces populated
 beforeAll(async () => {
@@ -68,17 +69,21 @@ async function getAstAndSolidSelections(code: string) {
 }
 
 describe('Testing addShell', () => {
-  it('should add a basic shell call on cylinder end cap', async () => {
-    const code = `sketch001 = startSketchOn(XY)
+  const cylinder = `sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [0, 0], radius = 10)
-extrude001 = extrude(profile001, length = 10)
-`
-    const { artifactGraph, ast, solids } = await getAstAndSolidSelections(code)
+extrude001 = extrude(profile001, length = 10)`
+
+  function getCapFromCylinder(artifactGraph: ArtifactGraph) {
     const endFace = [...artifactGraph.values()].find(
       (a) => a.type === 'cap' && a.subType === 'end'
     )
-    if (!endFace) throw new Error('End face not found in the artifact graph')
-    const faces = createSelectionFromArtifacts([endFace], artifactGraph)
+    return createSelectionFromArtifacts([endFace!], artifactGraph)
+  }
+
+  it('should add a basic shell call on cylinder end cap', async () => {
+    const { artifactGraph, ast, solids } =
+      await getAstAndSolidSelections(cylinder)
+    const faces = getCapFromCylinder(artifactGraph)
     const thickness = await getKclCommandValue('1')
     const result = addShell({ ast, artifactGraph, solids, faces, thickness })
     if (err(result)) {
@@ -86,15 +91,42 @@ extrude001 = extrude(profile001, length = 10)
     }
 
     const newCode = recast(result.modifiedAst)
-    expect(newCode).toContain(code)
+    expect(newCode).toContain(cylinder)
     expect(newCode).toContain(
       `shell001 = shell(extrude001, faces = END, thickness = 1)`
     )
     await enginelessExecutor(ast)
   })
 
-  it('should add a shell call on box for 2 walls', async () => {
-    const code = `sketch001 = startSketchOn(XY)
+  it('should edit a basic shell call on cylinder end cap with new thickness', async () => {
+    const code = `${cylinder}
+shell001 = shell(extrude001, faces = END, thickness = 1)
+`
+    const { artifactGraph, ast, solids } = await getAstAndSolidSelections(code)
+    const faces = getCapFromCylinder(artifactGraph)
+    const thickness = await getKclCommandValue('2')
+    const nodeToEdit = createPathToNodeForLastVariable(ast)
+    const result = addShell({
+      ast,
+      artifactGraph,
+      solids,
+      faces,
+      thickness,
+      nodeToEdit,
+    })
+    if (err(result)) {
+      throw result
+    }
+
+    const newCode = recast(result.modifiedAst)
+    expect(newCode).toContain(cylinder)
+    expect(newCode).toContain(
+      `shell001 = shell(extrude001, faces = END, thickness = 2)`
+    )
+    await enginelessExecutor(ast)
+  })
+
+  const box = `sketch001 = startSketchOn(XY)
 profile001 = startProfile(sketch001, at = [0, 0])
   |> xLine(length = 10)
   |> yLine(length = 10)
@@ -103,11 +135,25 @@ profile001 = startProfile(sketch001, at = [0, 0])
   |> close()
 extrude001 = extrude(profile001, length = 10)
 `
-    const { artifactGraph, ast, solids } = await getAstAndSolidSelections(code)
+  const boxWithTwoTags = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> xLine(length = 10, tag = $seg01)
+  |> yLine(length = 10, tag = $seg02)
+  |> xLine(length = -10)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = 10)`
+
+  function getTwoFacesFromBox(artifactGraph: ArtifactGraph) {
     const twoWalls = [...artifactGraph.values()]
       .filter((a) => a.type === 'wall')
       .slice(0, 2)
-    const faces = createSelectionFromArtifacts(twoWalls, artifactGraph)
+    return createSelectionFromArtifacts(twoWalls, artifactGraph)
+  }
+
+  it('should add a shell call on box for 2 walls', async () => {
+    const { artifactGraph, ast, solids } = await getAstAndSolidSelections(box)
+    const faces = getTwoFacesFromBox(artifactGraph)
     const thickness = await getKclCommandValue('1')
     const result = addShell({ ast, artifactGraph, solids, faces, thickness })
     if (err(result)) {
@@ -115,16 +161,33 @@ extrude001 = extrude(profile001, length = 10)
     }
 
     const newCode = recast(result.modifiedAst)
-    expect(newCode).toContain(`
-profile001 = startProfile(sketch001, at = [0, 0])
-  |> xLine(length = 10, tag = $seg01)
-  |> yLine(length = 10, tag = $seg02)
-  |> xLine(length = -10)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
-extrude001 = extrude(profile001, length = 10)
-shell001 = shell(extrude001, faces = [seg01, seg02], thickness = 1)
-`)
+    expect(newCode).toContain(`${boxWithTwoTags}
+shell001 = shell(extrude001, faces = [seg01, seg02], thickness = 1)`)
+    await enginelessExecutor(ast)
+  })
+
+  it('should edit a shell call on box for 2 walls to a new thickness', async () => {
+    const { artifactGraph, ast, solids } =
+      await getAstAndSolidSelections(`${boxWithTwoTags}
+shell001 = shell(extrude001, faces = [seg01, seg02], thickness = 1)`)
+    const faces = getTwoFacesFromBox(artifactGraph)
+    const thickness = await getKclCommandValue('2')
+    const nodeToEdit = createPathToNodeForLastVariable(ast)
+    const result = addShell({
+      ast,
+      artifactGraph,
+      solids,
+      faces,
+      thickness,
+      nodeToEdit,
+    })
+    if (err(result)) {
+      throw result
+    }
+
+    const newCode = recast(result.modifiedAst)
+    expect(newCode).toContain(`${boxWithTwoTags}
+shell001 = shell(extrude001, faces = [seg01, seg02], thickness = 2)`)
     await enginelessExecutor(ast)
   })
 
@@ -168,6 +231,4 @@ shell001 = shell([thing1, thing2], faces = [END, END], thickness = 5)
 `)
     await enginelessExecutor(ast)
   })
-
-  // TODO: missing edit flow test
 })
