@@ -58,7 +58,7 @@ export async function copyFileShareLink(
  * open the URL in the desktop app.
  */
 export function createCreateFileUrl({ code, name }: FileLinkParams) {
-  let origin = env().VITE_KC_SITE_APP_URL
+  let origin = env().VITE_KITTYCAD_SITE_APP_URL
   const searchParams = new URLSearchParams({
     [CREATE_FILE_URL_PARAM]: String(true),
     name,

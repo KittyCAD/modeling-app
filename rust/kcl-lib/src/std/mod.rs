@@ -256,6 +256,10 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::array::pop(e, a)),
             StdFnProps::default("std::array::pop"),
         ),
+        ("array", "concat") => (
+            |e, a| Box::pin(crate::std::array::concat(e, a)),
+            StdFnProps::default("std::array::concat"),
+        ),
         ("prelude", "clone") => (
             |e, a| Box::pin(crate::std::clone::clone(e, a)),
             StdFnProps::default("std::clone").include_in_feature_tree(),
