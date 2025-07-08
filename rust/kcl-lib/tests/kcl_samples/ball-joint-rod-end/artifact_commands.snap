@@ -905,7 +905,8 @@ description: Artifact commands ball-joint-rod-end.kcl
         "target": "[uuid]",
         "distance": 1016.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1163,7 +1164,8 @@ description: Artifact commands ball-joint-rod-end.kcl
         "target": "[uuid]",
         "distance": 2540.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1400,7 +1402,8 @@ description: Artifact commands ball-joint-rod-end.kcl
         "target": "[uuid]",
         "distance": 482.59999999999997,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {

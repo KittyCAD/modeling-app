@@ -239,7 +239,8 @@ description: Artifact commands surgical-drill-guide.kcl
         "target": "[uuid]",
         "distance": 30.0,
         "faces": null,
-        "opposite": "Symmetric"
+        "opposite": "Symmetric",
+        "extrude_method": "merge"
       }
     },
     {
@@ -400,7 +401,8 @@ description: Artifact commands surgical-drill-guide.kcl
         "target": "[uuid]",
         "distance": 100.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -584,7 +586,8 @@ description: Artifact commands surgical-drill-guide.kcl
         "target": "[uuid]",
         "distance": -100.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -794,7 +797,8 @@ description: Artifact commands surgical-drill-guide.kcl
         "target": "[uuid]",
         "distance": -15.0,
         "faces": null,
-        "opposite": "Symmetric"
+        "opposite": "Symmetric",
+        "extrude_method": "merge"
       }
     },
     {
@@ -922,7 +926,8 @@ description: Artifact commands surgical-drill-guide.kcl
         "target": "[uuid]",
         "distance": 45.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1079,7 +1084,8 @@ description: Artifact commands surgical-drill-guide.kcl
         "target": "[uuid]",
         "distance": -60.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1366,7 +1372,8 @@ description: Artifact commands surgical-drill-guide.kcl
         "target": "[uuid]",
         "distance": -10.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1611,7 +1618,8 @@ description: Artifact commands surgical-drill-guide.kcl
         "target": "[uuid]",
         "distance": 15.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1739,7 +1747,8 @@ description: Artifact commands surgical-drill-guide.kcl
         "target": "[uuid]",
         "distance": 45.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1896,7 +1905,8 @@ description: Artifact commands surgical-drill-guide.kcl
         "target": "[uuid]",
         "distance": -60.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2183,7 +2193,8 @@ description: Artifact commands surgical-drill-guide.kcl
         "target": "[uuid]",
         "distance": -10.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {

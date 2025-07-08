@@ -172,7 +172,8 @@ description: Artifact commands artifact_graph_example_code1.kcl
         "target": "[uuid]",
         "distance": -10.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -343,7 +344,8 @@ description: Artifact commands artifact_graph_example_code1.kcl
         "target": "[uuid]",
         "distance": 5.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {

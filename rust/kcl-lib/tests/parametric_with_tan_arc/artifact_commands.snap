@@ -221,7 +221,8 @@ description: Artifact commands parametric_with_tan_arc.kcl
         "target": "[uuid]",
         "distance": 11.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {

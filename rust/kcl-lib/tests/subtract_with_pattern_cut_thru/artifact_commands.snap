@@ -172,7 +172,8 @@ description: Artifact commands subtract_with_pattern_cut_thru.kcl
         "target": "[uuid]",
         "distance": 500.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -333,7 +334,8 @@ description: Artifact commands subtract_with_pattern_cut_thru.kcl
         "target": "[uuid]",
         "distance": 50.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {

@@ -390,7 +390,8 @@ description: Artifact commands color-cube.kcl
         "target": "[uuid]",
         "distance": 1.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -595,7 +596,8 @@ description: Artifact commands color-cube.kcl
         "target": "[uuid]",
         "distance": 1.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -800,7 +802,8 @@ description: Artifact commands color-cube.kcl
         "target": "[uuid]",
         "distance": 1.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1005,7 +1008,8 @@ description: Artifact commands color-cube.kcl
         "target": "[uuid]",
         "distance": 1.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1210,7 +1214,8 @@ description: Artifact commands color-cube.kcl
         "target": "[uuid]",
         "distance": 1.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1415,7 +1420,8 @@ description: Artifact commands color-cube.kcl
         "target": "[uuid]",
         "distance": 1.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {

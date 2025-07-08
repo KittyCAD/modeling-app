@@ -18,6 +18,7 @@ extrude(
   twistAngle?: number(Angle),
   twistAngleStep?: number(Angle),
   twistCenter?: Point2d,
+  method?: number(_),
 ): [Solid; 1+]
 ```
 
@@ -37,6 +38,7 @@ extruded in the same direction.
 | `twistAngle` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | If given, the sketch will be twisted around this angle while being extruded. | No |
 | `twistAngleStep` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | The size of each intermediate angle as the sketch twists around. Must be between 4 and 90 degrees. Only used if `twistAngle` is given, defaults to 15 degrees. | No |
 | `twistCenter` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | The center around which the sketch will be twisted. Relative to the sketch's center. Only used if `twistAngle` is given, defaults to [0, 0] i.e. sketch's center. | No |
+| `method` | [`number(_)`](/docs/kcl-std/types/std-types-number) | The method used during extrusion, i.e. create a NEW object or MERGE the extruded objects together. | No |
 
 ### Returns
 

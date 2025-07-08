@@ -412,7 +412,8 @@ description: Artifact commands truss-structure.kcl
         "target": "[uuid]",
         "distance": 50.8,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -622,7 +623,8 @@ description: Artifact commands truss-structure.kcl
         "target": "[uuid]",
         "distance": 45.72,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -793,7 +795,8 @@ description: Artifact commands truss-structure.kcl
         "target": "[uuid]",
         "distance": 45.72,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1138,7 +1141,8 @@ description: Artifact commands truss-structure.kcl
         "target": "[uuid]",
         "distance": -1221.74,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1198,7 +1202,8 @@ description: Artifact commands truss-structure.kcl
         "target": "[uuid]",
         "distance": -1221.74,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1529,7 +1534,8 @@ description: Artifact commands truss-structure.kcl
         "target": "[uuid]",
         "distance": -2082.7999999999997,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1858,7 +1864,8 @@ description: Artifact commands truss-structure.kcl
         "target": "[uuid]",
         "distance": 2082.7999999999997,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1918,7 +1925,8 @@ description: Artifact commands truss-structure.kcl
         "target": "[uuid]",
         "distance": 2082.7999999999997,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {

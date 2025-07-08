@@ -403,7 +403,8 @@ description: Artifact commands engine-valve.kcl
         "target": "[uuid]",
         "distance": 42.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -531,7 +532,8 @@ description: Artifact commands engine-valve.kcl
         "target": "[uuid]",
         "distance": 1.8,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -659,7 +661,8 @@ description: Artifact commands engine-valve.kcl
         "target": "[uuid]",
         "distance": 0.9,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -787,7 +790,8 @@ description: Artifact commands engine-valve.kcl
         "target": "[uuid]",
         "distance": 0.9,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -915,7 +919,8 @@ description: Artifact commands engine-valve.kcl
         "target": "[uuid]",
         "distance": 0.9,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1043,7 +1048,8 @@ description: Artifact commands engine-valve.kcl
         "target": "[uuid]",
         "distance": 0.9,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1171,7 +1177,8 @@ description: Artifact commands engine-valve.kcl
         "target": "[uuid]",
         "distance": 0.9,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1299,7 +1306,8 @@ description: Artifact commands engine-valve.kcl
         "target": "[uuid]",
         "distance": 2.7,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {

@@ -331,7 +331,8 @@ description: Artifact commands involute_circular_units.kcl
         "target": "[uuid]",
         "distance": 3.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {

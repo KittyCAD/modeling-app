@@ -743,7 +743,8 @@ description: Artifact commands wing-spar.kcl
         "target": "[uuid]",
         "distance": -8.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1272,7 +1273,8 @@ description: Artifact commands wing-spar.kcl
         "target": "[uuid]",
         "distance": -700.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1649,7 +1651,8 @@ description: Artifact commands wing-spar.kcl
         "target": "[uuid]",
         "distance": -700.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1983,7 +1986,8 @@ description: Artifact commands wing-spar.kcl
         "target": "[uuid]",
         "distance": -10.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2039,7 +2043,8 @@ description: Artifact commands wing-spar.kcl
         "target": "[uuid]",
         "distance": -10.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2095,7 +2100,8 @@ description: Artifact commands wing-spar.kcl
         "target": "[uuid]",
         "distance": -10.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2151,7 +2157,8 @@ description: Artifact commands wing-spar.kcl
         "target": "[uuid]",
         "distance": -10.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2485,7 +2492,8 @@ description: Artifact commands wing-spar.kcl
         "target": "[uuid]",
         "distance": -10.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2541,7 +2549,8 @@ description: Artifact commands wing-spar.kcl
         "target": "[uuid]",
         "distance": -10.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2597,7 +2606,8 @@ description: Artifact commands wing-spar.kcl
         "target": "[uuid]",
         "distance": -10.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2653,7 +2663,8 @@ description: Artifact commands wing-spar.kcl
         "target": "[uuid]",
         "distance": -10.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {

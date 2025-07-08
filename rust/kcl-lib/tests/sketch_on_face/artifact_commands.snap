@@ -155,7 +155,8 @@ description: Artifact commands sketch_on_face.kcl
         "target": "[uuid]",
         "distance": 5.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -309,7 +310,8 @@ description: Artifact commands sketch_on_face.kcl
         "target": "[uuid]",
         "distance": 5.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {

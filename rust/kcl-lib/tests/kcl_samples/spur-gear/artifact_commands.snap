@@ -390,7 +390,8 @@ description: Artifact commands spur-gear.kcl
         "target": "[uuid]",
         "distance": 6.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {

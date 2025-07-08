@@ -155,7 +155,8 @@ description: Artifact commands plane_of.kcl
         "target": "[uuid]",
         "distance": 1828.8,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {

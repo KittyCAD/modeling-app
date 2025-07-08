@@ -292,7 +292,8 @@ description: Artifact commands utility-sink.kcl
         "target": "[uuid]",
         "distance": 834.5,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -352,7 +353,8 @@ description: Artifact commands utility-sink.kcl
         "target": "[uuid]",
         "distance": 834.5,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -412,7 +414,8 @@ description: Artifact commands utility-sink.kcl
         "target": "[uuid]",
         "distance": 834.5,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -472,7 +475,8 @@ description: Artifact commands utility-sink.kcl
         "target": "[uuid]",
         "distance": 834.5,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -749,7 +753,8 @@ description: Artifact commands utility-sink.kcl
         "target": "[uuid]",
         "distance": 13.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -809,7 +814,8 @@ description: Artifact commands utility-sink.kcl
         "target": "[uuid]",
         "distance": 13.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1037,7 +1043,8 @@ description: Artifact commands utility-sink.kcl
         "target": "[uuid]",
         "distance": 13.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1097,7 +1104,8 @@ description: Artifact commands utility-sink.kcl
         "target": "[uuid]",
         "distance": 13.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1374,7 +1382,8 @@ description: Artifact commands utility-sink.kcl
         "target": "[uuid]",
         "distance": 671.5,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1434,7 +1443,8 @@ description: Artifact commands utility-sink.kcl
         "target": "[uuid]",
         "distance": 671.5,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1701,7 +1711,8 @@ description: Artifact commands utility-sink.kcl
         "target": "[uuid]",
         "distance": -13.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1761,7 +1772,8 @@ description: Artifact commands utility-sink.kcl
         "target": "[uuid]",
         "distance": -13.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1989,7 +2001,8 @@ description: Artifact commands utility-sink.kcl
         "target": "[uuid]",
         "distance": -13.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2049,7 +2062,8 @@ description: Artifact commands utility-sink.kcl
         "target": "[uuid]",
         "distance": -13.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2276,7 +2290,8 @@ description: Artifact commands utility-sink.kcl
         "target": "[uuid]",
         "distance": -2.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2457,7 +2472,8 @@ description: Artifact commands utility-sink.kcl
         "target": "[uuid]",
         "distance": 200.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2638,7 +2654,8 @@ description: Artifact commands utility-sink.kcl
         "target": "[uuid]",
         "distance": -200.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2832,7 +2849,8 @@ description: Artifact commands utility-sink.kcl
         "target": "[uuid]",
         "distance": 5.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -3026,7 +3044,8 @@ description: Artifact commands utility-sink.kcl
         "target": "[uuid]",
         "distance": 170.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -3220,7 +3239,8 @@ description: Artifact commands utility-sink.kcl
         "target": "[uuid]",
         "distance": 237.4,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -3414,7 +3434,8 @@ description: Artifact commands utility-sink.kcl
         "target": "[uuid]",
         "distance": 70.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -3681,7 +3702,8 @@ description: Artifact commands utility-sink.kcl
         "target": "[uuid]",
         "distance": 667.5,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -3741,7 +3763,8 @@ description: Artifact commands utility-sink.kcl
         "target": "[uuid]",
         "distance": 667.5,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -4049,7 +4072,8 @@ description: Artifact commands utility-sink.kcl
         "target": "[uuid]",
         "distance": 667.5,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -4109,7 +4133,8 @@ description: Artifact commands utility-sink.kcl
         "target": "[uuid]",
         "distance": 667.5,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {

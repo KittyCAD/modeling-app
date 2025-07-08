@@ -132,7 +132,8 @@ description: Artifact commands pipe-flange-assembly.kcl
         "target": "[uuid]",
         "distance": 0.7874,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -260,7 +261,8 @@ description: Artifact commands pipe-flange-assembly.kcl
         "target": "[uuid]",
         "distance": -0.7874,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -636,7 +638,8 @@ description: Artifact commands pipe-flange-assembly.kcl
         "target": "[uuid]",
         "distance": 17.525999999999996,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -764,7 +767,8 @@ description: Artifact commands pipe-flange-assembly.kcl
         "target": "[uuid]",
         "distance": 1.5239999999999998,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -892,7 +896,8 @@ description: Artifact commands pipe-flange-assembly.kcl
         "target": "[uuid]",
         "distance": 6.35,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1020,7 +1025,8 @@ description: Artifact commands pipe-flange-assembly.kcl
         "target": "[uuid]",
         "distance": -25.4,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1392,7 +1398,8 @@ description: Artifact commands pipe-flange-assembly.kcl
         "target": "[uuid]",
         "distance": 17.525999999999996,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1520,7 +1527,8 @@ description: Artifact commands pipe-flange-assembly.kcl
         "target": "[uuid]",
         "distance": 1.5239999999999998,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1648,7 +1656,8 @@ description: Artifact commands pipe-flange-assembly.kcl
         "target": "[uuid]",
         "distance": 6.35,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1776,7 +1785,8 @@ description: Artifact commands pipe-flange-assembly.kcl
         "target": "[uuid]",
         "distance": -25.4,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2036,7 +2046,8 @@ description: Artifact commands pipe-flange-assembly.kcl
         "target": "[uuid]",
         "distance": 0.8128,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2164,7 +2175,8 @@ description: Artifact commands pipe-flange-assembly.kcl
         "target": "[uuid]",
         "distance": -0.8128,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2550,7 +2562,8 @@ description: Artifact commands pipe-flange-assembly.kcl
         "target": "[uuid]",
         "distance": -15.875,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2768,7 +2781,8 @@ description: Artifact commands pipe-flange-assembly.kcl
         "target": "[uuid]",
         "distance": -11.90625,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2896,7 +2910,8 @@ description: Artifact commands pipe-flange-assembly.kcl
         "target": "[uuid]",
         "distance": 63.5,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -3209,7 +3224,8 @@ description: Artifact commands pipe-flange-assembly.kcl
         "target": "[uuid]",
         "distance": 13.890625,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -3337,7 +3353,8 @@ description: Artifact commands pipe-flange-assembly.kcl
         "target": "[uuid]",
         "distance": -13.890625,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -3563,7 +3580,8 @@ description: Artifact commands pipe-flange-assembly.kcl
         "target": "[uuid]",
         "distance": 152.39999999999998,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -3691,7 +3709,8 @@ description: Artifact commands pipe-flange-assembly.kcl
         "target": "[uuid]",
         "distance": -152.39999999999998,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -3923,7 +3942,8 @@ description: Artifact commands pipe-flange-assembly.kcl
         "target": "[uuid]",
         "distance": 152.39999999999998,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -4051,7 +4071,8 @@ description: Artifact commands pipe-flange-assembly.kcl
         "target": "[uuid]",
         "distance": -152.39999999999998,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {

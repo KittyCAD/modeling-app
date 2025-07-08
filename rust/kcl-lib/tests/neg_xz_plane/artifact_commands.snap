@@ -138,7 +138,8 @@ description: Artifact commands neg_xz_plane.kcl
         "target": "[uuid]",
         "distance": 12.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {

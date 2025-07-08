@@ -445,7 +445,8 @@ description: Artifact commands bench.kcl
         "target": "[uuid]",
         "distance": 2.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -921,7 +922,8 @@ description: Artifact commands bench.kcl
         "target": "[uuid]",
         "distance": -2.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1446,7 +1448,8 @@ description: Artifact commands bench.kcl
         "target": "[uuid]",
         "distance": 2.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1906,7 +1909,8 @@ description: Artifact commands bench.kcl
         "target": "[uuid]",
         "distance": -2.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2431,7 +2435,8 @@ description: Artifact commands bench.kcl
         "target": "[uuid]",
         "distance": 2.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2891,7 +2896,8 @@ description: Artifact commands bench.kcl
         "target": "[uuid]",
         "distance": -2.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -3230,7 +3236,8 @@ description: Artifact commands bench.kcl
         "target": "[uuid]",
         "distance": 56.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -3504,7 +3511,8 @@ description: Artifact commands bench.kcl
         "target": "[uuid]",
         "distance": 56.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -3834,7 +3842,8 @@ description: Artifact commands bench.kcl
         "target": "[uuid]",
         "distance": 60.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -3894,7 +3903,8 @@ description: Artifact commands bench.kcl
         "target": "[uuid]",
         "distance": 60.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -3954,7 +3964,8 @@ description: Artifact commands bench.kcl
         "target": "[uuid]",
         "distance": 60.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -4255,7 +4266,8 @@ description: Artifact commands bench.kcl
         "target": "[uuid]",
         "distance": 60.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -4315,7 +4327,8 @@ description: Artifact commands bench.kcl
         "target": "[uuid]",
         "distance": 60.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {

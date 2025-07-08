@@ -282,7 +282,8 @@ description: Artifact commands out_of_band_sketches.kcl
         "target": "[uuid]",
         "distance": 10.14,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -342,7 +343,8 @@ description: Artifact commands out_of_band_sketches.kcl
         "target": "[uuid]",
         "distance": 10.14,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
