@@ -36,7 +36,7 @@ describe('@src/env', () => {
       const actual = viteEnv()
       expect(typeof actual.NODE_ENV).toBe('string')
       expect(typeof actual.VITE_KITTYCAD_API_BASE_URL).toBe('string')
-      expect(typeof actual.VITE_KITTYCAD_WEBSOCKET_URL).toBe('undefined')
+      expect(typeof actual.VITE_KITTYCAD_API_WEBSOCKET_URL).toBe('undefined')
       expect(typeof actual.VITE_KITTYCAD_API_TOKEN).toBe('string')
       expect(typeof actual.VITE_KITTYCAD_SITE_BASE_URL).toBe('string')
       expect(typeof actual.VITE_KITTYCAD_SITE_APP_URL).toBe('string')
@@ -59,13 +59,13 @@ describe('@src/env', () => {
           process: {
             env: {
               NODE_ENV: 'test',
+              VITE_KITTYCAD_API_BASE_URL: 'https://api.dev.zoo.dev',
               VITE_KITTYCAD_API_WEBSOCKET_URL:
                 'wss://api.dev.zoo.dev/ws/modeling/commands',
-              VITE_KITTYCAD_API_BASE_URL: 'https://api.dev.zoo.dev',
+              VITE_KITTYCAD_API_TOKEN: 'redacted',
               VITE_KITTYCAD_SITE_BASE_URL: 'https://dev.zoo.dev',
               VITE_KITTYCAD_SITE_APP_URL: 'https://app.dev.zoo.dev',
               VITE_KITTYCAD_CONNECTION_TIMEOUT_MS: '5000',
-              VITE_KITTYCAD_API_TOKEN: 'redacted',
               PROD: undefined,
               TEST: 'true',
               DEV: '1',
@@ -75,13 +75,13 @@ describe('@src/env', () => {
         })
         const expected = {
           NODE_ENV: 'test',
+          VITE_KITTYCAD_API_BASE_URL: 'https://api.dev.zoo.dev',
           VITE_KITTYCAD_API_WEBSOCKET_URL:
             'wss://api.dev.zoo.dev/ws/modeling/commands',
-          VITE_KITTYCAD_API_BASE_URL: 'https://api.dev.zoo.dev',
+          VITE_KITTYCAD_API_TOKEN: 'redacted',
           VITE_KITTYCAD_SITE_BASE_URL: 'https://dev.zoo.dev',
           VITE_KITTYCAD_SITE_APP_URL: 'https://app.dev.zoo.dev',
           VITE_KITTYCAD_CONNECTION_TIMEOUT_MS: '5000',
-          VITE_KITTYCAD_API_TOKEN: 'redacted',
           PROD: undefined,
           TEST: 'true',
           DEV: '1',
@@ -108,7 +108,7 @@ describe('@src/env', () => {
       expect(!!actual).toBe(true)
       expect(typeof actual?.NODE_ENV).toBe('string')
       expect(typeof actual?.VITE_KITTYCAD_API_BASE_URL).toBe('string')
-      expect(typeof actual?.VITE_KITTYCAD_WEBSOCKET_URL).toBe('undefined')
+      expect(typeof actual?.VITE_KITTYCAD_API_WEBSOCKET_URL).toBe('undefined')
       expect(typeof actual?.VITE_KITTYCAD_API_TOKEN).toBe('string')
       expect(typeof actual?.VITE_KITTYCAD_SITE_BASE_URL).toBe('string')
       expect(typeof actual?.VITE_KITTYCAD_SITE_APP_URL).toBe('string')
