@@ -10,8 +10,8 @@
 /// assert(v2[2], isEqualTo = 13)
 /// ```
 export fn add(@v0: [number], v1: [number]): [number] {
-  l0 = reduce(v0, initial = 0, f = fn(@i, accum) { return accum + 1})
-  l1 = reduce(v1, initial = 0, f = fn(@i, accum) { return accum + 1})
+  l0 = count(v0)
+  l1 = count(v1)
   assert(l0, isEqualTo = l1, error = "The two input vectors must be the same length")
   arrayRange = [0..<l0]
   return reduce(arrayRange, initial = [], f = fn(@i, accum) {
@@ -31,8 +31,8 @@ export fn add(@v0: [number], v1: [number]): [number] {
 /// assert(v2[2], isEqualTo = 7)
 /// ```
 export fn sub(@v0: [number], v1: [number]): [number] {
-  l0 = reduce(v0, initial = 0, f = fn(@i, accum) { return accum + 1})
-  l1 = reduce(v1, initial = 0, f = fn(@i, accum) { return accum + 1})
+  l0 = count(v0)
+  l1 = count(v1)
   assert(l0, isEqualTo = l1, error = "The two input vectors must be the same length")
   arrayRange = [0..<l0]
   return reduce(arrayRange, initial = [], f = fn(@i, accum) {
@@ -53,8 +53,8 @@ export fn sub(@v0: [number], v1: [number]): [number] {
 /// assert(v2[2], isEqualTo = 30)
 /// ```
 export fn mul(@v0: [number], v1: [number]): [number] {
-  l0 = reduce(v0, initial = 0, f = fn(@i, accum) { return accum + 1})
-  l1 = reduce(v1, initial = 0, f = fn(@i, accum) { return accum + 1})
+  l0 = count(v0)
+  l1 = count(v1)
   assert(l0, isEqualTo = l1, error = "The two input vectors must be the same length")
   arrayRange = [0..<l0]
   return reduce(arrayRange, initial = [], f = fn(@i, accum) {
@@ -75,8 +75,8 @@ export fn mul(@v0: [number], v1: [number]): [number] {
 /// assert(v2[2], isEqualTo = 3.333, tolerance = 0.01)
 /// ```
 export fn div(@v0: [number], v1: [number]): [number] {
-  l0 = reduce(v0, initial = 0, f = fn(@i, accum) { return accum + 1})
-  l1 = reduce(v1, initial = 0, f = fn(@i, accum) { return accum + 1})
+  l0 = count(v0)
+  l1 = count(v1)
   assert(l0, isEqualTo = l1, error = "The two input vectors must be the same length")
   arrayRange = [0..<l0]
   return reduce(arrayRange, initial = [], f = fn(@i, accum) {
@@ -84,4 +84,74 @@ export fn div(@v0: [number], v1: [number]): [number] {
   })
 }
 
+/// Find the cross product of two 3D points or vectors.
+/// ```kcl
+/// vx = [1, 0, 0]
+/// vy = [0, 1, 0]
+/// vz = vector::cross([vx, vy])
+/// assert(vz[0], isEqualTo = 0)
+/// assert(vz[1], isEqualTo = 0)
+/// assert(vz[2], isEqualTo = 1)
+/// ```
+export fn cross(@vectors: [Point3d; 2]) {
+  v0 = vectors[0]
+  v1 = vectors[1]
+  return [
+    v0[1] * v1[2] - (v0[2] * v1[1]),
+    v0[2] * v1[0] - (v0[0] * v1[2]),
+    v0[0] * v1[1] - (v0[1] * v1[0])
+  ]
+}
 
+/// Find the dot product of two points or vectors of any dimension.
+/// ```kcl
+/// v0 = [1, 2, 3]
+/// v1 = [4, -5, 6]
+/// dotprod = vector::dot([v0, v1])
+/// assert(dotprod, isEqualTo = 12)
+/// ```
+export fn dot(@vectors: [[number]; 2]): number {
+  v0 = vectors[0]
+  v1 = vectors[1]
+  l0 = count(v0)
+  l1 = count(v1)
+  assert(l0, isEqualTo = l1, error = "The two input vectors must be the same length")
+  return reduce(
+    [0..<l0],
+    initial = 0,
+    f = fn(@i, accum) {
+      item = v0[i] * v1[i]
+      return accum + item
+    },
+  )
+}
+
+/// Find the magnitude of a vector (with any number of dimensions)
+/// ```kcl
+/// v = [3, 4]
+/// m = vector::magnitude(v)
+/// assert(m, isEqualTo = 5)
+/// ```
+export fn magnitude(@v: [number]) {
+  return reduce(
+    [0..<count(v)],
+    initial = 0,
+    f = fn(@i, accum) {
+      item = pow(v[i], exp = 2) 
+      return accum + item
+    },
+  )
+  |> sqrt()
+}
+
+/// Normalize a vector (with any number of dimensions)
+/// ```kcl
+/// v = [3, 4]
+/// normed = vector::normalize(v)
+/// assert(normed[0], isEqualTo = 0.6)
+/// assert(normed[1], isEqualTo = 0.8)
+/// ```
+export fn normalize(@v: [number]) {
+  mag = magnitude(v)
+  return map(v, f = fn(@i) { return i/mag })
+}
