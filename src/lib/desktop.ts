@@ -743,9 +743,9 @@ export const readEnvironmentFile = async () => {
 }
 
 /**
-  * We store the environment file on disk because we store the token.txt across app installs
-  * otherwise we would not know what environment they logged into when the app does the updater
-  */
+ * We store the environment file on disk because we store the token.txt across app installs
+ * otherwise we would not know what environment they logged into when the app does the updater
+ */
 export const writeEnvironmentFile = async (
   environment: EnvironmentName | ''
 ) => {
