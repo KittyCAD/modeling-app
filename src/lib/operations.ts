@@ -400,6 +400,8 @@ const prepareToEditShell: PrepareToEditCallback = async ({ operation }) => {
     return { reason: "Couldn't retrieve thickness argument" }
   }
 
+  // TODO: move the blocks below to a utility function and add unit tests for different ops
+  // NEEDS TO HAPPEN BEFORE WE MERGE
   // Mapping back the faces: this can probably be cleaned up
   // Build an artifact map here of eligible artifacts corresponding to our current sweep
   // that we can query in another loop later
