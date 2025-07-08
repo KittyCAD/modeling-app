@@ -151,7 +151,7 @@ async function getUser(input: { token?: string }) {
   if (env().VITE_KITTYCAD_RUN_LOCALLY === 'true') {
     return {
       user: {},
-      token: ''
+      token: '',
     }
   }
 
