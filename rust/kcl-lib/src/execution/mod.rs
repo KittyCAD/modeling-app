@@ -587,7 +587,7 @@ impl ExecutorContext {
 
         let mut mem = exec_state.stack().clone();
         let module_infos = exec_state.global.module_infos.clone();
-        let outcome = exec_state.into_mock_exec_outcome(result.0, self).await;
+        let outcome = exec_state.into_exec_outcome(result.0, self).await;
 
         mem.squash_env(result.0);
         cache::write_old_memory((mem, module_infos)).await;
@@ -2374,7 +2374,7 @@ profile001 = startProfile(sketch001, at = [0, 0])
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let mock_program = crate::Program::parse_no_errs(code).unwrap();
         let mock_result = mock_ctx.run_mock(mock_program, true).await.unwrap();
-        assert_eq!(mock_result.operations.len(), 0);
+        assert_eq!(mock_result.operations.len(), 1);
 
         let code2 = code.to_owned()
             + r#"
