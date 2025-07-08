@@ -293,7 +293,6 @@ contextBridge.exposeInMainWorld('electron', {
         'VITE_KITTYCAD_API_TOKEN',
         'VITE_KITTYCAD_SITE_BASE_URL',
         'VITE_KITTYCAD_SITE_APP_URL',
-        'VITE_KITTYCAD_CONNECTION_TIMEOUT_MS',
         'IS_PLAYWRIGHT',
         // Really we shouldn't use these and our code should use NODE_ENV
         'DEV',
