@@ -1,17 +1,30 @@
-import env from '@src/env'
 import {
   type Artifact,
+  type ArtifactGraph,
   assertParse,
-  type CodeRef,
   recast,
 } from '@src/lang/wasm'
 import type { Selection, Selections } from '@src/lib/selections'
 import { enginelessExecutor } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
 import { addShell } from '@src/lang/modifyAst/faces'
-import { stringToKclExpression } from '@src/lib/kclHelpers'
 import { initPromise } from '@src/lang/wasmUtils'
 import { engineCommandManager, kclManager } from '@src/lib/singletons'
+import { getCodeRefsByArtifactId } from '@src/lang/std/artifactGraph'
+import {
+  engineCommandManagerStartPromise,
+  getKclCommandValue,
+} from '@src/lang/modifyAst/utils.test'
+
+// Unfortunately, we need the real engine here it seems to get sweep faces populated
+beforeAll(async () => {
+  await initPromise
+  await engineCommandManagerStartPromise
+}, 30_000)
+
+afterAll(() => {
+  engineCommandManager.tearDown()
+})
 
 async function getAstAndArtifactGraph(code: string) {
   const ast = assertParse(code)
@@ -23,99 +36,55 @@ async function getAstAndArtifactGraph(code: string) {
   return { ast, artifactGraph }
 }
 
-function createSelectionFromPathArtifact(
-  artifacts: (Artifact & { codeRef: CodeRef })[]
+function createSelectionFromArtifacts(
+  artifacts: Artifact[],
+  artifactGraph: ArtifactGraph
 ): Selections {
-  const graphSelections = artifacts.map(
-    (artifact) =>
-      ({
-        codeRef: artifact.codeRef,
-        artifact,
-      }) as Selection
-  )
+  const graphSelections = artifacts.flatMap((artifact) => {
+    const codeRefs = getCodeRefsByArtifactId(artifact.id, artifactGraph)
+    if (!codeRefs || codeRefs.length === 0) {
+      return []
+    }
+
+    return {
+      codeRef: codeRefs[0],
+      artifact,
+    } as Selection
+  })
   return {
     graphSelections,
     otherSelections: [],
   }
 }
 
-async function getAstAndSketchSelections(code: string) {
+async function getAstAndSolidSelections(code: string) {
   const { ast, artifactGraph } = await getAstAndArtifactGraph(code)
   const artifacts = [...artifactGraph.values()].filter((a) => a.type === 'path')
   if (artifacts.length === 0) {
     throw new Error('Artifact not found in the graph')
   }
-  const sketches = createSelectionFromPathArtifact(artifacts)
-  return { artifactGraph, ast, sketches }
+  const solids = createSelectionFromArtifacts(artifacts, artifactGraph)
+  return { artifactGraph, ast, solids }
 }
-
-async function getKclCommandValue(value: string) {
-  const result = await stringToKclExpression(value)
-  if (err(result) || 'errors' in result) {
-    throw new Error(`Couldn't create kcl expression`)
-  }
-
-  return result
-}
-
-// Unfortunately, we need the real engine here it seems to get sweep faces populated
-beforeAll(async () => {
-  await initPromise
-
-  await new Promise((resolve) => {
-    engineCommandManager.start({
-      token: env().VITE_KITTYCAD_API_TOKEN,
-      width: 256,
-      height: 256,
-      setMediaStream: () => {},
-      setIsStreamReady: () => {},
-      callbackOnEngineLiteConnect: () => {
-        resolve(true)
-      },
-    })
-  })
-}, 30_000)
-
-afterAll(() => {
-  engineCommandManager.tearDown()
-})
 
 describe('Testing addShell', () => {
-  it('should push a call in pipe if selection was in variable-less pipe', async () => {
+  it('should add a basic shell call on cylinder end cap', async () => {
     const code = `sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [0, 0], radius = 10)
 extrude001 = extrude(profile001, length = 10)
 `
-    const {
-      artifactGraph,
-      ast,
-      sketches: solids,
-    } = await getAstAndSketchSelections(code)
-    if (
-      solids.graphSelections.length === 0 ||
-      !solids.graphSelections[0].artifact
-    ) {
-      throw new Error('No solids found in the graph selections')
-    }
-
+    const { artifactGraph, ast, solids } = await getAstAndSolidSelections(code)
     const endFace = [...artifactGraph.values()].find(
       (a) => a.type === 'cap' && a.subType === 'end'
     )
-    if (!endFace || endFace.type !== 'cap' || endFace.subType !== 'end') {
-      throw new Error('End face not found in the artifact graph')
-    }
-    const faces: Selections = {
-      graphSelections: [
-        {
-          codeRef: endFace.faceCodeRef,
-          artifact: endFace,
-        },
-      ],
-      otherSelections: [],
-    }
+    if (!endFace) throw new Error('End face not found in the artifact graph')
+    const faces = createSelectionFromArtifacts([endFace], artifactGraph)
     const thickness = await getKclCommandValue('1')
     const result = addShell({ ast, artifactGraph, solids, faces, thickness })
-    if (err(result)) throw result
+    if (err(result)) {
+      throw result
+    }
+
     const newCode = recast(result.modifiedAst)
     expect(newCode).toContain(code)
     expect(newCode).toContain(
@@ -124,7 +93,40 @@ extrude001 = extrude(profile001, length = 10)
     await enginelessExecutor(ast)
   })
 
-  // TODO: missing multi wall test
+  it('should add a shell call on box for 2 walls', async () => {
+    const code = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> xLine(length = 10)
+  |> yLine(length = 10)
+  |> xLine(length = -10)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = 10)
+`
+    const { artifactGraph, ast, solids } = await getAstAndSolidSelections(code)
+    const twoWalls = [...artifactGraph.values()]
+      .filter((a) => a.type === 'wall')
+      .slice(0, 2)
+    const faces = createSelectionFromArtifacts(twoWalls, artifactGraph)
+    const thickness = await getKclCommandValue('1')
+    const result = addShell({ ast, artifactGraph, solids, faces, thickness })
+    if (err(result)) {
+      throw result
+    }
+
+    const newCode = recast(result.modifiedAst)
+    expect(newCode).toContain(`
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> xLine(length = 10, tag = $seg01)
+  |> yLine(length = 10, tag = $seg02)
+  |> xLine(length = -10)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = 10)
+shell001 = shell(extrude001, faces = [seg01, seg02], thickness = 1)
+`)
+    await enginelessExecutor(ast)
+  })
 
   // TODO: missing multi solid test
 

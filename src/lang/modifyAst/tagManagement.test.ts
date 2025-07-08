@@ -4,24 +4,12 @@ import { initPromise } from '@src/lang/wasmUtils'
 import { err } from '@src/lib/trap'
 import type { Selection } from '@src/lib/selections'
 import { engineCommandManager, kclManager } from '@src/lib/singletons'
-import env from '@src/env'
 import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
+import { engineCommandManagerStartPromise } from '@src/lang/modifyAst/utils.test'
 
 beforeAll(async () => {
   await initPromise
-
-  await new Promise((resolve) => {
-    engineCommandManager.start({
-      token: env().VITE_KITTYCAD_API_TOKEN,
-      width: 256,
-      height: 256,
-      setMediaStream: () => {},
-      setIsStreamReady: () => {},
-      callbackOnEngineLiteConnect: () => {
-        resolve(true)
-      },
-    })
-  })
+  await engineCommandManagerStartPromise
 }, 30_000)
 
 afterAll(() => {

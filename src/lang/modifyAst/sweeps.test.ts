@@ -14,9 +14,9 @@ import {
   addRevolve,
   addSweep,
 } from '@src/lang/modifyAst/sweeps'
-import { stringToKclExpression } from '@src/lib/kclHelpers'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
+import { getKclCommandValue } from '@src/lang/modifyAst/utils.test'
 
 async function getAstAndArtifactGraph(code: string) {
   const ast = assertParse(code)
@@ -50,15 +50,6 @@ async function getAstAndSketchSelections(code: string) {
   }
   const sketches = createSelectionFromPathArtifact(artifacts)
   return { ast, sketches }
-}
-
-async function getKclCommandValue(value: string) {
-  const result = await stringToKclExpression(value)
-  if (err(result) || 'errors' in result) {
-    throw new Error(`Couldn't create kcl expression`)
-  }
-
-  return result
 }
 
 async function runNewAstAndCheckForSweep(ast: Node<Program>) {

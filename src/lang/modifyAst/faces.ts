@@ -76,13 +76,14 @@ export function addShell({
         { key, types: ['segment'] },
         artifactGraph
       )
-      if (err(segmentArtifact)) {
+      if (err(segmentArtifact) || segmentArtifact.type !== 'segment') {
         console.warn('No segment found for face', face)
         return []
       }
 
+      console.log('segmentArtifact', segmentArtifact)
       const tagResult = mutateAstWithTagForSketchSegment(
-        ast,
+        modifiedAst,
         segmentArtifact.codeRef.pathToNode
       )
       if (err(tagResult)) {
