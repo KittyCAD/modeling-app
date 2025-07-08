@@ -294,6 +294,7 @@ contextBridge.exposeInMainWorld('electron', {
         'VITE_KC_SITE_APP_URL',
         'VITE_KC_CONNECTION_TIMEOUT_MS',
         'VITE_KITTYCAD_API_TOKEN',
+        'VITE_KITTYCAD_RUN_LOCALLY',
 
         'IS_PLAYWRIGHT',
 

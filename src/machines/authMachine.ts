@@ -144,6 +144,17 @@ async function getUser(input: { token?: string }) {
     'Content-Type': 'application/json',
   }
 
+  /**
+   * We do not want to store a token or a user since the developer is running
+   * the application locally. They know what they are doing.
+   */
+  if (env().VITE_KITTYCAD_RUN_LOCALLY === 'true') {
+    return {
+      user: {},
+      token: ''
+    }
+  }
+
   if (!token && isDesktop()) return Promise.reject(new Error('No token found'))
   if (token) headers['Authorization'] = `Bearer ${token}`
 
