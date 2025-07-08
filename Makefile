@@ -150,6 +150,7 @@ else
 	rm -rf public/kcl_wasm_lib_bg.wasm
 	rm -rf rust/*/bindings/ rust/*/pkg/ rust/target/
 	rm -rf node_modules/ rust/*/node_modules/
+	rm -rf out/
 endif
 
 .PHONY: help
