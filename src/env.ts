@@ -1,10 +1,10 @@
 type EnvironmentVariables = {
   readonly NODE_ENV: string | undefined
-  readonly VITE_KC_API_WS_MODELING_URL: string | undefined
+  readonly VITE_KITTYCAD_API_WEBSOCKET_URL: string | undefined
   readonly VITE_KITTYCAD_API_BASE_URL: string | undefined
-  readonly VITE_KC_SITE_BASE_URL: string | undefined
-  readonly VITE_KC_SITE_APP_URL: string | undefined
-  readonly VITE_KC_CONNECTION_TIMEOUT_MS: string | undefined
+  readonly VITE_KITTYCAD_SITE_BASE_URL: string | undefined
+  readonly VITE_KITTYCAD_SITE_APP_URL: string | undefined
+  readonly VITE_KITTYCAD_CONNECTION_TIMEOUT_MS: string | undefined
   readonly VITE_KITTYCAD_API_TOKEN: string | undefined
   readonly PROD: string | undefined
   readonly TEST: string | undefined
@@ -69,16 +69,18 @@ export default (): EnvironmentVariables => {
   }
   const environmentVariables: EnvironmentVariables = {
     NODE_ENV: (env.NODE_ENV as string) || undefined,
-    VITE_KC_API_WS_MODELING_URL:
-      (env.VITE_KC_API_WS_MODELING_URL as string) || undefined,
     VITE_KITTYCAD_API_BASE_URL:
       (env.VITE_KITTYCAD_API_BASE_URL as string) || undefined,
-    VITE_KC_SITE_BASE_URL: (env.VITE_KC_SITE_BASE_URL as string) || undefined,
-    VITE_KC_SITE_APP_URL: (env.VITE_KC_SITE_APP_URL as string) || undefined,
-    VITE_KC_CONNECTION_TIMEOUT_MS:
-      (env.VITE_KC_CONNECTION_TIMEOUT_MS as string) || undefined,
+    VITE_KITTYCAD_API_WEBSOCKET_URL:
+      (env.VITE_KITTYCAD_API_WEBSOCKET_URL as string) || undefined,
     VITE_KITTYCAD_API_TOKEN:
       (env.VITE_KITTYCAD_API_TOKEN as string) || undefined,
+    VITE_KITTYCAD_SITE_BASE_URL:
+      (env.VITE_KITTYCAD_SITE_BASE_URL as string) || undefined,
+    VITE_KITTYCAD_SITE_APP_URL:
+      (env.VITE_KITTYCAD_SITE_APP_URL as string) || undefined,
+    VITE_KITTYCAD_CONNECTION_TIMEOUT_MS:
+      (env.VITE_KITTYCAD_CONNECTION_TIMEOUT_MS as string) || undefined,
     PROD: PROD || undefined,
     TEST: (env.TEST as string) || undefined,
     DEV: DEV || undefined,
