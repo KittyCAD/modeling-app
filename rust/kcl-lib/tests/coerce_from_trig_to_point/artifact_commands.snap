@@ -116,5 +116,6 @@ description: Artifact commands coerce_from_trig_to_point.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

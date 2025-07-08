@@ -2987,5 +2987,6 @@ description: Operations executed import_async.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

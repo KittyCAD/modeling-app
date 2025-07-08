@@ -239,5 +239,6 @@ description: Operations executed assembly_mixed_units_cubes.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

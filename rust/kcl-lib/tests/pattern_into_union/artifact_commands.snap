@@ -1912,5 +1912,6 @@ description: Artifact commands pattern_into_union.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

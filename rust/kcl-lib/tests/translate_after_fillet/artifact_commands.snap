@@ -593,5 +593,6 @@ description: Artifact commands translate_after_fillet.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

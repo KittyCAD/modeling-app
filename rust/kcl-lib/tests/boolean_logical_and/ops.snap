@@ -321,5 +321,6 @@ description: Operations executed boolean_logical_and.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

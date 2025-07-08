@@ -135,5 +135,6 @@ description: Operations executed kw_fn_too_few_args.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

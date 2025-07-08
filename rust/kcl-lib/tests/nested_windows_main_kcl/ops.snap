@@ -236,5 +236,6 @@ description: Operations executed nested_windows_main_kcl.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

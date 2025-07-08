@@ -650,5 +650,6 @@ description: Artifact commands subtract_regression02.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

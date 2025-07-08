@@ -378,5 +378,6 @@ description: Artifact commands involute_circular_units.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }
