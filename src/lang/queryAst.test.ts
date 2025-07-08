@@ -16,6 +16,8 @@ import {
   findOperationArtifact,
   findUsesOfTagInPipe,
   getNodeFromPath,
+  getSelectedPlaneId,
+  getSelectedPlaneAsNode,
   hasSketchPipeBeenExtruded,
   isCursorInFunctionDefinition,
   isNodeSafeToReplace,
@@ -29,7 +31,7 @@ import { topLevelRange } from '@src/lang/util'
 import type { Identifier, PathToNode } from '@src/lang/wasm'
 import { assertParse, recast } from '@src/lang/wasm'
 import { initPromise } from '@src/lang/wasmUtils'
-import { type Selection } from '@src/lib/selections'
+import type { Selections, Selection } from '@src/lib/selections'
 import { enginelessExecutor } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
 import type { Plane } from '@rust/kcl-lib/bindings/Artifact'
@@ -825,5 +827,164 @@ part001 = startSketchOn(plane001)
       const operationNodePath = JSON.stringify(offsetPlaneOp.nodePath)
       expect(artifactNodePath).toBe(operationNodePath)
     }
+  })
+})
+
+describe('Testing getSelectedPlaneId', () => {
+  it('should return the id of the selected default plane', () => {
+    const selections: Selections = {
+      otherSelections: [
+        {
+          name: 'XY', // actually, this is lowercase during runtime ("xy")!
+          id: 'default-plane-xy-id',
+        },
+      ],
+      graphSelections: [],
+    }
+
+    const result = getSelectedPlaneId(selections)
+    expect(result).toBe('default-plane-xy-id')
+  })
+
+  it('should return the id of the selected offset plane', () => {
+    const selections: Selections = {
+      otherSelections: [],
+      graphSelections: [
+        {
+          artifact: {
+            type: 'plane' as const,
+            id: 'offset-plane-id',
+            pathIds: [],
+            codeRef: {
+              nodePath: {
+                steps: [],
+              },
+              range: [0, 10, 0] as [number, number, number],
+              pathToNode: [
+                ['body', ''],
+                [0, 'index'],
+              ] as PathToNode,
+            },
+          },
+          codeRef: {
+            range: [0, 10, 0] as [number, number, number],
+            pathToNode: [
+              ['body', ''],
+              [0, 'index'],
+            ] as PathToNode,
+          },
+        },
+      ],
+    }
+
+    const result = getSelectedPlaneId(selections)
+    expect(result).toBe('offset-plane-id')
+  })
+
+  it('should prioritize default plane over offset plane when both are selected', () => {
+    const mockPlaneArtifact = {
+      type: 'plane' as const,
+      id: 'offset-plane-id',
+      pathIds: [],
+      codeRef: {
+        range: [0, 10, 0] as [number, number, number],
+        nodePath: { steps: [] },
+        pathToNode: [
+          ['body', ''],
+          [0, 'index'],
+        ] as PathToNode,
+      },
+    }
+
+    const selections: Selections = {
+      otherSelections: [
+        {
+          name: 'XY',
+          id: 'default-plane-xy-id',
+        },
+      ],
+      graphSelections: [
+        {
+          artifact: mockPlaneArtifact,
+          codeRef: {
+            range: [0, 10, 0] as [number, number, number],
+            pathToNode: [
+              ['body', ''],
+              [0, 'index'],
+            ] as PathToNode,
+          },
+        },
+      ],
+    }
+
+    const result = getSelectedPlaneId(selections)
+    expect(result).toBe('default-plane-xy-id')
+  })
+
+  it('should return null when no plane is selected', () => {
+    const selections: Selections = {
+      otherSelections: ['x-axis'],
+      graphSelections: [
+        {
+          artifact: {
+            type: 'startSketchOnFace' as const,
+            id: 'segment-id',
+            faceId: 'face-id',
+            codeRef: {
+              range: [0, 10, 0] as [number, number, number],
+              nodePath: { steps: [] },
+              pathToNode: [
+                ['body', ''],
+                [0, 'index'],
+              ] as PathToNode,
+            },
+          },
+          codeRef: {
+            range: [0, 10, 0] as [number, number, number],
+            pathToNode: [
+              ['body', ''],
+              [0, 'index'],
+            ] as PathToNode,
+          },
+        },
+      ],
+    }
+
+    const result = getSelectedPlaneId(selections)
+    expect(result).toBeNull()
+  })
+
+  it('should return null when selection is empty', () => {
+    const selections: Selections = {
+      otherSelections: [],
+      graphSelections: [],
+    }
+
+    const result = getSelectedPlaneId(selections)
+    expect(result).toBeNull()
+  })
+})
+
+describe('Testing getSelectedPlaneAsNode', () => {
+  it('should return a Node<Literal> for default plane selection', () => {
+    const selections: Selections = {
+      otherSelections: [
+        {
+          name: 'XY',
+          id: 'default-plane-xy-id',
+        },
+      ],
+      graphSelections: [],
+    }
+
+    const result = getSelectedPlaneAsNode(selections)
+    expect(result).toBeTruthy()
+    expect(result?.type).toBe('Literal')
+    if (result?.type !== 'Literal') {
+      // To make TypeScript happy
+      throw new Error('Expected result to be a Literal node')
+    }
+
+    expect(result?.value).toBe('XY')
   })
 })
