@@ -145,12 +145,11 @@ clean: ## Delete all artifacts
 ifdef POWERSHELL
 	git clean --force -d -x --exclude=.env* --exclude=**/*.env
 else
-	rm -rf .vite/ build/
+	rm -rf .vite/ build/ out/
 	rm -rf trace.zip playwright-report/ test-results/
 	rm -rf public/kcl_wasm_lib_bg.wasm
 	rm -rf rust/*/bindings/ rust/*/pkg/ rust/target/
 	rm -rf node_modules/ rust/*/node_modules/
-	rm -rf out/
 endif
 
 .PHONY: help
