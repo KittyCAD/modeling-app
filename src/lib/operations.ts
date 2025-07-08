@@ -454,14 +454,15 @@ const prepareToEditShell: PrepareToEditCallback = async ({ operation }) => {
   }
 
   // Loop over face value to retrieve the corresponding artifacts and build the graphSelections
-  // TODO: check on non array values
-  if (
-    !operation.labeledArgs.faces ||
-    operation.labeledArgs.faces.value.type !== 'Array'
-  ) {
+  if (!operation.labeledArgs.faces) {
     return { reason: 'No faces argument found in operation' }
   }
-  const faceValues = operation.labeledArgs.faces.value.value
+  const faceValues: OpKclValue[] = []
+  if (operation.labeledArgs.faces.value.type === 'Array') {
+    faceValues.push(...operation.labeledArgs.faces.value.value)
+  } else {
+    faceValues.push(operation.labeledArgs.faces.value)
+  }
   const graphSelections: Selection[] = []
   for (const v of faceValues) {
     if (v.type === 'String' && v.value && candidates.has(v.value)) {

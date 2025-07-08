@@ -1,6 +1,6 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
-import type { Locator, Page } from '@playwright/test'
+import type { Page } from '@playwright/test'
 
 import type { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
 import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
@@ -3026,16 +3026,15 @@ extrude001 = extrude(sketch001, length = 30)
     }, initialCode)
 
     await page.setBodyDimensions({ width: 1000, height: 500 })
-
     await homePage.goToModelingScene()
-    await scene.connectionEstablished()
+    await scene.settled(cmdBar)
 
     // One dumb hardcoded screen pixel value
     // Any idea here how to select a cap without clicking in the scene?
     const testPoint = { x: 575, y: 200 }
     const [clickOnCap] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
     const shellDeclaration =
-      'shell001 = shell(extrude001, faces = END, thickness = 1)'
+      'shell001 = shell(extrude001, faces = END, thickness = 5)'
     const editedShellDeclaration =
       'shell001 = shell(extrude001, faces = END, thickness = 2)'
 
@@ -3082,21 +3081,20 @@ extrude001 = extrude(sketch001, length = 30)
         highlightedHeaderArg: 'thickness',
         commandName: 'Shell',
       })
-      await page.keyboard.insertText('1')
       await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         stage: 'review',
         headerArguments: {
           Solids: '1 sweep',
           Faces: '1 cap',
-          Thickness: '1',
+          Thickness: '5',
         },
         commandName: 'Shell',
       })
       await cmdBar.submit()
     })
 
-    await test.step(`Confirm code is added to the editor, scene has changed`, async () => {
+    await test.step(`Confirm code is added to the editor`, async () => {
       await editor.expectEditor.toContain(shellDeclaration)
       await editor.expectState({
         diagnostics: [],
@@ -3149,6 +3147,7 @@ extrude001 = extrude(sketch001, length = 30)
     })
   })
 
+  // TODO: move to unit tests
   const shellSketchOnFacesCases = [
     `@settings(defaultLengthUnit = in)
 sketch001 = startSketchOn(XZ)
