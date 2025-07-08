@@ -151,6 +151,7 @@ async fn inner_extrude(
                     start: tag_start.as_ref(),
                     end: tag_end.as_ref(),
                 },
+                extrude_method,
                 exec_state,
                 &args,
                 None,
@@ -175,6 +176,7 @@ pub(crate) async fn do_post_extrude<'a>(
     length: TyF64,
     sectional: bool,
     named_cap_tags: &'a NamedCapTags<'a>,
+    extrude_method: ExtrudeMethod,
     exec_state: &mut ExecState,
     args: &Args,
     edge_id: Option<Uuid>,
@@ -208,7 +210,10 @@ pub(crate) async fn do_post_extrude<'a>(
 
     // If we were sketching on a face, we need the original face id.
     if let SketchSurface::Face(ref face) = sketch.on {
-        sketch.id = face.solid.sketch.id;
+        // If we are creating a new body we need to preserve its new id.
+        if extrude_method != ExtrudeMethod::New {
+            sketch.id = face.solid.sketch.id;
+        }
     }
 
     let solid3d_info = exec_state
