@@ -158,6 +158,25 @@ export fn mirror2d(
 /// ```
 ///
 /// ```kcl
+/// // Move an imported model.
+///
+/// import "tests/inputs/cube.sldprt" as cube
+///
+/// // Circle so you actually see the move.
+/// startSketchOn(XY)
+///     |> circle(
+///         center = [-10, -10],
+///         radius = 10,
+///         )
+///     |> extrude(
+///     length = 10,
+///     )
+///
+/// cube
+///     |> translate(xyz = [10.0, 10.0, 2.5])
+/// ```
+///
+/// ```kcl
 /// // Sweep two sketches along the same path.
 ///
 /// sketch001 = startSketchOn(XY)
@@ -252,6 +271,8 @@ export fn translate(
   z?: number(Length) = 0,
   /// If true, the transform is applied in global space. The origin of the model will move. By default, the transform is applied in local sketch axis, therefore the origin will not move.
   global?: bool = false,  
+  /// If given, interpret this point as 3 distances, along each of [X, Y, Z] and translate by each of them.
+  xyz?: [number(Length); 3]
 ): [Solid; 1+] | [Sketch; 1+] | ImportedGeometry {}
 
 /// Rotate a solid or a sketch.
