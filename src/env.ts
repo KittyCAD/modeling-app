@@ -10,7 +10,6 @@ type EnvironmentVariables = {
   readonly TEST: string | undefined
   readonly DEV: string | undefined
   readonly CI: string | undefined
-  readonly VITE_KITTYCAD_RUN_LOCALLY: string | undefined
 }
 
 export const viteEnv = () => {
@@ -86,8 +85,6 @@ export default (): EnvironmentVariables => {
     TEST: (env.TEST as string) || undefined,
     DEV: DEV || undefined,
     CI: (env.CI as string) || undefined,
-    VITE_KITTYCAD_RUN_LOCALLY:
-      (env.VITE_KITTYCAD_RUN_LOCALLY as string) || undefined,
   }
   return environmentVariables
 }

@@ -148,7 +148,7 @@ async function getUser(input: { token?: string }) {
    * We do not want to store a token or a user since the developer is running
    * the application locally. They know what they are doing.
    */
-  if (env().VITE_KITTYCAD_RUN_LOCALLY === 'true') {
+  if (env().DEV && env().VITE_KITTYCAD_API_TOKEN === 'localhost') {
     return {
       user: {},
       token: '',
