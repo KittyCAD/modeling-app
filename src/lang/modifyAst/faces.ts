@@ -61,46 +61,11 @@ export function addShell({
   }
 
   const sketchesExpr = createVariableExpressionsArray(vars.exprs)
-  // TODO: move to util function
-  const facesExprs = faces.graphSelections.flatMap((face) => {
-    if (!face.artifact) {
-      console.warn('No artifact found for face', face)
-      return []
-    }
-    const artifact = face.artifact
-    if (artifact.type === 'cap') {
-      return createLiteral(artifact.subType)
-    } else if (artifact.type === 'wall') {
-      const key = artifact.segId
-      const segmentArtifact = getArtifactOfTypes(
-        { key, types: ['segment'] },
-        artifactGraph
-      )
-      if (err(segmentArtifact) || segmentArtifact.type !== 'segment') {
-        console.warn('No segment found for face', face)
-        return []
-      }
-
-      console.log('segmentArtifact', segmentArtifact)
-      const tagResult = mutateAstWithTagForSketchSegment(
-        modifiedAst,
-        segmentArtifact.codeRef.pathToNode
-      )
-      if (err(tagResult)) {
-        console.warn(
-          'Failed to mutate ast with tag for sketch segment',
-          tagResult
-        )
-        return []
-      }
-
-      return createLocalName(tagResult.tag)
-    } else {
-      console.warn('Face was not a cap or wall', face)
-      return []
-    }
-  })
-
+  const facesExprs = getFacesExprsFromSelection(
+    modifiedAst,
+    faces,
+    artifactGraph
+  )
   const call = createCallExpressionStdLibKw('shell', sketchesExpr, [
     createLabeledArg('faces', createArrayExpression(facesExprs)),
     createLabeledArg('thickness', valueOrVariable(thickness)),
@@ -127,4 +92,48 @@ export function addShell({
     modifiedAst,
     pathToNode,
   }
+}
+
+function getFacesExprsFromSelection(
+  ast: Node<Program>,
+  faces: Selections,
+  artifactGraph: ArtifactGraph
+) {
+  return faces.graphSelections.flatMap((face) => {
+    if (!face.artifact) {
+      console.warn('No artifact found for face', face)
+      return []
+    }
+    const artifact = face.artifact
+    if (artifact.type === 'cap') {
+      return createLiteral(artifact.subType)
+    } else if (artifact.type === 'wall') {
+      const key = artifact.segId
+      const segmentArtifact = getArtifactOfTypes(
+        { key, types: ['segment'] },
+        artifactGraph
+      )
+      if (err(segmentArtifact) || segmentArtifact.type !== 'segment') {
+        console.warn('No segment found for face', face)
+        return []
+      }
+
+      const tagResult = mutateAstWithTagForSketchSegment(
+        ast,
+        segmentArtifact.codeRef.pathToNode
+      )
+      if (err(tagResult)) {
+        console.warn(
+          'Failed to mutate ast with tag for sketch segment',
+          tagResult
+        )
+        return []
+      }
+
+      return createLocalName(tagResult.tag)
+    } else {
+      console.warn('Face was not a cap or wall', face)
+      return []
+    }
+  })
 }
