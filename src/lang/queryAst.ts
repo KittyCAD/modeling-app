@@ -1202,10 +1202,12 @@ export function getSelectedPlaneId(selectionRanges: Selections): string | null {
   return null
 }
 
-export function getSelectedPlane(
+export function getSelectedPlaneAsNode(
   selection: Selections
 ): Node<Name> | Node<Literal> | undefined {
-  const defaultPlane = selection.otherSelections[0]
+  const defaultPlane = selection.otherSelections.find(
+    (selection) => typeof selection === 'object' && 'name' in selection
+  )
   if (
     defaultPlane &&
     defaultPlane instanceof Object &&
@@ -1214,9 +1216,11 @@ export function getSelectedPlane(
     return createLiteral(defaultPlane.name.toUpperCase())
   }
 
-  const offsetPlane = selection.graphSelections[0]
-  if (offsetPlane.artifact?.type === 'plane') {
-    const artifactId = offsetPlane.artifact?.id
+  const offsetPlane = selection.graphSelections.find(
+    (sel) => sel.artifact?.type === 'plane'
+  )
+  if (offsetPlane?.artifact?.type === 'plane') {
+    const artifactId = offsetPlane.artifact.id
     const variableName = Object.entries(kclManager.variables).find(
       ([_, value]) => {
         return value?.type === 'Plane' && value.value?.artifactId === artifactId

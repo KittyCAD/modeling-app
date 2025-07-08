@@ -99,7 +99,7 @@ import {
   valueOrVariable,
   artifactIsPlaneWithPaths,
   isCursorInFunctionDefinition,
-  getSelectedPlane,
+  getSelectedPlaneAsNode,
 } from '@src/lang/queryAst'
 import {
   getFaceCodeRef,
@@ -2610,7 +2610,7 @@ export const modelingMachine = setup({
           insertIndex = nodeToEdit[1][0]
         }
 
-        const selectedPlane = getSelectedPlane(selection)
+        const selectedPlane = getSelectedPlaneAsNode(selection)
         if (!selectedPlane) {
           return trap('No plane selected')
         }
