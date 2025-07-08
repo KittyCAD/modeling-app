@@ -245,6 +245,7 @@ pub const TEST_NAMES: &[&str] = &[
     "std-transform-translate-2",
     "std-transform-translate-3",
     "std-transform-translate-4",
+    "std-transform-translate-5",
     "std-transform-rotate-0",
     "std-transform-rotate-1",
     "std-transform-rotate-2",
