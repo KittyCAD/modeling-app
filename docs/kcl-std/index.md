@@ -17,6 +17,7 @@ layout: manual
 * [**std::appearance**](/docs/kcl-std/modules/std-appearance)
   * [`appearance::hexString`](/docs/kcl-std/functions/std-appearance-hexString)
 * [**std::array**](/docs/kcl-std/modules/std-array)
+  * [`concat`](/docs/kcl-std/functions/std-array-concat)
   * [`map`](/docs/kcl-std/functions/std-array-map)
   * [`pop`](/docs/kcl-std/functions/std-array-pop)
   * [`push`](/docs/kcl-std/functions/std-array-push)

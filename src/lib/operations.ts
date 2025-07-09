@@ -4,7 +4,7 @@ import type { CustomIconName } from '@src/components/CustomIcon'
 import {
   getNodeFromPath,
   findPipesWithImportAlias,
-  getSketchSelectionsFromOperation,
+  retrieveSelectionsFromOpArg,
 } from '@src/lang/queryAst'
 import type { Artifact } from '@src/lang/std/artifactGraph'
 import {
@@ -115,8 +115,12 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({ operation }) => {
   }
 
   // 1. Map the unlabeled arguments to solid2d selections
-  const sketches = getSketchSelectionsFromOperation(
-    operation,
+  if (!operation.unlabeledArg) {
+    return { reason: `Couldn't retrieve operation arguments` }
+  }
+
+  const sketches = retrieveSelectionsFromOpArg(
+    operation.unlabeledArg,
     kclManager.artifactGraph
   )
   if (err(sketches)) {
@@ -213,8 +217,12 @@ const prepareToEditLoft: PrepareToEditCallback = async ({ operation }) => {
   }
 
   // 1. Map the unlabeled arguments to solid2d selections
-  const sketches = getSketchSelectionsFromOperation(
-    operation,
+  if (!operation.unlabeledArg) {
+    return { reason: `Couldn't retrieve operation arguments` }
+  }
+
+  const sketches = retrieveSelectionsFromOpArg(
+    operation.unlabeledArg,
     kclManager.artifactGraph
   )
   if (err(sketches)) {
@@ -561,8 +569,12 @@ const prepareToEditSweep: PrepareToEditCallback = async ({ operation }) => {
   }
 
   // 1. Map the unlabeled arguments to solid2d selections
-  const sketches = getSketchSelectionsFromOperation(
-    operation,
+  if (!operation.unlabeledArg) {
+    return { reason: `Couldn't retrieve operation arguments` }
+  }
+
+  const sketches = retrieveSelectionsFromOpArg(
+    operation.unlabeledArg,
     kclManager.artifactGraph
   )
   if (err(sketches)) {
@@ -928,8 +940,12 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
   }
 
   // 1. Map the unlabeled arguments to solid2d selections
-  const sketches = getSketchSelectionsFromOperation(
-    operation,
+  if (!operation.unlabeledArg) {
+    return { reason: `Couldn't retrieve operation arguments` }
+  }
+
+  const sketches = retrieveSelectionsFromOpArg(
+    operation.unlabeledArg,
     kclManager.artifactGraph
   )
   if (err(sketches)) {
