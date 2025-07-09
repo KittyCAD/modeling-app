@@ -1623,36 +1623,31 @@ extrude001 = extrude(profile001, length = 100)
     toolbar,
     cmdBar,
   }) => {
+    const circleCode1 = `circle(center = [0, 0], radius = 30)`
+    const circleCode2 = `circle(center = [0, 0], radius = 20)`
     const initialCode = `sketch001 = startSketchOn(XZ)
-  |> circle(center = [0, 0], radius = 30)
+  |> ${circleCode1}
 plane001 = offsetPlane(XZ, offset = 50)
 sketch002 = startSketchOn(plane001)
-  |> circle(center = [0, 0], radius = 20)
+  |> ${circleCode2}
       `
     await context.addInitScript((initialCode) => {
       localStorage.setItem('persistCode', initialCode)
     }, initialCode)
     await page.setBodyDimensions({ width: 1000, height: 500 })
     await homePage.goToModelingScene()
+    await scene.settled(cmdBar)
 
-    // One dumb hardcoded screen pixel value,
-    // can't think of another way to select two profiles, tried multi-cursor
-    // but it didn't work
-    const testPoint = { x: 575, y: 200 }
-    const [clickOnSketch1] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
-    const [clickOnSketch2] = scene.makeMouseHelpers(
-      testPoint.x,
-      testPoint.y + 80
-    )
     const loftDeclaration = 'loft001 = loft([sketch001, sketch002])'
     const editedLoftDeclaration =
       'loft001 = loft([sketch001, sketch002], vDegree = 3)'
+
     async function selectSketches() {
-      await clickOnSketch1()
-      await page.keyboard.down('Shift')
-      await clickOnSketch2()
-      await page.waitForTimeout(500)
-      await page.keyboard.up('Shift')
+      const multiCursorKey = process.platform === 'linux' ? 'Control' : 'Meta'
+      await editor.selectText(circleCode1)
+      await page.keyboard.down(multiCursorKey)
+      await page.getByText(circleCode2).click()
+      await page.keyboard.up(multiCursorKey)
     }
 
     await test.step(`Go through the command bar flow without preselected sketches`, async () => {
@@ -1679,6 +1674,7 @@ sketch002 = startSketchOn(plane001)
     })
 
     await test.step(`Confirm code is added to the editor`, async () => {
+      await scene.settled(cmdBar)
       await editor.expectEditor.toContain(loftDeclaration)
       await editor.expectState({
         diagnostics: [],
@@ -1717,6 +1713,7 @@ sketch002 = startSketchOn(plane001)
         commandName: 'Loft',
       })
       await cmdBar.submit()
+      await scene.settled(cmdBar)
       await editor.expectEditor.toContain(editedLoftDeclaration)
     })
 
@@ -1725,6 +1722,8 @@ sketch002 = startSketchOn(plane001)
       const operationButton = await toolbar.getFeatureTreeOperation('Loft', 0)
       await operationButton.click({ button: 'left' })
       await page.keyboard.press('Delete')
+      await scene.settled(cmdBar)
+      await editor.expectEditor.not.toContain(editedLoftDeclaration)
     })
   })
 
