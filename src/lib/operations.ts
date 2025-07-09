@@ -1,6 +1,7 @@
 import type { OpKclValue, Operation } from '@rust/kcl-lib/bindings/Operation'
 
 import type { CustomIconName } from '@src/components/CustomIcon'
+import { retrieveFaceSelectionsFromOpArgs } from '@src/lang/modifyAst/faces'
 import {
   getNodeFromPath,
   findPipesWithImportAlias,
@@ -9,7 +10,6 @@ import {
 import type { Artifact } from '@src/lang/std/artifactGraph'
 import {
   getArtifactOfTypes,
-  getCapCodeRef,
   getEdgeCutConsumedCodeRef,
   getSweepEdgeCodeRef,
   getWallCodeRef,
@@ -31,7 +31,7 @@ import {
   retrieveArgFromPipedCallExpression,
 } from '@src/lib/kclHelpers'
 import { isDefaultPlaneStr } from '@src/lib/planes'
-import type { Selection, Selections } from '@src/lib/selections'
+import type { Selections } from '@src/lib/selections'
 import { codeManager, kclManager, rustContext } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
 import type { CommandBarMachineEvent } from '@src/machines/commandBarMachine'
@@ -376,18 +376,21 @@ const prepareToEditShell: PrepareToEditCallback = async ({ operation }) => {
     return { reason: 'Wrong operation type' }
   }
 
-  // 1. Map the unlabeled arguments to solid2d selections
-  if (!operation.unlabeledArg) {
+  // 1. Map the unlabeled and faces arguments to solid2d selections
+  if (!operation.unlabeledArg || !operation.labeledArgs?.faces) {
     return { reason: `Couldn't retrieve operation arguments` }
   }
 
-  const solids = retrieveSelectionsFromOpArg(
+  const result = retrieveFaceSelectionsFromOpArgs(
     operation.unlabeledArg,
+    operation.labeledArgs.faces,
     kclManager.artifactGraph
   )
-  if (err(solids)) {
-    return { reason: "Couldn't retrieve sketches" }
+  if (err(result)) {
+    return { reason: "Couldn't retrieve faces argument" }
   }
+
+  const { solids, faces } = result
 
   // 2. Convert the thickness argument from a string to a KCL expression
   const thickness = await stringToKclExpression(
@@ -399,87 +402,6 @@ const prepareToEditShell: PrepareToEditCallback = async ({ operation }) => {
   if (err(thickness) || 'errors' in thickness) {
     return { reason: "Couldn't retrieve thickness argument" }
   }
-
-  // TODO: move the blocks below to a utility function and add unit tests for different ops
-  // NEEDS TO HAPPEN BEFORE WE MERGE
-  // Mapping back the faces: this can probably be cleaned up
-  // Build an artifact map here of eligible artifacts corresponding to our current sweep
-  // that we can query in another loop later
-  let value
-  if (operation.unlabeledArg.value.type === 'Solid') {
-    value = operation.unlabeledArg.value.value
-  } else if (
-    operation.unlabeledArg.value.type === 'Array' &&
-    operation.unlabeledArg.value.value[0].type === 'Solid'
-  ) {
-    value = operation.unlabeledArg.value.value[0].value
-  } else {
-    return { reason: 'Unlabeled argument is not a Solid or Array of SOlid' }
-  }
-
-  const sweepId = value.artifactId
-  const candidates: Map<string, Selection> = new Map()
-  for (const artifact of kclManager.artifactGraph.values()) {
-    if (
-      artifact.type === 'cap' &&
-      artifact.sweepId === sweepId &&
-      artifact.subType
-    ) {
-      const codeRef = getCapCodeRef(artifact, kclManager.artifactGraph)
-      if (err(codeRef)) {
-        return baseCommand
-      }
-
-      candidates.set(artifact.subType, {
-        artifact,
-        codeRef,
-      })
-    } else if (
-      artifact.type === 'wall' &&
-      artifact.sweepId === sweepId &&
-      artifact.segId
-    ) {
-      const segArtifact = getArtifactOfTypes(
-        { key: artifact.segId, types: ['segment'] },
-        kclManager.artifactGraph
-      )
-      if (err(segArtifact)) {
-        return baseCommand
-      }
-
-      const { codeRef } = segArtifact
-      candidates.set(artifact.segId, {
-        artifact,
-        codeRef,
-      })
-    }
-  }
-
-  // Loop over face value to retrieve the corresponding artifacts and build the graphSelections
-  if (!operation.labeledArgs.faces) {
-    return { reason: 'No faces argument found in operation' }
-  }
-  const faceValues: OpKclValue[] = []
-  if (operation.labeledArgs.faces.value.type === 'Array') {
-    faceValues.push(...operation.labeledArgs.faces.value.value)
-  } else {
-    faceValues.push(operation.labeledArgs.faces.value)
-  }
-  const graphSelections: Selection[] = []
-  for (const v of faceValues) {
-    if (v.type === 'String' && v.value && candidates.has(v.value)) {
-      graphSelections.push(candidates.get(v.value)!)
-    } else if (
-      v.type === 'TagIdentifier' &&
-      v.artifact_id &&
-      candidates.has(v.artifact_id)
-    ) {
-      graphSelections.push(candidates.get(v.artifact_id)!)
-    } else {
-      return baseCommand
-    }
-  }
-  const faces: Selections = { graphSelections, otherSelections: [] }
 
   // 3. Assemble the default argument values for the command,
   // with `nodeToEdit` set, which will let the actor know

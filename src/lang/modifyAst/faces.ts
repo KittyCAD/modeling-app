@@ -13,14 +13,16 @@ import {
 } from '@src/lang/modifyAst'
 import {
   getVariableExprsFromSelection,
+  retrieveSelectionsFromOpArg,
   valueOrVariable,
 } from '@src/lang/queryAst'
 import type { ArtifactGraph, PathToNode, Program } from '@src/lang/wasm'
 import type { KclCommandValue } from '@src/lib/commandTypes'
-import type { Selections } from '@src/lib/selections'
+import type { Selection, Selections } from '@src/lib/selections'
 import { err } from '@src/lib/trap'
 import { mutateAstWithTagForSketchSegment } from '@src/lang/modifyAst/addEdgeTreatment'
-import { getArtifactOfTypes } from '@src/lang/std/artifactGraph'
+import { getArtifactOfTypes, getCapCodeRef } from '@src/lang/std/artifactGraph'
+import type { OpArg, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
 
 export function addShell({
   ast,
@@ -140,4 +142,85 @@ function getFacesExprsFromSelection(
       return []
     }
   })
+}
+
+// Sort of an opposite of getFacesExprsFromSelection above, used for edit flows
+export function retrieveFaceSelectionsFromOpArgs(
+  solidsArg: OpArg,
+  facesArg: OpArg,
+  artifactGraph: ArtifactGraph
+) {
+  const solids = retrieveSelectionsFromOpArg(solidsArg, artifactGraph)
+  if (err(solids)) {
+    return solids
+  }
+
+  // TODO: need to support multiple solids there
+  const sweepArtifact = solids.graphSelections[0]?.artifact
+  if (!sweepArtifact || sweepArtifact.type !== 'sweep') {
+    return new Error('No sweep artifact found in solids selection')
+  }
+  const sweepId = sweepArtifact.id
+  const candidates: Map<string, Selection> = new Map()
+  for (const artifact of artifactGraph.values()) {
+    if (
+      artifact.type === 'cap' &&
+      artifact.sweepId === sweepId &&
+      artifact.subType
+    ) {
+      const codeRef = getCapCodeRef(artifact, artifactGraph)
+      if (err(codeRef)) {
+        return codeRef
+      }
+
+      candidates.set(artifact.subType, {
+        artifact,
+        codeRef,
+      })
+    } else if (
+      artifact.type === 'wall' &&
+      artifact.sweepId === sweepId &&
+      artifact.segId
+    ) {
+      const segArtifact = getArtifactOfTypes(
+        { key: artifact.segId, types: ['segment'] },
+        artifactGraph
+      )
+      if (err(segArtifact)) {
+        return segArtifact
+      }
+
+      const { codeRef } = segArtifact
+      candidates.set(artifact.segId, {
+        artifact,
+        codeRef,
+      })
+    }
+  }
+
+  // Loop over face value to retrieve the corresponding artifacts and build the graphSelections
+  const faceValues: OpKclValue[] = []
+  if (facesArg.value.type === 'Array') {
+    faceValues.push(...facesArg.value.value)
+  } else {
+    faceValues.push(facesArg.value)
+  }
+  const graphSelections: Selection[] = []
+  for (const v of faceValues) {
+    if (v.type === 'String' && v.value && candidates.has(v.value)) {
+      graphSelections.push(candidates.get(v.value)!)
+    } else if (
+      v.type === 'TagIdentifier' &&
+      v.artifact_id &&
+      candidates.has(v.artifact_id)
+    ) {
+      graphSelections.push(candidates.get(v.artifact_id)!)
+    } else {
+      console.warn('Face value is not a String or TagIdentifier', v)
+      continue
+    }
+  }
+
+  const faces = { graphSelections, otherSelections: [] }
+  return { solids, faces }
 }

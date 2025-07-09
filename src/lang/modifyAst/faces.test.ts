@@ -7,13 +7,16 @@ import {
 import type { Selection, Selections } from '@src/lib/selections'
 import { enginelessExecutor } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
-import { addShell } from '@src/lang/modifyAst/faces'
+import {
+  addShell,
+  retrieveFaceSelectionsFromOpArgs,
+} from '@src/lang/modifyAst/faces'
 import { initPromise } from '@src/lang/wasmUtils'
 import { engineCommandManager, kclManager } from '@src/lib/singletons'
 import { getCodeRefsByArtifactId } from '@src/lang/std/artifactGraph'
 import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
-import { KclCommandValue } from '@src/lib/commandTypes'
+import type { KclCommandValue } from '@src/lib/commandTypes'
 import env from '@src/env'
 
 // Unfortunately, we need the real engine here it seems to get sweep faces populated
@@ -44,7 +47,7 @@ async function getAstAndArtifactGraph(code: string) {
   const artifactGraph = kclManager.artifactGraph
 
   expect(kclManager.errors).toEqual([])
-  return { ast, artifactGraph }
+  return { ast, artifactGraph, operations: kclManager.execState.operations }
 }
 
 function createSelectionFromArtifacts(
@@ -77,6 +80,27 @@ async function getAstAndSolidSelections(code: string) {
   const solids = createSelectionFromArtifacts(artifacts, artifactGraph)
   return { artifactGraph, ast, solids }
 }
+
+// More complex shell case
+const multiSolids = `size = 100
+case = startSketchOn(XY)
+  |> startProfile(at = [-size, -size])
+  |> line(end = [2 * size, 0])
+  |> line(end = [0, 2 * size])
+  |> tangentialArc(endAbsolute = [-size, size])
+  |> close()
+  |> extrude(length = 65)
+
+thing1 = startSketchOn(case, face = END)
+  |> circle(center = [-size / 2, -size / 2], radius = 25)
+  |> extrude(length = 50)
+
+thing2 = startSketchOn(case, face = END)
+  |> circle(center = [size / 2, -size / 2], radius = 25)
+  |> extrude(length = 50)`
+
+const multiSolidsShell = `${multiSolids}
+shell001 = shell([thing1, thing2], faces = [END, END], thickness = 5)`
 
 describe('Testing addShell', () => {
   const cylinder = `sketch001 = startSketchOn(XY)
@@ -203,23 +227,7 @@ shell001 = shell(extrude001, faces = [seg01, seg02], thickness = 2)`)
 
   it('should add a shell on two related sweeps end faces', async () => {
     // Code from https://github.com/KittyCAD/modeling-app/blob/21f11c369e1e4bcb6d2514d1150ba5e13138fe32/docs/kcl-std/functions/std-solid-shell.md#L154-L155
-    const code = `size = 100
-case = startSketchOn(XY)
-  |> startProfile(at = [-size, -size])
-  |> line(end = [2 * size, 0])
-  |> line(end = [0, 2 * size])
-  |> tangentialArc(endAbsolute = [-size, size])
-  |> close()
-  |> extrude(length = 65)
-
-thing1 = startSketchOn(case, face = END)
-  |> circle(center = [-size / 2, -size / 2], radius = 25)
-  |> extrude(length = 50)
-
-thing2 = startSketchOn(case, face = END)
-  |> circle(center = [size / 2, -size / 2], radius = 25)
-  |> extrude(length = 50)`
-    const { ast, artifactGraph } = await getAstAndArtifactGraph(code)
+    const { ast, artifactGraph } = await getAstAndArtifactGraph(multiSolids)
     const lastTwoSweeps = [...artifactGraph.values()]
       .filter((a) => a.type === 'sweep')
       .slice(-2)
@@ -235,10 +243,80 @@ thing2 = startSketchOn(case, face = END)
     }
 
     const newCode = recast(result.modifiedAst)
-    expect(newCode).toContain(code)
-    expect(newCode).toContain(`
-shell001 = shell([thing1, thing2], faces = [END, END], thickness = 5)
-`)
+    expect(newCode).toContain(multiSolidsShell)
     await enginelessExecutor(ast)
+  })
+})
+
+describe('Testing retrieveFaceSelectionsFromOpArgs', () => {
+  it('should find the solid and face of basic shell on cylinder cap', async () => {
+    const circleProfileInVar = `sketch001 = startSketchOn(XY)
+profile001 = circle(sketch001, center = [0, 0], radius = 1)
+extrude001 = extrude(profile001, length = 1)
+shell001 = shell(extrude001, faces = END, thickness = 0.1)
+`
+    const { artifactGraph, operations } =
+      await getAstAndArtifactGraph(circleProfileInVar)
+    const op = operations.find(
+      (o) => o.type === 'StdLibCall' && o.name === 'shell'
+    )
+    if (
+      !op ||
+      op.type !== 'StdLibCall' ||
+      !op.unlabeledArg ||
+      !op.labeledArgs?.faces
+    ) {
+      throw new Error('Extrude operation not found')
+    }
+
+    const selections = retrieveFaceSelectionsFromOpArgs(
+      op.unlabeledArg,
+      op.labeledArgs.faces,
+      artifactGraph
+    )
+    if (err(selections)) throw selections
+
+    console.log('Selections:', selections)
+    expect(selections.solids.graphSelections).toHaveLength(1)
+    const solid = selections.solids.graphSelections[0]
+    if (!solid.artifact) {
+      throw new Error('Artifact not found in the selection')
+    }
+    expect(solid.artifact.type).toEqual('sweep')
+
+    expect(selections.faces.graphSelections).toHaveLength(1)
+    const face = selections.faces.graphSelections[0]
+    if (!face.artifact || face.artifact.type !== 'cap') {
+      throw new Error('Artifact not found in the selection')
+    }
+    expect(face.artifact.subType).toEqual('end')
+    expect(face.artifact.sweepId).toEqual(solid.artifact.id)
+  })
+
+  it('should find the sweeps and faces of complex shell', async () => {
+    const { artifactGraph, operations } =
+      await getAstAndArtifactGraph(multiSolidsShell)
+    const op = operations.find(
+      (o) => o.type === 'StdLibCall' && o.name === 'shell'
+    )
+    if (
+      !op ||
+      op.type !== 'StdLibCall' ||
+      !op.unlabeledArg ||
+      !op.labeledArgs?.faces
+    ) {
+      throw new Error('Extrude operation not found')
+    }
+
+    const selections = retrieveFaceSelectionsFromOpArgs(
+      op.unlabeledArg,
+      op.labeledArgs.faces,
+      artifactGraph
+    )
+    if (err(selections)) throw selections
+
+    console.log('Selections:', selections)
+    expect(selections.solids.graphSelections).toHaveLength(2)
+    expect(selections.faces.graphSelections).toHaveLength(2)
   })
 })
