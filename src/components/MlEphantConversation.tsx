@@ -128,16 +128,20 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
     }
   }, [props.prompts.length])
 
-  const onProcess = (requestedPrompt: string) => {
+  const onProcess = async (requestedPrompt: string) => {
     if (!props.hasSelection) {
       mlEphantManagerActor.send({
         type: MlEphantManagerTransitions.PromptCreateModel,
         prompt: requestedPrompt,
       })
     } else {
+      const projectFiles = await collectProjectFiles()
       mlEphantManagerActor.send({
         type: MlEphantManagerTransitions.PromptEditModel,
         prompt: requestedPrompt,
+        selections: props.selections,
+        projectFiles,
+        artifactGraph: props.artifactGraph,
       })
     }
   }

@@ -7,8 +7,8 @@ import {
 } from '@src/machines/mlEphantManagerMachine'
 import { Prompt } from '@src/lib/prompt'
 
-const hasMlEditableSelection = (graphSelections) => {
-  return graphSelections.length > 0
+const hasMlEditableSelection = (graphSelections, codeSelections) => {
+  return graphSelections.length > 0 || codeSelections.length > 0
 }
 
 const hasPromptsPending = (promptsPool: Prompt[]) => {
@@ -34,8 +34,11 @@ export const MlEphantConversationPane = () => {
   return (
     <MlEphantConversation
       prompts={prompts}
+      selections={context.selectionRanges}
+      artifactGraph={kclManager.artifactGraph}
       hasSelection={hasMlEditableSelection(
-        context.selectionRanges.graphSelections
+        context.selectionRanges.graphSelections,
+        context.selectionRanges.otherSelections
       )}
       disabled={hasPromptsPending(prompts)}
     />

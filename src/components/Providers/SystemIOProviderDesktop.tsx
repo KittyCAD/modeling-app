@@ -267,31 +267,21 @@ export function SystemIOMachineLogicListenerDesktop() {
     }, [requestedTextToCadGeneration])
   }
 
-  const createCorrespondingFileForPromptWithId =
-    (context: MlEphantManagerContext) => (promptId: Prompt['id']) => {
-      const prompt = context.promptsPool.get(promptId)
-      if (prompt === undefined) return
-      const promptProjectName = context.promptsMeta.get(promptId)?.projectPath
-      if (promptProjectName === undefined) {
-        console.warn('No associated project path for this prompt, ignoring')
-        return
-      }
-
-      systemIOActor.send({
-        type: SystemIOMachineEvents.importFileFromURL,
-        data: {
-          requestedProjectName: promptProjectName,
-          requestedCode: prompt.code,
-          requestedFileNameWithExtension: PROJECT_ENTRYPOINT,
-        },
-      })
-    }
+  const createCorrespondingFileForPromptWithId = (prompt: Prompt) => {
+    systemIOActor.send({
+      type: SystemIOMachineEvents.importFileFromURL,
+      data: {
+        requestedProjectName: promptProjectName,
+        requestedCode: prompt.code,
+        requestedFileNameWithExtension: PROJECT_ENTRYPOINT,
+      },
+    })
+  }
 
   useEffect(() => {
     const subscription = mlEphantManagerActor.subscribe((next) => {
-      console.log(next.value?.ready)
       if (
-        next.matches(
+        !next.matches(
           MlEphantManagerStates.Ready +
             '.' +
             MlEphantManagerStates.Background +
@@ -299,10 +289,22 @@ export function SystemIOMachineLogicListenerDesktop() {
             MlEphantManagerTransitions.GetPromptsPendingStatuses
         )
       ) {
-        next.context.promptsInProgressToCompleted.promptsBelongingToProject.forEach(
-          createCorrespondingFileForPromptWithId(next.context)
-        )
+        return
       }
+
+      next.context.promptsInProgressToCompleted.promptsBelongingToProject.forEach(
+        (promptId: Prompt['id']) => {
+          const prompt = context.promptsPool.get(promptId)
+          if (prompt === undefined) return
+          const promptsMeta = context.promptsMeta.get(prompt.id)
+          if (promptsMeta === undefined) {
+            console.warn('No metadata for this prompt - ignoring.')
+            return
+          }
+
+          createCorrespondingFileForPromptWithId(prompt)
+        }
+      )
     })
     return () => {
       subscription.unsubscribe()
