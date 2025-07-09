@@ -176,23 +176,23 @@ export fn pop(
 /// ```kcl
 /// arr1 = [10, 20, 30]
 /// arr2 = [40, 50, 60]
-/// new_arr = concat(arr1, items = arr2)
-/// assert(new_arr[0], isEqualTo = 10, tolerance = 0.00001)
-/// assert(new_arr[1], isEqualTo = 20, tolerance = 0.00001)
-/// assert(new_arr[2], isEqualTo = 30, tolerance = 0.00001)
-/// assert(new_arr[3], isEqualTo = 40, tolerance = 0.00001)
-/// assert(new_arr[4], isEqualTo = 50, tolerance = 0.00001)
-/// assert(new_arr[5], isEqualTo = 60, tolerance = 0.00001)
-/// assert(count(new_arr), isEqualTo = 6, tolerance = 0.00001)
+/// newArr = concat(arr1, items = arr2)
+/// assert(newArr[0], isEqualTo = 10, tolerance = 0.00001)
+/// assert(newArr[1], isEqualTo = 20, tolerance = 0.00001)
+/// assert(newArr[2], isEqualTo = 30, tolerance = 0.00001)
+/// assert(newArr[3], isEqualTo = 40, tolerance = 0.00001)
+/// assert(newArr[4], isEqualTo = 50, tolerance = 0.00001)
+/// assert(newArr[5], isEqualTo = 60, tolerance = 0.00001)
+/// assert(count(newArr), isEqualTo = 6, tolerance = 0.00001)
 /// ```
 ///
 /// ```kcl
 /// // Concatenating an empty array has no effect.
-/// new_arr = concat([10, 20, 30], items = [])
-/// assert(new_arr[0], isEqualTo = 10, tolerance = 0.00001)
-/// assert(new_arr[1], isEqualTo = 20, tolerance = 0.00001)
-/// assert(new_arr[2], isEqualTo = 30, tolerance = 0.00001)
-/// assert(count(new_arr), isEqualTo = 3, tolerance = 0.00001)
+/// newArr = concat([10, 20, 30], items = [])
+/// assert(newArr[0], isEqualTo = 10, tolerance = 0.00001)
+/// assert(newArr[1], isEqualTo = 20, tolerance = 0.00001)
+/// assert(newArr[2], isEqualTo = 30, tolerance = 0.00001)
+/// assert(count(newArr), isEqualTo = 3, tolerance = 0.00001)
 /// ```
 @(impl = std_rust)
 export fn concat(
