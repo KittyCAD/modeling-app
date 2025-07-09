@@ -14,10 +14,7 @@ import {
 import { updateModelingState } from '@src/lang/modelingWorkflows'
 import { getNodeFromPath } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
-import {
-  getCodeRefsByArtifactId,
-  getFaceCodeRef,
-} from '@src/lang/std/artifactGraph'
+import { getFaceCodeRef } from '@src/lang/std/artifactGraph'
 import type { EngineCommandManager } from '@src/lang/std/engineConnection'
 import type {
   Artifact,
@@ -162,8 +159,8 @@ export function findAllChildrenAndOrderByPlaceInCode(
     for (const id of stringIds) {
       const artifact = artifactGraph.get(id)
       if (artifact) {
-        const codeRefs = getCodeRefsByArtifactId(id, artifactGraph)
-        if (codeRefs && codeRefs[0] && codeRefs[0].range[1] > 0) {
+        const codeRef = getFaceCodeRef(artifact)
+        if (codeRef && codeRef.range[1] > 0) {
           artifactsWithCodeRefs.push(artifact)
         }
       }

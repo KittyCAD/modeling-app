@@ -11,16 +11,26 @@ import { addShell } from '@src/lang/modifyAst/faces'
 import { initPromise } from '@src/lang/wasmUtils'
 import { engineCommandManager, kclManager } from '@src/lib/singletons'
 import { getCodeRefsByArtifactId } from '@src/lang/std/artifactGraph'
-import {
-  engineCommandManagerStartPromise,
-  getKclCommandValue,
-} from '@src/lang/modifyAst/utils.test'
 import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
+import { stringToKclExpression } from '@src/lib/kclHelpers'
+import { KclCommandValue } from '@src/lib/commandTypes'
+import env from '@src/env'
 
 // Unfortunately, we need the real engine here it seems to get sweep faces populated
 beforeAll(async () => {
   await initPromise
-  await engineCommandManagerStartPromise
+  await new Promise((resolve) => {
+    engineCommandManager.start({
+      token: env().VITE_KITTYCAD_API_TOKEN,
+      width: 256,
+      height: 256,
+      setMediaStream: () => {},
+      setIsStreamReady: () => {},
+      callbackOnEngineLiteConnect: () => {
+        resolve(true)
+      },
+    })
+  })
 }, 30_000)
 
 afterAll(() => {
@@ -84,7 +94,7 @@ extrude001 = extrude(profile001, length = 10)`
     const { artifactGraph, ast, solids } =
       await getAstAndSolidSelections(cylinder)
     const faces = getCapFromCylinder(artifactGraph)
-    const thickness = await getKclCommandValue('1')
+    const thickness = (await stringToKclExpression('1')) as KclCommandValue
     const result = addShell({ ast, artifactGraph, solids, faces, thickness })
     if (err(result)) {
       throw result
@@ -104,7 +114,7 @@ shell001 = shell(extrude001, faces = END, thickness = 1)
 `
     const { artifactGraph, ast, solids } = await getAstAndSolidSelections(code)
     const faces = getCapFromCylinder(artifactGraph)
-    const thickness = await getKclCommandValue('2')
+    const thickness = (await stringToKclExpression('2')) as KclCommandValue
     const nodeToEdit = createPathToNodeForLastVariable(ast)
     const result = addShell({
       ast,
@@ -154,7 +164,7 @@ extrude001 = extrude(profile001, length = 10)`
   it('should add a shell call on box for 2 walls', async () => {
     const { artifactGraph, ast, solids } = await getAstAndSolidSelections(box)
     const faces = getTwoFacesFromBox(artifactGraph)
-    const thickness = await getKclCommandValue('1')
+    const thickness = (await stringToKclExpression('1')) as KclCommandValue
     const result = addShell({ ast, artifactGraph, solids, faces, thickness })
     if (err(result)) {
       throw result
@@ -171,7 +181,7 @@ shell001 = shell(extrude001, faces = [seg01, seg02], thickness = 1)`)
       await getAstAndSolidSelections(`${boxWithTwoTags}
 shell001 = shell(extrude001, faces = [seg01, seg02], thickness = 1)`)
     const faces = getTwoFacesFromBox(artifactGraph)
-    const thickness = await getKclCommandValue('2')
+    const thickness = (await stringToKclExpression('2')) as KclCommandValue
     const nodeToEdit = createPathToNodeForLastVariable(ast)
     const result = addShell({
       ast,
@@ -218,7 +228,7 @@ thing2 = startSketchOn(case, face = END)
       .filter((a) => a.type === 'cap' && a.subType === 'end')
       .slice(0, 2)
     const faces = createSelectionFromArtifacts(twoCaps, artifactGraph)
-    const thickness = await getKclCommandValue('5')
+    const thickness = (await stringToKclExpression('5')) as KclCommandValue
     const result = addShell({ ast, artifactGraph, solids, faces, thickness })
     if (err(result)) {
       throw result
