@@ -100,8 +100,8 @@ export default (): EnvironmentVariables => {
    * e.g. View this sample -> button would be pointing to production if built with the production .env
    */
   let API_URL = env.VITE_KITTYCAD_API_BASE_URL
-  let SITE_URL = env.VITE_KC_SITE_BASE_URL
-  let WEBSOCKET_URL = env.VITE_KC_API_WS_MODELING_URL
+  let SITE_URL = env.VITE_KITTYCAD_SITE_BASE_URL
+  let WEBSOCKET_URL = env.VITE_KITTYCAD_API_WEBSOCKET_URL
 
   /**
    * If you are desktop, see if you have any runtime environment which can be read from disk and

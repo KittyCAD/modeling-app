@@ -3,7 +3,7 @@ import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes
 import Tooltip, { type TooltipProps } from '@src/components/Tooltip'
 import { ActionIcon } from '@src/components/ActionIcon'
 import { Popover } from '@headlessui/react'
-import { EnvironmentChipDevelopment } from '@src/components/environment/Banner'
+import { EnvironmentChip } from '@src/components/environment/EnvironmentDisplays'
 
 export function StatusBar({
   globalItems,
@@ -23,7 +23,7 @@ export function StatusBar({
         ))}
       </menu>
       <menu id="statusbar-locals" className="flex items-stretch">
-        <EnvironmentChipDevelopment></EnvironmentChipDevelopment>
+        <EnvironmentChip></EnvironmentChip>
         {localItems.map((item) => (
           <StatusBarItem key={item.id} {...item} position="right" />
         ))}
