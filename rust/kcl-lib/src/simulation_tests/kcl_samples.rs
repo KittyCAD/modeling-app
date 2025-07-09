@@ -289,9 +289,7 @@ fn get_kcl_metadata(project_path: &Path, files: &[String]) -> Option<KclMetadata
 }
 
 // Some samples may be temporarily disabled for various reasons
-static disabled_samples = vec![
-    "ball-joint-rod-end",
-];
+const DISABLED_SAMPLES: [&'static str; 1] = ["ball-joint-rod-end"];
 
 // Function to scan the directory and generate the manifest.json
 fn generate_kcl_manifest(dir: &Path) -> Result<()> {
@@ -302,11 +300,11 @@ fn generate_kcl_manifest(dir: &Path) -> Result<()> {
         .follow_links(true)
         .into_iter()
         .filter_map(|e| e.ok())
+        .filter(|e| !DISABLED_SAMPLES.contains(&e.file_name().to_string_lossy().as_ref()))
         .collect();
 
     // Sort directories by name for consistent ordering
     entries.sort_by_key(|a| a.file_name().to_string_lossy().to_string());
-    entries.filter(|e| !disabled_samples.contains(e.file_name().to_string_lossy().to_string()));
 
     // Loop through all directories and add to manifest if KCL sample
     for entry in entries {
