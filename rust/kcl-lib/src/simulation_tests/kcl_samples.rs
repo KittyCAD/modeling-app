@@ -289,7 +289,7 @@ fn get_kcl_metadata(project_path: &Path, files: &[String]) -> Option<KclMetadata
 }
 
 // Some samples may be temporarily disabled for various reasons
-const DISABLED_SAMPLES: [&'static str; 1] = ["ball-joint-rod-end"];
+const DISABLED_SAMPLES: [&str; 1] = ["ball-joint-rod-end"];
 
 // Function to scan the directory and generate the manifest.json
 fn generate_kcl_manifest(dir: &Path) -> Result<()> {
