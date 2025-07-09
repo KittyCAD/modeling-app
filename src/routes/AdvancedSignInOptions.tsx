@@ -7,8 +7,8 @@ export const AdvancedSignInOptions = ({
   signInDesktopDevelopment,
   signInDesktopProduction,
 }: {
-  signInDesktopDevelopment: AsyncFn<() => {}>
-  signInDesktopProduction: AsyncFn<() => {}>
+  signInDesktopDevelopment: AsyncFn<() => void>
+  signInDesktopProduction: AsyncFn<() => void>
 }) => {
   const [showSignInOptions, setShowSignInOptions] = useState<boolean>(false)
   return (

@@ -13,8 +13,6 @@ type EnvironmentVariables = {
   readonly TEST: string | undefined
   readonly DEV: string | undefined
   readonly CI: string | undefined
-  readonly CUSTOM_ZOO_WEBSOCKET_MODELING_URL: string | undefined
-  readonly POOL_ID: string | undefined
 }
 
 /** Store the environment in memory to be accessed during runtime */
