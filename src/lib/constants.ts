@@ -240,8 +240,9 @@ export type Environment = {
   WEBSOCKET_URL: string
   name: string
 }
+
 export const SUPPORTED_ENVIRONMENTS: { [key in EnvironmentName]: Environment } =
-  {
+  Object.freeze({
     development: {
       API_URL: 'https://api.dev.zoo.dev',
       SITE_URL: 'https://dev.zoo.dev',
@@ -254,4 +255,4 @@ export const SUPPORTED_ENVIRONMENTS: { [key in EnvironmentName]: Environment } =
       WEBSOCKET_URL: 'wss://api.zoo.dev/ws/modeling/commands',
       name: 'Production',
     },
-  }
+  })

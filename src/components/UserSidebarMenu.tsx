@@ -15,6 +15,7 @@ import { authActor } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import { getEnvironment } from '@src/env'
+import { shouldRender } from '@src/components/environment/Environment'
 
 type User = Models['User_type']
 
@@ -147,7 +148,12 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
           id: 'sign-out',
           Element: 'button',
           'data-testid': 'user-sidebar-sign-out',
-          children: <span>Sign out of {environment?.name}</span>,
+          children: (
+            <span>
+              Sign out{' '}
+              {shouldRender(environment) ? `of ${environment?.name}` : ``}
+            </span>
+          ),
           onClick: () => send({ type: 'Log out' }),
           className: '', // Just making TS's filter type coercion happy 😠
         },

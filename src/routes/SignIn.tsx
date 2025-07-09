@@ -17,7 +17,9 @@ import { authActor, useSettings } from '@src/lib/singletons'
 import { APP_VERSION, generateSignInUrl } from '@src/routes/utils'
 import { withAPIBaseURL, withSiteBaseURL } from '@src/lib/withBaseURL'
 import { getEnvironment, updateEnvironment } from '@src/env'
+import env from '@src/env'
 import { writeEnvironmentFile } from '@src/lib/desktop'
+import { AdvancedSignInOptions } from '@src/routes/AdvancedSignInOptions'
 
 const subtleBorder =
   'border border-solid border-chalkboard-30 dark:border-chalkboard-80'
@@ -99,6 +101,10 @@ const SignIn = () => {
   const signInDesktopProduction = async () => {
     return signInDesktop('production')
   }
+
+  const defaultSignInMethod = env().DEV
+    ? signInDesktopDevelopment
+    : signInDesktopProduction
   return (
     <main
       className="bg-primary h-screen grid place-items-stretch m-0 p-2"
@@ -139,17 +145,23 @@ const SignIn = () => {
             {isDesktop() ? (
               <div className="flex flex-col gap-2">
                 {!userCode ? (
-                  <button
-                    onClick={toSync(signInDesktop, reportRejection)}
-                    className={
-                      'm-0 mt-8 w-fit flex gap-4 items-center px-3 py-1 ' +
-                      '!border-transparent !text-lg !text-chalkboard-10 !bg-primary hover:hue-rotate-15'
-                    }
-                    data-testid="sign-in-button"
-                  >
-                    Sign in to get started
-                    <CustomIcon name="arrowRight" className="w-6 h-6" />
-                  </button>
+                  <>
+                    <button
+                      onClick={toSync(defaultSignInMethod, reportRejection)}
+                      className={
+                        'm-0 mt-8 w-fit flex gap-4 items-center px-3 py-1 ' +
+                        '!border-transparent !text-lg !text-chalkboard-10 !bg-primary hover:hue-rotate-15'
+                      }
+                      data-testid="sign-in-button"
+                    >
+                      Sign in to get started
+                      <CustomIcon name="arrowRight" className="w-6 h-6" />
+                    </button>
+                    <AdvancedSignInOptions
+                      signInDesktopDevelopment={signInDesktopDevelopment}
+                      signInDesktopProduction={signInDesktopProduction}
+                    />
+                  </>
                 ) : (
                   <>
                     <p className="text-xs">
@@ -184,28 +196,6 @@ const SignIn = () => {
                     </button>
                   </>
                 )}
-                <button
-                  onClick={toSync(signInDesktopDevelopment, reportRejection)}
-                  className={
-                    'm-0 mt-8 w-fit flex gap-4 items-center px-3 py-1 ' +
-                    '!border-transparent !text-lg !text-chalkboard-10 !bg-primary hover:hue-rotate-15'
-                  }
-                  data-testid="sign-in-button"
-                >
-                  Development
-                  <CustomIcon name="arrowRight" className="w-6 h-6" />
-                </button>
-                <button
-                  onClick={toSync(signInDesktopProduction, reportRejection)}
-                  className={
-                    'm-0 mt-8 w-fit flex gap-4 items-center px-3 py-1 ' +
-                    '!border-transparent !text-lg !text-chalkboard-10 !bg-primary hover:hue-rotate-15'
-                  }
-                  data-testid="sign-in-button"
-                >
-                  Production
-                  <CustomIcon name="arrowRight" className="w-6 h-6" />
-                </button>
               </div>
             ) : (
               <>
