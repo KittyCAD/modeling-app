@@ -6,6 +6,7 @@ import type { NonCodeMeta } from '@rust/kcl-lib/bindings/NonCodeMeta'
 import {
   createArrayExpression,
   createCallExpressionStdLibKw,
+  createExpressionStatement,
   createIdentifier,
   createImportAsSelector,
   createImportStatement,
@@ -1213,17 +1214,24 @@ export function createPathToNodeForLastVariable(
   return pathToCall
 }
 
-export function setCallInAst(
-  ast: Node<Program>,
-  call: Node<CallExpressionKw>,
-  nodeToEdit?: PathToNode,
-  pathIfPipe?: PathToNode
-): Error | PathToNode {
+export function setCallInAst({
+  ast,
+  call,
+  pathToEdit,
+  pathIfNewPipe,
+  variableIfNewDecl,
+}: {
+  ast: Node<Program>
+  call: Node<CallExpressionKw>
+  pathToEdit?: PathToNode
+  pathIfNewPipe?: PathToNode
+  variableIfNewDecl?: string
+}): Error | PathToNode {
   let pathToNode: PathToNode | undefined
-  if (nodeToEdit) {
+  if (pathToEdit) {
     const result = getNodeFromPath<CallExpressionKw>(
       ast,
-      nodeToEdit,
+      pathToEdit,
       'CallExpressionKw'
     )
     if (err(result)) {
@@ -1231,26 +1239,31 @@ export function setCallInAst(
     }
 
     Object.assign(result.node, call)
-    pathToNode = nodeToEdit
-  } else {
-    if (!call.unlabeled && pathIfPipe) {
-      const pipe = getNodeFromPath<PipeExpression>(
-        ast,
-        pathIfPipe,
-        'PipeExpression'
-      )
-      if (err(pipe)) {
-        return pipe
-      }
-      pipe.node.body.push(call)
-      pathToNode = pathIfPipe
-    } else {
-      const name = findUniqueName(ast, call.callee.name.name)
-      const declaration = createVariableDeclaration(name, call)
-      ast.body.push(declaration)
-      const toFirstKwarg = call.arguments.length > 0
-      pathToNode = createPathToNodeForLastVariable(ast, toFirstKwarg)
+    pathToNode = pathToEdit
+  } else if (pathIfNewPipe) {
+    const pipe = getNodeFromPath<PipeExpression>(
+      ast,
+      pathIfNewPipe,
+      'PipeExpression'
+    )
+    if (err(pipe)) {
+      return pipe
     }
+    pipe.node.body.push(call)
+    pathToNode = pathIfNewPipe
+  } else if (variableIfNewDecl) {
+    const name = findUniqueName(ast, variableIfNewDecl)
+    const declaration = createVariableDeclaration(name, call)
+    ast.body.push(declaration)
+    const toFirstKwarg = call.arguments.length > 0
+    pathToNode = createPathToNodeForLastVariable(ast, toFirstKwarg)
+  } else {
+    ast.body.push(createExpressionStatement(call))
+    pathToNode = [
+      ['body', ''],
+      [ast.body.length - 1, 'index'],
+      ['expression', 'ExpressionStatement'],
+    ]
   }
 
   return pathToNode

@@ -93,7 +93,7 @@ describe('Testing addTranslate', () => {
     const code = `sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [0, 0], radius = 1)
 extrude001 = extrude(profile001, length = 1)`
-    const expectedNewLine = `translate001 = translate(
+    const expectedNewLine = `translate(
   extrude001,
   x = 1,
   y = 2,
@@ -143,7 +143,7 @@ extrude001 = extrude(profile001, length = 1)`
     const code = `sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [0, 0], radius = 1)
 extrude001 = extrude(profile001, length = 1)
-translate001 = translate(
+translate(
   extrude001,
   x = 1,
   y = 2,
@@ -153,7 +153,7 @@ translate001 = translate(
     const expectedNewCode = `sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [0, 0], radius = 1)
 extrude001 = extrude(profile001, length = 1)
-translate001 = translate(
+translate(
   extrude001,
   x = 4,
   y = 5,
@@ -162,8 +162,7 @@ translate001 = translate(
     const nodeToEdit: PathToNode = [
       ['body', ''],
       [3, 'index'],
-      ['declaration', 'VariableDeclaration'],
-      ['init', ''],
+      ['expression', 'ExpressionStatement'],
     ]
     const newCode = await runEditTranslateTest(code, nodeToEdit)
     expect(newCode).toContain(expectedNewCode)
@@ -221,7 +220,7 @@ describe('Testing addScale', () => {
     const code = `sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [0, 0], radius = 1)
 extrude001 = extrude(profile001, length = 1)`
-    const expectedNewLine = `scale001 = scale(
+    const expectedNewLine = `scale(
   extrude001,
   x = 1,
   y = 2,
@@ -271,7 +270,7 @@ extrude001 = extrude(profile001, length = 1)`
     const code = `sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [0, 0], radius = 1)
 extrude001 = extrude(profile001, length = 1)
-scale001 = scale(
+scale(
   extrude001,
   x = 1,
   y = 2,
@@ -281,7 +280,7 @@ scale001 = scale(
     const expectedNewCode = `sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [0, 0], radius = 1)
 extrude001 = extrude(profile001, length = 1)
-scale001 = scale(
+scale(
   extrude001,
   x = 4,
   y = 5,
@@ -290,8 +289,7 @@ scale001 = scale(
     const nodeToEdit: PathToNode = [
       ['body', ''],
       [3, 'index'],
-      ['declaration', 'VariableDeclaration'],
-      ['init', ''],
+      ['expression', 'ExpressionStatement'],
     ]
     const newCode = await runEditScaleTest(code, nodeToEdit)
     expect(newCode).toContain(expectedNewCode)
@@ -351,7 +349,7 @@ describe('Testing addRotate', () => {
     const code = `sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [0, 0], radius = 1)
 extrude001 = extrude(profile001, length = 1)`
-    const expectedNewLine = `rotate001 = rotate(
+    const expectedNewLine = `rotate(
   extrude001,
   roll = 10,
   pitch = 20,
@@ -401,7 +399,7 @@ extrude001 = extrude(profile001, length = 1)`
     const code = `sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [0, 0], radius = 1)
 extrude001 = extrude(profile001, length = 1)
-rotate001 = rotate(
+rotate(
   extrude001,
   roll = 4,
   pitch = 5,
@@ -411,7 +409,7 @@ rotate001 = rotate(
     const expectedNewCode = `sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [0, 0], radius = 1)
 extrude001 = extrude(profile001, length = 1)
-rotate001 = rotate(
+rotate(
   extrude001,
   roll = 40,
   pitch = 50,
@@ -420,8 +418,7 @@ rotate001 = rotate(
     const nodeToEdit: PathToNode = [
       ['body', ''],
       [3, 'index'],
-      ['declaration', 'VariableDeclaration'],
-      ['init', ''],
+      ['expression', 'ExpressionStatement'],
     ]
     const newCode = await runEditRotateTest(code, nodeToEdit)
     expect(newCode).toContain(expectedNewCode)

@@ -86,12 +86,13 @@ export function addTranslate({
 
   // 3. If edit, we assign the new function call declaration to the existing node,
   // otherwise just push to the end
-  const pathToNode = setCallInAst(
-    modifiedAst,
+  const pathToNode = setCallInAst({
+    ast: modifiedAst,
     call,
-    nodeToEdit,
-    vars.pathIfPipe
-  )
+    pathToEdit: nodeToEdit,
+    pathIfNewPipe: vars.pathIfPipe,
+    variableIfNewDecl: undefined, // No variable declaration for translate
+  })
   if (err(pathToNode)) {
     return pathToNode
   }
@@ -168,12 +169,13 @@ export function addRotate({
 
   // 3. If edit, we assign the new function call declaration to the existing node,
   // otherwise just push to the end
-  const pathToNode = setCallInAst(
-    modifiedAst,
+  const pathToNode = setCallInAst({
+    ast: modifiedAst,
     call,
-    nodeToEdit,
-    vars.pathIfPipe
-  )
+    pathToEdit: nodeToEdit,
+    pathIfNewPipe: vars.pathIfPipe,
+    variableIfNewDecl: undefined, // No variable declaration for transforms
+  })
   if (err(pathToNode)) {
     return pathToNode
   }

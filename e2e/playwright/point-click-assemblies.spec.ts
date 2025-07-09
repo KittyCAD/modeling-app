@@ -299,10 +299,9 @@ test.describe('Point-and-click assemblies tests', () => {
         await cmdBar.progressCmdBar()
         await toolbar.closePane('feature-tree')
         await toolbar.openPane('code')
-        await editor.expectEditor.toContain(
-          `translate001 = translate(bracket, x = 100)`,
-          { shouldNormalise: true }
-        )
+        await editor.expectEditor.toContain(`translate(bracket, x = 100)`, {
+          shouldNormalise: true,
+        })
       })
 
       await test.step('Set scale on module', async () => {
@@ -355,8 +354,8 @@ test.describe('Point-and-click assemblies tests', () => {
         await toolbar.closePane('feature-tree')
         await toolbar.openPane('code')
         await editor.expectEditor.toContain(
-          `translate001 = translate(bracket, x = 100)
-          scale001 = scale(bracket, x = 1.1)`,
+          `translate(bracket, x = 100)
+          scale(bracket, x = 1.1)`,
           { shouldNormalise: true }
         )
       })
@@ -413,9 +412,9 @@ test.describe('Point-and-click assemblies tests', () => {
         await toolbar.openPane('code')
         await editor.expectEditor.toContain(
           `
-          translate001 = translate(bracket, x = 100)
-          scale001 = scale(bracket, x = 1.1)
-          rotate001 = rotate(bracket, roll = 0.1)
+          translate(bracket, x = 100)
+          scale(bracket, x = 1.1)
+          rotate(bracket, roll = 0.1)
           `,
           { shouldNormalise: true }
         )

@@ -23,6 +23,7 @@ import {
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type { PathToNode, Program, VariableDeclaration } from '@src/lang/wasm'
 import type { KclCommandValue } from '@src/lib/commandTypes'
+import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import type { Selections } from '@src/lib/selections'
 import { err } from '@src/lib/trap'
 
@@ -103,12 +104,13 @@ export function addExtrude({
 
   // 3. If edit, we assign the new function call declaration to the existing node,
   // otherwise just push to the end
-  const pathToNode = setCallInAst(
-    modifiedAst,
+  const pathToNode = setCallInAst({
+    ast: modifiedAst,
     call,
-    nodeToEdit,
-    vars.pathIfPipe
-  )
+    pathToEdit: nodeToEdit,
+    pathIfNewPipe: vars.pathIfPipe,
+    variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.EXTRUDE,
+  })
   if (err(pathToNode)) {
     return pathToNode
   }
@@ -177,12 +179,13 @@ export function addSweep({
 
   // 3. If edit, we assign the new function call declaration to the existing node,
   // otherwise just push to the end
-  const pathToNode = setCallInAst(
-    modifiedAst,
+  const pathToNode = setCallInAst({
+    ast: modifiedAst,
     call,
-    nodeToEdit,
-    vars.pathIfPipe
-  )
+    pathToEdit: nodeToEdit,
+    pathIfNewPipe: vars.pathIfPipe,
+    variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.SWEEP,
+  })
   if (err(pathToNode)) {
     return pathToNode
   }
@@ -236,12 +239,13 @@ export function addLoft({
 
   // 3. If edit, we assign the new function call declaration to the existing node,
   // otherwise just push to the end
-  const pathToNode = setCallInAst(
-    modifiedAst,
+  const pathToNode = setCallInAst({
+    ast: modifiedAst,
     call,
-    nodeToEdit,
-    vars.pathIfPipe
-  )
+    pathToEdit: nodeToEdit,
+    pathIfNewPipe: vars.pathIfPipe,
+    variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.LOFT,
+  })
   if (err(pathToNode)) {
     return pathToNode
   }
@@ -339,12 +343,13 @@ export function addRevolve({
 
   // 3. If edit, we assign the new function call declaration to the existing node,
   // otherwise just push to the end
-  const pathToNode = setCallInAst(
-    modifiedAst,
+  const pathToNode = setCallInAst({
+    ast: modifiedAst,
     call,
-    nodeToEdit,
-    vars.pathIfPipe
-  )
+    pathToEdit: nodeToEdit,
+    pathIfNewPipe: vars.pathIfPipe,
+    variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.REVOLVE,
+  })
   if (err(pathToNode)) {
     return pathToNode
   }
