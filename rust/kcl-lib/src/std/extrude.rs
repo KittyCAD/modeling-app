@@ -83,14 +83,16 @@ async fn inner_extrude(
     let mut solids = Vec::new();
     let tolerance = LengthUnit(tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM));
 
-    let extrude_method = if let Some(method) = method {
-        if method == "new" {
-            ExtrudeMethod::New
-        } else {
-            ExtrudeMethod::Merge
+    let extrude_method = match method.as_deref() {
+        Some("new") => ExtrudeMethod::New,
+        Some("merge") => ExtrudeMethod::Merge,
+        None => ExtrudeMethod::default(),
+        Some(other) => {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                format!("Unknown merge method {other}, try using MERGE or NEW"),
+                vec![args.source_range],
+            )));
         }
-    } else {
-        ExtrudeMethod::Merge
     };
 
     if symmetric.unwrap_or(false) && bidirectional_length.is_some() {
