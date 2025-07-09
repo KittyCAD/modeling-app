@@ -1525,23 +1525,15 @@ export class CameraControls {
       this.onMouseUpInner(event.srcEvent as PointerEvent)
     })
 
-    this.touchControlManager = hammertime
-  }
-
-  tearDownTouchControls = () => {
-    if (this.touchControlManager !== null) {
-      this.touchControlManager.destroy()
-      this.touchControlManager == null
-    }
+    return hammertime
   }
 
   initTouchControls = (shouldEnable?: boolean) => {
-    if (shouldEnable) {
-      this.enableTouchControls = shouldEnable
-      this.setUpTouchControls(this.domElement)
-    } else if (this.touchControlManager !== null) {
-      this.tearDownTouchControls()
+    if (this.touchControlManager === null) {
+      this.touchControlManager = this.setUpTouchControls(this.domElement)
     }
+
+    this.touchControlManager.set({ enable: shouldEnable })
   }
 }
 
