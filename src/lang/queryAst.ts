@@ -638,7 +638,7 @@ export function isLinesParallelAndConstrained(
       },
     }
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  } catch (_e) {
+  } catch (e) {
     return {
       isParallelAndConstrained: false,
       selection: null,
