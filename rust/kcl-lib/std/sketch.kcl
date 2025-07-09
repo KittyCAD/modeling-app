@@ -448,7 +448,7 @@ export fn extrude(
   @(snippetArray = ["0", "0"])
   twistCenter?: Point2d,
   /// The method used during extrusion, i.e. create a NEW object or MERGE the extruded objects together.
-  method?: number(Count),
+  method?: string,
 ): [Solid; 1+] {}
 
 /// Rotate a sketch around some provided axis, creating a solid from its extent.

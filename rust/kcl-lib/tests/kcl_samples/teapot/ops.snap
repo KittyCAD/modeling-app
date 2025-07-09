@@ -1001,17 +1001,8 @@ description: Operations executed teapot.kcl
       "type": "VariableDeclaration",
       "name": "NEW",
       "value": {
-        "type": "Number",
-        "value": 0.0,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
+        "type": "String",
+        "value": "new"
       },
       "visibility": "export",
       "nodePath": {
@@ -1023,17 +1014,8 @@ description: Operations executed teapot.kcl
       "type": "VariableDeclaration",
       "name": "MERGE",
       "value": {
-        "type": "Number",
-        "value": 1.0,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
+        "type": "String",
+        "value": "merge"
       },
       "visibility": "export",
       "nodePath": {

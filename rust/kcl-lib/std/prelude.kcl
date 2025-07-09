@@ -70,10 +70,10 @@ export START = 'start': TaggedFace
 export END = 'end': TaggedFace
 
 /// Specifies that a new object is created during extrusion.
-export NEW = 0
+export NEW = "new": string
 
 /// Specifies that the extrusion will result in one object.
-export MERGE = 1
+export MERGE = "merge": string
 
 /// Create a helix.
 ///

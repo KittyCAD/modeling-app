@@ -8,13 +8,13 @@ layout: manual
 Specifies that a new object is created during extrusion.
 
 ```kcl
-NEW: number = 0
+NEW: string
 ```
 
 
 
 ### Type
 
-[`number`](/docs/kcl-std/types/std-types-number) - A number.
+[`string`](/docs/kcl-std/types/std-types-string) - A sequence of characters
 
 

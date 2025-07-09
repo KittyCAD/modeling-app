@@ -41,7 +41,7 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     let twist_angle_step: Option<TyF64> = args.get_kw_arg_opt("twistAngleStep", &RuntimeType::degrees(), exec_state)?;
     let twist_center: Option<[TyF64; 2]> = args.get_kw_arg_opt("twistCenter", &RuntimeType::point2d(), exec_state)?;
     let tolerance: Option<TyF64> = args.get_kw_arg_opt("tolerance", &RuntimeType::length(), exec_state)?;
-    let method: Option<TyF64> = args.get_kw_arg_opt("method", &RuntimeType::count(), exec_state)?;
+    let method: Option<String> = args.get_kw_arg_opt("method", &RuntimeType::string(), exec_state)?;
 
     let result = inner_extrude(
         sketches,
@@ -75,7 +75,7 @@ async fn inner_extrude(
     twist_angle_step: Option<TyF64>,
     twist_center: Option<[TyF64; 2]>,
     tolerance: Option<TyF64>,
-    method: Option<TyF64>,
+    method: Option<String>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Solid>, KclError> {
@@ -84,7 +84,7 @@ async fn inner_extrude(
     let tolerance = LengthUnit(tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM));
 
     let extrude_method = if let Some(method) = method {
-        if method.n == 0.0 {
+        if method == "new" {
             ExtrudeMethod::New
         } else {
             ExtrudeMethod::Merge
