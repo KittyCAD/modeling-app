@@ -2640,5 +2640,6 @@ description: Artifact commands gear-rack.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

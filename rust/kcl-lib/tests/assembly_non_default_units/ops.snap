@@ -193,5 +193,6 @@ description: Operations executed assembly_non_default_units.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

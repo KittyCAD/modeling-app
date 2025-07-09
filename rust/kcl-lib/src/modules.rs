@@ -99,6 +99,7 @@ pub(crate) fn read_std(mod_name: &str) -> Option<&'static str> {
         "sweep" => Some(include_str!("../std/sweep.kcl")),
         "appearance" => Some(include_str!("../std/appearance.kcl")),
         "transform" => Some(include_str!("../std/transform.kcl")),
+        "vector" => Some(include_str!("../std/vector.kcl")),
         _ => None,
     }
 }

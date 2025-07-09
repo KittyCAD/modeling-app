@@ -274,12 +274,17 @@ test(
     const startXPx = 600
 
     // Equip the rectangle tool
-    await page
-      .getByRole('button', { name: 'rectangle Corner rectangle', exact: true })
-      .click()
+    const rectangleBtn = page.getByTestId('corner-rectangle')
+    await rectangleBtn.click()
+    await expect(rectangleBtn).toHaveAttribute('aria-pressed', 'true')
 
     // Draw the rectangle
-    await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 30)
+    const rectanglePointOne: [number, number] = [
+      startXPx + PUR * 40,
+      500 - PUR * 30,
+    ]
+    await page.mouse.move(...rectanglePointOne, { steps: 5 })
+    await page.mouse.click(...rectanglePointOne, { delay: 50 })
     await page.mouse.move(startXPx + PUR * 10, 500 - PUR * 10, { steps: 5 })
     await page.waitForTimeout(800)
 

@@ -364,5 +364,6 @@ description: Operations executed sketch_on_face_start.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

@@ -14,5 +14,6 @@ description: Artifact commands object_prop_not_found.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

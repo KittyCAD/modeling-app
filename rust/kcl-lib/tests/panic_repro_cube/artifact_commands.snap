@@ -249,5 +249,6 @@ description: Artifact commands panic_repro_cube.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

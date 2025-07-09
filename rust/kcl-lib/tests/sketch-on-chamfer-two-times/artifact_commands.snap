@@ -566,5 +566,6 @@ description: Artifact commands sketch-on-chamfer-two-times.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

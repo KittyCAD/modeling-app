@@ -270,5 +270,6 @@ description: Artifact commands flush_batch_on_end.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

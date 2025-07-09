@@ -1118,7 +1118,7 @@ test.describe('Electron constraint tests', () => {
           path.join(bracketDir, 'main.kcl'),
           `@settings(defaultLengthUnit = in)
           part001 = startSketchOn(XY)
-            |> startProfile(at = [4.83, 12.56])
+            |> startProfile(at = [4.83, 8.56])
             |> line(end = [15.1, 2.48])
             |> line(end = [3.15, -9.85], tag = $seg01)
             |> line(end = [-15.17, -4.1])

@@ -786,5 +786,6 @@ description: Operations executed user_reported_union_2_bug.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

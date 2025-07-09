@@ -3979,5 +3979,6 @@ description: Operations executed pipe-flange-assembly.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

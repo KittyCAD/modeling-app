@@ -1020,5 +1020,6 @@ description: Artifact commands router-template-cross-bar.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

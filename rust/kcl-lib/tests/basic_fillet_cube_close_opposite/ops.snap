@@ -241,5 +241,6 @@ description: Operations executed basic_fillet_cube_close_opposite.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }
