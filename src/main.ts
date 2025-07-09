@@ -75,8 +75,6 @@ process.env.VITE_KITTYCAD_API_WEBSOCKET_URL ??=
   viteEnv.VITE_KITTYCAD_API_WEBSOCKET_URL
 process.env.VITE_KITTYCAD_SITE_BASE_URL ??= viteEnv.VITE_KITTYCAD_SITE_BASE_URL
 process.env.VITE_KITTYCAD_SITE_APP_URL ??= viteEnv.VITE_KITTYCAD_SITE_APP_URL
-process.env.VITE_KITTYCAD_CONNECTION_TIMEOUT_MS ??=
-  viteEnv.VITE_KITTYCAD_CONNECTION_TIMEOUT_MS
 
 // Likely convenient to keep for debugging
 console.log('Environment vars', process.env)
