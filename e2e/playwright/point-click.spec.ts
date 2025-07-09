@@ -1643,10 +1643,11 @@ sketch002 = startSketchOn(plane001)
       'loft001 = loft([sketch001, sketch002], vDegree = 3)'
 
     async function selectSketches() {
+      const multiCursorKey = process.platform === 'linux' ? 'Control' : 'Meta'
       await editor.selectText(circleCode1)
-      await page.keyboard.down('Meta')
+      await page.keyboard.down(multiCursorKey)
       await page.getByText(circleCode2).click()
-      await page.keyboard.up('Meta')
+      await page.keyboard.up(multiCursorKey)
     }
 
     await test.step(`Go through the command bar flow without preselected sketches`, async () => {
