@@ -1,0 +1,24 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing array_concat_non_array.kcl
+---
+a = concat([1, 2], items = 3)
+assert(
+  a[2],
+  isEqualTo = 3,
+  tolerance = 0.00001,
+  error = "3 should have been coerced to [3] and concatenated",
+)
+b = concat(1, items = 2)
+assert(
+  b[0],
+  isEqualTo = 1,
+  tolerance = 0.00001,
+  error = "1 should have been coerced to [1] and concatenated",
+)
+assert(
+  b[1],
+  isEqualTo = 2,
+  tolerance = 0.00001,
+  error = "2 should have been coerced to [2] and concatenated",
+)
