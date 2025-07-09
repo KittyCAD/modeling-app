@@ -14,6 +14,7 @@ import { PATHS } from '@src/lib/paths'
 import { authActor } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
+import { getEnvironment } from '@src/env'
 
 type User = Models['User_type']
 
@@ -25,6 +26,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
   const [imageLoadFailed, setImageLoadFailed] = useState(false)
   const navigate = useNavigate()
   const send = authActor.send
+  const environment = getEnvironment()
 
   // We filter this memoized list so that no orphan "break" elements are rendered.
   const userMenuItems = useMemo<(ActionButtonProps | 'break')[]>(
@@ -145,7 +147,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
           id: 'sign-out',
           Element: 'button',
           'data-testid': 'user-sidebar-sign-out',
-          children: 'Sign out',
+          children: <span>Sign out of {environment?.name}</span>,
           onClick: () => send({ type: 'Log out' }),
           className: '', // Just making TS's filter type coercion happy 😠
         },
