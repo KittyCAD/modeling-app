@@ -253,6 +253,14 @@ description: Variables in memory after executing truss-structure.kcl
                 "units": {
                   "type": "Unknown"
                 }
+              },
+              "zAxis": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0,
+                "units": {
+                  "type": "Unknown"
+                }
               }
             },
             "start": {
@@ -504,6 +512,14 @@ description: Variables in memory after executing truss-structure.kcl
                 "units": {
                   "type": "Unknown"
                 }
+              },
+              "zAxis": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0,
+                "units": {
+                  "type": "Unknown"
+                }
               }
             },
             "start": {
@@ -567,6 +583,14 @@ description: Variables in memory after executing truss-structure.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
+        "units": {
+          "type": "Unknown"
+        }
+      },
+      "zAxis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0,
         "units": {
           "type": "Unknown"
         }
@@ -802,265 +826,11 @@ description: Variables in memory after executing truss-structure.kcl
                 "units": {
                   "type": "Unknown"
                 }
-              }
-            },
-            "start": {
-              "from": [
-                60.0,
-                0.0
-              ],
-              "to": [
-                60.0,
-                0.0
-              ],
-              "units": {
-                "type": "Inches"
               },
-              "tag": null,
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              }
-            },
-            "tags": {
-              "bottomFace": {
-                "type": "TagIdentifier",
-                "value": "bottomFace"
-              },
-              "tag001": {
-                "type": "TagIdentifier",
-                "value": "tag001"
-              },
-              "tag002": {
-                "type": "TagIdentifier",
-                "value": "tag002"
-              }
-            },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
-          },
-          "height": 2.0,
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
-          "units": {
-            "type": "Inches"
-          },
-          "sectional": false
-        }
-      },
-      {
-        "type": "Solid",
-        "value": {
-          "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 698,
-                "end": 709,
-                "moduleId": 0,
-                "start": 698,
-                "type": "TagDeclarator",
-                "value": "bottomFace"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 798,
-                "end": 805,
-                "moduleId": 0,
-                "start": 798,
-                "type": "TagDeclarator",
-                "value": "tag001"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 884,
-                "end": 891,
-                "moduleId": 0,
-                "start": 884,
-                "type": "TagDeclarator",
-                "value": "tag002"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
-          "sketch": {
-            "type": "Sketch",
-            "id": "[uuid]",
-            "paths": [
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  60.0,
-                  0.0
-                ],
-                "tag": {
-                  "commentStart": 698,
-                  "end": 709,
-                  "moduleId": 0,
-                  "start": 698,
-                  "type": "TagDeclarator",
-                  "value": "bottomFace"
-                },
-                "to": [
-                  -60.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -60.0,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  -60.0,
-                  12.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -60.0,
-                  12.0
-                ],
-                "tag": {
-                  "commentStart": 798,
-                  "end": 805,
-                  "moduleId": 0,
-                  "start": 798,
-                  "type": "TagDeclarator",
-                  "value": "tag001"
-                },
-                "to": [
-                  0.0,
-                  39.978459489299915
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  39.978459489299915
-                ],
-                "tag": {
-                  "commentStart": 884,
-                  "end": 891,
-                  "moduleId": 0,
-                  "start": 884,
-                  "type": "TagDeclarator",
-                  "value": "tag002"
-                },
-                "to": [
-                  60.0,
-                  12.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  60.0,
-                  12.0
-                ],
-                "tag": null,
-                "to": [
-                  60.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
-              }
-            ],
-            "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
-              "origin": {
-                "x": 0.0,
+              "zAxis": {
+                "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "type": "plane",
-              "value": "YZ",
-              "xAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
                 "units": {
                   "type": "Unknown"
                 }
@@ -1323,6 +1093,284 @@ description: Variables in memory after executing truss-structure.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
+                "units": {
+                  "type": "Unknown"
+                }
+              },
+              "zAxis": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0,
+                "units": {
+                  "type": "Unknown"
+                }
+              }
+            },
+            "start": {
+              "from": [
+                60.0,
+                0.0
+              ],
+              "to": [
+                60.0,
+                0.0
+              ],
+              "units": {
+                "type": "Inches"
+              },
+              "tag": null,
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": []
+              }
+            },
+            "tags": {
+              "bottomFace": {
+                "type": "TagIdentifier",
+                "value": "bottomFace"
+              },
+              "tag001": {
+                "type": "TagIdentifier",
+                "value": "tag001"
+              },
+              "tag002": {
+                "type": "TagIdentifier",
+                "value": "tag002"
+              }
+            },
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
+            "units": {
+              "type": "Inches"
+            }
+          },
+          "height": 2.0,
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
+          "units": {
+            "type": "Inches"
+          },
+          "sectional": false
+        }
+      },
+      {
+        "type": "Solid",
+        "value": {
+          "type": "Solid",
+          "id": "[uuid]",
+          "artifactId": "[uuid]",
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 698,
+                "end": 709,
+                "moduleId": 0,
+                "start": 698,
+                "type": "TagDeclarator",
+                "value": "bottomFace"
+              },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 798,
+                "end": 805,
+                "moduleId": 0,
+                "start": 798,
+                "type": "TagDeclarator",
+                "value": "tag001"
+              },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 884,
+                "end": 891,
+                "moduleId": 0,
+                "start": 884,
+                "type": "TagDeclarator",
+                "value": "tag002"
+              },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            }
+          ],
+          "sketch": {
+            "type": "Sketch",
+            "id": "[uuid]",
+            "paths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  60.0,
+                  0.0
+                ],
+                "tag": {
+                  "commentStart": 698,
+                  "end": 709,
+                  "moduleId": 0,
+                  "start": 698,
+                  "type": "TagDeclarator",
+                  "value": "bottomFace"
+                },
+                "to": [
+                  -60.0,
+                  0.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Inches"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  -60.0,
+                  0.0
+                ],
+                "tag": null,
+                "to": [
+                  -60.0,
+                  12.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Inches"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  -60.0,
+                  12.0
+                ],
+                "tag": {
+                  "commentStart": 798,
+                  "end": 805,
+                  "moduleId": 0,
+                  "start": 798,
+                  "type": "TagDeclarator",
+                  "value": "tag001"
+                },
+                "to": [
+                  0.0,
+                  39.978459489299915
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Inches"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  0.0,
+                  39.978459489299915
+                ],
+                "tag": {
+                  "commentStart": 884,
+                  "end": 891,
+                  "moduleId": 0,
+                  "start": 884,
+                  "type": "TagDeclarator",
+                  "value": "tag002"
+                },
+                "to": [
+                  60.0,
+                  12.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Inches"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  60.0,
+                  12.0
+                ],
+                "tag": null,
+                "to": [
+                  60.0,
+                  0.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Inches"
+                }
+              }
+            ],
+            "on": {
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
+              "origin": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              "type": "plane",
+              "value": "YZ",
+              "xAxis": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0,
+                "units": {
+                  "type": "Unknown"
+                }
+              },
+              "yAxis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0,
+                "units": {
+                  "type": "Unknown"
+                }
+              },
+              "zAxis": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0,
                 "units": {
                   "type": "Unknown"
                 }
@@ -1522,6 +1570,14 @@ description: Variables in memory after executing truss-structure.kcl
             "units": {
               "type": "Unknown"
             }
+          },
+          "zAxis": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 1.0,
+            "units": {
+              "type": "Unknown"
+            }
           }
         },
         "start": {
@@ -1583,6 +1639,14 @@ description: Variables in memory after executing truss-structure.kcl
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
+        "units": {
+          "type": "Unknown"
+        }
+      },
+      "zAxis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0,
         "units": {
           "type": "Unknown"
         }
@@ -1731,6 +1795,14 @@ description: Variables in memory after executing truss-structure.kcl
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
+          },
+          "zAxis": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 1.0,
             "units": {
               "type": "Unknown"
             }
@@ -1893,6 +1965,14 @@ description: Variables in memory after executing truss-structure.kcl
           "units": {
             "type": "Unknown"
           }
+        },
+        "zAxis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0,
+          "units": {
+            "type": "Unknown"
+          }
         }
       },
       "start": {
@@ -2028,6 +2108,14 @@ description: Variables in memory after executing truss-structure.kcl
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
+          "units": {
+            "type": "Unknown"
+          }
+        },
+        "zAxis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0,
           "units": {
             "type": "Unknown"
           }
@@ -2284,6 +2372,14 @@ description: Variables in memory after executing truss-structure.kcl
             "units": {
               "type": "Unknown"
             }
+          },
+          "zAxis": {
+            "x": 1.0,
+            "y": 0.0,
+            "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
           }
         },
         "start": {
@@ -2484,6 +2580,14 @@ description: Variables in memory after executing truss-structure.kcl
           "units": {
             "type": "Unknown"
           }
+        },
+        "zAxis": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0,
+          "units": {
+            "type": "Unknown"
+          }
         }
       },
       "start": {
@@ -2636,6 +2740,14 @@ description: Variables in memory after executing truss-structure.kcl
           "units": {
             "type": "Unknown"
           }
+        },
+        "zAxis": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0,
+          "units": {
+            "type": "Unknown"
+          }
         }
       },
       "start": {
@@ -2771,6 +2883,14 @@ description: Variables in memory after executing truss-structure.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
+          "units": {
+            "type": "Unknown"
+          }
+        },
+        "zAxis": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0,
           "units": {
             "type": "Unknown"
           }
@@ -2949,6 +3069,14 @@ description: Variables in memory after executing truss-structure.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
+          "units": {
+            "type": "Unknown"
+          }
+        },
+        "zAxis": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0,
           "units": {
             "type": "Unknown"
           }
@@ -3161,6 +3289,14 @@ description: Variables in memory after executing truss-structure.kcl
           "units": {
             "type": "Unknown"
           }
+        },
+        "zAxis": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0,
+          "units": {
+            "type": "Unknown"
+          }
         }
       },
       "start": {
@@ -3296,6 +3432,14 @@ description: Variables in memory after executing truss-structure.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
+          "units": {
+            "type": "Unknown"
+          }
+        },
+        "zAxis": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0,
           "units": {
             "type": "Unknown"
           }
@@ -3437,6 +3581,14 @@ description: Variables in memory after executing truss-structure.kcl
           "units": {
             "type": "Unknown"
           }
+        },
+        "zAxis": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0,
+          "units": {
+            "type": "Unknown"
+          }
         }
       },
       "start": {
@@ -3572,6 +3724,14 @@ description: Variables in memory after executing truss-structure.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
+          "units": {
+            "type": "Unknown"
+          }
+        },
+        "zAxis": {
+          "x": -1.0,
+          "y": 0.0,
+          "z": 0.0,
           "units": {
             "type": "Unknown"
           }
@@ -3713,6 +3873,14 @@ description: Variables in memory after executing truss-structure.kcl
           "units": {
             "type": "Unknown"
           }
+        },
+        "zAxis": {
+          "x": -1.0,
+          "y": 0.0,
+          "z": 0.0,
+          "units": {
+            "type": "Unknown"
+          }
         }
       },
       "start": {
@@ -3769,6 +3937,14 @@ description: Variables in memory after executing truss-structure.kcl
         "units": {
           "type": "Unknown"
         }
+      },
+      "zAxis": {
+        "x": -1.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": {
+          "type": "Unknown"
+        }
       }
     }
   },
@@ -3798,6 +3974,14 @@ description: Variables in memory after executing truss-structure.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
+        "units": {
+          "type": "Unknown"
+        }
+      },
+      "zAxis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0,
         "units": {
           "type": "Unknown"
         }
@@ -3946,6 +4130,14 @@ description: Variables in memory after executing truss-structure.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
+            "units": {
+              "type": "Unknown"
+            }
+          },
+          "zAxis": {
+            "x": 1.0,
+            "y": 0.0,
+            "z": 0.0,
             "units": {
               "type": "Unknown"
             }
@@ -4126,6 +4318,14 @@ description: Variables in memory after executing truss-structure.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
+            "units": {
+              "type": "Unknown"
+            }
+          },
+          "zAxis": {
+            "x": 1.0,
+            "y": 0.0,
+            "z": 0.0,
             "units": {
               "type": "Unknown"
             }
@@ -4413,6 +4613,14 @@ description: Variables in memory after executing truss-structure.kcl
             "units": {
               "type": "Unknown"
             }
+          },
+          "zAxis": {
+            "x": 1.0,
+            "y": 0.0,
+            "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
           }
         },
         "start": {
@@ -4488,6 +4696,14 @@ description: Variables in memory after executing truss-structure.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
+        "units": {
+          "type": "Unknown"
+        }
+      },
+      "zAxis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0,
         "units": {
           "type": "Unknown"
         }

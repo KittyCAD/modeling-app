@@ -12,6 +12,7 @@ Functions for manipulating arrays of values.
 
 ## Functions and constants
 
+* [`concat`](/docs/kcl-std/functions/std-array-concat)
 * [`map`](/docs/kcl-std/functions/std-array-map)
 * [`pop`](/docs/kcl-std/functions/std-array-pop)
 * [`push`](/docs/kcl-std/functions/std-array-push)

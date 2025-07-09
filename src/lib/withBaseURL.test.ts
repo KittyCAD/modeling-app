@@ -1,11 +1,15 @@
-import { withAPIBaseURL } from '@src/lib/withBaseURL'
+import {
+  withAPIBaseURL,
+  withSiteBaseURL,
+  withWebSocketURL,
+} from '@src/lib/withBaseURL'
 
 describe('withBaseURL', () => {
   /**
    * running in the development environment
    * the .env.development should load
    */
-  describe('withAPIBaseUrl', () => {
+  describe('withAPIBaseURL', () => {
     it('should return base url', () => {
       const expected = 'https://api.dev.zoo.dev'
       const actual = withAPIBaseURL('')
@@ -24,6 +28,55 @@ describe('withBaseURL', () => {
     it('should ensure base url does not have ending slash', () => {
       const expected = 'https://api.dev.zoo.dev'
       const actual = withAPIBaseURL('')
+      expect(actual).toBe(expected)
+      const expectedEndsWith = expected[expected.length - 1]
+      const actualEndsWith = actual[actual.length - 1]
+      expect(actual).toBe(expected)
+      expect(actualEndsWith).toBe(expectedEndsWith)
+    })
+  })
+
+  describe('withSiteBaseURL', () => {
+    it('should return base url', () => {
+      const expected = 'https://dev.zoo.dev'
+      const actual = withSiteBaseURL('')
+      expect(actual).toBe(expected)
+    })
+    it('should return base url with /docs', () => {
+      const expected = 'https://dev.zoo.dev/docs'
+      const actual = withSiteBaseURL('/docs')
+      expect(actual).toBe(expected)
+    })
+    it('should return a longer base base url with /docs/kcl-samples/car-wheel-assembly', () => {
+      const expected = 'https://dev.zoo.dev/docs/kcl-samples/car-wheel-assembly'
+      const actual = withSiteBaseURL('/docs/kcl-samples/car-wheel-assembly')
+      expect(actual).toBe(expected)
+    })
+    it('should ensure base url does not have ending slash', () => {
+      const expected = 'https://dev.zoo.dev'
+      const actual = withSiteBaseURL('')
+      expect(actual).toBe(expected)
+      const expectedEndsWith = expected[expected.length - 1]
+      const actualEndsWith = actual[actual.length - 1]
+      expect(actual).toBe(expected)
+      expect(actualEndsWith).toBe(expectedEndsWith)
+    })
+  })
+
+  describe('withWebSocketURL', () => {
+    it('should return url', () => {
+      const expected = 'wss://api.dev.zoo.dev/ws/modeling/commands'
+      const actual = withWebSocketURL('')
+      expect(actual).toBe(expected)
+    })
+    it('should return url with /docs', () => {
+      const expected = 'wss://api.dev.zoo.dev/ws/modeling/commands?'
+      const actual = withWebSocketURL('?')
+      expect(actual).toBe(expected)
+    })
+    it('should ensure url does not have ending slash', () => {
+      const expected = 'wss://api.dev.zoo.dev/ws/modeling/commands'
+      const actual = withWebSocketURL('')
       expect(actual).toBe(expected)
       const expectedEndsWith = expected[expected.length - 1]
       const actualEndsWith = actual[actual.length - 1]

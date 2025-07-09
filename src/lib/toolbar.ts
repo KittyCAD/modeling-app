@@ -11,6 +11,7 @@ import {
   pipeHasCircle,
 } from '@src/machines/modelingMachine'
 import { IS_ML_EXPERIMENTAL } from '@src/lib/constants'
+import { withSiteBaseURL } from '@src/lib/withBaseURL'
 
 export type ToolbarModeName = 'modeling' | 'sketching'
 
@@ -105,7 +106,9 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         links: [
           {
             label: 'KCL docs',
-            url: 'https://zoo.dev/docs/kcl-std/functions/std-sketch-startSketchOn',
+            url: withSiteBaseURL(
+              '/docs/kcl-std/functions/std-sketch-startSketchOn'
+            ),
           },
         ],
       },
@@ -125,7 +128,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         links: [
           {
             label: 'KCL docs',
-            url: 'https://zoo.dev/docs/kcl-std/functions/std-sketch-extrude',
+            url: withSiteBaseURL('/docs/kcl-std/functions/std-sketch-extrude'),
           },
         ],
       },
@@ -145,7 +148,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         links: [
           {
             label: 'KCL docs',
-            url: 'https://zoo.dev/docs/kcl-std/functions/std-sketch-sweep',
+            url: withSiteBaseURL('/docs/kcl-std/functions/std-sketch-sweep'),
           },
         ],
       },
@@ -165,7 +168,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         links: [
           {
             label: 'KCL docs',
-            url: 'https://zoo.dev/docs/kcl-std/functions/std-sketch-loft',
+            url: withSiteBaseURL('/docs/kcl-std/functions/std-sketch-loft'),
           },
         ],
       },
@@ -185,11 +188,11 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         links: [
           {
             label: 'KCL docs',
-            url: 'https://zoo.dev/docs/kcl-std/functions/std-sketch-revolve',
+            url: withSiteBaseURL('/docs/kcl-std/functions/std-sketch-revolve'),
           },
           {
             label: 'KCL example',
-            url: 'https://zoo.dev/docs/kcl-samples/ball-bearing',
+            url: withSiteBaseURL('/docs/kcl-samples/ball-bearing'),
           },
         ],
       },
@@ -209,7 +212,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         links: [
           {
             label: 'KCL docs',
-            url: 'https://zoo.dev/docs/kcl-std/functions/std-solid-fillet',
+            url: withSiteBaseURL('/docs/kcl-std/functions/std-solid-fillet'),
           },
         ],
       },
@@ -234,7 +237,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           },
           {
             label: 'KCL docs',
-            url: 'https://zoo.dev/docs/kcl-std/functions/std-solid-chamfer',
+            url: withSiteBaseURL('/docs/kcl-std/functions/std-solid-chamfer'),
           },
         ],
       },
@@ -253,7 +256,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         links: [
           {
             label: 'KCL docs',
-            url: 'https://zoo.dev/docs/kcl-std/functions/std-solid-shell',
+            url: withSiteBaseURL('/docs/kcl-std/functions/std-solid-shell'),
           },
         ],
       },
@@ -275,7 +278,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             links: [
               {
                 label: 'KCL docs',
-                url: 'https://zoo.dev/docs/kcl-std/functions/std-solid-union',
+                url: withSiteBaseURL('/docs/kcl-std/functions/std-solid-union'),
               },
             ],
           },
@@ -293,7 +296,9 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             links: [
               {
                 label: 'KCL docs',
-                url: 'https://zoo.dev/docs/kcl-std/functions/std-solid-subtract',
+                url: withSiteBaseURL(
+                  '/docs/kcl-std/functions/std-solid-subtract'
+                ),
               },
             ],
           },
@@ -311,7 +316,9 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             links: [
               {
                 label: 'KCL docs',
-                url: 'https://zoo.dev/docs/kcl-std/functions/std-solid-intersect',
+                url: withSiteBaseURL(
+                  '/docs/kcl-std/functions/std-solid-intersect'
+                ),
               },
             ],
           },
@@ -337,7 +344,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             links: [
               {
                 label: 'KCL docs',
-                url: 'https://zoo.dev/docs/kcl-std/functions/std-offsetPlane',
+                url: withSiteBaseURL('/docs/kcl-std/functions/std-offsetPlane'),
               },
             ],
           },
@@ -368,7 +375,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         links: [
           {
             label: 'KCL docs',
-            url: 'https://zoo.dev/docs/kcl-std/functions/std-helix',
+            url: withSiteBaseURL('/docs/kcl-std/functions/std-helix'),
           },
         ],
       },
@@ -389,7 +396,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         links: [
           {
             label: 'API docs',
-            url: 'https://zoo.dev/docs/kcl-lang/modules',
+            url: withSiteBaseURL('/docs/kcl-lang/modules'),
           },
         ],
       },
@@ -410,7 +417,9 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             links: [
               {
                 label: 'API docs',
-                url: 'https://zoo.dev/docs/kcl-std/functions/std-transform-translate',
+                url: withSiteBaseURL(
+                  '/docs/kcl-std/functions/std-transform-translate'
+                ),
               },
             ],
           },
@@ -428,7 +437,9 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             links: [
               {
                 label: 'API docs',
-                url: 'https://zoo.dev/docs/kcl-std/functions/std-transform-rotate',
+                url: withSiteBaseURL(
+                  '/docs/kcl-std/functions/std-transform-rotate'
+                ),
               },
             ],
           },
@@ -464,7 +475,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             links: [
               {
                 label: 'API docs',
-                url: 'https://zoo.dev/docs/kcl-std/functions/std-clone',
+                url: withSiteBaseURL('/docs/kcl-std/functions/std-clone'),
               },
             ],
           },
@@ -500,7 +511,9 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             links: [
               {
                 label: 'API docs',
-                url: 'https://zoo.dev/docs/api/ml/generate-a-cad-model-from-text',
+                url: withSiteBaseURL(
+                  '/docs/api/ml/generate-a-cad-model-from-text'
+                ),
               },
             ],
           },
@@ -757,7 +770,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         links: [
           {
             label: 'KCL docs',
-            url: 'https://zoo.dev/docs/kcl-std/functions/std-sketch-polygon',
+            url: withSiteBaseURL('/docs/kcl-std/functions/std-sketch-polygon'),
           },
         ],
       },
@@ -773,7 +786,9 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         links: [
           {
             label: 'KCL docs',
-            url: 'https://zoo.dev/docs/kcl-std/functions/std-transform-mirror2d',
+            url: withSiteBaseURL(
+              '/docs/kcl-std/functions/std-transform-mirror2d'
+            ),
           },
         ],
       },

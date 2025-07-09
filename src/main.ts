@@ -70,12 +70,13 @@ dotenv.config({ path: [`.env.${NODE_ENV}.local`, `.env.${NODE_ENV}`] })
 
 // default vite values based on mode
 process.env.NODE_ENV ??= viteEnv.MODE
-process.env.VITE_KC_API_WS_MODELING_URL ??= viteEnv.VITE_KC_API_WS_MODELING_URL
 process.env.VITE_KITTYCAD_API_BASE_URL ??= viteEnv.VITE_KITTYCAD_API_BASE_URL
-process.env.VITE_KC_SITE_BASE_URL ??= viteEnv.VITE_KC_SITE_BASE_URL
-process.env.VITE_KC_SITE_APP_URL ??= viteEnv.VITE_KC_SITE_APP_URL
-process.env.VITE_KC_CONNECTION_TIMEOUT_MS ??=
-  viteEnv.VITE_KC_CONNECTION_TIMEOUT_MS
+process.env.VITE_KITTYCAD_API_WEBSOCKET_URL ??=
+  viteEnv.VITE_KITTYCAD_API_WEBSOCKET_URL
+process.env.VITE_KITTYCAD_SITE_BASE_URL ??= viteEnv.VITE_KITTYCAD_SITE_BASE_URL
+process.env.VITE_KITTYCAD_SITE_APP_URL ??= viteEnv.VITE_KITTYCAD_SITE_APP_URL
+process.env.VITE_KITTYCAD_CONNECTION_TIMEOUT_MS ??=
+  viteEnv.VITE_KITTYCAD_CONNECTION_TIMEOUT_MS
 
 // Likely convenient to keep for debugging
 console.log('Environment vars', process.env)

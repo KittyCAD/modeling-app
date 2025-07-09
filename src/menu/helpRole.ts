@@ -5,6 +5,7 @@ import { reportRejection } from '@src/lib/trap'
 import { typeSafeWebContentsSend } from '@src/menu/channels'
 import type { ZooMenuItemConstructorOptions } from '@src/menu/roles'
 import { getAutoUpdater } from '@src/updater'
+import { withSiteBaseURL } from '@src/lib/withBaseURL'
 
 export const helpRole = (
   mainWindow: BrowserWindow
@@ -26,14 +27,16 @@ export const helpRole = (
         id: 'Help.KCL code samples',
         click: () => {
           shell
-            .openExternal('https://zoo.dev/docs/kcl-samples')
+            .openExternal(withSiteBaseURL('/docs/kcl-samples'))
             .catch(reportRejection)
         },
       },
       {
         label: 'KCL Docs',
         click: () => {
-          shell.openExternal('https://zoo.dev/docs/kcl').catch(reportRejection)
+          shell
+            .openExternal(withSiteBaseURL('/docs/kcl'))
+            .catch(reportRejection)
         },
       },
       {
@@ -116,7 +119,7 @@ export const helpRole = (
       {
         label: 'Manage Account',
         click: () => {
-          shell.openExternal('https://zoo.dev/account').catch(reportRejection)
+          shell.openExternal(withSiteBaseURL('/account')).catch(reportRejection)
         },
       },
     ],

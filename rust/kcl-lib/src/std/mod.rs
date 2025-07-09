@@ -156,6 +156,14 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::math::leg_angle_y(e, a)),
             StdFnProps::default("std::math::legAngY"),
         ),
+        ("sketch", "circle") => (
+            |e, a| Box::pin(crate::std::shapes::circle(e, a)),
+            StdFnProps::default("std::sketch::circle"),
+        ),
+        ("sketch", "ellipse") => (
+            |e, a| Box::pin(crate::std::shapes::ellipse(e, a)),
+            StdFnProps::default("std::sketch::ellipse").include_in_feature_tree(),
+        ),
         ("prelude", "helix") => (
             |e, a| Box::pin(crate::std::helix::helix(e, a)),
             StdFnProps::default("std::helix").include_in_feature_tree(),
@@ -248,13 +256,41 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::array::pop(e, a)),
             StdFnProps::default("std::array::pop"),
         ),
+        ("array", "concat") => (
+            |e, a| Box::pin(crate::std::array::concat(e, a)),
+            StdFnProps::default("std::array::concat"),
+        ),
         ("prelude", "clone") => (
             |e, a| Box::pin(crate::std::clone::clone(e, a)),
             StdFnProps::default("std::clone").include_in_feature_tree(),
         ),
-        ("sketch", "circle") => (
-            |e, a| Box::pin(crate::std::shapes::circle(e, a)),
-            StdFnProps::default("std::sketch::circle"),
+        ("sketch", "conic") => (
+            |e, a| Box::pin(crate::std::sketch::conic(e, a)),
+            StdFnProps::default("std::sketch::conic").include_in_feature_tree(),
+        ),
+        ("sketch", "parabolic") => (
+            |e, a| Box::pin(crate::std::sketch::parabolic(e, a)),
+            StdFnProps::default("std::sketch::parabolic").include_in_feature_tree(),
+        ),
+        ("sketch", "parabolicPoint") => (
+            |e, a| Box::pin(crate::std::sketch::parabolic_point(e, a)),
+            StdFnProps::default("std::sketch::parabolicPoint"),
+        ),
+        ("sketch", "hyperbolic") => (
+            |e, a| Box::pin(crate::std::sketch::hyperbolic(e, a)),
+            StdFnProps::default("std::sketch::hyperbolic").include_in_feature_tree(),
+        ),
+        ("sketch", "hyperbolicPoint") => (
+            |e, a| Box::pin(crate::std::sketch::hyperbolic_point(e, a)),
+            StdFnProps::default("std::sketch::hyperbolicPoint"),
+        ),
+        ("sketch", "elliptic") => (
+            |e, a| Box::pin(crate::std::sketch::elliptic(e, a)),
+            StdFnProps::default("std::sketch::elliptic").include_in_feature_tree(),
+        ),
+        ("sketch", "ellipticPoint") => (
+            |e, a| Box::pin(crate::std::sketch::elliptic_point(e, a)),
+            StdFnProps::default("std::sketch::ellipticPoint"),
         ),
         ("sketch", "rectangle") => (
             |e, a| Box::pin(crate::std::shapes::rectangle(e, a)),
