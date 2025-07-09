@@ -8,7 +8,7 @@ layout: manual
 Normalize a vector (with any number of dimensions)
 
 ```kcl
-vector::normalize(@v: [number])
+vector::normalize(@v: [number]): [number]
 ```
 
 
@@ -18,6 +18,10 @@ vector::normalize(@v: [number])
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `v` | [`[number]`](/docs/kcl-std/types/std-types-number) |  | Yes |
+
+### Returns
+
+[`[number]`](/docs/kcl-std/types/std-types-number)
 
 
 ### Examples

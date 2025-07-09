@@ -147,7 +147,7 @@ export fn magnitude(@v: [number]): number {
 /// assert(normed[0], isEqualTo = 0.6)
 /// assert(normed[1], isEqualTo = 0.8)
 /// ```
-export fn normalize(@v: [number]) {
+export fn normalize(@v: [number]): [number] {
   mag = magnitude(v)
   return map(v, f = fn(@i) { return i/mag })
 }
