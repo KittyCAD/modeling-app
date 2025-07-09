@@ -5,7 +5,6 @@ type EnvironmentVariables = {
   readonly VITE_KITTYCAD_API_TOKEN: string | undefined
   readonly VITE_KITTYCAD_SITE_BASE_URL: string | undefined
   readonly VITE_KITTYCAD_SITE_APP_URL: string | undefined
-  readonly PROD: string | undefined
   readonly TEST: string | undefined
   readonly DEV: string | undefined
   readonly CI: string | undefined
@@ -58,10 +57,6 @@ export default (): EnvironmentVariables => {
   const processEnvOnly = processEnv()
   const env = processEnvOnly || windowElectronProcessEnvOnly || viteOnly
   // Vite uses Booleans and process.env uses strings
-  let PROD = env.PROD
-  if (typeof PROD === 'boolean') {
-    PROD = Number(PROD).toString()
-  }
   let DEV = env.DEV
   if (typeof DEV === 'boolean') {
     DEV = Number(DEV).toString()
@@ -78,7 +73,6 @@ export default (): EnvironmentVariables => {
       (env.VITE_KITTYCAD_SITE_BASE_URL as string) || undefined,
     VITE_KITTYCAD_SITE_APP_URL:
       (env.VITE_KITTYCAD_SITE_APP_URL as string) || undefined,
-    PROD: PROD || undefined,
     TEST: (env.TEST as string) || undefined,
     DEV: DEV || undefined,
     CI: (env.CI as string) || undefined,

@@ -296,7 +296,6 @@ contextBridge.exposeInMainWorld('electron', {
         'IS_PLAYWRIGHT',
         // Really we shouldn't use these and our code should use NODE_ENV
         'DEV',
-        'PROD',
         'TEST',
         'CI',
       ])
