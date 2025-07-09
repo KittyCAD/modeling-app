@@ -5,7 +5,7 @@ import { ACTOR_IDS } from '@src/machines/machineConstants'
 import { S, transitions } from '@src/machines/utils'
 
 import type { Prompt } from '@src/lib/prompt'
-import { generateFakeSubmittedPrompt } from '@src/lib/prompt'
+import { generateFakeSubmittedPrompt, PromptType } from '@src/lib/prompt'
 
 const MLEPHANT_POLL_STATUSES_MS = 5000
 
@@ -87,6 +87,10 @@ export interface MlEphantManagerContext {
   promptsMeta: Map<
     Prompt['id'],
     {
+      // If it's a creation prompt, it'll run some SystemIO code that
+      // creates a new project and other goodies.
+      type: PromptType
+
       // Where the prompt's output should be placed on completion.
       projectPath: string
     }
@@ -170,6 +174,7 @@ export const mlEphantManagerMachine = setup({
             promptsToSeedProjects.add(result.id)
             promptsBelongingToProject.add(result.id)
             promptsMeta.set(result.id, {
+              type: PromptType.Create,
               projectPath: args.input.event.projectPathForPromptOutput,
             })
 
@@ -180,6 +185,39 @@ export const mlEphantManagerMachine = setup({
             })
           }, 1000)
         })
+      },
+    [MlEphantManagerTransitions.PromptEditModel]: fromPromise(
+      async function (args: {
+        system: any
+        input: {
+          event: XSEvent<MlEphantManagerTransitions.PromptEditModel>
+          context: MlEphantManagerContext
+        }
+      }): Promise<Partial<MlEphantManagerContext>> {
+        const context = args.input.context
+        if (context.apiTokenMlephant === undefined)
+          return Promise.reject('missing api token')
+
+          const result = generateFakeSubmittedPrompt()
+          result.status = 'in_progress'
+
+          const promptsPool = context.promptsPool
+          const promptsBelongingToProject = new Set(
+            context.promptsBelongingToProject
+          )
+          const promptsMeta = new Map(context.promptsMeta)
+
+          promptsPool.set(result.id, result)
+          promptsBelongingToProject.add(result.id)
+          promptsMeta.set(result.id, {
+            type: PromptType.Edit,
+            projectPath: args.input.event.projectPathForPromptOutput,
+          })
+
+          resolve({
+            promptsBelongingToProject,
+            promptsMeta,
+          })
       }
     ),
     [MlEphantManagerTransitions.GetPromptsPendingStatuses]: fromPromise(
