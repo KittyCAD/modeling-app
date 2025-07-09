@@ -94,6 +94,11 @@ const PROMPTS = [
   'Model a heat-dissipating structure suitable for passive cooling in electronic assemblies.',
 ]
 
+export enum PromptType {
+  Create = 'create',
+  Edit = 'edit',
+}
+
 export const generateFakeSubmittedPrompt = () => ({
   code: `
   sketch001 = startSketchOn(XY)
