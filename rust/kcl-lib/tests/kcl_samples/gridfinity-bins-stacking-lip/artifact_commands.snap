@@ -212,7 +212,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
         "target": "[uuid]",
         "distance": 34.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -676,7 +677,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
         "target": "[uuid]",
         "distance": 4.75,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -889,7 +891,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
         "target": "[uuid]",
         "distance": -2.4,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -945,7 +948,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
         "target": "[uuid]",
         "distance": -2.4,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1001,7 +1005,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
         "target": "[uuid]",
         "distance": -2.4,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1057,7 +1062,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
         "target": "[uuid]",
         "distance": -2.4,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2869,7 +2875,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
         "target": "[uuid]",
         "distance": 7.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -3218,7 +3225,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
         "target": "[uuid]",
         "distance": 76.5,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -3490,7 +3498,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
         "target": "[uuid]",
         "distance": 118.5,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {

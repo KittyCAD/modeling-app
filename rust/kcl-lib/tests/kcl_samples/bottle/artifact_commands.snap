@@ -180,7 +180,8 @@ description: Artifact commands bottle.kcl
         "target": "[uuid]",
         "distance": 202.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -308,7 +309,8 @@ description: Artifact commands bottle.kcl
         "target": "[uuid]",
         "distance": 18.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {

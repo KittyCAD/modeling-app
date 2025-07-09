@@ -129,7 +129,8 @@ description: Artifact commands import_whole_simple.kcl
         "target": "[uuid]",
         "distance": 254.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {

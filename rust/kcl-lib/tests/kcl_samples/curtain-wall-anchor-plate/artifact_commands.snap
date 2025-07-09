@@ -229,7 +229,8 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
         "target": "[uuid]",
         "distance": 200.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -518,7 +519,8 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
         "target": "[uuid]",
         "distance": 10.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -850,7 +852,8 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
         "target": "[uuid]",
         "distance": -3.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1055,7 +1058,8 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
         "target": "[uuid]",
         "distance": 7.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1293,7 +1297,8 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
         "target": "[uuid]",
         "distance": 7.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1421,7 +1426,8 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
         "target": "[uuid]",
         "distance": 26.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {

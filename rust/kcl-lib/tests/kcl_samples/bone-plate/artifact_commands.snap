@@ -584,7 +584,8 @@ description: Artifact commands bone-plate.kcl
         "target": "[uuid]",
         "distance": -100.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -745,7 +746,8 @@ description: Artifact commands bone-plate.kcl
         "target": "[uuid]",
         "distance": -100.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -906,7 +908,8 @@ description: Artifact commands bone-plate.kcl
         "target": "[uuid]",
         "distance": -100.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1067,7 +1070,8 @@ description: Artifact commands bone-plate.kcl
         "target": "[uuid]",
         "distance": -100.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1228,7 +1232,8 @@ description: Artifact commands bone-plate.kcl
         "target": "[uuid]",
         "distance": -100.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1389,7 +1394,8 @@ description: Artifact commands bone-plate.kcl
         "target": "[uuid]",
         "distance": -100.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1550,7 +1556,8 @@ description: Artifact commands bone-plate.kcl
         "target": "[uuid]",
         "distance": -100.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1711,7 +1718,8 @@ description: Artifact commands bone-plate.kcl
         "target": "[uuid]",
         "distance": -100.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {

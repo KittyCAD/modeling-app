@@ -360,7 +360,8 @@ description: Artifact commands subtract_regression04.kcl
         "faces": null,
         "opposite": {
           "Other": 15.239999999999998
-        }
+        },
+        "extrude_method": "merge"
       }
     },
     {
