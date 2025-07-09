@@ -2,7 +2,7 @@ import { getEnvironment } from '@src/env'
 export function EnvironmentChip() {
   const environment = getEnvironment()
   return (
-    <div className="bg-energy-30 text-black text-center self-center text-xs rounded-sm p-1">
+    <div className="bg-energy-40 text-black text-center self-center text-xs rounded-sm p-1 text-energy-90">
       <span className="">{environment?.name}</span>
     </div>
   )
