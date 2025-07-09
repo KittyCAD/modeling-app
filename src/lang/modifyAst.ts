@@ -1207,3 +1207,84 @@ export function insertVariableAndOffsetPathToNode(
     }
   }
 }
+
+// Create an array expression for variables,
+// or keep it null if all are PipeSubstitutions
+export function createVariableExpressionsArray(exprs: Expr[]): Expr | null {
+  let expr: Expr | null = null
+  if (exprs.every((s) => s.type === 'PipeSubstitution')) {
+    // Keeping null so we don't even put it the % sign
+  } else if (exprs.length === 1) {
+    expr = exprs[0]
+  } else {
+    expr = createArrayExpression(exprs)
+  }
+  return expr
+}
+
+// Create a path to node to the last variable declaroator of an ast
+// Optionally, can point to the first kwarg of the CallExpressionKw
+export function createPathToNodeForLastVariable(
+  ast: Node<Program>,
+  toFirstKwarg = true
+): PathToNode {
+  const argIndex = 0 // first kwarg for all sweeps here
+  const pathToCall: PathToNode = [
+    ['body', ''],
+    [ast.body.length - 1, 'index'],
+    ['declaration', 'VariableDeclaration'],
+    ['init', 'VariableDeclarator'],
+  ]
+  if (toFirstKwarg) {
+    pathToCall.push(
+      ['arguments', 'CallExpressionKw'],
+      [argIndex, ARG_INDEX_FIELD],
+      ['arg', LABELED_ARG_FIELD]
+    )
+  }
+
+  return pathToCall
+}
+
+export function setCallInAst(
+  ast: Node<Program>,
+  call: Node<CallExpressionKw>,
+  nodeToEdit?: PathToNode,
+  pathIfPipe?: PathToNode
+): Error | PathToNode {
+  let pathToNode: PathToNode | undefined
+  if (nodeToEdit) {
+    const result = getNodeFromPath<CallExpressionKw>(
+      ast,
+      nodeToEdit,
+      'CallExpressionKw'
+    )
+    if (err(result)) {
+      return result
+    }
+
+    Object.assign(result.node, call)
+    pathToNode = nodeToEdit
+  } else {
+    if (!call.unlabeled && pathIfPipe) {
+      const pipe = getNodeFromPath<PipeExpression>(
+        ast,
+        pathIfPipe,
+        'PipeExpression'
+      )
+      if (err(pipe)) {
+        return pipe
+      }
+      pipe.node.body.push(call)
+      pathToNode = pathIfPipe
+    } else {
+      const name = findUniqueName(ast, call.callee.name.name)
+      const declaration = createVariableDeclaration(name, call)
+      ast.body.push(declaration)
+      const toFirstKwarg = call.arguments.length > 0
+      pathToNode = createPathToNodeForLastVariable(ast, toFirstKwarg)
+    }
+  }
+
+  return pathToNode
+}

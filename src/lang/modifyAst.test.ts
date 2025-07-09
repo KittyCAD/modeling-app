@@ -2,24 +2,33 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 
 import {
   createArrayExpression,
+  createCallExpressionStdLibKw,
   createIdentifier,
+  createLabeledArg,
   createLiteral,
   createLiteralMaybeSuffix,
+  createLocalName,
   createObjectExpression,
   createPipeExpression,
   createPipeSubstitution,
   createVariableDeclaration,
   findUniqueName,
-  giveSketchFnCallTag,
 } from '@src/lang/create'
 import {
   addSketchTo,
+  createPathToNodeForLastVariable,
+  createVariableExpressionsArray,
   deleteSegmentFromPipeExpression,
   moveValueIntoNewVariable,
+  setCallInAst,
   sketchOnExtrudedFace,
   splitPipedProfile,
 } from '@src/lang/modifyAst'
-import { findUsesOfTagInPipe } from '@src/lang/queryAst'
+import {
+  findUsesOfTagInPipe,
+  getNodeFromPath,
+  getVariableExprsFromSelection,
+} from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type { Artifact } from '@src/lang/std/artifactGraph'
 import { codeRefFromRange } from '@src/lang/std/artifactGraph'
@@ -31,6 +40,8 @@ import { enginelessExecutor } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
 import { deleteFromSelection } from '@src/lang/modifyAst/deleteFromSelection'
 import { assertNotErr } from '@src/unitTestUtils'
+import type { Selections } from '@src/lib/selections'
+import { giveSketchFnCallTag } from '@src/lang/modifyAst/giveSketchFnCallTag'
 
 beforeAll(async () => {
   await initPromise
@@ -915,5 +926,212 @@ extrude001 = extrude(part001, length = 5)
 
     const result = splitPipedProfile(ast, pathToPipe)
     expect(result instanceof Error).toBe(true)
+  })
+})
+
+describe('Testing createVariableExpressionsArray', () => {
+  it('should return null for any number of pipe substitutions', () => {
+    const onePipe = [createPipeSubstitution()]
+    const twoPipes = [createPipeSubstitution(), createPipeSubstitution()]
+    const threePipes = [
+      createPipeSubstitution(),
+      createPipeSubstitution(),
+      createPipeSubstitution(),
+    ]
+    expect(createVariableExpressionsArray(onePipe)).toBeNull()
+    expect(createVariableExpressionsArray(twoPipes)).toBeNull()
+    expect(createVariableExpressionsArray(threePipes)).toBeNull()
+  })
+
+  it('should create a variable expressions for one variable', () => {
+    const oneVariableName = [createLocalName('var1')]
+    const expr = createVariableExpressionsArray(oneVariableName)
+    if (expr?.type !== 'Name') {
+      throw new Error(`Expected Literal type, got ${expr?.type}`)
+    }
+
+    expect(expr.name.name).toBe('var1')
+  })
+
+  it('should create an array of variable expressions for two variables', () => {
+    const twoVariableNames = [createLocalName('var1'), createLocalName('var2')]
+    const exprs = createVariableExpressionsArray(twoVariableNames)
+    if (exprs?.type !== 'ArrayExpression') {
+      throw new Error('Expected ArrayExpression type')
+    }
+
+    expect(exprs.elements).toHaveLength(2)
+    if (
+      exprs.elements[0].type !== 'Name' ||
+      exprs.elements[1].type !== 'Name'
+    ) {
+      throw new Error(
+        `Expected elements to be of type Name, got ${exprs.elements[0].type} and ${exprs.elements[1].type}`
+      )
+    }
+    expect(exprs.elements[0].name.name).toBe('var1')
+    expect(exprs.elements[1].name.name).toBe('var2')
+  })
+
+  // This would catch the issue at https://github.com/KittyCAD/modeling-app/issues/7669
+  // TODO: add uniqueness check to function to get this test to pass and bring boolean ops up to speed
+  // it('should create one expr if the array of variable names are the same', () => {
+  //   const twoVariableNames = [createLocalName('var1'), createLocalName('var1')]
+  //   const expr = createVariableExpressionsArray(twoVariableNames)
+  //   if (expr?.type !== 'Name') {
+  //     throw new Error(`Expected Literal type, got ${expr?.type}`)
+  //   }
+
+  //   expect(expr.name.name).toBe('var1')
+  // })
+
+  it('should create an array of variable expressions for one variable and a pipe', () => {
+    const oneVarOnePipe = [createPipeSubstitution(), createLocalName('var1')]
+    const exprs = createVariableExpressionsArray(oneVarOnePipe)
+    if (exprs?.type !== 'ArrayExpression') {
+      throw new Error('Expected ArrayExpression type')
+    }
+
+    expect(exprs.elements).toHaveLength(2)
+    expect(exprs.elements[0].type).toBe('PipeSubstitution')
+    if (exprs.elements[1].type !== 'Name') {
+      throw new Error(
+        `Expected elements[1] to be of type Name, got ${exprs.elements[1].type}`
+      )
+    }
+
+    expect(exprs.elements[1].name.name).toBe('var1')
+  })
+})
+
+describe('Testing createPathToNodeForLastVariable', () => {
+  it('should create a path to the last variable in the array', () => {
+    const circleProfileInVar = `sketch001 = startSketchOn(XY)
+profile001 = circle(sketch001, center = [0, 0], radius = 1)
+extrude001 = extrude(profile001, length = 5)
+`
+    const ast = assertParse(circleProfileInVar)
+    const path = createPathToNodeForLastVariable(ast, false)
+    expect(path.length).toEqual(4)
+
+    // Verify we can get the right node
+    const node = getNodeFromPath<any>(ast, path)
+    if (err(node)) {
+      throw node
+    }
+    // With the expected range
+    const startOfExtrudeIndex = circleProfileInVar.indexOf('extrude(')
+    expect(node.node.start).toEqual(startOfExtrudeIndex)
+    expect(node.node.end).toEqual(circleProfileInVar.length - 1)
+  })
+
+  it('should create a path to the first kwarg in the last expression', () => {
+    const circleProfileInVar = `sketch001 = startSketchOn(XY)
+profile001 = circle(sketch001, center = [0, 0], radius = 1)
+extrude001 = extrude(profile001, length = 123)
+`
+    const ast = assertParse(circleProfileInVar)
+    const path = createPathToNodeForLastVariable(ast, true)
+    expect(path.length).toEqual(7)
+
+    // Verify we can get the right node
+    const node = getNodeFromPath<any>(ast, path)
+    if (err(node)) {
+      throw node
+    }
+    // With the expected range
+    const startOfKwargIndex = circleProfileInVar.indexOf('123')
+    expect(node.node.start).toEqual(startOfKwargIndex)
+    expect(node.node.end).toEqual(startOfKwargIndex + 3)
+  })
+})
+
+describe('Testing setCallInAst', () => {
+  it('should push an extrude call with variable on variable profile', () => {
+    const code = `sketch001 = startSketchOn(XY)
+profile001 = circle(sketch001, center = [0, 0], radius = 1)
+`
+    const ast = assertParse(code)
+    const exprs = createVariableExpressionsArray([
+      createLocalName('profile001'),
+    ])
+    const call = createCallExpressionStdLibKw('extrude', exprs, [
+      createLabeledArg('length', createLiteral(5)),
+    ])
+    const pathToNode = setCallInAst(ast, call)
+    if (err(pathToNode)) {
+      throw pathToNode
+    }
+    const newCode = recast(ast)
+    expect(newCode).toContain(code)
+    expect(newCode).toContain(`extrude001 = extrude(profile001, length = 5)`)
+  })
+
+  it('should push an extrude call in pipe is selection was in variable-less pipe', async () => {
+    const code = `startSketchOn(XY)
+  |> circle(center = [0, 0], radius = 1)
+`
+    const ast = assertParse(code)
+    const { artifactGraph } = await enginelessExecutor(ast)
+    const artifact = [...artifactGraph.values()].find((a) => a.type === 'path')
+    if (!artifact) {
+      throw new Error('Artifact not found in the graph')
+    }
+    const selections: Selections = {
+      graphSelections: [
+        {
+          codeRef: artifact.codeRef,
+          artifact,
+        },
+      ],
+      otherSelections: [],
+    }
+    const vars = getVariableExprsFromSelection(selections, ast)
+    if (err(vars)) throw vars
+    const exprs = createVariableExpressionsArray(vars.exprs)
+    const call = createCallExpressionStdLibKw('extrude', exprs, [
+      createLabeledArg('length', createLiteral(5)),
+    ])
+    const pathToNode = setCallInAst(ast, call, undefined, vars.pathIfPipe)
+    if (err(pathToNode)) {
+      throw pathToNode
+    }
+    const newCode = recast(ast)
+    expect(newCode).toContain(code)
+    expect(newCode).toContain(`|> extrude(length = 5)`)
+  })
+
+  it('should push an extrude call with variable if selection was in variable pipe', async () => {
+    const code = `profile001 = startSketchOn(XY)
+  |> circle(center = [0, 0], radius = 1)
+`
+    const ast = assertParse(code)
+    const { artifactGraph } = await enginelessExecutor(ast)
+    const artifact = [...artifactGraph.values()].find((a) => a.type === 'path')
+    if (!artifact) {
+      throw new Error('Artifact not found in the graph')
+    }
+    const selections: Selections = {
+      graphSelections: [
+        {
+          codeRef: artifact.codeRef,
+          artifact,
+        },
+      ],
+      otherSelections: [],
+    }
+    const vars = getVariableExprsFromSelection(selections, ast)
+    if (err(vars)) throw vars
+    const exprs = createVariableExpressionsArray(vars.exprs)
+    const call = createCallExpressionStdLibKw('extrude', exprs, [
+      createLabeledArg('length', createLiteral(5)),
+    ])
+    const pathToNode = setCallInAst(ast, call, undefined, vars.pathIfPipe)
+    if (err(pathToNode)) {
+      throw pathToNode
+    }
+    const newCode = recast(ast)
+    expect(newCode).toContain(code)
+    expect(newCode).toContain(`extrude001 = extrude(profile001, length = 5)`)
   })
 })
