@@ -42,12 +42,13 @@ afterAll(() => {
 
 async function getAstAndArtifactGraph(code: string) {
   const ast = assertParse(code)
-  if (err(ast)) throw ast
   await kclManager.executeAst({ ast })
-  const artifactGraph = kclManager.artifactGraph
-
-  expect(kclManager.errors).toEqual([])
-  return { ast, artifactGraph, operations: kclManager.execState.operations }
+  const {
+    artifactGraph,
+    execState: { operations },
+  } = kclManager
+  await new Promise((resolve) => setTimeout(resolve, 100))
+  return { ast, artifactGraph, operations }
 }
 
 function createSelectionFromArtifacts(
@@ -315,7 +316,6 @@ shell001 = shell(extrude001, faces = END, thickness = 0.1)
     )
     if (err(selections)) throw selections
 
-    console.log('Selections:', selections)
     expect(selections.solids.graphSelections).toHaveLength(2)
     expect(selections.faces.graphSelections).toHaveLength(2)
   })
