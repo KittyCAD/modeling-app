@@ -15,7 +15,10 @@ import { isDesktop } from '@src/lib/isDesktop'
 import { APP_DOWNLOAD_PATH } from '@src/lib/constants'
 import { desktopAppPitchMessage } from '@src/components/DownloadAppToast'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
-import { EnvironmentChip, EnvironmentDescription } from '@src/components/environment/Environment'
+import {
+  EnvironmentChip,
+  EnvironmentDescription,
+} from '@src/components/environment/Environment'
 import { getEnvironment } from '@src/env'
 
 export const defaultGlobalStatusBarItems = ({
@@ -126,7 +129,7 @@ function EnvironmentStatusBarItem() {
         </Tooltip>
       </Popover.Button>
       <Popover.Panel className="absolute left-0 bottom-full mb-1 w-64 flex flex-col gap-1 align-stretch rounded-lg shadow-lg text-sm">
-        <EnvironmentDescription/>
+        <EnvironmentDescription />
       </Popover.Panel>
     </Popover>
   )
