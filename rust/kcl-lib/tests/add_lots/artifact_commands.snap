@@ -14,5 +14,6 @@ description: Artifact commands add_lots.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }
