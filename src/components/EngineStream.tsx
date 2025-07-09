@@ -590,6 +590,7 @@ export const EngineStream = (props: {
       </canvas>
       <ClientSideScene
         cameraControls={settings.modeling.mouseControls.current}
+        enableTouchControls={settings.modeling.enableTouchControls.current}
       />
       <ViewControlContextMenu
         event="mouseup"

@@ -432,6 +432,19 @@ export function createSettings() {
           </>
         ),
       }),
+      /** Whether to enable the touch listeners for controlling the camera, which run separate from the mouse control listeners
+       *
+       */
+      enableTouchControls: new Setting<boolean>({
+        defaultValue: true,
+        hideOnLevel: 'project',
+        description:
+          'Enable touch events to navigate the 3D scene. When enabled, orbit with one-finger drag, pan with two-finger drag, and zoom with pinch.',
+        validate: (v) => typeof v === 'boolean',
+        commandConfig: {
+          inputType: 'boolean',
+        },
+      }),
       /**
        * Projection method applied to the 3D view, perspective or orthographic
        */
