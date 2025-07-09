@@ -1,35 +1,28 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
 import {
-  createArrayExpression,
   createCallExpressionStdLibKw,
   createLabeledArg,
   createLiteral,
   createLocalName,
-  createVariableDeclaration,
-  findUniqueName,
 } from '@src/lang/create'
-import { insertVariableAndOffsetPathToNode } from '@src/lang/modifyAst'
+import {
+  createVariableExpressionsArray,
+  insertVariableAndOffsetPathToNode,
+  setCallInAst,
+} from '@src/lang/modifyAst'
 import {
   getEdgeTagCall,
   mutateAstWithTagForSketchSegment,
 } from '@src/lang/modifyAst/addEdgeTreatment'
 import {
   getNodeFromPath,
-  getSketchExprsFromSelection,
+  getVariableExprsFromSelection,
   valueOrVariable,
 } from '@src/lang/queryAst'
-import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
-import type {
-  CallExpressionKw,
-  Expr,
-  PathToNode,
-  Program,
-  VariableDeclaration,
-} from '@src/lang/wasm'
+import type { PathToNode, Program, VariableDeclaration } from '@src/lang/wasm'
 import type { KclCommandValue } from '@src/lib/commandTypes'
-import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import type { Selections } from '@src/lib/selections'
 import { err } from '@src/lib/trap'
 
@@ -60,13 +53,9 @@ export function addExtrude({
 
   // 2. Prepare unlabeled and labeled arguments
   // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
-  const sketchesExprList = getSketchExprsFromSelection(
-    sketches,
-    modifiedAst,
-    nodeToEdit
-  )
-  if (err(sketchesExprList)) {
-    return sketchesExprList
+  const vars = getVariableExprsFromSelection(sketches, modifiedAst, nodeToEdit)
+  if (err(vars)) {
+    return vars
   }
 
   // Extra labeled args expressions
@@ -85,7 +74,7 @@ export function addExtrude({
     ? [createLabeledArg('twistAngle', valueOrVariable(twistAngle))]
     : []
 
-  const sketchesExpr = createSketchExpression(sketchesExprList)
+  const sketchesExpr = createVariableExpressionsArray(vars.exprs)
   const call = createCallExpressionStdLibKw('extrude', sketchesExpr, [
     createLabeledArg('length', valueOrVariable(length)),
     ...symmetricExpr,
@@ -114,27 +103,14 @@ export function addExtrude({
 
   // 3. If edit, we assign the new function call declaration to the existing node,
   // otherwise just push to the end
-  let pathToNode: PathToNode | undefined
-  if (nodeToEdit) {
-    const result = getNodeFromPath<CallExpressionKw>(
-      modifiedAst,
-      nodeToEdit,
-      'CallExpressionKw'
-    )
-    if (err(result)) {
-      return result
-    }
-
-    Object.assign(result.node, call)
-    pathToNode = nodeToEdit
-  } else {
-    const name = findUniqueName(
-      modifiedAst,
-      KCL_DEFAULT_CONSTANT_PREFIXES.EXTRUDE
-    )
-    const declaration = createVariableDeclaration(name, call)
-    modifiedAst.body.push(declaration)
-    pathToNode = createPathToNode(modifiedAst)
+  const pathToNode = setCallInAst(
+    modifiedAst,
+    call,
+    nodeToEdit,
+    vars.pathIfPipe
+  )
+  if (err(pathToNode)) {
+    return pathToNode
   }
 
   return {
@@ -168,13 +144,9 @@ export function addSweep({
 
   // 2. Prepare unlabeled and labeled arguments
   // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
-  const sketchesExprList = getSketchExprsFromSelection(
-    sketches,
-    modifiedAst,
-    nodeToEdit
-  )
-  if (err(sketchesExprList)) {
-    return sketchesExprList
+  const vars = getVariableExprsFromSelection(sketches, modifiedAst, nodeToEdit)
+  if (err(vars)) {
+    return vars
   }
 
   // Find the path declaration for the labeled argument
@@ -196,7 +168,7 @@ export function addSweep({
     ? [createLabeledArg('relativeTo', createLiteral(relativeTo))]
     : []
 
-  const sketchesExpr = createSketchExpression(sketchesExprList)
+  const sketchesExpr = createVariableExpressionsArray(vars.exprs)
   const call = createCallExpressionStdLibKw('sweep', sketchesExpr, [
     createLabeledArg('path', pathExpr),
     ...sectionalExpr,
@@ -205,27 +177,14 @@ export function addSweep({
 
   // 3. If edit, we assign the new function call declaration to the existing node,
   // otherwise just push to the end
-  let pathToNode: PathToNode | undefined
-  if (nodeToEdit) {
-    const result = getNodeFromPath<CallExpressionKw>(
-      modifiedAst,
-      nodeToEdit,
-      'CallExpressionKw'
-    )
-    if (err(result)) {
-      return result
-    }
-
-    Object.assign(result.node, call)
-    pathToNode = nodeToEdit
-  } else {
-    const name = findUniqueName(
-      modifiedAst,
-      KCL_DEFAULT_CONSTANT_PREFIXES.SWEEP
-    )
-    const declaration = createVariableDeclaration(name, call)
-    modifiedAst.body.push(declaration)
-    pathToNode = createPathToNode(modifiedAst)
+  const pathToNode = setCallInAst(
+    modifiedAst,
+    call,
+    nodeToEdit,
+    vars.pathIfPipe
+  )
+  if (err(pathToNode)) {
+    return pathToNode
   }
 
   return {
@@ -255,13 +214,9 @@ export function addLoft({
 
   // 2. Prepare unlabeled and labeled arguments
   // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
-  const sketchesExprList = getSketchExprsFromSelection(
-    sketches,
-    modifiedAst,
-    nodeToEdit
-  )
-  if (err(sketchesExprList)) {
-    return sketchesExprList
+  const vars = getVariableExprsFromSelection(sketches, modifiedAst, nodeToEdit)
+  if (err(vars)) {
+    return vars
   }
 
   // Extra labeled args expressions
@@ -269,7 +224,7 @@ export function addLoft({
     ? [createLabeledArg('vDegree', valueOrVariable(vDegree))]
     : []
 
-  const sketchesExpr = createSketchExpression(sketchesExprList)
+  const sketchesExpr = createVariableExpressionsArray(vars.exprs)
   const call = createCallExpressionStdLibKw('loft', sketchesExpr, [
     ...vDegreeExpr,
   ])
@@ -281,25 +236,14 @@ export function addLoft({
 
   // 3. If edit, we assign the new function call declaration to the existing node,
   // otherwise just push to the end
-  let pathToNode: PathToNode | undefined
-  if (nodeToEdit) {
-    const result = getNodeFromPath<CallExpressionKw>(
-      modifiedAst,
-      nodeToEdit,
-      'CallExpressionKw'
-    )
-    if (err(result)) {
-      return result
-    }
-
-    Object.assign(result.node, call)
-    pathToNode = nodeToEdit
-  } else {
-    const name = findUniqueName(modifiedAst, KCL_DEFAULT_CONSTANT_PREFIXES.LOFT)
-    const declaration = createVariableDeclaration(name, call)
-    modifiedAst.body.push(declaration)
-    const toFirstKwarg = !!vDegree
-    pathToNode = createPathToNode(modifiedAst, toFirstKwarg)
+  const pathToNode = setCallInAst(
+    modifiedAst,
+    call,
+    nodeToEdit,
+    vars.pathIfPipe
+  )
+  if (err(pathToNode)) {
+    return pathToNode
   }
 
   return {
@@ -323,8 +267,8 @@ export function addRevolve({
   sketches: Selections
   angle: KclCommandValue
   axisOrEdge: 'Axis' | 'Edge'
-  axis: string | undefined
-  edge: Selections | undefined
+  axis?: string
+  edge?: Selections
   symmetric?: boolean
   bidirectionalAngle?: KclCommandValue
   nodeToEdit?: PathToNode
@@ -339,13 +283,9 @@ export function addRevolve({
 
   // 2. Prepare unlabeled and labeled arguments
   // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
-  const sketchesExprList = getSketchExprsFromSelection(
-    sketches,
-    modifiedAst,
-    nodeToEdit
-  )
-  if (err(sketchesExprList)) {
-    return sketchesExprList
+  const vars = getVariableExprsFromSelection(sketches, modifiedAst, nodeToEdit)
+  if (err(vars)) {
+    return vars
   }
 
   // Retrieve axis expression depending on mode
@@ -372,7 +312,7 @@ export function addRevolve({
       ]
     : []
 
-  const sketchesExpr = createSketchExpression(sketchesExprList)
+  const sketchesExpr = createVariableExpressionsArray(vars.exprs)
   const call = createCallExpressionStdLibKw('revolve', sketchesExpr, [
     createLabeledArg('angle', valueOrVariable(angle)),
     createLabeledArg('axis', getAxisResult.generatedAxis),
@@ -399,27 +339,14 @@ export function addRevolve({
 
   // 3. If edit, we assign the new function call declaration to the existing node,
   // otherwise just push to the end
-  let pathToNode: PathToNode | undefined
-  if (nodeToEdit) {
-    const result = getNodeFromPath<CallExpressionKw>(
-      modifiedAst,
-      nodeToEdit,
-      'CallExpressionKw'
-    )
-    if (err(result)) {
-      return result
-    }
-
-    Object.assign(result.node, call)
-    pathToNode = nodeToEdit
-  } else {
-    const name = findUniqueName(
-      modifiedAst,
-      KCL_DEFAULT_CONSTANT_PREFIXES.REVOLVE
-    )
-    const declaration = createVariableDeclaration(name, call)
-    modifiedAst.body.push(declaration)
-    pathToNode = createPathToNode(modifiedAst)
+  const pathToNode = setCallInAst(
+    modifiedAst,
+    call,
+    nodeToEdit,
+    vars.pathIfPipe
+  )
+  if (err(pathToNode)) {
+    return pathToNode
   }
 
   return {
@@ -429,40 +356,6 @@ export function addRevolve({
 }
 
 // Utilities
-
-function createSketchExpression(sketches: Expr[]) {
-  let sketchesExpr: Expr | null = null
-  if (sketches.every((s) => s.type === 'PipeSubstitution')) {
-    // Keeping null so we don't even put it the % sign
-  } else if (sketches.length === 1) {
-    sketchesExpr = sketches[0]
-  } else {
-    sketchesExpr = createArrayExpression(sketches)
-  }
-  return sketchesExpr
-}
-
-function createPathToNode(
-  modifiedAst: Node<Program>,
-  toFirstKwarg = true
-): PathToNode {
-  const argIndex = 0 // first kwarg for all sweeps here
-  const pathToCall: PathToNode = [
-    ['body', ''],
-    [modifiedAst.body.length - 1, 'index'],
-    ['declaration', 'VariableDeclaration'],
-    ['init', 'VariableDeclarator'],
-  ]
-  if (toFirstKwarg) {
-    pathToCall.push(
-      ['arguments', 'CallExpressionKw'],
-      [argIndex, ARG_INDEX_FIELD],
-      ['arg', LABELED_ARG_FIELD]
-    )
-  }
-
-  return pathToCall
-}
 
 export function getAxisExpressionAndIndex(
   axisOrEdge: 'Axis' | 'Edge',
