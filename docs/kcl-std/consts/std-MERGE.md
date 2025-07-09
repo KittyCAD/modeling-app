@@ -1,11 +1,11 @@
 ---
 title: "MERGE"
 subtitle: "Constant in std"
-excerpt: "Specifies that the extrusion will result in one object."
+excerpt: "Specifies that the extrusion will be pulled into or pushed out of the existing object, modifying it without creating a new object."
 layout: manual
 ---
 
-Specifies that the extrusion will result in one object.
+Specifies that the extrusion will be pulled into or pushed out of the existing object, modifying it without creating a new object.
 
 ```kcl
 MERGE: string
