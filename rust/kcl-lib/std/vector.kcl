@@ -122,13 +122,13 @@ export fn dot(@u: [number], v: [number]): number {
   )
 }
 
-/// Find the magnitude of a vector (with any number of dimensions)
+/// Find the Euclidean distance of a vector.
 /// ```kcl
 /// v = [3, 4]
 /// m = vector::magnitude(v)
 /// assert(m, isEqualTo = 5)
 /// ```
-export fn magnitude(@v: [number]) {
+export fn magnitude(@v: [number]): number {
   return reduce(
     [0..<count(v)],
     initial = 0,

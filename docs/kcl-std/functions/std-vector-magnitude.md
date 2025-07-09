@@ -1,14 +1,14 @@
 ---
 title: "vector::magnitude"
 subtitle: "Function in std::vector"
-excerpt: "Find the magnitude of a vector (with any number of dimensions)"
+excerpt: "Find the Euclidean distance of a vector."
 layout: manual
 ---
 
-Find the magnitude of a vector (with any number of dimensions)
+Find the Euclidean distance of a vector.
 
 ```kcl
-vector::magnitude(@v: [number])
+vector::magnitude(@v: [number]): number
 ```
 
 
@@ -18,6 +18,10 @@ vector::magnitude(@v: [number])
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `v` | [`[number]`](/docs/kcl-std/types/std-types-number) |  | Yes |
+
+### Returns
+
+[`number`](/docs/kcl-std/types/std-types-number) - A number.
 
 
 ### Examples
