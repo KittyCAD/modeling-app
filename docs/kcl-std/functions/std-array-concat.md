@@ -40,6 +40,7 @@ assert(new_arr[2], isEqualTo = 30, tolerance = 0.00001)
 assert(new_arr[3], isEqualTo = 40, tolerance = 0.00001)
 assert(new_arr[4], isEqualTo = 50, tolerance = 0.00001)
 assert(new_arr[5], isEqualTo = 60, tolerance = 0.00001)
+assert(count(new_arr), isEqualTo = 6, tolerance = 0.00001)
 
 ```
 
@@ -51,6 +52,7 @@ new_arr = concat([10, 20, 30], items = [])
 assert(new_arr[0], isEqualTo = 10, tolerance = 0.00001)
 assert(new_arr[1], isEqualTo = 20, tolerance = 0.00001)
 assert(new_arr[2], isEqualTo = 30, tolerance = 0.00001)
+assert(count(new_arr), isEqualTo = 3, tolerance = 0.00001)
 
 ```
 
