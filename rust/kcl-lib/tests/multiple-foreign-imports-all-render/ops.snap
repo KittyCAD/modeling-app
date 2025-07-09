@@ -280,5 +280,6 @@ description: Operations executed multiple-foreign-imports-all-render.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

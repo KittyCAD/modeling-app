@@ -274,5 +274,6 @@ description: Operations executed error_revolve_on_edge_get_edge.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

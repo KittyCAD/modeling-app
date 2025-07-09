@@ -222,5 +222,6 @@ description: Artifact commands fillet_duplicate_tags.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

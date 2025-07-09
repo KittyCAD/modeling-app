@@ -3781,5 +3781,6 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

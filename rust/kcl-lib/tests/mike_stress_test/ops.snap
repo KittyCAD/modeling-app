@@ -174,5 +174,6 @@ description: Operations executed mike_stress_test.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

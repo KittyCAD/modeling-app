@@ -176,5 +176,6 @@ description: Artifact commands circle_three_point.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

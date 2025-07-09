@@ -201,5 +201,6 @@ description: Operations executed out_of_band_sketches.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

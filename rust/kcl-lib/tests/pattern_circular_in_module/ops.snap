@@ -305,5 +305,6 @@ description: Operations executed pattern_circular_in_module.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

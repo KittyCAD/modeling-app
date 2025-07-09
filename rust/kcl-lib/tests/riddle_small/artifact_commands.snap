@@ -202,5 +202,6 @@ description: Artifact commands riddle_small.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

@@ -4928,5 +4928,6 @@ description: Artifact commands kittycad_svg.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

@@ -1236,5 +1236,6 @@ description: Artifact commands import_mesh_clone.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

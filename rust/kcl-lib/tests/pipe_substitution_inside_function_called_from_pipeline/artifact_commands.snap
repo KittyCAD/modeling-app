@@ -14,5 +14,6 @@ description: Artifact commands pipe_substitution_inside_function_called_from_pip
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }
