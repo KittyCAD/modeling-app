@@ -61,7 +61,6 @@ import type { KclCommandValue } from '@src/lib/commandTypes'
 import type { UnaryExpression } from 'typescript'
 import type { NumericType } from '@rust/kcl-lib/bindings/NumericType'
 import type { Plane } from '@rust/kcl-lib/bindings/Artifact'
-import { kclManager } from '@src/lib/singletons'
 
 /**
  * Retrieves a node from a given path within a Program node structure, optionally stopping at a specified node type.
@@ -1203,7 +1202,8 @@ export function getSelectedPlaneId(selectionRanges: Selections): string | null {
 }
 
 export function getSelectedPlaneAsNode(
-  selection: Selections
+  selection: Selections,
+  variables: VariableMap
 ): Node<Name> | Node<Literal> | undefined {
   const defaultPlane = selection.otherSelections.find(
     (selection) => typeof selection === 'object' && 'name' in selection
@@ -1221,11 +1221,9 @@ export function getSelectedPlaneAsNode(
   )
   if (offsetPlane?.artifact?.type === 'plane') {
     const artifactId = offsetPlane.artifact.id
-    const variableName = Object.entries(kclManager.variables).find(
-      ([_, value]) => {
-        return value?.type === 'Plane' && value.value?.artifactId === artifactId
-      }
-    )
+    const variableName = Object.entries(variables).find(([_, value]) => {
+      return value?.type === 'Plane' && value.value?.artifactId === artifactId
+    })
     const offsetPlaneName = variableName?.[0]
     return offsetPlaneName ? createLocalName(offsetPlaneName) : undefined
   }

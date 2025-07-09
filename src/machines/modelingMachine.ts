@@ -2610,7 +2610,10 @@ export const modelingMachine = setup({
           insertIndex = nodeToEdit[1][0]
         }
 
-        const selectedPlane = getSelectedPlaneAsNode(selection)
+        const selectedPlane = getSelectedPlaneAsNode(
+          selection,
+          kclManager.variables
+        )
         if (!selectedPlane) {
           return trap('No plane selected')
         }

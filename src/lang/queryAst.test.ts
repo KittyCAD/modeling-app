@@ -966,7 +966,21 @@ describe('Testing getSelectedPlaneId', () => {
 })
 
 describe('Testing getSelectedPlaneAsNode', () => {
-  it('should return a Node<Literal> for default plane selection', () => {
+  it('should return a Node<Literal> for default plane selection', async () => {
+    const code = `sketch001 = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(end = [10, 0])
+  |> line(end = [10, 10])
+  |> line(end = [0, 10])
+  |> close()
+
+plane001 = offsetPlane(YZ, offset = 10)
+`
+
+    const ast = assertParse(code)
+    const execState = await enginelessExecutor(ast, false)
+    const { variables } = execState
+
     const selections: Selections = {
       otherSelections: [
         {
@@ -977,7 +991,7 @@ describe('Testing getSelectedPlaneAsNode', () => {
       graphSelections: [],
     }
 
-    const result = getSelectedPlaneAsNode(selections)
+    const result = getSelectedPlaneAsNode(selections, variables)
     expect(result).toBeTruthy()
     expect(result?.type).toBe('Literal')
     if (result?.type !== 'Literal') {
