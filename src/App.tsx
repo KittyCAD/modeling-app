@@ -64,6 +64,7 @@ import { useModelingContext } from '@src/hooks/useModelingContext'
 import { xStateValueToString } from '@src/lib/xStateValueToString'
 import { getSelectionTypeDisplayText } from '@src/lib/selections'
 import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
+import { UndoRedoButtons } from '@src/components/UndoRedoButtons'
 import { Toolbar } from '@src/Toolbar'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 
@@ -254,6 +255,12 @@ export function App() {
             project={{ project, file }}
             enableMenu={true}
             nativeFileMenuCreated={nativeFileMenuCreated}
+            projectMenuChildren={
+              <UndoRedoButtons
+                editorManager={editorManager}
+                className="flex items-center px-2 border-x border-chalkboard-30 dark:border-chalkboard-80"
+              />
+            }
           >
             <CommandBarOpenButton />
             <ShareButton />
