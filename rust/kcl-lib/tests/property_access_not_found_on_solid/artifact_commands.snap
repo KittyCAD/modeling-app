@@ -202,5 +202,6 @@ description: Artifact commands property_access_not_found_on_solid.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

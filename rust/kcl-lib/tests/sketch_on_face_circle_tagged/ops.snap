@@ -361,5 +361,6 @@ description: Operations executed sketch_on_face_circle_tagged.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

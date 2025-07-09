@@ -858,5 +858,6 @@ description: Operations executed t-slot-rail.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

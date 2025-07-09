@@ -14,5 +14,6 @@ description: Artifact commands error_inside_fn_also_has_source_range_of_call_sit
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

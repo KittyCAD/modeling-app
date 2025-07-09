@@ -168,5 +168,6 @@ description: Artifact commands nested_main_kcl.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

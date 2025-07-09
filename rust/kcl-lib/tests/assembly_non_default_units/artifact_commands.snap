@@ -221,5 +221,6 @@ description: Artifact commands assembly_non_default_units.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

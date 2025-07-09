@@ -174,5 +174,6 @@ description: Operations executed tangential_arc.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

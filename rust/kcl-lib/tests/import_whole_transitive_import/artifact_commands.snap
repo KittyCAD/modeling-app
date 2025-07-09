@@ -206,5 +206,6 @@ description: Artifact commands import_whole_transitive_import.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

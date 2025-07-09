@@ -17,6 +17,8 @@ layout: manual
 * [**std::appearance**](/docs/kcl-std/modules/std-appearance)
   * [`appearance::hexString`](/docs/kcl-std/functions/std-appearance-hexString)
 * [**std::array**](/docs/kcl-std/modules/std-array)
+  * [`concat`](/docs/kcl-std/functions/std-array-concat)
+  * [`count`](/docs/kcl-std/functions/std-array-count)
   * [`map`](/docs/kcl-std/functions/std-array-map)
   * [`pop`](/docs/kcl-std/functions/std-array-pop)
   * [`push`](/docs/kcl-std/functions/std-array-push)
@@ -124,6 +126,15 @@ layout: manual
   * [`units::toMillimeters`](/docs/kcl-std/functions/std-units-toMillimeters)
   * [`units::toRadians`](/docs/kcl-std/functions/std-units-toRadians)
   * [`units::toYards`](/docs/kcl-std/functions/std-units-toYards)
+* [**std::vector**](/docs/kcl-std/modules/std-vector)
+  * [`vector::add`](/docs/kcl-std/functions/std-vector-add)
+  * [`vector::cross`](/docs/kcl-std/functions/std-vector-cross)
+  * [`vector::div`](/docs/kcl-std/functions/std-vector-div)
+  * [`vector::dot`](/docs/kcl-std/functions/std-vector-dot)
+  * [`vector::magnitude`](/docs/kcl-std/functions/std-vector-magnitude)
+  * [`vector::mul`](/docs/kcl-std/functions/std-vector-mul)
+  * [`vector::normalize`](/docs/kcl-std/functions/std-vector-normalize)
+  * [`vector::sub`](/docs/kcl-std/functions/std-vector-sub)
 
 ### Constants
 

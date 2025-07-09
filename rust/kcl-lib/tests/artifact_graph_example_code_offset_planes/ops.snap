@@ -256,5 +256,6 @@ description: Operations executed artifact_graph_example_code_offset_planes.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

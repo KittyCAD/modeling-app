@@ -599,17 +599,59 @@ flowchart LR
   438["SweepEdge Adjacent"]
   439["Plane<br>[482, 499, 6]"]
   456["Sweep Revolve<br>[1502, 1531, 6]"]
-  457["StartSketchOnFace<br>[635, 669, 1]"]
-  458["StartSketchOnFace<br>[912, 951, 1]"]
-  459["StartSketchOnFace<br>[1254, 1288, 1]"]
-  460["StartSketchOnFace<br>[792, 824, 3]"]
-  461["StartSketchOnFace<br>[974, 1010, 3]"]
-  462["StartSketchOnFace<br>[1417, 1451, 3]"]
-  463["StartSketchOnFace<br>[1561, 1600, 3]"]
-  464["StartSketchOnFace<br>[1751, 1789, 3]"]
-  465["StartSketchOnFace<br>[2055, 2089, 3]"]
-  466["StartSketchOnFace<br>[2389, 2423, 3]"]
-  467["StartSketchOnFace<br>[2877, 2915, 3]"]
+  457[Wall]
+    %% face_code_ref=Missing NodePath
+  458[Wall]
+    %% face_code_ref=Missing NodePath
+  459[Wall]
+    %% face_code_ref=Missing NodePath
+  460[Wall]
+    %% face_code_ref=Missing NodePath
+  461[Wall]
+    %% face_code_ref=Missing NodePath
+  462[Wall]
+    %% face_code_ref=Missing NodePath
+  463[Wall]
+    %% face_code_ref=Missing NodePath
+  464[Wall]
+    %% face_code_ref=Missing NodePath
+  465[Wall]
+    %% face_code_ref=Missing NodePath
+  466[Wall]
+    %% face_code_ref=Missing NodePath
+  467[Wall]
+    %% face_code_ref=Missing NodePath
+  468[Wall]
+    %% face_code_ref=Missing NodePath
+  469[Wall]
+    %% face_code_ref=Missing NodePath
+  470[Wall]
+    %% face_code_ref=Missing NodePath
+  471["SweepEdge Adjacent"]
+  472["SweepEdge Adjacent"]
+  473["SweepEdge Adjacent"]
+  474["SweepEdge Adjacent"]
+  475["SweepEdge Adjacent"]
+  476["SweepEdge Adjacent"]
+  477["SweepEdge Adjacent"]
+  478["SweepEdge Adjacent"]
+  479["SweepEdge Adjacent"]
+  480["SweepEdge Adjacent"]
+  481["SweepEdge Adjacent"]
+  482["SweepEdge Adjacent"]
+  483["SweepEdge Adjacent"]
+  484["SweepEdge Adjacent"]
+  485["StartSketchOnFace<br>[635, 669, 1]"]
+  486["StartSketchOnFace<br>[912, 951, 1]"]
+  487["StartSketchOnFace<br>[1254, 1288, 1]"]
+  488["StartSketchOnFace<br>[792, 824, 3]"]
+  489["StartSketchOnFace<br>[974, 1010, 3]"]
+  490["StartSketchOnFace<br>[1417, 1451, 3]"]
+  491["StartSketchOnFace<br>[1561, 1600, 3]"]
+  492["StartSketchOnFace<br>[1751, 1789, 3]"]
+  493["StartSketchOnFace<br>[2055, 2089, 3]"]
+  494["StartSketchOnFace<br>[2389, 2423, 3]"]
+  495["StartSketchOnFace<br>[2877, 2915, 3]"]
   1 --- 2
   1 --- 5
   2 --- 3
@@ -634,8 +676,8 @@ flowchart LR
   11 --- 17
   11 --- 37
   38 <--x 11
-  11 <--x 457
-  11 <--x 459
+  11 <--x 485
+  11 <--x 487
   14 --- 15
   14 --- 16
   14 ---- 20
@@ -656,7 +698,7 @@ flowchart LR
   24 <--x 23
   23 --- 26
   27 <--x 23
-  23 <--x 458
+  23 <--x 486
   26 --- 27
   26 --- 28
   26 ---- 29
@@ -1079,13 +1121,13 @@ flowchart LR
   286 <--x 210
   287 <--x 210
   288 <--x 210
-  210 <--x 462
-  210 <--x 465
-  210 <--x 466
+  210 <--x 490
+  210 <--x 493
+  210 <--x 494
   212 <--x 211
   211 --- 214
   215 <--x 211
-  211 <--x 460
+  211 <--x 488
   214 --- 215
   214 --- 216
   214 ---- 217
@@ -1101,7 +1143,7 @@ flowchart LR
   220 <--x 219
   219 --- 222
   223 <--x 219
-  219 <--x 461
+  219 <--x 489
   222 --- 223
   222 --- 224
   222 ---- 225
@@ -1127,7 +1169,7 @@ flowchart LR
   237 --- 240
   239 <--x 238
   238 --- 241
-  238 <--x 463
+  238 <--x 491
   241 --- 242
   241 --- 243
   241 ---- 244
@@ -1151,8 +1193,8 @@ flowchart LR
   311 <--x 247
   312 <--x 247
   313 <--x 247
-  247 <--x 464
-  247 <--x 467
+  247 <--x 492
+  247 <--x 495
   250 --- 251
   250 --- 252
   250 ---- 253
@@ -1574,4 +1616,102 @@ flowchart LR
   440 --- 454
   440 --- 455
   440 ---- 456
+  456 <--x 441
+  441 --- 457
+  441 --- 471
+  456 <--x 442
+  442 --- 458
+  442 --- 472
+  456 <--x 443
+  443 --- 459
+  443 --- 473
+  456 <--x 444
+  444 --- 460
+  444 --- 474
+  456 <--x 445
+  445 --- 461
+  445 --- 475
+  456 <--x 446
+  446 --- 462
+  446 --- 476
+  456 <--x 447
+  447 --- 463
+  447 --- 477
+  456 <--x 448
+  448 --- 464
+  448 --- 478
+  456 <--x 449
+  449 --- 465
+  449 --- 479
+  456 <--x 450
+  450 --- 466
+  450 --- 480
+  456 <--x 451
+  451 --- 467
+  451 --- 481
+  456 <--x 452
+  452 --- 468
+  452 --- 482
+  456 <--x 453
+  453 --- 469
+  453 --- 483
+  456 <--x 454
+  454 --- 470
+  454 --- 484
+  456 --- 457
+  456 --- 458
+  456 --- 459
+  456 --- 460
+  456 --- 461
+  456 --- 462
+  456 --- 463
+  456 --- 464
+  456 --- 465
+  456 --- 466
+  456 --- 467
+  456 --- 468
+  456 --- 469
+  456 --- 470
+  456 --- 471
+  456 --- 472
+  456 --- 473
+  456 --- 474
+  456 --- 475
+  456 --- 476
+  456 --- 477
+  456 --- 478
+  456 --- 479
+  456 --- 480
+  456 --- 481
+  456 --- 482
+  456 --- 483
+  456 --- 484
+  457 --- 471
+  484 <--x 457
+  471 <--x 458
+  458 --- 472
+  472 <--x 459
+  459 --- 473
+  473 <--x 460
+  460 --- 474
+  474 <--x 461
+  461 --- 475
+  475 <--x 462
+  462 --- 476
+  476 <--x 463
+  463 --- 477
+  477 <--x 464
+  464 --- 478
+  478 <--x 465
+  465 --- 479
+  479 <--x 466
+  466 --- 480
+  480 <--x 467
+  467 --- 481
+  481 <--x 468
+  468 --- 482
+  482 <--x 469
+  469 --- 483
+  483 <--x 470
+  470 --- 484
 ```

@@ -1393,5 +1393,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

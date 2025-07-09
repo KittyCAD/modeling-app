@@ -311,5 +311,6 @@ description: Operations executed function_sketch_with_position.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

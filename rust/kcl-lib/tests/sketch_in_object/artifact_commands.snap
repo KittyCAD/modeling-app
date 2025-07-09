@@ -389,5 +389,6 @@ description: Artifact commands sketch_in_object.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }
