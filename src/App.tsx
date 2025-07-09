@@ -64,6 +64,7 @@ import { useModelingContext } from '@src/hooks/useModelingContext'
 import { xStateValueToString } from '@src/lib/xStateValueToString'
 import { getSelectionTypeDisplayText } from '@src/lib/selections'
 import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
+import { Toolbar } from '@src/Toolbar'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 
 // CYCLIC REF
@@ -247,15 +248,18 @@ export function App() {
   return (
     <div className="h-screen flex flex-col overflow-hidden select-none">
       <div className="relative flex flex-1 flex-col">
-        <AppHeader
-          className="transition-opacity transition-duration-75"
-          project={{ project, file }}
-          enableMenu={true}
-          nativeFileMenuCreated={nativeFileMenuCreated}
-        >
-          <CommandBarOpenButton />
-          <ShareButton />
-        </AppHeader>
+        <div className="relative flex items-center flex-col">
+          <AppHeader
+            className="transition-opacity transition-duration-75"
+            project={{ project, file }}
+            enableMenu={true}
+            nativeFileMenuCreated={nativeFileMenuCreated}
+          >
+            <CommandBarOpenButton />
+            <ShareButton />
+          </AppHeader>
+          <Toolbar />
+        </div>
         <ModalContainer />
         <ModelingSidebar />
         <EngineStream pool={pool} authToken={authToken} />
