@@ -202,5 +202,6 @@ description: Artifact commands execute_engine_error_return.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

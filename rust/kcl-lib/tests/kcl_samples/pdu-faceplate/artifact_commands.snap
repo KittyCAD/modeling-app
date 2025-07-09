@@ -3584,5 +3584,6 @@ description: Artifact commands pdu-faceplate.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

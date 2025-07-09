@@ -1367,5 +1367,6 @@ description: Artifact commands crazy_multi_profile.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

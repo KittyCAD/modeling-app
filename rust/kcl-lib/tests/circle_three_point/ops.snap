@@ -174,5 +174,6 @@ description: Operations executed circle_three_point.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

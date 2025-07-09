@@ -2627,5 +2627,6 @@ description: Artifact commands enclosure.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

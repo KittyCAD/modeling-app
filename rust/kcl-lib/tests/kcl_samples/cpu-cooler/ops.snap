@@ -5520,5 +5520,6 @@ description: Operations executed cpu-cooler.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

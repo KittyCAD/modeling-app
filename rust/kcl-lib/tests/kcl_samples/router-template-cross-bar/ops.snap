@@ -716,5 +716,6 @@ description: Operations executed router-template-cross-bar.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

@@ -179,9 +179,9 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
   }
 
   return (
-    <Popover className="relative">
+    <Popover className="relative grid">
       <Popover.Button
-        className="relative group border-0 w-fit min-w-max p-0 rounded-l-full focus-visible:outline-appForeground"
+        className="m-0 relative group border-0 w-fit min-w-max p-0 rounded-l-full rounded-r focus-visible:outline-appForeground"
         data-testid="user-sidebar-toggle"
       >
         <div className="flex items-center">

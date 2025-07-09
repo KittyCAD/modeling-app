@@ -286,5 +286,6 @@ description: Operations executed tan_arc_x_line.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

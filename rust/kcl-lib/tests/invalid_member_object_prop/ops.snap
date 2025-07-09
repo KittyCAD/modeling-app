@@ -117,5 +117,6 @@ description: Operations executed invalid_member_object_prop.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

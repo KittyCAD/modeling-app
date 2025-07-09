@@ -1682,5 +1682,6 @@ description: Artifact commands linear_pattern3d_a_pattern.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

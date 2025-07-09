@@ -152,5 +152,6 @@ description: Operations executed import_only_at_top_level.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

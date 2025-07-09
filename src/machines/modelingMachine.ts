@@ -29,7 +29,6 @@ import {
   applyConstraintHorzVert,
   horzVertInfo,
 } from '@src/components/Toolbar/HorzVert'
-import { intersectInfo } from '@src/components/Toolbar/Intersect'
 import {
   applyRemoveConstrainingValues,
   removeConstrainingValuesInfo,
@@ -149,6 +148,7 @@ import type { Plane } from '@rust/kcl-lib/bindings/Plane'
 import type { Point3d } from '@rust/kcl-lib/bindings/ModelingCmd'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import { letEngineAnimateAndSyncCamAfter } from '@src/clientSideScene/CameraControls'
+import { intersectInfo } from '@src/components/Toolbar/Intersect'
 
 export type SetSelections =
   | {

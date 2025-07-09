@@ -703,5 +703,6 @@ description: Artifact commands subtract_with_pattern.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }
