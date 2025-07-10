@@ -2,7 +2,7 @@ import { getEnvironmentName } from '@src/env'
 import { SUPPORTED_ENVIRONMENTS } from '@src/lib/constants'
 import env from '@src/env'
 
-export function environmentNameDisplay () {
+export function environmentNameDisplay() {
   return env().DEV ? '.env' : getEnvironmentName()
 }
 
@@ -26,7 +26,7 @@ export function EnvironmentChip() {
     shouldRender(environmentName) && (
       <div className="bg-energy-40 text-black text-center self-center text-xs rounded-sm p-1 text-energy-90">
         <span className="">{environmentName}</span>
-        </div>
+      </div>
     )
   )
 }
@@ -49,10 +49,12 @@ export function EnvironmentDescription() {
         </div>
         <ul>
           <li className="flex flex-col px-2 py-4 gap-1 last:mb-0 ">
-          <p className="font-bold">API</p> <p>{env().VITE_KITTYCAD_API_BASE_URL}</p>
+            <p className="font-bold">API</p>{' '}
+            <p>{env().VITE_KITTYCAD_API_BASE_URL}</p>
           </li>
           <li className="flex flex-col px-2 py-4 gap-1 last:mb-0 ">
-        <p className="font-bold">Site</p> <p>{env().VITE_KITTYCAD_SITE_BASE_URL}</p>
+            <p className="font-bold">Site</p>{' '}
+            <p>{env().VITE_KITTYCAD_SITE_BASE_URL}</p>
           </li>
           <li className="flex flex-col px-2 py-4 gap-1 last:mb-0 ">
             <p className="font-bold">Websocket</p>{' '}

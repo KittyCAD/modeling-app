@@ -17,10 +17,9 @@ import { desktopAppPitchMessage } from '@src/components/DownloadAppToast'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import {
   EnvironmentChip,
-    EnvironmentDescription,
-    environmentNameDisplay,
+  EnvironmentDescription,
+  environmentNameDisplay,
 } from '@src/components/environment/Environment'
-import { getEnvironmentName } from '@src/env'
 
 export const defaultGlobalStatusBarItems = ({
   location,

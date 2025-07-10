@@ -14,7 +14,10 @@ import { PATHS } from '@src/lib/paths'
 import { authActor } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
-import { environmentNameDisplay, shouldRender } from '@src/components/environment/Environment'
+import {
+  environmentNameDisplay,
+  shouldRender,
+} from '@src/components/environment/Environment'
 
 type User = Models['User_type']
 

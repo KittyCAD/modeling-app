@@ -157,10 +157,12 @@ const SignIn = () => {
                       Sign in to get started
                       <CustomIcon name="arrowRight" className="w-6 h-6" />
                     </button>
-                    {env().PROD && <AdvancedSignInOptions
-                      signInDesktopDevelopment={signInDesktopDevelopment}
-                      signInDesktopProduction={signInDesktopProduction}
-                      />}
+                    {env().PROD && (
+                      <AdvancedSignInOptions
+                        signInDesktopDevelopment={signInDesktopDevelopment}
+                        signInDesktopProduction={signInDesktopProduction}
+                      />
+                    )}
                   </>
                 ) : (
                   <>
