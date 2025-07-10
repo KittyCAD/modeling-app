@@ -20,10 +20,7 @@ concurrency:
 jobs:
   build-test-artifacts:
     name: Build test artifacts
-    runs-on:
-      - runs-on=${{ github.run_id }}
-      - runner=8cpu-linux-x64
-      - extras=s3-cache
+    runs-on: namespace-profile-ubuntu-8-cores
     steps:
       - uses: runs-on/action@v2
       - uses: actions/create-github-app-token@v2
@@ -138,10 +135,7 @@ jobs:
           path: rust/nextest-archive.tar.zst
   run-test-artifacts:
     name: cargo test (shard ${{ matrix.partitionIndex}})
-    runs-on:
-      - runs-on=${{ github.run_id }}
-      - runner=32cpu-linux-x64
-      - extras=s3-cache
+    runs-on: namespace-profile-ubuntu-8-cores
     needs: build-test-artifacts
     strategy:
       fail-fast: false
@@ -202,10 +196,7 @@ jobs:
           CI_SUITE: e2e:kcl
   run-internal-kcl-samples:
     name: cargo test (internal-kcl-samples)
-    runs-on:
-      - runs-on=${{ github.run_id }}
-      - runner=32cpu-linux-x64
-      - extras=s3-cache
+    runs-on: namespace-profile-ubuntu-8-cores
     steps:
       - uses: runs-on/action@v2
       - uses: actions/create-github-app-token@v2
