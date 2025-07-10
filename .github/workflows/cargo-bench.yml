@@ -26,7 +26,11 @@ name: cargo bench
 jobs:
   cargo-bench:
     name: cargo bench
-    runs-on: namespace-profile-ubuntu-2-cores
+    runs-on: ubuntu-latest
+    # runs-on: namespace-profile-ubuntu-2-cores
+    # TODO: Figure out if there is a way to make CodSpeed work with Namespace
+    # Enabling this results in the following error on GitHub Actions:
+    #   setarch: failed to set personality to x86_64: Operation not permitted
     steps:
       - uses: actions/checkout@v4
       - name: Use correct Rust toolchain
