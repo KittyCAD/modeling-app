@@ -24,7 +24,6 @@ import { Themes } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
 import { isEnumMember } from '@src/lib/types'
 import { capitaliseFC, isArray, toSync } from '@src/lib/utils'
-import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 
 /**
  * A setting that can be set at the user or project level
@@ -222,7 +221,7 @@ export function createSettings() {
        * Stream resource saving behavior toggle
        */
       streamIdleMode: new Setting<number | undefined>({
-        defaultValue: IS_STAGING_OR_DEBUG ? 30 * 1000 : 5 * MS_IN_MINUTE,
+        defaultValue: 5 * MS_IN_MINUTE,
         hideOnLevel: 'project',
         hideOnPlatform: 'both',
         description: 'Save bandwidth & battery',
