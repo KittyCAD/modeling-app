@@ -524,7 +524,7 @@ export async function getUtils(page: Page, test_?: typeof test) {
     createNewFile: async (name: string) => {
       return test?.step(`Create a file named ${name}`, async () => {
         await page.getByTestId('create-file-button').click()
-        await page.getByTestId('tree-input-field').fill(name)
+        await page.getByTestId('file-rename-field').fill(name)
         await page.keyboard.press('Enter')
       })
     },
@@ -532,7 +532,7 @@ export async function getUtils(page: Page, test_?: typeof test) {
     createNewFolder: async (name: string) => {
       return test?.step(`Create a folder named ${name}`, async () => {
         await page.getByTestId('create-folder-button').click()
-        await page.getByTestId('tree-input-field').fill(name)
+        await page.getByTestId('file-rename-field').fill(name)
         await page.keyboard.press('Enter')
       })
     },
@@ -540,7 +540,7 @@ export async function getUtils(page: Page, test_?: typeof test) {
     cloneFile: async (name: string) => {
       return test?.step(`Cloning file '${name}'`, async () => {
         await page
-          .locator('[data-testid="file-pane-scroll-container"] button')
+          .locator('[data-testid="file-pane-scroll-container"] [role=treeitem]')
           .filter({ hasText: name })
           .click({ button: 'right' })
         await page.getByTestId('context-menu-clone').click()
@@ -550,7 +550,7 @@ export async function getUtils(page: Page, test_?: typeof test) {
     selectFile: async (name: string) => {
       return test?.step(`Select ${name}`, async () => {
         await page
-          .locator('[data-testid="file-pane-scroll-container"] button')
+          .locator('[data-testid="file-pane-scroll-container"] [role=treeitem]')
           .filter({ hasText: name })
           .click()
         await expect(page.getByTestId('project-sidebar-toggle')).toContainText(
@@ -566,7 +566,7 @@ export async function getUtils(page: Page, test_?: typeof test) {
         await page.getByTestId('file-rename-field').fill(name)
         await page.keyboard.press('Enter')
         const newFile = page
-          .locator('[data-testid="file-pane-scroll-container"] button')
+          .locator('[data-testid="file-pane-scroll-container"] [role=treeitem]')
           .filter({ hasText: name })
 
         await expect(newFile).toBeVisible()
@@ -577,14 +577,14 @@ export async function getUtils(page: Page, test_?: typeof test) {
     renameFile: async (fromName: string, toName: string) => {
       return test?.step(`Rename ${fromName} to ${toName}`, async () => {
         await page
-          .locator('[data-testid="file-pane-scroll-container"] button')
+          .locator('[data-testid="file-pane-scroll-container"] [role=treeitem]')
           .filter({ hasText: fromName })
           .click({ button: 'right' })
         await page.getByTestId('context-menu-rename').click()
         await page.getByTestId('file-rename-field').fill(toName)
         await page.keyboard.press('Enter')
         await page
-          .locator('[data-testid="file-pane-scroll-container"] button')
+          .locator('[data-testid="file-pane-scroll-container"] [role=treeitem]')
           .filter({ hasText: toName })
           .click()
       })
@@ -593,12 +593,24 @@ export async function getUtils(page: Page, test_?: typeof test) {
     deleteFile: async (name: string) => {
       return test?.step(`Delete ${name}`, async () => {
         await page
-          .locator('[data-testid="file-pane-scroll-container"] button')
+          .locator('[data-testid="file-pane-scroll-container"] [role=treeitem]')
           .filter({ hasText: name })
           .click({ button: 'right' })
         await page.getByTestId('context-menu-delete').click()
         await page.getByTestId('delete-confirmation').click()
       })
+    },
+
+    locatorFile: (name: string) => {
+      return page
+        .locator('[data-testid="file-pane-scroll-container"] [role=treeitem]')
+        .filter({ hasText: name })
+    },
+
+    locatorFolder: (name: string) => {
+      return page
+        .locator('[data-testid="file-pane-scroll-container"] [role=treeitem]')
+        .filter({ hasText: name })
     },
 
     /**
