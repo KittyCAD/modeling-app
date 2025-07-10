@@ -40,7 +40,7 @@ export const TOKEN_PERSIST_KEY = 'TOKEN_PERSIST_KEY'
  */
 const persistedCookie = getCookie(COOKIE_NAME)
 const persistedDevToken = env().VITE_KITTYCAD_API_TOKEN
-export const persistedToken = persistedDevToken || persistedCookie
+export const persistedToken = persistedDevToken || persistedCookie || ''
 console.log('Initial persisted token')
 console.table([
   ['cookie', !!persistedCookie],
