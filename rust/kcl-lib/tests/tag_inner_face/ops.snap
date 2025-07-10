@@ -115,45 +115,6 @@ description: Operations executed tag_inner_face.kcl
         ]
       },
       "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "startSketchOn",
-      "unlabeledArg": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {
-        "face": {
-          "value": {
-            "type": "TagIdentifier",
-            "value": "yoyo",
-            "artifact_id": "[uuid]"
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 5
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": [],
-      "isError": true
     }
   ],
   "std::appearance": [],
