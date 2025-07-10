@@ -3630,9 +3630,7 @@ extrude001 = extrude(profile001, length = 100)
 
     await test.step('Edit appearance via feature tree selection works', async () => {
       const op = await toolbar.getFeatureTreeOperation('Appearance', 0)
-      await op.click({ button: 'right' })
-      const menuButton = page.getByTestId('context-menu-edit')
-      await menuButton.click()
+      await op.dblclick({ button: 'left' })
       await cmdBar.expectState({
         stage: 'arguments',
         currentArgKey: 'color',
