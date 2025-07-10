@@ -132,8 +132,6 @@ export default (): EnvironmentVariables => {
     DEV: DEV || undefined,
     CI: (env.CI as string) || undefined,
   }
-  console.log('environment', environment)
-  console.log('environment variables', environmentVariables)
-  console.log('env', env)
+
   return environmentVariables
 }
