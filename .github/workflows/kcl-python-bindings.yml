@@ -57,7 +57,7 @@ jobs:
           path: rust/kcl-python-bindings/dist
   windows:
     name: kcl-python-bindings (windows)
-    runs-on: windows-16-cores
+    runs-on: namespace-profile-windows-8-cores
     strategy:
       matrix:
         target:
@@ -83,7 +83,13 @@ jobs:
           path: rust/kcl-python-bindings/dist
   macos:
     name: kcl-python-bindings (macos)
-    runs-on: namespace-profile-macos-6-cores
+    runs-on: macos-latest
+    # runs-on: namespace-profile-macos-6-cores
+    # TODO: Figure out if there is a way to make this work with Namespace
+    # Enabling this results in the following error on GitHub Actions:
+    #   $ /opt/homebrew/bin/python3 -m pip install sccache>=0.10.0
+    #   error: externally-managed-environment
+    #   To install Python packages system-wide, try brew install <package>
     strategy:
       matrix:
         target:
