@@ -1,0 +1,23 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Error from executing tag_inner_face.kcl
+---
+KCL UndefinedValue error
+
+  × undefined value: `yoyo` is not defined
+    ╭─[17:13]
+ 16 │ extrude001 = extrude(out, length = 5)
+ 17 │ sketch002 = startSketchOn(extrude001, face = yoyo)
+    ·             ───────────────────┬──────────────────┬
+    ·                                ╰── tests/tag_inner_face/input.kcl
+    ·                                ╰── tests/tag_inner_face/input.kcl
+    ╰────
+  ╰─▶ KCL UndefinedValue error
+      
+        × undefined value: `yoyo` is not defined
+          ╭─[17:13]
+       16 │ extrude001 = extrude(out, length = 5)
+       17 │ sketch002 = startSketchOn(extrude001, face = yoyo)
+          ·             ───────────────────┬──────────────────
+          ·                                ╰── tests/tag_inner_face/input.kcl
+          ╰────
