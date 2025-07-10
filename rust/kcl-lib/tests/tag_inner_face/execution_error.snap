@@ -2,22 +2,22 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Error from executing tag_inner_face.kcl
 ---
-KCL UndefinedValue error
+[31mKCL UndefinedValue error[0m
 
-  × undefined value: `yoyo` is not defined
+  [31m×[0m undefined value: `yoyo` is not defined
     ╭─[17:13]
- 16 │ extrude001 = extrude(out, length = 5)
- 17 │ sketch002 = startSketchOn(extrude001, face = yoyo)
-    ·             ───────────────────┬──────────────────┬
-    ·                                ╰── tests/tag_inner_face/input.kcl
-    ·                                ╰── tests/tag_inner_face/input.kcl
+ [2m16[0m │ extrude001 = extrude(out, length = 5)
+ [2m17[0m │ sketch002 = startSketchOn(extrude001, face = yoyo)
+    · [35;1m            ───────────────────┬──────────────────[0m[33;1m┬[0m
+    ·                                [33;1m╰── [33;1mtests/tag_inner_face/input.kcl[0m[0m
+    ·                                [35;1m╰── [35;1mtests/tag_inner_face/input.kcl[0m[0m
     ╰────
-  ╰─▶ KCL UndefinedValue error
-      
-        × undefined value: `yoyo` is not defined
-          ╭─[17:13]
-       16 │ extrude001 = extrude(out, length = 5)
-       17 │ sketch002 = startSketchOn(extrude001, face = yoyo)
-          ·             ───────────────────┬──────────────────
-          ·                                ╰── tests/tag_inner_face/input.kcl
-          ╰────
+[31m  ╰─▶ [0m[31mKCL UndefinedValue error[0m
+[31m      [0m
+[31m      [0m  [31m×[0m undefined value: `yoyo` is not defined
+[31m      [0m    ╭─[17:13]
+[31m      [0m [2m16[0m │ extrude001 = extrude(out, length = 5)
+[31m      [0m [2m17[0m │ sketch002 = startSketchOn(extrude001, face = yoyo)
+[31m      [0m    · [35;1m            ───────────────────┬──────────────────[0m
+[31m      [0m    ·                                [35;1m╰── [35;1mtests/tag_inner_face/input.kcl[0m[0m
+[31m      [0m    ╰────
