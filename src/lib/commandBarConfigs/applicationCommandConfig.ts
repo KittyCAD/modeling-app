@@ -10,7 +10,7 @@ import {
   kclSamplesManifestWithNoMultipleFiles,
 } from '@src/lib/kclSamples'
 import { getUniqueProjectName } from '@src/lib/desktopFS'
-import { IS_ML_EXPERIMENTAL } from '@src/lib/constants'
+import { IS_ML_EXPERIMENTAL, isEnvironmentName, SUPPORTED_ENVIRONMENTS } from '@src/lib/constants'
 import toast from 'react-hot-toast'
 import { reportRejection } from '@src/lib/trap'
 import { relevantFileExtensions } from '@src/lang/wasmUtils'
@@ -20,6 +20,7 @@ import {
   webSafePathSplit,
 } from '@src/lib/paths'
 import { getAllSubDirectoriesAtProjectRoot } from '@src/machines/systemIO/snapshotContext'
+import { writeEnvironmentFile } from '@src/lib/desktop'
 
 function onSubmitKCLSampleCreation({
   sample,
@@ -447,7 +448,46 @@ export function createApplicationCommands({
     },
   }
 
+  const switchEnvironmentsCommand: Command = {
+    name: 'switch-environments',
+    displayName: 'Switch environments',
+    description: 'Switch between different environments to connect your application runtime',
+    needsReview: false,
+    icon: 'importFile',
+    groupId: 'application',
+    onSubmit: (data) => {
+      if (data) {
+        if (isEnvironmentName(data.environment))
+          writeEnvironmentFile(data.environment).then(()=>{
+            // Reload the application and it will trigger the correct sign in workflow for the new environment
+            window.location.reload()
+          })
+      }
+    },
+    args: {
+      environment: {
+        inputType: 'options',
+        required: true,
+        valueSummary(value) {
+          const MAX_LENGTH = 12
+          if (typeof value === 'string') {
+            return value.length > MAX_LENGTH
+              ? value.substring(0, MAX_LENGTH) + '...'
+              : value
+          }
+          return value
+        },
+        options: Object.keys(SUPPORTED_ENVIRONMENTS).map((name) => {
+          return {
+            value: name,
+            name: name,
+          }
+        }),
+      },
+    },
+  }
+
   return isDesktop()
-    ? [textToCADCommand, addKCLFileToProject, createASampleDesktopOnly]
+    ? [textToCADCommand, addKCLFileToProject, createASampleDesktopOnly, switchEnvironmentsCommand]
     : [textToCADCommand, addKCLFileToProject]
 }
