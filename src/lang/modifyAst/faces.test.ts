@@ -302,7 +302,6 @@ shell001 = shell(extrude001, faces = END, thickness = 0.1)
     )
     if (err(selections)) throw selections
 
-    console.log('Selections:', selections)
     expect(selections.solids.graphSelections).toHaveLength(1)
     const solid = selections.solids.graphSelections[0]
     if (!solid.artifact) {
@@ -322,6 +321,9 @@ shell001 = shell(extrude001, faces = END, thickness = 0.1)
   it('should find the sweeps and faces of complex shell', async () => {
     const { artifactGraph, operations } =
       await getAstAndArtifactGraph(multiSolidsShell)
+    const lastTwoSweeps = [...artifactGraph.values()]
+      .filter((a) => a.type === 'sweep')
+      .slice(-2)
     const op = operations.find(
       (o) => o.type === 'StdLibCall' && o.name === 'shell'
     )
@@ -342,6 +344,14 @@ shell001 = shell(extrude001, faces = END, thickness = 0.1)
     if (err(selections)) throw selections
 
     expect(selections.solids.graphSelections).toHaveLength(2)
+    expect(selections.solids.graphSelections[0].artifact!.id).toEqual(
+      lastTwoSweeps[0].id
+    )
+    expect(selections.solids.graphSelections[1].artifact!.id).toEqual(
+      lastTwoSweeps[1].id
+    )
     expect(selections.faces.graphSelections).toHaveLength(2)
+    expect(selections.faces.graphSelections[0].artifact!.type).toEqual('cap')
+    expect(selections.faces.graphSelections[1].artifact!.type).toEqual('cap')
   })
 })

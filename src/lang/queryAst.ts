@@ -1112,7 +1112,7 @@ export function getVariableExprsFromSelection(
       exprs.push(createLocalName(name))
       continue
     } else if (variable.node.type === 'CallExpressionKw') {
-      // no variable assigment in that call and not a pipe yet, we'll need to create it
+      // no variable assignment in that call and not a pipe yet, we'll need to create it
       exprs.push(createPipeSubstitution())
       pathIfPipe = variable.deepPath
       continue

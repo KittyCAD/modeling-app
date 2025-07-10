@@ -3094,6 +3094,7 @@ extrude001 = extrude(sketch001, length = 30)
     })
 
     await test.step(`Confirm code is added to the editor`, async () => {
+      await scene.settled(cmdBar)
       await editor.expectEditor.toContain(shellDeclaration)
       await editor.expectState({
         diagnostics: [],
@@ -3125,7 +3126,8 @@ extrude001 = extrude(sketch001, length = 30)
         },
         commandName: 'Shell',
       })
-      await cmdBar.progressCmdBar()
+      await cmdBar.submit()
+      await scene.settled(cmdBar)
       await toolbar.closePane('feature-tree')
       await toolbar.openPane('code')
       await editor.expectEditor.toContain(editedShellDeclaration)
