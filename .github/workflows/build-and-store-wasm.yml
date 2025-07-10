@@ -7,7 +7,7 @@ on:
 
 jobs:
   build-and-upload:
-    runs-on: ubuntu-latest
+    runs-on: namespace-profile-ubuntu-2-cores
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

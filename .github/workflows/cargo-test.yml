@@ -244,7 +244,9 @@ jobs:
     name: Run wasm tests
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os:
+          - namespace-profile-ubuntu-2-cores
+          - namespace-profile-macos-6-cores
       fail-fast: false
     runs-on: ${{ matrix.os }}
     steps:

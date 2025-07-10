@@ -34,7 +34,7 @@ concurrency:
 jobs:
   linux-x86_64:
     name: kcl-python-bindings (linux-x86_64)
-    runs-on: ubuntu-latest
+    runs-on: namespace-profile-ubuntu-2-cores
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -83,7 +83,7 @@ jobs:
           path: rust/kcl-python-bindings/dist
   macos:
     name: kcl-python-bindings (macos)
-    runs-on: macos-latest
+    runs-on: namespace-profile-macos-6-cores
     strategy:
       matrix:
         target:
@@ -109,7 +109,7 @@ jobs:
           path: rust/kcl-python-bindings/dist
   test:
     name: kcl-python-bindings (test)
-    runs-on: ubuntu-latest
+    runs-on: namespace-profile-ubuntu-2-cores
     steps:
       - uses: actions/checkout@v4
       - name: Install uv
@@ -126,7 +126,7 @@ jobs:
           ZOO_HOST: https://api.dev.zoo.dev
   sdist:
     name: kcl-python-bindings (sdist)
-    runs-on: ubuntu-latest
+    runs-on: namespace-profile-ubuntu-2-cores
     steps:
       - uses: actions/checkout@v4
       - name: Install the latest version of uv
@@ -150,7 +150,7 @@ jobs:
           path: rust/kcl-python-bindings/dist
   release:
     name: Release
-    runs-on: ubuntu-latest
+    runs-on: namespace-profile-ubuntu-2-cores
     permissions:
       contents: write
     if: startsWith(github.ref, 'refs/tags/')
