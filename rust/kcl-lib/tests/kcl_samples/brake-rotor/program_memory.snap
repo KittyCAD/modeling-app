@@ -513,6 +513,33 @@ description: Variables in memory after executing brake-rotor.kcl
             }
           }
         ],
+        "innerPaths": [
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.0,
+              0.0
+            ],
+            "from": [
+              100.0,
+              0.0
+            ],
+            "radius": 100.0,
+            "tag": null,
+            "to": [
+              100.0,
+              0.0
+            ],
+            "type": "Circle",
+            "units": {
+              "type": "Mm"
+            }
+          }
+        ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
@@ -621,6 +648,33 @@ description: Variables in memory after executing brake-rotor.kcl
             "tag": null,
             "to": [
               160.0,
+              0.0
+            ],
+            "type": "Circle",
+            "units": {
+              "type": "Mm"
+            }
+          }
+        ],
+        "innerPaths": [
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.0,
+              0.0
+            ],
+            "from": [
+              100.0,
+              0.0
+            ],
+            "radius": 100.0,
+            "tag": null,
+            "to": [
+              100.0,
               0.0
             ],
             "type": "Circle",

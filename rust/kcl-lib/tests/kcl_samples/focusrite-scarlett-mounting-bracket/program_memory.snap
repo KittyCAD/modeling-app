@@ -2071,6 +2071,33 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 }
               }
             ],
+            "innerPaths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  -82.0,
+                  27.333333333333332
+                ],
+                "from": [
+                  -79.5,
+                  27.333333333333332
+                ],
+                "radius": 2.5,
+                "tag": null,
+                "to": [
+                  -79.5,
+                  27.333333333333332
+                ],
+                "type": "Circle",
+                "units": {
+                  "type": "Mm"
+                }
+              }
+            ],
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
@@ -2366,6 +2393,33 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   44.0
                 ],
                 "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              }
+            ],
+            "innerPaths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  -82.0,
+                  27.333333333333332
+                ],
+                "from": [
+                  -79.5,
+                  27.333333333333332
+                ],
+                "radius": 2.5,
+                "tag": null,
+                "to": [
+                  -79.5,
+                  27.333333333333332
+                ],
+                "type": "Circle",
                 "units": {
                   "type": "Mm"
                 }
@@ -2676,6 +2730,33 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 }
               }
             ],
+            "innerPaths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  82.0,
+                  27.333333333333332
+                ],
+                "from": [
+                  84.5,
+                  27.333333333333332
+                ],
+                "radius": 2.5,
+                "tag": null,
+                "to": [
+                  84.5,
+                  27.333333333333332
+                ],
+                "type": "Circle",
+                "units": {
+                  "type": "Mm"
+                }
+              }
+            ],
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
@@ -2971,6 +3052,33 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   44.0
                 ],
                 "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              }
+            ],
+            "innerPaths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  82.0,
+                  27.333333333333332
+                ],
+                "from": [
+                  84.5,
+                  27.333333333333332
+                ],
+                "radius": 2.5,
+                "tag": null,
+                "to": [
+                  84.5,
+                  27.333333333333332
+                ],
+                "type": "Circle",
                 "units": {
                   "type": "Mm"
                 }

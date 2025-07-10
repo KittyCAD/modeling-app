@@ -11535,6 +11535,362 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             }
           }
         ],
+        "innerPaths": [
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              2.8499999999999996,
+              13.0
+            ],
+            "tag": null,
+            "to": [
+              9.75,
+              13.0
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": false,
+            "center": [
+              9.75,
+              9.75
+            ],
+            "from": [
+              9.75,
+              13.0
+            ],
+            "radius": 3.25,
+            "tag": null,
+            "to": [
+              13.0,
+              9.75
+            ],
+            "type": "Arc",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              13.0,
+              9.75
+            ],
+            "tag": null,
+            "to": [
+              13.0,
+              2.8499999999999996
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              13.0,
+              2.8499999999999996
+            ],
+            "tag": null,
+            "to": [
+              29.0,
+              2.8499999999999996
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              29.0,
+              2.8499999999999996
+            ],
+            "tag": null,
+            "to": [
+              29.0,
+              9.75
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": false,
+            "center": [
+              32.25,
+              9.75
+            ],
+            "from": [
+              29.0,
+              9.75
+            ],
+            "radius": 3.25,
+            "tag": null,
+            "to": [
+              32.25,
+              13.0
+            ],
+            "type": "Arc",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              32.25,
+              13.0
+            ],
+            "tag": null,
+            "to": [
+              39.15,
+              13.0
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              39.15,
+              13.0
+            ],
+            "tag": null,
+            "to": [
+              39.15,
+              29.0
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              39.15,
+              29.0
+            ],
+            "tag": null,
+            "to": [
+              32.25,
+              29.0
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": false,
+            "center": [
+              32.25,
+              32.25
+            ],
+            "from": [
+              32.25,
+              29.0
+            ],
+            "radius": 3.25,
+            "tag": null,
+            "to": [
+              29.0,
+              32.25
+            ],
+            "type": "Arc",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              29.0,
+              32.25
+            ],
+            "tag": null,
+            "to": [
+              29.0,
+              39.15
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              29.0,
+              39.15
+            ],
+            "tag": {
+              "commentStart": 3754,
+              "end": 3762,
+              "moduleId": 0,
+              "start": 3754,
+              "type": "TagDeclarator",
+              "value": "line012"
+            },
+            "to": [
+              13.0,
+              39.15
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              13.0,
+              39.15
+            ],
+            "tag": null,
+            "to": [
+              13.0,
+              32.25
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": false,
+            "center": [
+              9.75,
+              32.25
+            ],
+            "from": [
+              13.0,
+              32.25
+            ],
+            "radius": 3.25,
+            "tag": null,
+            "to": [
+              9.75,
+              29.0
+            ],
+            "type": "Arc",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              9.75,
+              29.0
+            ],
+            "tag": null,
+            "to": [
+              2.8499999999999996,
+              29.0
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              2.8499999999999996,
+              29.0
+            ],
+            "tag": null,
+            "to": [
+              2.8499999999999996,
+              13.0
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              2.8499999999999996,
+              13.0
+            ],
+            "tag": null,
+            "to": [
+              2.8499999999999996,
+              13.0
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          }
+        ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
@@ -11790,6 +12146,362 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "to": [
               0.0,
               0.0
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          }
+        ],
+        "innerPaths": [
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              2.8499999999999996,
+              13.0
+            ],
+            "tag": null,
+            "to": [
+              9.75,
+              13.0
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": false,
+            "center": [
+              9.75,
+              9.75
+            ],
+            "from": [
+              9.75,
+              13.0
+            ],
+            "radius": 3.25,
+            "tag": null,
+            "to": [
+              13.0,
+              9.75
+            ],
+            "type": "Arc",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              13.0,
+              9.75
+            ],
+            "tag": null,
+            "to": [
+              13.0,
+              2.8499999999999996
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              13.0,
+              2.8499999999999996
+            ],
+            "tag": null,
+            "to": [
+              29.0,
+              2.8499999999999996
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              29.0,
+              2.8499999999999996
+            ],
+            "tag": null,
+            "to": [
+              29.0,
+              9.75
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": false,
+            "center": [
+              32.25,
+              9.75
+            ],
+            "from": [
+              29.0,
+              9.75
+            ],
+            "radius": 3.25,
+            "tag": null,
+            "to": [
+              32.25,
+              13.0
+            ],
+            "type": "Arc",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              32.25,
+              13.0
+            ],
+            "tag": null,
+            "to": [
+              39.15,
+              13.0
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              39.15,
+              13.0
+            ],
+            "tag": null,
+            "to": [
+              39.15,
+              29.0
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              39.15,
+              29.0
+            ],
+            "tag": null,
+            "to": [
+              32.25,
+              29.0
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": false,
+            "center": [
+              32.25,
+              32.25
+            ],
+            "from": [
+              32.25,
+              29.0
+            ],
+            "radius": 3.25,
+            "tag": null,
+            "to": [
+              29.0,
+              32.25
+            ],
+            "type": "Arc",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              29.0,
+              32.25
+            ],
+            "tag": null,
+            "to": [
+              29.0,
+              39.15
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              29.0,
+              39.15
+            ],
+            "tag": {
+              "commentStart": 3754,
+              "end": 3762,
+              "moduleId": 0,
+              "start": 3754,
+              "type": "TagDeclarator",
+              "value": "line012"
+            },
+            "to": [
+              13.0,
+              39.15
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              13.0,
+              39.15
+            ],
+            "tag": null,
+            "to": [
+              13.0,
+              32.25
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": false,
+            "center": [
+              9.75,
+              32.25
+            ],
+            "from": [
+              13.0,
+              32.25
+            ],
+            "radius": 3.25,
+            "tag": null,
+            "to": [
+              9.75,
+              29.0
+            ],
+            "type": "Arc",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              9.75,
+              29.0
+            ],
+            "tag": null,
+            "to": [
+              2.8499999999999996,
+              29.0
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              2.8499999999999996,
+              29.0
+            ],
+            "tag": null,
+            "to": [
+              2.8499999999999996,
+              13.0
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              2.8499999999999996,
+              13.0
+            ],
+            "tag": null,
+            "to": [
+              2.8499999999999996,
+              13.0
             ],
             "type": "ToPoint",
             "units": {
@@ -12133,6 +12845,462 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             }
           }
         ],
+        "innerPaths": [
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              2.8499999999999996,
+              13.0
+            ],
+            "tag": null,
+            "to": [
+              9.75,
+              13.0
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": false,
+            "center": [
+              9.75,
+              9.75
+            ],
+            "from": [
+              9.75,
+              13.0
+            ],
+            "radius": 3.25,
+            "tag": null,
+            "to": [
+              13.0,
+              9.75
+            ],
+            "type": "Arc",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              13.0,
+              9.75
+            ],
+            "tag": null,
+            "to": [
+              13.0,
+              2.8499999999999996
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              13.0,
+              2.8499999999999996
+            ],
+            "tag": null,
+            "to": [
+              29.0,
+              2.8499999999999996
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              29.0,
+              2.8499999999999996
+            ],
+            "tag": null,
+            "to": [
+              29.0,
+              9.75
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": false,
+            "center": [
+              32.25,
+              9.75
+            ],
+            "from": [
+              29.0,
+              9.75
+            ],
+            "radius": 3.25,
+            "tag": null,
+            "to": [
+              32.25,
+              13.0
+            ],
+            "type": "Arc",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              32.25,
+              13.0
+            ],
+            "tag": null,
+            "to": [
+              39.15,
+              13.0
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              39.15,
+              13.0
+            ],
+            "tag": null,
+            "to": [
+              39.15,
+              29.0
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              39.15,
+              29.0
+            ],
+            "tag": null,
+            "to": [
+              32.25,
+              29.0
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": false,
+            "center": [
+              32.25,
+              32.25
+            ],
+            "from": [
+              32.25,
+              29.0
+            ],
+            "radius": 3.25,
+            "tag": null,
+            "to": [
+              29.0,
+              32.25
+            ],
+            "type": "Arc",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              29.0,
+              32.25
+            ],
+            "tag": null,
+            "to": [
+              29.0,
+              39.15
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              29.0,
+              39.15
+            ],
+            "tag": {
+              "commentStart": 3754,
+              "end": 3762,
+              "moduleId": 0,
+              "start": 3754,
+              "type": "TagDeclarator",
+              "value": "line012"
+            },
+            "to": [
+              13.0,
+              39.15
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              13.0,
+              39.15
+            ],
+            "tag": null,
+            "to": [
+              13.0,
+              32.25
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": false,
+            "center": [
+              9.75,
+              32.25
+            ],
+            "from": [
+              13.0,
+              32.25
+            ],
+            "radius": 3.25,
+            "tag": null,
+            "to": [
+              9.75,
+              29.0
+            ],
+            "type": "Arc",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              9.75,
+              29.0
+            ],
+            "tag": null,
+            "to": [
+              2.8499999999999996,
+              29.0
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              2.8499999999999996,
+              29.0
+            ],
+            "tag": null,
+            "to": [
+              2.8499999999999996,
+              13.0
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              2.8499999999999996,
+              13.0
+            ],
+            "tag": null,
+            "to": [
+              2.8499999999999996,
+              13.0
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              8.0,
+              8.0
+            ],
+            "from": [
+              11.25,
+              8.0
+            ],
+            "radius": 3.25,
+            "tag": null,
+            "to": [
+              11.25,
+              8.0
+            ],
+            "type": "Circle",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              8.0,
+              8.0
+            ],
+            "from": [
+              11.25,
+              8.0
+            ],
+            "radius": 3.25,
+            "tag": null,
+            "to": [
+              11.25,
+              8.0
+            ],
+            "type": "Circle",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              8.0,
+              8.0
+            ],
+            "from": [
+              11.25,
+              8.0
+            ],
+            "radius": 3.25,
+            "tag": null,
+            "to": [
+              11.25,
+              8.0
+            ],
+            "type": "Circle",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              8.0,
+              8.0
+            ],
+            "from": [
+              11.25,
+              8.0
+            ],
+            "radius": 3.25,
+            "tag": null,
+            "to": [
+              11.25,
+              8.0
+            ],
+            "type": "Circle",
+            "units": {
+              "type": "Mm"
+            }
+          }
+        ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
@@ -12390,6 +13558,462 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
               0.0
             ],
             "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          }
+        ],
+        "innerPaths": [
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              2.8499999999999996,
+              13.0
+            ],
+            "tag": null,
+            "to": [
+              9.75,
+              13.0
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": false,
+            "center": [
+              9.75,
+              9.75
+            ],
+            "from": [
+              9.75,
+              13.0
+            ],
+            "radius": 3.25,
+            "tag": null,
+            "to": [
+              13.0,
+              9.75
+            ],
+            "type": "Arc",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              13.0,
+              9.75
+            ],
+            "tag": null,
+            "to": [
+              13.0,
+              2.8499999999999996
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              13.0,
+              2.8499999999999996
+            ],
+            "tag": null,
+            "to": [
+              29.0,
+              2.8499999999999996
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              29.0,
+              2.8499999999999996
+            ],
+            "tag": null,
+            "to": [
+              29.0,
+              9.75
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": false,
+            "center": [
+              32.25,
+              9.75
+            ],
+            "from": [
+              29.0,
+              9.75
+            ],
+            "radius": 3.25,
+            "tag": null,
+            "to": [
+              32.25,
+              13.0
+            ],
+            "type": "Arc",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              32.25,
+              13.0
+            ],
+            "tag": null,
+            "to": [
+              39.15,
+              13.0
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              39.15,
+              13.0
+            ],
+            "tag": null,
+            "to": [
+              39.15,
+              29.0
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              39.15,
+              29.0
+            ],
+            "tag": null,
+            "to": [
+              32.25,
+              29.0
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": false,
+            "center": [
+              32.25,
+              32.25
+            ],
+            "from": [
+              32.25,
+              29.0
+            ],
+            "radius": 3.25,
+            "tag": null,
+            "to": [
+              29.0,
+              32.25
+            ],
+            "type": "Arc",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              29.0,
+              32.25
+            ],
+            "tag": null,
+            "to": [
+              29.0,
+              39.15
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              29.0,
+              39.15
+            ],
+            "tag": {
+              "commentStart": 3754,
+              "end": 3762,
+              "moduleId": 0,
+              "start": 3754,
+              "type": "TagDeclarator",
+              "value": "line012"
+            },
+            "to": [
+              13.0,
+              39.15
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              13.0,
+              39.15
+            ],
+            "tag": null,
+            "to": [
+              13.0,
+              32.25
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": false,
+            "center": [
+              9.75,
+              32.25
+            ],
+            "from": [
+              13.0,
+              32.25
+            ],
+            "radius": 3.25,
+            "tag": null,
+            "to": [
+              9.75,
+              29.0
+            ],
+            "type": "Arc",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              9.75,
+              29.0
+            ],
+            "tag": null,
+            "to": [
+              2.8499999999999996,
+              29.0
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              2.8499999999999996,
+              29.0
+            ],
+            "tag": null,
+            "to": [
+              2.8499999999999996,
+              13.0
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              2.8499999999999996,
+              13.0
+            ],
+            "tag": null,
+            "to": [
+              2.8499999999999996,
+              13.0
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              8.0,
+              8.0
+            ],
+            "from": [
+              11.25,
+              8.0
+            ],
+            "radius": 3.25,
+            "tag": null,
+            "to": [
+              11.25,
+              8.0
+            ],
+            "type": "Circle",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              8.0,
+              8.0
+            ],
+            "from": [
+              11.25,
+              8.0
+            ],
+            "radius": 3.25,
+            "tag": null,
+            "to": [
+              11.25,
+              8.0
+            ],
+            "type": "Circle",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              8.0,
+              8.0
+            ],
+            "from": [
+              11.25,
+              8.0
+            ],
+            "radius": 3.25,
+            "tag": null,
+            "to": [
+              11.25,
+              8.0
+            ],
+            "type": "Circle",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              8.0,
+              8.0
+            ],
+            "from": [
+              11.25,
+              8.0
+            ],
+            "radius": 3.25,
+            "tag": null,
+            "to": [
+              11.25,
+              8.0
+            ],
+            "type": "Circle",
             "units": {
               "type": "Mm"
             }
@@ -12669,6 +14293,462 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           }
         }
       ],
+      "innerPaths": [
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            2.8499999999999996,
+            13.0
+          ],
+          "tag": null,
+          "to": [
+            9.75,
+            13.0
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": false,
+          "center": [
+            9.75,
+            9.75
+          ],
+          "from": [
+            9.75,
+            13.0
+          ],
+          "radius": 3.25,
+          "tag": null,
+          "to": [
+            13.0,
+            9.75
+          ],
+          "type": "Arc",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            13.0,
+            9.75
+          ],
+          "tag": null,
+          "to": [
+            13.0,
+            2.8499999999999996
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            13.0,
+            2.8499999999999996
+          ],
+          "tag": null,
+          "to": [
+            29.0,
+            2.8499999999999996
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            29.0,
+            2.8499999999999996
+          ],
+          "tag": null,
+          "to": [
+            29.0,
+            9.75
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": false,
+          "center": [
+            32.25,
+            9.75
+          ],
+          "from": [
+            29.0,
+            9.75
+          ],
+          "radius": 3.25,
+          "tag": null,
+          "to": [
+            32.25,
+            13.0
+          ],
+          "type": "Arc",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            32.25,
+            13.0
+          ],
+          "tag": null,
+          "to": [
+            39.15,
+            13.0
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            39.15,
+            13.0
+          ],
+          "tag": null,
+          "to": [
+            39.15,
+            29.0
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            39.15,
+            29.0
+          ],
+          "tag": null,
+          "to": [
+            32.25,
+            29.0
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": false,
+          "center": [
+            32.25,
+            32.25
+          ],
+          "from": [
+            32.25,
+            29.0
+          ],
+          "radius": 3.25,
+          "tag": null,
+          "to": [
+            29.0,
+            32.25
+          ],
+          "type": "Arc",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            29.0,
+            32.25
+          ],
+          "tag": null,
+          "to": [
+            29.0,
+            39.15
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            29.0,
+            39.15
+          ],
+          "tag": {
+            "commentStart": 3754,
+            "end": 3762,
+            "moduleId": 0,
+            "start": 3754,
+            "type": "TagDeclarator",
+            "value": "line012"
+          },
+          "to": [
+            13.0,
+            39.15
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            13.0,
+            39.15
+          ],
+          "tag": null,
+          "to": [
+            13.0,
+            32.25
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": false,
+          "center": [
+            9.75,
+            32.25
+          ],
+          "from": [
+            13.0,
+            32.25
+          ],
+          "radius": 3.25,
+          "tag": null,
+          "to": [
+            9.75,
+            29.0
+          ],
+          "type": "Arc",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            9.75,
+            29.0
+          ],
+          "tag": null,
+          "to": [
+            2.8499999999999996,
+            29.0
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            2.8499999999999996,
+            29.0
+          ],
+          "tag": null,
+          "to": [
+            2.8499999999999996,
+            13.0
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            2.8499999999999996,
+            13.0
+          ],
+          "tag": null,
+          "to": [
+            2.8499999999999996,
+            13.0
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            8.0,
+            8.0
+          ],
+          "from": [
+            11.25,
+            8.0
+          ],
+          "radius": 3.25,
+          "tag": null,
+          "to": [
+            11.25,
+            8.0
+          ],
+          "type": "Circle",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            8.0,
+            8.0
+          ],
+          "from": [
+            11.25,
+            8.0
+          ],
+          "radius": 3.25,
+          "tag": null,
+          "to": [
+            11.25,
+            8.0
+          ],
+          "type": "Circle",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            8.0,
+            8.0
+          ],
+          "from": [
+            11.25,
+            8.0
+          ],
+          "radius": 3.25,
+          "tag": null,
+          "to": [
+            11.25,
+            8.0
+          ],
+          "type": "Circle",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            8.0,
+            8.0
+          ],
+          "from": [
+            11.25,
+            8.0
+          ],
+          "radius": 3.25,
+          "tag": null,
+          "to": [
+            11.25,
+            8.0
+          ],
+          "type": "Circle",
+          "units": {
+            "type": "Mm"
+          }
+        }
+      ],
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
@@ -12854,6 +14934,362 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "to": [
             0.0,
             0.0
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        }
+      ],
+      "innerPaths": [
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            2.8499999999999996,
+            13.0
+          ],
+          "tag": null,
+          "to": [
+            9.75,
+            13.0
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": false,
+          "center": [
+            9.75,
+            9.75
+          ],
+          "from": [
+            9.75,
+            13.0
+          ],
+          "radius": 3.25,
+          "tag": null,
+          "to": [
+            13.0,
+            9.75
+          ],
+          "type": "Arc",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            13.0,
+            9.75
+          ],
+          "tag": null,
+          "to": [
+            13.0,
+            2.8499999999999996
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            13.0,
+            2.8499999999999996
+          ],
+          "tag": null,
+          "to": [
+            29.0,
+            2.8499999999999996
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            29.0,
+            2.8499999999999996
+          ],
+          "tag": null,
+          "to": [
+            29.0,
+            9.75
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": false,
+          "center": [
+            32.25,
+            9.75
+          ],
+          "from": [
+            29.0,
+            9.75
+          ],
+          "radius": 3.25,
+          "tag": null,
+          "to": [
+            32.25,
+            13.0
+          ],
+          "type": "Arc",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            32.25,
+            13.0
+          ],
+          "tag": null,
+          "to": [
+            39.15,
+            13.0
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            39.15,
+            13.0
+          ],
+          "tag": null,
+          "to": [
+            39.15,
+            29.0
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            39.15,
+            29.0
+          ],
+          "tag": null,
+          "to": [
+            32.25,
+            29.0
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": false,
+          "center": [
+            32.25,
+            32.25
+          ],
+          "from": [
+            32.25,
+            29.0
+          ],
+          "radius": 3.25,
+          "tag": null,
+          "to": [
+            29.0,
+            32.25
+          ],
+          "type": "Arc",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            29.0,
+            32.25
+          ],
+          "tag": null,
+          "to": [
+            29.0,
+            39.15
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            29.0,
+            39.15
+          ],
+          "tag": {
+            "commentStart": 3754,
+            "end": 3762,
+            "moduleId": 0,
+            "start": 3754,
+            "type": "TagDeclarator",
+            "value": "line012"
+          },
+          "to": [
+            13.0,
+            39.15
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            13.0,
+            39.15
+          ],
+          "tag": null,
+          "to": [
+            13.0,
+            32.25
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": false,
+          "center": [
+            9.75,
+            32.25
+          ],
+          "from": [
+            13.0,
+            32.25
+          ],
+          "radius": 3.25,
+          "tag": null,
+          "to": [
+            9.75,
+            29.0
+          ],
+          "type": "Arc",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            9.75,
+            29.0
+          ],
+          "tag": null,
+          "to": [
+            2.8499999999999996,
+            29.0
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            2.8499999999999996,
+            29.0
+          ],
+          "tag": null,
+          "to": [
+            2.8499999999999996,
+            13.0
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            2.8499999999999996,
+            13.0
+          ],
+          "tag": null,
+          "to": [
+            2.8499999999999996,
+            13.0
           ],
           "type": "ToPoint",
           "units": {

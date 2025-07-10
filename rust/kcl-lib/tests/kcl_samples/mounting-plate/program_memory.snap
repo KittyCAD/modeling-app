@@ -267,6 +267,133 @@ description: Variables in memory after executing mounting-plate.kcl
             }
           }
         ],
+        "innerPaths": [
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              -2.25,
+              4.25
+            ],
+            "from": [
+              -2.0,
+              4.25
+            ],
+            "radius": 0.25,
+            "tag": null,
+            "to": [
+              -2.0,
+              4.25
+            ],
+            "type": "Circle",
+            "units": {
+              "type": "Inches"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              2.25,
+              4.25
+            ],
+            "from": [
+              2.5,
+              4.25
+            ],
+            "radius": 0.25,
+            "tag": null,
+            "to": [
+              2.5,
+              4.25
+            ],
+            "type": "Circle",
+            "units": {
+              "type": "Inches"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              -2.25,
+              -4.25
+            ],
+            "from": [
+              -2.0,
+              -4.25
+            ],
+            "radius": 0.25,
+            "tag": null,
+            "to": [
+              -2.0,
+              -4.25
+            ],
+            "type": "Circle",
+            "units": {
+              "type": "Inches"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              2.25,
+              -4.25
+            ],
+            "from": [
+              2.5,
+              -4.25
+            ],
+            "radius": 0.25,
+            "tag": null,
+            "to": [
+              2.5,
+              -4.25
+            ],
+            "type": "Circle",
+            "units": {
+              "type": "Inches"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.0,
+              0.0
+            ],
+            "from": [
+              2.0,
+              0.0
+            ],
+            "radius": 2.0,
+            "tag": null,
+            "to": [
+              2.0,
+              0.0
+            ],
+            "type": "Circle",
+            "units": {
+              "type": "Inches"
+            }
+          }
+        ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
