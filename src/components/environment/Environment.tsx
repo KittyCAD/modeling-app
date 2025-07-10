@@ -3,7 +3,7 @@ import { SUPPORTED_ENVIRONMENTS } from '@src/lib/constants'
 import env from '@src/env'
 
 export function environmentNameDisplay() {
-  return env().DEV ? '.env' : getEnvironmentName()
+  return env().NODE_ENV === 'development' ? '.env' : getEnvironmentName()
 }
 
 export function shouldRender(environmentName: string | null) {

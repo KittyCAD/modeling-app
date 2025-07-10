@@ -1,5 +1,5 @@
 import type { Models } from '@kittycad/lib'
-import env, { updateEnvironment } from '@src/env'
+import env, { getEnvironmentName, updateEnvironment } from '@src/env'
 import { assign, fromPromise, setup } from 'xstate'
 
 import {
@@ -9,10 +9,10 @@ import {
 } from '@src/lib/constants'
 import {
   getUser as getUserDesktop,
+  readEnvironmentConfigurationToken,
   readEnvironmentFile,
-  readTokenFile,
+  writeEnvironmentConfigurationToken,
   writeEnvironmentFile,
-  writeTokenFile,
 } from '@src/lib/desktop'
 import { isDesktop } from '@src/lib/isDesktop'
 import { markOnce } from '@src/lib/performance'
@@ -39,14 +39,11 @@ export const TOKEN_PERSIST_KEY = 'TOKEN_PERSIST_KEY'
  * Determine which token do we have persisted to initialize the auth machine
  */
 const persistedCookie = getCookie(COOKIE_NAME)
-const persistedLocalStorage = localStorage?.getItem(TOKEN_PERSIST_KEY) || ''
 const persistedDevToken = env().VITE_KITTYCAD_API_TOKEN
-export const persistedToken =
-  persistedDevToken || persistedCookie || persistedLocalStorage
+export const persistedToken = persistedDevToken || persistedCookie
 console.log('Initial persisted token')
 console.table([
   ['cookie', !!persistedCookie],
-  ['local storage', !!persistedLocalStorage],
   ['api token', !!persistedDevToken],
 ])
 
@@ -144,7 +141,6 @@ export const authMachine = setup({
 })
 
 async function getUser(input: { token?: string }) {
-  const token = await getAndSyncStoredToken(input)
   const environment = await readEnvironmentFile()
   if (isEnvironmentName(environment)) {
     updateEnvironment(environment)
@@ -152,6 +148,12 @@ async function getUser(input: { token?: string }) {
     return Promise.reject(
       new Error('Unable to update environment from disk cache')
     )
+  }
+  let token = ''
+  try {
+    token = await getAndSyncStoredToken(input)
+  } catch (e) {
+    console.error(e)
   }
   const url = withAPIBaseURL('/user')
   const headers: { [key: string]: string } = {
@@ -229,40 +231,55 @@ async function getAndSyncStoredToken(input: {
     return VITE_KITTYCAD_API_TOKEN
   }
 
+  const environmentName = getEnvironmentName()
+
+  // Find possible tokens
   const inputToken = input.token && input.token !== '' ? input.token : ''
   const cookieToken = getCookie(COOKIE_NAME)
-  const localStorageToken = localStorage?.getItem(TOKEN_PERSIST_KEY) || ''
-  const token = inputToken || cookieToken || localStorageToken
+  const fileToken =
+    isDesktop() && environmentName
+      ? await readEnvironmentConfigurationToken(environmentName)
+      : ''
+  const token = inputToken || cookieToken || fileToken
 
+  // Log what tokens we found
   console.log('Token used for authentication')
   console.table([
     ['persisted token', !!inputToken],
     ['cookie', !!cookieToken],
-    ['local storage', !!localStorageToken],
     ['api token', !!VITE_KITTYCAD_API_TOKEN],
+    ['file token', !!fileToken],
   ])
+
+  // If you found a token
   if (token) {
+    // Write it to disk to sync it for desktop!
     if (isDesktop()) {
       // has just logged in, update storage
-      localStorage.setItem(TOKEN_PERSIST_KEY, token)
-      await writeTokenFile(token)
+      if (environmentName)
+        await writeEnvironmentConfigurationToken(environmentName, token)
     }
     return token
   }
+
+  // If you are web and you made it this far, you do not get a token
   if (!isDesktop()) return ''
-  const fileToken = isDesktop() ? await readTokenFile() : ''
-  // prefer other above, but file will ensure login persists after app updates
+
   if (!fileToken) return ''
-  // has token in file, update localStorage
-  localStorage.setItem(TOKEN_PERSIST_KEY, fileToken)
+  // default desktop login workflow to always read from disk, file will ensure login persists after app updates
   return fileToken
 }
 
 async function logout() {
+  // TODO: 7/10/2025 Remove this months from now, we want to clear the localStorage of the key.
   localStorage.removeItem(TOKEN_PERSIST_KEY)
   if (isDesktop()) {
     try {
-      let token = await readTokenFile()
+      const environmentName = getEnvironmentName()
+      let token = ''
+      if (environmentName) {
+        token = await readEnvironmentConfigurationToken(environmentName)
+      }
 
       if (token) {
         try {
@@ -281,7 +298,8 @@ async function logout() {
           console.error('Error revoking token:', e)
         }
 
-        await writeTokenFile('')
+        if (environmentName)
+          await writeEnvironmentConfigurationToken(environmentName, '')
         await writeEnvironmentFile('')
         return Promise.resolve(null)
       }

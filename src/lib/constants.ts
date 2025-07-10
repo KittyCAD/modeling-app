@@ -238,7 +238,7 @@ export type Environment = {
   API_URL: string
   SITE_URL: string
   WEBSOCKET_URL: string
-  name: string
+  name: EnvironmentName
 }
 
 export const SUPPORTED_ENVIRONMENTS: { [key in EnvironmentName]: Environment } =
@@ -247,12 +247,24 @@ export const SUPPORTED_ENVIRONMENTS: { [key in EnvironmentName]: Environment } =
       API_URL: 'https://api.dev.zoo.dev',
       SITE_URL: 'https://dev.zoo.dev',
       WEBSOCKET_URL: 'wss://api.dev.zoo.dev/ws/modeling/commands',
-      name: 'Development',
+      name: 'development',
     },
     production: {
       API_URL: 'https://api.zoo.dev',
       SITE_URL: 'https://zoo.dev',
       WEBSOCKET_URL: 'wss://api.zoo.dev/ws/modeling/commands',
-      name: 'Production',
+      name: 'production',
     },
   })
+
+/**
+ * Signed in environment data, when you sign in on desktop
+ * you will get one of these written to disk.
+ */
+export type EnvironmentConfiguration = {
+  name: EnvironmentName // same name as the file development for development.json
+  pool: string // can be the empty string to indicate no pool for engine
+  token: string // authentication token from signing in. Can be empty string
+}
+
+export const ENVIRONMENT_CONFIGURATION_FOLDER = 'envs'

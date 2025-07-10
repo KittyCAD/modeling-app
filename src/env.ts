@@ -112,7 +112,7 @@ export default (): EnvironmentVariables => {
    * A built binary will allow the user to sign into different environments on the desktop
    */
   const environment = getEnvironmentFromThisFile()
-  if (PROD && isDesktop() && environment) {
+  if (env.NODE_ENV === 'production' && isDesktop() && environment) {
     API_URL = environment.API_URL
     SITE_URL = environment.SITE_URL
     WEBSOCKET_URL = environment.WEBSOCKET_URL
@@ -132,5 +132,8 @@ export default (): EnvironmentVariables => {
     DEV: DEV || undefined,
     CI: (env.CI as string) || undefined,
   }
+  console.log('environment', environment)
+  console.log('environment variables', environmentVariables)
+  console.log('env', env)
   return environmentVariables
 }

@@ -102,9 +102,10 @@ const SignIn = () => {
     return signInDesktop('production')
   }
 
-  const defaultSignInMethod = env().DEV
-    ? signInDesktopDevelopment
-    : signInDesktopProduction
+  const defaultSignInMethod =
+    env().NODE_ENV === 'development'
+      ? signInDesktopDevelopment
+      : signInDesktopProduction
   return (
     <main
       className="bg-primary h-screen grid place-items-stretch m-0 p-2"
@@ -157,7 +158,7 @@ const SignIn = () => {
                       Sign in to get started
                       <CustomIcon name="arrowRight" className="w-6 h-6" />
                     </button>
-                    {env().PROD && (
+                    {env().NODE_ENV === 'production' && (
                       <AdvancedSignInOptions
                         signInDesktopDevelopment={signInDesktopDevelopment}
                         signInDesktopProduction={signInDesktopProduction}
