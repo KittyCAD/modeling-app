@@ -12,6 +12,7 @@ import { err } from '@src/lib/trap'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import {
+  addAppearance,
   addClone,
   addRotate,
   addScale,
@@ -479,4 +480,99 @@ extrude001 = extrude(profile001, length = 1)`
     const newCode = await runAddCloneTest(code)
     expect(newCode).toContain(code + '\n' + expectedNewLine)
   })
+})
+
+describe('Testing addAppearance', () => {
+  async function runAddAppearanceTest(code: string) {
+    const {
+      artifactGraph,
+      ast,
+      sketches: objects,
+    } = await getAstAndSketchSelections(code)
+    const result = addAppearance({
+      ast,
+      artifactGraph,
+      objects,
+      color: '#FF0000',
+    })
+    if (err(result)) throw result
+    await runNewAstAndCheckForSweep(result.modifiedAst)
+    return recast(result.modifiedAst)
+  }
+
+  it('should add a standalone call on sweep selection', async () => {
+    const code = `sketch001 = startSketchOn(XY)
+profile001 = circle(sketch001, center = [0, 0], radius = 1)
+extrude001 = extrude(profile001, length = 1)`
+    const expectedNewLine = `appearance(extrude001, color = '#FF0000')`
+    const newCode = await runAddAppearanceTest(code)
+    expect(newCode).toContain(code + '\n' + expectedNewLine)
+  })
+
+  it('should push a call in pipe if selection was in variable-less pipe', async () => {
+    const code = `startSketchOn(XY)
+  |> circle(center = [0, 0], radius = 1)
+  |> extrude(length = 1)`
+    const expectedNewLine = `  |> appearance(color = '#FF0000')`
+    const newCode = await runAddAppearanceTest(code)
+    expect(newCode).toContain(code + '\n' + expectedNewLine)
+  })
+
+  async function runEditAppearanceTest(code: string, nodeToEdit: PathToNode) {
+    const {
+      artifactGraph,
+      ast,
+      sketches: objects,
+    } = await getAstAndSketchSelections(code)
+    const result = addAppearance({
+      ast,
+      artifactGraph,
+      objects,
+      color: '#00FF00',
+      nodeToEdit,
+    })
+    if (err(result)) throw result
+    await runNewAstAndCheckForSweep(result.modifiedAst)
+    return recast(result.modifiedAst)
+  }
+
+  it('should edit a call with variable if og selection was a variable sweep', async () => {
+    const code = `sketch001 = startSketchOn(XY)
+profile001 = circle(sketch001, center = [0, 0], radius = 1)
+extrude001 = extrude(profile001, length = 1)
+appearance(extrude001, color = '#FF0000')`
+    const expectedNewCode = `sketch001 = startSketchOn(XY)
+profile001 = circle(sketch001, center = [0, 0], radius = 1)
+extrude001 = extrude(profile001, length = 1)
+appearance(extrude001, color = '#00FF00')`
+    const nodeToEdit: PathToNode = [
+      ['body', ''],
+      [3, 'index'],
+      ['expression', 'ExpressionStatement'],
+    ]
+    const newCode = await runEditAppearanceTest(code, nodeToEdit)
+    expect(newCode).toContain(expectedNewCode)
+  })
+
+  it('should edit a call in pipe if og selection was in pipe', async () => {
+    const code = `startSketchOn(XY)
+  |> circle(center = [0, 0], radius = 1)
+  |> extrude(length = 1)
+  |> appearance(color = '#FF0000')`
+    const expectedNewCode = `startSketchOn(XY)
+  |> circle(center = [0, 0], radius = 1)
+  |> extrude(length = 1)
+  |> appearance(color = '#00FF00')`
+    const nodeToEdit: PathToNode = [
+      ['body', ''],
+      [0, 'index'],
+      ['expression', 'ExpressionStatement'],
+      ['body', 'PipeExpression'],
+      [3, 'index'],
+    ]
+    const newCode = await runEditAppearanceTest(code, nodeToEdit)
+    expect(newCode).toContain(expectedNewCode)
+  })
+
+  // TODO: missing multi-objects test
 })

@@ -98,6 +98,12 @@ export const FeatureTreePane = () => {
             data: { name: 'Clone', groupId: 'modeling' },
           })
         },
+        sendAppearanceCommand: () => {
+          commandBarActor.send({
+            type: 'Find and select command',
+            data: { name: 'Appearance', groupId: 'modeling' },
+          })
+        },
         sendSelectionEvent: ({ context }) => {
           if (!context.targetSourceRange) {
             return

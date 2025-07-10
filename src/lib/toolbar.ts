@@ -479,6 +479,25 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
               },
             ],
           },
+          {
+            id: 'appearance',
+            onClick: () =>
+              commandBarActor.send({
+                type: 'Find and select command',
+                data: { name: 'Appearance', groupId: 'modeling' },
+              }),
+            status: 'available',
+            title: 'Appearance',
+            icon: 'text',
+            description:
+              'Set the appearance of a solid. This only works on solids, not sketches or individual paths.',
+            links: [
+              {
+                label: 'API docs',
+                url: withSiteBaseURL('/docs/kcl-std/functions/std-appearance'),
+              },
+            ],
+          },
         ],
       },
       'break',

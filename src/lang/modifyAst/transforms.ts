@@ -266,3 +266,58 @@ export function addClone({
     pathToNode,
   }
 }
+
+export function addAppearance({
+  ast,
+  artifactGraph,
+  objects,
+  color,
+  nodeToEdit,
+}: {
+  ast: Node<Program>
+  artifactGraph: ArtifactGraph
+  objects: Selections
+  color: string
+  nodeToEdit?: PathToNode
+}): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
+  // 1. Clone the ast so we can edit it
+  const modifiedAst = structuredClone(ast)
+
+  // 2. Prepare unlabeled and labeled arguments
+  // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
+  const lastChildLookup = true
+  const vars = getVariableExprsFromSelection(
+    objects,
+    modifiedAst,
+    nodeToEdit,
+    lastChildLookup,
+    artifactGraph
+  )
+  if (err(vars)) {
+    return vars
+  }
+
+  const colorExpr = [createLabeledArg('color', createLiteral(color))]
+  const objectsExpr = createVariableExpressionsArray(vars.exprs)
+  const call = createCallExpressionStdLibKw('appearance', objectsExpr, [
+    ...colorExpr,
+  ])
+
+  // 3. If edit, we assign the new function call declaration to the existing node,
+  // otherwise just push to the end
+  const pathToNode = setCallInAst({
+    ast: modifiedAst,
+    call,
+    pathToEdit: nodeToEdit,
+    pathIfNewPipe: vars.pathIfPipe,
+    variableIfNewDecl: undefined, // No variable declaration for transforms
+  })
+  if (err(pathToNode)) {
+    return pathToNode
+  }
+
+  return {
+    modifiedAst,
+    pathToNode,
+  }
+}

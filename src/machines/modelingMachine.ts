@@ -79,12 +79,12 @@ import {
   deleteSelectionPromise,
   deletionErrorMessage,
 } from '@src/lang/modifyAst/deleteSelection'
-import { setAppearance } from '@src/lang/modifyAst/setAppearance'
 import {
   addTranslate,
   addRotate,
   addScale,
   addClone,
+  addAppearance,
 } from '@src/lang/modifyAst/transforms'
 import {
   getNodeFromPath,
@@ -3257,21 +3257,15 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        // Extract inputs
         const ast = kclManager.ast
-        const { color, nodeToEdit } = input
-        if (!(nodeToEdit && typeof nodeToEdit[1][0] === 'number')) {
-          return Promise.reject(new Error('Appearance is only an edit flow'))
-        }
-
-        const result = setAppearance({
+        const artifactGraph = kclManager.artifactGraph
+        const result = addAppearance({
+          ...input,
           ast,
-          nodeToEdit,
-          color,
+          artifactGraph,
         })
-
         if (err(result)) {
-          return Promise.reject(err(result))
+          return Promise.reject(result)
         }
 
         await updateModelingState(

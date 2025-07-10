@@ -1107,6 +1107,7 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   appearance: {
     label: 'Appearance',
     icon: 'text',
+    prepareToEdit: prepareToEditAppearance,
   },
   chamfer: {
     label: 'Chamfer',
@@ -1540,35 +1541,6 @@ export async function enterEditFlow({
   )
 }
 
-export async function enterAppearanceFlow({
-  operation,
-}: EnterEditFlowProps): Promise<Error | CommandBarMachineEvent> {
-  if (operation.type !== 'StdLibCall') {
-    return new Error(
-      'Appearance setting not yet supported for user-defined functions or modules. Please edit in the code editor.'
-    )
-  }
-  const stdLibInfo = stdLibMap[operation.name]
-
-  if (stdLibInfo && stdLibInfo.supportsAppearance) {
-    const argDefaultValues = {
-      nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
-    }
-    return {
-      type: 'Find and select command',
-      data: {
-        name: 'Appearance',
-        groupId: 'modeling',
-        argDefaultValues,
-      },
-    }
-  }
-
-  return new Error(
-    'Appearance setting not yet supported for this operation. Please edit in the code editor.'
-  )
-}
-
 async function prepareToEditTranslate({ operation }: EnterEditFlowProps) {
   const baseCommand = {
     name: 'Translate',
@@ -1849,6 +1821,54 @@ async function prepareToEditRotate({ operation }: EnterEditFlowProps) {
     pitch,
     yaw,
     global,
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
+  }
+  return {
+    ...baseCommand,
+    argDefaultValues,
+  }
+}
+
+async function prepareToEditAppearance({ operation }: EnterEditFlowProps) {
+  const baseCommand = {
+    name: 'Appearance',
+    groupId: 'modeling',
+  }
+  if (operation.type !== 'StdLibCall') {
+    return {
+      reason: 'Unsupported operation type. Please edit in the code editor.',
+    }
+  }
+
+  // 1. Map the unlabeled arguments to selections
+  if (!operation.unlabeledArg) {
+    return { reason: `Couldn't retrieve operation arguments` }
+  }
+
+  const objects = retrieveSelectionsFromOpArg(
+    operation.unlabeledArg,
+    kclManager.artifactGraph
+  )
+  if (err(objects)) {
+    return { reason: "Couldn't retrieve objects" }
+  }
+
+  // 2. Convert the color argument from a string to a KCL expression
+  // TODO: other args
+  if (!operation.labeledArgs.color) {
+    return { reason: "Couldn't find color argument" }
+  }
+  let color = codeManager.code.slice(
+    operation.labeledArgs.color.sourceRange[0],
+    operation.labeledArgs.color.sourceRange[1]
+  )
+
+  // 3. Assemble the default argument values for the command,
+  // with `nodeToEdit` set, which will let the actor know
+  // to edit the node that corresponds to the StdLibCall.
+  const argDefaultValues: ModelingCommandSchema['Appearance'] = {
+    objects,
+    color,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
   return {

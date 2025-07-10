@@ -12,7 +12,7 @@ import type { Artifact } from '@src/lang/std/artifactGraph'
 import { getArtifactFromRange } from '@src/lang/std/artifactGraph'
 import type { SourceRange } from '@src/lang/wasm'
 import type { EnterEditFlowProps } from '@src/lib/operations'
-import { enterAppearanceFlow, enterEditFlow } from '@src/lib/operations'
+import { enterEditFlow } from '@src/lib/operations'
 import { kclManager } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
 import { commandBarActor } from '@src/lib/singletons'
@@ -101,29 +101,6 @@ export const featureTreeMachine = setup({
         })
       }
     ),
-    prepareAppearanceCommand: fromPromise(
-      ({
-        input,
-      }: {
-        input: EnterEditFlowProps & {
-          commandBarSend: (typeof commandBarActor)['send']
-        }
-      }) => {
-        return new Promise((resolve, reject) => {
-          const { commandBarSend, ...editFlowProps } = input
-          enterAppearanceFlow(editFlowProps)
-            .then((result) => {
-              if (err(result)) {
-                reject(result)
-                return
-              }
-              input.commandBarSend(result)
-              resolve(result)
-            })
-            .catch(reject)
-        })
-      }
-    ),
     sendDeleteCommand: fromPromise(
       ({
         input,
@@ -185,6 +162,7 @@ export const featureTreeMachine = setup({
     sendRotateCommand: () => {},
     sendScaleCommand: () => {},
     sendCloneCommand: () => {},
+    sendAppearanceCommand: () => {},
     openCodePane: () => {},
     scrollToError: () => {},
   },
@@ -213,7 +191,11 @@ export const featureTreeMachine = setup({
 
         enterAppearanceFlow: {
           target: 'enteringAppearanceFlow',
-          actions: ['saveTargetSourceRange', 'saveCurrentOperation'],
+          actions: [
+            'saveTargetSourceRange',
+            'saveCurrentOperation',
+            'sendSelectionEvent',
+          ],
         },
 
         enterTranslateFlow: {
@@ -385,6 +367,25 @@ export const featureTreeMachine = setup({
       initial: 'enteringCloneFlow',
     },
 
+    enteringAppearanceFlow: {
+      states: {
+        enteringAppearanceFlow: {
+          on: {
+            selected: 'done',
+          },
+
+          entry: 'sendAppearanceCommand',
+        },
+
+        done: {
+          always: '#featureTree.idle',
+          entry: 'clearContext',
+        },
+      },
+
+      initial: 'enteringAppearanceFlow',
+    },
+
     enteringEditFlow: {
       states: {
         selecting: {
@@ -403,60 +404,6 @@ export const featureTreeMachine = setup({
         prepareEditCommand: {
           invoke: {
             src: 'prepareEditCommand',
-            input: ({ context }) => {
-              const artifact = context.targetSourceRange
-                ? (getArtifactFromRange(
-                    context.targetSourceRange,
-                    kclManager.artifactGraph
-                  ) ?? undefined)
-                : undefined
-              return {
-                // currentOperation is guaranteed to be defined here
-                operation: context.currentOperation!,
-                artifact,
-                commandBarSend: commandBarActor.send,
-              }
-            },
-            onDone: {
-              target: 'done',
-              reenter: true,
-            },
-            onError: {
-              target: 'done',
-              reenter: true,
-              actions: ({ event }) => {
-                if ('error' in event && err(event.error)) {
-                  toast.error(event.error.message)
-                }
-              },
-            },
-          },
-        },
-      },
-
-      initial: 'selecting',
-      entry: 'sendSelectionEvent',
-      exit: ['clearContext'],
-    },
-
-    enteringAppearanceFlow: {
-      states: {
-        selecting: {
-          on: {
-            selected: {
-              target: 'prepareAppearanceCommand',
-              reenter: true,
-            },
-          },
-        },
-
-        done: {
-          always: '#featureTree.idle',
-        },
-
-        prepareAppearanceCommand: {
-          invoke: {
-            src: 'prepareAppearanceCommand',
             input: ({ context }) => {
               const artifact = context.targetSourceRange
                 ? (getArtifactFromRange(

@@ -183,6 +183,7 @@ export type ModelingCommandSchema = {
   'Delete selection': {}
   Appearance: {
     nodeToEdit?: PathToNode
+    objects: Selections
     color: string
   }
   Translate: {
@@ -1031,7 +1032,17 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       nodeToEdit: {
         ...nodeToEditProps,
       },
+      objects: {
+        // selectionMixed allows for feature tree selection of module imports
+        inputType: 'selectionMixed',
+        selectionTypes: ['path', 'sweep', 'compositeSolid'],
+        selectionFilter: ['object'],
+        multiple: true,
+        required: true,
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+      },
       color: {
+        // TODO: change this to a color picker and add other optional args
         inputType: 'options',
         required: true,
         options: [
