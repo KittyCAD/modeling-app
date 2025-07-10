@@ -97,6 +97,32 @@ description: Operations executed walkie-talkie.kcl
         "steps": []
       },
       "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "appearance",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "color": {
+          "value": {
+            "type": "String",
+            "value": "#000000"
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
     }
   ],
   "public/kcl-samples/walkie-talkie/body.kcl": [
@@ -384,6 +410,32 @@ description: Operations executed walkie-talkie.kcl
                 "type": "Degrees"
               }
             }
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "appearance",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "color": {
+          "value": {
+            "type": "String",
+            "value": "#277bb0"
           },
           "sourceRange": []
         }
@@ -2580,6 +2632,54 @@ description: Operations executed walkie-talkie.kcl
         "steps": []
       },
       "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "appearance",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "color": {
+          "value": {
+            "type": "String",
+            "value": "#D0FF01"
+          },
+          "sourceRange": []
+        },
+        "metalness": {
+          "value": {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Known",
+              "type": "Count"
+            }
+          },
+          "sourceRange": []
+        },
+        "roughness": {
+          "value": {
+            "type": "Number",
+            "value": 50.0,
+            "ty": {
+              "type": "Known",
+              "type": "Count"
+            }
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
     }
   ],
   "public/kcl-samples/walkie-talkie/knob.kcl": [
@@ -2672,6 +2772,32 @@ description: Operations executed walkie-talkie.kcl
                 "value": "[uuid]"
               }
             ]
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "appearance",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "color": {
+          "value": {
+            "type": "String",
+            "value": "#afbf36"
           },
           "sourceRange": []
         }
@@ -3268,6 +3394,32 @@ description: Operations executed walkie-talkie.kcl
       "sourceRange": []
     },
     {
+      "type": "StdLibCall",
+      "name": "appearance",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "color": {
+          "value": {
+            "type": "String",
+            "value": "#ff0000"
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
       "type": "GroupEnd"
     },
     {
@@ -3478,6 +3630,32 @@ description: Operations executed walkie-talkie.kcl
       "sourceRange": []
     },
     {
+      "type": "StdLibCall",
+      "name": "appearance",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "color": {
+          "value": {
+            "type": "String",
+            "value": "#ff0000"
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
       "type": "GroupEnd"
     },
     {
@@ -3678,6 +3856,32 @@ description: Operations executed walkie-talkie.kcl
                 "value": "[uuid]"
               }
             ]
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "appearance",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "color": {
+          "value": {
+            "type": "String",
+            "value": "#ff0000"
           },
           "sourceRange": []
         }
@@ -3974,6 +4178,32 @@ description: Operations executed walkie-talkie.kcl
                 "value": "[uuid]"
               }
             ]
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "appearance",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "color": {
+          "value": {
+            "type": "String",
+            "value": "#ff0000"
           },
           "sourceRange": []
         }
@@ -4850,6 +5080,54 @@ description: Operations executed walkie-talkie.kcl
                 "value": "[uuid]"
               }
             ]
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "appearance",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "color": {
+          "value": {
+            "type": "String",
+            "value": "#D0FF01"
+          },
+          "sourceRange": []
+        },
+        "metalness": {
+          "value": {
+            "type": "Number",
+            "value": 90.0,
+            "ty": {
+              "type": "Known",
+              "type": "Count"
+            }
+          },
+          "sourceRange": []
+        },
+        "roughness": {
+          "value": {
+            "type": "Number",
+            "value": 90.0,
+            "ty": {
+              "type": "Known",
+              "type": "Count"
+            }
           },
           "sourceRange": []
         }

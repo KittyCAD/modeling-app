@@ -758,6 +758,82 @@ description: Operations executed translate_after_fillet.kcl
       "sourceRange": []
     },
     {
+      "type": "StdLibCall",
+      "name": "appearance",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "color": {
+          "value": {
+            "type": "String",
+            "value": "#4dd043"
+          },
+          "sourceRange": []
+        },
+        "metalness": {
+          "value": {
+            "type": "Number",
+            "value": 90.0,
+            "ty": {
+              "type": "Known",
+              "type": "Count"
+            }
+          },
+          "sourceRange": []
+        },
+        "roughness": {
+          "value": {
+            "type": "Number",
+            "value": 90.0,
+            "ty": {
+              "type": "Known",
+              "type": "Count"
+            }
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 7
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 4
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
       "type": "GroupEnd"
     },
     {
