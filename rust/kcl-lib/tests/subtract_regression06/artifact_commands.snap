@@ -426,7 +426,8 @@ description: Artifact commands subtract_regression06.kcl
         "faces": null,
         "opposite": {
           "Other": 12.7
-        }
+        },
+        "extrude_method": "merge"
       }
     },
     {
@@ -596,7 +597,8 @@ description: Artifact commands subtract_regression06.kcl
         "target": "[uuid]",
         "distance": 101.6,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {

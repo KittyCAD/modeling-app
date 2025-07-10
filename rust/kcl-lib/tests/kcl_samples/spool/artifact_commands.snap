@@ -421,7 +421,8 @@ description: Artifact commands spool.kcl
         "target": "[uuid]",
         "distance": -133.5,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -477,7 +478,8 @@ description: Artifact commands spool.kcl
         "target": "[uuid]",
         "distance": -133.5,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -533,7 +535,8 @@ description: Artifact commands spool.kcl
         "target": "[uuid]",
         "distance": -133.5,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -589,7 +592,8 @@ description: Artifact commands spool.kcl
         "target": "[uuid]",
         "distance": -133.5,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -645,7 +649,8 @@ description: Artifact commands spool.kcl
         "target": "[uuid]",
         "distance": -133.5,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -701,7 +706,8 @@ description: Artifact commands spool.kcl
         "target": "[uuid]",
         "distance": -133.5,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -757,7 +763,8 @@ description: Artifact commands spool.kcl
         "target": "[uuid]",
         "distance": -133.5,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -813,7 +820,8 @@ description: Artifact commands spool.kcl
         "target": "[uuid]",
         "distance": -133.5,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1021,7 +1029,8 @@ description: Artifact commands spool.kcl
         "target": "[uuid]",
         "distance": -5.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1077,7 +1086,8 @@ description: Artifact commands spool.kcl
         "target": "[uuid]",
         "distance": -5.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1133,7 +1143,8 @@ description: Artifact commands spool.kcl
         "target": "[uuid]",
         "distance": -5.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1189,7 +1200,8 @@ description: Artifact commands spool.kcl
         "target": "[uuid]",
         "distance": -5.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1245,7 +1257,8 @@ description: Artifact commands spool.kcl
         "target": "[uuid]",
         "distance": -5.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1301,7 +1314,8 @@ description: Artifact commands spool.kcl
         "target": "[uuid]",
         "distance": -5.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1357,7 +1371,8 @@ description: Artifact commands spool.kcl
         "target": "[uuid]",
         "distance": -5.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1413,7 +1428,8 @@ description: Artifact commands spool.kcl
         "target": "[uuid]",
         "distance": -5.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {

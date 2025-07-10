@@ -155,7 +155,8 @@ description: Artifact commands subtract_doesnt_need_brackets.kcl
         "target": "[uuid]",
         "distance": 10.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -342,7 +343,8 @@ description: Artifact commands subtract_doesnt_need_brackets.kcl
         "target": "[uuid]",
         "distance": 10.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {

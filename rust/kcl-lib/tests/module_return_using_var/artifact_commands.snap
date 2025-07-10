@@ -172,7 +172,8 @@ description: Artifact commands module_return_using_var.kcl
         "target": "[uuid]",
         "distance": 1.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {

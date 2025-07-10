@@ -195,7 +195,8 @@ description: Artifact commands sash-window.kcl
         "target": "[uuid]",
         "distance": 50.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -386,7 +387,8 @@ description: Artifact commands sash-window.kcl
         "target": "[uuid]",
         "distance": -50.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -630,7 +632,8 @@ description: Artifact commands sash-window.kcl
         "target": "[uuid]",
         "distance": 23.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -861,7 +864,8 @@ description: Artifact commands sash-window.kcl
         "target": "[uuid]",
         "distance": -23.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -917,7 +921,8 @@ description: Artifact commands sash-window.kcl
         "target": "[uuid]",
         "distance": -23.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1232,7 +1237,8 @@ description: Artifact commands sash-window.kcl
         "target": "[uuid]",
         "distance": 1.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1518,7 +1524,8 @@ description: Artifact commands sash-window.kcl
         "target": "[uuid]",
         "distance": 5.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1826,7 +1833,8 @@ description: Artifact commands sash-window.kcl
         "target": "[uuid]",
         "distance": 23.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2057,7 +2065,8 @@ description: Artifact commands sash-window.kcl
         "target": "[uuid]",
         "distance": -23.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2113,7 +2122,8 @@ description: Artifact commands sash-window.kcl
         "target": "[uuid]",
         "distance": -23.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2378,7 +2388,8 @@ description: Artifact commands sash-window.kcl
         "target": "[uuid]",
         "distance": 1.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {

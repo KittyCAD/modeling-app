@@ -995,6 +995,14 @@ impl Node<MemberExpression> {
         // Check the property and object match -- e.g. ints for arrays, strs for objects.
         match (object, property, self.computed) {
             (KclValue::Plane { value: plane }, Property::String(property), false) => match property.as_str() {
+                "zAxis" => {
+                    let (p, u) = plane.info.z_axis.as_3_dims();
+                    Ok(KclValue::array_from_point3d(
+                        p,
+                        NumericType::Known(crate::exec::UnitType::Length(u)),
+                        vec![meta],
+                    ))
+                }
                 "yAxis" => {
                     let (p, u) = plane.info.y_axis.as_3_dims();
                     Ok(KclValue::array_from_point3d(
