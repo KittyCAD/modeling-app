@@ -80,7 +80,6 @@ export interface IElectronAPI {
       VITE_KITTYCAD_SITE_APP_URL: string
       NODE_ENV: string
       TEST: string
-      CI: string
     }
   }
   kittycad: (access: string, args: any) => any

@@ -6,7 +6,6 @@ type EnvironmentVariables = {
   readonly VITE_KITTYCAD_SITE_BASE_URL: string | undefined
   readonly VITE_KITTYCAD_SITE_APP_URL: string | undefined
   readonly TEST: string | undefined
-  readonly CI: string | undefined
 }
 
 export const viteEnv = () => {
@@ -68,7 +67,6 @@ export default (): EnvironmentVariables => {
     VITE_KITTYCAD_SITE_APP_URL:
       (env.VITE_KITTYCAD_SITE_APP_URL as string) || undefined,
     TEST: (env.TEST as string) || undefined,
-    CI: (env.CI as string) || undefined,
   }
   return environmentVariables
 }

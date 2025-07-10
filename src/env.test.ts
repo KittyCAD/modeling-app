@@ -15,14 +15,11 @@ describe('@src/env', () => {
         VITE_KITTYCAD_SITE_BASE_URL: 'https://dev.zoo.dev',
         VITE_KITTYCAD_SITE_APP_URL: 'https://app.dev.zoo.dev',
         TEST: 'true',
-        CI: 'true',
       }
       const actual = env()
       expect(typeof actual.VITE_KITTYCAD_API_TOKEN).toBe('string')
       //@ts-ignore I do not want this token in our logs for any reason.
       actual.VITE_KITTYCAD_API_TOKEN = 'redacted'
-      //@ts-ignore need to hard code this for localhost and CI
-      actual.CI = 'true'
       expect(actual).toStrictEqual(expected)
     })
   })
@@ -59,7 +56,6 @@ describe('@src/env', () => {
               VITE_KITTYCAD_SITE_BASE_URL: 'https://dev.zoo.dev',
               VITE_KITTYCAD_SITE_APP_URL: 'https://app.dev.zoo.dev',
               TEST: 'true',
-              CI: undefined,
             },
           },
         })
@@ -72,7 +68,6 @@ describe('@src/env', () => {
           VITE_KITTYCAD_SITE_BASE_URL: 'https://dev.zoo.dev',
           VITE_KITTYCAD_SITE_APP_URL: 'https://app.dev.zoo.dev',
           TEST: 'true',
-          CI: undefined,
         }
         const actual = windowElectronProcessEnv()
         expect(actual).toStrictEqual(expected)
