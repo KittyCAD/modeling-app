@@ -11,7 +11,7 @@ const isTestEnv = window?.localStorage.getItem(IS_PLAYWRIGHT_KEY) === 'true'
 
 export const APP_VERSION =
   isTestEnv && env().NODE_ENV === 'development'
-    ? '11.22.33'
+    ? '0.0.0'
     : isDesktop()
       ? // @ts-ignore
         window.electron.packageJson.version
