@@ -14,13 +14,15 @@ import {
 import { isTopLevelModule } from '@src/lang/util'
 import type { CallExpressionKw, PathToNode } from '@src/lang/wasm'
 import { defaultSourceRange } from '@src/lang/sourceRange'
-import type { DefaultPlaneStr } from '@src/lib/planes'
-import { getEventForSelectWithPoint } from '@src/lib/selections'
+import {
+  getEventForSelectWithPoint,
+  selectDefaultSketchPlane,
+  selectOffsetSketchPlane,
+} from '@src/lib/selections'
 import {
   editorManager,
   engineCommandManager,
   kclManager,
-  rustContext,
   sceneEntitiesManager,
   sceneInfra,
 } from '@src/lib/singletons'
@@ -96,101 +98,18 @@ export function useEngineConnectionSubscriptions() {
             ;(async () => {
               let planeOrFaceId = data.entity_id
               if (!planeOrFaceId) return
+
+              const defaultSketchPlaneSelected =
+                selectDefaultSketchPlane(planeOrFaceId)
               if (
-                rustContext.defaultPlanes?.xy === planeOrFaceId ||
-                rustContext.defaultPlanes?.xz === planeOrFaceId ||
-                rustContext.defaultPlanes?.yz === planeOrFaceId ||
-                rustContext.defaultPlanes?.negXy === planeOrFaceId ||
-                rustContext.defaultPlanes?.negXz === planeOrFaceId ||
-                rustContext.defaultPlanes?.negYz === planeOrFaceId
+                !err(defaultSketchPlaneSelected) &&
+                defaultSketchPlaneSelected
               ) {
-                let planeId = planeOrFaceId
-                const defaultPlaneStrMap: Record<string, DefaultPlaneStr> = {
-                  [rustContext.defaultPlanes.xy]: 'XY',
-                  [rustContext.defaultPlanes.xz]: 'XZ',
-                  [rustContext.defaultPlanes.yz]: 'YZ',
-                  [rustContext.defaultPlanes.negXy]: '-XY',
-                  [rustContext.defaultPlanes.negXz]: '-XZ',
-                  [rustContext.defaultPlanes.negYz]: '-YZ',
-                }
-                // TODO can we get this information from rust land when it creates the default planes?
-                // maybe returned from make_default_planes (src/wasm-lib/src/wasm.rs)
-                let zAxis: [number, number, number] = [0, 0, 1]
-                let yAxis: [number, number, number] = [0, 1, 0]
-
-                // get unit vector from camera position to target
-                const camVector = sceneInfra.camControls.camera.position
-                  .clone()
-                  .sub(sceneInfra.camControls.target)
-
-                if (rustContext.defaultPlanes?.xy === planeId) {
-                  zAxis = [0, 0, 1]
-                  yAxis = [0, 1, 0]
-                  if (camVector.z < 0) {
-                    zAxis = [0, 0, -1]
-                    planeId = rustContext.defaultPlanes?.negXy || ''
-                  }
-                } else if (rustContext.defaultPlanes?.yz === planeId) {
-                  zAxis = [1, 0, 0]
-                  yAxis = [0, 0, 1]
-                  if (camVector.x < 0) {
-                    zAxis = [-1, 0, 0]
-                    planeId = rustContext.defaultPlanes?.negYz || ''
-                  }
-                } else if (rustContext.defaultPlanes?.xz === planeId) {
-                  zAxis = [0, 1, 0]
-                  yAxis = [0, 0, 1]
-                  planeId = rustContext.defaultPlanes?.negXz || ''
-                  if (camVector.y < 0) {
-                    zAxis = [0, -1, 0]
-                    planeId = rustContext.defaultPlanes?.xz || ''
-                  }
-                }
-
-                sceneInfra.modelingSend({
-                  type: 'Select sketch plane',
-                  data: {
-                    type: 'defaultPlane',
-                    planeId: planeId,
-                    plane: defaultPlaneStrMap[planeId],
-                    zAxis,
-                    yAxis,
-                  },
-                })
                 return
               }
-              const artifact = kclManager.artifactGraph.get(planeOrFaceId)
 
-              if (artifact?.type === 'plane') {
-                const planeInfo =
-                  await sceneEntitiesManager.getFaceDetails(planeOrFaceId)
-                sceneInfra.modelingSend({
-                  type: 'Select sketch plane',
-                  data: {
-                    type: 'offsetPlane',
-                    zAxis: [
-                      planeInfo.z_axis.x,
-                      planeInfo.z_axis.y,
-                      planeInfo.z_axis.z,
-                    ],
-                    yAxis: [
-                      planeInfo.y_axis.x,
-                      planeInfo.y_axis.y,
-                      planeInfo.y_axis.z,
-                    ],
-                    position: [
-                      planeInfo.origin.x,
-                      planeInfo.origin.y,
-                      planeInfo.origin.z,
-                    ].map((num) => num / sceneInfra._baseUnitMultiplier) as [
-                      number,
-                      number,
-                      number,
-                    ],
-                    planeId: planeOrFaceId,
-                    pathToNode: artifact.codeRef.pathToNode,
-                  },
-                })
+              const artifact = kclManager.artifactGraph.get(planeOrFaceId)
+              if (await selectOffsetSketchPlane(artifact)) {
                 return
               }
 

@@ -14,5 +14,6 @@ description: Artifact commands kw_fn_unlabeled_but_has_label.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

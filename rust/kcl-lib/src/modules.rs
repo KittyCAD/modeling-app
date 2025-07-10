@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 use crate::{
     errors::{KclError, KclErrorDetails},
     exec::KclValue,
-    execution::{typed_path::TypedPath, EnvironmentRef, ModuleArtifactState, PreImportedGeometry},
+    execution::{EnvironmentRef, ModuleArtifactState, PreImportedGeometry, typed_path::TypedPath},
     fs::{FileManager, FileSystem},
     parsing::ast::types::{ImportPath, Node, Program},
     source_range::SourceRange,
@@ -73,13 +73,13 @@ impl ModuleLoader {
     }
 
     pub(crate) fn enter_module(&mut self, path: &ModulePath) {
-        if let ModulePath::Local { value: ref path } = path {
+        if let ModulePath::Local { value: path } = path {
             self.import_stack.push(path.clone());
         }
     }
 
     pub(crate) fn leave_module(&mut self, path: &ModulePath) {
-        if let ModulePath::Local { value: ref path } = path {
+        if let ModulePath::Local { value: path } = path {
             let popped = self.import_stack.pop().unwrap();
             assert_eq!(path, &popped);
         }
@@ -99,6 +99,7 @@ pub(crate) fn read_std(mod_name: &str) -> Option<&'static str> {
         "sweep" => Some(include_str!("../std/sweep.kcl")),
         "appearance" => Some(include_str!("../std/appearance.kcl")),
         "transform" => Some(include_str!("../std/transform.kcl")),
+        "vector" => Some(include_str!("../std/vector.kcl")),
         _ => None,
     }
 }

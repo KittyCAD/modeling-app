@@ -937,7 +937,8 @@ description: Artifact commands loop_tag.kcl
         "target": "[uuid]",
         "distance": 50.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -984,5 +985,6 @@ description: Artifact commands loop_tag.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

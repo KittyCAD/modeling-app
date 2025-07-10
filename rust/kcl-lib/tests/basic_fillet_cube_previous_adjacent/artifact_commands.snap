@@ -155,7 +155,8 @@ description: Artifact commands basic_fillet_cube_previous_adjacent.kcl
         "target": "[uuid]",
         "distance": 10.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -229,5 +230,6 @@ description: Artifact commands basic_fillet_cube_previous_adjacent.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

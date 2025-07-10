@@ -460,7 +460,8 @@ description: Artifact commands router-template-cross-bar.kcl
         "target": "[uuid]",
         "distance": 5.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -631,7 +632,8 @@ description: Artifact commands router-template-cross-bar.kcl
         "target": "[uuid]",
         "distance": 13.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -802,7 +804,8 @@ description: Artifact commands router-template-cross-bar.kcl
         "target": "[uuid]",
         "distance": 13.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -973,7 +976,8 @@ description: Artifact commands router-template-cross-bar.kcl
         "target": "[uuid]",
         "distance": 4.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1020,5 +1024,6 @@ description: Artifact commands router-template-cross-bar.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

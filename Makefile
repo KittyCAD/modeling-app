@@ -49,7 +49,7 @@ RUST_SOURCES := $(wildcard rust/**/*.rs)
 
 REACT_SOURCES := $(wildcard src/*.tsx) $(wildcard src/**/*.tsx)
 TYPESCRIPT_SOURCES := tsconfig.* $(wildcard src/*.ts) $(wildcard src/**/*.ts)
-VITE_SOURCES := $(wildcard vite.*) $(wildcard vite/**/*.tsx)
+VITE_SOURCES := $(wildcard vite.*) $(wildcard vite/**/*.tsx) .env*
 
 .PHONY: build
 build: install public/kcl_wasm_lib_bg.wasm public/kcl-samples/manifest.json .vite/build/main.js
@@ -62,7 +62,10 @@ else
 endif
 
 public/kcl-samples/manifest.json: $(KCL_SOURCES)
+ifndef WINDOWS
 	cd rust/kcl-lib && EXPECTORATE=overwrite cargo test generate_manifest
+	@ touch $@
+endif
 
 .vite/build/main.js: $(REACT_SOURCES) $(TYPESCRIPT_SOURCES) $(VITE_SOURCES)
 	npm run tronb:vite:dev
@@ -142,11 +145,11 @@ clean: ## Delete all artifacts
 ifdef POWERSHELL
 	git clean --force -d -x --exclude=.env* --exclude=**/*.env
 else
-	rm -rf .vite/ build/
-	rm -rf trace.zip playwright-report/ test-results/
+	rm -rf .vite/ build/ out/
+	rm -rf trace.zip playwright-report/ test-results/ e2e/playwright/temp*.png
 	rm -rf public/kcl_wasm_lib_bg.wasm
 	rm -rf rust/*/bindings/ rust/*/pkg/ rust/target/
-	rm -rf node_modules/ rust/*/node_modules/
+	rm -rf node_modules/ packages/*/node_modules/ rust/*/node_modules/
 endif
 
 .PHONY: help

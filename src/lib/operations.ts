@@ -4,7 +4,7 @@ import type { CustomIconName } from '@src/components/CustomIcon'
 import {
   getNodeFromPath,
   findPipesWithImportAlias,
-  getSketchSelectionsFromOperation,
+  retrieveSelectionsFromOpArg,
 } from '@src/lang/queryAst'
 import type { Artifact } from '@src/lang/std/artifactGraph'
 import {
@@ -115,8 +115,12 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({ operation }) => {
   }
 
   // 1. Map the unlabeled arguments to solid2d selections
-  const sketches = getSketchSelectionsFromOperation(
-    operation,
+  if (!operation.unlabeledArg) {
+    return { reason: `Couldn't retrieve operation arguments` }
+  }
+
+  const sketches = retrieveSelectionsFromOpArg(
+    operation.unlabeledArg,
     kclManager.artifactGraph
   )
   if (err(sketches)) {
@@ -182,6 +186,15 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({ operation }) => {
     twistAngle = result
   }
 
+  // method argument from a string to boolean
+  let method: string | undefined
+  if ('method' in operation.labeledArgs && operation.labeledArgs.method) {
+    method = codeManager.code.slice(
+      operation.labeledArgs.method.sourceRange[0],
+      operation.labeledArgs.method.sourceRange[1]
+    )
+  }
+
   // 3. Assemble the default argument values for the command,
   // with `nodeToEdit` set, which will let the actor know
   // to edit the node that corresponds to the StdLibCall.
@@ -191,6 +204,7 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({ operation }) => {
     symmetric,
     bidirectionalLength,
     twistAngle,
+    method,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
   return {
@@ -213,8 +227,12 @@ const prepareToEditLoft: PrepareToEditCallback = async ({ operation }) => {
   }
 
   // 1. Map the unlabeled arguments to solid2d selections
-  const sketches = getSketchSelectionsFromOperation(
-    operation,
+  if (!operation.unlabeledArg) {
+    return { reason: `Couldn't retrieve operation arguments` }
+  }
+
+  const sketches = retrieveSelectionsFromOpArg(
+    operation.unlabeledArg,
     kclManager.artifactGraph
   )
   if (err(sketches)) {
@@ -561,8 +579,12 @@ const prepareToEditSweep: PrepareToEditCallback = async ({ operation }) => {
   }
 
   // 1. Map the unlabeled arguments to solid2d selections
-  const sketches = getSketchSelectionsFromOperation(
-    operation,
+  if (!operation.unlabeledArg) {
+    return { reason: `Couldn't retrieve operation arguments` }
+  }
+
+  const sketches = retrieveSelectionsFromOpArg(
+    operation.unlabeledArg,
     kclManager.artifactGraph
   )
   if (err(sketches)) {
@@ -928,8 +950,12 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
   }
 
   // 1. Map the unlabeled arguments to solid2d selections
-  const sketches = getSketchSelectionsFromOperation(
-    operation,
+  if (!operation.unlabeledArg) {
+    return { reason: `Couldn't retrieve operation arguments` }
+  }
+
+  const sketches = retrieveSelectionsFromOpArg(
+    operation.unlabeledArg,
     kclManager.artifactGraph
   )
   if (err(sketches)) {
@@ -1082,11 +1108,27 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
  * for use in the feature tree UI.
  */
 export const stdLibMap: Record<string, StdLibCallInfo> = {
+  appearance: {
+    label: 'Appearance',
+    icon: 'text',
+  },
   chamfer: {
     label: 'Chamfer',
     icon: 'chamfer3d',
     prepareToEdit: prepareToEditEdgeTreatment,
     // modelingEvent: 'Chamfer',
+  },
+  conic: {
+    label: 'Conic',
+    icon: 'conic',
+  },
+  ellipse: {
+    label: 'Ellipse',
+    icon: 'ellipse',
+  },
+  elliptic: {
+    label: 'Elliptic',
+    icon: 'elliptic',
   },
   extrude: {
     label: 'Extrude',
@@ -1108,6 +1150,10 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   subtract2d: {
     label: 'Subtract 2D',
     icon: 'hole',
+  },
+  hyperbolic: {
+    label: 'Hyperbolic',
+    icon: 'conic',
   },
   hollow: {
     label: 'Hollow',
@@ -1138,6 +1184,10 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     label: 'Offset Plane',
     icon: 'plane',
     prepareToEdit: prepareToEditOffsetPlane,
+  },
+  parabolic: {
+    label: 'Parabolic',
+    icon: 'conic',
   },
   patternCircular2d: {
     label: 'Circular Pattern',

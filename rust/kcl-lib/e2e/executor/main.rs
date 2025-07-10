@@ -1,8 +1,8 @@
 mod cache;
 
 use kcl_lib::{
-    test_server::{execute_and_export_step, execute_and_snapshot, execute_and_snapshot_no_auth},
     BacktraceItem, ExecError, ModuleId, SourceRange,
+    test_server::{execute_and_export_step, execute_and_snapshot, execute_and_snapshot_no_auth},
 };
 
 /// The minimum permissible difference between asserted twenty-twenty images.
@@ -869,11 +869,13 @@ async fn kcl_test_revolve_bad_angle_low() {
     let result = execute_and_snapshot(code, None).await;
 
     assert!(result.is_err());
-    assert!(result
-        .err()
-        .unwrap()
-        .to_string()
-        .contains("Expected angle to be between -360 and 360 and not 0, found `-455`"));
+    assert!(
+        result
+            .err()
+            .unwrap()
+            .to_string()
+            .contains("Expected angle to be between -360 and 360 and not 0, found `-455`")
+    );
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -895,11 +897,13 @@ async fn kcl_test_revolve_bad_angle_high() {
     let result = execute_and_snapshot(code, None).await;
 
     assert!(result.is_err());
-    assert!(result
-        .err()
-        .unwrap()
-        .to_string()
-        .contains("Expected angle to be between -360 and 360 and not 0, found `455`"));
+    assert!(
+        result
+            .err()
+            .unwrap()
+            .to_string()
+            .contains("Expected angle to be between -360 and 360 and not 0, found `455`")
+    );
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -2090,7 +2094,10 @@ async fn kcl_test_better_type_names() {
         },
         None => todo!(),
     };
-    assert_eq!(err, "This function expected the input argument to be one or more Solids or ImportedGeometry but it's actually of type Sketch. You can convert a sketch (2D) into a Solid (3D) by calling a function like `extrude` or `revolve`");
+    assert_eq!(
+        err,
+        "This function expected the input argument to be one or more Solids or ImportedGeometry but it's actually of type Sketch. You can convert a sketch (2D) into a Solid (3D) by calling a function like `extrude` or `revolve`"
+    );
 }
 
 #[tokio::test(flavor = "multi_thread")]

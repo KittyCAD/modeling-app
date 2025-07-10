@@ -629,7 +629,10 @@ description: Artifact commands herringbone-gear.kcl
                 "z": 8.0
               },
               "set": false,
-              "is_local": true
+              "is_local": true,
+              "origin": {
+                "type": "local"
+              }
             },
             "rotate_rpy": null,
             "rotate_angle_axis": null,
@@ -691,5 +694,6 @@ description: Artifact commands herringbone-gear.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

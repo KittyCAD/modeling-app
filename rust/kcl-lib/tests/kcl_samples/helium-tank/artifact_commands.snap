@@ -577,7 +577,8 @@ description: Artifact commands helium-tank.kcl
         "target": "[uuid]",
         "distance": 38.099999999999994,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -861,7 +862,8 @@ description: Artifact commands helium-tank.kcl
         "target": "[uuid]",
         "distance": 33.019999999999996,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1404,7 +1406,8 @@ description: Artifact commands helium-tank.kcl
         "target": "[uuid]",
         "distance": 25.4,
         "faces": null,
-        "opposite": "Symmetric"
+        "opposite": "Symmetric",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1691,7 +1694,8 @@ description: Artifact commands helium-tank.kcl
         "target": "[uuid]",
         "distance": 20.32,
         "faces": null,
-        "opposite": "Symmetric"
+        "opposite": "Symmetric",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1889,7 +1893,8 @@ description: Artifact commands helium-tank.kcl
         "target": "[uuid]",
         "distance": -127.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2259,7 +2264,8 @@ description: Artifact commands helium-tank.kcl
         "target": "[uuid]",
         "distance": 19.049999999999997,
         "faces": null,
-        "opposite": "Symmetric"
+        "opposite": "Symmetric",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2403,5 +2409,6 @@ description: Artifact commands helium-tank.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

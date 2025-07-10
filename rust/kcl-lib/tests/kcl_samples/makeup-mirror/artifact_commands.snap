@@ -152,7 +152,8 @@ description: Artifact commands makeup-mirror.kcl
         "target": "[uuid]",
         "distance": 24.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -336,7 +337,8 @@ description: Artifact commands makeup-mirror.kcl
         "target": "[uuid]",
         "distance": 24.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -520,7 +522,8 @@ description: Artifact commands makeup-mirror.kcl
         "target": "[uuid]",
         "distance": 24.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -704,7 +707,8 @@ description: Artifact commands makeup-mirror.kcl
         "target": "[uuid]",
         "distance": 24.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -888,7 +892,8 @@ description: Artifact commands makeup-mirror.kcl
         "target": "[uuid]",
         "distance": 24.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1072,7 +1077,8 @@ description: Artifact commands makeup-mirror.kcl
         "target": "[uuid]",
         "distance": 24.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1256,7 +1262,8 @@ description: Artifact commands makeup-mirror.kcl
         "target": "[uuid]",
         "distance": 24.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1417,7 +1424,8 @@ description: Artifact commands makeup-mirror.kcl
         "target": "[uuid]",
         "distance": 170.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1578,7 +1586,8 @@ description: Artifact commands makeup-mirror.kcl
         "target": "[uuid]",
         "distance": 170.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1762,7 +1771,8 @@ description: Artifact commands makeup-mirror.kcl
         "target": "[uuid]",
         "distance": 10.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1960,7 +1970,8 @@ description: Artifact commands makeup-mirror.kcl
         "target": "[uuid]",
         "distance": 10.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2007,5 +2018,6 @@ description: Artifact commands makeup-mirror.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

@@ -5,6 +5,7 @@ import { reportRejection } from '@src/lib/trap'
 import { typeSafeWebContentsSend } from '@src/menu/channels'
 import type { ZooMenuItemConstructorOptions } from '@src/menu/roles'
 import { getAutoUpdater } from '@src/updater'
+import { withSiteBaseURL } from '@src/lib/withBaseURL'
 
 export const helpRole = (
   mainWindow: BrowserWindow
@@ -14,7 +15,7 @@ export const helpRole = (
     submenu: [
       {
         id: 'Help.Show all commands',
-        label: 'Show all commands',
+        label: 'Show All Commands',
         click: () => {
           typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
             menuLabel: 'Help.Command Palette...',
@@ -22,22 +23,24 @@ export const helpRole = (
         },
       },
       {
-        label: 'KCL code samples',
+        label: 'KCL Code Samples',
         id: 'Help.KCL code samples',
         click: () => {
           shell
-            .openExternal('https://zoo.dev/docs/kcl-samples')
+            .openExternal(withSiteBaseURL('/docs/kcl-samples'))
             .catch(reportRejection)
         },
       },
       {
-        label: 'KCL docs',
+        label: 'KCL Docs',
         click: () => {
-          shell.openExternal('https://zoo.dev/docs/kcl').catch(reportRejection)
+          shell
+            .openExternal(withSiteBaseURL('/docs/kcl'))
+            .catch(reportRejection)
         },
       },
       {
-        label: 'Get started with Text-to-CAD',
+        label: 'Get Started with Text-to-CAD',
         click: () => {
           shell
             .openExternal('https://text-to-cad.zoo.dev/dashboard')
@@ -46,7 +49,7 @@ export const helpRole = (
       },
       { type: 'separator' },
       {
-        label: 'Ask the community discord',
+        label: 'Ask the Community Discord',
         click: () => {
           shell
             .openExternal('https://discord.gg/JQEpHR7Nt2')
@@ -54,7 +57,7 @@ export const helpRole = (
         },
       },
       {
-        label: 'Ask the community discourse',
+        label: 'Ask the Community Discourse',
         click: () => {
           shell
             .openExternal('https://community.zoo.dev/')
@@ -63,7 +66,7 @@ export const helpRole = (
       },
       { type: 'separator' },
       {
-        label: 'Report a bug',
+        label: 'Report a Bug',
         id: 'Help.Report a bug',
         click: () => {
           shell
@@ -74,7 +77,7 @@ export const helpRole = (
         },
       },
       {
-        label: 'Request a feature',
+        label: 'Request a Feature',
         click: () => {
           shell
             .openExternal(
@@ -86,7 +89,7 @@ export const helpRole = (
       { type: 'separator' },
       {
         id: 'Help.Replay onboarding tutorial',
-        label: 'Replay onboarding tutorial',
+        label: 'Replay Onboarding Tutorial',
         click: () => {
           typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
             menuLabel: 'Help.Replay onboarding tutorial',
@@ -99,7 +102,7 @@ export const helpRole = (
       { role: 'forceReload' },
       { type: 'separator' },
       {
-        label: 'Show release notes',
+        label: 'Show Release Notes',
         click: () => {
           shell
             .openExternal('https://github.com/KittyCAD/modeling-app/releases')
@@ -107,16 +110,16 @@ export const helpRole = (
         },
       },
       {
-        label: 'Check for updates',
+        label: 'Check for Updates',
         click: () => {
           getAutoUpdater().checkForUpdates().catch(reportRejection)
         },
       },
       { type: 'separator' },
       {
-        label: 'Manage account',
+        label: 'Manage Account',
         click: () => {
-          shell.openExternal('https://zoo.dev/account').catch(reportRejection)
+          shell.openExternal(withSiteBaseURL('/account')).catch(reportRejection)
         },
       },
     ],

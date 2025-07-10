@@ -189,7 +189,8 @@ description: Artifact commands sketch_on_face_after_fillets_referencing_face.kcl
         "target": "[uuid]",
         "distance": 6.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -414,7 +415,8 @@ description: Artifact commands sketch_on_face_after_fillets_referencing_face.kcl
         "target": "[uuid]",
         "distance": 10.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -461,5 +463,6 @@ description: Artifact commands sketch_on_face_after_fillets_referencing_face.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

@@ -740,7 +740,8 @@ description: Artifact commands subtract_regression10.kcl
         "target": "[uuid]",
         "distance": 314.0,
         "faces": null,
-        "opposite": "Symmetric"
+        "opposite": "Symmetric",
+        "extrude_method": "merge"
       }
     },
     {
@@ -948,7 +949,8 @@ description: Artifact commands subtract_regression10.kcl
         "target": "[uuid]",
         "distance": 92.0,
         "faces": null,
-        "opposite": "Symmetric"
+        "opposite": "Symmetric",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1202,7 +1204,8 @@ description: Artifact commands subtract_regression10.kcl
         "target": "[uuid]",
         "distance": 314.0,
         "faces": null,
-        "opposite": "Symmetric"
+        "opposite": "Symmetric",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1663,7 +1666,8 @@ description: Artifact commands subtract_regression10.kcl
         "target": "[uuid]",
         "distance": 54.0,
         "faces": null,
-        "opposite": "Symmetric"
+        "opposite": "Symmetric",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1911,7 +1915,8 @@ description: Artifact commands subtract_regression10.kcl
         "target": "[uuid]",
         "distance": 554.0,
         "faces": null,
-        "opposite": "Symmetric"
+        "opposite": "Symmetric",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2084,7 +2089,8 @@ description: Artifact commands subtract_regression10.kcl
         "target": "[uuid]",
         "distance": 54.0,
         "faces": null,
-        "opposite": "Symmetric"
+        "opposite": "Symmetric",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2220,7 +2226,8 @@ description: Artifact commands subtract_regression10.kcl
         "target": "[uuid]",
         "distance": 54.0,
         "faces": null,
-        "opposite": "Symmetric"
+        "opposite": "Symmetric",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2437,7 +2444,8 @@ description: Artifact commands subtract_regression10.kcl
         "target": "[uuid]",
         "distance": 300.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2497,7 +2505,8 @@ description: Artifact commands subtract_regression10.kcl
         "target": "[uuid]",
         "distance": 300.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2570,5 +2579,6 @@ description: Artifact commands subtract_regression10.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

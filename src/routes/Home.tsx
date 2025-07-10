@@ -66,6 +66,8 @@ import {
   defaultLocalStatusBarItems,
   defaultGlobalStatusBarItems,
 } from '@src/components/StatusBar/defaultStatusBarItems'
+import { useSelector } from '@xstate/react'
+import { withSiteBaseURL } from '@src/lib/withBaseURL'
 
 type ReadWriteProjectState = {
   value: boolean
@@ -81,6 +83,8 @@ const Home = () => {
   const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
   const apiToken = useToken()
   const networkMachineStatus = useNetworkMachineStatus()
+  const billingContext = useSelector(billingActor, ({ context }) => context)
+  const hasUnlimitedCredits = billingContext.credits === Infinity
 
   // Only create the native file menus on desktop
   useEffect(() => {
@@ -218,10 +222,7 @@ const Home = () => {
 
   return (
     <div className="relative flex flex-col items-stretch h-screen w-screen overflow-hidden">
-      <AppHeader
-        nativeFileMenuCreated={nativeFileMenuCreated}
-        showToolbar={false}
-      />
+      <AppHeader nativeFileMenuCreated={nativeFileMenuCreated} />
       <div className="overflow-hidden self-stretch w-full flex-1 home-layout max-w-4xl lg:max-w-5xl xl:max-w-7xl px-4 mx-auto mt-8 lg:mt-24 lg:px-0">
         <HomeHeader
           setQuery={setQuery}
@@ -354,17 +355,19 @@ const Home = () => {
             </li>
           </ul>
           <ul className="flex flex-col">
-            <li className="contents">
-              <div className="my-2">
-                <BillingDialog billingActor={billingActor} />
-              </div>
-            </li>
+            {!hasUnlimitedCredits && (
+              <li className="contents">
+                <div className="my-2">
+                  <BillingDialog billingActor={billingActor} />
+                </div>
+              </li>
+            )}
             <li className="contents">
               <ActionButton
                 Element="externalLink"
-                to="https://zoo.dev/docs"
+                to={withSiteBaseURL('/account')}
                 onClick={openExternalBrowserIfDesktop(
-                  'https://zoo.dev/account'
+                  withSiteBaseURL('/account')
                 )}
                 className={sidebarButtonClasses}
                 iconStart={{
@@ -379,8 +382,8 @@ const Home = () => {
             <li className="contents">
               <ActionButton
                 Element="externalLink"
-                to="https://zoo.dev/blog"
-                onClick={openExternalBrowserIfDesktop('https://zoo.dev/blog')}
+                to={withSiteBaseURL('/blog')}
+                onClick={openExternalBrowserIfDesktop(withSiteBaseURL('/blog'))}
                 className={sidebarButtonClasses}
                 iconStart={{
                   icon: 'glasses',

@@ -65,7 +65,7 @@ If you're not a Zoo employee you won't be able to access the dev environment, yo
 
 ### Development environment variables
 
-The Copilot LSP plugin in the editor requires a Zoo API token to run. In production, we authenticate this with a token via cookie in the browser and device auth token in the desktop environment, but this token is inaccessible in the dev browser version because the cookie is considered "cross-site" (from `localhost` to `zoo.dev`). There is an optional environment variable called `VITE_KC_DEV_TOKEN` that you can populate with a dev token in a `.env.development.local` file to not check it into Git, which will use that token instead of other methods for the LSP service.
+The Copilot LSP plugin in the editor requires a Zoo API token to run. In production, we authenticate this with a token via cookie in the browser and device auth token in the desktop environment, but this token is inaccessible in the dev browser version because the cookie is considered "cross-site" (from `localhost` to `zoo.dev`). There is an optional environment variable called `VITE_KITTYCAD_API_TOKEN` that you can populate with a dev token in a `.env.development.local` file to not check it into Git, which will use that token instead of other methods for the LSP service.
 
 ### Developing in Chrome
 
@@ -96,7 +96,7 @@ To package the app for your platform with electron-builder, run `npm run tronb:p
 
 Prepare these system dependencies:
 
-- Set $token from https://zoo.dev/account/api-tokens
+- Set `$VITE_KITTYCAD_API_TOKEN` from https://zoo.dev/account/api-tokens
 
 #### Snapshot tests (Google Chrome on Ubuntu only)
 
@@ -234,6 +234,47 @@ For more information on fuzzing you can check out
 To display logging (to the terminal or console) set `ZOO_LOG=1`. This will log some warnings and simple performance metrics. To view these in test runs, use `-- --nocapture`.
 
 To enable memory metrics, build with `--features dhat-heap`.
+
+## Running scripts
+
+There are multiple scripts under the folder path `./scripts` which can be used in various settings.
+
+### Pattern for a static file, npm run commands, and CI-CD checks
+
+If you want to implement a static checker follow this pattern. Two static checkers we have are circular dependency checks in our typescript code and url checker to see if any hard coded URL is the typescript application 404s. We have a set of known files in `./scripts/known/*.txt` which is the baseline.
+
+If you improve the baseline, run the overwrite command and commit the new smaller baseline. Try not to make the baseline bigger, the CI CD will complain.
+These baselines are to hold us to higher standards and help implement automated testing against the repository
+
+#### Output result to stdout
+- `npm run circular-deps`
+- `npm run url-checker`
+
+- create a `<name>.sh` file that will run the static checker then output the result to `stdout`
+
+#### Overwrite result to known .txt file on disk
+
+If the application needs to overwrite the known file on disk use this pattern. This known .txt file will be source controlled as the baseline
+
+- `npm run circular-deps:overwrite`
+- `npm run url-checker:overwrite`
+
+#### Diff baseline and current
+
+These commands will write a /tmp/ file on disk and compare it to the known file in the repository. This command will also be used in the CI CD pipeline for automated checks
+
+- create a `diff-<name>.sh` file that is the script to diff your tmp file to the baseline
+e.g. `diff-url-checker.sh`
+```bash
+#!/bin/bash
+set -euo pipefail
+
+npm run url-checker > /tmp/urls.txt
+diff --ignore-blank-lines -w /tmp/urls.txt ./scripts/known/urls.txt
+```
+
+- `npm run circular-deps:diff`
+- `npm run url-checker:diff`
 
 ## Proposing changes
 

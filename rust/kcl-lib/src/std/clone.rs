@@ -4,10 +4,9 @@ use std::collections::HashMap;
 
 use anyhow::Result;
 use kcmc::{
-    each_cmd as mcmd,
-    ok_response::{output::EntityGetAllChildUuids, OkModelingCmdResponse},
+    ModelingCmd, each_cmd as mcmd,
+    ok_response::{OkModelingCmdResponse, output::EntityGetAllChildUuids},
     websocket::OkWebSocketResponseData,
-    ModelingCmd,
 };
 use kittycad_modeling_cmds::{self as kcmc};
 
@@ -15,11 +14,11 @@ use super::extrude::do_post_extrude;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        types::{NumericType, PrimitiveType, RuntimeType},
         ExecState, GeometryWithImportedGeometry, KclValue, ModelingCmdMeta, Sketch, Solid,
+        types::{NumericType, PrimitiveType, RuntimeType},
     },
     parsing::ast::types::TagNode,
-    std::{extrude::NamedCapTags, Args},
+    std::{Args, extrude::NamedCapTags},
 };
 
 /// Clone a sketch or solid.
@@ -91,7 +90,7 @@ async fn inner_clone(
         .await
         .map_err(|e| {
             KclError::new_internal(KclErrorDetails::new(
-                format!("failed to fix tags and references: {:?}", e),
+                format!("failed to fix tags and references: {e:?}"),
                 vec![args.source_range],
             ))
         })?;
@@ -155,6 +154,7 @@ async fn fix_tags_and_references(
                     start: start_tag.as_ref(),
                     end: end_tag.as_ref(),
                 },
+                kittycad_modeling_cmds::shared::ExtrudeMethod::Merge,
                 exec_state,
                 args,
                 None,
@@ -320,10 +320,10 @@ clonedCube = clone(cube)
         assert_ne!(cube, cloned_cube);
 
         let KclValue::Sketch { value: cube } = cube else {
-            panic!("Expected a sketch, got: {:?}", cube);
+            panic!("Expected a sketch, got: {cube:?}");
         };
         let KclValue::Sketch { value: cloned_cube } = cloned_cube else {
-            panic!("Expected a sketch, got: {:?}", cloned_cube);
+            panic!("Expected a sketch, got: {cloned_cube:?}");
         };
 
         assert_ne!(cube.id, cloned_cube.id);
@@ -369,10 +369,10 @@ clonedCube = clone(cube)
         assert_ne!(cube, cloned_cube);
 
         let KclValue::Solid { value: cube } = cube else {
-            panic!("Expected a solid, got: {:?}", cube);
+            panic!("Expected a solid, got: {cube:?}");
         };
         let KclValue::Solid { value: cloned_cube } = cloned_cube else {
-            panic!("Expected a solid, got: {:?}", cloned_cube);
+            panic!("Expected a solid, got: {cloned_cube:?}");
         };
 
         assert_ne!(cube.id, cloned_cube.id);
@@ -427,10 +427,10 @@ clonedCube = clone(cube)
         assert_ne!(cube, cloned_cube);
 
         let KclValue::Sketch { value: cube } = cube else {
-            panic!("Expected a sketch, got: {:?}", cube);
+            panic!("Expected a sketch, got: {cube:?}");
         };
         let KclValue::Sketch { value: cloned_cube } = cloned_cube else {
-            panic!("Expected a sketch, got: {:?}", cloned_cube);
+            panic!("Expected a sketch, got: {cloned_cube:?}");
         };
 
         assert_ne!(cube.id, cloned_cube.id);
@@ -483,10 +483,10 @@ clonedCube = clone(cube)
         assert_ne!(cube, cloned_cube);
 
         let KclValue::Solid { value: cube } = cube else {
-            panic!("Expected a solid, got: {:?}", cube);
+            panic!("Expected a solid, got: {cube:?}");
         };
         let KclValue::Solid { value: cloned_cube } = cloned_cube else {
-            panic!("Expected a solid, got: {:?}", cloned_cube);
+            panic!("Expected a solid, got: {cloned_cube:?}");
         };
 
         assert_ne!(cube.id, cloned_cube.id);
@@ -555,10 +555,10 @@ clonedCube = clone(cube)
         assert_ne!(cube, cloned_cube);
 
         let KclValue::Solid { value: cube } = cube else {
-            panic!("Expected a solid, got: {:?}", cube);
+            panic!("Expected a solid, got: {cube:?}");
         };
         let KclValue::Solid { value: cloned_cube } = cloned_cube else {
-            panic!("Expected a solid, got: {:?}", cloned_cube);
+            panic!("Expected a solid, got: {cloned_cube:?}");
         };
 
         assert_ne!(cube.id, cloned_cube.id);
@@ -655,10 +655,10 @@ clonedCube = clone(cube)
         assert_ne!(cube, cloned_cube);
 
         let KclValue::Solid { value: cube } = cube else {
-            panic!("Expected a solid, got: {:?}", cube);
+            panic!("Expected a solid, got: {cube:?}");
         };
         let KclValue::Solid { value: cloned_cube } = cloned_cube else {
-            panic!("Expected a solid, got: {:?}", cloned_cube);
+            panic!("Expected a solid, got: {cloned_cube:?}");
         };
 
         assert_ne!(cube.id, cloned_cube.id);

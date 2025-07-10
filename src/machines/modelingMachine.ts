@@ -29,7 +29,6 @@ import {
   applyConstraintHorzVert,
   horzVertInfo,
 } from '@src/components/Toolbar/HorzVert'
-import { intersectInfo } from '@src/components/Toolbar/Intersect'
 import {
   applyRemoveConstrainingValues,
   removeConstrainingValuesInfo,
@@ -72,7 +71,7 @@ import {
   addRevolve,
   addSweep,
   getAxisExpressionAndIndex,
-} from '@src/lang/modifyAst/addSweep'
+} from '@src/lang/modifyAst/sweeps'
 import {
   applyIntersectFromTargetOperatorSelections,
   applySubtractFromTargetOperatorSelections,
@@ -155,6 +154,7 @@ import type { Plane } from '@rust/kcl-lib/bindings/Plane'
 import type { Point3d } from '@rust/kcl-lib/bindings/ModelingCmd'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import { letEngineAnimateAndSyncCamAfter } from '@src/clientSideScene/CameraControls'
+import { intersectInfo } from '@src/components/Toolbar/Intersect'
 
 export type SetSelections =
   | {
@@ -280,6 +280,7 @@ export type OffsetPlane = {
   pathToNode: PathToNode
   zAxis: [number, number, number]
   yAxis: [number, number, number]
+  negated: boolean
 }
 
 export type SegmentOverlayPayload =
@@ -2435,23 +2436,10 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const {
-          nodeToEdit,
-          sketches,
-          length,
-          symmetric,
-          bidirectionalLength,
-          twistAngle,
-        } = input
         const { ast } = kclManager
         const astResult = addExtrude({
           ast,
-          sketches,
-          length,
-          symmetric,
-          bidirectionalLength,
-          twistAngle,
-          nodeToEdit,
+          ...input,
         })
         if (err(astResult)) {
           return Promise.reject(new Error("Couldn't add extrude statement"))
@@ -2608,15 +2596,15 @@ export const modelingMachine = setup({
           insertIndex = nodeToEdit[1][0]
         }
 
-        // Extract the default plane from selection
-        const plane = selection.otherSelections[0]
-        if (!(plane && plane instanceof Object && 'name' in plane))
+        const selectedPlane = getSelectedPlane(selection)
+        if (!selectedPlane) {
           return trap('No plane selected')
+        }
 
         // Get the default plane name from the selection
         const offsetPlaneResult = addOffsetPlane({
           node: ast,
-          defaultPlane: plane.name,
+          plane: selectedPlane,
           offset:
             'variableName' in distance
               ? distance.variableIdentifierAst
@@ -3570,17 +3558,17 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const { target, tool } = input
+        const { solids, tools } = input
         if (
-          !target.graphSelections[0].artifact ||
-          !tool.graphSelections[0].artifact
+          !solids.graphSelections.some((selection) => selection.artifact) ||
+          !tools.graphSelections.some((selection) => selection.artifact)
         ) {
           return Promise.reject(new Error('No artifact in selections found'))
         }
 
-        await applySubtractFromTargetOperatorSelections(
-          target.graphSelections[0],
-          tool.graphSelections[0],
+        const result = await applySubtractFromTargetOperatorSelections(
+          solids,
+          tools,
           {
             kclManager,
             codeManager,
@@ -3588,6 +3576,9 @@ export const modelingMachine = setup({
             editorManager,
           }
         )
+        if (err(result)) {
+          return Promise.reject(result)
+        }
       }
     ),
     boolUnionAstMod: fromPromise(
@@ -3605,12 +3596,15 @@ export const modelingMachine = setup({
           return Promise.reject(new Error('No artifact in selections found'))
         }
 
-        await applyUnionFromTargetOperatorSelections(solids, {
+        const result = await applyUnionFromTargetOperatorSelections(solids, {
           kclManager,
           codeManager,
           engineCommandManager,
           editorManager,
         })
+        if (err(result)) {
+          return Promise.reject(result)
+        }
       }
     ),
     boolIntersectAstMod: fromPromise(
@@ -3628,12 +3622,18 @@ export const modelingMachine = setup({
           return Promise.reject(new Error('No artifact in selections found'))
         }
 
-        await applyIntersectFromTargetOperatorSelections(solids, {
-          kclManager,
-          codeManager,
-          engineCommandManager,
-          editorManager,
-        })
+        const result = await applyIntersectFromTargetOperatorSelections(
+          solids,
+          {
+            kclManager,
+            codeManager,
+            engineCommandManager,
+            editorManager,
+          }
+        )
+        if (err(result)) {
+          return Promise.reject(result)
+        }
       }
     ),
 
@@ -5505,6 +5505,33 @@ export function isEditingExistingSketch({
         item.callee.name.name === 'circleThreePoint'
     )
   return (hasStartProfileAt && maybePipeExpression.body.length > 1) || hasCircle
+}
+
+const getSelectedPlane = (
+  selection: Selections
+): Node<Name> | Node<Literal> | undefined => {
+  const defaultPlane = selection.otherSelections[0]
+  if (
+    defaultPlane &&
+    defaultPlane instanceof Object &&
+    'name' in defaultPlane
+  ) {
+    return createLiteral(defaultPlane.name.toUpperCase())
+  }
+
+  const offsetPlane = selection.graphSelections[0]
+  if (offsetPlane.artifact?.type === 'plane') {
+    const artifactId = offsetPlane.artifact?.id
+    const variableName = Object.entries(kclManager.variables).find(
+      ([_, value]) => {
+        return value?.type === 'Plane' && value.value?.artifactId === artifactId
+      }
+    )
+    const offsetPlaneName = variableName?.[0]
+    return offsetPlaneName ? createLocalName(offsetPlaneName) : undefined
+  }
+
+  return undefined
 }
 
 export function pipeHasCircle({

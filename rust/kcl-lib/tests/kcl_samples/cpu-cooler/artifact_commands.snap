@@ -642,7 +642,8 @@ description: Artifact commands cpu-cooler.kcl
         "target": "[uuid]",
         "distance": 4.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -899,7 +900,8 @@ description: Artifact commands cpu-cooler.kcl
         "target": "[uuid]",
         "distance": -4.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -955,7 +957,8 @@ description: Artifact commands cpu-cooler.kcl
         "target": "[uuid]",
         "distance": -4.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1011,7 +1014,8 @@ description: Artifact commands cpu-cooler.kcl
         "target": "[uuid]",
         "distance": -4.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1067,7 +1071,8 @@ description: Artifact commands cpu-cooler.kcl
         "target": "[uuid]",
         "distance": -4.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1294,7 +1299,8 @@ description: Artifact commands cpu-cooler.kcl
         "target": "[uuid]",
         "distance": 17.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1422,7 +1428,8 @@ description: Artifact commands cpu-cooler.kcl
         "target": "[uuid]",
         "distance": -17.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2043,7 +2050,8 @@ description: Artifact commands cpu-cooler.kcl
         "target": "[uuid]",
         "distance": 4.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2171,7 +2179,8 @@ description: Artifact commands cpu-cooler.kcl
         "target": "[uuid]",
         "distance": 16.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2299,7 +2308,8 @@ description: Artifact commands cpu-cooler.kcl
         "target": "[uuid]",
         "distance": -16.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2591,7 +2601,8 @@ description: Artifact commands cpu-cooler.kcl
         "target": "[uuid]",
         "distance": 25.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -4880,7 +4891,8 @@ description: Artifact commands cpu-cooler.kcl
         "target": "[uuid]",
         "distance": 1.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -6103,7 +6115,8 @@ description: Artifact commands cpu-cooler.kcl
         "target": "[uuid]",
         "distance": 30.000000000000004,
         "faces": null,
-        "opposite": "Symmetric"
+        "opposite": "Symmetric",
+        "extrude_method": "merge"
       }
     },
     {
@@ -6436,7 +6449,8 @@ description: Artifact commands cpu-cooler.kcl
         "target": "[uuid]",
         "distance": 22.500000000000004,
         "faces": null,
-        "opposite": "Symmetric"
+        "opposite": "Symmetric",
+        "extrude_method": "merge"
       }
     },
     {
@@ -6772,7 +6786,8 @@ description: Artifact commands cpu-cooler.kcl
         "target": "[uuid]",
         "distance": 16.0,
         "faces": null,
-        "opposite": "Symmetric"
+        "opposite": "Symmetric",
+        "extrude_method": "merge"
       }
     },
     {
@@ -6972,7 +6987,8 @@ description: Artifact commands cpu-cooler.kcl
         "target": "[uuid]",
         "distance": -2.125,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -7075,7 +7091,10 @@ description: Artifact commands cpu-cooler.kcl
                 "z": 100.0
               },
               "set": false,
-              "is_local": true
+              "is_local": true,
+              "origin": {
+                "type": "local"
+              }
             },
             "rotate_rpy": null,
             "rotate_angle_axis": null,
@@ -7139,7 +7158,10 @@ description: Artifact commands cpu-cooler.kcl
                 "z": 100.0
               },
               "set": false,
-              "is_local": true
+              "is_local": true,
+              "origin": {
+                "type": "local"
+              }
             },
             "rotate_rpy": null,
             "rotate_angle_axis": null,
@@ -7163,7 +7185,10 @@ description: Artifact commands cpu-cooler.kcl
                 "z": 100.0
               },
               "set": false,
-              "is_local": true
+              "is_local": true,
+              "origin": {
+                "type": "local"
+              }
             },
             "rotate_rpy": null,
             "rotate_angle_axis": null,
@@ -7267,7 +7292,10 @@ description: Artifact commands cpu-cooler.kcl
                 "z": 100.0
               },
               "set": false,
-              "is_local": true
+              "is_local": true,
+              "origin": {
+                "type": "local"
+              }
             },
             "rotate_rpy": null,
             "rotate_angle_axis": null,
@@ -7291,7 +7319,10 @@ description: Artifact commands cpu-cooler.kcl
                 "z": 100.0
               },
               "set": false,
-              "is_local": true
+              "is_local": true,
+              "origin": {
+                "type": "local"
+              }
             },
             "rotate_rpy": null,
             "rotate_angle_axis": null,
@@ -7315,7 +7346,10 @@ description: Artifact commands cpu-cooler.kcl
                 "z": 100.0
               },
               "set": false,
-              "is_local": true
+              "is_local": true,
+              "origin": {
+                "type": "local"
+              }
             },
             "rotate_rpy": null,
             "rotate_angle_axis": null,
@@ -7339,7 +7373,10 @@ description: Artifact commands cpu-cooler.kcl
                 "z": 100.0
               },
               "set": false,
-              "is_local": true
+              "is_local": true,
+              "origin": {
+                "type": "local"
+              }
             },
             "rotate_rpy": null,
             "rotate_angle_axis": null,
@@ -7363,7 +7400,10 @@ description: Artifact commands cpu-cooler.kcl
                 "z": 100.0
               },
               "set": false,
-              "is_local": true
+              "is_local": true,
+              "origin": {
+                "type": "local"
+              }
             },
             "rotate_rpy": null,
             "rotate_angle_axis": null,
@@ -7387,7 +7427,10 @@ description: Artifact commands cpu-cooler.kcl
                 "z": 100.0
               },
               "set": false,
-              "is_local": true
+              "is_local": true,
+              "origin": {
+                "type": "local"
+              }
             },
             "rotate_rpy": null,
             "rotate_angle_axis": null,
@@ -7411,7 +7454,10 @@ description: Artifact commands cpu-cooler.kcl
                 "z": 100.0
               },
               "set": false,
-              "is_local": true
+              "is_local": true,
+              "origin": {
+                "type": "local"
+              }
             },
             "rotate_rpy": null,
             "rotate_angle_axis": null,
@@ -7435,7 +7481,10 @@ description: Artifact commands cpu-cooler.kcl
                 "z": 100.0
               },
               "set": false,
-              "is_local": true
+              "is_local": true,
+              "origin": {
+                "type": "local"
+              }
             },
             "rotate_rpy": null,
             "rotate_angle_axis": null,
@@ -7459,7 +7508,10 @@ description: Artifact commands cpu-cooler.kcl
                 "z": 100.0
               },
               "set": false,
-              "is_local": true
+              "is_local": true,
+              "origin": {
+                "type": "local"
+              }
             },
             "rotate_rpy": null,
             "rotate_angle_axis": null,
@@ -7483,7 +7535,10 @@ description: Artifact commands cpu-cooler.kcl
                 "z": 100.0
               },
               "set": false,
-              "is_local": true
+              "is_local": true,
+              "origin": {
+                "type": "local"
+              }
             },
             "rotate_rpy": null,
             "rotate_angle_axis": null,
@@ -8294,7 +8349,8 @@ description: Artifact commands cpu-cooler.kcl
         "target": "[uuid]",
         "distance": 17.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -8525,7 +8581,8 @@ description: Artifact commands cpu-cooler.kcl
         "target": "[uuid]",
         "distance": 3.8,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -10285,7 +10342,8 @@ description: Artifact commands cpu-cooler.kcl
         "target": "[uuid]",
         "distance": 0.3,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -10457,5 +10515,6 @@ description: Artifact commands cpu-cooler.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

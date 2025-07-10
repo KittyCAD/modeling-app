@@ -905,7 +905,8 @@ description: Artifact commands ball-joint-rod-end.kcl
         "target": "[uuid]",
         "distance": 1016.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -956,7 +957,10 @@ description: Artifact commands ball-joint-rod-end.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true
+              "is_local": true,
+              "origin": {
+                "type": "local"
+              }
             },
             "rotate_rpy": null,
             "rotate_angle_axis": null,
@@ -1160,7 +1164,8 @@ description: Artifact commands ball-joint-rod-end.kcl
         "target": "[uuid]",
         "distance": 2540.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1211,7 +1216,10 @@ description: Artifact commands ball-joint-rod-end.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true
+              "is_local": true,
+              "origin": {
+                "type": "local"
+              }
             },
             "rotate_rpy": null,
             "rotate_angle_axis": null,
@@ -1394,7 +1402,8 @@ description: Artifact commands ball-joint-rod-end.kcl
         "target": "[uuid]",
         "distance": 482.59999999999997,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1455,5 +1464,6 @@ description: Artifact commands ball-joint-rod-end.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

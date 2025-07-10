@@ -28,7 +28,10 @@ import {
   parseCLIArgs,
 } from '@src/commandLineArgs'
 import { initPromiseNode } from '@src/lang/wasmUtilsNode'
-import { ZOO_STUDIO_PROTOCOL } from '@src/lib/constants'
+import {
+  ZOO_STUDIO_PROTOCOL,
+  OAUTH2_DEVICE_CLIENT_ID,
+} from '@src/lib/constants'
 import getCurrentProjectFile from '@src/lib/getCurrentProjectFile'
 import { reportRejection } from '@src/lib/trap'
 import {
@@ -67,14 +70,11 @@ dotenv.config({ path: [`.env.${NODE_ENV}.local`, `.env.${NODE_ENV}`] })
 
 // default vite values based on mode
 process.env.NODE_ENV ??= viteEnv.MODE
-process.env.BASE_URL ??= viteEnv.VITE_KC_API_BASE_URL
-process.env.VITE_KC_API_WS_MODELING_URL ??= viteEnv.VITE_KC_API_WS_MODELING_URL
-process.env.VITE_KC_API_BASE_URL ??= viteEnv.VITE_KC_API_BASE_URL
-process.env.VITE_KC_SITE_BASE_URL ??= viteEnv.VITE_KC_SITE_BASE_URL
-process.env.VITE_KC_SITE_APP_URL ??= viteEnv.VITE_KC_SITE_APP_URL
-process.env.VITE_KC_SKIP_AUTH ??= viteEnv.VITE_KC_SKIP_AUTH
-process.env.VITE_KC_CONNECTION_TIMEOUT_MS ??=
-  viteEnv.VITE_KC_CONNECTION_TIMEOUT_MS
+process.env.VITE_KITTYCAD_API_BASE_URL ??= viteEnv.VITE_KITTYCAD_API_BASE_URL
+process.env.VITE_KITTYCAD_API_WEBSOCKET_URL ??=
+  viteEnv.VITE_KITTYCAD_API_WEBSOCKET_URL
+process.env.VITE_KITTYCAD_SITE_BASE_URL ??= viteEnv.VITE_KITTYCAD_SITE_BASE_URL
+process.env.VITE_KITTYCAD_SITE_APP_URL ??= viteEnv.VITE_KITTYCAD_SITE_APP_URL
 
 // Likely convenient to keep for debugging
 console.log('Environment vars', process.env)
@@ -402,7 +402,7 @@ ipcMain.handle('startDeviceFlow', async (_, host: string) => {
     // We can hardcode the client ID.
     // This value is safe to be embedded in version control.
     // This is the client ID of the KittyCAD app.
-    client_id: '2af127fb-e14e-400a-9c57-a9ed08d1a5b7',
+    client_id: OAUTH2_DEVICE_CLIENT_ID,
     token_endpoint_auth_method: 'none',
   })
 

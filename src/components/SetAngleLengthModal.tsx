@@ -10,6 +10,7 @@ import {
 } from '@src/components/AvailableVarsHelpers'
 import type { Expr } from '@src/lang/wasm'
 import { useCalculateKclExpression } from '@src/lib/useCalculateKclExpression'
+import type { Selections } from '@src/lib/selections'
 
 type ModalResolve = {
   value: string
@@ -25,6 +26,7 @@ type SetAngleLengthModalProps = InstanceProps<ModalResolve, ModalReject> & {
   value: number
   valueName: string
   shouldCreateVariable?: boolean
+  selectionRanges: Selections
 }
 
 export const createSetAngleLengthModal = create<
@@ -40,6 +42,7 @@ export const SetAngleLengthModal = ({
   value: initialValue,
   valueName,
   shouldCreateVariable: initialShouldCreateVariable = false,
+  selectionRanges,
 }: SetAngleLengthModalProps) => {
   const [sign, setSign] = useState(Math.sign(Number(initialValue)))
   const [value, setValue] = useState(String(initialValue * sign))
@@ -59,6 +62,7 @@ export const SetAngleLengthModal = ({
   } = useCalculateKclExpression({
     value,
     initialVariableName: valueName,
+    selectionRanges,
   })
 
   return (

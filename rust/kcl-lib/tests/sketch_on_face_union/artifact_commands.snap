@@ -412,7 +412,8 @@ description: Artifact commands sketch_on_face_union.kcl
         "target": "[uuid]",
         "distance": 50.8,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -622,7 +623,8 @@ description: Artifact commands sketch_on_face_union.kcl
         "target": "[uuid]",
         "distance": 45.72,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -793,7 +795,8 @@ description: Artifact commands sketch_on_face_union.kcl
         "target": "[uuid]",
         "distance": 45.72,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -971,7 +974,8 @@ description: Artifact commands sketch_on_face_union.kcl
         "target": "[uuid]",
         "distance": 1219.1999999999998,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1025,7 +1029,10 @@ description: Artifact commands sketch_on_face_union.kcl
                 "w": -90.0
               },
               "set": false,
-              "is_local": true
+              "is_local": true,
+              "origin": {
+                "type": "local"
+              }
             },
             "scale": null
           }
@@ -1043,5 +1050,6 @@ description: Artifact commands sketch_on_face_union.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

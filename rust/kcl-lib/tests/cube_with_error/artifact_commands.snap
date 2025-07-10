@@ -172,7 +172,8 @@ description: Artifact commands cube_with_error.kcl
         "target": "[uuid]",
         "distance": 40.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -219,5 +220,6 @@ description: Artifact commands cube_with_error.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

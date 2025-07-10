@@ -1,15 +1,15 @@
 use indexmap::IndexMap;
 
 use crate::{
+    ExecutorContext,
     errors::{KclError, KclErrorDetails},
     execution::{
+        ExecState,
         fn_call::{Arg, Args, KwArgs},
         kcl_value::{FunctionSource, KclValue},
         types::RuntimeType,
-        ExecState,
     },
     source_range::SourceRange,
-    ExecutorContext,
 };
 
 /// Apply a function to each element of an array.
@@ -145,4 +145,55 @@ pub async fn pop(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
     }
     array.pop();
     Ok(KclValue::HomArray { value: array, ty })
+}
+
+pub async fn concat(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let (left, left_el_ty) = args.get_unlabeled_kw_arg_array_and_type("array", exec_state)?;
+    let right_value: KclValue = args.get_kw_arg("items", &RuntimeType::any_array(), exec_state)?;
+
+    match right_value {
+        KclValue::HomArray {
+            value: right,
+            ty: right_el_ty,
+            ..
+        } => Ok(inner_concat(&left, &left_el_ty, &right, &right_el_ty)),
+        KclValue::Tuple { value: right, .. } => {
+            // Tuples are treated as arrays for concatenation.
+            Ok(inner_concat(&left, &left_el_ty, &right, &RuntimeType::any()))
+        }
+        // Any single value is a subtype of an array, so we can treat it as a
+        // single-element array.
+        _ => Ok(inner_concat(&left, &left_el_ty, &[right_value], &RuntimeType::any())),
+    }
+}
+
+fn inner_concat(
+    left: &[KclValue],
+    left_el_ty: &RuntimeType,
+    right: &[KclValue],
+    right_el_ty: &RuntimeType,
+) -> KclValue {
+    if left.is_empty() {
+        return KclValue::HomArray {
+            value: right.to_vec(),
+            ty: right_el_ty.clone(),
+        };
+    }
+    if right.is_empty() {
+        return KclValue::HomArray {
+            value: left.to_vec(),
+            ty: left_el_ty.clone(),
+        };
+    }
+    let mut new = left.to_vec();
+    new.extend_from_slice(right);
+    // Propagate the element type if we can.
+    let ty = if right_el_ty.subtype(left_el_ty) {
+        left_el_ty.clone()
+    } else if left_el_ty.subtype(right_el_ty) {
+        right_el_ty.clone()
+    } else {
+        RuntimeType::any()
+    };
+    KclValue::HomArray { value: new, ty }
 }

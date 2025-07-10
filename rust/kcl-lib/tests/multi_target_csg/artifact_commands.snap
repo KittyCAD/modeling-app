@@ -366,7 +366,8 @@ description: Artifact commands multi_target_csg.kcl
         "target": "[uuid]",
         "distance": 1.5875,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -725,7 +726,8 @@ description: Artifact commands multi_target_csg.kcl
         "faces": null,
         "opposite": {
           "Other": 2.54
-        }
+        },
+        "extrude_method": "merge"
       }
     },
     {
@@ -787,7 +789,8 @@ description: Artifact commands multi_target_csg.kcl
         "faces": null,
         "opposite": {
           "Other": 2.54
-        }
+        },
+        "extrude_method": "merge"
       }
     },
     {
@@ -971,7 +974,8 @@ description: Artifact commands multi_target_csg.kcl
         "target": "[uuid]",
         "distance": -25.4,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1033,5 +1037,6 @@ description: Artifact commands multi_target_csg.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

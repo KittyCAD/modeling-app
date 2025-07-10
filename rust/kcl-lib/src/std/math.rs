@@ -3,13 +3,13 @@
 use anyhow::Result;
 
 use crate::{
+    CompilationError,
     errors::{KclError, KclErrorDetails},
     execution::{
-        types::{ArrayLen, NumericType, RuntimeType},
         ExecState, KclValue,
+        types::{ArrayLen, NumericType, RuntimeType},
     },
     std::args::{Args, TyF64},
-    CompilationError,
 };
 
 /// Compute the remainder after dividing `num` by `div`.

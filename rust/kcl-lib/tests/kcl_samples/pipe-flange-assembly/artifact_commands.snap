@@ -132,7 +132,8 @@ description: Artifact commands pipe-flange-assembly.kcl
         "target": "[uuid]",
         "distance": 0.7874,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -260,7 +261,8 @@ description: Artifact commands pipe-flange-assembly.kcl
         "target": "[uuid]",
         "distance": -0.7874,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -636,7 +638,8 @@ description: Artifact commands pipe-flange-assembly.kcl
         "target": "[uuid]",
         "distance": 17.525999999999996,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -764,7 +767,8 @@ description: Artifact commands pipe-flange-assembly.kcl
         "target": "[uuid]",
         "distance": 1.5239999999999998,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -892,7 +896,8 @@ description: Artifact commands pipe-flange-assembly.kcl
         "target": "[uuid]",
         "distance": 6.35,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1020,7 +1025,8 @@ description: Artifact commands pipe-flange-assembly.kcl
         "target": "[uuid]",
         "distance": -25.4,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1392,7 +1398,8 @@ description: Artifact commands pipe-flange-assembly.kcl
         "target": "[uuid]",
         "distance": 17.525999999999996,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1520,7 +1527,8 @@ description: Artifact commands pipe-flange-assembly.kcl
         "target": "[uuid]",
         "distance": 1.5239999999999998,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1648,7 +1656,8 @@ description: Artifact commands pipe-flange-assembly.kcl
         "target": "[uuid]",
         "distance": 6.35,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1776,7 +1785,8 @@ description: Artifact commands pipe-flange-assembly.kcl
         "target": "[uuid]",
         "distance": -25.4,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1847,7 +1857,10 @@ description: Artifact commands pipe-flange-assembly.kcl
                 "w": 180.0
               },
               "set": false,
-              "is_local": true
+              "is_local": true,
+              "origin": {
+                "type": "local"
+              }
             },
             "scale": null
           }
@@ -1869,7 +1882,10 @@ description: Artifact commands pipe-flange-assembly.kcl
                 "z": 3.8353999999999995
               },
               "set": false,
-              "is_local": true
+              "is_local": true,
+              "origin": {
+                "type": "local"
+              }
             },
             "rotate_rpy": null,
             "rotate_angle_axis": null,
@@ -1893,7 +1909,10 @@ description: Artifact commands pipe-flange-assembly.kcl
                 "z": -2.3114
               },
               "set": false,
-              "is_local": true
+              "is_local": true,
+              "origin": {
+                "type": "local"
+              }
             },
             "rotate_rpy": null,
             "rotate_angle_axis": null,
@@ -2027,7 +2046,8 @@ description: Artifact commands pipe-flange-assembly.kcl
         "target": "[uuid]",
         "distance": 0.8128,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2155,7 +2175,8 @@ description: Artifact commands pipe-flange-assembly.kcl
         "target": "[uuid]",
         "distance": -0.8128,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2223,7 +2244,10 @@ description: Artifact commands pipe-flange-assembly.kcl
                 "z": 17.525999999999996
               },
               "set": false,
-              "is_local": true
+              "is_local": true,
+              "origin": {
+                "type": "local"
+              }
             },
             "rotate_rpy": null,
             "rotate_angle_axis": null,
@@ -2538,7 +2562,8 @@ description: Artifact commands pipe-flange-assembly.kcl
         "target": "[uuid]",
         "distance": -15.875,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2756,7 +2781,8 @@ description: Artifact commands pipe-flange-assembly.kcl
         "target": "[uuid]",
         "distance": -11.90625,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2884,7 +2910,8 @@ description: Artifact commands pipe-flange-assembly.kcl
         "target": "[uuid]",
         "distance": 63.5,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2952,7 +2979,10 @@ description: Artifact commands pipe-flange-assembly.kcl
                 "z": 18.3388
               },
               "set": false,
-              "is_local": true
+              "is_local": true,
+              "origin": {
+                "type": "local"
+              }
             },
             "rotate_rpy": null,
             "rotate_angle_axis": null,
@@ -2977,7 +3007,10 @@ description: Artifact commands pipe-flange-assembly.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true
+              "is_local": true,
+              "origin": {
+                "type": "local"
+              }
             },
             "rotate_angle_axis": null,
             "scale": null
@@ -3191,7 +3224,8 @@ description: Artifact commands pipe-flange-assembly.kcl
         "target": "[uuid]",
         "distance": 13.890625,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -3319,7 +3353,8 @@ description: Artifact commands pipe-flange-assembly.kcl
         "target": "[uuid]",
         "distance": -13.890625,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -3387,7 +3422,10 @@ description: Artifact commands pipe-flange-assembly.kcl
                 "z": -36.064825
               },
               "set": false,
-              "is_local": true
+              "is_local": true,
+              "origin": {
+                "type": "local"
+              }
             },
             "rotate_rpy": null,
             "rotate_angle_axis": null,
@@ -3542,7 +3580,8 @@ description: Artifact commands pipe-flange-assembly.kcl
         "target": "[uuid]",
         "distance": 152.39999999999998,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -3670,7 +3709,8 @@ description: Artifact commands pipe-flange-assembly.kcl
         "target": "[uuid]",
         "distance": -152.39999999999998,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -3739,7 +3779,10 @@ description: Artifact commands pipe-flange-assembly.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true
+              "is_local": true,
+              "origin": {
+                "type": "local"
+              }
             },
             "rotate_angle_axis": null,
             "scale": null
@@ -3762,7 +3805,10 @@ description: Artifact commands pipe-flange-assembly.kcl
                 "z": 11.175999999999998
               },
               "set": false,
-              "is_local": false
+              "is_local": false,
+              "origin": {
+                "type": "global"
+              }
             },
             "rotate_rpy": null,
             "rotate_angle_axis": null,
@@ -3896,7 +3942,8 @@ description: Artifact commands pipe-flange-assembly.kcl
         "target": "[uuid]",
         "distance": 152.39999999999998,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -4024,7 +4071,8 @@ description: Artifact commands pipe-flange-assembly.kcl
         "target": "[uuid]",
         "distance": -152.39999999999998,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -4093,7 +4141,10 @@ description: Artifact commands pipe-flange-assembly.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true
+              "is_local": true,
+              "origin": {
+                "type": "local"
+              }
             },
             "rotate_angle_axis": null,
             "scale": null
@@ -4116,7 +4167,10 @@ description: Artifact commands pipe-flange-assembly.kcl
                 "z": -15.011399999999998
               },
               "set": false,
-              "is_local": false
+              "is_local": false,
+              "origin": {
+                "type": "global"
+              }
             },
             "rotate_rpy": null,
             "rotate_angle_axis": null,
@@ -4137,5 +4191,6 @@ description: Artifact commands pipe-flange-assembly.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

@@ -3,8 +3,8 @@
 
 use super::CompilationError;
 use crate::{
-    parsing::ast::types::{BinaryExpression, BinaryOperator, BinaryPart, Node},
     SourceRange,
+    parsing::ast::types::{BinaryExpression, BinaryOperator, BinaryPart, Node},
 };
 
 /// Parses a list of tokens (in infix order, i.e. as the user typed them)
@@ -127,11 +127,11 @@ impl From<BinaryOperator> for BinaryExpressionToken {
 mod tests {
     use super::*;
     use crate::{
+        ModuleId,
         parsing::{
             ast::types::{Literal, LiteralValue},
             token::NumericSuffix,
         },
-        ModuleId,
     };
 
     #[test]

@@ -4,26 +4,25 @@ use std::collections::HashMap;
 
 use anyhow::Result;
 use kcmc::{
-    each_cmd as mcmd,
+    ModelingCmd, each_cmd as mcmd,
     length_unit::LengthUnit,
     ok_response::OkModelingCmdResponse,
     output::ExtrusionFaceInfo,
     shared::{ExtrusionFaceCapType, Opposite},
     websocket::{ModelingCmdReq, OkWebSocketResponseData},
-    ModelingCmd,
 };
 use kittycad_modeling_cmds::{
     self as kcmc,
-    shared::{Angle, Point2d},
+    shared::{Angle, ExtrudeMethod, Point2d},
 };
 use uuid::Uuid;
 
-use super::{args::TyF64, utils::point_to_mm, DEFAULT_TOLERANCE_MM};
+use super::{DEFAULT_TOLERANCE_MM, args::TyF64, utils::point_to_mm};
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        types::RuntimeType, ArtifactId, ExecState, ExtrudeSurface, GeoMeta, KclValue, ModelingCmdMeta, Path, Sketch,
-        SketchSurface, Solid,
+        ArtifactId, ExecState, ExtrudeSurface, GeoMeta, KclValue, ModelingCmdMeta, Path, Sketch, SketchSurface, Solid,
+        types::RuntimeType,
     },
     parsing::ast::types::TagNode,
     std::Args,
@@ -42,6 +41,7 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     let twist_angle_step: Option<TyF64> = args.get_kw_arg_opt("twistAngleStep", &RuntimeType::degrees(), exec_state)?;
     let twist_center: Option<[TyF64; 2]> = args.get_kw_arg_opt("twistCenter", &RuntimeType::point2d(), exec_state)?;
     let tolerance: Option<TyF64> = args.get_kw_arg_opt("tolerance", &RuntimeType::length(), exec_state)?;
+    let method: Option<String> = args.get_kw_arg_opt("method", &RuntimeType::string(), exec_state)?;
 
     let result = inner_extrude(
         sketches,
@@ -54,6 +54,7 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         twist_angle_step,
         twist_center,
         tolerance,
+        method,
         exec_state,
         args,
     )
@@ -74,12 +75,25 @@ async fn inner_extrude(
     twist_angle_step: Option<TyF64>,
     twist_center: Option<[TyF64; 2]>,
     tolerance: Option<TyF64>,
+    method: Option<String>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Solid>, KclError> {
     // Extrude the element(s).
     let mut solids = Vec::new();
     let tolerance = LengthUnit(tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM));
+
+    let extrude_method = match method.as_deref() {
+        Some("new") => ExtrudeMethod::New,
+        Some("merge") => ExtrudeMethod::Merge,
+        None => ExtrudeMethod::default(),
+        Some(other) => {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                format!("Unknown merge method {other}, try using MERGE or NEW"),
+                vec![args.source_range],
+            )));
+        }
+    };
 
     if symmetric.unwrap_or(false) && bidirectional_length.is_some() {
         return Err(KclError::new_semantic(KclErrorDetails::new(
@@ -121,6 +135,7 @@ async fn inner_extrude(
                 distance: LengthUnit(length.to_mm()),
                 faces: Default::default(),
                 opposite: opposite.clone(),
+                extrude_method,
             }),
         };
         let cmds = sketch.build_sketch_mode_cmds(exec_state, ModelingCmdReq { cmd_id: id.into(), cmd });
@@ -138,6 +153,7 @@ async fn inner_extrude(
                     start: tag_start.as_ref(),
                     end: tag_end.as_ref(),
                 },
+                extrude_method,
                 exec_state,
                 &args,
                 None,
@@ -162,6 +178,7 @@ pub(crate) async fn do_post_extrude<'a>(
     length: TyF64,
     sectional: bool,
     named_cap_tags: &'a NamedCapTags<'a>,
+    extrude_method: ExtrudeMethod,
     exec_state: &mut ExecState,
     args: &Args,
     edge_id: Option<Uuid>,
@@ -195,7 +212,10 @@ pub(crate) async fn do_post_extrude<'a>(
 
     // If we were sketching on a face, we need the original face id.
     if let SketchSurface::Face(ref face) = sketch.on {
-        sketch.id = face.solid.sketch.id;
+        // If we are creating a new body we need to preserve its new id.
+        if extrude_method != ExtrudeMethod::New {
+            sketch.id = face.solid.sketch.id;
+        }
     }
 
     let solid3d_info = exec_state
@@ -252,6 +272,9 @@ pub(crate) async fn do_post_extrude<'a>(
                     Path::Arc { .. }
                     | Path::TangentialArc { .. }
                     | Path::TangentialArcTo { .. }
+                    // TODO: (bc) fix me
+                    | Path::Ellipse { .. }
+                    | Path::Conic {.. }
                     | Path::Circle { .. }
                     | Path::CircleThreePoint { .. } => {
                         let extrude_surface = ExtrudeSurface::ExtrudeArc(crate::execution::ExtrudeArc {

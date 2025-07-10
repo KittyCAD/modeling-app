@@ -90,10 +90,9 @@ pub use errors::{
     ReportWithOutputs,
 };
 pub use execution::{
-    bust_cache, clear_mem_cache,
+    ExecOutcome, ExecState, ExecutorContext, ExecutorSettings, MetaSettings, Point2d, bust_cache, clear_mem_cache,
     typed_path::TypedPath,
     types::{UnitAngle, UnitLen},
-    ExecOutcome, ExecState, ExecutorContext, ExecutorSettings, MetaSettings, Point2d,
 };
 pub use lsp::{
     copilot::Backend as CopilotLspBackend,
@@ -101,7 +100,7 @@ pub use lsp::{
 };
 pub use modules::ModuleId;
 pub use parsing::ast::types::{FormatOptions, NodePath, Step as NodePathStep};
-pub use settings::types::{project::ProjectConfiguration, Configuration, UnitLength};
+pub use settings::types::{Configuration, UnitLength, project::ProjectConfiguration};
 pub use source_range::SourceRange;
 #[cfg(not(target_arch = "wasm32"))]
 pub use unparser::{recast_dir, walk_dir};
@@ -109,12 +108,12 @@ pub use unparser::{recast_dir, walk_dir};
 // Rather than make executor public and make lots of it pub(crate), just re-export into a new module.
 // Ideally we wouldn't export these things at all, they should only be used for testing.
 pub mod exec {
-    pub use crate::execution::{
-        types::{NumericType, UnitAngle, UnitLen, UnitType},
-        DefaultPlanes, IdGenerator, KclValue, PlaneType, Sketch,
-    };
     #[cfg(feature = "artifact-graph")]
     pub use crate::execution::{ArtifactCommand, Operation};
+    pub use crate::execution::{
+        DefaultPlanes, IdGenerator, KclValue, PlaneType, Sketch,
+        types::{NumericType, UnitAngle, UnitLen, UnitType},
+    };
 }
 
 #[cfg(target_arch = "wasm32")]
@@ -136,12 +135,12 @@ pub mod native_engine {
 }
 
 pub mod std_utils {
-    pub use crate::std::utils::{get_tangential_arc_to_info, is_points_ccw_wasm, TangentialArcInfoInput};
+    pub use crate::std::utils::{TangentialArcInfoInput, get_tangential_arc_to_info, is_points_ccw_wasm};
 }
 
 pub mod pretty {
     pub use crate::{
-        fmt::{format_number_literal, human_display_number},
+        fmt::{format_number_literal, format_number_value, human_display_number},
         parsing::token::NumericSuffix,
     };
 }
@@ -160,7 +159,7 @@ lazy_static::lazy_static! {
         #[cfg(feature = "cli")]
         let named_extensions = kittycad::types::FileImportFormat::value_variants()
             .iter()
-            .map(|x| format!("{}", x))
+            .map(|x| format!("{x}"))
             .collect::<Vec<String>>();
         #[cfg(not(feature = "cli"))]
         let named_extensions = vec![]; // We don't really need this outside of the CLI.
@@ -276,41 +275,25 @@ impl Program {
 #[inline]
 fn try_f64_to_usize(f: f64) -> Option<usize> {
     let i = f as usize;
-    if i as f64 == f {
-        Some(i)
-    } else {
-        None
-    }
+    if i as f64 == f { Some(i) } else { None }
 }
 
 #[inline]
 fn try_f64_to_u32(f: f64) -> Option<u32> {
     let i = f as u32;
-    if i as f64 == f {
-        Some(i)
-    } else {
-        None
-    }
+    if i as f64 == f { Some(i) } else { None }
 }
 
 #[inline]
 fn try_f64_to_u64(f: f64) -> Option<u64> {
     let i = f as u64;
-    if i as f64 == f {
-        Some(i)
-    } else {
-        None
-    }
+    if i as f64 == f { Some(i) } else { None }
 }
 
 #[inline]
 fn try_f64_to_i64(f: f64) -> Option<i64> {
     let i = f as i64;
-    if i as f64 == f {
-        Some(i)
-    } else {
-        None
-    }
+    if i as f64 == f { Some(i) } else { None }
 }
 
 /// Get the version of the KCL library.

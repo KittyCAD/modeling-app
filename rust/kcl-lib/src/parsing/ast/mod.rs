@@ -2,8 +2,8 @@ pub(crate) mod digest;
 pub mod types;
 
 use crate::{
-    parsing::ast::types::{BinaryPart, BodyItem, Expr, LiteralIdentifier},
     ModuleId,
+    parsing::ast::types::{BinaryPart, BodyItem, Expr, LiteralIdentifier},
 };
 
 impl BodyItem {
@@ -51,6 +51,9 @@ impl BinaryPart {
             BinaryPart::CallExpressionKw(call_expression) => call_expression.module_id,
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.module_id,
             BinaryPart::MemberExpression(member_expression) => member_expression.module_id,
+            BinaryPart::ArrayExpression(e) => e.module_id,
+            BinaryPart::ArrayRangeExpression(e) => e.module_id,
+            BinaryPart::ObjectExpression(e) => e.module_id,
             BinaryPart::IfExpression(e) => e.module_id,
             BinaryPart::AscribedExpression(e) => e.module_id,
         }

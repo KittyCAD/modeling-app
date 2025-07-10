@@ -47,7 +47,7 @@ impl EngineConnection {
 
     fn handle_command(&self, cmd_id: &ModelingCmdId, cmd: &kcmc::ModelingCmd) -> (String, OkModelingCmdResponse) {
         let cpp_id = id_to_cpp(cmd_id);
-        let cmd_id = format!("{}", cmd_id);
+        let cmd_id = format!("{cmd_id}");
         let mut this_response = OkModelingCmdResponse::Empty {};
 
         let new_code = match cmd {
@@ -86,7 +86,7 @@ impl EngineConnection {
                 size,
                 ..
             }) => {
-                let plane_id = format!("plane_{}", cpp_id);
+                let plane_id = format!("plane_{cpp_id}");
                 format!(
                     r#"
                     auto {plane_id} = make_shared<Object>("plane", glm::dvec3 {{ 0, 0, 0 }});
@@ -108,8 +108,8 @@ impl EngineConnection {
                 )
             }
             kcmc::ModelingCmd::StartPath(kcmc::StartPath { .. }) => {
-                let sketch_id = format!("sketch_{}", cpp_id);
-                let path_id = format!("path_{}", cpp_id);
+                let sketch_id = format!("sketch_{cpp_id}");
+                let path_id = format!("path_{cpp_id}");
                 format!(
                     r#"
                     auto {sketch_id} = make_shared<Object>("sketch", glm::dvec3 {{ 0, 0, 0 }});
@@ -178,7 +178,7 @@ impl EngineConnection {
                     )
                 }
                 _ => {
-                    format!("//{:?}", cmd)
+                    format!("//{cmd:?}")
                 }
             },
             kcmc::ModelingCmd::ClosePath(kcmc::ClosePath { path_id }) => {
@@ -196,6 +196,7 @@ impl EngineConnection {
                 target,
                 faces: _, // Engine team: start using this once the frontend and engine both use it.
                 opposite: _,
+                extrude_method: _,
             }) => {
                 format!(
                     r#"
@@ -240,9 +241,8 @@ impl EngineConnection {
             }) => {
                 format!(
                     r#"
-                    //face info get {} {}
-                "#,
-                    object_id, edge_id
+                    //face info get {object_id} {edge_id}
+                "#
                 )
             }
             kcmc::ModelingCmd::EntityCircularPattern(kcmc::EntityCircularPattern {
@@ -313,11 +313,11 @@ impl EngineConnection {
                 // base_code.push_str(&repl_uuid_fix_code);
 
                 // base_code
-                format!("//{:?}", cmd)
+                format!("//{cmd:?}")
             }
             _ => {
                 //helps us follow along with the currently unhandled engine commands
-                format!("//{:?}", cmd)
+                format!("//{cmd:?}")
             }
         };
 
@@ -330,7 +330,7 @@ fn id_to_cpp(id: &ModelingCmdId) -> String {
 }
 
 fn uuid_to_cpp(id: &uuid::Uuid) -> String {
-    let str = format!("{}", id);
+    let str = format!("{id}");
     str::replace(&str, "-", "_")
 }
 
