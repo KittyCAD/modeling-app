@@ -24,9 +24,14 @@ export const updateEnvironment = (environment: EnvironmentName) => {
   console.log('updating environment', environment)
 }
 
-/** Get the runtime environment */
-export const getEnvironment = () => {
+// Do not export the entire Environment! Use env()
+const getEnvironmentFromThisFile = () => {
   return ENVIRONMENT
+}
+
+/** Get the runtime environment */
+export const getEnvironmentName = () => {
+  return ENVIRONMENT?.name || null
 }
 
 export const viteEnv = () => {
@@ -106,8 +111,8 @@ export default (): EnvironmentVariables => {
    * populated during the sign in workflow.
    * A built binary will allow the user to sign into different environments on the desktop
    */
-  const environment = getEnvironment()
-  if (isDesktop() && environment) {
+  const environment = getEnvironmentFromThisFile()
+  if (PROD && isDesktop() && environment) {
     API_URL = environment.API_URL
     SITE_URL = environment.SITE_URL
     WEBSOCKET_URL = environment.WEBSOCKET_URL

@@ -14,8 +14,7 @@ import { PATHS } from '@src/lib/paths'
 import { authActor } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
-import { getEnvironment } from '@src/env'
-import { shouldRender } from '@src/components/environment/Environment'
+import { environmentNameDisplay, shouldRender } from '@src/components/environment/Environment'
 
 type User = Models['User_type']
 
@@ -27,7 +26,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
   const [imageLoadFailed, setImageLoadFailed] = useState(false)
   const navigate = useNavigate()
   const send = authActor.send
-  const environment = getEnvironment()
+  const environmentName = environmentNameDisplay()
 
   // We filter this memoized list so that no orphan "break" elements are rendered.
   const userMenuItems = useMemo<(ActionButtonProps | 'break')[]>(
@@ -151,7 +150,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
           children: (
             <span>
               Sign out{' '}
-              {shouldRender(environment) ? `of ${environment?.name}` : ``}
+              {shouldRender(environmentName) ? `of ${environmentName}` : ``}
             </span>
           ),
           onClick: () => send({ type: 'Log out' }),

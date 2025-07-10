@@ -16,7 +16,7 @@ import { toSync } from '@src/lib/utils'
 import { authActor, useSettings } from '@src/lib/singletons'
 import { APP_VERSION, generateSignInUrl } from '@src/routes/utils'
 import { withAPIBaseURL, withSiteBaseURL } from '@src/lib/withBaseURL'
-import { getEnvironment, updateEnvironment } from '@src/env'
+import { updateEnvironment } from '@src/env'
 import env from '@src/env'
 import { writeEnvironmentFile } from '@src/lib/desktop'
 import { AdvancedSignInOptions } from '@src/routes/AdvancedSignInOptions'
@@ -58,7 +58,7 @@ const SignIn = () => {
 
   const signInDesktop = async (environmentName: EnvironmentName) => {
     updateEnvironment(environmentName)
-    const environment = getEnvironment()
+    const environment = env()
     if (!environment) {
       console.error('Unable to login, failed to fetch environment.')
       toast.error('Unable to login, failed to fetch environment.')
@@ -157,10 +157,10 @@ const SignIn = () => {
                       Sign in to get started
                       <CustomIcon name="arrowRight" className="w-6 h-6" />
                     </button>
-                    <AdvancedSignInOptions
+                    {env().PROD && <AdvancedSignInOptions
                       signInDesktopDevelopment={signInDesktopDevelopment}
                       signInDesktopProduction={signInDesktopProduction}
-                    />
+                      />}
                   </>
                 ) : (
                   <>

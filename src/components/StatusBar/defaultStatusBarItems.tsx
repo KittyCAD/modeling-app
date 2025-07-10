@@ -17,9 +17,10 @@ import { desktopAppPitchMessage } from '@src/components/DownloadAppToast'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import {
   EnvironmentChip,
-  EnvironmentDescription,
+    EnvironmentDescription,
+    environmentNameDisplay,
 } from '@src/components/environment/Environment'
-import { getEnvironment } from '@src/env'
+import { getEnvironmentName } from '@src/env'
 
 export const defaultGlobalStatusBarItems = ({
   location,
@@ -111,7 +112,7 @@ function BillingStatusBarItem() {
 }
 
 function EnvironmentStatusBarItem() {
-  const environment = getEnvironment()
+  const environmentName = environmentNameDisplay()
   return (
     <Popover className="relative flex items-stretch">
       <Popover.Button
@@ -125,7 +126,7 @@ function EnvironmentStatusBarItem() {
           hoverOnly
           wrapperClassName="ui-open:!hidden"
         >
-          You are connected to the {environment?.name} environment
+          You are connected to the {environmentName} environment
         </Tooltip>
       </Popover.Button>
       <Popover.Panel className="absolute left-0 bottom-full mb-1 w-64 flex flex-col gap-1 align-stretch rounded-lg shadow-lg text-sm">
