@@ -1113,7 +1113,12 @@ export function getVariableExprsFromSelection(
       continue
     }
 
-    // TODO: handle imported geometry case
+    // import case
+    const importNodeAndAlias = findImportNodeAndAlias(ast, s.codeRef.pathToNode)
+    if (importNodeAndAlias) {
+      exprs.push(createLocalName(importNodeAndAlias.alias))
+      continue
+    }
 
     // No variable case
     exprs.push(createPipeSubstitution())
@@ -1127,7 +1132,7 @@ export function getVariableExprsFromSelection(
   return { exprs, pathIfPipe }
 }
 
-// Go from the sketches argument in a KCL sweep call declaration
+// Go from the sketches argument in a KCL call declaration
 // to a list of graph selections, useful for edit flows.
 // Somewhat of an inverse of getVariableExprsFromSelection.
 export function retrieveSelectionsFromOpArg(
@@ -1136,6 +1141,7 @@ export function retrieveSelectionsFromOpArg(
 ): Error | Selections {
   const error = new Error("Couldn't retrieve sketches from operation")
   let artifactIds: string[] = []
+  console.log('opArg.value.type', opArg.value.type)
   if (opArg.value.type === 'Solid' || opArg.value.type === 'Sketch') {
     artifactIds = [opArg.value.value.artifactId]
   } else if (opArg.value.type === 'ImportedGeometry') {
@@ -1149,6 +1155,7 @@ export function retrieveSelectionsFromOpArg(
   }
 
   const graphSelections: Selection[] = []
+  console.log('artifactIds', artifactIds)
   for (const artifactId of artifactIds) {
     const artifact = artifactGraph.get(artifactId)
     if (!artifact) {
@@ -1166,6 +1173,7 @@ export function retrieveSelectionsFromOpArg(
     })
   }
 
+  console.log('graphSelections', graphSelections)
   if (graphSelections.length === 0) {
     return error
   }

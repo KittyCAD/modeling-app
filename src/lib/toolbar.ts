@@ -444,6 +444,24 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             ],
           },
           {
+            id: 'scale',
+            onClick: () =>
+              commandBarActor.send({
+                type: 'Find and select command',
+                data: { name: 'Scale', groupId: 'modeling' },
+              }),
+            icon: 'scale',
+            status: 'available',
+            title: 'Scale',
+            description: 'Apply scaling to a solid or sketch.',
+            links: [
+              {
+                label: 'API docs',
+                url: 'https://zoo.dev/docs/kcl-std/functions/std-transform-scale',
+              },
+            ],
+          },
+          {
             id: 'clone',
             onClick: () =>
               commandBarActor.send({
@@ -458,6 +476,25 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
               {
                 label: 'API docs',
                 url: withSiteBaseURL('/docs/kcl-std/functions/std-clone'),
+              },
+            ],
+          },
+          {
+            id: 'appearance',
+            onClick: () =>
+              commandBarActor.send({
+                type: 'Find and select command',
+                data: { name: 'Appearance', groupId: 'modeling' },
+              }),
+            status: 'available',
+            title: 'Appearance',
+            icon: 'text',
+            description:
+              'Set the appearance of a solid. This only works on solids, not sketches or individual paths.',
+            links: [
+              {
+                label: 'API docs',
+                url: withSiteBaseURL('/docs/kcl-std/functions/std-appearance'),
               },
             ],
           },
