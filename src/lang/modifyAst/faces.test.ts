@@ -133,6 +133,31 @@ extrude001 = extrude(profile001, length = 10)`
     await enginelessExecutor(ast)
   })
 
+  it('should add a shell call on variable-less extrude', async () => {
+    // Note: this was code from https://github.com/KittyCAD/modeling-app/issues/7640
+    const code = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 2358.24])
+  |> line(end = [1197.84, -393.04])
+  |> line(end = [804.79, -1300.78])
+  |> line(end = [505.34, -2498.61])
+  |> line(end = [-973.24, -1244.62])
+  |> line(endAbsolute = [0, -3434.42])
+p = mirror2d([profile001], axis = Y)
+extrude(p, length = 1000)`
+    const { artifactGraph, ast, solids } = await getAstAndSolidSelections(code)
+    const faces = getCapFromCylinder(artifactGraph)
+    const thickness = (await stringToKclExpression('1')) as KclCommandValue
+    const result = addShell({ ast, artifactGraph, solids, faces, thickness })
+    if (err(result)) {
+      throw result
+    }
+
+    const newCode = recast(result.modifiedAst)
+    expect(newCode).toContain(`${code}
+  |> shell(faces = END, thickness = 1)`)
+    await enginelessExecutor(ast)
+  })
+
   it('should edit a basic shell call on cylinder end cap with new thickness', async () => {
     const code = `${cylinder}
 shell001 = shell(extrude001, faces = END, thickness = 1)
