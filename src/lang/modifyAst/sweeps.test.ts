@@ -158,6 +158,19 @@ extrude001 = extrude(profile001, length = 1, symmetric = true)`
 extrude001 = extrude(profile001, length = 2)`)
     await runNewAstAndCheckForSweep(result.modifiedAst)
   })
+
+  it('should add an extrude call with method NEW', async () => {
+    const { ast, sketches } = await getAstAndSketchSelections(circleProfileCode)
+    const length = await getKclCommandValue('1')
+    const result = addExtrude({ ast, sketches, length, method: 'NEW' })
+    if (err(result)) throw result
+    const newCode = recast(result.modifiedAst)
+    expect(newCode).toContain(circleProfileCode)
+    expect(newCode).toContain(
+      `extrude001 = extrude(profile001, length = 1, method = NEW)`
+    )
+    await runNewAstAndCheckForSweep(result.modifiedAst)
+  })
 })
 
 describe('Testing addSweep', () => {

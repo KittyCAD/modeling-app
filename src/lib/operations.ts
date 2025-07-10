@@ -186,6 +186,15 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({ operation }) => {
     twistAngle = result
   }
 
+  // method argument from a string to boolean
+  let method: string | undefined
+  if ('method' in operation.labeledArgs && operation.labeledArgs.method) {
+    method = codeManager.code.slice(
+      operation.labeledArgs.method.sourceRange[0],
+      operation.labeledArgs.method.sourceRange[1]
+    )
+  }
+
   // 3. Assemble the default argument values for the command,
   // with `nodeToEdit` set, which will let the actor know
   // to edit the node that corresponds to the StdLibCall.
@@ -195,6 +204,7 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({ operation }) => {
     symmetric,
     bidirectionalLength,
     twistAngle,
+    method,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
   return {
