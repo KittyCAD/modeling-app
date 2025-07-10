@@ -359,7 +359,8 @@ description: Artifact commands cold-plate.kcl
         "target": "[uuid]",
         "distance": 254.0,
         "faces": null,
-        "opposite": "Symmetric"
+        "opposite": "Symmetric",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1071,7 +1072,8 @@ description: Artifact commands cold-plate.kcl
         "target": "[uuid]",
         "distance": 254.0,
         "faces": null,
-        "opposite": "Symmetric"
+        "opposite": "Symmetric",
+        "extrude_method": "merge"
       }
     },
     {

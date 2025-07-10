@@ -154,6 +154,7 @@ async fn fix_tags_and_references(
                     start: start_tag.as_ref(),
                     end: end_tag.as_ref(),
                 },
+                kittycad_modeling_cmds::shared::ExtrudeMethod::Merge,
                 exec_state,
                 args,
                 None,

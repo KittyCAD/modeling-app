@@ -331,7 +331,8 @@ description: Artifact commands countersunk-plate.kcl
         "target": "[uuid]",
         "distance": 9.524999999999999,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -459,7 +460,8 @@ description: Artifact commands countersunk-plate.kcl
         "target": "[uuid]",
         "distance": -9.524999999999999,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -604,7 +606,8 @@ description: Artifact commands countersunk-plate.kcl
         "target": "[uuid]",
         "distance": -9.524999999999999,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {

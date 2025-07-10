@@ -174,7 +174,8 @@ description: Artifact commands multi-axis-robot.kcl
         "target": "[uuid]",
         "distance": 12.7,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -410,7 +411,8 @@ description: Artifact commands multi-axis-robot.kcl
         "target": "[uuid]",
         "distance": 76.19999999999999,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -565,7 +567,8 @@ description: Artifact commands multi-axis-robot.kcl
         "target": "[uuid]",
         "distance": 25.4,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -714,7 +717,8 @@ description: Artifact commands multi-axis-robot.kcl
         "target": "[uuid]",
         "distance": -12.7,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -770,7 +774,8 @@ description: Artifact commands multi-axis-robot.kcl
         "target": "[uuid]",
         "distance": -12.7,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -826,7 +831,8 @@ description: Artifact commands multi-axis-robot.kcl
         "target": "[uuid]",
         "distance": -12.7,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -882,7 +888,8 @@ description: Artifact commands multi-axis-robot.kcl
         "target": "[uuid]",
         "distance": -12.7,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1031,7 +1038,8 @@ description: Artifact commands multi-axis-robot.kcl
         "target": "[uuid]",
         "distance": -12.7,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1087,7 +1095,8 @@ description: Artifact commands multi-axis-robot.kcl
         "target": "[uuid]",
         "distance": -12.7,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1143,7 +1152,8 @@ description: Artifact commands multi-axis-robot.kcl
         "target": "[uuid]",
         "distance": -12.7,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1199,7 +1209,8 @@ description: Artifact commands multi-axis-robot.kcl
         "target": "[uuid]",
         "distance": -12.7,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1498,7 +1509,8 @@ description: Artifact commands multi-axis-robot.kcl
         "target": "[uuid]",
         "distance": -63.5,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1626,7 +1638,8 @@ description: Artifact commands multi-axis-robot.kcl
         "target": "[uuid]",
         "distance": 3.8099999999999996,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1781,7 +1794,8 @@ description: Artifact commands multi-axis-robot.kcl
         "target": "[uuid]",
         "distance": 25.4,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1957,7 +1971,8 @@ description: Artifact commands multi-axis-robot.kcl
         "target": "[uuid]",
         "distance": 3.8099999999999996,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2013,7 +2028,8 @@ description: Artifact commands multi-axis-robot.kcl
         "target": "[uuid]",
         "distance": 3.8099999999999996,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2069,7 +2085,8 @@ description: Artifact commands multi-axis-robot.kcl
         "target": "[uuid]",
         "distance": 3.8099999999999996,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2125,7 +2142,8 @@ description: Artifact commands multi-axis-robot.kcl
         "target": "[uuid]",
         "distance": 3.8099999999999996,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2181,7 +2199,8 @@ description: Artifact commands multi-axis-robot.kcl
         "target": "[uuid]",
         "distance": 3.8099999999999996,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2237,7 +2256,8 @@ description: Artifact commands multi-axis-robot.kcl
         "target": "[uuid]",
         "distance": 3.8099999999999996,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2293,7 +2313,8 @@ description: Artifact commands multi-axis-robot.kcl
         "target": "[uuid]",
         "distance": 3.8099999999999996,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2349,7 +2370,8 @@ description: Artifact commands multi-axis-robot.kcl
         "target": "[uuid]",
         "distance": 3.8099999999999996,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2498,7 +2520,8 @@ description: Artifact commands multi-axis-robot.kcl
         "target": "[uuid]",
         "distance": 3.8099999999999996,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2554,7 +2577,8 @@ description: Artifact commands multi-axis-robot.kcl
         "target": "[uuid]",
         "distance": 3.8099999999999996,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2610,7 +2634,8 @@ description: Artifact commands multi-axis-robot.kcl
         "target": "[uuid]",
         "distance": 3.8099999999999996,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2666,7 +2691,8 @@ description: Artifact commands multi-axis-robot.kcl
         "target": "[uuid]",
         "distance": 3.8099999999999996,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2794,7 +2820,8 @@ description: Artifact commands multi-axis-robot.kcl
         "target": "[uuid]",
         "distance": 25.4,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -3042,7 +3069,8 @@ description: Artifact commands multi-axis-robot.kcl
         "target": "[uuid]",
         "distance": 63.5,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -3170,7 +3198,8 @@ description: Artifact commands multi-axis-robot.kcl
         "target": "[uuid]",
         "distance": 3.8099999999999996,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -3346,7 +3375,8 @@ description: Artifact commands multi-axis-robot.kcl
         "target": "[uuid]",
         "distance": 3.8099999999999996,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -3402,7 +3432,8 @@ description: Artifact commands multi-axis-robot.kcl
         "target": "[uuid]",
         "distance": 3.8099999999999996,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -3458,7 +3489,8 @@ description: Artifact commands multi-axis-robot.kcl
         "target": "[uuid]",
         "distance": 3.8099999999999996,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -3514,7 +3546,8 @@ description: Artifact commands multi-axis-robot.kcl
         "target": "[uuid]",
         "distance": 3.8099999999999996,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -3570,7 +3603,8 @@ description: Artifact commands multi-axis-robot.kcl
         "target": "[uuid]",
         "distance": 3.8099999999999996,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -3626,7 +3660,8 @@ description: Artifact commands multi-axis-robot.kcl
         "target": "[uuid]",
         "distance": 3.8099999999999996,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -3682,7 +3717,8 @@ description: Artifact commands multi-axis-robot.kcl
         "target": "[uuid]",
         "distance": 3.8099999999999996,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -3738,7 +3774,8 @@ description: Artifact commands multi-axis-robot.kcl
         "target": "[uuid]",
         "distance": 3.8099999999999996,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -3866,7 +3903,8 @@ description: Artifact commands multi-axis-robot.kcl
         "target": "[uuid]",
         "distance": -12.7,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -3994,7 +4032,8 @@ description: Artifact commands multi-axis-robot.kcl
         "target": "[uuid]",
         "distance": -12.7,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -4122,7 +4161,8 @@ description: Artifact commands multi-axis-robot.kcl
         "target": "[uuid]",
         "distance": -0.254,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -4352,7 +4392,8 @@ description: Artifact commands multi-axis-robot.kcl
         "target": "[uuid]",
         "distance": -38.099999999999994,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -4582,7 +4623,8 @@ description: Artifact commands multi-axis-robot.kcl
         "target": "[uuid]",
         "distance": -38.099999999999994,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -4771,7 +4813,8 @@ description: Artifact commands multi-axis-robot.kcl
         "target": "[uuid]",
         "distance": 35.559999999999995,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -5036,7 +5079,8 @@ description: Artifact commands multi-axis-robot.kcl
         "target": "[uuid]",
         "distance": 25.4,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -5164,7 +5208,8 @@ description: Artifact commands multi-axis-robot.kcl
         "target": "[uuid]",
         "distance": 38.099999999999994,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -5340,7 +5385,8 @@ description: Artifact commands multi-axis-robot.kcl
         "target": "[uuid]",
         "distance": 5.08,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -5396,7 +5442,8 @@ description: Artifact commands multi-axis-robot.kcl
         "target": "[uuid]",
         "distance": 5.08,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -5452,7 +5499,8 @@ description: Artifact commands multi-axis-robot.kcl
         "target": "[uuid]",
         "distance": 5.08,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -5508,7 +5556,8 @@ description: Artifact commands multi-axis-robot.kcl
         "target": "[uuid]",
         "distance": 5.08,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -5636,7 +5685,8 @@ description: Artifact commands multi-axis-robot.kcl
         "target": "[uuid]",
         "distance": 3.8099999999999996,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -5850,7 +5900,8 @@ description: Artifact commands multi-axis-robot.kcl
         "target": "[uuid]",
         "distance": -25.4,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {

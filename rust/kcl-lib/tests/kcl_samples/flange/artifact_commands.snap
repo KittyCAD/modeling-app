@@ -323,7 +323,8 @@ description: Artifact commands flange.kcl
         "target": "[uuid]",
         "distance": 15.875,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -451,7 +452,8 @@ description: Artifact commands flange.kcl
         "target": "[uuid]",
         "distance": 3.251199999999997,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -579,7 +581,8 @@ description: Artifact commands flange.kcl
         "target": "[uuid]",
         "distance": 1.5239999999999998,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -707,7 +710,8 @@ description: Artifact commands flange.kcl
         "target": "[uuid]",
         "distance": -20.650199999999998,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
