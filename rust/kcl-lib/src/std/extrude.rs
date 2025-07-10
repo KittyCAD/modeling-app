@@ -255,32 +255,87 @@ pub(crate) async fn do_post_extrude<'a>(
         }
     }
 
+    assert_eq!(face_infos.len(), 8);
     let Faces {
         sides: face_id_map,
         start_cap_id,
         end_cap_id,
     } = analyze_faces(exec_state, args, face_infos).await;
+    assert_eq!(face_id_map.len(), 6);
+    println!("ADAM: Curve -> Face ID map from engine");
+    let outer_paths: indexmap::IndexSet<_> = sketch.paths.iter().map(|p| p.get_id()).collect();
+    let inner_paths: indexmap::IndexSet<_> = sketch.inner_paths.iter().map(|p| p.get_id()).collect();
+    for (curve_id, face_id) in &face_id_map {
+        let note = if outer_paths.contains(curve_id) {
+            "(outer)"
+        } else if inner_paths.contains(curve_id) {
+            "(inner)"
+        } else {
+            ""
+        };
+        println!("\t{curve_id} -> {face_id:?} {note}");
+    }
+    println!("ADAM: client knows about {} outer paths", sketch.paths.len());
+    for p in &sketch.paths {
+        let id = p.get_id();
+        if let Some(tag) = p.get_tag() {
+            println!("\t{id} ({tag})");
+        } else {
+            println!("\t{id}");
+        }
+    }
+    println!("ADAM: client knows about {} inner paths", sketch.inner_paths.len());
+    for p in &sketch.inner_paths {
+        let id = p.get_id();
+        if let Some(tag) = p.get_tag() {
+            println!("\t{id} ({tag})");
+        } else {
+            println!("\t{id}");
+        }
+    }
     // Iterate over the sketch.value array and add face_id to GeoMeta
     let no_engine_commands = args.ctx.no_engine_commands().await;
     let mut new_value: Vec<ExtrudeSurface> = Vec::with_capacity(sketch.paths.len() + sketch.inner_paths.len() + 2);
+    println!("ADAM: Outer");
     let outer_surfaces = sketch.paths.iter().flat_map(|path| {
         if let Some(Some(actual_face_id)) = face_id_map.get(&path.get_base().geo_meta.id) {
+            if let Some(tag) = path.get_tag() {
+                println!("\tADAM: engine reported this path, tag = {tag}");
+            } else {
+                println!("\tADAM: engine reported this path");
+            }
             surface_of(path, *actual_face_id)
         } else if no_engine_commands {
             // Only pre-populate the extrude surface if we are in mock mode.
             fake_extrude_surface(exec_state, path)
         } else {
+            if let Some(tag) = path.get_tag() {
+                println!("\tADAM: engine didn't report this path, tag = {tag}");
+            } else {
+                println!("\tADAM: engine didn't report this path");
+            }
             None
         }
     });
     new_value.extend(outer_surfaces);
+    println!("ADAM: Inner");
     let inner_surfaces = sketch.inner_paths.iter().flat_map(|path| {
         if let Some(Some(actual_face_id)) = face_id_map.get(&path.get_base().geo_meta.id) {
+            if let Some(tag) = path.get_tag() {
+                println!("\tADAM: engine reported this path, tag = {tag}");
+            } else {
+                println!("\tADAM: engine reported this path");
+            }
             surface_of(path, *actual_face_id)
         } else if no_engine_commands {
             // Only pre-populate the extrude surface if we are in mock mode.
             fake_extrude_surface(exec_state, path)
         } else {
+            if let Some(tag) = path.get_tag() {
+                println!("\tADAM: engine didn't report this path, tag = {tag}");
+            } else {
+                println!("\tADAM: engine didn't report this path");
+            }
             None
         }
     });
