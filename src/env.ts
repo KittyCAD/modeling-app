@@ -2,6 +2,12 @@ import type { Environment, EnvironmentName } from '@src/lib/constants'
 import { SUPPORTED_ENVIRONMENTS } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 
+type EnvironmentVariableSources = {
+  readonly VITE_KITTYCAD_API_BASE_URL: string | undefined
+  readonly VITE_KITTYCAD_API_WEBSOCKET_URL: string | undefined
+  readonly VITE_KITTYCAD_SITE_BASE_URL: string | undefined
+}
+
 type EnvironmentVariables = {
   readonly NODE_ENV: string | undefined
   readonly VITE_KITTYCAD_API_BASE_URL: string | undefined
@@ -13,6 +19,7 @@ type EnvironmentVariables = {
   readonly TEST: string | undefined
   readonly DEV: string | undefined
   readonly CI: string | undefined
+  readonly SOURCES: EnvironmentVariableSources
 }
 
 /** Store the environment in memory to be accessed during runtime */
@@ -106,6 +113,18 @@ export default (): EnvironmentVariables => {
   let SITE_URL = env.VITE_KITTYCAD_SITE_BASE_URL
   let WEBSOCKET_URL = env.VITE_KITTYCAD_API_WEBSOCKET_URL
 
+
+  const viteSource = '.env.development(.local)'
+  const supportedEnvironmentSource = 'Supported Environment configuration'
+  /**
+   * Initialize sources
+   */
+  let sources: EnvironmentVariableSources = {
+    VITE_KITTYCAD_API_BASE_URL: viteSource,
+    VITE_KITTYCAD_SITE_BASE_URL: viteSource,
+    VITE_KITTYCAD_API_WEBSOCKET_URL: viteSource
+  }
+
   /**
    * If you are desktop, see if you have any runtime environment which can be read from disk and
    * populated during the sign in workflow.
@@ -116,6 +135,10 @@ export default (): EnvironmentVariables => {
     API_URL = environment.API_URL
     SITE_URL = environment.SITE_URL
     WEBSOCKET_URL = environment.WEBSOCKET_URL
+
+    sources = {VITE_KITTYCAD_API_BASE_URL : supportedEnvironmentSource,
+               VITE_KITTYCAD_SITE_BASE_URL : supportedEnvironmentSource,
+               VITE_KITTYCAD_API_WEBSOCKET_URL : supportedEnvironmentSource}
   }
 
   const environmentVariables: EnvironmentVariables = {
@@ -131,6 +154,7 @@ export default (): EnvironmentVariables => {
     TEST: (env.TEST as string) || undefined,
     DEV: DEV || undefined,
     CI: (env.CI as string) || undefined,
+    SOURCES: sources
   }
 
   return environmentVariables

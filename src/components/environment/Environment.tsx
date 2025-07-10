@@ -51,14 +51,17 @@ export function EnvironmentDescription() {
           <li className="flex flex-col px-2 py-4 gap-1 last:mb-0 ">
             <p className="font-bold">API</p>{' '}
             <p>{env().VITE_KITTYCAD_API_BASE_URL}</p>
+            <p className="py-0.5 px-1.5 rounded bg-primary/10 dark:bg-chalkboard-80 font-mono">{env().SOURCES.VITE_KITTYCAD_API_BASE_URL}</p>
           </li>
           <li className="flex flex-col px-2 py-4 gap-1 last:mb-0 ">
             <p className="font-bold">Site</p>{' '}
             <p>{env().VITE_KITTYCAD_SITE_BASE_URL}</p>
+            <p className="py-0.5 px-1.5 rounded bg-primary/10 dark:bg-chalkboard-80 font-mono">{env().SOURCES.VITE_KITTYCAD_SITE_BASE_URL}</p>
           </li>
           <li className="flex flex-col px-2 py-4 gap-1 last:mb-0 ">
             <p className="font-bold">Websocket</p>{' '}
             <p>{env().VITE_KITTYCAD_API_WEBSOCKET_URL}</p>
+            <p className="py-0.5 px-1.5 rounded bg-primary/10 dark:bg-chalkboard-80 font-mono">{env().SOURCES.VITE_KITTYCAD_API_WEBSOCKET_URL}</p>
           </li>
         </ul>
       </div>
