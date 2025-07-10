@@ -113,16 +113,16 @@ export default (): EnvironmentVariables => {
   let SITE_URL = env.VITE_KITTYCAD_SITE_BASE_URL
   let WEBSOCKET_URL = env.VITE_KITTYCAD_API_WEBSOCKET_URL
 
-
   const viteSource = '.env.development(.local)'
   const supportedEnvironmentSource = 'Supported Environment configuration'
   /**
    * Initialize sources
+   * TODO: If you package for development environment it will read .env instead of vite from packaged binary?
    */
   let sources: EnvironmentVariableSources = {
     VITE_KITTYCAD_API_BASE_URL: viteSource,
     VITE_KITTYCAD_SITE_BASE_URL: viteSource,
-    VITE_KITTYCAD_API_WEBSOCKET_URL: viteSource
+    VITE_KITTYCAD_API_WEBSOCKET_URL: viteSource,
   }
 
   /**
@@ -136,9 +136,11 @@ export default (): EnvironmentVariables => {
     SITE_URL = environment.SITE_URL
     WEBSOCKET_URL = environment.WEBSOCKET_URL
 
-    sources = {VITE_KITTYCAD_API_BASE_URL : supportedEnvironmentSource,
-               VITE_KITTYCAD_SITE_BASE_URL : supportedEnvironmentSource,
-               VITE_KITTYCAD_API_WEBSOCKET_URL : supportedEnvironmentSource}
+    sources = {
+      VITE_KITTYCAD_API_BASE_URL: supportedEnvironmentSource,
+      VITE_KITTYCAD_SITE_BASE_URL: supportedEnvironmentSource,
+      VITE_KITTYCAD_API_WEBSOCKET_URL: supportedEnvironmentSource,
+    }
   }
 
   const environmentVariables: EnvironmentVariables = {
@@ -154,7 +156,7 @@ export default (): EnvironmentVariables => {
     TEST: (env.TEST as string) || undefined,
     DEV: DEV || undefined,
     CI: (env.CI as string) || undefined,
-    SOURCES: sources
+    SOURCES: sources,
   }
 
   return environmentVariables
