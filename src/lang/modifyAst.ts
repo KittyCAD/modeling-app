@@ -47,6 +47,7 @@ import type {
   ArrayExpression,
   CallExpressionKw,
   Expr,
+  ExpressionStatement,
   Literal,
   PathToNode,
   PipeExpression,
@@ -1217,7 +1218,28 @@ export function setCallInAst(
       if (err(pipe)) {
         return pipe
       }
-      pipe.node.body.push(call)
+
+      if (pipe.node.type === 'PipeExpression') {
+        pipe.node.body.push(call)
+      } else if (pipe.node.type === 'CallExpressionKw') {
+        const expression = getNodeFromPath<ExpressionStatement>(
+          ast,
+          pathIfPipe,
+          'ExpressionStatement'
+        )
+        if (err(expression) || expression.node.type !== 'ExpressionStatement') {
+          return new Error('Could not retrieve ExpressionStatement')
+        }
+
+        expression.node.expression = createPipeExpression([
+          expression.node.expression,
+          call,
+        ])
+      } else {
+        return new Error(
+          'Expected pipeIfPipe to be a PipeExpression or CallExpressionKw'
+        )
+      }
       pathToNode = pathIfPipe
     } else {
       const name = findUniqueName(ast, call.callee.name.name)

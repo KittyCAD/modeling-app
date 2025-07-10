@@ -1088,7 +1088,7 @@ export function getVariableExprsFromSelection(
       variable = directLookup
     }
 
-    if (variable?.node.declaration?.id) {
+    if (variable.node.type === 'VariableDeclaration') {
       const name = variable.node.declaration.id.name
       if (nodeToEdit) {
         const result = getNodeFromPath<VariableDeclaration>(
@@ -1110,6 +1110,11 @@ export function getVariableExprsFromSelection(
 
       // Pointing to different variable case
       exprs.push(createLocalName(name))
+      continue
+    } else if (variable.node.type === 'CallExpressionKw') {
+      // no variable assigment in that call and not a pipe yet, we'll need to create it
+      exprs.push(createPipeSubstitution())
+      pathIfPipe = variable.deepPath
       continue
     }
 
