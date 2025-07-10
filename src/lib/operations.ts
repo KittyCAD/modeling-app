@@ -1863,12 +1863,42 @@ async function prepareToEditAppearance({ operation }: EnterEditFlowProps) {
     operation.labeledArgs.color.sourceRange[1]
   )
 
+  let metalness: KclCommandValue | undefined
+  if (operation.labeledArgs.metalness) {
+    const result = await stringToKclExpression(
+      codeManager.code.slice(
+        operation.labeledArgs.metalness.sourceRange[0],
+        operation.labeledArgs.metalness.sourceRange[1]
+      )
+    )
+    if (err(result) || 'errors' in result) {
+      return { reason: "Couldn't retrieve metalness argument" }
+    }
+    metalness = result
+  }
+
+  let roughness: KclCommandValue | undefined
+  if (operation.labeledArgs.roughness) {
+    const result = await stringToKclExpression(
+      codeManager.code.slice(
+        operation.labeledArgs.roughness.sourceRange[0],
+        operation.labeledArgs.roughness.sourceRange[1]
+      )
+    )
+    if (err(result) || 'errors' in result) {
+      return { reason: "Couldn't retrieve roughness argument" }
+    }
+    roughness = result
+  }
+
   // 3. Assemble the default argument values for the command,
   // with `nodeToEdit` set, which will let the actor know
   // to edit the node that corresponds to the StdLibCall.
   const argDefaultValues: ModelingCommandSchema['Appearance'] = {
     objects,
     color,
+    metalness,
+    roughness,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
   return {

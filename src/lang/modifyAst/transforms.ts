@@ -272,12 +272,16 @@ export function addAppearance({
   artifactGraph,
   objects,
   color,
+  metalness,
+  roughness,
   nodeToEdit,
 }: {
   ast: Node<Program>
   artifactGraph: ArtifactGraph
   objects: Selections
   color: string
+  metalness?: KclCommandValue
+  roughness?: KclCommandValue
   nodeToEdit?: PathToNode
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   // 1. Clone the ast so we can edit it
@@ -298,10 +302,26 @@ export function addAppearance({
   }
 
   const colorExpr = [createLabeledArg('color', createLiteral(color))]
+  const metalnessExpr = metalness
+    ? [createLabeledArg('metalness', valueOrVariable(metalness))]
+    : []
+  const roughnessExpr = roughness
+    ? [createLabeledArg('roughness', valueOrVariable(roughness))]
+    : []
   const objectsExpr = createVariableExpressionsArray(vars.exprs)
   const call = createCallExpressionStdLibKw('appearance', objectsExpr, [
     ...colorExpr,
+    ...metalnessExpr,
+    ...roughnessExpr,
   ])
+
+  if (metalness && 'variableName' in metalness && metalness.variableName) {
+    insertVariableAndOffsetPathToNode(metalness, modifiedAst, nodeToEdit)
+  }
+
+  if (roughness && 'variableName' in roughness && roughness.variableName) {
+    insertVariableAndOffsetPathToNode(roughness, modifiedAst, nodeToEdit)
+  }
 
   // 3. If edit, we assign the new function call declaration to the existing node,
   // otherwise just push to the end

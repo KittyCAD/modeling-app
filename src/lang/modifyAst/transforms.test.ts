@@ -500,13 +500,13 @@ describe('Testing addAppearance', () => {
     return recast(result.modifiedAst)
   }
 
-  it('should add a standalone call on sweep selection', async () => {
-    const code = `sketch001 = startSketchOn(XY)
+  const box = `sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [0, 0], radius = 1)
 extrude001 = extrude(profile001, length = 1)`
+  it('should add a standalone call on sweep selection', async () => {
     const expectedNewLine = `appearance(extrude001, color = '#FF0000')`
-    const newCode = await runAddAppearanceTest(code)
-    expect(newCode).toContain(code + '\n' + expectedNewLine)
+    const newCode = await runAddAppearanceTest(box)
+    expect(newCode).toContain(box + '\n' + expectedNewLine)
   })
 
   it('should push a call in pipe if selection was in variable-less pipe', async () => {
@@ -516,6 +516,32 @@ extrude001 = extrude(profile001, length = 1)`
     const expectedNewLine = `  |> appearance(color = '#FF0000')`
     const newCode = await runAddAppearanceTest(code)
     expect(newCode).toContain(code + '\n' + expectedNewLine)
+  })
+
+  it('should add a call with metalness and roughness', async () => {
+    const {
+      artifactGraph,
+      ast,
+      sketches: objects,
+    } = await getAstAndSketchSelections(box)
+    const result = addAppearance({
+      ast,
+      artifactGraph,
+      objects,
+      color: '#FF0000',
+      metalness: await getKclCommandValue('1'),
+      roughness: await getKclCommandValue('2'),
+    })
+    if (err(result)) throw result
+    await runNewAstAndCheckForSweep(result.modifiedAst)
+    const newCode = recast(result.modifiedAst)
+    expect(newCode).toContain(`${box}
+appearance(
+  extrude001,
+  color = '#FF0000',
+  metalness = 1,
+  roughness = 2,
+)`)
   })
 
   async function runEditAppearanceTest(code: string, nodeToEdit: PathToNode) {

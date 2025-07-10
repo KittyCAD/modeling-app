@@ -185,6 +185,8 @@ export type ModelingCommandSchema = {
     nodeToEdit?: PathToNode
     objects: Selections
     color: string
+    metalness?: KclCommandValue
+    roughness?: KclCommandValue
   }
   Translate: {
     nodeToEdit?: PathToNode
@@ -1042,7 +1044,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       color: {
-        // TODO: change this to a color picker and add other optional args
+        // TODO: change this to a color picker
         inputType: 'options',
         required: true,
         options: [
@@ -1092,7 +1094,14 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           },
         ],
       },
-      // Add more fields
+      metalness: {
+        inputType: 'kcl',
+        required: false,
+      },
+      roughness: {
+        inputType: 'kcl',
+        required: false,
+      },
     },
   },
   Translate: {
