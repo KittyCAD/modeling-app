@@ -110,23 +110,6 @@ description: Artifact commands tag_inner_face.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -25.4,
-            "y": -29.463999999999995,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
         "type": "close_path",
         "path_id": "[uuid]"
       }
@@ -205,23 +188,6 @@ description: Artifact commands tag_inner_face.kcl
             "z": 0.0
           },
           "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 3.556,
-            "y": -21.336,
-            "z": 0.0
-          },
-          "relative": false
         }
       }
     },
