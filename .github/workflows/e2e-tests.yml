@@ -21,8 +21,7 @@ jobs:
 
   prepare-wasm:
 
-    # separate job on Ubuntu to build or fetch the wasm blob once on the fastest runner
-    runs-on: runs-on=${{ github.run_id }}/family=i7ie.2xlarge/image=ubuntu22-full-x64
+    runs-on: namespace-profile-ubuntu-8-cores
     steps:
 
       - uses: actions/checkout@v4
@@ -105,7 +104,7 @@ jobs:
   snapshots:
     needs: [prepare-wasm]
 
-    runs-on: runs-on=${{ github.run_id }}/family=i7ie.2xlarge/image=ubuntu22-full-x64
+    runs-on: namespace-profile-ubuntu-8-cores
     name: e2e:snapshots
 
     steps:
@@ -220,7 +219,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: "runs-on=${{ github.run_id }}/family=i7ie.2xlarge/image=ubuntu22-full-x64"
+          - os: namespace-profile-ubuntu-8-cores
           - os: namespace-profile-macos-8-cores
           - os: namespace-profile-windows-8-cores
     runs-on: ${{ matrix.os }}
@@ -309,28 +308,28 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: "runs-on=${{ github.run_id }}/family=i7ie.2xlarge/image=ubuntu22-full-x64"
+          - os: namespace-profile-ubuntu-8-cores
             shardIndex: 1
             shardTotal: 8
-          - os: "runs-on=${{ github.run_id }}/family=i7ie.2xlarge/image=ubuntu22-full-x64"
+          - os: namespace-profile-ubuntu-8-cores
             shardIndex: 2
             shardTotal: 8
-          - os: "runs-on=${{ github.run_id }}/family=i7ie.2xlarge/image=ubuntu22-full-x64"
+          - os: namespace-profile-ubuntu-8-cores
             shardIndex: 3
             shardTotal: 8
-          - os: "runs-on=${{ github.run_id }}/family=i7ie.2xlarge/image=ubuntu22-full-x64"
+          - os: namespace-profile-ubuntu-8-cores
             shardIndex: 4
             shardTotal: 8
-          - os: "runs-on=${{ github.run_id }}/family=i7ie.2xlarge/image=ubuntu22-full-x64"
+          - os: namespace-profile-ubuntu-8-cores
             shardIndex: 5
             shardTotal: 8
-          - os: "runs-on=${{ github.run_id }}/family=i7ie.2xlarge/image=ubuntu22-full-x64"
+          - os: namespace-profile-ubuntu-8-cores
             shardIndex: 6
             shardTotal: 8
-          - os: "runs-on=${{ github.run_id }}/family=i7ie.2xlarge/image=ubuntu22-full-x64"
+          - os: namespace-profile-ubuntu-8-cores
             shardIndex: 7
             shardTotal: 8
-          - os: "runs-on=${{ github.run_id }}/family=i7ie.2xlarge/image=ubuntu22-full-x64"
+          - os: namespace-profile-ubuntu-8-cores
             shardIndex: 8
             shardTotal: 8
           - os: namespace-profile-macos-8-cores

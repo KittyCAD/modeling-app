@@ -18,7 +18,7 @@ concurrency:
 
 jobs:
   prepare-files:
-    runs-on: ubuntu-22.04  # seperate job on Ubuntu for easy string manipulations (compared to Windows)
+    runs-on: namespace-profile-ubuntu-2-cores
     outputs:
       version: ${{ steps.export_version.outputs.version }}
       notes: ${{ steps.export_notes.outputs.notes }}
@@ -250,7 +250,7 @@ jobs:
 
 
   upload-apps-release:
-    runs-on: ubuntu-22.04
+    runs-on: namespace-profile-ubuntu-2-cores
     permissions:
       contents: write
     # Equivalent to IS_RELEASE || IS_STAGING (but we can't access those env vars here)
