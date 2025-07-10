@@ -614,7 +614,12 @@ pub struct Sketch {
     /// The id of the sketch (this will change when the engine's reference to it changes).
     pub id: uuid::Uuid,
     /// The paths in the sketch.
+    /// Only paths on the "outside" i.e. the perimeter.
+    /// Does not include paths "inside" the profile (for example, edges made by subtracting a profile)
     pub paths: Vec<Path>,
+    /// Inner paths, resulting from subtract2d to carve profiles out of the sketch.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub inner_paths: Vec<Path>,
     /// What the sketch is on (can be a plane or a face).
     pub on: SketchSurface,
     /// The starting path.

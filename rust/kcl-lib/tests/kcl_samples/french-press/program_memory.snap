@@ -1091,6 +1091,33 @@ description: Variables in memory after executing french-press.kcl
             }
           }
         ],
+        "innerPaths": [
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.0,
+              0.0
+            ],
+            "from": [
+              0.15,
+              0.0
+            ],
+            "radius": 0.15,
+            "tag": null,
+            "to": [
+              0.15,
+              0.0
+            ],
+            "type": "Circle",
+            "units": {
+              "type": "Inches"
+            }
+          }
+        ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
@@ -1274,196 +1301,7 @@ description: Variables in memory after executing french-press.kcl
                       }
                     }
                   ],
-                  "on": {
-                    "artifactId": "[uuid]",
-                    "id": "[uuid]",
-                    "origin": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 28.448,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "type": "plane",
-                    "value": "Custom",
-                    "xAxis": {
-                      "x": 1.0,
-                      "y": 0.0,
-                      "z": 0.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
-                    },
-                    "yAxis": {
-                      "x": 0.0,
-                      "y": 1.0,
-                      "z": 0.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
-                    }
-                  },
-                  "start": {
-                    "from": [
-                      1.965,
-                      0.0
-                    ],
-                    "to": [
-                      1.965,
-                      0.0
-                    ],
-                    "units": {
-                      "type": "Inches"
-                    },
-                    "tag": null,
-                    "__geoMeta": {
-                      "id": "[uuid]",
-                      "sourceRange": []
-                    }
-                  },
-                  "artifactId": "[uuid]",
-                  "originalId": "[uuid]",
-                  "units": {
-                    "type": "Inches"
-                  }
-                },
-                "height": 0.05,
-                "startCapId": "[uuid]",
-                "endCapId": "[uuid]",
-                "units": {
-                  "type": "Inches"
-                },
-                "sectional": false
-              },
-              "units": {
-                "type": "Inches"
-              }
-            },
-            "start": {
-              "from": [
-                1.7,
-                0.0
-              ],
-              "to": [
-                1.7,
-                0.0
-              ],
-              "units": {
-                "type": "Inches"
-              },
-              "tag": null,
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              }
-            },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
-          },
-          "height": -0.05,
-          "startCapId": null,
-          "endCapId": null,
-          "units": {
-            "type": "Inches"
-          },
-          "sectional": false
-        }
-      },
-      {
-        "type": "Solid",
-        "value": {
-          "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudeArc"
-            }
-          ],
-          "sketch": {
-            "type": "Sketch",
-            "id": "[uuid]",
-            "paths": [
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "ccw": true,
-                "center": [
-                  1.4,
-                  0.0
-                ],
-                "from": [
-                  1.7,
-                  0.0
-                ],
-                "radius": 0.3,
-                "tag": null,
-                "to": [
-                  1.7,
-                  0.0
-                ],
-                "type": "Circle",
-                "units": {
-                  "type": "Inches"
-                }
-              }
-            ],
-            "on": {
-              "type": "face",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
-              "value": "end",
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
-              },
-              "solid": {
-                "type": "Solid",
-                "id": "[uuid]",
-                "artifactId": "[uuid]",
-                "value": [
-                  {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [],
-                    "tag": null,
-                    "type": "extrudeArc"
-                  }
-                ],
-                "sketch": {
-                  "type": "Sketch",
-                  "id": "[uuid]",
-                  "paths": [
+                  "innerPaths": [
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
@@ -1475,13 +1313,13 @@ description: Variables in memory after executing french-press.kcl
                         0.0
                       ],
                       "from": [
-                        1.965,
+                        0.15,
                         0.0
                       ],
-                      "radius": 1.965,
+                      "radius": 0.15,
                       "tag": null,
                       "to": [
-                        1.965,
+                        0.15,
                         0.0
                       ],
                       "type": "Circle",
@@ -1706,196 +1544,7 @@ description: Variables in memory after executing french-press.kcl
                       }
                     }
                   ],
-                  "on": {
-                    "artifactId": "[uuid]",
-                    "id": "[uuid]",
-                    "origin": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 28.448,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "type": "plane",
-                    "value": "Custom",
-                    "xAxis": {
-                      "x": 1.0,
-                      "y": 0.0,
-                      "z": 0.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
-                    },
-                    "yAxis": {
-                      "x": 0.0,
-                      "y": 1.0,
-                      "z": 0.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
-                    }
-                  },
-                  "start": {
-                    "from": [
-                      1.965,
-                      0.0
-                    ],
-                    "to": [
-                      1.965,
-                      0.0
-                    ],
-                    "units": {
-                      "type": "Inches"
-                    },
-                    "tag": null,
-                    "__geoMeta": {
-                      "id": "[uuid]",
-                      "sourceRange": []
-                    }
-                  },
-                  "artifactId": "[uuid]",
-                  "originalId": "[uuid]",
-                  "units": {
-                    "type": "Inches"
-                  }
-                },
-                "height": 0.05,
-                "startCapId": "[uuid]",
-                "endCapId": "[uuid]",
-                "units": {
-                  "type": "Inches"
-                },
-                "sectional": false
-              },
-              "units": {
-                "type": "Inches"
-              }
-            },
-            "start": {
-              "from": [
-                1.7,
-                0.0
-              ],
-              "to": [
-                1.7,
-                0.0
-              ],
-              "units": {
-                "type": "Inches"
-              },
-              "tag": null,
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              }
-            },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
-          },
-          "height": -0.05,
-          "startCapId": null,
-          "endCapId": null,
-          "units": {
-            "type": "Inches"
-          },
-          "sectional": false
-        }
-      },
-      {
-        "type": "Solid",
-        "value": {
-          "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudeArc"
-            }
-          ],
-          "sketch": {
-            "type": "Sketch",
-            "id": "[uuid]",
-            "paths": [
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "ccw": true,
-                "center": [
-                  1.4,
-                  0.0
-                ],
-                "from": [
-                  1.7,
-                  0.0
-                ],
-                "radius": 0.3,
-                "tag": null,
-                "to": [
-                  1.7,
-                  0.0
-                ],
-                "type": "Circle",
-                "units": {
-                  "type": "Inches"
-                }
-              }
-            ],
-            "on": {
-              "type": "face",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
-              "value": "end",
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
-              },
-              "solid": {
-                "type": "Solid",
-                "id": "[uuid]",
-                "artifactId": "[uuid]",
-                "value": [
-                  {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [],
-                    "tag": null,
-                    "type": "extrudeArc"
-                  }
-                ],
-                "sketch": {
-                  "type": "Sketch",
-                  "id": "[uuid]",
-                  "paths": [
+                  "innerPaths": [
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
@@ -1907,13 +1556,13 @@ description: Variables in memory after executing french-press.kcl
                         0.0
                       ],
                       "from": [
-                        1.965,
+                        0.15,
                         0.0
                       ],
-                      "radius": 1.965,
+                      "radius": 0.15,
                       "tag": null,
                       "to": [
-                        1.965,
+                        0.15,
                         0.0
                       ],
                       "type": "Circle",
@@ -2138,196 +1787,7 @@ description: Variables in memory after executing french-press.kcl
                       }
                     }
                   ],
-                  "on": {
-                    "artifactId": "[uuid]",
-                    "id": "[uuid]",
-                    "origin": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 28.448,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "type": "plane",
-                    "value": "Custom",
-                    "xAxis": {
-                      "x": 1.0,
-                      "y": 0.0,
-                      "z": 0.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
-                    },
-                    "yAxis": {
-                      "x": 0.0,
-                      "y": 1.0,
-                      "z": 0.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
-                    }
-                  },
-                  "start": {
-                    "from": [
-                      1.965,
-                      0.0
-                    ],
-                    "to": [
-                      1.965,
-                      0.0
-                    ],
-                    "units": {
-                      "type": "Inches"
-                    },
-                    "tag": null,
-                    "__geoMeta": {
-                      "id": "[uuid]",
-                      "sourceRange": []
-                    }
-                  },
-                  "artifactId": "[uuid]",
-                  "originalId": "[uuid]",
-                  "units": {
-                    "type": "Inches"
-                  }
-                },
-                "height": 0.05,
-                "startCapId": "[uuid]",
-                "endCapId": "[uuid]",
-                "units": {
-                  "type": "Inches"
-                },
-                "sectional": false
-              },
-              "units": {
-                "type": "Inches"
-              }
-            },
-            "start": {
-              "from": [
-                1.7,
-                0.0
-              ],
-              "to": [
-                1.7,
-                0.0
-              ],
-              "units": {
-                "type": "Inches"
-              },
-              "tag": null,
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              }
-            },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
-          },
-          "height": -0.05,
-          "startCapId": null,
-          "endCapId": null,
-          "units": {
-            "type": "Inches"
-          },
-          "sectional": false
-        }
-      },
-      {
-        "type": "Solid",
-        "value": {
-          "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudeArc"
-            }
-          ],
-          "sketch": {
-            "type": "Sketch",
-            "id": "[uuid]",
-            "paths": [
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "ccw": true,
-                "center": [
-                  1.4,
-                  0.0
-                ],
-                "from": [
-                  1.7,
-                  0.0
-                ],
-                "radius": 0.3,
-                "tag": null,
-                "to": [
-                  1.7,
-                  0.0
-                ],
-                "type": "Circle",
-                "units": {
-                  "type": "Inches"
-                }
-              }
-            ],
-            "on": {
-              "type": "face",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
-              "value": "end",
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
-              },
-              "solid": {
-                "type": "Solid",
-                "id": "[uuid]",
-                "artifactId": "[uuid]",
-                "value": [
-                  {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [],
-                    "tag": null,
-                    "type": "extrudeArc"
-                  }
-                ],
-                "sketch": {
-                  "type": "Sketch",
-                  "id": "[uuid]",
-                  "paths": [
+                  "innerPaths": [
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
@@ -2339,13 +1799,13 @@ description: Variables in memory after executing french-press.kcl
                         0.0
                       ],
                       "from": [
-                        1.965,
+                        0.15,
                         0.0
                       ],
-                      "radius": 1.965,
+                      "radius": 0.15,
                       "tag": null,
                       "to": [
-                        1.965,
+                        0.15,
                         0.0
                       ],
                       "type": "Circle",
@@ -2570,6 +2030,33 @@ description: Variables in memory after executing french-press.kcl
                       }
                     }
                   ],
+                  "innerPaths": [
+                    {
+                      "__geoMeta": {
+                        "id": "[uuid]",
+                        "sourceRange": []
+                      },
+                      "ccw": true,
+                      "center": [
+                        0.0,
+                        0.0
+                      ],
+                      "from": [
+                        0.15,
+                        0.0
+                      ],
+                      "radius": 0.15,
+                      "tag": null,
+                      "to": [
+                        0.15,
+                        0.0
+                      ],
+                      "type": "Circle",
+                      "units": {
+                        "type": "Inches"
+                      }
+                    }
+                  ],
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
@@ -2778,6 +2265,762 @@ description: Variables in memory after executing french-press.kcl
                       "tag": null,
                       "to": [
                         1.965,
+                        0.0
+                      ],
+                      "type": "Circle",
+                      "units": {
+                        "type": "Inches"
+                      }
+                    }
+                  ],
+                  "innerPaths": [
+                    {
+                      "__geoMeta": {
+                        "id": "[uuid]",
+                        "sourceRange": []
+                      },
+                      "ccw": true,
+                      "center": [
+                        0.0,
+                        0.0
+                      ],
+                      "from": [
+                        0.15,
+                        0.0
+                      ],
+                      "radius": 0.15,
+                      "tag": null,
+                      "to": [
+                        0.15,
+                        0.0
+                      ],
+                      "type": "Circle",
+                      "units": {
+                        "type": "Inches"
+                      }
+                    }
+                  ],
+                  "on": {
+                    "artifactId": "[uuid]",
+                    "id": "[uuid]",
+                    "origin": {
+                      "x": 0.0,
+                      "y": 0.0,
+                      "z": 28.448,
+                      "units": {
+                        "type": "Mm"
+                      }
+                    },
+                    "type": "plane",
+                    "value": "Custom",
+                    "xAxis": {
+                      "x": 1.0,
+                      "y": 0.0,
+                      "z": 0.0,
+                      "units": {
+                        "type": "Unknown"
+                      }
+                    },
+                    "yAxis": {
+                      "x": 0.0,
+                      "y": 1.0,
+                      "z": 0.0,
+                      "units": {
+                        "type": "Unknown"
+                      }
+                    },
+                    "zAxis": {
+                      "x": 0.0,
+                      "y": 0.0,
+                      "z": 1.0,
+                      "units": {
+                        "type": "Unknown"
+                      }
+                    }
+                  },
+                  "start": {
+                    "from": [
+                      1.965,
+                      0.0
+                    ],
+                    "to": [
+                      1.965,
+                      0.0
+                    ],
+                    "units": {
+                      "type": "Inches"
+                    },
+                    "tag": null,
+                    "__geoMeta": {
+                      "id": "[uuid]",
+                      "sourceRange": []
+                    }
+                  },
+                  "artifactId": "[uuid]",
+                  "originalId": "[uuid]",
+                  "units": {
+                    "type": "Inches"
+                  }
+                },
+                "height": 0.05,
+                "startCapId": "[uuid]",
+                "endCapId": "[uuid]",
+                "units": {
+                  "type": "Inches"
+                },
+                "sectional": false
+              },
+              "units": {
+                "type": "Inches"
+              }
+            },
+            "start": {
+              "from": [
+                1.7,
+                0.0
+              ],
+              "to": [
+                1.7,
+                0.0
+              ],
+              "units": {
+                "type": "Inches"
+              },
+              "tag": null,
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": []
+              }
+            },
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
+            "units": {
+              "type": "Inches"
+            }
+          },
+          "height": -0.05,
+          "startCapId": null,
+          "endCapId": null,
+          "units": {
+            "type": "Inches"
+          },
+          "sectional": false
+        }
+      },
+      {
+        "type": "Solid",
+        "value": {
+          "type": "Solid",
+          "id": "[uuid]",
+          "artifactId": "[uuid]",
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            }
+          ],
+          "sketch": {
+            "type": "Sketch",
+            "id": "[uuid]",
+            "paths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  1.4,
+                  0.0
+                ],
+                "from": [
+                  1.7,
+                  0.0
+                ],
+                "radius": 0.3,
+                "tag": null,
+                "to": [
+                  1.7,
+                  0.0
+                ],
+                "type": "Circle",
+                "units": {
+                  "type": "Inches"
+                }
+              }
+            ],
+            "on": {
+              "type": "face",
+              "id": "[uuid]",
+              "artifactId": "[uuid]",
+              "value": "end",
+              "xAxis": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0,
+                "units": {
+                  "type": "Unknown"
+                }
+              },
+              "yAxis": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0,
+                "units": {
+                  "type": "Unknown"
+                }
+              },
+              "solid": {
+                "type": "Solid",
+                "id": "[uuid]",
+                "artifactId": "[uuid]",
+                "value": [
+                  {
+                    "faceId": "[uuid]",
+                    "id": "[uuid]",
+                    "sourceRange": [],
+                    "tag": null,
+                    "type": "extrudeArc"
+                  }
+                ],
+                "sketch": {
+                  "type": "Sketch",
+                  "id": "[uuid]",
+                  "paths": [
+                    {
+                      "__geoMeta": {
+                        "id": "[uuid]",
+                        "sourceRange": []
+                      },
+                      "ccw": true,
+                      "center": [
+                        0.0,
+                        0.0
+                      ],
+                      "from": [
+                        1.965,
+                        0.0
+                      ],
+                      "radius": 1.965,
+                      "tag": null,
+                      "to": [
+                        1.965,
+                        0.0
+                      ],
+                      "type": "Circle",
+                      "units": {
+                        "type": "Inches"
+                      }
+                    }
+                  ],
+                  "innerPaths": [
+                    {
+                      "__geoMeta": {
+                        "id": "[uuid]",
+                        "sourceRange": []
+                      },
+                      "ccw": true,
+                      "center": [
+                        0.0,
+                        0.0
+                      ],
+                      "from": [
+                        0.15,
+                        0.0
+                      ],
+                      "radius": 0.15,
+                      "tag": null,
+                      "to": [
+                        0.15,
+                        0.0
+                      ],
+                      "type": "Circle",
+                      "units": {
+                        "type": "Inches"
+                      }
+                    }
+                  ],
+                  "on": {
+                    "artifactId": "[uuid]",
+                    "id": "[uuid]",
+                    "origin": {
+                      "x": 0.0,
+                      "y": 0.0,
+                      "z": 28.448,
+                      "units": {
+                        "type": "Mm"
+                      }
+                    },
+                    "type": "plane",
+                    "value": "Custom",
+                    "xAxis": {
+                      "x": 1.0,
+                      "y": 0.0,
+                      "z": 0.0,
+                      "units": {
+                        "type": "Unknown"
+                      }
+                    },
+                    "yAxis": {
+                      "x": 0.0,
+                      "y": 1.0,
+                      "z": 0.0,
+                      "units": {
+                        "type": "Unknown"
+                      }
+                    },
+                    "zAxis": {
+                      "x": 0.0,
+                      "y": 0.0,
+                      "z": 1.0,
+                      "units": {
+                        "type": "Unknown"
+                      }
+                    }
+                  },
+                  "start": {
+                    "from": [
+                      1.965,
+                      0.0
+                    ],
+                    "to": [
+                      1.965,
+                      0.0
+                    ],
+                    "units": {
+                      "type": "Inches"
+                    },
+                    "tag": null,
+                    "__geoMeta": {
+                      "id": "[uuid]",
+                      "sourceRange": []
+                    }
+                  },
+                  "artifactId": "[uuid]",
+                  "originalId": "[uuid]",
+                  "units": {
+                    "type": "Inches"
+                  }
+                },
+                "height": 0.05,
+                "startCapId": "[uuid]",
+                "endCapId": "[uuid]",
+                "units": {
+                  "type": "Inches"
+                },
+                "sectional": false
+              },
+              "units": {
+                "type": "Inches"
+              }
+            },
+            "start": {
+              "from": [
+                1.7,
+                0.0
+              ],
+              "to": [
+                1.7,
+                0.0
+              ],
+              "units": {
+                "type": "Inches"
+              },
+              "tag": null,
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": []
+              }
+            },
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
+            "units": {
+              "type": "Inches"
+            }
+          },
+          "height": -0.05,
+          "startCapId": null,
+          "endCapId": null,
+          "units": {
+            "type": "Inches"
+          },
+          "sectional": false
+        }
+      },
+      {
+        "type": "Solid",
+        "value": {
+          "type": "Solid",
+          "id": "[uuid]",
+          "artifactId": "[uuid]",
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            }
+          ],
+          "sketch": {
+            "type": "Sketch",
+            "id": "[uuid]",
+            "paths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  1.4,
+                  0.0
+                ],
+                "from": [
+                  1.7,
+                  0.0
+                ],
+                "radius": 0.3,
+                "tag": null,
+                "to": [
+                  1.7,
+                  0.0
+                ],
+                "type": "Circle",
+                "units": {
+                  "type": "Inches"
+                }
+              }
+            ],
+            "on": {
+              "type": "face",
+              "id": "[uuid]",
+              "artifactId": "[uuid]",
+              "value": "end",
+              "xAxis": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0,
+                "units": {
+                  "type": "Unknown"
+                }
+              },
+              "yAxis": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0,
+                "units": {
+                  "type": "Unknown"
+                }
+              },
+              "solid": {
+                "type": "Solid",
+                "id": "[uuid]",
+                "artifactId": "[uuid]",
+                "value": [
+                  {
+                    "faceId": "[uuid]",
+                    "id": "[uuid]",
+                    "sourceRange": [],
+                    "tag": null,
+                    "type": "extrudeArc"
+                  }
+                ],
+                "sketch": {
+                  "type": "Sketch",
+                  "id": "[uuid]",
+                  "paths": [
+                    {
+                      "__geoMeta": {
+                        "id": "[uuid]",
+                        "sourceRange": []
+                      },
+                      "ccw": true,
+                      "center": [
+                        0.0,
+                        0.0
+                      ],
+                      "from": [
+                        1.965,
+                        0.0
+                      ],
+                      "radius": 1.965,
+                      "tag": null,
+                      "to": [
+                        1.965,
+                        0.0
+                      ],
+                      "type": "Circle",
+                      "units": {
+                        "type": "Inches"
+                      }
+                    }
+                  ],
+                  "innerPaths": [
+                    {
+                      "__geoMeta": {
+                        "id": "[uuid]",
+                        "sourceRange": []
+                      },
+                      "ccw": true,
+                      "center": [
+                        0.0,
+                        0.0
+                      ],
+                      "from": [
+                        0.15,
+                        0.0
+                      ],
+                      "radius": 0.15,
+                      "tag": null,
+                      "to": [
+                        0.15,
+                        0.0
+                      ],
+                      "type": "Circle",
+                      "units": {
+                        "type": "Inches"
+                      }
+                    }
+                  ],
+                  "on": {
+                    "artifactId": "[uuid]",
+                    "id": "[uuid]",
+                    "origin": {
+                      "x": 0.0,
+                      "y": 0.0,
+                      "z": 28.448,
+                      "units": {
+                        "type": "Mm"
+                      }
+                    },
+                    "type": "plane",
+                    "value": "Custom",
+                    "xAxis": {
+                      "x": 1.0,
+                      "y": 0.0,
+                      "z": 0.0,
+                      "units": {
+                        "type": "Unknown"
+                      }
+                    },
+                    "yAxis": {
+                      "x": 0.0,
+                      "y": 1.0,
+                      "z": 0.0,
+                      "units": {
+                        "type": "Unknown"
+                      }
+                    },
+                    "zAxis": {
+                      "x": 0.0,
+                      "y": 0.0,
+                      "z": 1.0,
+                      "units": {
+                        "type": "Unknown"
+                      }
+                    }
+                  },
+                  "start": {
+                    "from": [
+                      1.965,
+                      0.0
+                    ],
+                    "to": [
+                      1.965,
+                      0.0
+                    ],
+                    "units": {
+                      "type": "Inches"
+                    },
+                    "tag": null,
+                    "__geoMeta": {
+                      "id": "[uuid]",
+                      "sourceRange": []
+                    }
+                  },
+                  "artifactId": "[uuid]",
+                  "originalId": "[uuid]",
+                  "units": {
+                    "type": "Inches"
+                  }
+                },
+                "height": 0.05,
+                "startCapId": "[uuid]",
+                "endCapId": "[uuid]",
+                "units": {
+                  "type": "Inches"
+                },
+                "sectional": false
+              },
+              "units": {
+                "type": "Inches"
+              }
+            },
+            "start": {
+              "from": [
+                1.7,
+                0.0
+              ],
+              "to": [
+                1.7,
+                0.0
+              ],
+              "units": {
+                "type": "Inches"
+              },
+              "tag": null,
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": []
+              }
+            },
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
+            "units": {
+              "type": "Inches"
+            }
+          },
+          "height": -0.05,
+          "startCapId": null,
+          "endCapId": null,
+          "units": {
+            "type": "Inches"
+          },
+          "sectional": false
+        }
+      },
+      {
+        "type": "Solid",
+        "value": {
+          "type": "Solid",
+          "id": "[uuid]",
+          "artifactId": "[uuid]",
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            }
+          ],
+          "sketch": {
+            "type": "Sketch",
+            "id": "[uuid]",
+            "paths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  1.4,
+                  0.0
+                ],
+                "from": [
+                  1.7,
+                  0.0
+                ],
+                "radius": 0.3,
+                "tag": null,
+                "to": [
+                  1.7,
+                  0.0
+                ],
+                "type": "Circle",
+                "units": {
+                  "type": "Inches"
+                }
+              }
+            ],
+            "on": {
+              "type": "face",
+              "id": "[uuid]",
+              "artifactId": "[uuid]",
+              "value": "end",
+              "xAxis": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0,
+                "units": {
+                  "type": "Unknown"
+                }
+              },
+              "yAxis": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0,
+                "units": {
+                  "type": "Unknown"
+                }
+              },
+              "solid": {
+                "type": "Solid",
+                "id": "[uuid]",
+                "artifactId": "[uuid]",
+                "value": [
+                  {
+                    "faceId": "[uuid]",
+                    "id": "[uuid]",
+                    "sourceRange": [],
+                    "tag": null,
+                    "type": "extrudeArc"
+                  }
+                ],
+                "sketch": {
+                  "type": "Sketch",
+                  "id": "[uuid]",
+                  "paths": [
+                    {
+                      "__geoMeta": {
+                        "id": "[uuid]",
+                        "sourceRange": []
+                      },
+                      "ccw": true,
+                      "center": [
+                        0.0,
+                        0.0
+                      ],
+                      "from": [
+                        1.965,
+                        0.0
+                      ],
+                      "radius": 1.965,
+                      "tag": null,
+                      "to": [
+                        1.965,
+                        0.0
+                      ],
+                      "type": "Circle",
+                      "units": {
+                        "type": "Inches"
+                      }
+                    }
+                  ],
+                  "innerPaths": [
+                    {
+                      "__geoMeta": {
+                        "id": "[uuid]",
+                        "sourceRange": []
+                      },
+                      "ccw": true,
+                      "center": [
+                        0.0,
+                        0.0
+                      ],
+                      "from": [
+                        0.15,
+                        0.0
+                      ],
+                      "radius": 0.15,
+                      "tag": null,
+                      "to": [
+                        0.15,
                         0.0
                       ],
                       "type": "Circle",
@@ -3007,196 +3250,7 @@ description: Variables in memory after executing french-press.kcl
                       }
                     }
                   ],
-                  "on": {
-                    "artifactId": "[uuid]",
-                    "id": "[uuid]",
-                    "origin": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 28.448,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "type": "plane",
-                    "value": "Custom",
-                    "xAxis": {
-                      "x": 1.0,
-                      "y": 0.0,
-                      "z": 0.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
-                    },
-                    "yAxis": {
-                      "x": 0.0,
-                      "y": 1.0,
-                      "z": 0.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
-                    }
-                  },
-                  "start": {
-                    "from": [
-                      1.965,
-                      0.0
-                    ],
-                    "to": [
-                      1.965,
-                      0.0
-                    ],
-                    "units": {
-                      "type": "Inches"
-                    },
-                    "tag": null,
-                    "__geoMeta": {
-                      "id": "[uuid]",
-                      "sourceRange": []
-                    }
-                  },
-                  "artifactId": "[uuid]",
-                  "originalId": "[uuid]",
-                  "units": {
-                    "type": "Inches"
-                  }
-                },
-                "height": 0.05,
-                "startCapId": "[uuid]",
-                "endCapId": "[uuid]",
-                "units": {
-                  "type": "Inches"
-                },
-                "sectional": false
-              },
-              "units": {
-                "type": "Inches"
-              }
-            },
-            "start": {
-              "from": [
-                0.8,
-                0.0
-              ],
-              "to": [
-                0.8,
-                0.0
-              ],
-              "units": {
-                "type": "Inches"
-              },
-              "tag": null,
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              }
-            },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
-          },
-          "height": -0.05,
-          "startCapId": null,
-          "endCapId": null,
-          "units": {
-            "type": "Inches"
-          },
-          "sectional": false
-        }
-      },
-      {
-        "type": "Solid",
-        "value": {
-          "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudeArc"
-            }
-          ],
-          "sketch": {
-            "type": "Sketch",
-            "id": "[uuid]",
-            "paths": [
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "ccw": true,
-                "center": [
-                  0.6,
-                  0.0
-                ],
-                "from": [
-                  0.8,
-                  0.0
-                ],
-                "radius": 0.2,
-                "tag": null,
-                "to": [
-                  0.8,
-                  0.0
-                ],
-                "type": "Circle",
-                "units": {
-                  "type": "Inches"
-                }
-              }
-            ],
-            "on": {
-              "type": "face",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
-              "value": "end",
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
-              },
-              "solid": {
-                "type": "Solid",
-                "id": "[uuid]",
-                "artifactId": "[uuid]",
-                "value": [
-                  {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [],
-                    "tag": null,
-                    "type": "extrudeArc"
-                  }
-                ],
-                "sketch": {
-                  "type": "Sketch",
-                  "id": "[uuid]",
-                  "paths": [
+                  "innerPaths": [
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
@@ -3208,13 +3262,13 @@ description: Variables in memory after executing french-press.kcl
                         0.0
                       ],
                       "from": [
-                        1.965,
+                        0.15,
                         0.0
                       ],
-                      "radius": 1.965,
+                      "radius": 0.15,
                       "tag": null,
                       "to": [
-                        1.965,
+                        0.15,
                         0.0
                       ],
                       "type": "Circle",
@@ -3439,6 +3493,33 @@ description: Variables in memory after executing french-press.kcl
                       }
                     }
                   ],
+                  "innerPaths": [
+                    {
+                      "__geoMeta": {
+                        "id": "[uuid]",
+                        "sourceRange": []
+                      },
+                      "ccw": true,
+                      "center": [
+                        0.0,
+                        0.0
+                      ],
+                      "from": [
+                        0.15,
+                        0.0
+                      ],
+                      "radius": 0.15,
+                      "tag": null,
+                      "to": [
+                        0.15,
+                        0.0
+                      ],
+                      "type": "Circle",
+                      "units": {
+                        "type": "Inches"
+                      }
+                    }
+                  ],
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
@@ -3647,6 +3728,276 @@ description: Variables in memory after executing french-press.kcl
                       "tag": null,
                       "to": [
                         1.965,
+                        0.0
+                      ],
+                      "type": "Circle",
+                      "units": {
+                        "type": "Inches"
+                      }
+                    }
+                  ],
+                  "innerPaths": [
+                    {
+                      "__geoMeta": {
+                        "id": "[uuid]",
+                        "sourceRange": []
+                      },
+                      "ccw": true,
+                      "center": [
+                        0.0,
+                        0.0
+                      ],
+                      "from": [
+                        0.15,
+                        0.0
+                      ],
+                      "radius": 0.15,
+                      "tag": null,
+                      "to": [
+                        0.15,
+                        0.0
+                      ],
+                      "type": "Circle",
+                      "units": {
+                        "type": "Inches"
+                      }
+                    }
+                  ],
+                  "on": {
+                    "artifactId": "[uuid]",
+                    "id": "[uuid]",
+                    "origin": {
+                      "x": 0.0,
+                      "y": 0.0,
+                      "z": 28.448,
+                      "units": {
+                        "type": "Mm"
+                      }
+                    },
+                    "type": "plane",
+                    "value": "Custom",
+                    "xAxis": {
+                      "x": 1.0,
+                      "y": 0.0,
+                      "z": 0.0,
+                      "units": {
+                        "type": "Unknown"
+                      }
+                    },
+                    "yAxis": {
+                      "x": 0.0,
+                      "y": 1.0,
+                      "z": 0.0,
+                      "units": {
+                        "type": "Unknown"
+                      }
+                    },
+                    "zAxis": {
+                      "x": 0.0,
+                      "y": 0.0,
+                      "z": 1.0,
+                      "units": {
+                        "type": "Unknown"
+                      }
+                    }
+                  },
+                  "start": {
+                    "from": [
+                      1.965,
+                      0.0
+                    ],
+                    "to": [
+                      1.965,
+                      0.0
+                    ],
+                    "units": {
+                      "type": "Inches"
+                    },
+                    "tag": null,
+                    "__geoMeta": {
+                      "id": "[uuid]",
+                      "sourceRange": []
+                    }
+                  },
+                  "artifactId": "[uuid]",
+                  "originalId": "[uuid]",
+                  "units": {
+                    "type": "Inches"
+                  }
+                },
+                "height": 0.05,
+                "startCapId": "[uuid]",
+                "endCapId": "[uuid]",
+                "units": {
+                  "type": "Inches"
+                },
+                "sectional": false
+              },
+              "units": {
+                "type": "Inches"
+              }
+            },
+            "start": {
+              "from": [
+                0.8,
+                0.0
+              ],
+              "to": [
+                0.8,
+                0.0
+              ],
+              "units": {
+                "type": "Inches"
+              },
+              "tag": null,
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": []
+              }
+            },
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
+            "units": {
+              "type": "Inches"
+            }
+          },
+          "height": -0.05,
+          "startCapId": null,
+          "endCapId": null,
+          "units": {
+            "type": "Inches"
+          },
+          "sectional": false
+        }
+      },
+      {
+        "type": "Solid",
+        "value": {
+          "type": "Solid",
+          "id": "[uuid]",
+          "artifactId": "[uuid]",
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            }
+          ],
+          "sketch": {
+            "type": "Sketch",
+            "id": "[uuid]",
+            "paths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  0.6,
+                  0.0
+                ],
+                "from": [
+                  0.8,
+                  0.0
+                ],
+                "radius": 0.2,
+                "tag": null,
+                "to": [
+                  0.8,
+                  0.0
+                ],
+                "type": "Circle",
+                "units": {
+                  "type": "Inches"
+                }
+              }
+            ],
+            "on": {
+              "type": "face",
+              "id": "[uuid]",
+              "artifactId": "[uuid]",
+              "value": "end",
+              "xAxis": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0,
+                "units": {
+                  "type": "Unknown"
+                }
+              },
+              "yAxis": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0,
+                "units": {
+                  "type": "Unknown"
+                }
+              },
+              "solid": {
+                "type": "Solid",
+                "id": "[uuid]",
+                "artifactId": "[uuid]",
+                "value": [
+                  {
+                    "faceId": "[uuid]",
+                    "id": "[uuid]",
+                    "sourceRange": [],
+                    "tag": null,
+                    "type": "extrudeArc"
+                  }
+                ],
+                "sketch": {
+                  "type": "Sketch",
+                  "id": "[uuid]",
+                  "paths": [
+                    {
+                      "__geoMeta": {
+                        "id": "[uuid]",
+                        "sourceRange": []
+                      },
+                      "ccw": true,
+                      "center": [
+                        0.0,
+                        0.0
+                      ],
+                      "from": [
+                        1.965,
+                        0.0
+                      ],
+                      "radius": 1.965,
+                      "tag": null,
+                      "to": [
+                        1.965,
+                        0.0
+                      ],
+                      "type": "Circle",
+                      "units": {
+                        "type": "Inches"
+                      }
+                    }
+                  ],
+                  "innerPaths": [
+                    {
+                      "__geoMeta": {
+                        "id": "[uuid]",
+                        "sourceRange": []
+                      },
+                      "ccw": true,
+                      "center": [
+                        0.0,
+                        0.0
+                      ],
+                      "from": [
+                        0.15,
+                        0.0
+                      ],
+                      "radius": 0.15,
+                      "tag": null,
+                      "to": [
+                        0.15,
                         0.0
                       ],
                       "type": "Circle",
@@ -8996,6 +9347,33 @@ description: Variables in memory after executing french-press.kcl
           }
         }
       ],
+      "innerPaths": [
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            0.0,
+            0.0
+          ],
+          "from": [
+            0.15,
+            0.0
+          ],
+          "radius": 0.15,
+          "tag": null,
+          "to": [
+            0.15,
+            0.0
+          ],
+          "type": "Circle",
+          "units": {
+            "type": "Inches"
+          }
+        }
+      ],
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
@@ -9158,175 +9536,7 @@ description: Variables in memory after executing french-press.kcl
                     }
                   }
                 ],
-                "on": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
-                  "origin": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 28.448,
-                    "units": {
-                      "type": "Mm"
-                    }
-                  },
-                  "type": "plane",
-                  "value": "Custom",
-                  "xAxis": {
-                    "x": 1.0,
-                    "y": 0.0,
-                    "z": 0.0,
-                    "units": {
-                      "type": "Unknown"
-                    }
-                  },
-                  "yAxis": {
-                    "x": 0.0,
-                    "y": 1.0,
-                    "z": 0.0,
-                    "units": {
-                      "type": "Unknown"
-                    }
-                  },
-                  "zAxis": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 1.0,
-                    "units": {
-                      "type": "Unknown"
-                    }
-                  }
-                },
-                "start": {
-                  "from": [
-                    1.965,
-                    0.0
-                  ],
-                  "to": [
-                    1.965,
-                    0.0
-                  ],
-                  "units": {
-                    "type": "Inches"
-                  },
-                  "tag": null,
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  }
-                },
-                "artifactId": "[uuid]",
-                "originalId": "[uuid]",
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              "height": 0.05,
-              "startCapId": "[uuid]",
-              "endCapId": "[uuid]",
-              "units": {
-                "type": "Inches"
-              },
-              "sectional": false
-            },
-            "units": {
-              "type": "Inches"
-            }
-          },
-          "start": {
-            "from": [
-              1.7,
-              0.0
-            ],
-            "to": [
-              1.7,
-              0.0
-            ],
-            "units": {
-              "type": "Inches"
-            },
-            "tag": null,
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            }
-          },
-          "artifactId": "[uuid]",
-          "originalId": "[uuid]",
-          "units": {
-            "type": "Inches"
-          }
-        }
-      },
-      {
-        "type": "Sketch",
-        "value": {
-          "type": "Sketch",
-          "id": "[uuid]",
-          "paths": [
-            {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              },
-              "ccw": true,
-              "center": [
-                1.4,
-                0.0
-              ],
-              "from": [
-                1.7,
-                0.0
-              ],
-              "radius": 0.3,
-              "tag": null,
-              "to": [
-                1.7,
-                0.0
-              ],
-              "type": "Circle",
-              "units": {
-                "type": "Inches"
-              }
-            }
-          ],
-          "on": {
-            "type": "face",
-            "id": "[uuid]",
-            "artifactId": "[uuid]",
-            "value": "end",
-            "xAxis": {
-              "x": 1.0,
-              "y": 0.0,
-              "z": 0.0,
-              "units": {
-                "type": "Unknown"
-              }
-            },
-            "yAxis": {
-              "x": 0.0,
-              "y": 1.0,
-              "z": 0.0,
-              "units": {
-                "type": "Unknown"
-              }
-            },
-            "solid": {
-              "type": "Solid",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
-              "value": [
-                {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [],
-                  "tag": null,
-                  "type": "extrudeArc"
-                }
-              ],
-              "sketch": {
-                "type": "Sketch",
-                "id": "[uuid]",
-                "paths": [
+                "innerPaths": [
                   {
                     "__geoMeta": {
                       "id": "[uuid]",
@@ -9338,13 +9548,13 @@ description: Variables in memory after executing french-press.kcl
                       0.0
                     ],
                     "from": [
-                      1.965,
+                      0.15,
                       0.0
                     ],
-                    "radius": 1.965,
+                    "radius": 0.15,
                     "tag": null,
                     "to": [
-                      1.965,
+                      0.15,
                       0.0
                     ],
                     "type": "Circle",
@@ -9548,175 +9758,7 @@ description: Variables in memory after executing french-press.kcl
                     }
                   }
                 ],
-                "on": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
-                  "origin": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 28.448,
-                    "units": {
-                      "type": "Mm"
-                    }
-                  },
-                  "type": "plane",
-                  "value": "Custom",
-                  "xAxis": {
-                    "x": 1.0,
-                    "y": 0.0,
-                    "z": 0.0,
-                    "units": {
-                      "type": "Unknown"
-                    }
-                  },
-                  "yAxis": {
-                    "x": 0.0,
-                    "y": 1.0,
-                    "z": 0.0,
-                    "units": {
-                      "type": "Unknown"
-                    }
-                  },
-                  "zAxis": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 1.0,
-                    "units": {
-                      "type": "Unknown"
-                    }
-                  }
-                },
-                "start": {
-                  "from": [
-                    1.965,
-                    0.0
-                  ],
-                  "to": [
-                    1.965,
-                    0.0
-                  ],
-                  "units": {
-                    "type": "Inches"
-                  },
-                  "tag": null,
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  }
-                },
-                "artifactId": "[uuid]",
-                "originalId": "[uuid]",
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              "height": 0.05,
-              "startCapId": "[uuid]",
-              "endCapId": "[uuid]",
-              "units": {
-                "type": "Inches"
-              },
-              "sectional": false
-            },
-            "units": {
-              "type": "Inches"
-            }
-          },
-          "start": {
-            "from": [
-              1.7,
-              0.0
-            ],
-            "to": [
-              1.7,
-              0.0
-            ],
-            "units": {
-              "type": "Inches"
-            },
-            "tag": null,
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            }
-          },
-          "artifactId": "[uuid]",
-          "originalId": "[uuid]",
-          "units": {
-            "type": "Inches"
-          }
-        }
-      },
-      {
-        "type": "Sketch",
-        "value": {
-          "type": "Sketch",
-          "id": "[uuid]",
-          "paths": [
-            {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              },
-              "ccw": true,
-              "center": [
-                1.4,
-                0.0
-              ],
-              "from": [
-                1.7,
-                0.0
-              ],
-              "radius": 0.3,
-              "tag": null,
-              "to": [
-                1.7,
-                0.0
-              ],
-              "type": "Circle",
-              "units": {
-                "type": "Inches"
-              }
-            }
-          ],
-          "on": {
-            "type": "face",
-            "id": "[uuid]",
-            "artifactId": "[uuid]",
-            "value": "end",
-            "xAxis": {
-              "x": 1.0,
-              "y": 0.0,
-              "z": 0.0,
-              "units": {
-                "type": "Unknown"
-              }
-            },
-            "yAxis": {
-              "x": 0.0,
-              "y": 1.0,
-              "z": 0.0,
-              "units": {
-                "type": "Unknown"
-              }
-            },
-            "solid": {
-              "type": "Solid",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
-              "value": [
-                {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [],
-                  "tag": null,
-                  "type": "extrudeArc"
-                }
-              ],
-              "sketch": {
-                "type": "Sketch",
-                "id": "[uuid]",
-                "paths": [
+                "innerPaths": [
                   {
                     "__geoMeta": {
                       "id": "[uuid]",
@@ -9728,13 +9770,13 @@ description: Variables in memory after executing french-press.kcl
                       0.0
                     ],
                     "from": [
-                      1.965,
+                      0.15,
                       0.0
                     ],
-                    "radius": 1.965,
+                    "radius": 0.15,
                     "tag": null,
                     "to": [
-                      1.965,
+                      0.15,
                       0.0
                     ],
                     "type": "Circle",
@@ -9938,175 +9980,7 @@ description: Variables in memory after executing french-press.kcl
                     }
                   }
                 ],
-                "on": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
-                  "origin": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 28.448,
-                    "units": {
-                      "type": "Mm"
-                    }
-                  },
-                  "type": "plane",
-                  "value": "Custom",
-                  "xAxis": {
-                    "x": 1.0,
-                    "y": 0.0,
-                    "z": 0.0,
-                    "units": {
-                      "type": "Unknown"
-                    }
-                  },
-                  "yAxis": {
-                    "x": 0.0,
-                    "y": 1.0,
-                    "z": 0.0,
-                    "units": {
-                      "type": "Unknown"
-                    }
-                  },
-                  "zAxis": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 1.0,
-                    "units": {
-                      "type": "Unknown"
-                    }
-                  }
-                },
-                "start": {
-                  "from": [
-                    1.965,
-                    0.0
-                  ],
-                  "to": [
-                    1.965,
-                    0.0
-                  ],
-                  "units": {
-                    "type": "Inches"
-                  },
-                  "tag": null,
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  }
-                },
-                "artifactId": "[uuid]",
-                "originalId": "[uuid]",
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              "height": 0.05,
-              "startCapId": "[uuid]",
-              "endCapId": "[uuid]",
-              "units": {
-                "type": "Inches"
-              },
-              "sectional": false
-            },
-            "units": {
-              "type": "Inches"
-            }
-          },
-          "start": {
-            "from": [
-              1.7,
-              0.0
-            ],
-            "to": [
-              1.7,
-              0.0
-            ],
-            "units": {
-              "type": "Inches"
-            },
-            "tag": null,
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            }
-          },
-          "artifactId": "[uuid]",
-          "originalId": "[uuid]",
-          "units": {
-            "type": "Inches"
-          }
-        }
-      },
-      {
-        "type": "Sketch",
-        "value": {
-          "type": "Sketch",
-          "id": "[uuid]",
-          "paths": [
-            {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              },
-              "ccw": true,
-              "center": [
-                1.4,
-                0.0
-              ],
-              "from": [
-                1.7,
-                0.0
-              ],
-              "radius": 0.3,
-              "tag": null,
-              "to": [
-                1.7,
-                0.0
-              ],
-              "type": "Circle",
-              "units": {
-                "type": "Inches"
-              }
-            }
-          ],
-          "on": {
-            "type": "face",
-            "id": "[uuid]",
-            "artifactId": "[uuid]",
-            "value": "end",
-            "xAxis": {
-              "x": 1.0,
-              "y": 0.0,
-              "z": 0.0,
-              "units": {
-                "type": "Unknown"
-              }
-            },
-            "yAxis": {
-              "x": 0.0,
-              "y": 1.0,
-              "z": 0.0,
-              "units": {
-                "type": "Unknown"
-              }
-            },
-            "solid": {
-              "type": "Solid",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
-              "value": [
-                {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [],
-                  "tag": null,
-                  "type": "extrudeArc"
-                }
-              ],
-              "sketch": {
-                "type": "Sketch",
-                "id": "[uuid]",
-                "paths": [
+                "innerPaths": [
                   {
                     "__geoMeta": {
                       "id": "[uuid]",
@@ -10118,13 +9992,13 @@ description: Variables in memory after executing french-press.kcl
                       0.0
                     ],
                     "from": [
-                      1.965,
+                      0.15,
                       0.0
                     ],
-                    "radius": 1.965,
+                    "radius": 0.15,
                     "tag": null,
                     "to": [
-                      1.965,
+                      0.15,
                       0.0
                     ],
                     "type": "Circle",
@@ -10328,6 +10202,33 @@ description: Variables in memory after executing french-press.kcl
                     }
                   }
                 ],
+                "innerPaths": [
+                  {
+                    "__geoMeta": {
+                      "id": "[uuid]",
+                      "sourceRange": []
+                    },
+                    "ccw": true,
+                    "center": [
+                      0.0,
+                      0.0
+                    ],
+                    "from": [
+                      0.15,
+                      0.0
+                    ],
+                    "radius": 0.15,
+                    "tag": null,
+                    "to": [
+                      0.15,
+                      0.0
+                    ],
+                    "type": "Circle",
+                    "units": {
+                      "type": "Inches"
+                    }
+                  }
+                ],
                 "on": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
@@ -10515,6 +10416,699 @@ description: Variables in memory after executing french-press.kcl
                     "tag": null,
                     "to": [
                       1.965,
+                      0.0
+                    ],
+                    "type": "Circle",
+                    "units": {
+                      "type": "Inches"
+                    }
+                  }
+                ],
+                "innerPaths": [
+                  {
+                    "__geoMeta": {
+                      "id": "[uuid]",
+                      "sourceRange": []
+                    },
+                    "ccw": true,
+                    "center": [
+                      0.0,
+                      0.0
+                    ],
+                    "from": [
+                      0.15,
+                      0.0
+                    ],
+                    "radius": 0.15,
+                    "tag": null,
+                    "to": [
+                      0.15,
+                      0.0
+                    ],
+                    "type": "Circle",
+                    "units": {
+                      "type": "Inches"
+                    }
+                  }
+                ],
+                "on": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 28.448,
+                    "units": {
+                      "type": "Mm"
+                    }
+                  },
+                  "type": "plane",
+                  "value": "Custom",
+                  "xAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": {
+                      "type": "Unknown"
+                    }
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "units": {
+                      "type": "Unknown"
+                    }
+                  },
+                  "zAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": {
+                      "type": "Unknown"
+                    }
+                  }
+                },
+                "start": {
+                  "from": [
+                    1.965,
+                    0.0
+                  ],
+                  "to": [
+                    1.965,
+                    0.0
+                  ],
+                  "units": {
+                    "type": "Inches"
+                  },
+                  "tag": null,
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  }
+                },
+                "artifactId": "[uuid]",
+                "originalId": "[uuid]",
+                "units": {
+                  "type": "Inches"
+                }
+              },
+              "height": 0.05,
+              "startCapId": "[uuid]",
+              "endCapId": "[uuid]",
+              "units": {
+                "type": "Inches"
+              },
+              "sectional": false
+            },
+            "units": {
+              "type": "Inches"
+            }
+          },
+          "start": {
+            "from": [
+              1.7,
+              0.0
+            ],
+            "to": [
+              1.7,
+              0.0
+            ],
+            "units": {
+              "type": "Inches"
+            },
+            "tag": null,
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            }
+          },
+          "artifactId": "[uuid]",
+          "originalId": "[uuid]",
+          "units": {
+            "type": "Inches"
+          }
+        }
+      },
+      {
+        "type": "Sketch",
+        "value": {
+          "type": "Sketch",
+          "id": "[uuid]",
+          "paths": [
+            {
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": []
+              },
+              "ccw": true,
+              "center": [
+                1.4,
+                0.0
+              ],
+              "from": [
+                1.7,
+                0.0
+              ],
+              "radius": 0.3,
+              "tag": null,
+              "to": [
+                1.7,
+                0.0
+              ],
+              "type": "Circle",
+              "units": {
+                "type": "Inches"
+              }
+            }
+          ],
+          "on": {
+            "type": "face",
+            "id": "[uuid]",
+            "artifactId": "[uuid]",
+            "value": "end",
+            "xAxis": {
+              "x": 1.0,
+              "y": 0.0,
+              "z": 0.0,
+              "units": {
+                "type": "Unknown"
+              }
+            },
+            "yAxis": {
+              "x": 0.0,
+              "y": 1.0,
+              "z": 0.0,
+              "units": {
+                "type": "Unknown"
+              }
+            },
+            "solid": {
+              "type": "Solid",
+              "id": "[uuid]",
+              "artifactId": "[uuid]",
+              "value": [
+                {
+                  "faceId": "[uuid]",
+                  "id": "[uuid]",
+                  "sourceRange": [],
+                  "tag": null,
+                  "type": "extrudeArc"
+                }
+              ],
+              "sketch": {
+                "type": "Sketch",
+                "id": "[uuid]",
+                "paths": [
+                  {
+                    "__geoMeta": {
+                      "id": "[uuid]",
+                      "sourceRange": []
+                    },
+                    "ccw": true,
+                    "center": [
+                      0.0,
+                      0.0
+                    ],
+                    "from": [
+                      1.965,
+                      0.0
+                    ],
+                    "radius": 1.965,
+                    "tag": null,
+                    "to": [
+                      1.965,
+                      0.0
+                    ],
+                    "type": "Circle",
+                    "units": {
+                      "type": "Inches"
+                    }
+                  }
+                ],
+                "innerPaths": [
+                  {
+                    "__geoMeta": {
+                      "id": "[uuid]",
+                      "sourceRange": []
+                    },
+                    "ccw": true,
+                    "center": [
+                      0.0,
+                      0.0
+                    ],
+                    "from": [
+                      0.15,
+                      0.0
+                    ],
+                    "radius": 0.15,
+                    "tag": null,
+                    "to": [
+                      0.15,
+                      0.0
+                    ],
+                    "type": "Circle",
+                    "units": {
+                      "type": "Inches"
+                    }
+                  }
+                ],
+                "on": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 28.448,
+                    "units": {
+                      "type": "Mm"
+                    }
+                  },
+                  "type": "plane",
+                  "value": "Custom",
+                  "xAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": {
+                      "type": "Unknown"
+                    }
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "units": {
+                      "type": "Unknown"
+                    }
+                  },
+                  "zAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": {
+                      "type": "Unknown"
+                    }
+                  }
+                },
+                "start": {
+                  "from": [
+                    1.965,
+                    0.0
+                  ],
+                  "to": [
+                    1.965,
+                    0.0
+                  ],
+                  "units": {
+                    "type": "Inches"
+                  },
+                  "tag": null,
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  }
+                },
+                "artifactId": "[uuid]",
+                "originalId": "[uuid]",
+                "units": {
+                  "type": "Inches"
+                }
+              },
+              "height": 0.05,
+              "startCapId": "[uuid]",
+              "endCapId": "[uuid]",
+              "units": {
+                "type": "Inches"
+              },
+              "sectional": false
+            },
+            "units": {
+              "type": "Inches"
+            }
+          },
+          "start": {
+            "from": [
+              1.7,
+              0.0
+            ],
+            "to": [
+              1.7,
+              0.0
+            ],
+            "units": {
+              "type": "Inches"
+            },
+            "tag": null,
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            }
+          },
+          "artifactId": "[uuid]",
+          "originalId": "[uuid]",
+          "units": {
+            "type": "Inches"
+          }
+        }
+      },
+      {
+        "type": "Sketch",
+        "value": {
+          "type": "Sketch",
+          "id": "[uuid]",
+          "paths": [
+            {
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": []
+              },
+              "ccw": true,
+              "center": [
+                1.4,
+                0.0
+              ],
+              "from": [
+                1.7,
+                0.0
+              ],
+              "radius": 0.3,
+              "tag": null,
+              "to": [
+                1.7,
+                0.0
+              ],
+              "type": "Circle",
+              "units": {
+                "type": "Inches"
+              }
+            }
+          ],
+          "on": {
+            "type": "face",
+            "id": "[uuid]",
+            "artifactId": "[uuid]",
+            "value": "end",
+            "xAxis": {
+              "x": 1.0,
+              "y": 0.0,
+              "z": 0.0,
+              "units": {
+                "type": "Unknown"
+              }
+            },
+            "yAxis": {
+              "x": 0.0,
+              "y": 1.0,
+              "z": 0.0,
+              "units": {
+                "type": "Unknown"
+              }
+            },
+            "solid": {
+              "type": "Solid",
+              "id": "[uuid]",
+              "artifactId": "[uuid]",
+              "value": [
+                {
+                  "faceId": "[uuid]",
+                  "id": "[uuid]",
+                  "sourceRange": [],
+                  "tag": null,
+                  "type": "extrudeArc"
+                }
+              ],
+              "sketch": {
+                "type": "Sketch",
+                "id": "[uuid]",
+                "paths": [
+                  {
+                    "__geoMeta": {
+                      "id": "[uuid]",
+                      "sourceRange": []
+                    },
+                    "ccw": true,
+                    "center": [
+                      0.0,
+                      0.0
+                    ],
+                    "from": [
+                      1.965,
+                      0.0
+                    ],
+                    "radius": 1.965,
+                    "tag": null,
+                    "to": [
+                      1.965,
+                      0.0
+                    ],
+                    "type": "Circle",
+                    "units": {
+                      "type": "Inches"
+                    }
+                  }
+                ],
+                "innerPaths": [
+                  {
+                    "__geoMeta": {
+                      "id": "[uuid]",
+                      "sourceRange": []
+                    },
+                    "ccw": true,
+                    "center": [
+                      0.0,
+                      0.0
+                    ],
+                    "from": [
+                      0.15,
+                      0.0
+                    ],
+                    "radius": 0.15,
+                    "tag": null,
+                    "to": [
+                      0.15,
+                      0.0
+                    ],
+                    "type": "Circle",
+                    "units": {
+                      "type": "Inches"
+                    }
+                  }
+                ],
+                "on": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 28.448,
+                    "units": {
+                      "type": "Mm"
+                    }
+                  },
+                  "type": "plane",
+                  "value": "Custom",
+                  "xAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": {
+                      "type": "Unknown"
+                    }
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "units": {
+                      "type": "Unknown"
+                    }
+                  },
+                  "zAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": {
+                      "type": "Unknown"
+                    }
+                  }
+                },
+                "start": {
+                  "from": [
+                    1.965,
+                    0.0
+                  ],
+                  "to": [
+                    1.965,
+                    0.0
+                  ],
+                  "units": {
+                    "type": "Inches"
+                  },
+                  "tag": null,
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  }
+                },
+                "artifactId": "[uuid]",
+                "originalId": "[uuid]",
+                "units": {
+                  "type": "Inches"
+                }
+              },
+              "height": 0.05,
+              "startCapId": "[uuid]",
+              "endCapId": "[uuid]",
+              "units": {
+                "type": "Inches"
+              },
+              "sectional": false
+            },
+            "units": {
+              "type": "Inches"
+            }
+          },
+          "start": {
+            "from": [
+              1.7,
+              0.0
+            ],
+            "to": [
+              1.7,
+              0.0
+            ],
+            "units": {
+              "type": "Inches"
+            },
+            "tag": null,
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            }
+          },
+          "artifactId": "[uuid]",
+          "originalId": "[uuid]",
+          "units": {
+            "type": "Inches"
+          }
+        }
+      },
+      {
+        "type": "Sketch",
+        "value": {
+          "type": "Sketch",
+          "id": "[uuid]",
+          "paths": [
+            {
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": []
+              },
+              "ccw": true,
+              "center": [
+                1.4,
+                0.0
+              ],
+              "from": [
+                1.7,
+                0.0
+              ],
+              "radius": 0.3,
+              "tag": null,
+              "to": [
+                1.7,
+                0.0
+              ],
+              "type": "Circle",
+              "units": {
+                "type": "Inches"
+              }
+            }
+          ],
+          "on": {
+            "type": "face",
+            "id": "[uuid]",
+            "artifactId": "[uuid]",
+            "value": "end",
+            "xAxis": {
+              "x": 1.0,
+              "y": 0.0,
+              "z": 0.0,
+              "units": {
+                "type": "Unknown"
+              }
+            },
+            "yAxis": {
+              "x": 0.0,
+              "y": 1.0,
+              "z": 0.0,
+              "units": {
+                "type": "Unknown"
+              }
+            },
+            "solid": {
+              "type": "Solid",
+              "id": "[uuid]",
+              "artifactId": "[uuid]",
+              "value": [
+                {
+                  "faceId": "[uuid]",
+                  "id": "[uuid]",
+                  "sourceRange": [],
+                  "tag": null,
+                  "type": "extrudeArc"
+                }
+              ],
+              "sketch": {
+                "type": "Sketch",
+                "id": "[uuid]",
+                "paths": [
+                  {
+                    "__geoMeta": {
+                      "id": "[uuid]",
+                      "sourceRange": []
+                    },
+                    "ccw": true,
+                    "center": [
+                      0.0,
+                      0.0
+                    ],
+                    "from": [
+                      1.965,
+                      0.0
+                    ],
+                    "radius": 1.965,
+                    "tag": null,
+                    "to": [
+                      1.965,
+                      0.0
+                    ],
+                    "type": "Circle",
+                    "units": {
+                      "type": "Inches"
+                    }
+                  }
+                ],
+                "innerPaths": [
+                  {
+                    "__geoMeta": {
+                      "id": "[uuid]",
+                      "sourceRange": []
+                    },
+                    "ccw": true,
+                    "center": [
+                      0.0,
+                      0.0
+                    ],
+                    "from": [
+                      0.15,
+                      0.0
+                    ],
+                    "radius": 0.15,
+                    "tag": null,
+                    "to": [
+                      0.15,
                       0.0
                     ],
                     "type": "Circle",
@@ -10723,175 +11317,7 @@ description: Variables in memory after executing french-press.kcl
                     }
                   }
                 ],
-                "on": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
-                  "origin": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 28.448,
-                    "units": {
-                      "type": "Mm"
-                    }
-                  },
-                  "type": "plane",
-                  "value": "Custom",
-                  "xAxis": {
-                    "x": 1.0,
-                    "y": 0.0,
-                    "z": 0.0,
-                    "units": {
-                      "type": "Unknown"
-                    }
-                  },
-                  "yAxis": {
-                    "x": 0.0,
-                    "y": 1.0,
-                    "z": 0.0,
-                    "units": {
-                      "type": "Unknown"
-                    }
-                  },
-                  "zAxis": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 1.0,
-                    "units": {
-                      "type": "Unknown"
-                    }
-                  }
-                },
-                "start": {
-                  "from": [
-                    1.965,
-                    0.0
-                  ],
-                  "to": [
-                    1.965,
-                    0.0
-                  ],
-                  "units": {
-                    "type": "Inches"
-                  },
-                  "tag": null,
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  }
-                },
-                "artifactId": "[uuid]",
-                "originalId": "[uuid]",
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              "height": 0.05,
-              "startCapId": "[uuid]",
-              "endCapId": "[uuid]",
-              "units": {
-                "type": "Inches"
-              },
-              "sectional": false
-            },
-            "units": {
-              "type": "Inches"
-            }
-          },
-          "start": {
-            "from": [
-              0.8,
-              0.0
-            ],
-            "to": [
-              0.8,
-              0.0
-            ],
-            "units": {
-              "type": "Inches"
-            },
-            "tag": null,
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            }
-          },
-          "artifactId": "[uuid]",
-          "originalId": "[uuid]",
-          "units": {
-            "type": "Inches"
-          }
-        }
-      },
-      {
-        "type": "Sketch",
-        "value": {
-          "type": "Sketch",
-          "id": "[uuid]",
-          "paths": [
-            {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              },
-              "ccw": true,
-              "center": [
-                0.6,
-                0.0
-              ],
-              "from": [
-                0.8,
-                0.0
-              ],
-              "radius": 0.2,
-              "tag": null,
-              "to": [
-                0.8,
-                0.0
-              ],
-              "type": "Circle",
-              "units": {
-                "type": "Inches"
-              }
-            }
-          ],
-          "on": {
-            "type": "face",
-            "id": "[uuid]",
-            "artifactId": "[uuid]",
-            "value": "end",
-            "xAxis": {
-              "x": 1.0,
-              "y": 0.0,
-              "z": 0.0,
-              "units": {
-                "type": "Unknown"
-              }
-            },
-            "yAxis": {
-              "x": 0.0,
-              "y": 1.0,
-              "z": 0.0,
-              "units": {
-                "type": "Unknown"
-              }
-            },
-            "solid": {
-              "type": "Solid",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
-              "value": [
-                {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [],
-                  "tag": null,
-                  "type": "extrudeArc"
-                }
-              ],
-              "sketch": {
-                "type": "Sketch",
-                "id": "[uuid]",
-                "paths": [
+                "innerPaths": [
                   {
                     "__geoMeta": {
                       "id": "[uuid]",
@@ -10903,13 +11329,13 @@ description: Variables in memory after executing french-press.kcl
                       0.0
                     ],
                     "from": [
-                      1.965,
+                      0.15,
                       0.0
                     ],
-                    "radius": 1.965,
+                    "radius": 0.15,
                     "tag": null,
                     "to": [
-                      1.965,
+                      0.15,
                       0.0
                     ],
                     "type": "Circle",
@@ -11113,6 +11539,33 @@ description: Variables in memory after executing french-press.kcl
                     }
                   }
                 ],
+                "innerPaths": [
+                  {
+                    "__geoMeta": {
+                      "id": "[uuid]",
+                      "sourceRange": []
+                    },
+                    "ccw": true,
+                    "center": [
+                      0.0,
+                      0.0
+                    ],
+                    "from": [
+                      0.15,
+                      0.0
+                    ],
+                    "radius": 0.15,
+                    "tag": null,
+                    "to": [
+                      0.15,
+                      0.0
+                    ],
+                    "type": "Circle",
+                    "units": {
+                      "type": "Inches"
+                    }
+                  }
+                ],
                 "on": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
@@ -11300,6 +11753,255 @@ description: Variables in memory after executing french-press.kcl
                     "tag": null,
                     "to": [
                       1.965,
+                      0.0
+                    ],
+                    "type": "Circle",
+                    "units": {
+                      "type": "Inches"
+                    }
+                  }
+                ],
+                "innerPaths": [
+                  {
+                    "__geoMeta": {
+                      "id": "[uuid]",
+                      "sourceRange": []
+                    },
+                    "ccw": true,
+                    "center": [
+                      0.0,
+                      0.0
+                    ],
+                    "from": [
+                      0.15,
+                      0.0
+                    ],
+                    "radius": 0.15,
+                    "tag": null,
+                    "to": [
+                      0.15,
+                      0.0
+                    ],
+                    "type": "Circle",
+                    "units": {
+                      "type": "Inches"
+                    }
+                  }
+                ],
+                "on": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 28.448,
+                    "units": {
+                      "type": "Mm"
+                    }
+                  },
+                  "type": "plane",
+                  "value": "Custom",
+                  "xAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": {
+                      "type": "Unknown"
+                    }
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "units": {
+                      "type": "Unknown"
+                    }
+                  },
+                  "zAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": {
+                      "type": "Unknown"
+                    }
+                  }
+                },
+                "start": {
+                  "from": [
+                    1.965,
+                    0.0
+                  ],
+                  "to": [
+                    1.965,
+                    0.0
+                  ],
+                  "units": {
+                    "type": "Inches"
+                  },
+                  "tag": null,
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  }
+                },
+                "artifactId": "[uuid]",
+                "originalId": "[uuid]",
+                "units": {
+                  "type": "Inches"
+                }
+              },
+              "height": 0.05,
+              "startCapId": "[uuid]",
+              "endCapId": "[uuid]",
+              "units": {
+                "type": "Inches"
+              },
+              "sectional": false
+            },
+            "units": {
+              "type": "Inches"
+            }
+          },
+          "start": {
+            "from": [
+              0.8,
+              0.0
+            ],
+            "to": [
+              0.8,
+              0.0
+            ],
+            "units": {
+              "type": "Inches"
+            },
+            "tag": null,
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            }
+          },
+          "artifactId": "[uuid]",
+          "originalId": "[uuid]",
+          "units": {
+            "type": "Inches"
+          }
+        }
+      },
+      {
+        "type": "Sketch",
+        "value": {
+          "type": "Sketch",
+          "id": "[uuid]",
+          "paths": [
+            {
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": []
+              },
+              "ccw": true,
+              "center": [
+                0.6,
+                0.0
+              ],
+              "from": [
+                0.8,
+                0.0
+              ],
+              "radius": 0.2,
+              "tag": null,
+              "to": [
+                0.8,
+                0.0
+              ],
+              "type": "Circle",
+              "units": {
+                "type": "Inches"
+              }
+            }
+          ],
+          "on": {
+            "type": "face",
+            "id": "[uuid]",
+            "artifactId": "[uuid]",
+            "value": "end",
+            "xAxis": {
+              "x": 1.0,
+              "y": 0.0,
+              "z": 0.0,
+              "units": {
+                "type": "Unknown"
+              }
+            },
+            "yAxis": {
+              "x": 0.0,
+              "y": 1.0,
+              "z": 0.0,
+              "units": {
+                "type": "Unknown"
+              }
+            },
+            "solid": {
+              "type": "Solid",
+              "id": "[uuid]",
+              "artifactId": "[uuid]",
+              "value": [
+                {
+                  "faceId": "[uuid]",
+                  "id": "[uuid]",
+                  "sourceRange": [],
+                  "tag": null,
+                  "type": "extrudeArc"
+                }
+              ],
+              "sketch": {
+                "type": "Sketch",
+                "id": "[uuid]",
+                "paths": [
+                  {
+                    "__geoMeta": {
+                      "id": "[uuid]",
+                      "sourceRange": []
+                    },
+                    "ccw": true,
+                    "center": [
+                      0.0,
+                      0.0
+                    ],
+                    "from": [
+                      1.965,
+                      0.0
+                    ],
+                    "radius": 1.965,
+                    "tag": null,
+                    "to": [
+                      1.965,
+                      0.0
+                    ],
+                    "type": "Circle",
+                    "units": {
+                      "type": "Inches"
+                    }
+                  }
+                ],
+                "innerPaths": [
+                  {
+                    "__geoMeta": {
+                      "id": "[uuid]",
+                      "sourceRange": []
+                    },
+                    "ccw": true,
+                    "center": [
+                      0.0,
+                      0.0
+                    ],
+                    "from": [
+                      0.15,
+                      0.0
+                    ],
+                    "radius": 0.15,
+                    "tag": null,
+                    "to": [
+                      0.15,
                       0.0
                     ],
                     "type": "Circle",

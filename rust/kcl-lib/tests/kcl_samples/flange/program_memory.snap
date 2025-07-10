@@ -138,6 +138,108 @@ description: Variables in memory after executing flange.kcl
                   }
                 }
               ],
+              "innerPaths": [
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "ccw": true,
+                  "center": [
+                    1.75,
+                    0.0
+                  ],
+                  "from": [
+                    2.0625,
+                    0.0
+                  ],
+                  "radius": 0.3125,
+                  "tag": null,
+                  "to": [
+                    2.0625,
+                    0.0
+                  ],
+                  "type": "Circle",
+                  "units": {
+                    "type": "Inches"
+                  }
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "ccw": true,
+                  "center": [
+                    1.75,
+                    0.0
+                  ],
+                  "from": [
+                    2.0625,
+                    0.0
+                  ],
+                  "radius": 0.3125,
+                  "tag": null,
+                  "to": [
+                    2.0625,
+                    0.0
+                  ],
+                  "type": "Circle",
+                  "units": {
+                    "type": "Inches"
+                  }
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "ccw": true,
+                  "center": [
+                    1.75,
+                    0.0
+                  ],
+                  "from": [
+                    2.0625,
+                    0.0
+                  ],
+                  "radius": 0.3125,
+                  "tag": null,
+                  "to": [
+                    2.0625,
+                    0.0
+                  ],
+                  "type": "Circle",
+                  "units": {
+                    "type": "Inches"
+                  }
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "ccw": true,
+                  "center": [
+                    1.75,
+                    0.0
+                  ],
+                  "from": [
+                    2.0625,
+                    0.0
+                  ],
+                  "radius": 0.3125,
+                  "tag": null,
+                  "to": [
+                    2.0625,
+                    0.0
+                  ],
+                  "type": "Circle",
+                  "units": {
+                    "type": "Inches"
+                  }
+                }
+              ],
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
@@ -701,6 +803,108 @@ description: Variables in memory after executing flange.kcl
             }
           }
         ],
+        "innerPaths": [
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              1.75,
+              0.0
+            ],
+            "from": [
+              2.0625,
+              0.0
+            ],
+            "radius": 0.3125,
+            "tag": null,
+            "to": [
+              2.0625,
+              0.0
+            ],
+            "type": "Circle",
+            "units": {
+              "type": "Inches"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              1.75,
+              0.0
+            ],
+            "from": [
+              2.0625,
+              0.0
+            ],
+            "radius": 0.3125,
+            "tag": null,
+            "to": [
+              2.0625,
+              0.0
+            ],
+            "type": "Circle",
+            "units": {
+              "type": "Inches"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              1.75,
+              0.0
+            ],
+            "from": [
+              2.0625,
+              0.0
+            ],
+            "radius": 0.3125,
+            "tag": null,
+            "to": [
+              2.0625,
+              0.0
+            ],
+            "type": "Circle",
+            "units": {
+              "type": "Inches"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              1.75,
+              0.0
+            ],
+            "from": [
+              2.0625,
+              0.0
+            ],
+            "radius": 0.3125,
+            "tag": null,
+            "to": [
+              2.0625,
+              0.0
+            ],
+            "type": "Circle",
+            "units": {
+              "type": "Inches"
+            }
+          }
+        ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
@@ -997,6 +1201,108 @@ description: Variables in memory after executing flange.kcl
                         }
                       }
                     ],
+                    "innerPaths": [
+                      {
+                        "__geoMeta": {
+                          "id": "[uuid]",
+                          "sourceRange": []
+                        },
+                        "ccw": true,
+                        "center": [
+                          1.75,
+                          0.0
+                        ],
+                        "from": [
+                          2.0625,
+                          0.0
+                        ],
+                        "radius": 0.3125,
+                        "tag": null,
+                        "to": [
+                          2.0625,
+                          0.0
+                        ],
+                        "type": "Circle",
+                        "units": {
+                          "type": "Inches"
+                        }
+                      },
+                      {
+                        "__geoMeta": {
+                          "id": "[uuid]",
+                          "sourceRange": []
+                        },
+                        "ccw": true,
+                        "center": [
+                          1.75,
+                          0.0
+                        ],
+                        "from": [
+                          2.0625,
+                          0.0
+                        ],
+                        "radius": 0.3125,
+                        "tag": null,
+                        "to": [
+                          2.0625,
+                          0.0
+                        ],
+                        "type": "Circle",
+                        "units": {
+                          "type": "Inches"
+                        }
+                      },
+                      {
+                        "__geoMeta": {
+                          "id": "[uuid]",
+                          "sourceRange": []
+                        },
+                        "ccw": true,
+                        "center": [
+                          1.75,
+                          0.0
+                        ],
+                        "from": [
+                          2.0625,
+                          0.0
+                        ],
+                        "radius": 0.3125,
+                        "tag": null,
+                        "to": [
+                          2.0625,
+                          0.0
+                        ],
+                        "type": "Circle",
+                        "units": {
+                          "type": "Inches"
+                        }
+                      },
+                      {
+                        "__geoMeta": {
+                          "id": "[uuid]",
+                          "sourceRange": []
+                        },
+                        "ccw": true,
+                        "center": [
+                          1.75,
+                          0.0
+                        ],
+                        "from": [
+                          2.0625,
+                          0.0
+                        ],
+                        "radius": 0.3125,
+                        "tag": null,
+                        "to": [
+                          2.0625,
+                          0.0
+                        ],
+                        "type": "Circle",
+                        "units": {
+                          "type": "Inches"
+                        }
+                      }
+                    ],
                     "on": {
                       "artifactId": "[uuid]",
                       "id": "[uuid]",
@@ -1241,6 +1547,108 @@ description: Variables in memory after executing flange.kcl
                   "tag": null,
                   "to": [
                     2.3125,
+                    0.0
+                  ],
+                  "type": "Circle",
+                  "units": {
+                    "type": "Inches"
+                  }
+                }
+              ],
+              "innerPaths": [
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "ccw": true,
+                  "center": [
+                    1.75,
+                    0.0
+                  ],
+                  "from": [
+                    2.0625,
+                    0.0
+                  ],
+                  "radius": 0.3125,
+                  "tag": null,
+                  "to": [
+                    2.0625,
+                    0.0
+                  ],
+                  "type": "Circle",
+                  "units": {
+                    "type": "Inches"
+                  }
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "ccw": true,
+                  "center": [
+                    1.75,
+                    0.0
+                  ],
+                  "from": [
+                    2.0625,
+                    0.0
+                  ],
+                  "radius": 0.3125,
+                  "tag": null,
+                  "to": [
+                    2.0625,
+                    0.0
+                  ],
+                  "type": "Circle",
+                  "units": {
+                    "type": "Inches"
+                  }
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "ccw": true,
+                  "center": [
+                    1.75,
+                    0.0
+                  ],
+                  "from": [
+                    2.0625,
+                    0.0
+                  ],
+                  "radius": 0.3125,
+                  "tag": null,
+                  "to": [
+                    2.0625,
+                    0.0
+                  ],
+                  "type": "Circle",
+                  "units": {
+                    "type": "Inches"
+                  }
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "ccw": true,
+                  "center": [
+                    1.75,
+                    0.0
+                  ],
+                  "from": [
+                    2.0625,
+                    0.0
+                  ],
+                  "radius": 0.3125,
+                  "tag": null,
+                  "to": [
+                    2.0625,
                     0.0
                   ],
                   "type": "Circle",

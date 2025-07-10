@@ -260,74 +260,31 @@ pub(crate) async fn do_post_extrude<'a>(
         start_cap_id,
         end_cap_id,
     } = analyze_faces(exec_state, args, face_infos).await;
-
     // Iterate over the sketch.value array and add face_id to GeoMeta
     let no_engine_commands = args.ctx.no_engine_commands().await;
-    let mut new_value: Vec<ExtrudeSurface> = sketch
-        .paths
-        .iter()
-        .flat_map(|path| {
-            if let Some(Some(actual_face_id)) = face_id_map.get(&path.get_base().geo_meta.id) {
-                match path {
-                    Path::Arc { .. }
-                    | Path::TangentialArc { .. }
-                    | Path::TangentialArcTo { .. }
-                    // TODO: (bc) fix me
-                    | Path::Ellipse { .. }
-                    | Path::Conic {.. }
-                    | Path::Circle { .. }
-                    | Path::CircleThreePoint { .. } => {
-                        let extrude_surface = ExtrudeSurface::ExtrudeArc(crate::execution::ExtrudeArc {
-                            face_id: *actual_face_id,
-                            tag: path.get_base().tag.clone(),
-                            geo_meta: GeoMeta {
-                                id: path.get_base().geo_meta.id,
-                                metadata: path.get_base().geo_meta.metadata,
-                            },
-                        });
-                        Some(extrude_surface)
-                    }
-                    Path::Base { .. } | Path::ToPoint { .. } | Path::Horizontal { .. } | Path::AngledLineTo { .. } => {
-                        let extrude_surface = ExtrudeSurface::ExtrudePlane(crate::execution::ExtrudePlane {
-                            face_id: *actual_face_id,
-                            tag: path.get_base().tag.clone(),
-                            geo_meta: GeoMeta {
-                                id: path.get_base().geo_meta.id,
-                                metadata: path.get_base().geo_meta.metadata,
-                            },
-                        });
-                        Some(extrude_surface)
-                    }
-                    Path::ArcThreePoint { .. } => {
-                        let extrude_surface = ExtrudeSurface::ExtrudeArc(crate::execution::ExtrudeArc {
-                            face_id: *actual_face_id,
-                            tag: path.get_base().tag.clone(),
-                            geo_meta: GeoMeta {
-                                id: path.get_base().geo_meta.id,
-                                metadata: path.get_base().geo_meta.metadata,
-                            },
-                        });
-                        Some(extrude_surface)
-                    }
-                }
-            } else if no_engine_commands {
-                // Only pre-populate the extrude surface if we are in mock mode.
-
-                let extrude_surface = ExtrudeSurface::ExtrudePlane(crate::execution::ExtrudePlane {
-                    // pushing this values with a fake face_id to make extrudes mock-execute safe
-                    face_id: exec_state.next_uuid(),
-                    tag: path.get_base().tag.clone(),
-                    geo_meta: GeoMeta {
-                        id: path.get_base().geo_meta.id,
-                        metadata: path.get_base().geo_meta.metadata,
-                    },
-                });
-                Some(extrude_surface)
-            } else {
-                None
-            }
-        })
-        .collect();
+    let mut new_value: Vec<ExtrudeSurface> = Vec::with_capacity(sketch.paths.len() + sketch.inner_paths.len() + 2);
+    let outer_surfaces = sketch.paths.iter().flat_map(|path| {
+        if let Some(Some(actual_face_id)) = face_id_map.get(&path.get_base().geo_meta.id) {
+            surface_of(path, *actual_face_id)
+        } else if no_engine_commands {
+            // Only pre-populate the extrude surface if we are in mock mode.
+            fake_extrude_surface(exec_state, path)
+        } else {
+            None
+        }
+    });
+    new_value.extend(outer_surfaces);
+    let inner_surfaces = sketch.inner_paths.iter().flat_map(|path| {
+        if let Some(Some(actual_face_id)) = face_id_map.get(&path.get_base().geo_meta.id) {
+            surface_of(path, *actual_face_id)
+        } else if no_engine_commands {
+            // Only pre-populate the extrude surface if we are in mock mode.
+            fake_extrude_surface(exec_state, path)
+        } else {
+            None
+        }
+    });
+    new_value.extend(inner_surfaces);
 
     // Add the tags for the start or end caps.
     if let Some(tag_start) = named_cap_tags.start {
@@ -425,4 +382,62 @@ async fn analyze_faces(exec_state: &mut ExecState, args: &Args, face_infos: Vec<
         }
     }
     faces
+}
+fn surface_of(path: &Path, actual_face_id: Uuid) -> Option<ExtrudeSurface> {
+    match path {
+        Path::Arc { .. }
+        | Path::TangentialArc { .. }
+        | Path::TangentialArcTo { .. }
+        // TODO: (bc) fix me
+        | Path::Ellipse { .. }
+        | Path::Conic {.. }
+        | Path::Circle { .. }
+        | Path::CircleThreePoint { .. } => {
+            let extrude_surface = ExtrudeSurface::ExtrudeArc(crate::execution::ExtrudeArc {
+                face_id: actual_face_id,
+                tag: path.get_base().tag.clone(),
+                geo_meta: GeoMeta {
+                    id: path.get_base().geo_meta.id,
+                    metadata: path.get_base().geo_meta.metadata,
+                },
+            });
+            Some(extrude_surface)
+        }
+        Path::Base { .. } | Path::ToPoint { .. } | Path::Horizontal { .. } | Path::AngledLineTo { .. } => {
+            let extrude_surface = ExtrudeSurface::ExtrudePlane(crate::execution::ExtrudePlane {
+                face_id: actual_face_id,
+                tag: path.get_base().tag.clone(),
+                geo_meta: GeoMeta {
+                    id: path.get_base().geo_meta.id,
+                    metadata: path.get_base().geo_meta.metadata,
+                },
+            });
+            Some(extrude_surface)
+        }
+        Path::ArcThreePoint { .. } => {
+            let extrude_surface = ExtrudeSurface::ExtrudeArc(crate::execution::ExtrudeArc {
+                face_id: actual_face_id,
+                tag: path.get_base().tag.clone(),
+                geo_meta: GeoMeta {
+                    id: path.get_base().geo_meta.id,
+                    metadata: path.get_base().geo_meta.metadata,
+                },
+            });
+            Some(extrude_surface)
+        }
+    }
+}
+
+/// Create a fake extrude surface to report for mock execution, when there's no engine response.
+fn fake_extrude_surface(exec_state: &mut ExecState, path: &Path) -> Option<ExtrudeSurface> {
+    let extrude_surface = ExtrudeSurface::ExtrudePlane(crate::execution::ExtrudePlane {
+        // pushing this values with a fake face_id to make extrudes mock-execute safe
+        face_id: exec_state.next_uuid(),
+        tag: path.get_base().tag.clone(),
+        geo_meta: GeoMeta {
+            id: path.get_base().geo_meta.id,
+            metadata: path.get_base().geo_meta.metadata,
+        },
+    });
+    Some(extrude_surface)
 }
