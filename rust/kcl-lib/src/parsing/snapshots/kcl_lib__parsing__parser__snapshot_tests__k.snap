@@ -130,7 +130,7 @@ expression: actual
               "operator": "-",
               "right": {
                 "commentStart": 41,
-                "computed": false,
+                "computed": true,
                 "end": 49,
                 "moduleId": 0,
                 "object": {
@@ -152,16 +152,14 @@ expression: actual
                   "type": "Name"
                 },
                 "property": {
+                  "commentStart": 45,
+                  "end": 48,
+                  "moduleId": 0,
+                  "raw": "\"a\"",
+                  "start": 45,
                   "type": "Literal",
-                  "property": {
-                    "commentStart": 45,
-                    "end": 48,
-                    "moduleId": 0,
-                    "raw": "\"a\"",
-                    "start": 45,
-                    "type": "Literal",
-                    "value": "a"
-                  }
+                  "type": "Literal",
+                  "value": "a"
                 },
                 "start": 41,
                 "type": "MemberExpression",

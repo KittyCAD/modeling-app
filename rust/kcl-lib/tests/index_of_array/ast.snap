@@ -93,7 +93,7 @@ description: Result of parsing index_of_array.kcl
           },
           "init": {
             "commentStart": 0,
-            "computed": false,
+            "computed": true,
             "end": 0,
             "moduleId": 0,
             "object": {
@@ -115,18 +115,16 @@ description: Result of parsing index_of_array.kcl
               "type": "Name"
             },
             "property": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "raw": "1",
+              "start": 0,
               "type": "Literal",
-              "property": {
-                "commentStart": 0,
-                "end": 0,
-                "moduleId": 0,
-                "raw": "1",
-                "start": 0,
-                "type": "Literal",
-                "value": {
-                  "value": 1.0,
-                  "suffix": "None"
-                }
+              "type": "Literal",
+              "value": {
+                "value": 1.0,
+                "suffix": "None"
               }
             },
             "start": 0,
@@ -436,15 +434,22 @@ description: Result of parsing index_of_array.kcl
               "type": "Name"
             },
             "property": {
-              "type": "Identifier",
-              "property": {
+              "abs_path": false,
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": {
                 "commentStart": 0,
                 "end": 0,
                 "moduleId": 0,
                 "name": "i",
                 "start": 0,
                 "type": "Identifier"
-              }
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
             },
             "start": 0,
             "type": "MemberExpression",

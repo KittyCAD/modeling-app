@@ -15101,7 +15101,7 @@ description: Result of parsing clock.kcl
               },
               "arg": {
                 "commentStart": 0,
-                "computed": false,
+                "computed": true,
                 "end": 0,
                 "moduleId": 0,
                 "object": {
@@ -15133,48 +15133,60 @@ description: Result of parsing clock.kcl
                       "type": "Name"
                     },
                     "property": {
-                      "type": "Identifier",
-                      "property": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
                         "name": "one",
                         "start": 0,
                         "type": "Identifier"
-                      }
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "start": 0,
                     "type": "MemberExpression",
                     "type": "MemberExpression"
                   },
                   "property": {
-                    "type": "Identifier",
-                    "property": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
                       "name": "i",
                       "start": 0,
                       "type": "Identifier"
-                    }
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "start": 0,
                   "type": "MemberExpression",
                   "type": "MemberExpression"
                 },
                 "property": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "raw": "0",
+                  "start": 0,
                   "type": "Literal",
-                  "property": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "raw": "0",
-                    "start": 0,
-                    "type": "Literal",
-                    "value": {
-                      "value": 0.0,
-                      "suffix": "None"
-                    }
+                  "type": "Literal",
+                  "value": {
+                    "value": 0.0,
+                    "suffix": "None"
                   }
                 },
                 "start": 0,
@@ -15194,7 +15206,7 @@ description: Result of parsing clock.kcl
               },
               "arg": {
                 "commentStart": 0,
-                "computed": false,
+                "computed": true,
                 "end": 0,
                 "moduleId": 0,
                 "object": {
@@ -15226,48 +15238,60 @@ description: Result of parsing clock.kcl
                       "type": "Name"
                     },
                     "property": {
-                      "type": "Identifier",
-                      "property": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
                         "name": "one",
                         "start": 0,
                         "type": "Identifier"
-                      }
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "start": 0,
                     "type": "MemberExpression",
                     "type": "MemberExpression"
                   },
                   "property": {
-                    "type": "Identifier",
-                    "property": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
                       "name": "i",
                       "start": 0,
                       "type": "Identifier"
-                    }
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "start": 0,
                   "type": "MemberExpression",
                   "type": "MemberExpression"
                 },
                 "property": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "raw": "1",
+                  "start": 0,
                   "type": "Literal",
-                  "property": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "raw": "1",
-                    "start": 0,
-                    "type": "Literal",
-                    "value": {
-                      "value": 1.0,
-                      "suffix": "None"
-                    }
+                  "type": "Literal",
+                  "value": {
+                    "value": 1.0,
+                    "suffix": "None"
                   }
                 },
                 "start": 0,
@@ -15331,7 +15355,7 @@ description: Result of parsing clock.kcl
               },
               "arg": {
                 "commentStart": 0,
-                "computed": false,
+                "computed": true,
                 "end": 0,
                 "moduleId": 0,
                 "object": {
@@ -15363,48 +15387,60 @@ description: Result of parsing clock.kcl
                       "type": "Name"
                     },
                     "property": {
-                      "type": "Identifier",
-                      "property": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
                         "name": "two",
                         "start": 0,
                         "type": "Identifier"
-                      }
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "start": 0,
                     "type": "MemberExpression",
                     "type": "MemberExpression"
                   },
                   "property": {
-                    "type": "Identifier",
-                    "property": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
                       "name": "i",
                       "start": 0,
                       "type": "Identifier"
-                    }
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "start": 0,
                   "type": "MemberExpression",
                   "type": "MemberExpression"
                 },
                 "property": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "raw": "0",
+                  "start": 0,
                   "type": "Literal",
-                  "property": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "raw": "0",
-                    "start": 0,
-                    "type": "Literal",
-                    "value": {
-                      "value": 0.0,
-                      "suffix": "None"
-                    }
+                  "type": "Literal",
+                  "value": {
+                    "value": 0.0,
+                    "suffix": "None"
                   }
                 },
                 "start": 0,
@@ -15424,7 +15460,7 @@ description: Result of parsing clock.kcl
               },
               "arg": {
                 "commentStart": 0,
-                "computed": false,
+                "computed": true,
                 "end": 0,
                 "moduleId": 0,
                 "object": {
@@ -15456,48 +15492,60 @@ description: Result of parsing clock.kcl
                       "type": "Name"
                     },
                     "property": {
-                      "type": "Identifier",
-                      "property": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
                         "name": "two",
                         "start": 0,
                         "type": "Identifier"
-                      }
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "start": 0,
                     "type": "MemberExpression",
                     "type": "MemberExpression"
                   },
                   "property": {
-                    "type": "Identifier",
-                    "property": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
                       "name": "i",
                       "start": 0,
                       "type": "Identifier"
-                    }
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "start": 0,
                   "type": "MemberExpression",
                   "type": "MemberExpression"
                 },
                 "property": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "raw": "1",
+                  "start": 0,
                   "type": "Literal",
-                  "property": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "raw": "1",
-                    "start": 0,
-                    "type": "Literal",
-                    "value": {
-                      "value": 1.0,
-                      "suffix": "None"
-                    }
+                  "type": "Literal",
+                  "value": {
+                    "value": 1.0,
+                    "suffix": "None"
                   }
                 },
                 "start": 0,
@@ -15558,7 +15606,7 @@ description: Result of parsing clock.kcl
               },
               "arg": {
                 "commentStart": 0,
-                "computed": false,
+                "computed": true,
                 "end": 0,
                 "moduleId": 0,
                 "object": {
@@ -15590,48 +15638,60 @@ description: Result of parsing clock.kcl
                       "type": "Name"
                     },
                     "property": {
-                      "type": "Identifier",
-                      "property": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
                         "name": "two",
                         "start": 0,
                         "type": "Identifier"
-                      }
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "start": 0,
                     "type": "MemberExpression",
                     "type": "MemberExpression"
                   },
                   "property": {
-                    "type": "Identifier",
-                    "property": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
                       "name": "i2",
                       "start": 0,
                       "type": "Identifier"
-                    }
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "start": 0,
                   "type": "MemberExpression",
                   "type": "MemberExpression"
                 },
                 "property": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "raw": "0",
+                  "start": 0,
                   "type": "Literal",
-                  "property": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "raw": "0",
-                    "start": 0,
-                    "type": "Literal",
-                    "value": {
-                      "value": 0.0,
-                      "suffix": "None"
-                    }
+                  "type": "Literal",
+                  "value": {
+                    "value": 0.0,
+                    "suffix": "None"
                   }
                 },
                 "start": 0,
@@ -15651,7 +15711,7 @@ description: Result of parsing clock.kcl
               },
               "arg": {
                 "commentStart": 0,
-                "computed": false,
+                "computed": true,
                 "end": 0,
                 "moduleId": 0,
                 "object": {
@@ -15683,48 +15743,60 @@ description: Result of parsing clock.kcl
                       "type": "Name"
                     },
                     "property": {
-                      "type": "Identifier",
-                      "property": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
                         "name": "two",
                         "start": 0,
                         "type": "Identifier"
-                      }
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "start": 0,
                     "type": "MemberExpression",
                     "type": "MemberExpression"
                   },
                   "property": {
-                    "type": "Identifier",
-                    "property": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
                       "name": "i2",
                       "start": 0,
                       "type": "Identifier"
-                    }
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "start": 0,
                   "type": "MemberExpression",
                   "type": "MemberExpression"
                 },
                 "property": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "raw": "1",
+                  "start": 0,
                   "type": "Literal",
-                  "property": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "raw": "1",
-                    "start": 0,
-                    "type": "Literal",
-                    "value": {
-                      "value": 1.0,
-                      "suffix": "None"
-                    }
+                  "type": "Literal",
+                  "value": {
+                    "value": 1.0,
+                    "suffix": "None"
                   }
                 },
                 "start": 0,
@@ -15780,7 +15852,7 @@ description: Result of parsing clock.kcl
               },
               "arg": {
                 "commentStart": 0,
-                "computed": false,
+                "computed": true,
                 "end": 0,
                 "moduleId": 0,
                 "object": {
@@ -15812,48 +15884,60 @@ description: Result of parsing clock.kcl
                       "type": "Name"
                     },
                     "property": {
-                      "type": "Identifier",
-                      "property": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
                         "name": "three",
                         "start": 0,
                         "type": "Identifier"
-                      }
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "start": 0,
                     "type": "MemberExpression",
                     "type": "MemberExpression"
                   },
                   "property": {
-                    "type": "Identifier",
-                    "property": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
                       "name": "i",
                       "start": 0,
                       "type": "Identifier"
-                    }
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "start": 0,
                   "type": "MemberExpression",
                   "type": "MemberExpression"
                 },
                 "property": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "raw": "0",
+                  "start": 0,
                   "type": "Literal",
-                  "property": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "raw": "0",
-                    "start": 0,
-                    "type": "Literal",
-                    "value": {
-                      "value": 0.0,
-                      "suffix": "None"
-                    }
+                  "type": "Literal",
+                  "value": {
+                    "value": 0.0,
+                    "suffix": "None"
                   }
                 },
                 "start": 0,
@@ -15873,7 +15957,7 @@ description: Result of parsing clock.kcl
               },
               "arg": {
                 "commentStart": 0,
-                "computed": false,
+                "computed": true,
                 "end": 0,
                 "moduleId": 0,
                 "object": {
@@ -15905,48 +15989,60 @@ description: Result of parsing clock.kcl
                       "type": "Name"
                     },
                     "property": {
-                      "type": "Identifier",
-                      "property": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
                         "name": "three",
                         "start": 0,
                         "type": "Identifier"
-                      }
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "start": 0,
                     "type": "MemberExpression",
                     "type": "MemberExpression"
                   },
                   "property": {
-                    "type": "Identifier",
-                    "property": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
                       "name": "i",
                       "start": 0,
                       "type": "Identifier"
-                    }
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "start": 0,
                   "type": "MemberExpression",
                   "type": "MemberExpression"
                 },
                 "property": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "raw": "1",
+                  "start": 0,
                   "type": "Literal",
-                  "property": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "raw": "1",
-                    "start": 0,
-                    "type": "Literal",
-                    "value": {
-                      "value": 1.0,
-                      "suffix": "None"
-                    }
+                  "type": "Literal",
+                  "value": {
+                    "value": 1.0,
+                    "suffix": "None"
                   }
                 },
                 "start": 0,
@@ -16007,7 +16103,7 @@ description: Result of parsing clock.kcl
               },
               "arg": {
                 "commentStart": 0,
-                "computed": false,
+                "computed": true,
                 "end": 0,
                 "moduleId": 0,
                 "object": {
@@ -16039,48 +16135,60 @@ description: Result of parsing clock.kcl
                       "type": "Name"
                     },
                     "property": {
-                      "type": "Identifier",
-                      "property": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
                         "name": "three",
                         "start": 0,
                         "type": "Identifier"
-                      }
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "start": 0,
                     "type": "MemberExpression",
                     "type": "MemberExpression"
                   },
                   "property": {
-                    "type": "Identifier",
-                    "property": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
                       "name": "i2",
                       "start": 0,
                       "type": "Identifier"
-                    }
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "start": 0,
                   "type": "MemberExpression",
                   "type": "MemberExpression"
                 },
                 "property": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "raw": "0",
+                  "start": 0,
                   "type": "Literal",
-                  "property": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "raw": "0",
-                    "start": 0,
-                    "type": "Literal",
-                    "value": {
-                      "value": 0.0,
-                      "suffix": "None"
-                    }
+                  "type": "Literal",
+                  "value": {
+                    "value": 0.0,
+                    "suffix": "None"
                   }
                 },
                 "start": 0,
@@ -16100,7 +16208,7 @@ description: Result of parsing clock.kcl
               },
               "arg": {
                 "commentStart": 0,
-                "computed": false,
+                "computed": true,
                 "end": 0,
                 "moduleId": 0,
                 "object": {
@@ -16132,48 +16240,60 @@ description: Result of parsing clock.kcl
                       "type": "Name"
                     },
                     "property": {
-                      "type": "Identifier",
-                      "property": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
                         "name": "three",
                         "start": 0,
                         "type": "Identifier"
-                      }
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "start": 0,
                     "type": "MemberExpression",
                     "type": "MemberExpression"
                   },
                   "property": {
-                    "type": "Identifier",
-                    "property": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
                       "name": "i2",
                       "start": 0,
                       "type": "Identifier"
-                    }
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "start": 0,
                   "type": "MemberExpression",
                   "type": "MemberExpression"
                 },
                 "property": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "raw": "1",
+                  "start": 0,
                   "type": "Literal",
-                  "property": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "raw": "1",
-                    "start": 0,
-                    "type": "Literal",
-                    "value": {
-                      "value": 1.0,
-                      "suffix": "None"
-                    }
+                  "type": "Literal",
+                  "value": {
+                    "value": 1.0,
+                    "suffix": "None"
                   }
                 },
                 "start": 0,
@@ -16229,7 +16349,7 @@ description: Result of parsing clock.kcl
               },
               "arg": {
                 "commentStart": 0,
-                "computed": false,
+                "computed": true,
                 "end": 0,
                 "moduleId": 0,
                 "object": {
@@ -16261,48 +16381,60 @@ description: Result of parsing clock.kcl
                       "type": "Name"
                     },
                     "property": {
-                      "type": "Identifier",
-                      "property": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
                         "name": "three",
                         "start": 0,
                         "type": "Identifier"
-                      }
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "start": 0,
                     "type": "MemberExpression",
                     "type": "MemberExpression"
                   },
                   "property": {
-                    "type": "Identifier",
-                    "property": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
                       "name": "i3",
                       "start": 0,
                       "type": "Identifier"
-                    }
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "start": 0,
                   "type": "MemberExpression",
                   "type": "MemberExpression"
                 },
                 "property": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "raw": "0",
+                  "start": 0,
                   "type": "Literal",
-                  "property": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "raw": "0",
-                    "start": 0,
-                    "type": "Literal",
-                    "value": {
-                      "value": 0.0,
-                      "suffix": "None"
-                    }
+                  "type": "Literal",
+                  "value": {
+                    "value": 0.0,
+                    "suffix": "None"
                   }
                 },
                 "start": 0,
@@ -16322,7 +16454,7 @@ description: Result of parsing clock.kcl
               },
               "arg": {
                 "commentStart": 0,
-                "computed": false,
+                "computed": true,
                 "end": 0,
                 "moduleId": 0,
                 "object": {
@@ -16354,48 +16486,60 @@ description: Result of parsing clock.kcl
                       "type": "Name"
                     },
                     "property": {
-                      "type": "Identifier",
-                      "property": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
                         "name": "three",
                         "start": 0,
                         "type": "Identifier"
-                      }
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "start": 0,
                     "type": "MemberExpression",
                     "type": "MemberExpression"
                   },
                   "property": {
-                    "type": "Identifier",
-                    "property": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
                       "name": "i3",
                       "start": 0,
                       "type": "Identifier"
-                    }
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "start": 0,
                   "type": "MemberExpression",
                   "type": "MemberExpression"
                 },
                 "property": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "raw": "1",
+                  "start": 0,
                   "type": "Literal",
-                  "property": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "raw": "1",
-                    "start": 0,
-                    "type": "Literal",
-                    "value": {
-                      "value": 1.0,
-                      "suffix": "None"
-                    }
+                  "type": "Literal",
+                  "value": {
+                    "value": 1.0,
+                    "suffix": "None"
                   }
                 },
                 "start": 0,
@@ -16451,7 +16595,7 @@ description: Result of parsing clock.kcl
               },
               "arg": {
                 "commentStart": 0,
-                "computed": false,
+                "computed": true,
                 "end": 0,
                 "moduleId": 0,
                 "object": {
@@ -16483,48 +16627,60 @@ description: Result of parsing clock.kcl
                       "type": "Name"
                     },
                     "property": {
-                      "type": "Identifier",
-                      "property": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
                         "name": "four",
                         "start": 0,
                         "type": "Identifier"
-                      }
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "start": 0,
                     "type": "MemberExpression",
                     "type": "MemberExpression"
                   },
                   "property": {
-                    "type": "Identifier",
-                    "property": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
                       "name": "i",
                       "start": 0,
                       "type": "Identifier"
-                    }
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "start": 0,
                   "type": "MemberExpression",
                   "type": "MemberExpression"
                 },
                 "property": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "raw": "0",
+                  "start": 0,
                   "type": "Literal",
-                  "property": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "raw": "0",
-                    "start": 0,
-                    "type": "Literal",
-                    "value": {
-                      "value": 0.0,
-                      "suffix": "None"
-                    }
+                  "type": "Literal",
+                  "value": {
+                    "value": 0.0,
+                    "suffix": "None"
                   }
                 },
                 "start": 0,
@@ -16544,7 +16700,7 @@ description: Result of parsing clock.kcl
               },
               "arg": {
                 "commentStart": 0,
-                "computed": false,
+                "computed": true,
                 "end": 0,
                 "moduleId": 0,
                 "object": {
@@ -16576,48 +16732,60 @@ description: Result of parsing clock.kcl
                       "type": "Name"
                     },
                     "property": {
-                      "type": "Identifier",
-                      "property": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
                         "name": "four",
                         "start": 0,
                         "type": "Identifier"
-                      }
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "start": 0,
                     "type": "MemberExpression",
                     "type": "MemberExpression"
                   },
                   "property": {
-                    "type": "Identifier",
-                    "property": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
                       "name": "i",
                       "start": 0,
                       "type": "Identifier"
-                    }
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "start": 0,
                   "type": "MemberExpression",
                   "type": "MemberExpression"
                 },
                 "property": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "raw": "1",
+                  "start": 0,
                   "type": "Literal",
-                  "property": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "raw": "1",
-                    "start": 0,
-                    "type": "Literal",
-                    "value": {
-                      "value": 1.0,
-                      "suffix": "None"
-                    }
+                  "type": "Literal",
+                  "value": {
+                    "value": 1.0,
+                    "suffix": "None"
                   }
                 },
                 "start": 0,
@@ -16678,7 +16846,7 @@ description: Result of parsing clock.kcl
               },
               "arg": {
                 "commentStart": 0,
-                "computed": false,
+                "computed": true,
                 "end": 0,
                 "moduleId": 0,
                 "object": {
@@ -16710,48 +16878,60 @@ description: Result of parsing clock.kcl
                       "type": "Name"
                     },
                     "property": {
-                      "type": "Identifier",
-                      "property": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
                         "name": "four",
                         "start": 0,
                         "type": "Identifier"
-                      }
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "start": 0,
                     "type": "MemberExpression",
                     "type": "MemberExpression"
                   },
                   "property": {
-                    "type": "Identifier",
-                    "property": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
                       "name": "v",
                       "start": 0,
                       "type": "Identifier"
-                    }
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "start": 0,
                   "type": "MemberExpression",
                   "type": "MemberExpression"
                 },
                 "property": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "raw": "0",
+                  "start": 0,
                   "type": "Literal",
-                  "property": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "raw": "0",
-                    "start": 0,
-                    "type": "Literal",
-                    "value": {
-                      "value": 0.0,
-                      "suffix": "None"
-                    }
+                  "type": "Literal",
+                  "value": {
+                    "value": 0.0,
+                    "suffix": "None"
                   }
                 },
                 "start": 0,
@@ -16771,7 +16951,7 @@ description: Result of parsing clock.kcl
               },
               "arg": {
                 "commentStart": 0,
-                "computed": false,
+                "computed": true,
                 "end": 0,
                 "moduleId": 0,
                 "object": {
@@ -16803,48 +16983,60 @@ description: Result of parsing clock.kcl
                       "type": "Name"
                     },
                     "property": {
-                      "type": "Identifier",
-                      "property": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
                         "name": "four",
                         "start": 0,
                         "type": "Identifier"
-                      }
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "start": 0,
                     "type": "MemberExpression",
                     "type": "MemberExpression"
                   },
                   "property": {
-                    "type": "Identifier",
-                    "property": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
                       "name": "v",
                       "start": 0,
                       "type": "Identifier"
-                    }
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "start": 0,
                   "type": "MemberExpression",
                   "type": "MemberExpression"
                 },
                 "property": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "raw": "1",
+                  "start": 0,
                   "type": "Literal",
-                  "property": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "raw": "1",
-                    "start": 0,
-                    "type": "Literal",
-                    "value": {
-                      "value": 1.0,
-                      "suffix": "None"
-                    }
+                  "type": "Literal",
+                  "value": {
+                    "value": 1.0,
+                    "suffix": "None"
                   }
                 },
                 "start": 0,
@@ -16900,7 +17092,7 @@ description: Result of parsing clock.kcl
               },
               "arg": {
                 "commentStart": 0,
-                "computed": false,
+                "computed": true,
                 "end": 0,
                 "moduleId": 0,
                 "object": {
@@ -16932,48 +17124,60 @@ description: Result of parsing clock.kcl
                       "type": "Name"
                     },
                     "property": {
-                      "type": "Identifier",
-                      "property": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
                         "name": "five",
                         "start": 0,
                         "type": "Identifier"
-                      }
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "start": 0,
                     "type": "MemberExpression",
                     "type": "MemberExpression"
                   },
                   "property": {
-                    "type": "Identifier",
-                    "property": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
                       "name": "v",
                       "start": 0,
                       "type": "Identifier"
-                    }
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "start": 0,
                   "type": "MemberExpression",
                   "type": "MemberExpression"
                 },
                 "property": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "raw": "0",
+                  "start": 0,
                   "type": "Literal",
-                  "property": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "raw": "0",
-                    "start": 0,
-                    "type": "Literal",
-                    "value": {
-                      "value": 0.0,
-                      "suffix": "None"
-                    }
+                  "type": "Literal",
+                  "value": {
+                    "value": 0.0,
+                    "suffix": "None"
                   }
                 },
                 "start": 0,
@@ -16993,7 +17197,7 @@ description: Result of parsing clock.kcl
               },
               "arg": {
                 "commentStart": 0,
-                "computed": false,
+                "computed": true,
                 "end": 0,
                 "moduleId": 0,
                 "object": {
@@ -17025,48 +17229,60 @@ description: Result of parsing clock.kcl
                       "type": "Name"
                     },
                     "property": {
-                      "type": "Identifier",
-                      "property": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
                         "name": "five",
                         "start": 0,
                         "type": "Identifier"
-                      }
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "start": 0,
                     "type": "MemberExpression",
                     "type": "MemberExpression"
                   },
                   "property": {
-                    "type": "Identifier",
-                    "property": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
                       "name": "v",
                       "start": 0,
                       "type": "Identifier"
-                    }
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "start": 0,
                   "type": "MemberExpression",
                   "type": "MemberExpression"
                 },
                 "property": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "raw": "1",
+                  "start": 0,
                   "type": "Literal",
-                  "property": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "raw": "1",
-                    "start": 0,
-                    "type": "Literal",
-                    "value": {
-                      "value": 1.0,
-                      "suffix": "None"
-                    }
+                  "type": "Literal",
+                  "value": {
+                    "value": 1.0,
+                    "suffix": "None"
                   }
                 },
                 "start": 0,
@@ -17127,7 +17343,7 @@ description: Result of parsing clock.kcl
               },
               "arg": {
                 "commentStart": 0,
-                "computed": false,
+                "computed": true,
                 "end": 0,
                 "moduleId": 0,
                 "object": {
@@ -17159,48 +17375,60 @@ description: Result of parsing clock.kcl
                       "type": "Name"
                     },
                     "property": {
-                      "type": "Identifier",
-                      "property": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
                         "name": "six",
                         "start": 0,
                         "type": "Identifier"
-                      }
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "start": 0,
                     "type": "MemberExpression",
                     "type": "MemberExpression"
                   },
                   "property": {
-                    "type": "Identifier",
-                    "property": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
                       "name": "v",
                       "start": 0,
                       "type": "Identifier"
-                    }
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "start": 0,
                   "type": "MemberExpression",
                   "type": "MemberExpression"
                 },
                 "property": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "raw": "0",
+                  "start": 0,
                   "type": "Literal",
-                  "property": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "raw": "0",
-                    "start": 0,
-                    "type": "Literal",
-                    "value": {
-                      "value": 0.0,
-                      "suffix": "None"
-                    }
+                  "type": "Literal",
+                  "value": {
+                    "value": 0.0,
+                    "suffix": "None"
                   }
                 },
                 "start": 0,
@@ -17220,7 +17448,7 @@ description: Result of parsing clock.kcl
               },
               "arg": {
                 "commentStart": 0,
-                "computed": false,
+                "computed": true,
                 "end": 0,
                 "moduleId": 0,
                 "object": {
@@ -17252,48 +17480,60 @@ description: Result of parsing clock.kcl
                       "type": "Name"
                     },
                     "property": {
-                      "type": "Identifier",
-                      "property": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
                         "name": "six",
                         "start": 0,
                         "type": "Identifier"
-                      }
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "start": 0,
                     "type": "MemberExpression",
                     "type": "MemberExpression"
                   },
                   "property": {
-                    "type": "Identifier",
-                    "property": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
                       "name": "v",
                       "start": 0,
                       "type": "Identifier"
-                    }
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "start": 0,
                   "type": "MemberExpression",
                   "type": "MemberExpression"
                 },
                 "property": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "raw": "1",
+                  "start": 0,
                   "type": "Literal",
-                  "property": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "raw": "1",
-                    "start": 0,
-                    "type": "Literal",
-                    "value": {
-                      "value": 1.0,
-                      "suffix": "None"
-                    }
+                  "type": "Literal",
+                  "value": {
+                    "value": 1.0,
+                    "suffix": "None"
                   }
                 },
                 "start": 0,
@@ -17354,7 +17594,7 @@ description: Result of parsing clock.kcl
               },
               "arg": {
                 "commentStart": 0,
-                "computed": false,
+                "computed": true,
                 "end": 0,
                 "moduleId": 0,
                 "object": {
@@ -17386,48 +17626,60 @@ description: Result of parsing clock.kcl
                       "type": "Name"
                     },
                     "property": {
-                      "type": "Identifier",
-                      "property": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
                         "name": "six",
                         "start": 0,
                         "type": "Identifier"
-                      }
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "start": 0,
                     "type": "MemberExpression",
                     "type": "MemberExpression"
                   },
                   "property": {
-                    "type": "Identifier",
-                    "property": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
                       "name": "i",
                       "start": 0,
                       "type": "Identifier"
-                    }
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "start": 0,
                   "type": "MemberExpression",
                   "type": "MemberExpression"
                 },
                 "property": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "raw": "0",
+                  "start": 0,
                   "type": "Literal",
-                  "property": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "raw": "0",
-                    "start": 0,
-                    "type": "Literal",
-                    "value": {
-                      "value": 0.0,
-                      "suffix": "None"
-                    }
+                  "type": "Literal",
+                  "value": {
+                    "value": 0.0,
+                    "suffix": "None"
                   }
                 },
                 "start": 0,
@@ -17447,7 +17699,7 @@ description: Result of parsing clock.kcl
               },
               "arg": {
                 "commentStart": 0,
-                "computed": false,
+                "computed": true,
                 "end": 0,
                 "moduleId": 0,
                 "object": {
@@ -17479,48 +17731,60 @@ description: Result of parsing clock.kcl
                       "type": "Name"
                     },
                     "property": {
-                      "type": "Identifier",
-                      "property": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
                         "name": "six",
                         "start": 0,
                         "type": "Identifier"
-                      }
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "start": 0,
                     "type": "MemberExpression",
                     "type": "MemberExpression"
                   },
                   "property": {
-                    "type": "Identifier",
-                    "property": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
                       "name": "i",
                       "start": 0,
                       "type": "Identifier"
-                    }
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "start": 0,
                   "type": "MemberExpression",
                   "type": "MemberExpression"
                 },
                 "property": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "raw": "1",
+                  "start": 0,
                   "type": "Literal",
-                  "property": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "raw": "1",
-                    "start": 0,
-                    "type": "Literal",
-                    "value": {
-                      "value": 1.0,
-                      "suffix": "None"
-                    }
+                  "type": "Literal",
+                  "value": {
+                    "value": 1.0,
+                    "suffix": "None"
                   }
                 },
                 "start": 0,
@@ -17576,7 +17840,7 @@ description: Result of parsing clock.kcl
               },
               "arg": {
                 "commentStart": 0,
-                "computed": false,
+                "computed": true,
                 "end": 0,
                 "moduleId": 0,
                 "object": {
@@ -17608,48 +17872,60 @@ description: Result of parsing clock.kcl
                       "type": "Name"
                     },
                     "property": {
-                      "type": "Identifier",
-                      "property": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
                         "name": "seven",
                         "start": 0,
                         "type": "Identifier"
-                      }
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "start": 0,
                     "type": "MemberExpression",
                     "type": "MemberExpression"
                   },
                   "property": {
-                    "type": "Identifier",
-                    "property": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
                       "name": "v",
                       "start": 0,
                       "type": "Identifier"
-                    }
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "start": 0,
                   "type": "MemberExpression",
                   "type": "MemberExpression"
                 },
                 "property": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "raw": "0",
+                  "start": 0,
                   "type": "Literal",
-                  "property": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "raw": "0",
-                    "start": 0,
-                    "type": "Literal",
-                    "value": {
-                      "value": 0.0,
-                      "suffix": "None"
-                    }
+                  "type": "Literal",
+                  "value": {
+                    "value": 0.0,
+                    "suffix": "None"
                   }
                 },
                 "start": 0,
@@ -17669,7 +17945,7 @@ description: Result of parsing clock.kcl
               },
               "arg": {
                 "commentStart": 0,
-                "computed": false,
+                "computed": true,
                 "end": 0,
                 "moduleId": 0,
                 "object": {
@@ -17701,48 +17977,60 @@ description: Result of parsing clock.kcl
                       "type": "Name"
                     },
                     "property": {
-                      "type": "Identifier",
-                      "property": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
                         "name": "seven",
                         "start": 0,
                         "type": "Identifier"
-                      }
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "start": 0,
                     "type": "MemberExpression",
                     "type": "MemberExpression"
                   },
                   "property": {
-                    "type": "Identifier",
-                    "property": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
                       "name": "v",
                       "start": 0,
                       "type": "Identifier"
-                    }
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "start": 0,
                   "type": "MemberExpression",
                   "type": "MemberExpression"
                 },
                 "property": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "raw": "1",
+                  "start": 0,
                   "type": "Literal",
-                  "property": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "raw": "1",
-                    "start": 0,
-                    "type": "Literal",
-                    "value": {
-                      "value": 1.0,
-                      "suffix": "None"
-                    }
+                  "type": "Literal",
+                  "value": {
+                    "value": 1.0,
+                    "suffix": "None"
                   }
                 },
                 "start": 0,
@@ -17803,7 +18091,7 @@ description: Result of parsing clock.kcl
               },
               "arg": {
                 "commentStart": 0,
-                "computed": false,
+                "computed": true,
                 "end": 0,
                 "moduleId": 0,
                 "object": {
@@ -17835,48 +18123,60 @@ description: Result of parsing clock.kcl
                       "type": "Name"
                     },
                     "property": {
-                      "type": "Identifier",
-                      "property": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
                         "name": "seven",
                         "start": 0,
                         "type": "Identifier"
-                      }
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "start": 0,
                     "type": "MemberExpression",
                     "type": "MemberExpression"
                   },
                   "property": {
-                    "type": "Identifier",
-                    "property": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
                       "name": "i",
                       "start": 0,
                       "type": "Identifier"
-                    }
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "start": 0,
                   "type": "MemberExpression",
                   "type": "MemberExpression"
                 },
                 "property": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "raw": "0",
+                  "start": 0,
                   "type": "Literal",
-                  "property": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "raw": "0",
-                    "start": 0,
-                    "type": "Literal",
-                    "value": {
-                      "value": 0.0,
-                      "suffix": "None"
-                    }
+                  "type": "Literal",
+                  "value": {
+                    "value": 0.0,
+                    "suffix": "None"
                   }
                 },
                 "start": 0,
@@ -17896,7 +18196,7 @@ description: Result of parsing clock.kcl
               },
               "arg": {
                 "commentStart": 0,
-                "computed": false,
+                "computed": true,
                 "end": 0,
                 "moduleId": 0,
                 "object": {
@@ -17928,48 +18228,60 @@ description: Result of parsing clock.kcl
                       "type": "Name"
                     },
                     "property": {
-                      "type": "Identifier",
-                      "property": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
                         "name": "seven",
                         "start": 0,
                         "type": "Identifier"
-                      }
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "start": 0,
                     "type": "MemberExpression",
                     "type": "MemberExpression"
                   },
                   "property": {
-                    "type": "Identifier",
-                    "property": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
                       "name": "i",
                       "start": 0,
                       "type": "Identifier"
-                    }
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "start": 0,
                   "type": "MemberExpression",
                   "type": "MemberExpression"
                 },
                 "property": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "raw": "1",
+                  "start": 0,
                   "type": "Literal",
-                  "property": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "raw": "1",
-                    "start": 0,
-                    "type": "Literal",
-                    "value": {
-                      "value": 1.0,
-                      "suffix": "None"
-                    }
+                  "type": "Literal",
+                  "value": {
+                    "value": 1.0,
+                    "suffix": "None"
                   }
                 },
                 "start": 0,
@@ -18025,7 +18337,7 @@ description: Result of parsing clock.kcl
               },
               "arg": {
                 "commentStart": 0,
-                "computed": false,
+                "computed": true,
                 "end": 0,
                 "moduleId": 0,
                 "object": {
@@ -18057,48 +18369,60 @@ description: Result of parsing clock.kcl
                       "type": "Name"
                     },
                     "property": {
-                      "type": "Identifier",
-                      "property": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
                         "name": "seven",
                         "start": 0,
                         "type": "Identifier"
-                      }
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "start": 0,
                     "type": "MemberExpression",
                     "type": "MemberExpression"
                   },
                   "property": {
-                    "type": "Identifier",
-                    "property": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
                       "name": "i2",
                       "start": 0,
                       "type": "Identifier"
-                    }
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "start": 0,
                   "type": "MemberExpression",
                   "type": "MemberExpression"
                 },
                 "property": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "raw": "0",
+                  "start": 0,
                   "type": "Literal",
-                  "property": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "raw": "0",
-                    "start": 0,
-                    "type": "Literal",
-                    "value": {
-                      "value": 0.0,
-                      "suffix": "None"
-                    }
+                  "type": "Literal",
+                  "value": {
+                    "value": 0.0,
+                    "suffix": "None"
                   }
                 },
                 "start": 0,
@@ -18118,7 +18442,7 @@ description: Result of parsing clock.kcl
               },
               "arg": {
                 "commentStart": 0,
-                "computed": false,
+                "computed": true,
                 "end": 0,
                 "moduleId": 0,
                 "object": {
@@ -18150,48 +18474,60 @@ description: Result of parsing clock.kcl
                       "type": "Name"
                     },
                     "property": {
-                      "type": "Identifier",
-                      "property": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
                         "name": "seven",
                         "start": 0,
                         "type": "Identifier"
-                      }
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "start": 0,
                     "type": "MemberExpression",
                     "type": "MemberExpression"
                   },
                   "property": {
-                    "type": "Identifier",
-                    "property": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
                       "name": "i2",
                       "start": 0,
                       "type": "Identifier"
-                    }
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "start": 0,
                   "type": "MemberExpression",
                   "type": "MemberExpression"
                 },
                 "property": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "raw": "1",
+                  "start": 0,
                   "type": "Literal",
-                  "property": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "raw": "1",
-                    "start": 0,
-                    "type": "Literal",
-                    "value": {
-                      "value": 1.0,
-                      "suffix": "None"
-                    }
+                  "type": "Literal",
+                  "value": {
+                    "value": 1.0,
+                    "suffix": "None"
                   }
                 },
                 "start": 0,
@@ -18247,7 +18583,7 @@ description: Result of parsing clock.kcl
               },
               "arg": {
                 "commentStart": 0,
-                "computed": false,
+                "computed": true,
                 "end": 0,
                 "moduleId": 0,
                 "object": {
@@ -18279,48 +18615,60 @@ description: Result of parsing clock.kcl
                       "type": "Name"
                     },
                     "property": {
-                      "type": "Identifier",
-                      "property": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
                         "name": "eight",
                         "start": 0,
                         "type": "Identifier"
-                      }
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "start": 0,
                     "type": "MemberExpression",
                     "type": "MemberExpression"
                   },
                   "property": {
-                    "type": "Identifier",
-                    "property": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
                       "name": "v",
                       "start": 0,
                       "type": "Identifier"
-                    }
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "start": 0,
                   "type": "MemberExpression",
                   "type": "MemberExpression"
                 },
                 "property": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "raw": "0",
+                  "start": 0,
                   "type": "Literal",
-                  "property": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "raw": "0",
-                    "start": 0,
-                    "type": "Literal",
-                    "value": {
-                      "value": 0.0,
-                      "suffix": "None"
-                    }
+                  "type": "Literal",
+                  "value": {
+                    "value": 0.0,
+                    "suffix": "None"
                   }
                 },
                 "start": 0,
@@ -18340,7 +18688,7 @@ description: Result of parsing clock.kcl
               },
               "arg": {
                 "commentStart": 0,
-                "computed": false,
+                "computed": true,
                 "end": 0,
                 "moduleId": 0,
                 "object": {
@@ -18372,48 +18720,60 @@ description: Result of parsing clock.kcl
                       "type": "Name"
                     },
                     "property": {
-                      "type": "Identifier",
-                      "property": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
                         "name": "eight",
                         "start": 0,
                         "type": "Identifier"
-                      }
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "start": 0,
                     "type": "MemberExpression",
                     "type": "MemberExpression"
                   },
                   "property": {
-                    "type": "Identifier",
-                    "property": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
                       "name": "v",
                       "start": 0,
                       "type": "Identifier"
-                    }
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "start": 0,
                   "type": "MemberExpression",
                   "type": "MemberExpression"
                 },
                 "property": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "raw": "1",
+                  "start": 0,
                   "type": "Literal",
-                  "property": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "raw": "1",
-                    "start": 0,
-                    "type": "Literal",
-                    "value": {
-                      "value": 1.0,
-                      "suffix": "None"
-                    }
+                  "type": "Literal",
+                  "value": {
+                    "value": 1.0,
+                    "suffix": "None"
                   }
                 },
                 "start": 0,
@@ -18474,7 +18834,7 @@ description: Result of parsing clock.kcl
               },
               "arg": {
                 "commentStart": 0,
-                "computed": false,
+                "computed": true,
                 "end": 0,
                 "moduleId": 0,
                 "object": {
@@ -18506,48 +18866,60 @@ description: Result of parsing clock.kcl
                       "type": "Name"
                     },
                     "property": {
-                      "type": "Identifier",
-                      "property": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
                         "name": "eight",
                         "start": 0,
                         "type": "Identifier"
-                      }
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "start": 0,
                     "type": "MemberExpression",
                     "type": "MemberExpression"
                   },
                   "property": {
-                    "type": "Identifier",
-                    "property": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
                       "name": "i",
                       "start": 0,
                       "type": "Identifier"
-                    }
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "start": 0,
                   "type": "MemberExpression",
                   "type": "MemberExpression"
                 },
                 "property": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "raw": "0",
+                  "start": 0,
                   "type": "Literal",
-                  "property": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "raw": "0",
-                    "start": 0,
-                    "type": "Literal",
-                    "value": {
-                      "value": 0.0,
-                      "suffix": "None"
-                    }
+                  "type": "Literal",
+                  "value": {
+                    "value": 0.0,
+                    "suffix": "None"
                   }
                 },
                 "start": 0,
@@ -18567,7 +18939,7 @@ description: Result of parsing clock.kcl
               },
               "arg": {
                 "commentStart": 0,
-                "computed": false,
+                "computed": true,
                 "end": 0,
                 "moduleId": 0,
                 "object": {
@@ -18599,48 +18971,60 @@ description: Result of parsing clock.kcl
                       "type": "Name"
                     },
                     "property": {
-                      "type": "Identifier",
-                      "property": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
                         "name": "eight",
                         "start": 0,
                         "type": "Identifier"
-                      }
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "start": 0,
                     "type": "MemberExpression",
                     "type": "MemberExpression"
                   },
                   "property": {
-                    "type": "Identifier",
-                    "property": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
                       "name": "i",
                       "start": 0,
                       "type": "Identifier"
-                    }
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "start": 0,
                   "type": "MemberExpression",
                   "type": "MemberExpression"
                 },
                 "property": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "raw": "1",
+                  "start": 0,
                   "type": "Literal",
-                  "property": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "raw": "1",
-                    "start": 0,
-                    "type": "Literal",
-                    "value": {
-                      "value": 1.0,
-                      "suffix": "None"
-                    }
+                  "type": "Literal",
+                  "value": {
+                    "value": 1.0,
+                    "suffix": "None"
                   }
                 },
                 "start": 0,
@@ -18696,7 +19080,7 @@ description: Result of parsing clock.kcl
               },
               "arg": {
                 "commentStart": 0,
-                "computed": false,
+                "computed": true,
                 "end": 0,
                 "moduleId": 0,
                 "object": {
@@ -18728,48 +19112,60 @@ description: Result of parsing clock.kcl
                       "type": "Name"
                     },
                     "property": {
-                      "type": "Identifier",
-                      "property": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
                         "name": "eight",
                         "start": 0,
                         "type": "Identifier"
-                      }
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "start": 0,
                     "type": "MemberExpression",
                     "type": "MemberExpression"
                   },
                   "property": {
-                    "type": "Identifier",
-                    "property": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
                       "name": "i2",
                       "start": 0,
                       "type": "Identifier"
-                    }
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "start": 0,
                   "type": "MemberExpression",
                   "type": "MemberExpression"
                 },
                 "property": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "raw": "0",
+                  "start": 0,
                   "type": "Literal",
-                  "property": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "raw": "0",
-                    "start": 0,
-                    "type": "Literal",
-                    "value": {
-                      "value": 0.0,
-                      "suffix": "None"
-                    }
+                  "type": "Literal",
+                  "value": {
+                    "value": 0.0,
+                    "suffix": "None"
                   }
                 },
                 "start": 0,
@@ -18789,7 +19185,7 @@ description: Result of parsing clock.kcl
               },
               "arg": {
                 "commentStart": 0,
-                "computed": false,
+                "computed": true,
                 "end": 0,
                 "moduleId": 0,
                 "object": {
@@ -18821,48 +19217,60 @@ description: Result of parsing clock.kcl
                       "type": "Name"
                     },
                     "property": {
-                      "type": "Identifier",
-                      "property": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
                         "name": "eight",
                         "start": 0,
                         "type": "Identifier"
-                      }
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "start": 0,
                     "type": "MemberExpression",
                     "type": "MemberExpression"
                   },
                   "property": {
-                    "type": "Identifier",
-                    "property": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
                       "name": "i2",
                       "start": 0,
                       "type": "Identifier"
-                    }
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "start": 0,
                   "type": "MemberExpression",
                   "type": "MemberExpression"
                 },
                 "property": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "raw": "1",
+                  "start": 0,
                   "type": "Literal",
-                  "property": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "raw": "1",
-                    "start": 0,
-                    "type": "Literal",
-                    "value": {
-                      "value": 1.0,
-                      "suffix": "None"
-                    }
+                  "type": "Literal",
+                  "value": {
+                    "value": 1.0,
+                    "suffix": "None"
                   }
                 },
                 "start": 0,
@@ -18918,7 +19326,7 @@ description: Result of parsing clock.kcl
               },
               "arg": {
                 "commentStart": 0,
-                "computed": false,
+                "computed": true,
                 "end": 0,
                 "moduleId": 0,
                 "object": {
@@ -18950,48 +19358,60 @@ description: Result of parsing clock.kcl
                       "type": "Name"
                     },
                     "property": {
-                      "type": "Identifier",
-                      "property": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
                         "name": "eight",
                         "start": 0,
                         "type": "Identifier"
-                      }
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "start": 0,
                     "type": "MemberExpression",
                     "type": "MemberExpression"
                   },
                   "property": {
-                    "type": "Identifier",
-                    "property": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
                       "name": "i3",
                       "start": 0,
                       "type": "Identifier"
-                    }
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "start": 0,
                   "type": "MemberExpression",
                   "type": "MemberExpression"
                 },
                 "property": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "raw": "0",
+                  "start": 0,
                   "type": "Literal",
-                  "property": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "raw": "0",
-                    "start": 0,
-                    "type": "Literal",
-                    "value": {
-                      "value": 0.0,
-                      "suffix": "None"
-                    }
+                  "type": "Literal",
+                  "value": {
+                    "value": 0.0,
+                    "suffix": "None"
                   }
                 },
                 "start": 0,
@@ -19011,7 +19431,7 @@ description: Result of parsing clock.kcl
               },
               "arg": {
                 "commentStart": 0,
-                "computed": false,
+                "computed": true,
                 "end": 0,
                 "moduleId": 0,
                 "object": {
@@ -19043,48 +19463,60 @@ description: Result of parsing clock.kcl
                       "type": "Name"
                     },
                     "property": {
-                      "type": "Identifier",
-                      "property": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
                         "name": "eight",
                         "start": 0,
                         "type": "Identifier"
-                      }
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "start": 0,
                     "type": "MemberExpression",
                     "type": "MemberExpression"
                   },
                   "property": {
-                    "type": "Identifier",
-                    "property": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
                       "name": "i3",
                       "start": 0,
                       "type": "Identifier"
-                    }
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "start": 0,
                   "type": "MemberExpression",
                   "type": "MemberExpression"
                 },
                 "property": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "raw": "1",
+                  "start": 0,
                   "type": "Literal",
-                  "property": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "raw": "1",
-                    "start": 0,
-                    "type": "Literal",
-                    "value": {
-                      "value": 1.0,
-                      "suffix": "None"
-                    }
+                  "type": "Literal",
+                  "value": {
+                    "value": 1.0,
+                    "suffix": "None"
                   }
                 },
                 "start": 0,
@@ -19140,7 +19572,7 @@ description: Result of parsing clock.kcl
               },
               "arg": {
                 "commentStart": 0,
-                "computed": false,
+                "computed": true,
                 "end": 0,
                 "moduleId": 0,
                 "object": {
@@ -19172,48 +19604,60 @@ description: Result of parsing clock.kcl
                       "type": "Name"
                     },
                     "property": {
-                      "type": "Identifier",
-                      "property": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
                         "name": "nine",
                         "start": 0,
                         "type": "Identifier"
-                      }
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "start": 0,
                     "type": "MemberExpression",
                     "type": "MemberExpression"
                   },
                   "property": {
-                    "type": "Identifier",
-                    "property": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
                       "name": "i",
                       "start": 0,
                       "type": "Identifier"
-                    }
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "start": 0,
                   "type": "MemberExpression",
                   "type": "MemberExpression"
                 },
                 "property": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "raw": "0",
+                  "start": 0,
                   "type": "Literal",
-                  "property": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "raw": "0",
-                    "start": 0,
-                    "type": "Literal",
-                    "value": {
-                      "value": 0.0,
-                      "suffix": "None"
-                    }
+                  "type": "Literal",
+                  "value": {
+                    "value": 0.0,
+                    "suffix": "None"
                   }
                 },
                 "start": 0,
@@ -19233,7 +19677,7 @@ description: Result of parsing clock.kcl
               },
               "arg": {
                 "commentStart": 0,
-                "computed": false,
+                "computed": true,
                 "end": 0,
                 "moduleId": 0,
                 "object": {
@@ -19265,48 +19709,60 @@ description: Result of parsing clock.kcl
                       "type": "Name"
                     },
                     "property": {
-                      "type": "Identifier",
-                      "property": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
                         "name": "nine",
                         "start": 0,
                         "type": "Identifier"
-                      }
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "start": 0,
                     "type": "MemberExpression",
                     "type": "MemberExpression"
                   },
                   "property": {
-                    "type": "Identifier",
-                    "property": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
                       "name": "i",
                       "start": 0,
                       "type": "Identifier"
-                    }
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "start": 0,
                   "type": "MemberExpression",
                   "type": "MemberExpression"
                 },
                 "property": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "raw": "1",
+                  "start": 0,
                   "type": "Literal",
-                  "property": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "raw": "1",
-                    "start": 0,
-                    "type": "Literal",
-                    "value": {
-                      "value": 1.0,
-                      "suffix": "None"
-                    }
+                  "type": "Literal",
+                  "value": {
+                    "value": 1.0,
+                    "suffix": "None"
                   }
                 },
                 "start": 0,
@@ -19367,7 +19823,7 @@ description: Result of parsing clock.kcl
               },
               "arg": {
                 "commentStart": 0,
-                "computed": false,
+                "computed": true,
                 "end": 0,
                 "moduleId": 0,
                 "object": {
@@ -19399,48 +19855,60 @@ description: Result of parsing clock.kcl
                       "type": "Name"
                     },
                     "property": {
-                      "type": "Identifier",
-                      "property": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
                         "name": "nine",
                         "start": 0,
                         "type": "Identifier"
-                      }
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "start": 0,
                     "type": "MemberExpression",
                     "type": "MemberExpression"
                   },
                   "property": {
-                    "type": "Identifier",
-                    "property": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
                       "name": "x",
                       "start": 0,
                       "type": "Identifier"
-                    }
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "start": 0,
                   "type": "MemberExpression",
                   "type": "MemberExpression"
                 },
                 "property": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "raw": "0",
+                  "start": 0,
                   "type": "Literal",
-                  "property": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "raw": "0",
-                    "start": 0,
-                    "type": "Literal",
-                    "value": {
-                      "value": 0.0,
-                      "suffix": "None"
-                    }
+                  "type": "Literal",
+                  "value": {
+                    "value": 0.0,
+                    "suffix": "None"
                   }
                 },
                 "start": 0,
@@ -19460,7 +19928,7 @@ description: Result of parsing clock.kcl
               },
               "arg": {
                 "commentStart": 0,
-                "computed": false,
+                "computed": true,
                 "end": 0,
                 "moduleId": 0,
                 "object": {
@@ -19492,48 +19960,60 @@ description: Result of parsing clock.kcl
                       "type": "Name"
                     },
                     "property": {
-                      "type": "Identifier",
-                      "property": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
                         "name": "nine",
                         "start": 0,
                         "type": "Identifier"
-                      }
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "start": 0,
                     "type": "MemberExpression",
                     "type": "MemberExpression"
                   },
                   "property": {
-                    "type": "Identifier",
-                    "property": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
                       "name": "x",
                       "start": 0,
                       "type": "Identifier"
-                    }
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "start": 0,
                   "type": "MemberExpression",
                   "type": "MemberExpression"
                 },
                 "property": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "raw": "1",
+                  "start": 0,
                   "type": "Literal",
-                  "property": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "raw": "1",
-                    "start": 0,
-                    "type": "Literal",
-                    "value": {
-                      "value": 1.0,
-                      "suffix": "None"
-                    }
+                  "type": "Literal",
+                  "value": {
+                    "value": 1.0,
+                    "suffix": "None"
                   }
                 },
                 "start": 0,
@@ -19589,7 +20069,7 @@ description: Result of parsing clock.kcl
               },
               "arg": {
                 "commentStart": 0,
-                "computed": false,
+                "computed": true,
                 "end": 0,
                 "moduleId": 0,
                 "object": {
@@ -19621,48 +20101,60 @@ description: Result of parsing clock.kcl
                       "type": "Name"
                     },
                     "property": {
-                      "type": "Identifier",
-                      "property": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
                         "name": "ten",
                         "start": 0,
                         "type": "Identifier"
-                      }
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "start": 0,
                     "type": "MemberExpression",
                     "type": "MemberExpression"
                   },
                   "property": {
-                    "type": "Identifier",
-                    "property": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
                       "name": "x",
                       "start": 0,
                       "type": "Identifier"
-                    }
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "start": 0,
                   "type": "MemberExpression",
                   "type": "MemberExpression"
                 },
                 "property": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "raw": "0",
+                  "start": 0,
                   "type": "Literal",
-                  "property": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "raw": "0",
-                    "start": 0,
-                    "type": "Literal",
-                    "value": {
-                      "value": 0.0,
-                      "suffix": "None"
-                    }
+                  "type": "Literal",
+                  "value": {
+                    "value": 0.0,
+                    "suffix": "None"
                   }
                 },
                 "start": 0,
@@ -19682,7 +20174,7 @@ description: Result of parsing clock.kcl
               },
               "arg": {
                 "commentStart": 0,
-                "computed": false,
+                "computed": true,
                 "end": 0,
                 "moduleId": 0,
                 "object": {
@@ -19714,48 +20206,60 @@ description: Result of parsing clock.kcl
                       "type": "Name"
                     },
                     "property": {
-                      "type": "Identifier",
-                      "property": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
                         "name": "ten",
                         "start": 0,
                         "type": "Identifier"
-                      }
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "start": 0,
                     "type": "MemberExpression",
                     "type": "MemberExpression"
                   },
                   "property": {
-                    "type": "Identifier",
-                    "property": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
                       "name": "x",
                       "start": 0,
                       "type": "Identifier"
-                    }
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "start": 0,
                   "type": "MemberExpression",
                   "type": "MemberExpression"
                 },
                 "property": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "raw": "1",
+                  "start": 0,
                   "type": "Literal",
-                  "property": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "raw": "1",
-                    "start": 0,
-                    "type": "Literal",
-                    "value": {
-                      "value": 1.0,
-                      "suffix": "None"
-                    }
+                  "type": "Literal",
+                  "value": {
+                    "value": 1.0,
+                    "suffix": "None"
                   }
                 },
                 "start": 0,
@@ -19816,7 +20320,7 @@ description: Result of parsing clock.kcl
               },
               "arg": {
                 "commentStart": 0,
-                "computed": false,
+                "computed": true,
                 "end": 0,
                 "moduleId": 0,
                 "object": {
@@ -19848,48 +20352,60 @@ description: Result of parsing clock.kcl
                       "type": "Name"
                     },
                     "property": {
-                      "type": "Identifier",
-                      "property": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
                         "name": "eleven",
                         "start": 0,
                         "type": "Identifier"
-                      }
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "start": 0,
                     "type": "MemberExpression",
                     "type": "MemberExpression"
                   },
                   "property": {
-                    "type": "Identifier",
-                    "property": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
                       "name": "x",
                       "start": 0,
                       "type": "Identifier"
-                    }
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "start": 0,
                   "type": "MemberExpression",
                   "type": "MemberExpression"
                 },
                 "property": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "raw": "0",
+                  "start": 0,
                   "type": "Literal",
-                  "property": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "raw": "0",
-                    "start": 0,
-                    "type": "Literal",
-                    "value": {
-                      "value": 0.0,
-                      "suffix": "None"
-                    }
+                  "type": "Literal",
+                  "value": {
+                    "value": 0.0,
+                    "suffix": "None"
                   }
                 },
                 "start": 0,
@@ -19909,7 +20425,7 @@ description: Result of parsing clock.kcl
               },
               "arg": {
                 "commentStart": 0,
-                "computed": false,
+                "computed": true,
                 "end": 0,
                 "moduleId": 0,
                 "object": {
@@ -19941,48 +20457,60 @@ description: Result of parsing clock.kcl
                       "type": "Name"
                     },
                     "property": {
-                      "type": "Identifier",
-                      "property": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
                         "name": "eleven",
                         "start": 0,
                         "type": "Identifier"
-                      }
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "start": 0,
                     "type": "MemberExpression",
                     "type": "MemberExpression"
                   },
                   "property": {
-                    "type": "Identifier",
-                    "property": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
                       "name": "x",
                       "start": 0,
                       "type": "Identifier"
-                    }
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "start": 0,
                   "type": "MemberExpression",
                   "type": "MemberExpression"
                 },
                 "property": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "raw": "1",
+                  "start": 0,
                   "type": "Literal",
-                  "property": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "raw": "1",
-                    "start": 0,
-                    "type": "Literal",
-                    "value": {
-                      "value": 1.0,
-                      "suffix": "None"
-                    }
+                  "type": "Literal",
+                  "value": {
+                    "value": 1.0,
+                    "suffix": "None"
                   }
                 },
                 "start": 0,
@@ -20043,7 +20571,7 @@ description: Result of parsing clock.kcl
               },
               "arg": {
                 "commentStart": 0,
-                "computed": false,
+                "computed": true,
                 "end": 0,
                 "moduleId": 0,
                 "object": {
@@ -20075,48 +20603,60 @@ description: Result of parsing clock.kcl
                       "type": "Name"
                     },
                     "property": {
-                      "type": "Identifier",
-                      "property": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
                         "name": "eleven",
                         "start": 0,
                         "type": "Identifier"
-                      }
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "start": 0,
                     "type": "MemberExpression",
                     "type": "MemberExpression"
                   },
                   "property": {
-                    "type": "Identifier",
-                    "property": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
                       "name": "i",
                       "start": 0,
                       "type": "Identifier"
-                    }
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "start": 0,
                   "type": "MemberExpression",
                   "type": "MemberExpression"
                 },
                 "property": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "raw": "0",
+                  "start": 0,
                   "type": "Literal",
-                  "property": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "raw": "0",
-                    "start": 0,
-                    "type": "Literal",
-                    "value": {
-                      "value": 0.0,
-                      "suffix": "None"
-                    }
+                  "type": "Literal",
+                  "value": {
+                    "value": 0.0,
+                    "suffix": "None"
                   }
                 },
                 "start": 0,
@@ -20136,7 +20676,7 @@ description: Result of parsing clock.kcl
               },
               "arg": {
                 "commentStart": 0,
-                "computed": false,
+                "computed": true,
                 "end": 0,
                 "moduleId": 0,
                 "object": {
@@ -20168,48 +20708,60 @@ description: Result of parsing clock.kcl
                       "type": "Name"
                     },
                     "property": {
-                      "type": "Identifier",
-                      "property": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
                         "name": "eleven",
                         "start": 0,
                         "type": "Identifier"
-                      }
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "start": 0,
                     "type": "MemberExpression",
                     "type": "MemberExpression"
                   },
                   "property": {
-                    "type": "Identifier",
-                    "property": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
                       "name": "i",
                       "start": 0,
                       "type": "Identifier"
-                    }
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "start": 0,
                   "type": "MemberExpression",
                   "type": "MemberExpression"
                 },
                 "property": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "raw": "1",
+                  "start": 0,
                   "type": "Literal",
-                  "property": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "raw": "1",
-                    "start": 0,
-                    "type": "Literal",
-                    "value": {
-                      "value": 1.0,
-                      "suffix": "None"
-                    }
+                  "type": "Literal",
+                  "value": {
+                    "value": 1.0,
+                    "suffix": "None"
                   }
                 },
                 "start": 0,
@@ -20265,7 +20817,7 @@ description: Result of parsing clock.kcl
               },
               "arg": {
                 "commentStart": 0,
-                "computed": false,
+                "computed": true,
                 "end": 0,
                 "moduleId": 0,
                 "object": {
@@ -20297,48 +20849,60 @@ description: Result of parsing clock.kcl
                       "type": "Name"
                     },
                     "property": {
-                      "type": "Identifier",
-                      "property": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
                         "name": "twelve",
                         "start": 0,
                         "type": "Identifier"
-                      }
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "start": 0,
                     "type": "MemberExpression",
                     "type": "MemberExpression"
                   },
                   "property": {
-                    "type": "Identifier",
-                    "property": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
                       "name": "x",
                       "start": 0,
                       "type": "Identifier"
-                    }
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "start": 0,
                   "type": "MemberExpression",
                   "type": "MemberExpression"
                 },
                 "property": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "raw": "0",
+                  "start": 0,
                   "type": "Literal",
-                  "property": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "raw": "0",
-                    "start": 0,
-                    "type": "Literal",
-                    "value": {
-                      "value": 0.0,
-                      "suffix": "None"
-                    }
+                  "type": "Literal",
+                  "value": {
+                    "value": 0.0,
+                    "suffix": "None"
                   }
                 },
                 "start": 0,
@@ -20358,7 +20922,7 @@ description: Result of parsing clock.kcl
               },
               "arg": {
                 "commentStart": 0,
-                "computed": false,
+                "computed": true,
                 "end": 0,
                 "moduleId": 0,
                 "object": {
@@ -20390,48 +20954,60 @@ description: Result of parsing clock.kcl
                       "type": "Name"
                     },
                     "property": {
-                      "type": "Identifier",
-                      "property": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
                         "name": "twelve",
                         "start": 0,
                         "type": "Identifier"
-                      }
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "start": 0,
                     "type": "MemberExpression",
                     "type": "MemberExpression"
                   },
                   "property": {
-                    "type": "Identifier",
-                    "property": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
                       "name": "x",
                       "start": 0,
                       "type": "Identifier"
-                    }
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "start": 0,
                   "type": "MemberExpression",
                   "type": "MemberExpression"
                 },
                 "property": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "raw": "1",
+                  "start": 0,
                   "type": "Literal",
-                  "property": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "raw": "1",
-                    "start": 0,
-                    "type": "Literal",
-                    "value": {
-                      "value": 1.0,
-                      "suffix": "None"
-                    }
+                  "type": "Literal",
+                  "value": {
+                    "value": 1.0,
+                    "suffix": "None"
                   }
                 },
                 "start": 0,
@@ -20492,7 +21068,7 @@ description: Result of parsing clock.kcl
               },
               "arg": {
                 "commentStart": 0,
-                "computed": false,
+                "computed": true,
                 "end": 0,
                 "moduleId": 0,
                 "object": {
@@ -20524,48 +21100,60 @@ description: Result of parsing clock.kcl
                       "type": "Name"
                     },
                     "property": {
-                      "type": "Identifier",
-                      "property": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
                         "name": "twelve",
                         "start": 0,
                         "type": "Identifier"
-                      }
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "start": 0,
                     "type": "MemberExpression",
                     "type": "MemberExpression"
                   },
                   "property": {
-                    "type": "Identifier",
-                    "property": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
                       "name": "i",
                       "start": 0,
                       "type": "Identifier"
-                    }
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "start": 0,
                   "type": "MemberExpression",
                   "type": "MemberExpression"
                 },
                 "property": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "raw": "0",
+                  "start": 0,
                   "type": "Literal",
-                  "property": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "raw": "0",
-                    "start": 0,
-                    "type": "Literal",
-                    "value": {
-                      "value": 0.0,
-                      "suffix": "None"
-                    }
+                  "type": "Literal",
+                  "value": {
+                    "value": 0.0,
+                    "suffix": "None"
                   }
                 },
                 "start": 0,
@@ -20585,7 +21173,7 @@ description: Result of parsing clock.kcl
               },
               "arg": {
                 "commentStart": 0,
-                "computed": false,
+                "computed": true,
                 "end": 0,
                 "moduleId": 0,
                 "object": {
@@ -20617,48 +21205,60 @@ description: Result of parsing clock.kcl
                       "type": "Name"
                     },
                     "property": {
-                      "type": "Identifier",
-                      "property": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
                         "name": "twelve",
                         "start": 0,
                         "type": "Identifier"
-                      }
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "start": 0,
                     "type": "MemberExpression",
                     "type": "MemberExpression"
                   },
                   "property": {
-                    "type": "Identifier",
-                    "property": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
                       "name": "i",
                       "start": 0,
                       "type": "Identifier"
-                    }
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "start": 0,
                   "type": "MemberExpression",
                   "type": "MemberExpression"
                 },
                 "property": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "raw": "1",
+                  "start": 0,
                   "type": "Literal",
-                  "property": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "raw": "1",
-                    "start": 0,
-                    "type": "Literal",
-                    "value": {
-                      "value": 1.0,
-                      "suffix": "None"
-                    }
+                  "type": "Literal",
+                  "value": {
+                    "value": 1.0,
+                    "suffix": "None"
                   }
                 },
                 "start": 0,
@@ -20714,7 +21314,7 @@ description: Result of parsing clock.kcl
               },
               "arg": {
                 "commentStart": 0,
-                "computed": false,
+                "computed": true,
                 "end": 0,
                 "moduleId": 0,
                 "object": {
@@ -20746,48 +21346,60 @@ description: Result of parsing clock.kcl
                       "type": "Name"
                     },
                     "property": {
-                      "type": "Identifier",
-                      "property": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
                         "name": "twelve",
                         "start": 0,
                         "type": "Identifier"
-                      }
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "start": 0,
                     "type": "MemberExpression",
                     "type": "MemberExpression"
                   },
                   "property": {
-                    "type": "Identifier",
-                    "property": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
                       "name": "i2",
                       "start": 0,
                       "type": "Identifier"
-                    }
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "start": 0,
                   "type": "MemberExpression",
                   "type": "MemberExpression"
                 },
                 "property": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "raw": "0",
+                  "start": 0,
                   "type": "Literal",
-                  "property": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "raw": "0",
-                    "start": 0,
-                    "type": "Literal",
-                    "value": {
-                      "value": 0.0,
-                      "suffix": "None"
-                    }
+                  "type": "Literal",
+                  "value": {
+                    "value": 0.0,
+                    "suffix": "None"
                   }
                 },
                 "start": 0,
@@ -20807,7 +21419,7 @@ description: Result of parsing clock.kcl
               },
               "arg": {
                 "commentStart": 0,
-                "computed": false,
+                "computed": true,
                 "end": 0,
                 "moduleId": 0,
                 "object": {
@@ -20839,48 +21451,60 @@ description: Result of parsing clock.kcl
                       "type": "Name"
                     },
                     "property": {
-                      "type": "Identifier",
-                      "property": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
                         "name": "twelve",
                         "start": 0,
                         "type": "Identifier"
-                      }
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "start": 0,
                     "type": "MemberExpression",
                     "type": "MemberExpression"
                   },
                   "property": {
-                    "type": "Identifier",
-                    "property": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
                       "name": "i2",
                       "start": 0,
                       "type": "Identifier"
-                    }
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "start": 0,
                   "type": "MemberExpression",
                   "type": "MemberExpression"
                 },
                 "property": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "raw": "1",
+                  "start": 0,
                   "type": "Literal",
-                  "property": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "raw": "1",
-                    "start": 0,
-                    "type": "Literal",
-                    "value": {
-                      "value": 1.0,
-                      "suffix": "None"
-                    }
+                  "type": "Literal",
+                  "value": {
+                    "value": 1.0,
+                    "suffix": "None"
                   }
                 },
                 "start": 0,

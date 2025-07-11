@@ -106,7 +106,7 @@ description: Result of parsing complex_expr_as_array_index.kcl
           },
           "init": {
             "commentStart": 0,
-            "computed": false,
+            "computed": true,
             "end": 0,
             "moduleId": 0,
             "object": {
@@ -128,18 +128,16 @@ description: Result of parsing complex_expr_as_array_index.kcl
               "type": "Name"
             },
             "property": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "raw": "2",
+              "start": 0,
               "type": "Literal",
-              "property": {
-                "commentStart": 0,
-                "end": 0,
-                "moduleId": 0,
-                "raw": "2",
-                "start": 0,
-                "type": "Literal",
-                "value": {
-                  "value": 2.0,
-                  "suffix": "None"
-                }
+              "type": "Literal",
+              "value": {
+                "value": 2.0,
+                "suffix": "None"
               }
             },
             "start": 0,

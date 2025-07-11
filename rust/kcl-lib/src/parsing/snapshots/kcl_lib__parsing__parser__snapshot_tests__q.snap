@@ -22,7 +22,7 @@ expression: actual
           "elements": [
             {
               "commentStart": 11,
-              "computed": false,
+              "computed": true,
               "end": 19,
               "moduleId": 0,
               "object": {
@@ -44,16 +44,14 @@ expression: actual
                 "type": "Name"
               },
               "property": {
+                "commentStart": 15,
+                "end": 18,
+                "moduleId": 0,
+                "raw": "\"a\"",
+                "start": 15,
                 "type": "Literal",
-                "property": {
-                  "commentStart": 15,
-                  "end": 18,
-                  "moduleId": 0,
-                  "raw": "\"a\"",
-                  "start": 15,
-                  "type": "Literal",
-                  "value": "a"
-                }
+                "type": "Literal",
+                "value": "a"
               },
               "start": 11,
               "type": "MemberExpression",

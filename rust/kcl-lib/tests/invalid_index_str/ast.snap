@@ -93,7 +93,7 @@ description: Result of parsing invalid_index_str.kcl
           },
           "init": {
             "commentStart": 0,
-            "computed": false,
+            "computed": true,
             "end": 0,
             "moduleId": 0,
             "object": {
@@ -115,16 +115,14 @@ description: Result of parsing invalid_index_str.kcl
               "type": "Name"
             },
             "property": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "raw": "\"s\"",
+              "start": 0,
               "type": "Literal",
-              "property": {
-                "commentStart": 0,
-                "end": 0,
-                "moduleId": 0,
-                "raw": "\"s\"",
-                "start": 0,
-                "type": "Literal",
-                "value": "s"
-              }
+              "type": "Literal",
+              "value": "s"
             },
             "start": 0,
             "type": "MemberExpression",

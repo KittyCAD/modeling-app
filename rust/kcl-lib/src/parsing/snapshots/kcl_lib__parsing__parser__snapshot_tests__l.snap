@@ -115,7 +115,7 @@ expression: actual
               "end": 49,
               "left": {
                 "commentStart": 37,
-                "computed": false,
+                "computed": true,
                 "end": 45,
                 "moduleId": 0,
                 "object": {
@@ -137,16 +137,14 @@ expression: actual
                   "type": "Name"
                 },
                 "property": {
+                  "commentStart": 41,
+                  "end": 44,
+                  "moduleId": 0,
+                  "raw": "\"a\"",
+                  "start": 41,
                   "type": "Literal",
-                  "property": {
-                    "commentStart": 41,
-                    "end": 44,
-                    "moduleId": 0,
-                    "raw": "\"a\"",
-                    "start": 41,
-                    "type": "Literal",
-                    "value": "a"
-                  }
+                  "type": "Literal",
+                  "value": "a"
                 },
                 "start": 37,
                 "type": "MemberExpression",

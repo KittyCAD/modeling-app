@@ -1380,30 +1380,44 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                               "type": "Name"
                             },
                             "property": {
-                              "type": "Identifier",
-                              "property": {
+                              "abs_path": false,
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": {
                                 "commentStart": 0,
                                 "end": 0,
                                 "moduleId": 0,
                                 "name": "tags",
                                 "start": 0,
                                 "type": "Identifier"
-                              }
+                              },
+                              "path": [],
+                              "start": 0,
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "start": 0,
                             "type": "MemberExpression",
                             "type": "MemberExpression"
                           },
                           "property": {
-                            "type": "Identifier",
-                            "property": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
                               "commentStart": 0,
                               "end": 0,
                               "moduleId": 0,
                               "name": "arc_tag",
                               "start": 0,
                               "type": "Identifier"
-                            }
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "start": 0,
                           "type": "MemberExpression",
@@ -1463,30 +1477,44 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                                 "type": "Name"
                               },
                               "property": {
-                                "type": "Identifier",
-                                "property": {
+                                "abs_path": false,
+                                "commentStart": 0,
+                                "end": 0,
+                                "moduleId": 0,
+                                "name": {
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
                                   "name": "tags",
                                   "start": 0,
                                   "type": "Identifier"
-                                }
+                                },
+                                "path": [],
+                                "start": 0,
+                                "type": "Name",
+                                "type": "Name"
                               },
                               "start": 0,
                               "type": "MemberExpression",
                               "type": "MemberExpression"
                             },
                             "property": {
-                              "type": "Identifier",
-                              "property": {
+                              "abs_path": false,
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": {
                                 "commentStart": 0,
                                 "end": 0,
                                 "moduleId": 0,
                                 "name": "arc_tag",
                                 "start": 0,
                                 "type": "Identifier"
-                              }
+                              },
+                              "path": [],
+                              "start": 0,
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "start": 0,
                             "type": "MemberExpression",
@@ -1809,30 +1837,44 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                               "type": "Name"
                             },
                             "property": {
-                              "type": "Identifier",
-                              "property": {
+                              "abs_path": false,
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": {
                                 "commentStart": 0,
                                 "end": 0,
                                 "moduleId": 0,
                                 "name": "tags",
                                 "start": 0,
                                 "type": "Identifier"
-                              }
+                              },
+                              "path": [],
+                              "start": 0,
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "start": 0,
                             "type": "MemberExpression",
                             "type": "MemberExpression"
                           },
                           "property": {
-                            "type": "Identifier",
-                            "property": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
                               "commentStart": 0,
                               "end": 0,
                               "moduleId": 0,
                               "name": "arc_tag",
                               "start": 0,
                               "type": "Identifier"
-                            }
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "start": 0,
                           "type": "MemberExpression",
@@ -1892,30 +1934,44 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                                 "type": "Name"
                               },
                               "property": {
-                                "type": "Identifier",
-                                "property": {
+                                "abs_path": false,
+                                "commentStart": 0,
+                                "end": 0,
+                                "moduleId": 0,
+                                "name": {
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
                                   "name": "tags",
                                   "start": 0,
                                   "type": "Identifier"
-                                }
+                                },
+                                "path": [],
+                                "start": 0,
+                                "type": "Name",
+                                "type": "Name"
                               },
                               "start": 0,
                               "type": "MemberExpression",
                               "type": "MemberExpression"
                             },
                             "property": {
-                              "type": "Identifier",
-                              "property": {
+                              "abs_path": false,
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": {
                                 "commentStart": 0,
                                 "end": 0,
                                 "moduleId": 0,
                                 "name": "arc_tag",
                                 "start": 0,
                                 "type": "Identifier"
-                              }
+                              },
+                              "path": [],
+                              "start": 0,
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "start": 0,
                             "type": "MemberExpression",

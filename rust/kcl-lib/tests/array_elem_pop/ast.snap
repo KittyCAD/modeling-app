@@ -358,7 +358,7 @@ description: Result of parsing array_elem_pop.kcl
           "type": "CallExpressionKw",
           "unlabeled": {
             "commentStart": 0,
-            "computed": false,
+            "computed": true,
             "end": 0,
             "moduleId": 0,
             "object": {
@@ -380,18 +380,16 @@ description: Result of parsing array_elem_pop.kcl
               "type": "Name"
             },
             "property": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "raw": "0",
+              "start": 0,
               "type": "Literal",
-              "property": {
-                "commentStart": 0,
-                "end": 0,
-                "moduleId": 0,
-                "raw": "0",
-                "start": 0,
-                "type": "Literal",
-                "value": {
-                  "value": 0.0,
-                  "suffix": "None"
-                }
+              "type": "Literal",
+              "value": {
+                "value": 0.0,
+                "suffix": "None"
               }
             },
             "start": 0,
@@ -480,7 +478,7 @@ description: Result of parsing array_elem_pop.kcl
           "type": "CallExpressionKw",
           "unlabeled": {
             "commentStart": 0,
-            "computed": false,
+            "computed": true,
             "end": 0,
             "moduleId": 0,
             "object": {
@@ -502,18 +500,16 @@ description: Result of parsing array_elem_pop.kcl
               "type": "Name"
             },
             "property": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "raw": "1",
+              "start": 0,
               "type": "Literal",
-              "property": {
-                "commentStart": 0,
-                "end": 0,
-                "moduleId": 0,
-                "raw": "1",
-                "start": 0,
-                "type": "Literal",
-                "value": {
-                  "value": 1.0,
-                  "suffix": "None"
-                }
+              "type": "Literal",
+              "value": {
+                "value": 1.0,
+                "suffix": "None"
               }
             },
             "start": 0,
@@ -602,7 +598,7 @@ description: Result of parsing array_elem_pop.kcl
           "type": "CallExpressionKw",
           "unlabeled": {
             "commentStart": 0,
-            "computed": false,
+            "computed": true,
             "end": 0,
             "moduleId": 0,
             "object": {
@@ -624,18 +620,16 @@ description: Result of parsing array_elem_pop.kcl
               "type": "Name"
             },
             "property": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "raw": "0",
+              "start": 0,
               "type": "Literal",
-              "property": {
-                "commentStart": 0,
-                "end": 0,
-                "moduleId": 0,
-                "raw": "0",
-                "start": 0,
-                "type": "Literal",
-                "value": {
-                  "value": 0.0,
-                  "suffix": "None"
-                }
+              "type": "Literal",
+              "value": {
+                "value": 0.0,
+                "suffix": "None"
               }
             },
             "start": 0,

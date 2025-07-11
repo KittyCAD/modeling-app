@@ -41,15 +41,22 @@ expression: actual
             "type": "Name"
           },
           "property": {
-            "type": "Identifier",
-            "property": {
+            "abs_path": false,
+            "commentStart": 9,
+            "end": 10,
+            "moduleId": 0,
+            "name": {
               "commentStart": 9,
               "end": 10,
               "moduleId": 0,
               "name": "x",
               "start": 9,
               "type": "Identifier"
-            }
+            },
+            "path": [],
+            "start": 9,
+            "type": "Name",
+            "type": "Name"
           },
           "start": 6,
           "type": "MemberExpression",

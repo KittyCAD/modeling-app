@@ -53,7 +53,7 @@ description: Result of parsing object_prop_not_found.kcl
           },
           "init": {
             "commentStart": 0,
-            "computed": false,
+            "computed": true,
             "end": 0,
             "moduleId": 0,
             "object": {
@@ -75,16 +75,14 @@ description: Result of parsing object_prop_not_found.kcl
               "type": "Name"
             },
             "property": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "raw": "\"age\"",
+              "start": 0,
               "type": "Literal",
-              "property": {
-                "commentStart": 0,
-                "end": 0,
-                "moduleId": 0,
-                "raw": "\"age\"",
-                "start": 0,
-                "type": "Literal",
-                "value": "age"
-              }
+              "type": "Literal",
+              "value": "age"
             },
             "start": 0,
             "type": "MemberExpression",

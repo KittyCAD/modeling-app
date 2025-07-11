@@ -19,7 +19,7 @@ expression: actual
         },
         "init": {
           "commentStart": 6,
-          "computed": false,
+          "computed": true,
           "end": 11,
           "moduleId": 0,
           "object": {
@@ -41,18 +41,16 @@ expression: actual
             "type": "Name"
           },
           "property": {
+            "commentStart": 9,
+            "end": 10,
+            "moduleId": 0,
+            "raw": "0",
+            "start": 9,
             "type": "Literal",
-            "property": {
-              "commentStart": 9,
-              "end": 10,
-              "moduleId": 0,
-              "raw": "0",
-              "start": 9,
-              "type": "Literal",
-              "value": {
-                "value": 0.0,
-                "suffix": "None"
-              }
+            "type": "Literal",
+            "value": {
+              "value": 0.0,
+              "suffix": "None"
             }
           },
           "start": 6,
