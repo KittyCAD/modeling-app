@@ -29,6 +29,7 @@ import {
   writeEnvironmentFile,
 } from '@src/lib/desktop'
 import { getEnvironmentName } from '@src/env'
+import env from '@src/env'
 
 function onSubmitKCLSampleCreation({
   sample,
@@ -489,7 +490,7 @@ export function createApplicationCommands({
         options: Object.keys(SUPPORTED_ENVIRONMENTS).map((name) => {
           return {
             value: name,
-            name: name,
+            name: name
           }
         }),
       },
@@ -519,9 +520,11 @@ export function createApplicationCommands({
       pool: {
         inputType: 'string',
         required: true,
+        defaultValue: () => env().POOL
       },
     },
   }
+
 
   return isDesktop()
     ? [
