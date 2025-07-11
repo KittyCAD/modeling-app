@@ -64,7 +64,8 @@ impl LiteralIdentifier {
     pub fn module_id(&self) -> ModuleId {
         match self {
             LiteralIdentifier::Identifier(identifier) => identifier.module_id,
-            LiteralIdentifier::Literal(literal) => literal.module_id,
+            LiteralIdentifier::Expr(node) => node.module_id(),
+            LiteralIdentifier::Literal(node) => node.module_id,
         }
     }
 }

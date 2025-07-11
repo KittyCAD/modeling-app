@@ -130,7 +130,7 @@ expression: actual
               "operator": "-",
               "right": {
                 "commentStart": 41,
-                "computed": false,
+                "computed": true,
                 "end": 49,
                 "moduleId": 0,
                 "object": {
@@ -157,6 +157,7 @@ expression: actual
                   "moduleId": 0,
                   "raw": "\"a\"",
                   "start": 45,
+                  "type": "Expr",
                   "type": "Literal",
                   "type": "Literal",
                   "value": "a"

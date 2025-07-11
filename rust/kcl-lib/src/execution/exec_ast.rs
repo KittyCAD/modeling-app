@@ -17,15 +17,13 @@ use crate::{
     },
     fmt,
     modules::{ModuleId, ModulePath, ModuleRepr},
-    parsing::{
-        ast::types::{
-            Annotation, ArrayExpression, ArrayRangeExpression, AscribedExpression, BinaryExpression, BinaryOperator,
-            BinaryPart, BodyItem, Expr, IfExpression, ImportPath, ImportSelector, ItemVisibility, LiteralIdentifier,
-            LiteralValue, MemberExpression, Name, Node, NodeRef, ObjectExpression, PipeExpression, Program,
-            TagDeclarator, Type, UnaryExpression, UnaryOperator,
-        },
-        token::NumericSuffix,
+    parsing::ast::types::{
+        Annotation, ArrayExpression, ArrayRangeExpression, AscribedExpression, BinaryExpression, BinaryOperator,
+        BinaryPart, BodyItem, Expr, IfExpression, ImportPath, ImportSelector, ItemVisibility, LiteralIdentifier,
+        LiteralValue, MemberExpression, Name, Node, NodeRef, ObjectExpression, PipeExpression, Program, TagDeclarator,
+        Type, UnaryExpression, UnaryOperator,
     },
+    pretty::NumericSuffix,
     source_range::SourceRange,
     std::args::TyF64,
 };
@@ -984,10 +982,20 @@ impl Node<Name> {
 
 impl Node<MemberExpression> {
     async fn get_result(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
-        let property = Property::try_from(self.computed, self.property.clone(), exec_state, self.into())?;
         let meta = Metadata {
             source_range: SourceRange::from(self),
         };
+        let property = Property::try_from(
+            self.computed,
+            self.property.clone(),
+            exec_state,
+            self.into(),
+            ctx,
+            &meta,
+            &[],
+            StatementKind::Expression,
+        )
+        .await?;
         let object = ctx
             .execute_expr(&self.object, exec_state, &meta, &[], StatementKind::Expression)
             .await?;
@@ -1726,11 +1734,16 @@ enum Property {
 }
 
 impl Property {
-    fn try_from(
+    #[allow(clippy::too_many_arguments)]
+    async fn try_from<'a>(
         computed: bool,
         value: LiteralIdentifier,
-        exec_state: &ExecState,
+        exec_state: &mut ExecState,
         sr: SourceRange,
+        ctx: &ExecutorContext,
+        metadata: &Metadata,
+        annotations: &[Node<Annotation>],
+        statement_kind: StatementKind<'a>,
     ) -> Result<Self, KclError> {
         let property_sr = vec![sr];
         let property_src: SourceRange = value.clone().into();
@@ -1761,7 +1774,39 @@ impl Property {
                             Ok(Property::UInt(x))
                         } else {
                             Err(KclError::new_semantic(KclErrorDetails::new(
-                                format!("{n} is not a valid index, indices must be whole numbers >= 0"),
+                                format!("{value} is not a valid index, indices must be whole numbers >= 0"),
+                                property_sr,
+                            )))
+                        }
+                    }
+                    _ => Err(KclError::new_semantic(KclErrorDetails::new(
+                        "Only numbers (>= 0) can be indexes".to_owned(),
+                        vec![sr],
+                    ))),
+                }
+            }
+            LiteralIdentifier::Expr(expr) => {
+                let prop_value = ctx
+                    .execute_expr(&expr, exec_state, metadata, annotations, statement_kind)
+                    .await?;
+                match prop_value {
+                    KclValue::Number { value, ty, meta: _ } => {
+                        if !matches!(
+                            ty,
+                            NumericType::Unknown
+                                | NumericType::Default { .. }
+                                | NumericType::Known(crate::exec::UnitType::Count)
+                        ) {
+                            return Err(KclError::new_semantic(KclErrorDetails::new(
+                                format!("{value} is not a valid index, indices must be non-dimensional numbers"),
+                                property_sr,
+                            )));
+                        }
+                        if let Some(x) = crate::try_f64_to_usize(value) {
+                            Ok(Property::UInt(x))
+                        } else {
+                            Err(KclError::new_semantic(KclErrorDetails::new(
+                                format!("{value} is not a valid index, indices must be whole numbers >= 0"),
                                 property_sr,
                             )))
                         }

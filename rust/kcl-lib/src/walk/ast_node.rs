@@ -234,6 +234,7 @@ impl<'tree> From<&'tree types::LiteralIdentifier> for Node<'tree> {
         match node {
             types::LiteralIdentifier::Identifier(id) => id.as_ref().into(),
             types::LiteralIdentifier::Literal(lit) => lit.as_ref().into(),
+            types::LiteralIdentifier::Expr(node) => node.into(),
         }
     }
 }

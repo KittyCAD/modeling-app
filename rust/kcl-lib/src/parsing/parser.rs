@@ -1312,13 +1312,14 @@ fn member_expression_dot(i: &mut TokenSlice) -> ModalResult<(LiteralIdentifier, 
 /// E.g. `people[0]` or `people[i]` or `people['adam']`
 fn member_expression_subscript(i: &mut TokenSlice) -> ModalResult<(LiteralIdentifier, usize, bool)> {
     let _ = open_bracket.parse_next(i)?;
-    // TODO: This should be an expression, not just a literal or identifier.
     let property = alt((
-        literal.map(LiteralIdentifier::Literal),
-        nameable_identifier.map(Box::new).map(LiteralIdentifier::Identifier),
+        terminated(literal, peek(close_bracket)).map(LiteralIdentifier::Literal),
+        terminated(nameable_identifier, peek(close_bracket))
+            .map(Box::new)
+            .map(LiteralIdentifier::Identifier),
+        expression.map(LiteralIdentifier::Expr),
     ))
     .parse_next(i)?;
-
     let end = close_bracket.parse_next(i)?.end;
     let computed = matches!(property, LiteralIdentifier::Identifier(_));
     Ok((property, end, computed))
@@ -3405,6 +3406,17 @@ mod tests {
         let tokens = crate::parsing::token::lex("[0] + 1", ModuleId::default()).unwrap();
         let tokens = tokens.as_slice();
         binary_expression.parse(tokens).unwrap();
+    }
+
+    #[test]
+    fn expression_in_array_index() {
+        let tokens = crate::parsing::token::lex("[x + 1]", ModuleId::default()).unwrap();
+        let tokens = tokens.as_slice();
+        let expr = member_expression_subscript.parse(tokens).unwrap();
+        let LiteralIdentifier::Expr(Expr::BinaryExpression(be)) = expr.0 else {
+            panic!();
+        };
+        assert_eq!(be.inner.operator, BinaryOperator::Add);
     }
 
     #[test]

@@ -173,8 +173,9 @@ impl BinaryPart {
 impl LiteralIdentifier {
     pub fn compute_digest(&mut self) -> Digest {
         match self {
-            LiteralIdentifier::Identifier(id) => id.compute_digest(),
-            LiteralIdentifier::Literal(lit) => lit.compute_digest(),
+            LiteralIdentifier::Identifier(node) => node.compute_digest(),
+            LiteralIdentifier::Literal(node) => node.compute_digest(),
+            LiteralIdentifier::Expr(node) => node.compute_digest(),
         }
     }
 }

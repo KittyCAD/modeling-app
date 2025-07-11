@@ -2761,9 +2761,11 @@ impl ObjectProperty {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
+#[allow(clippy::large_enum_variant)]
 pub enum LiteralIdentifier {
     Identifier(BoxNode<Identifier>),
     Literal(BoxNode<Literal>),
+    Expr(Expr),
 }
 
 impl LiteralIdentifier {
@@ -2771,6 +2773,7 @@ impl LiteralIdentifier {
         match self {
             LiteralIdentifier::Identifier(identifier) => identifier.start,
             LiteralIdentifier::Literal(literal) => literal.start,
+            LiteralIdentifier::Expr(e) => e.start(),
         }
     }
 
@@ -2778,6 +2781,7 @@ impl LiteralIdentifier {
         match self {
             LiteralIdentifier::Identifier(identifier) => identifier.end,
             LiteralIdentifier::Literal(literal) => literal.end,
+            LiteralIdentifier::Expr(e) => e.end(),
         }
     }
 
@@ -2830,6 +2834,7 @@ impl MemberExpression {
         match &mut self.property {
             LiteralIdentifier::Identifier(identifier) => identifier.rename(old_name, new_name),
             LiteralIdentifier::Literal(_) => {}
+            LiteralIdentifier::Expr(e) => e.rename_identifiers(old_name, new_name),
         }
     }
 }

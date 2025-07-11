@@ -115,7 +115,7 @@ expression: actual
               "end": 47,
               "left": {
                 "commentStart": 36,
-                "computed": false,
+                "computed": true,
                 "end": 44,
                 "moduleId": 0,
                 "object": {
@@ -142,6 +142,7 @@ expression: actual
                   "moduleId": 0,
                   "raw": "\"a\"",
                   "start": 40,
+                  "type": "Expr",
                   "type": "Literal",
                   "type": "Literal",
                   "value": "a"

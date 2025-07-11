@@ -698,6 +698,10 @@ impl MemberExpression {
                 }
             }
             LiteralIdentifier::Literal(lit) => format!("[{}]", &(*lit.raw)),
+            LiteralIdentifier::Expr(node) => {
+                let node_fmt = node.recast(options, indentation_level, ctxt);
+                format!("[{node_fmt}]")
+            }
         };
 
         self.object.recast(options, indentation_level, ctxt) + key_str.as_str()

@@ -22,7 +22,7 @@ expression: actual
           "elements": [
             {
               "commentStart": 11,
-              "computed": false,
+              "computed": true,
               "end": 19,
               "moduleId": 0,
               "object": {
@@ -49,6 +49,7 @@ expression: actual
                 "moduleId": 0,
                 "raw": "\"a\"",
                 "start": 15,
+                "type": "Expr",
                 "type": "Literal",
                 "type": "Literal",
                 "value": "a"
