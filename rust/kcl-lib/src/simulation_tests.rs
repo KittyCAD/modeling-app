@@ -260,6 +260,12 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
                     panic!("Step data was empty");
                 }
             }
+            let ok_snap = catch_unwind(AssertUnwindSafe(|| {
+                assert_snapshot(test, "Execution success", || {
+                    insta::assert_json_snapshot!("execution_success", ())
+                })
+            }));
+
             let (outcome, module_state) = exec_state.into_test_exec_outcome(env_ref, &ctx, &test.input_dir).await;
 
             assert_common_snapshots(test, outcome.variables);
@@ -268,9 +274,11 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
             drop(module_state);
             #[cfg(feature = "artifact-graph")]
             assert_artifact_snapshots(test, module_state, outcome.artifact_graph);
+
+            ok_snap.unwrap();
         }
         Err(e) => {
-            let ok_path = test.output_dir.join("program_memory.snap");
+            let ok_path = test.output_dir.join("execution_success.snap");
             let previously_passed = std::fs::exists(&ok_path).unwrap();
             match e.error {
                 crate::errors::ExecError::Kcl(error) => {
