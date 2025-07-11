@@ -72,6 +72,7 @@ export const PROJECT_SETTINGS_FILE_NAME = 'project.toml'
 export const COOKIE_NAME = '__Secure-next-auth.session-token'
 export const TELEMETRY_FILE_NAME = 'boot.txt'
 export const TELEMETRY_RAW_FILE_NAME = 'raw-metrics.txt'
+export const ENVIRONMENT_FILE_NAME = 'environment.txt'
 
 /** localStorage key to determine if we're in Playwright tests */
 export const PLAYWRIGHT_KEY = 'playwright'
@@ -225,3 +226,45 @@ export const IMMEDIATE_SIGN_IN_IF_NECESSARY_QUERY_PARAM =
 
 // Only used by the desktop app
 export const OAUTH2_DEVICE_CLIENT_ID = '2af127fb-e14e-400a-9c57-a9ed08d1a5b7'
+
+/** Names of supported environments */
+const environmentNames = ['development', 'production'] as const
+export type EnvironmentName = (typeof environmentNames)[number]
+export const isEnvironmentName = (x: any): x is EnvironmentName =>
+  environmentNames.includes(x)
+
+/** Environments to login and connect to the environment's deployed engine and website*/
+export type Environment = {
+  API_URL: string
+  SITE_URL: string
+  WEBSOCKET_URL: string
+  name: EnvironmentName
+}
+
+export const SUPPORTED_ENVIRONMENTS: { [key in EnvironmentName]: Environment } =
+  Object.freeze({
+    development: {
+      API_URL: 'https://api.dev.zoo.dev',
+      SITE_URL: 'https://dev.zoo.dev',
+      WEBSOCKET_URL: 'wss://api.dev.zoo.dev/ws/modeling/commands',
+      name: 'development',
+    },
+    production: {
+      API_URL: 'https://api.zoo.dev',
+      SITE_URL: 'https://zoo.dev',
+      WEBSOCKET_URL: 'wss://api.zoo.dev/ws/modeling/commands',
+      name: 'production',
+    },
+  })
+
+/**
+ * Signed in environment data, when you sign in on desktop
+ * you will get one of these written to disk.
+ */
+export type EnvironmentConfiguration = {
+  name: EnvironmentName // same name as the file development for development.json
+  pool: string // can be the empty string to indicate no pool for engine
+  token: string // authentication token from signing in. Can be empty string
+}
+
+export const ENVIRONMENT_CONFIGURATION_FOLDER = 'envs'

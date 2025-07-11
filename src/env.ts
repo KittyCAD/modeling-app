@@ -1,3 +1,13 @@
+import type { Environment, EnvironmentName } from '@src/lib/constants'
+import { SUPPORTED_ENVIRONMENTS } from '@src/lib/constants'
+import { isDesktop } from '@src/lib/isDesktop'
+
+type EnvironmentVariableSources = {
+  readonly VITE_KITTYCAD_API_BASE_URL: string | undefined
+  readonly VITE_KITTYCAD_API_WEBSOCKET_URL: string | undefined
+  readonly VITE_KITTYCAD_SITE_BASE_URL: string | undefined
+}
+
 type EnvironmentVariables = {
   readonly NODE_ENV: string | undefined
   readonly VITE_KITTYCAD_API_BASE_URL: string | undefined
@@ -9,6 +19,30 @@ type EnvironmentVariables = {
   readonly TEST: string | undefined
   readonly DEV: string | undefined
   readonly CI: string | undefined
+  readonly SOURCES: EnvironmentVariableSources
+}
+
+/** Store the environment in memory to be accessed during runtime */
+let ENVIRONMENT: Environment | null = null
+
+/** Update the runtime environment */
+export const updateEnvironment = (environment: EnvironmentName | null) => {
+  if (environment === null) {
+    ENVIRONMENT = null
+  } else {
+    ENVIRONMENT = SUPPORTED_ENVIRONMENTS[environment]
+  }
+  console.log('updating environment', environment)
+}
+
+// Do not export the entire Environment! Use env()
+const getEnvironmentFromThisFile = () => {
+  return ENVIRONMENT
+}
+
+/** Get the runtime environment */
+export const getEnvironmentName = () => {
+  return ENVIRONMENT?.name || null
 }
 
 export const viteEnv = () => {
@@ -66,22 +100,68 @@ export default (): EnvironmentVariables => {
   if (typeof DEV === 'boolean') {
     DEV = Number(DEV).toString()
   }
+
+  /**
+   * Resolve the API, Site, and Websocket URL
+   * This is computed during runtime for Desktop.
+   * Web will have hard coded values from the VITE .env
+   * electron will get this from the sign in page and the local disk cache
+   *
+   *
+   * catch 22: If you are in the sign in page and there are URLs, they should
+   * point to the VITE .env file for that build
+   *
+   * e.g. View this sample -> button would be pointing to production if built with the production .env
+   */
+  let API_URL = env.VITE_KITTYCAD_API_BASE_URL
+  let SITE_URL = env.VITE_KITTYCAD_SITE_BASE_URL
+  let WEBSOCKET_URL = env.VITE_KITTYCAD_API_WEBSOCKET_URL
+
+  const viteSource = '.env.development(.local)'
+  const supportedEnvironmentSource = 'Supported Environment configuration'
+  /**
+   * Initialize sources
+   * TODO: If you package for development environment it will read .env instead of vite from packaged binary?
+   */
+  let sources: EnvironmentVariableSources = {
+    VITE_KITTYCAD_API_BASE_URL: viteSource,
+    VITE_KITTYCAD_SITE_BASE_URL: viteSource,
+    VITE_KITTYCAD_API_WEBSOCKET_URL: viteSource,
+  }
+
+  /**
+   * If you are desktop, see if you have any runtime environment which can be read from disk and
+   * populated during the sign in workflow.
+   * A built binary will allow the user to sign into different environments on the desktop
+   */
+  const environment = getEnvironmentFromThisFile()
+  if (env.NODE_ENV === 'production' && isDesktop() && environment) {
+    API_URL = environment.API_URL
+    SITE_URL = environment.SITE_URL
+    WEBSOCKET_URL = environment.WEBSOCKET_URL
+
+    sources = {
+      VITE_KITTYCAD_API_BASE_URL: supportedEnvironmentSource,
+      VITE_KITTYCAD_SITE_BASE_URL: supportedEnvironmentSource,
+      VITE_KITTYCAD_API_WEBSOCKET_URL: supportedEnvironmentSource,
+    }
+  }
+
   const environmentVariables: EnvironmentVariables = {
     NODE_ENV: (env.NODE_ENV as string) || undefined,
-    VITE_KITTYCAD_API_BASE_URL:
-      (env.VITE_KITTYCAD_API_BASE_URL as string) || undefined,
-    VITE_KITTYCAD_API_WEBSOCKET_URL:
-      (env.VITE_KITTYCAD_API_WEBSOCKET_URL as string) || undefined,
+    VITE_KITTYCAD_API_BASE_URL: (API_URL as string) || undefined,
+    VITE_KITTYCAD_API_WEBSOCKET_URL: (WEBSOCKET_URL as string) || undefined,
     VITE_KITTYCAD_API_TOKEN:
       (env.VITE_KITTYCAD_API_TOKEN as string) || undefined,
-    VITE_KITTYCAD_SITE_BASE_URL:
-      (env.VITE_KITTYCAD_SITE_BASE_URL as string) || undefined,
+    VITE_KITTYCAD_SITE_BASE_URL: (SITE_URL as string) || undefined,
     VITE_KITTYCAD_SITE_APP_URL:
       (env.VITE_KITTYCAD_SITE_APP_URL as string) || undefined,
     PROD: PROD || undefined,
     TEST: (env.TEST as string) || undefined,
     DEV: DEV || undefined,
     CI: (env.CI as string) || undefined,
+    SOURCES: sources,
   }
+
   return environmentVariables
 }

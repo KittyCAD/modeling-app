@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom'
 import { ActionButton } from '@src/components/ActionButton'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { Logo } from '@src/components/Logo'
+import type { EnvironmentName } from '@src/lib/constants'
 import { APP_NAME } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
@@ -15,6 +16,10 @@ import { toSync } from '@src/lib/utils'
 import { authActor, useSettings } from '@src/lib/singletons'
 import { APP_VERSION, generateSignInUrl } from '@src/routes/utils'
 import { withAPIBaseURL, withSiteBaseURL } from '@src/lib/withBaseURL'
+import { updateEnvironment } from '@src/env'
+import env from '@src/env'
+import { writeEnvironmentFile } from '@src/lib/desktop'
+import { AdvancedSignInOptions } from '@src/routes/AdvancedSignInOptions'
 
 const subtleBorder =
   'border border-solid border-chalkboard-30 dark:border-chalkboard-80'
@@ -51,7 +56,15 @@ const SignIn = () => {
     [theme.current]
   )
 
-  const signInDesktop = async () => {
+  const signInDesktop = async (environmentName: EnvironmentName) => {
+    updateEnvironment(environmentName)
+    const environment = env()
+    if (!environment) {
+      console.error('Unable to login, failed to fetch environment.')
+      toast.error('Unable to login, failed to fetch environment.')
+      return
+    }
+
     // We want to invoke our command to login via device auth.
     const userCodeToDisplay = await window.electron
       .startDeviceFlow(withAPIBaseURL(location.search))
@@ -68,8 +81,11 @@ const SignIn = () => {
     if (!token) {
       console.error('No token received while trying to log in')
       toast.error('Error while trying to log in')
+      await writeEnvironmentFile('')
       return
     }
+
+    await writeEnvironmentFile(environmentName)
     authActor.send({ type: 'Log in', token })
   }
 
@@ -78,6 +94,18 @@ const SignIn = () => {
     setUserCode('')
   }
 
+  const signInDesktopDevelopment = async () => {
+    return signInDesktop('development')
+  }
+
+  const signInDesktopProduction = async () => {
+    return signInDesktop('production')
+  }
+
+  const defaultSignInMethod =
+    env().NODE_ENV === 'development'
+      ? signInDesktopDevelopment
+      : signInDesktopProduction
   return (
     <main
       className="bg-primary h-screen grid place-items-stretch m-0 p-2"
@@ -118,17 +146,25 @@ const SignIn = () => {
             {isDesktop() ? (
               <div className="flex flex-col gap-2">
                 {!userCode ? (
-                  <button
-                    onClick={toSync(signInDesktop, reportRejection)}
-                    className={
-                      'm-0 mt-8 w-fit flex gap-4 items-center px-3 py-1 ' +
-                      '!border-transparent !text-lg !text-chalkboard-10 !bg-primary hover:hue-rotate-15'
-                    }
-                    data-testid="sign-in-button"
-                  >
-                    Sign in to get started
-                    <CustomIcon name="arrowRight" className="w-6 h-6" />
-                  </button>
+                  <>
+                    <button
+                      onClick={toSync(defaultSignInMethod, reportRejection)}
+                      className={
+                        'm-0 mt-8 w-fit flex gap-4 items-center px-3 py-1 ' +
+                        '!border-transparent !text-lg !text-chalkboard-10 !bg-primary hover:hue-rotate-15'
+                      }
+                      data-testid="sign-in-button"
+                    >
+                      Sign in to get started
+                      <CustomIcon name="arrowRight" className="w-6 h-6" />
+                    </button>
+                    {env().NODE_ENV === 'production' && (
+                      <AdvancedSignInOptions
+                        signInDesktopDevelopment={signInDesktopDevelopment}
+                        signInDesktopProduction={signInDesktopProduction}
+                      />
+                    )}
+                  </>
                 ) : (
                   <>
                     <p className="text-xs">

@@ -10,8 +10,14 @@ import {
   parseProjectSettings,
 } from '@src/lang/wasm'
 import { initPromise, relevantFileExtensions } from '@src/lang/wasmUtils'
+import type {
+  EnvironmentConfiguration,
+  EnvironmentName,
+} from '@src/lib/constants'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
+  ENVIRONMENT_CONFIGURATION_FOLDER,
+  ENVIRONMENT_FILE_NAME,
   PROJECT_ENTRYPOINT,
   PROJECT_FOLDER,
   PROJECT_IMAGE_NAME,
@@ -519,6 +525,56 @@ const getTokenFilePath = async () => {
   return window.electron.path.join(fullPath, TOKEN_FILE_NAME)
 }
 
+const getEnvironmentConfigurationPath = async (
+  environmentName: EnvironmentName
+) => {
+  const isTestEnv = window.electron.process.env.IS_PLAYWRIGHT === 'true'
+  const testSettingsPath = await window.electron.getAppTestProperty(
+    'TEST_SETTINGS_FILE_KEY'
+  )
+
+  const appConfig = await window.electron.getPath('appData')
+  const fullPath = isTestEnv
+    ? window.electron.path.resolve(testSettingsPath, '..')
+    : window.electron.path.join(
+        appConfig,
+        getAppFolderName(),
+        ENVIRONMENT_CONFIGURATION_FOLDER
+      )
+  try {
+    await window.electron.stat(fullPath)
+  } catch (e) {
+    // File/path doesn't exist
+    if (e === 'ENOENT') {
+      await window.electron.mkdir(fullPath, { recursive: true })
+    }
+  }
+  console.log('fullPath', fullPath)
+  // /envs/development.json
+  return window.electron.path.join(fullPath, environmentName + '.json')
+}
+
+const getEnvironmentFilePath = async () => {
+  const isTestEnv = window.electron.process.env.IS_PLAYWRIGHT === 'true'
+  const testSettingsPath = await window.electron.getAppTestProperty(
+    'TEST_SETTINGS_FILE_KEY'
+  )
+
+  const appConfig = await window.electron.getPath('appData')
+  const fullPath = isTestEnv
+    ? window.electron.path.resolve(testSettingsPath, '..')
+    : window.electron.path.join(appConfig, getAppFolderName())
+  try {
+    await window.electron.stat(fullPath)
+  } catch (e) {
+    // File/path doesn't exist
+    if (e === 'ENOENT') {
+      await window.electron.mkdir(fullPath, { recursive: true })
+    }
+  }
+  return window.electron.path.join(fullPath, ENVIRONMENT_FILE_NAME)
+}
+
 const getTelemetryFilePath = async () => {
   const isTestEnv = window.electron.process.env.IS_PLAYWRIGHT === 'true'
   const testSettingsPath = await window.electron.getAppTestProperty(
@@ -700,6 +756,87 @@ export const writeTokenFile = async (token: string) => {
   if (err(token)) return Promise.reject(token)
   const result = window.electron.writeFile(tokenFilePath, token)
   console.log('token written to disk')
+  return result
+}
+
+/**
+ * Store credentials in
+ *  - envs/
+ *      - development.json
+ *      - production.json
+ *      - production-us.json
+ */
+export const readEnvironmentConfigurationFile = async (
+  environmentName: EnvironmentName
+): Promise<EnvironmentConfiguration | null> => {
+  const path = await getEnvironmentConfigurationPath(environmentName)
+  if (window.electron.exists(path)) {
+    const configurationJSON: string = await window.electron.readFile(path, {
+      encoding: 'utf-8',
+    })
+    if (!configurationJSON) return null
+    return JSON.parse(configurationJSON)
+  }
+  return null
+}
+
+export const writeEnvironmentConfigurationToken = async (
+  environmentName: EnvironmentName,
+  token: string
+) => {
+  const path = await getEnvironmentConfigurationPath(environmentName)
+  let environmentConfiguration =
+    await readEnvironmentConfigurationFile(environmentName)
+  if (environmentConfiguration === null) {
+    const initialConfiguration: EnvironmentConfiguration = {
+      token,
+      pool: '',
+      name: environmentName,
+    }
+    environmentConfiguration = initialConfiguration
+  }
+  environmentConfiguration.token = token
+  const requestedConfiguration = JSON.stringify(environmentConfiguration)
+  const result = window.electron.writeFile(path, requestedConfiguration)
+  console.log(`wrote ${environmentName}.json to disk`)
+  return result
+}
+
+export const readEnvironmentConfigurationToken = async (
+  environmentName: EnvironmentName
+) => {
+  const environmentConfiguration =
+    await readEnvironmentConfigurationFile(environmentName)
+  return environmentConfiguration ? environmentConfiguration.token : ''
+}
+
+export const readEnvironmentFile = async () => {
+  let environmentFilePath = await getEnvironmentFilePath()
+
+  if (window.electron.exists(environmentFilePath)) {
+    const environment: string = await window.electron.readFile(
+      environmentFilePath,
+      {
+        encoding: 'utf-8',
+      }
+    )
+    if (!environment) return ''
+    return environment
+  }
+  return ''
+}
+
+/**
+ * We store the environment file on disk because we store the token.txt across app installs
+ * otherwise we would not know what environment they logged into when the app does the updater
+ */
+export const writeEnvironmentFile = async (
+  environment: EnvironmentName | ''
+) => {
+  const environmentFilePath = await getEnvironmentFilePath()
+  if (err(environment)) return Promise.reject(environment)
+  const result = window.electron.writeFile(environmentFilePath, environment)
+  console.log('environment written to disk')
   return result
 }
 
