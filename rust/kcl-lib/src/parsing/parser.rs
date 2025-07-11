@@ -3416,10 +3416,12 @@ mod tests {
 
     #[test]
     fn expression_in_array_index() {
-        let tokens = crate::parsing::token::lex("[x + 1]", ModuleId::default()).unwrap();
+        let tokens = crate::parsing::token::lex("arr[x + 1]", ModuleId::default()).unwrap();
         let tokens = tokens.as_slice();
-        let expr = member_expression_subscript.parse(tokens).unwrap();
-        let LiteralIdentifier::Expr(Expr::BinaryExpression(be)) = expr.0 else {
+        let Expr::MemberExpression(expr) = expression.parse(tokens).unwrap() else {
+            panic!();
+        };
+        let LiteralIdentifier::Expr(Expr::BinaryExpression(ref be)) = expr.property else {
             panic!();
         };
         assert_eq!(be.inner.operator, BinaryOperator::Add);
