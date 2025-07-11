@@ -286,6 +286,9 @@ pub struct ModelingSettings {
     /// The controls for how to navigate the 3D view.
     #[serde(default, skip_serializing_if = "is_default")]
     pub mouse_controls: MouseControlType,
+    /// Toggle touch controls for 3D view navigation
+    #[serde(default, skip_serializing_if = "is_default")]
+    pub enable_touch_controls: DefaultTrue,
     /// Highlight edges of 3D objects?
     #[serde(default, skip_serializing_if = "is_default")]
     pub highlight_edges: DefaultTrue,

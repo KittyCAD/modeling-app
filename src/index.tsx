@@ -20,14 +20,6 @@ import { createApplicationCommands } from '@src/lib/commandBarConfigs/applicatio
 markOnce('code/willAuth')
 initializeWindowExceptionHandler()
 
-// uncomment for xstate inspector
-// import { DEV } from 'env'
-// import { inspect } from '@xstate/inspect'
-// if (DEV)
-//   inspect({
-//     iframe: false,
-//   })
-
 // Don't start the app machine until all these singletons
 // are initialized, and the wasm module is loaded.
 initPromise

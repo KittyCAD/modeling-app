@@ -327,6 +327,40 @@ description: Variables in memory after executing flush_batch_on_end.kcl
             }
           }
         ],
+        "innerPaths": [
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.0,
+              0.0
+            ],
+            "from": [
+              0.182,
+              0.0
+            ],
+            "radius": 0.182,
+            "tag": {
+              "commentStart": 515,
+              "end": 522,
+              "moduleId": 0,
+              "start": 515,
+              "type": "TagDeclarator",
+              "value": "arc001"
+            },
+            "to": [
+              0.182,
+              0.0
+            ],
+            "type": "Circle",
+            "units": {
+              "type": "Inches"
+            }
+          }
+        ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
@@ -435,6 +469,40 @@ description: Variables in memory after executing flush_batch_on_end.kcl
           },
           "to": [
             0.2734375,
+            0.0
+          ],
+          "type": "Circle",
+          "units": {
+            "type": "Inches"
+          }
+        }
+      ],
+      "innerPaths": [
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            0.0,
+            0.0
+          ],
+          "from": [
+            0.182,
+            0.0
+          ],
+          "radius": 0.182,
+          "tag": {
+            "commentStart": 515,
+            "end": 522,
+            "moduleId": 0,
+            "start": 515,
+            "type": "TagDeclarator",
+            "value": "arc001"
+          },
+          "to": [
+            0.182,
             0.0
           ],
           "type": "Circle",

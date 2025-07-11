@@ -69,10 +69,14 @@ function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
 
 export const ClientSideScene = ({
   cameraControls,
+  enableTouchControls,
 }: {
   cameraControls: ReturnType<
     typeof useSettings
   >['modeling']['mouseControls']['current']
+  enableTouchControls: ReturnType<
+    typeof useSettings
+  >['modeling']['enableTouchControls']['current']
 }) => {
   const canvasRef = useRef<HTMLDivElement>(null)
   const { state, send, context } = useModelingContext()
@@ -84,6 +88,9 @@ export const ClientSideScene = ({
     sceneInfra.camControls.interactionGuards =
       cameraMouseDragGuards[cameraControls]
   }, [cameraControls])
+  useEffect(() => {
+    sceneInfra.camControls.initTouchControls(enableTouchControls)
+  }, [enableTouchControls])
   useEffect(() => {
     sceneInfra.updateOtherSelectionColors(
       state?.context?.selectionRanges?.otherSelections || []

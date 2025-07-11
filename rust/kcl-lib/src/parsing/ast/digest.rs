@@ -427,6 +427,7 @@ impl ArrayRangeExpression {
     compute_digest!(|slf, hasher| {
         hasher.update(slf.start_element.compute_digest());
         hasher.update(slf.end_element.compute_digest());
+        hasher.update(if slf.end_inclusive { [1] } else { [0] });
     });
 }
 

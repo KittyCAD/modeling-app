@@ -48,6 +48,33 @@ description: Variables in memory after executing subtract_regression05.kcl
             }
           }
         ],
+        "innerPaths": [
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.0,
+              0.0
+            ],
+            "from": [
+              0.9375,
+              0.0
+            ],
+            "radius": 0.9375,
+            "tag": null,
+            "to": [
+              0.9375,
+              0.0
+            ],
+            "type": "Circle",
+            "units": {
+              "type": "Inches"
+            }
+          }
+        ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
@@ -390,6 +417,33 @@ description: Variables in memory after executing subtract_regression05.kcl
           "tag": null,
           "to": [
             1.1875,
+            0.0
+          ],
+          "type": "Circle",
+          "units": {
+            "type": "Inches"
+          }
+        }
+      ],
+      "innerPaths": [
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            0.0,
+            0.0
+          ],
+          "from": [
+            0.9375,
+            0.0
+          ],
+          "radius": 0.9375,
+          "tag": null,
+          "to": [
+            0.9375,
             0.0
           ],
           "type": "Circle",
@@ -876,6 +930,33 @@ description: Variables in memory after executing subtract_regression05.kcl
             "tag": null,
             "to": [
               1.1875,
+              0.0
+            ],
+            "type": "Circle",
+            "units": {
+              "type": "Inches"
+            }
+          }
+        ],
+        "innerPaths": [
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.0,
+              0.0
+            ],
+            "from": [
+              0.9375,
+              0.0
+            ],
+            "radius": 0.9375,
+            "tag": null,
+            "to": [
+              0.9375,
               0.0
             ],
             "type": "Circle",

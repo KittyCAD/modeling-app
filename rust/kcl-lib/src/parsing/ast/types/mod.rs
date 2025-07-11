@@ -2432,6 +2432,12 @@ pub struct TagDeclarator {
 
 pub type TagNode = Node<TagDeclarator>;
 
+impl std::fmt::Display for TagNode {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        self.inner.name.fmt(f)
+    }
+}
+
 impl From<&BoxNode<TagDeclarator>> for KclValue {
     fn from(tag: &BoxNode<TagDeclarator>) -> Self {
         KclValue::TagDeclarator(tag.clone())

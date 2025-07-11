@@ -238,7 +238,7 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ),
         ("solid", "appearance") => (
             |e, a| Box::pin(crate::std::appearance::appearance(e, a)),
-            StdFnProps::default("std::solid::appearance"),
+            StdFnProps::default("std::solid::appearance").include_in_feature_tree(),
         ),
         ("array", "map") => (
             |e, a| Box::pin(crate::std::array::map(e, a)),

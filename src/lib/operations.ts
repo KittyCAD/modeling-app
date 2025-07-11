@@ -1041,6 +1041,10 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
  * for use in the feature tree UI.
  */
 export const stdLibMap: Record<string, StdLibCallInfo> = {
+  appearance: {
+    label: 'Appearance',
+    icon: 'text',
+  },
   chamfer: {
     label: 'Chamfer',
     icon: 'chamfer3d',
