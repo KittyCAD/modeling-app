@@ -10,7 +10,11 @@ import {
   kclSamplesManifestWithNoMultipleFiles,
 } from '@src/lib/kclSamples'
 import { getUniqueProjectName } from '@src/lib/desktopFS'
-import { IS_ML_EXPERIMENTAL, isEnvironmentName, SUPPORTED_ENVIRONMENTS } from '@src/lib/constants'
+import {
+  IS_ML_EXPERIMENTAL,
+  isEnvironmentName,
+  SUPPORTED_ENVIRONMENTS,
+} from '@src/lib/constants'
 import toast from 'react-hot-toast'
 import { reportRejection } from '@src/lib/trap'
 import { relevantFileExtensions } from '@src/lang/wasmUtils'
@@ -451,14 +455,15 @@ export function createApplicationCommands({
   const switchEnvironmentsCommand: Command = {
     name: 'switch-environments',
     displayName: 'Switch environments',
-    description: 'Switch between different environments to connect your application runtime',
+    description:
+      'Switch between different environments to connect your application runtime',
     needsReview: false,
     icon: 'importFile',
     groupId: 'application',
     onSubmit: (data) => {
       if (data) {
         if (isEnvironmentName(data.environment))
-          writeEnvironmentFile(data.environment).then(()=>{
+          writeEnvironmentFile(data.environment).then(() => {
             // Reload the application and it will trigger the correct sign in workflow for the new environment
             window.location.reload()
           })
@@ -488,6 +493,11 @@ export function createApplicationCommands({
   }
 
   return isDesktop()
-    ? [textToCADCommand, addKCLFileToProject, createASampleDesktopOnly, switchEnvironmentsCommand]
+    ? [
+        textToCADCommand,
+        addKCLFileToProject,
+        createASampleDesktopOnly,
+        switchEnvironmentsCommand,
+      ]
     : [textToCADCommand, addKCLFileToProject]
 }
