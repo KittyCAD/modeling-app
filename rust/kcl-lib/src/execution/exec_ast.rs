@@ -1748,9 +1748,8 @@ impl Property {
             let Expr::Name(identifier) = value else {
                 // Should actually be impossible because the parser would reject it.
                 return Err(KclError::new_semantic(KclErrorDetails::new(
-                    format!(
-                        "Object expressions like `obj.property` must use simple identifier names, not complex expressions"
-                    ),
+                    "Object expressions like `obj.property` must use simple identifier names, not complex expressions"
+                        .to_owned(),
                     property_sr,
                 )));
             };
@@ -1787,40 +1786,6 @@ impl Property {
                 vec![sr],
             ))),
         }
-    }
-}
-
-fn jvalue_to_prop(value: &KclValue, property_sr: Vec<SourceRange>, name: &str) -> Result<Property, KclError> {
-    let make_err =
-        |message: String| Err::<Property, _>(KclError::new_semantic(KclErrorDetails::new(message, property_sr)));
-    match value {
-        n @ KclValue::Number { value: num, ty, .. } => {
-            if !matches!(
-                ty,
-                NumericType::Known(crate::exec::UnitType::Count) | NumericType::Default { .. } | NumericType::Any
-            ) {
-                return make_err(format!(
-                    "arrays can only be indexed by non-dimensioned numbers, found {}",
-                    n.human_friendly_type()
-                ));
-            }
-            let num = *num;
-            if num < 0.0 {
-                return make_err(format!("'{num}' is negative, so you can't index an array with it"));
-            }
-            let nearest_int = crate::try_f64_to_usize(num);
-            if let Some(nearest_int) = nearest_int {
-                Ok(Property::UInt(nearest_int))
-            } else {
-                make_err(format!(
-                    "'{num}' is not an integer, so you can't index an array with it"
-                ))
-            }
-        }
-        KclValue::String { value: x, meta: _ } => Ok(Property::String(x.to_owned())),
-        _ => make_err(format!(
-            "{name} is not a valid property/index, you can only use a string to get the property of an object, or an int (>= 0) to get an item in an array"
-        )),
     }
 }
 
