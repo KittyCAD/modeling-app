@@ -19,11 +19,9 @@ use crate::{
     modules::{ModuleId, ModulePath, ModuleRepr},
     parsing::ast::types::{
         Annotation, ArrayExpression, ArrayRangeExpression, AscribedExpression, BinaryExpression, BinaryOperator,
-        BinaryPart, BodyItem, Expr, IfExpression, ImportPath, ImportSelector, ItemVisibility, LiteralIdentifier,
-        LiteralValue, MemberExpression, Name, Node, NodeRef, ObjectExpression, PipeExpression, Program, TagDeclarator,
-        Type, UnaryExpression, UnaryOperator,
+        BinaryPart, BodyItem, Expr, IfExpression, ImportPath, ImportSelector, ItemVisibility, MemberExpression, Name,
+        Node, NodeRef, ObjectExpression, PipeExpression, Program, TagDeclarator, Type, UnaryExpression, UnaryOperator,
     },
-    pretty::NumericSuffix,
     source_range::SourceRange,
     std::args::TyF64,
 };
@@ -1737,7 +1735,7 @@ impl Property {
     #[allow(clippy::too_many_arguments)]
     async fn try_from<'a>(
         computed: bool,
-        value: LiteralIdentifier,
+        value: Expr,
         exec_state: &mut ExecState,
         sr: SourceRange,
         ctx: &ExecutorContext,
@@ -1746,77 +1744,48 @@ impl Property {
         statement_kind: StatementKind<'a>,
     ) -> Result<Self, KclError> {
         let property_sr = vec![sr];
-        let property_src: SourceRange = value.clone().into();
-        match value {
-            LiteralIdentifier::Identifier { property: identifier } => {
-                let name = &identifier.name;
-                if !computed {
-                    // This is dot syntax. Treat the property as a literal.
-                    Ok(Property::String(name.to_string()))
+        if !computed {
+            let Expr::Name(identifier) = value else {
+                // Should actually be impossible because the parser would reject it.
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    format!(
+                        "Object expressions like `obj.property` must use simple identifier names, not complex expressions"
+                    ),
+                    property_sr,
+                )));
+            };
+            return Ok(Property::String(identifier.to_string()));
+        }
+
+        let prop_value = ctx
+            .execute_expr(&value, exec_state, metadata, annotations, statement_kind)
+            .await?;
+        match prop_value {
+            KclValue::Number { value, ty, meta: _ } => {
+                if !matches!(
+                    ty,
+                    NumericType::Unknown
+                        | NumericType::Default { .. }
+                        | NumericType::Known(crate::exec::UnitType::Count)
+                ) {
+                    return Err(KclError::new_semantic(KclErrorDetails::new(
+                        format!("{value} is not a valid index, indices must be non-dimensional numbers"),
+                        property_sr,
+                    )));
+                }
+                if let Some(x) = crate::try_f64_to_usize(value) {
+                    Ok(Property::UInt(x))
                 } else {
-                    // This is bracket syntax. Actually evaluate memory to
-                    // compute the property.
-                    let prop = exec_state.stack().get(name, property_src)?;
-                    jvalue_to_prop(prop, property_sr, name)
+                    Err(KclError::new_semantic(KclErrorDetails::new(
+                        format!("{value} is not a valid index, indices must be whole numbers >= 0"),
+                        property_sr,
+                    )))
                 }
             }
-            LiteralIdentifier::Literal { property: literal } => {
-                let value = literal.value.clone();
-                match value {
-                    n @ LiteralValue::Number { value, suffix } => {
-                        if !matches!(suffix, NumericSuffix::None | NumericSuffix::Count) {
-                            return Err(KclError::new_semantic(KclErrorDetails::new(
-                                format!("{n} is not a valid index, indices must be non-dimensional numbers"),
-                                property_sr,
-                            )));
-                        }
-                        if let Some(x) = crate::try_f64_to_usize(value) {
-                            Ok(Property::UInt(x))
-                        } else {
-                            Err(KclError::new_semantic(KclErrorDetails::new(
-                                format!("{value} is not a valid index, indices must be whole numbers >= 0"),
-                                property_sr,
-                            )))
-                        }
-                    }
-                    _ => Err(KclError::new_semantic(KclErrorDetails::new(
-                        "Only numbers (>= 0) can be indexes".to_owned(),
-                        vec![sr],
-                    ))),
-                }
-            }
-            LiteralIdentifier::Expression { property: expr } => {
-                let prop_value = ctx
-                    .execute_expr(&expr, exec_state, metadata, annotations, statement_kind)
-                    .await?;
-                match prop_value {
-                    KclValue::Number { value, ty, meta: _ } => {
-                        if !matches!(
-                            ty,
-                            NumericType::Unknown
-                                | NumericType::Default { .. }
-                                | NumericType::Known(crate::exec::UnitType::Count)
-                        ) {
-                            return Err(KclError::new_semantic(KclErrorDetails::new(
-                                format!("{value} is not a valid index, indices must be non-dimensional numbers"),
-                                property_sr,
-                            )));
-                        }
-                        if let Some(x) = crate::try_f64_to_usize(value) {
-                            Ok(Property::UInt(x))
-                        } else {
-                            Err(KclError::new_semantic(KclErrorDetails::new(
-                                format!("{value} is not a valid index, indices must be whole numbers >= 0"),
-                                property_sr,
-                            )))
-                        }
-                    }
-                    _ => Err(KclError::new_semantic(KclErrorDetails::new(
-                        "Only numbers (>= 0) can be indexes".to_owned(),
-                        vec![sr],
-                    ))),
-                }
-            }
+            _ => Err(KclError::new_semantic(KclErrorDetails::new(
+                "Only numbers (>= 0) can be indexes".to_owned(),
+                vec![sr],
+            ))),
         }
     }
 }

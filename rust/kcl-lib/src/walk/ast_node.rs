@@ -229,34 +229,6 @@ impl<'tree> From<&'tree types::BinaryPart> for Node<'tree> {
     }
 }
 
-impl<'tree> From<&'tree types::LiteralIdentifier> for Node<'tree> {
-    fn from(node: &'tree types::LiteralIdentifier) -> Self {
-        match node {
-            types::LiteralIdentifier::Identifier { property } => property.as_ref().into(),
-            types::LiteralIdentifier::Literal { property } => property.as_ref().into(),
-            types::LiteralIdentifier::Expression { property } => match &**property.as_ref() {
-                types::Expr::Literal(node) => node.as_ref().into(),
-                types::Expr::Name(node) => node.as_ref().into(),
-                types::Expr::TagDeclarator(node) => node.as_ref().into(),
-                types::Expr::BinaryExpression(node) => node.as_ref().into(),
-                types::Expr::FunctionExpression(node) => node.as_ref().into(),
-                types::Expr::CallExpressionKw(node) => node.as_ref().into(),
-                types::Expr::PipeExpression(node) => node.as_ref().into(),
-                types::Expr::PipeSubstitution(node) => node.as_ref().into(),
-                types::Expr::ArrayExpression(node) => node.as_ref().into(),
-                types::Expr::ArrayRangeExpression(node) => node.as_ref().into(),
-                types::Expr::ObjectExpression(node) => node.as_ref().into(),
-                types::Expr::MemberExpression(node) => node.as_ref().into(),
-                types::Expr::UnaryExpression(node) => node.as_ref().into(),
-                types::Expr::IfExpression(node) => node.as_ref().into(),
-                types::Expr::LabelledExpression(node) => node.as_ref().into(),
-                types::Expr::AscribedExpression(node) => node.as_ref().into(),
-                types::Expr::None(node) => node.into(),
-            },
-        }
-    }
-}
-
 macro_rules! impl_from {
     ($node:ident, $t: ident) => {
         impl<'a> From<NodeRef<'a, types::$t>> for Node<'a> {

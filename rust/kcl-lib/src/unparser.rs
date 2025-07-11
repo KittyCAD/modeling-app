@@ -8,8 +8,8 @@ use crate::{
             Annotation, ArrayExpression, ArrayRangeExpression, AscribedExpression, Associativity, BinaryExpression,
             BinaryOperator, BinaryPart, BodyItem, CallExpressionKw, CommentStyle, DefaultParamVal, Expr, FormatOptions,
             FunctionExpression, IfExpression, ImportSelector, ImportStatement, ItemVisibility, LabeledArg, Literal,
-            LiteralIdentifier, LiteralValue, MemberExpression, Node, NonCodeNode, NonCodeValue, ObjectExpression,
-            Parameter, PipeExpression, Program, TagDeclarator, TypeDeclaration, UnaryExpression, VariableDeclaration,
+            LiteralValue, MemberExpression, Node, NonCodeNode, NonCodeValue, ObjectExpression, Parameter,
+            PipeExpression, Program, TagDeclarator, TypeDeclaration, UnaryExpression, VariableDeclaration,
             VariableKind,
         },
         deprecation,
@@ -689,21 +689,13 @@ impl ObjectExpression {
 
 impl MemberExpression {
     fn recast(&self, options: &FormatOptions, indentation_level: usize, ctxt: ExprContext) -> String {
-        let key_str = match &self.property {
-            LiteralIdentifier::Identifier { property: identifier } => {
-                if self.computed {
-                    format!("[{}]", &(*identifier.name))
-                } else {
-                    format!(".{}", &(*identifier.name))
-                }
-            }
-            LiteralIdentifier::Literal { property } => format!("[{}]", &(*property.raw)),
-            LiteralIdentifier::Expression { property: node } => {
-                let node_fmt = node.recast(options, indentation_level, ctxt);
-                format!("[{node_fmt}]")
-            }
+        let key_str = if self.computed {
+            let node_fmt = self.property.recast(options, indentation_level, ctxt);
+            format!("[{node_fmt}]")
+        } else {
+            let node_fmt = self.property.recast(options, indentation_level, ctxt);
+            format!(".{node_fmt}")
         };
-
         self.object.recast(options, indentation_level, ctxt) + key_str.as_str()
     }
 }

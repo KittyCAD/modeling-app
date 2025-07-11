@@ -4,9 +4,9 @@ use crate::parsing::ast::types::{
     Annotation, ArrayExpression, ArrayRangeExpression, AscribedExpression, BinaryExpression, BinaryPart, BodyItem,
     CallExpressionKw, DefaultParamVal, ElseIf, Expr, ExpressionStatement, FunctionExpression, FunctionType, Identifier,
     IfExpression, ImportItem, ImportSelector, ImportStatement, ItemVisibility, KclNone, LabelledExpression, Literal,
-    LiteralIdentifier, LiteralValue, MemberExpression, Name, ObjectExpression, ObjectProperty, Parameter,
-    PipeExpression, PipeSubstitution, PrimitiveType, Program, ReturnStatement, TagDeclarator, Type, TypeDeclaration,
-    UnaryExpression, VariableDeclaration, VariableDeclarator, VariableKind,
+    LiteralValue, MemberExpression, Name, ObjectExpression, ObjectProperty, Parameter, PipeExpression,
+    PipeSubstitution, PrimitiveType, Program, ReturnStatement, TagDeclarator, Type, TypeDeclaration, UnaryExpression,
+    VariableDeclaration, VariableDeclarator, VariableKind,
 };
 
 /// Position-independent digest of the AST node.
@@ -170,15 +170,6 @@ impl BinaryPart {
     }
 }
 
-impl LiteralIdentifier {
-    pub fn compute_digest(&mut self) -> Digest {
-        match self {
-            LiteralIdentifier::Identifier { property } => property.compute_digest(),
-            LiteralIdentifier::Literal { property } => property.compute_digest(),
-            LiteralIdentifier::Expression { property: node } => node.compute_digest(),
-        }
-    }
-}
 impl Type {
     pub fn compute_digest(&mut self) -> Digest {
         let mut hasher = Sha256::new();

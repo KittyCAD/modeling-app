@@ -28,10 +28,10 @@ use crate::{
             Annotation, ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem,
             BoxNode, CallExpressionKw, CommentStyle, DefaultParamVal, ElseIf, Expr, ExpressionStatement,
             FunctionExpression, FunctionType, Identifier, IfExpression, ImportItem, ImportSelector, ImportStatement,
-            ItemVisibility, LabeledArg, Literal, LiteralIdentifier, LiteralValue, MemberExpression, Name, Node,
-            NodeList, NonCodeMeta, NonCodeNode, NonCodeValue, ObjectExpression, ObjectProperty, Parameter,
-            PipeExpression, PipeSubstitution, PrimitiveType, Program, ReturnStatement, Shebang, TagDeclarator, Type,
-            TypeDeclaration, UnaryExpression, UnaryOperator, VariableDeclaration, VariableDeclarator, VariableKind,
+            ItemVisibility, LabeledArg, Literal, LiteralValue, MemberExpression, Name, Node, NodeList, NonCodeMeta,
+            NonCodeNode, NonCodeValue, ObjectExpression, ObjectProperty, Parameter, PipeExpression, PipeSubstitution,
+            PrimitiveType, Program, ReturnStatement, Shebang, TagDeclarator, Type, TypeDeclaration, UnaryExpression,
+            UnaryOperator, VariableDeclaration, VariableDeclarator, VariableKind,
         },
         math::BinaryExpressionToken,
         token::{Token, TokenSlice, TokenType},
@@ -1299,42 +1299,26 @@ fn function_decl(i: &mut TokenSlice) -> ModalResult<Node<FunctionExpression>> {
 }
 
 /// E.g. `person.name`
-fn member_expression_dot(i: &mut TokenSlice) -> ModalResult<(LiteralIdentifier, usize, bool)> {
+fn member_expression_dot(i: &mut TokenSlice) -> ModalResult<(Expr, usize, bool)> {
     period.parse_next(i)?;
     let property = nameable_identifier
         .map(Box::new)
-        .map(|p| LiteralIdentifier::Identifier { property: p })
+        .map(|p| {
+            let ni: Node<Identifier> = *p;
+            let nn: Node<Name> = ni.into();
+            Expr::Name(Box::new(nn))
+        })
         .parse_next(i)?;
     let end = property.end();
-    Ok((property, end, false))
-}
-
-/// E.g. `people[0]` or `people[i]` or `people['adam']`
-fn member_expression_subscript(i: &mut TokenSlice) -> ModalResult<(LiteralIdentifier, usize, bool)> {
-    let _ = open_bracket.parse_next(i)?;
-    let property = alt((
-        literal.map(|p| LiteralIdentifier::Literal { property: p }),
-        nameable_identifier
-            .map(Box::new)
-            .map(|p| LiteralIdentifier::Identifier { property: p }),
-    ))
-    .parse_next(i)?;
-    let end = close_bracket.parse_next(i)?.end;
-    let computed = matches!(property, LiteralIdentifier::Identifier { .. });
+    let computed = false;
     Ok((property, end, computed))
 }
 
-fn member_expression_subscript_complex_expr(i: &mut TokenSlice) -> ModalResult<(LiteralIdentifier, usize, bool)> {
+fn member_expression_subscript_complex_expr(i: &mut TokenSlice) -> ModalResult<(Expr, usize, bool)> {
     let _ = open_bracket.parse_next(i)?;
     let property = expression.parse_next(i)?;
-    let start = property.start();
-    let end = property.end();
-    let module_id = property.module_id();
-    let property = LiteralIdentifier::Expression {
-        property: Node::boxed(property, start, end, module_id),
-    };
     let end = close_bracket.parse_next(i)?.end;
-    let computed = matches!(property, LiteralIdentifier::Identifier { .. });
+    let computed = true;
     Ok((property, end, computed))
 }
 
@@ -1342,7 +1326,7 @@ fn member_expression_subscript_complex_expr(i: &mut TokenSlice) -> ModalResult<(
 /// Can be arbitrarily nested, e.g. `people[i]['adam'].age`.
 fn build_member_expression(object: Expr, i: &mut TokenSlice) -> ModalResult<Node<MemberExpression>> {
     // Now a sequence of members.
-    let member = alt((member_expression_dot, member_expression_subscript, member_expression_subscript_complex_expr)).context(expected("a member/property, e.g. size.x and size['height'] and size[0] are all different ways to access a member/property of 'size'"));
+    let member = alt((member_expression_dot, member_expression_subscript_complex_expr)).context(expected("a member/property, e.g. size.x and size['height'] and size[0] are all different ways to access a member/property of 'size'"));
     let mut members: Vec<_> = repeat(1.., member)
         .context(expected("a sequence of at least one members/properties"))
         .parse_next(i)?;
@@ -3428,11 +3412,7 @@ mod tests {
         let Expr::MemberExpression(expr) = expression.parse(tokens).unwrap() else {
             panic!();
         };
-        let memexp: MemberExpression = expr.inner;
-        let LiteralIdentifier::Expression { property } = memexp.property else {
-            panic!();
-        };
-        let Expr::BinaryExpression(be) = property.inner else {
+        let Expr::BinaryExpression(be) = expr.inner.property else {
             panic!();
         };
         assert_eq!(be.inner.operator, BinaryOperator::Add);
