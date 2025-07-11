@@ -9,6 +9,7 @@ import {
 } from '@src/lib/constants'
 import {
   getUser as getUserDesktop,
+  migrateOldTokenToProductionEnvironmentConfiguration,
   readEnvironmentConfigurationToken,
   readEnvironmentFile,
   writeEnvironmentConfigurationToken,
@@ -141,6 +142,9 @@ export const authMachine = setup({
 })
 
 async function getUser(input: { token?: string }) {
+  // TODO: Remove at some point in the future after many deployments.
+  await migrateOldTokenToProductionEnvironmentConfiguration()
+
   const environment = await readEnvironmentFile()
   if (isEnvironmentName(environment)) {
     updateEnvironment(environment)

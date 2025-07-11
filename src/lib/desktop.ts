@@ -23,6 +23,7 @@ import {
   PROJECT_IMAGE_NAME,
   PROJECT_SETTINGS_FILE_NAME,
   SETTINGS_FILE_NAME,
+  SUPPORTED_ENVIRONMENTS,
   TELEMETRY_FILE_NAME,
   TELEMETRY_RAW_FILE_NAME,
   TOKEN_FILE_NAME,
@@ -33,6 +34,7 @@ import type { DeepPartial } from '@src/lib/types'
 import { getInVariableCase } from '@src/lib/utils'
 import { IS_STAGING } from '@src/routes/utils'
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
+import env from '@src/env'
 
 export async function renameProjectDirectory(
   projectPath: string,
@@ -823,6 +825,30 @@ export const readEnvironmentFile = async () => {
     return environment
   }
   return ''
+}
+
+/**
+ * We stored the login token as token.txt and now it will be stored as
+ * envs/production.json
+ *
+ * We see if we can migrate and delete this file to follow the new login flow.
+ * This will help fix users from having to login whenever this code gets deployed
+ *
+ * TODO: Delete this function at some point in the future.
+ *
+ */
+export const migrateOldTokenToProductionEnvironmentConfiguration = async () => {
+  const token = await readTokenFile()
+
+  // No token to migrate, exit the function
+  if (!token || env().NODE_ENV !== 'production') return
+
+  // Migrate any previous token to the envs/production.json cache
+  const environmentName = SUPPORTED_ENVIRONMENTS.production.name
+  await writeEnvironmentConfigurationToken(environmentName, token)
+  await writeEnvironmentFile(environmentName)
+  const tokenPath = await getTokenFilePath()
+  await window.electron.rm(tokenPath)
 }
 
 /**

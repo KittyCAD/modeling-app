@@ -13,7 +13,7 @@ import {
 } from '@src/lib/desktop'
 import type { DeepPartial } from '@src/lib/types'
 import { webSafeJoin, webSafePathSplit } from '@src/lib/paths'
-import { EnvironmentConfiguration } from './constants'
+import type { EnvironmentConfiguration } from '@src/lib/constants'
 
 beforeAll(async () => {
   await initPromise
@@ -223,13 +223,15 @@ describe('desktop utilities', () => {
       expect(actual).toBe(expected)
     })
     it('should return a empty string object for development', async () => {
-      mockElectron.exists.mockImplementation(()=>true)
-      mockElectron.readFile.mockImplementation(()=>{return '{"token":"","pool":"","name":"development"}'})
+      mockElectron.exists.mockImplementation(() => true)
+      mockElectron.readFile.mockImplementation(() => {
+        return '{"token":"","pool":"","name":"development"}'
+      })
       mockElectron.packageJson.name = 'zoo-modeling-app'
-      const expected : EnvironmentConfiguration = {
-        name:'development',
-        pool :'',
-        token: ''
+      const expected: EnvironmentConfiguration = {
+        name: 'development',
+        pool: '',
+        token: '',
       }
       const actual = await readEnvironmentConfigurationFile('development')
 
@@ -238,13 +240,15 @@ describe('desktop utilities', () => {
       expect(actual).toStrictEqual(expected)
     })
     it('should return an empty string object for production', async () => {
-      mockElectron.exists.mockImplementation(()=>true)
-      mockElectron.readFile.mockImplementation(()=>{return '{"token":"","pool":"","name":"production"}'})
+      mockElectron.exists.mockImplementation(() => true)
+      mockElectron.readFile.mockImplementation(() => {
+        return '{"token":"","pool":"","name":"production"}'
+      })
       mockElectron.packageJson.name = 'zoo-modeling-app'
-      const expected : EnvironmentConfiguration = {
-        name:'production',
-        pool :'',
-        token: ''
+      const expected: EnvironmentConfiguration = {
+        name: 'production',
+        pool: '',
+        token: '',
       }
       const actual = await readEnvironmentConfigurationFile('development')
 
@@ -254,16 +258,16 @@ describe('desktop utilities', () => {
     })
   })
 
-  describe('readEnvironmentFile', () =>{
+  describe('readEnvironmentFile', () => {
     it('should return the empty string', async () => {
-      const expected =''
+      const expected = ''
       const actual = await readEnvironmentFile()
       expect(actual).toBe(expected)
     })
     it('should return development', async () => {
       const expected = 'development'
-      mockElectron.exists.mockImplementation(()=>true)
-      mockElectron.readFile.mockImplementation(()=>'development')
+      mockElectron.exists.mockImplementation(() => true)
+      mockElectron.readFile.mockImplementation(() => 'development')
       mockElectron.packageJson.name = 'zoo-modeling-app'
       const actual = await readEnvironmentFile()
       mockElectron.packageJson.name = ''
@@ -271,8 +275,8 @@ describe('desktop utilities', () => {
     })
     it('should return production', async () => {
       const expected = 'production'
-      mockElectron.exists.mockImplementation(()=>true)
-      mockElectron.readFile.mockImplementation(()=>'production')
+      mockElectron.exists.mockImplementation(() => true)
+      mockElectron.readFile.mockImplementation(() => 'production')
       mockElectron.packageJson.name = 'zoo-modeling-app'
       const actual = await readEnvironmentFile()
       mockElectron.packageJson.name = ''
@@ -280,8 +284,7 @@ describe('desktop utilities', () => {
     })
   })
 
-
-  describe('readEnvironmentConfigurationToken', ()=>{
+  describe('readEnvironmentConfigurationToken', () => {
     it('should return the empty string for development', async () => {
       const expected = ''
       const actual = await readEnvironmentConfigurationToken('development')
@@ -293,8 +296,10 @@ describe('desktop utilities', () => {
       expect(actual).toBe(expected)
     })
     it('should return the string dog-dog-dog for development', async () => {
-      mockElectron.exists.mockImplementation(()=>true)
-      mockElectron.readFile.mockImplementation(()=>{return '{"token":"dog-dog-dog","pool":"","name":"development"}'})
+      mockElectron.exists.mockImplementation(() => true)
+      mockElectron.readFile.mockImplementation(() => {
+        return '{"token":"dog-dog-dog","pool":"","name":"development"}'
+      })
       mockElectron.packageJson.name = 'zoo-modeling-app'
       const expected = 'dog-dog-dog'
       const actual = await readEnvironmentConfigurationToken('development')
@@ -303,8 +308,10 @@ describe('desktop utilities', () => {
       expect(actual).toBe(expected)
     })
     it('should return the string cat-cat-cat for production', async () => {
-      mockElectron.exists.mockImplementation(()=>true)
-      mockElectron.readFile.mockImplementation(()=>{return '{"token":"cat-cat-cat","pool":"","name":"production"}'})
+      mockElectron.exists.mockImplementation(() => true)
+      mockElectron.readFile.mockImplementation(() => {
+        return '{"token":"cat-cat-cat","pool":"","name":"production"}'
+      })
       mockElectron.packageJson.name = 'zoo-modeling-app'
       const expected = 'cat-cat-cat'
       const actual = await readEnvironmentConfigurationToken('production')
@@ -313,5 +320,4 @@ describe('desktop utilities', () => {
       expect(actual).toBe(expected)
     })
   })
-
 })
