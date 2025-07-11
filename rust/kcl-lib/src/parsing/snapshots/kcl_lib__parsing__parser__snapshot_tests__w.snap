@@ -41,14 +41,16 @@ expression: actual
             "type": "Name"
           },
           "property": {
-            "commentStart": 9,
-            "end": 15,
-            "moduleId": 0,
-            "raw": "'zero'",
-            "start": 9,
             "type": "Literal",
-            "type": "Literal",
-            "value": "zero"
+            "property": {
+              "commentStart": 9,
+              "end": 15,
+              "moduleId": 0,
+              "raw": "'zero'",
+              "start": 9,
+              "type": "Literal",
+              "value": "zero"
+            }
           },
           "start": 6,
           "type": "MemberExpression",

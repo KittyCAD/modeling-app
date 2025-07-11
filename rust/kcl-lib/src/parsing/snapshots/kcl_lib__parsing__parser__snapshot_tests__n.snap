@@ -59,13 +59,15 @@ expression: actual
               "type": "Name"
             },
             "property": {
-              "commentStart": 17,
-              "end": 18,
-              "moduleId": 0,
-              "name": "a",
-              "start": 17,
               "type": "Identifier",
-              "type": "Identifier"
+              "property": {
+                "commentStart": 17,
+                "end": 18,
+                "moduleId": 0,
+                "name": "a",
+                "start": 17,
+                "type": "Identifier"
+              }
             },
             "start": 13,
             "type": "MemberExpression",

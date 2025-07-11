@@ -180,16 +180,18 @@ description: Result of parsing array_range_negative_expr.kcl
               "type": "Name"
             },
             "property": {
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "raw": "0",
-              "start": 0,
               "type": "Literal",
-              "type": "Literal",
-              "value": {
-                "value": 0.0,
-                "suffix": "None"
+              "property": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "raw": "0",
+                "start": 0,
+                "type": "Literal",
+                "value": {
+                  "value": 0.0,
+                  "suffix": "None"
+                }
               }
             },
             "start": 0,

@@ -46,27 +46,31 @@ expression: actual
               "type": "Name"
             },
             "property": {
-              "commentStart": 10,
-              "end": 15,
-              "moduleId": 0,
-              "raw": "\"one\"",
-              "start": 10,
               "type": "Literal",
-              "type": "Literal",
-              "value": "one"
+              "property": {
+                "commentStart": 10,
+                "end": 15,
+                "moduleId": 0,
+                "raw": "\"one\"",
+                "start": 10,
+                "type": "Literal",
+                "value": "one"
+              }
             },
             "start": 7,
             "type": "MemberExpression",
             "type": "MemberExpression"
           },
           "property": {
-            "commentStart": 17,
-            "end": 20,
-            "moduleId": 0,
-            "name": "two",
-            "start": 17,
             "type": "Identifier",
-            "type": "Identifier"
+            "property": {
+              "commentStart": 17,
+              "end": 20,
+              "moduleId": 0,
+              "name": "two",
+              "start": 17,
+              "type": "Identifier"
+            }
           },
           "start": 7,
           "type": "MemberExpression",
