@@ -786,21 +786,44 @@ export const writeEnvironmentConfigurationToken = async (
   token: string
 ) => {
   const path = await getEnvironmentConfigurationPath(environmentName)
-  let environmentConfiguration =
-    await readEnvironmentConfigurationFile(environmentName)
-  if (environmentConfiguration === null) {
-    const initialConfiguration: EnvironmentConfiguration = {
-      token,
-      pool: '',
-      name: environmentName,
-    }
-    environmentConfiguration = initialConfiguration
-  }
+  const environmentConfiguration = await getEnvironmentConfigurationObject(environmentName)
   environmentConfiguration.token = token
   const requestedConfiguration = JSON.stringify(environmentConfiguration)
   const result = window.electron.writeFile(path, requestedConfiguration)
   console.log(`wrote ${environmentName}.json to disk`)
   return result
+}
+
+export const writeEnvironmentConfigurationPool = async  (environmentName: EnvironmentName, pool: string) => {
+  const path = await getEnvironmentConfigurationPath(environmentName)
+  const environmentConfiguration = await getEnvironmentConfigurationObject(environmentName)
+  environmentConfiguration.pool = pool
+  const requestedConfiguration = JSON.stringify(environmentConfiguration)
+  const result = window.electron.writeFile(path, requestedConfiguration)
+  console.log(`wrote ${environmentName}.json to disk`)
+  return result
+}
+
+export const getEnvironmentConfigurationObject = async  (environmentName: EnvironmentName) => {
+  let environmentConfiguration =
+    await readEnvironmentConfigurationFile(environmentName)
+  if (environmentConfiguration === null) {
+    const initialConfiguration: EnvironmentConfiguration = {
+      token: '',
+      pool: '',
+      name: environmentName,
+    }
+    environmentConfiguration = initialConfiguration
+  }
+  return environmentConfiguration
+}
+
+export const readEnvironmentConfigurationPool = async (
+  environmentName: EnvironmentName
+) => {
+  const environmentConfiguration =
+    await readEnvironmentConfigurationFile(environmentName)
+  return environmentConfiguration ? environmentConfiguration.pool : ''
 }
 
 export const readEnvironmentConfigurationToken = async (

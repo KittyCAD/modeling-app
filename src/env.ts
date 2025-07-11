@@ -6,6 +6,7 @@ type EnvironmentVariableSources = {
   readonly VITE_KITTYCAD_API_BASE_URL: string | undefined
   readonly VITE_KITTYCAD_API_WEBSOCKET_URL: string | undefined
   readonly VITE_KITTYCAD_SITE_BASE_URL: string | undefined
+  readonly POOL: string | undefined
 }
 
 type EnvironmentVariables = {
@@ -20,6 +21,7 @@ type EnvironmentVariables = {
   readonly DEV: string | undefined
   readonly CI: string | undefined
   readonly SOURCES: EnvironmentVariableSources
+  readonly POOL: string | undefined
 }
 
 /** Store the environment in memory to be accessed during runtime */
@@ -33,6 +35,13 @@ export const updateEnvironment = (environment: EnvironmentName | null) => {
     ENVIRONMENT = SUPPORTED_ENVIRONMENTS[environment]
   }
   console.log('updating environment', environment)
+}
+
+export const updateEnvironmentPool = (environmentName: EnvironmentName, pool :string) => {
+  if (!ENVIRONMENT) return
+  if (ENVIRONMENT.name === environmentName) {
+    ENVIRONMENT.pool = pool
+  }
 }
 
 // Do not export the entire Environment! Use env()
@@ -119,6 +128,9 @@ export default (): EnvironmentVariables => {
 
   const viteSource = '.env.development(.local)'
   const supportedEnvironmentSource = 'Supported Environment configuration'
+  const pool = ENVIRONMENT && ENVIRONMENT.pool ? ENVIRONMENT.pool : ''
+  const poolSource = pool ? supportedEnvironmentSource : ''
+
   /**
    * Initialize sources
    * TODO: If you package for development environment it will read .env instead of vite from packaged binary?
@@ -127,6 +139,7 @@ export default (): EnvironmentVariables => {
     VITE_KITTYCAD_API_BASE_URL: viteSource,
     VITE_KITTYCAD_SITE_BASE_URL: viteSource,
     VITE_KITTYCAD_API_WEBSOCKET_URL: viteSource,
+    POOL: poolSource
   }
 
   /**
@@ -144,6 +157,7 @@ export default (): EnvironmentVariables => {
       VITE_KITTYCAD_API_BASE_URL: supportedEnvironmentSource,
       VITE_KITTYCAD_SITE_BASE_URL: supportedEnvironmentSource,
       VITE_KITTYCAD_API_WEBSOCKET_URL: supportedEnvironmentSource,
+      POOL: poolSource
     }
   }
 
@@ -161,6 +175,7 @@ export default (): EnvironmentVariables => {
     DEV: DEV || undefined,
     CI: (env.CI as string) || undefined,
     SOURCES: sources,
+    POOL: pool
   }
 
   return environmentVariables

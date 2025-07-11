@@ -1,5 +1,5 @@
 import type { Models } from '@kittycad/lib'
-import env, { getEnvironmentName, updateEnvironment } from '@src/env'
+import env, { getEnvironmentName, updateEnvironment, updateEnvironmentPool } from '@src/env'
 import { assign, fromPromise, setup } from 'xstate'
 
 import {
@@ -10,6 +10,7 @@ import {
 import {
   getUser as getUserDesktop,
   migrateOldTokenToProductionEnvironmentConfiguration,
+  readEnvironmentConfigurationPool,
   readEnvironmentConfigurationToken,
   readEnvironmentFile,
   writeEnvironmentConfigurationToken,
@@ -153,6 +154,11 @@ async function getUser(input: { token?: string }) {
       new Error('Unable to update environment from disk cache')
     )
   }
+
+  // Update the pool
+  const cachedPool = await readEnvironmentConfigurationPool(environment)
+  updateEnvironmentPool(environment,cachedPool)
+
   let token = ''
   try {
     token = await getAndSyncStoredToken(input)
