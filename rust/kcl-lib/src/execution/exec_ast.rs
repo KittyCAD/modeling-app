@@ -88,7 +88,7 @@ impl ExecutorContext {
         path: &ModulePath,
     ) -> Result<
         (Option<KclValue>, EnvironmentRef, Vec<String>, ModuleArtifactState),
-        (KclError, Option<ModuleArtifactState>),
+        (KclError, Option<EnvironmentRef>, Option<ModuleArtifactState>),
     > {
         crate::log::log(format!("enter module {path} {}", exec_state.stack()));
 
@@ -100,7 +100,7 @@ impl ExecutorContext {
         let no_prelude = self
             .handle_annotations(program.inner_attrs.iter(), crate::execution::BodyType::Root, exec_state)
             .await
-            .map_err(|err| (err, None))?;
+            .map_err(|err| (err, None, None))?;
 
         if !preserve_mem {
             exec_state.mut_stack().push_new_root_env(!no_prelude);
@@ -125,7 +125,7 @@ impl ExecutorContext {
         crate::log::log(format!("leave {path}"));
 
         result
-            .map_err(|err| (err, Some(module_artifacts.clone())))
+            .map_err(|err| (err, Some(env_ref), Some(module_artifacts.clone())))
             .map(|result| (result, env_ref, local_state.module_exports, module_artifacts))
     }
 
@@ -644,7 +644,7 @@ impl ExecutorContext {
 
         // TODO: ModuleArtifactState is getting dropped here when there's an
         // error.  Should we propagate it for non-root modules?
-        result.map_err(|(err, _)| {
+        result.map_err(|(err, _, _)| {
             if let KclError::ImportCycle { .. } = err {
                 // It was an import cycle.  Keep the original message.
                 err.override_source_ranges(vec![source_range])
