@@ -1,0 +1,5 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Execution success subtract_doesnt_need_brackets.kcl
+---
+null
