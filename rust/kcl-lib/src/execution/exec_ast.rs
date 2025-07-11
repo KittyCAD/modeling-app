@@ -1768,7 +1768,9 @@ impl Property {
                         | NumericType::Known(crate::exec::UnitType::Count)
                 ) {
                     return Err(KclError::new_semantic(KclErrorDetails::new(
-                        format!("{value} is not a valid index, indices must be non-dimensional numbers"),
+                        format!(
+                            "{value} is not a valid index, indices must be non-dimensional numbers. If you're sure this is correct, you can add `: number(Count)` to tell KCL this number is an index"
+                        ),
                         property_sr,
                     )));
                 }
