@@ -1,6 +1,6 @@
 import env from '@src/env'
 import { vi } from 'vitest'
-import { viteEnv, windowElectronProcessEnv, processEnv } from '@src/env'
+import { viteEnv, windowElectronProcessEnv, processEnv, updateEnvironment, getEnvironmentName } from '@src/env'
 
 describe('@src/env', () => {
   describe('default export', () => {
@@ -18,8 +18,14 @@ describe('@src/env', () => {
         TEST: 'true',
         DEV: '1',
         CI: 'true',
+             "SOURCES": {
+                "VITE_KITTYCAD_API_BASE_URL": ".env.development(.local)",
+                   "VITE_KITTYCAD_API_WEBSOCKET_URL": ".env.development(.local)",
+                   "VITE_KITTYCAD_SITE_BASE_URL": ".env.development(.local)",
+                 },
       }
       const actual = env()
+      // Gotcha: If this fails you need a token in .env.development.local
       expect(typeof actual.VITE_KITTYCAD_API_TOKEN).toBe('string')
       //@ts-ignore I do not want this token in our logs for any reason.
       actual.VITE_KITTYCAD_API_TOKEN = 'redacted'
@@ -36,6 +42,7 @@ describe('@src/env', () => {
       expect(typeof actual.NODE_ENV).toBe('string')
       expect(typeof actual.VITE_KITTYCAD_API_BASE_URL).toBe('string')
       expect(typeof actual.VITE_KITTYCAD_API_WEBSOCKET_URL).toBe('string')
+      // Gotcha: If this fails you need a token in .env.development.local
       expect(typeof actual.VITE_KITTYCAD_API_TOKEN).toBe('string')
       expect(typeof actual.VITE_KITTYCAD_SITE_BASE_URL).toBe('string')
       expect(typeof actual.VITE_KITTYCAD_SITE_APP_URL).toBe('string')
@@ -105,6 +112,7 @@ describe('@src/env', () => {
       expect(typeof actual?.NODE_ENV).toBe('string')
       expect(typeof actual?.VITE_KITTYCAD_API_BASE_URL).toBe('string')
       expect(typeof actual?.VITE_KITTYCAD_API_WEBSOCKET_URL).toBe('string')
+      // Gotcha: If this fails you need a token in .env.development.local
       expect(typeof actual?.VITE_KITTYCAD_API_TOKEN).toBe('string')
       expect(typeof actual?.VITE_KITTYCAD_SITE_BASE_URL).toBe('string')
       expect(typeof actual?.VITE_KITTYCAD_SITE_APP_URL).toBe('string')
@@ -112,6 +120,32 @@ describe('@src/env', () => {
       expect(typeof actual?.TEST).toBe('string')
       expect(typeof actual?.DEV).toBe('string')
       // Don't check CI...
+    })
+  })
+
+  describe('Environment functions', () =>{
+    describe('getEnvironmentName and updateEnvironment', () => {
+      it('should return null by default', ()=>{
+        const expected = null
+        const actual = getEnvironmentName()
+        expect(actual).toBe(expected)
+      })
+      it('should return development', () => {
+        const expected = 'development'
+        updateEnvironment('development')
+        const actual = getEnvironmentName()
+        expect(actual).toBe(expected)
+        // restore global state to the default value
+        updateEnvironment(null)
+      })
+      it('should return production', () => {
+        const expected = 'production'
+        updateEnvironment('production')
+        const actual = getEnvironmentName()
+        expect(actual).toBe(expected)
+        // restore global state to the default value
+        updateEnvironment(null)
+      })
     })
   })
 })

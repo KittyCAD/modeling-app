@@ -26,8 +26,12 @@ type EnvironmentVariables = {
 let ENVIRONMENT: Environment | null = null
 
 /** Update the runtime environment */
-export const updateEnvironment = (environment: EnvironmentName) => {
-  ENVIRONMENT = SUPPORTED_ENVIRONMENTS[environment]
+export const updateEnvironment = (environment: EnvironmentName | null) => {
+  if (environment === null) {
+    ENVIRONMENT = null
+  } else {
+    ENVIRONMENT = SUPPORTED_ENVIRONMENTS[environment]
+  }
   console.log('updating environment', environment)
 }
 
