@@ -2763,25 +2763,25 @@ impl ObjectProperty {
 #[serde(tag = "type")]
 #[allow(clippy::large_enum_variant)]
 pub enum LiteralIdentifier {
-    Identifier(BoxNode<Identifier>),
-    Literal(BoxNode<Literal>),
-    Expr(Expr),
+    Identifier { property: BoxNode<Identifier> },
+    Literal { property: BoxNode<Literal> },
+    Expression { property: BoxNode<Expr> },
 }
 
 impl LiteralIdentifier {
     pub fn start(&self) -> usize {
         match self {
-            LiteralIdentifier::Identifier(identifier) => identifier.start,
-            LiteralIdentifier::Literal(literal) => literal.start,
-            LiteralIdentifier::Expr(e) => e.start(),
+            LiteralIdentifier::Identifier { property } => property.start,
+            LiteralIdentifier::Literal { property } => property.start,
+            LiteralIdentifier::Expression { property } => property.start(),
         }
     }
 
     pub fn end(&self) -> usize {
         match self {
-            LiteralIdentifier::Identifier(identifier) => identifier.end,
-            LiteralIdentifier::Literal(literal) => literal.end,
-            LiteralIdentifier::Expr(e) => e.end(),
+            LiteralIdentifier::Identifier { property } => property.end,
+            LiteralIdentifier::Literal { property } => property.end,
+            LiteralIdentifier::Expression { property } => property.end(),
         }
     }
 
@@ -2832,9 +2832,9 @@ impl MemberExpression {
         self.object.rename_identifiers(old_name, new_name);
 
         match &mut self.property {
-            LiteralIdentifier::Identifier(identifier) => identifier.rename(old_name, new_name),
-            LiteralIdentifier::Literal(_) => {}
-            LiteralIdentifier::Expr(e) => e.rename_identifiers(old_name, new_name),
+            LiteralIdentifier::Identifier { property: identifier } => identifier.rename(old_name, new_name),
+            LiteralIdentifier::Literal { .. } => {}
+            LiteralIdentifier::Expression { property } => property.rename_identifiers(old_name, new_name),
         }
     }
 }

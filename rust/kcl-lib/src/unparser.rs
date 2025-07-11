@@ -690,15 +690,15 @@ impl ObjectExpression {
 impl MemberExpression {
     fn recast(&self, options: &FormatOptions, indentation_level: usize, ctxt: ExprContext) -> String {
         let key_str = match &self.property {
-            LiteralIdentifier::Identifier(identifier) => {
+            LiteralIdentifier::Identifier { property: identifier } => {
                 if self.computed {
                     format!("[{}]", &(*identifier.name))
                 } else {
                     format!(".{}", &(*identifier.name))
                 }
             }
-            LiteralIdentifier::Literal(lit) => format!("[{}]", &(*lit.raw)),
-            LiteralIdentifier::Expr(node) => {
+            LiteralIdentifier::Literal { property } => format!("[{}]", &(*property.raw)),
+            LiteralIdentifier::Expression { property: node } => {
                 let node_fmt = node.recast(options, indentation_level, ctxt);
                 format!("[{node_fmt}]")
             }

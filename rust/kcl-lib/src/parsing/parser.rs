@@ -1303,7 +1303,7 @@ fn member_expression_dot(i: &mut TokenSlice) -> ModalResult<(LiteralIdentifier, 
     period.parse_next(i)?;
     let property = nameable_identifier
         .map(Box::new)
-        .map(LiteralIdentifier::Identifier)
+        .map(|p| LiteralIdentifier::Identifier { property: p })
         .parse_next(i)?;
     let end = property.end();
     Ok((property, end, false))
@@ -1313,21 +1313,28 @@ fn member_expression_dot(i: &mut TokenSlice) -> ModalResult<(LiteralIdentifier, 
 fn member_expression_subscript(i: &mut TokenSlice) -> ModalResult<(LiteralIdentifier, usize, bool)> {
     let _ = open_bracket.parse_next(i)?;
     let property = alt((
-        literal.map(LiteralIdentifier::Literal),
-        nameable_identifier.map(Box::new).map(LiteralIdentifier::Identifier),
+        literal.map(|p| LiteralIdentifier::Literal { property: p }),
+        nameable_identifier
+            .map(Box::new)
+            .map(|p| LiteralIdentifier::Identifier { property: p }),
     ))
     .parse_next(i)?;
     let end = close_bracket.parse_next(i)?.end;
-    let computed = matches!(property, LiteralIdentifier::Identifier(_));
+    let computed = matches!(property, LiteralIdentifier::Identifier { .. });
     Ok((property, end, computed))
 }
 
 fn member_expression_subscript_complex_expr(i: &mut TokenSlice) -> ModalResult<(LiteralIdentifier, usize, bool)> {
     let _ = open_bracket.parse_next(i)?;
     let property = expression.parse_next(i)?;
-    let property = LiteralIdentifier::Expr(property);
+    let start = property.start();
+    let end = property.end();
+    let module_id = property.module_id();
+    let property = LiteralIdentifier::Expression {
+        property: Node::boxed(property, start, end, module_id),
+    };
     let end = close_bracket.parse_next(i)?.end;
-    let computed = matches!(property, LiteralIdentifier::Identifier(_));
+    let computed = matches!(property, LiteralIdentifier::Identifier { .. });
     Ok((property, end, computed))
 }
 
@@ -3421,7 +3428,11 @@ mod tests {
         let Expr::MemberExpression(expr) = expression.parse(tokens).unwrap() else {
             panic!();
         };
-        let LiteralIdentifier::Expr(Expr::BinaryExpression(ref be)) = expr.property else {
+        let memexp: MemberExpression = expr.inner;
+        let LiteralIdentifier::Expression { property } = memexp.property else {
+            panic!();
+        };
+        let Expr::BinaryExpression(be) = property.inner else {
             panic!();
         };
         assert_eq!(be.inner.operator, BinaryOperator::Add);

@@ -173,9 +173,9 @@ impl BinaryPart {
 impl LiteralIdentifier {
     pub fn compute_digest(&mut self) -> Digest {
         match self {
-            LiteralIdentifier::Identifier(node) => node.compute_digest(),
-            LiteralIdentifier::Literal(node) => node.compute_digest(),
-            LiteralIdentifier::Expr(node) => node.compute_digest(),
+            LiteralIdentifier::Identifier { property } => property.compute_digest(),
+            LiteralIdentifier::Literal { property } => property.compute_digest(),
+            LiteralIdentifier::Expression { property: node } => node.compute_digest(),
         }
     }
 }
