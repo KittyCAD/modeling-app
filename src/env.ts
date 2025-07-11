@@ -55,7 +55,7 @@ export default (): EnvironmentVariables => {
   const processEnvOnly = processEnv()
   const env = processEnvOnly || windowElectronProcessEnvOnly || viteOnly
   const environmentVariables: EnvironmentVariables = {
-    NODE_ENV: (env.NODE_ENV as string) || undefined,
+    NODE_ENV: (env.NODE_ENV as string) || viteOnly.MODE || undefined,
     VITE_KITTYCAD_API_BASE_URL:
       (env.VITE_KITTYCAD_API_BASE_URL as string) || undefined,
     VITE_KITTYCAD_API_WEBSOCKET_URL:
