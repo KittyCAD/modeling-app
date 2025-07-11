@@ -525,7 +525,7 @@ const getTokenFilePath = async () => {
   return window.electron.path.join(fullPath, TOKEN_FILE_NAME)
 }
 
-const getEnvironmentConfigurationPath = async (
+export const getEnvironmentConfigurationPath = async (
   environmentName: EnvironmentName
 ) => {
   const isTestEnv = window.electron.process.env.IS_PLAYWRIGHT === 'true'
@@ -549,12 +549,11 @@ const getEnvironmentConfigurationPath = async (
       await window.electron.mkdir(fullPath, { recursive: true })
     }
   }
-  console.log('fullPath', fullPath)
   // /envs/development.json
   return window.electron.path.join(fullPath, environmentName + '.json')
 }
 
-const getEnvironmentFilePath = async () => {
+export const getEnvironmentFilePath = async () => {
   const isTestEnv = window.electron.process.env.IS_PLAYWRIGHT === 'true'
   const testSettingsPath = await window.electron.getAppTestProperty(
     'TEST_SETTINGS_FILE_KEY'

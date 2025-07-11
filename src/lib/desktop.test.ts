@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 
 import { initPromise } from '@src/lang/wasmUtils'
-import { listProjects } from '@src/lib/desktop'
+import { getEnvironmentConfigurationPath, listProjects, getEnvironmentFilePath} from '@src/lib/desktop'
 import type { DeepPartial } from '@src/lib/types'
 import { webSafeJoin, webSafePathSplit } from '@src/lib/paths'
 
@@ -34,6 +34,10 @@ const mockElectron = {
   getPath: vi.fn(),
   kittycad: vi.fn(),
   canReadWriteDirectory: vi.fn(),
+  getAppTestProperty: vi.fn(),
+  packageJson: {
+    name: ''
+  }
 }
 
 vi.stubGlobal('window', { electron: mockElectron })
@@ -164,6 +168,43 @@ describe('desktop utilities', () => {
       const projects = await listProjects(mockConfig)
 
       expect(projects).toEqual([])
+    })
+  })
+
+  describe('getEnvironmentConfigurationPath', () => {
+    it('should return a wonky path because appConfig is not set by default', async () => {
+      const expected = '/appData//envs/development.json'
+      const actual = await getEnvironmentConfigurationPath('development')
+      expect(actual).toBe(expected)
+    })
+    it('should return path to the configuration file for development', async () => {
+      const expected = '/appData/zoo-modeling-app/envs/development.json'
+      mockElectron.packageJson.name =  'zoo-modeling-app'
+      const actual = await getEnvironmentConfigurationPath('development')
+      mockElectron.packageJson.name =  ''
+      expect(actual).toBe(expected)
+    })
+    it('should return path to the configuration file for production', async () => {
+      const expected = '/appData/zoo-modeling-app/envs/production.json'
+      mockElectron.packageJson.name =  'zoo-modeling-app'
+      const actual = await getEnvironmentConfigurationPath('production')
+      mockElectron.packageJson.name =  ''
+      expect(actual).toBe(expected)
+    })
+  })
+
+  describe("getEnvironmentPath", () => {
+    it('should return a wonky path because appConfig is not set by default', async () =>{
+      const expected = '/appData//environment.txt'
+      const actual = await getEnvironmentFilePath()
+      expect(actual).toBe(expected)
+    })
+    it('should return path to the environment.txt file', async () =>{
+      const expected = '/appData/zoo-modeling-app/environment.txt'
+      mockElectron.packageJson.name =  'zoo-modeling-app'
+      const actual = await getEnvironmentFilePath()
+      mockElectron.packageJson.name =  ''
+      expect(actual).toBe(expected)
     })
   })
 })
