@@ -786,7 +786,8 @@ export const writeEnvironmentConfigurationToken = async (
   token: string
 ) => {
   const path = await getEnvironmentConfigurationPath(environmentName)
-  const environmentConfiguration = await getEnvironmentConfigurationObject(environmentName)
+  const environmentConfiguration =
+    await getEnvironmentConfigurationObject(environmentName)
   environmentConfiguration.token = token
   const requestedConfiguration = JSON.stringify(environmentConfiguration)
   const result = window.electron.writeFile(path, requestedConfiguration)
@@ -794,9 +795,13 @@ export const writeEnvironmentConfigurationToken = async (
   return result
 }
 
-export const writeEnvironmentConfigurationPool = async  (environmentName: EnvironmentName, pool: string) => {
+export const writeEnvironmentConfigurationPool = async (
+  environmentName: EnvironmentName,
+  pool: string
+) => {
   const path = await getEnvironmentConfigurationPath(environmentName)
-  const environmentConfiguration = await getEnvironmentConfigurationObject(environmentName)
+  const environmentConfiguration =
+    await getEnvironmentConfigurationObject(environmentName)
   environmentConfiguration.pool = pool
   const requestedConfiguration = JSON.stringify(environmentConfiguration)
   const result = window.electron.writeFile(path, requestedConfiguration)
@@ -804,7 +809,9 @@ export const writeEnvironmentConfigurationPool = async  (environmentName: Enviro
   return result
 }
 
-export const getEnvironmentConfigurationObject = async  (environmentName: EnvironmentName) => {
+export const getEnvironmentConfigurationObject = async (
+  environmentName: EnvironmentName
+) => {
   let environmentConfiguration =
     await readEnvironmentConfigurationFile(environmentName)
   if (environmentConfiguration === null) {

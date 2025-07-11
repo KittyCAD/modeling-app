@@ -65,6 +65,7 @@ import { xStateValueToString } from '@src/lib/xStateValueToString'
 import { getSelectionTypeDisplayText } from '@src/lib/selections'
 import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
+import env from '@src/env'
 
 // CYCLIC REF
 sceneInfra.camControls.engineStreamActor = engineStreamActor
@@ -90,7 +91,7 @@ export function App() {
 
   // Stream related refs and data
   const [searchParams] = useSearchParams()
-  const pool = searchParams.get('pool')
+  const pool = searchParams.get('pool') || env().POOL || undefined
 
   const projectName = project?.name || null
   const projectPath = project?.path || null

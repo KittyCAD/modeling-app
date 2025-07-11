@@ -37,7 +37,10 @@ export const updateEnvironment = (environment: EnvironmentName | null) => {
   console.log('updating environment', environment)
 }
 
-export const updateEnvironmentPool = (environmentName: EnvironmentName, pool :string) => {
+export const updateEnvironmentPool = (
+  environmentName: EnvironmentName,
+  pool: string
+) => {
   if (!ENVIRONMENT) return
   if (ENVIRONMENT.name === environmentName) {
     ENVIRONMENT.pool = pool
@@ -139,7 +142,7 @@ export default (): EnvironmentVariables => {
     VITE_KITTYCAD_API_BASE_URL: viteSource,
     VITE_KITTYCAD_SITE_BASE_URL: viteSource,
     VITE_KITTYCAD_API_WEBSOCKET_URL: viteSource,
-    POOL: poolSource
+    POOL: poolSource,
   }
 
   /**
@@ -157,7 +160,7 @@ export default (): EnvironmentVariables => {
       VITE_KITTYCAD_API_BASE_URL: supportedEnvironmentSource,
       VITE_KITTYCAD_SITE_BASE_URL: supportedEnvironmentSource,
       VITE_KITTYCAD_API_WEBSOCKET_URL: supportedEnvironmentSource,
-      POOL: poolSource
+      POOL: poolSource,
     }
   }
 
@@ -175,7 +178,7 @@ export default (): EnvironmentVariables => {
     DEV: DEV || undefined,
     CI: (env.CI as string) || undefined,
     SOURCES: sources,
-    POOL: pool
+    POOL: pool,
   }
 
   return environmentVariables

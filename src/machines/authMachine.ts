@@ -1,5 +1,9 @@
 import type { Models } from '@kittycad/lib'
-import env, { getEnvironmentName, updateEnvironment, updateEnvironmentPool } from '@src/env'
+import env, {
+  getEnvironmentName,
+  updateEnvironment,
+  updateEnvironmentPool,
+} from '@src/env'
 import { assign, fromPromise, setup } from 'xstate'
 
 import {
@@ -157,7 +161,7 @@ async function getUser(input: { token?: string }) {
 
   // Update the pool
   const cachedPool = await readEnvironmentConfigurationPool(environment)
-  updateEnvironmentPool(environment,cachedPool)
+  updateEnvironmentPool(environment, cachedPool)
 
   let token = ''
   try {

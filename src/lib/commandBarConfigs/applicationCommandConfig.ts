@@ -24,7 +24,10 @@ import {
   webSafePathSplit,
 } from '@src/lib/paths'
 import { getAllSubDirectoriesAtProjectRoot } from '@src/machines/systemIO/snapshotContext'
-import { writeEnvironmentConfigurationPool, writeEnvironmentFile } from '@src/lib/desktop'
+import {
+  writeEnvironmentConfigurationPool,
+  writeEnvironmentFile,
+} from '@src/lib/desktop'
 import { getEnvironmentName } from '@src/env'
 
 function onSubmitKCLSampleCreation({
@@ -496,8 +499,7 @@ export function createApplicationCommands({
   const choosePoolCommand: Command = {
     name: 'choose-pool',
     displayName: 'Choose pool',
-    description:
-      'Switch between different engine pools',
+    description: 'Switch between different engine pools',
     needsReview: false,
     icon: 'importFile',
     groupId: 'application',
@@ -505,16 +507,18 @@ export function createApplicationCommands({
       if (data) {
         const environmentName = getEnvironmentName()
         if (environmentName)
-          writeEnvironmentConfigurationPool(environmentName, data.pool).then(() => {
-            // Reload the application and it will trigger the correct sign in workflow for the new environment
-            window.location.reload()
-          })
+          writeEnvironmentConfigurationPool(environmentName, data.pool).then(
+            () => {
+              // Reload the application and it will trigger the correct sign in workflow for the new environment
+              window.location.reload()
+            }
+          )
       }
     },
     args: {
       pool: {
-        inputType: 'text',
-        required: true
+        inputType: 'string',
+        required: true,
       },
     },
   }
@@ -525,7 +529,7 @@ export function createApplicationCommands({
         addKCLFileToProject,
         createASampleDesktopOnly,
         switchEnvironmentsCommand,
-        choosePoolCommand
+        choosePoolCommand,
       ]
     : [textToCADCommand, addKCLFileToProject]
 }

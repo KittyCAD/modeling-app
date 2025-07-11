@@ -71,10 +71,12 @@ export function EnvironmentDescription() {
           </li>
           <li className="flex flex-col px-2 py-4 gap-1 last:mb-0 ">
             <p className="font-bold">Pool</p>{' '}
-            <p>{env().POOL}</p>
-            <p className="py-0.5 px-1.5 rounded bg-primary/10 dark:bg-chalkboard-80 font-mono">
-              {env().SOURCES.POOL}
-            </p>
+            <p>{env().POOL || 'No pool configured'}</p>
+            {env().POOL && (
+              <p className="py-0.5 px-1.5 rounded bg-primary/10 dark:bg-chalkboard-80 font-mono">
+                {env().SOURCES.POOL}
+              </p>
+            )}
           </li>
         </ul>
       </div>
