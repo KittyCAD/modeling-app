@@ -196,9 +196,9 @@ function moreNodePathFromSourceRange(
       path.push(['object', 'MemberExpression'])
       return moreNodePathFromSourceRange(object, sourceRange, path)
     }
-    if (property.start <= start && property.end >= end) {
+    if (property.property.start <= start && property.property.end >= end) {
       path.push(['property', 'MemberExpression'])
-      return moreNodePathFromSourceRange(property, sourceRange, path)
+      return moreNodePathFromSourceRange(property.property, sourceRange, path)
     }
     return path
   }
