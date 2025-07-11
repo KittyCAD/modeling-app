@@ -1,6 +1,12 @@
 import env from '@src/env'
 import { vi } from 'vitest'
-import { viteEnv, windowElectronProcessEnv, processEnv, updateEnvironment, getEnvironmentName } from '@src/env'
+import {
+  viteEnv,
+  windowElectronProcessEnv,
+  processEnv,
+  updateEnvironment,
+  getEnvironmentName,
+} from '@src/env'
 
 describe('@src/env', () => {
   describe('default export', () => {
@@ -18,11 +24,11 @@ describe('@src/env', () => {
         TEST: 'true',
         DEV: '1',
         CI: 'true',
-             "SOURCES": {
-                "VITE_KITTYCAD_API_BASE_URL": ".env.development(.local)",
-                   "VITE_KITTYCAD_API_WEBSOCKET_URL": ".env.development(.local)",
-                   "VITE_KITTYCAD_SITE_BASE_URL": ".env.development(.local)",
-                 },
+        SOURCES: {
+          VITE_KITTYCAD_API_BASE_URL: '.env.development(.local)',
+          VITE_KITTYCAD_API_WEBSOCKET_URL: '.env.development(.local)',
+          VITE_KITTYCAD_SITE_BASE_URL: '.env.development(.local)',
+        },
       }
       const actual = env()
       // Gotcha: If this fails you need a token in .env.development.local
@@ -123,9 +129,9 @@ describe('@src/env', () => {
     })
   })
 
-  describe('Environment functions', () =>{
+  describe('Environment functions', () => {
     describe('getEnvironmentName and updateEnvironment', () => {
-      it('should return null by default', ()=>{
+      it('should return null by default', () => {
         const expected = null
         const actual = getEnvironmentName()
         expect(actual).toBe(expected)
