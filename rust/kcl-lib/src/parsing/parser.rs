@@ -1313,13 +1313,19 @@ fn member_expression_dot(i: &mut TokenSlice) -> ModalResult<(LiteralIdentifier, 
 fn member_expression_subscript(i: &mut TokenSlice) -> ModalResult<(LiteralIdentifier, usize, bool)> {
     let _ = open_bracket.parse_next(i)?;
     let property = alt((
-        terminated(literal, peek(close_bracket)).map(LiteralIdentifier::Literal),
-        terminated(nameable_identifier, peek(close_bracket))
-            .map(Box::new)
-            .map(LiteralIdentifier::Identifier),
-        expression.map(LiteralIdentifier::Expr),
+        literal.map(LiteralIdentifier::Literal),
+        nameable_identifier.map(Box::new).map(LiteralIdentifier::Identifier),
     ))
     .parse_next(i)?;
+    let end = close_bracket.parse_next(i)?.end;
+    let computed = matches!(property, LiteralIdentifier::Identifier(_));
+    Ok((property, end, computed))
+}
+
+fn member_expression_subscript_complex_expr(i: &mut TokenSlice) -> ModalResult<(LiteralIdentifier, usize, bool)> {
+    let _ = open_bracket.parse_next(i)?;
+    let property = expression.parse_next(i)?;
+    let property = LiteralIdentifier::Expr(property);
     let end = close_bracket.parse_next(i)?.end;
     let computed = matches!(property, LiteralIdentifier::Identifier(_));
     Ok((property, end, computed))
@@ -1329,7 +1335,7 @@ fn member_expression_subscript(i: &mut TokenSlice) -> ModalResult<(LiteralIdenti
 /// Can be arbitrarily nested, e.g. `people[i]['adam'].age`.
 fn build_member_expression(object: Expr, i: &mut TokenSlice) -> ModalResult<Node<MemberExpression>> {
     // Now a sequence of members.
-    let member = alt((member_expression_dot, member_expression_subscript)).context(expected("a member/property, e.g. size.x and size['height'] and size[0] are all different ways to access a member/property of 'size'"));
+    let member = alt((member_expression_dot, member_expression_subscript, member_expression_subscript_complex_expr)).context(expected("a member/property, e.g. size.x and size['height'] and size[0] are all different ways to access a member/property of 'size'"));
     let mut members: Vec<_> = repeat(1.., member)
         .context(expected("a sequence of at least one members/properties"))
         .parse_next(i)?;

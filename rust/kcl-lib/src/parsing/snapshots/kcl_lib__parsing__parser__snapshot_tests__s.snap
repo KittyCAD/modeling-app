@@ -24,7 +24,7 @@ expression: actual
           "moduleId": 0,
           "object": {
             "commentStart": 7,
-            "computed": true,
+            "computed": false,
             "end": 16,
             "moduleId": 0,
             "object": {
@@ -51,7 +51,6 @@ expression: actual
               "moduleId": 0,
               "raw": "\"one\"",
               "start": 10,
-              "type": "Expr",
               "type": "Literal",
               "type": "Literal",
               "value": "one"
@@ -61,23 +60,13 @@ expression: actual
             "type": "MemberExpression"
           },
           "property": {
-            "abs_path": false,
             "commentStart": 17,
             "end": 20,
             "moduleId": 0,
-            "name": {
-              "commentStart": 17,
-              "end": 20,
-              "moduleId": 0,
-              "name": "two",
-              "start": 17,
-              "type": "Identifier"
-            },
-            "path": [],
+            "name": "two",
             "start": 17,
-            "type": "Expr",
-            "type": "Name",
-            "type": "Name"
+            "type": "Identifier",
+            "type": "Identifier"
           },
           "start": 7,
           "type": "MemberExpression",

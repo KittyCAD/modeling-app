@@ -19,7 +19,7 @@ expression: actual
         },
         "init": {
           "commentStart": 6,
-          "computed": true,
+          "computed": false,
           "end": 11,
           "moduleId": 0,
           "object": {
@@ -46,7 +46,6 @@ expression: actual
             "moduleId": 0,
             "raw": "0",
             "start": 9,
-            "type": "Expr",
             "type": "Literal",
             "type": "Literal",
             "value": {
