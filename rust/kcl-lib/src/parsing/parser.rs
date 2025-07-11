@@ -1303,7 +1303,7 @@ fn member_expression_dot(i: &mut TokenSlice) -> ModalResult<(LiteralIdentifier, 
     period.parse_next(i)?;
     let property = nameable_identifier
         .map(Box::new)
-        .map(LiteralIdentifier::Identifier)
+        .map(|property| LiteralIdentifier::Identifier { property })
         .parse_next(i)?;
     let end = property.end();
     Ok((property, end, false))
@@ -1314,13 +1314,15 @@ fn member_expression_subscript(i: &mut TokenSlice) -> ModalResult<(LiteralIdenti
     let _ = open_bracket.parse_next(i)?;
     // TODO: This should be an expression, not just a literal or identifier.
     let property = alt((
-        literal.map(LiteralIdentifier::Literal),
-        nameable_identifier.map(Box::new).map(LiteralIdentifier::Identifier),
+        literal.map(|property| LiteralIdentifier::Literal { property }),
+        nameable_identifier
+            .map(Box::new)
+            .map(|property| LiteralIdentifier::Identifier { property }),
     ))
     .parse_next(i)?;
 
     let end = close_bracket.parse_next(i)?.end;
-    let computed = matches!(property, LiteralIdentifier::Identifier(_));
+    let computed = matches!(property, LiteralIdentifier::Identifier { .. });
     Ok((property, end, computed))
 }
 

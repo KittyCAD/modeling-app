@@ -2762,22 +2762,22 @@ impl ObjectProperty {
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum LiteralIdentifier {
-    Identifier(BoxNode<Identifier>),
-    Literal(BoxNode<Literal>),
+    Identifier { property: BoxNode<Identifier> },
+    Literal { property: BoxNode<Literal> },
 }
 
 impl LiteralIdentifier {
     pub fn start(&self) -> usize {
         match self {
-            LiteralIdentifier::Identifier(identifier) => identifier.start,
-            LiteralIdentifier::Literal(literal) => literal.start,
+            LiteralIdentifier::Identifier { property } => property.start,
+            LiteralIdentifier::Literal { property } => property.start,
         }
     }
 
     pub fn end(&self) -> usize {
         match self {
-            LiteralIdentifier::Identifier(identifier) => identifier.end,
-            LiteralIdentifier::Literal(literal) => literal.end,
+            LiteralIdentifier::Identifier { property } => property.end,
+            LiteralIdentifier::Literal { property } => property.end,
         }
     }
 
@@ -2828,8 +2828,8 @@ impl MemberExpression {
         self.object.rename_identifiers(old_name, new_name);
 
         match &mut self.property {
-            LiteralIdentifier::Identifier(identifier) => identifier.rename(old_name, new_name),
-            LiteralIdentifier::Literal(_) => {}
+            LiteralIdentifier::Identifier { property } => property.rename(old_name, new_name),
+            LiteralIdentifier::Literal { .. } => {}
         }
     }
 }

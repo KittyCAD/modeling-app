@@ -295,7 +295,10 @@ export function traverse(
   } else if (_node.type === 'MemberExpression') {
     // hmm this smell
     _traverse(_node.object, [...pathToNode, ['object', 'MemberExpression']])
-    _traverse(_node.property, [...pathToNode, ['property', 'MemberExpression']])
+    _traverse(_node.property.property, [
+      ...pathToNode,
+      ['property', 'MemberExpression'],
+    ])
   } else if (_node.type === 'ImportStatement') {
     // Do nothing.
   } else if ('body' in _node && isArray(_node.body)) {

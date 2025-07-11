@@ -63,8 +63,8 @@ impl BinaryPart {
 impl LiteralIdentifier {
     pub fn module_id(&self) -> ModuleId {
         match self {
-            LiteralIdentifier::Identifier(identifier) => identifier.module_id,
-            LiteralIdentifier::Literal(literal) => literal.module_id,
+            LiteralIdentifier::Identifier { property } => property.module_id,
+            LiteralIdentifier::Literal { property } => property.module_id,
         }
     }
 }

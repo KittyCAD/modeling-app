@@ -1735,7 +1735,7 @@ impl Property {
         let property_sr = vec![sr];
         let property_src: SourceRange = value.clone().into();
         match value {
-            LiteralIdentifier::Identifier(identifier) => {
+            LiteralIdentifier::Identifier { property: identifier } => {
                 let name = &identifier.name;
                 if !computed {
                     // This is dot syntax. Treat the property as a literal.
@@ -1747,7 +1747,7 @@ impl Property {
                     jvalue_to_prop(prop, property_sr, name)
                 }
             }
-            LiteralIdentifier::Literal(literal) => {
+            LiteralIdentifier::Literal { property: literal } => {
                 let value = literal.value.clone();
                 match value {
                     n @ LiteralValue::Number { value, suffix } => {
