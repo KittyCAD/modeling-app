@@ -41,16 +41,18 @@ expression: actual
             "type": "Name"
           },
           "property": {
-            "commentStart": 9,
-            "end": 10,
-            "moduleId": 0,
-            "raw": "0",
-            "start": 9,
             "type": "Literal",
-            "type": "Literal",
-            "value": {
-              "value": 0.0,
-              "suffix": "None"
+            "property": {
+              "commentStart": 9,
+              "end": 10,
+              "moduleId": 0,
+              "raw": "0",
+              "start": 9,
+              "type": "Literal",
+              "value": {
+                "value": 0.0,
+                "suffix": "None"
+              }
             }
           },
           "start": 6,

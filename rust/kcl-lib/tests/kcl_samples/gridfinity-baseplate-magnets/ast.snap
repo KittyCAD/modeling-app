@@ -7272,39 +7272,45 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                               "type": "Name"
                             },
                             "property": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "moduleId": 0,
-                              "name": "sketch",
-                              "start": 0,
                               "type": "Identifier",
-                              "type": "Identifier"
+                              "property": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "moduleId": 0,
+                                "name": "sketch",
+                                "start": 0,
+                                "type": "Identifier"
+                              }
                             },
                             "start": 0,
                             "type": "MemberExpression",
                             "type": "MemberExpression"
                           },
                           "property": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": "tags",
-                            "start": 0,
                             "type": "Identifier",
-                            "type": "Identifier"
+                            "property": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "tags",
+                              "start": 0,
+                              "type": "Identifier"
+                            }
                           },
                           "start": 0,
                           "type": "MemberExpression",
                           "type": "MemberExpression"
                         },
                         "property": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "line001",
-                          "start": 0,
                           "type": "Identifier",
-                          "type": "Identifier"
+                          "property": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": "line001",
+                            "start": 0,
+                            "type": "Identifier"
+                          }
                         },
                         "start": 0,
                         "type": "MemberExpression",
@@ -7370,39 +7376,45 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                               "type": "Name"
                             },
                             "property": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "moduleId": 0,
-                              "name": "sketch",
-                              "start": 0,
                               "type": "Identifier",
-                              "type": "Identifier"
+                              "property": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "moduleId": 0,
+                                "name": "sketch",
+                                "start": 0,
+                                "type": "Identifier"
+                              }
                             },
                             "start": 0,
                             "type": "MemberExpression",
                             "type": "MemberExpression"
                           },
                           "property": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": "tags",
-                            "start": 0,
                             "type": "Identifier",
-                            "type": "Identifier"
+                            "property": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "tags",
+                              "start": 0,
+                              "type": "Identifier"
+                            }
                           },
                           "start": 0,
                           "type": "MemberExpression",
                           "type": "MemberExpression"
                         },
                         "property": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "line001",
-                          "start": 0,
                           "type": "Identifier",
-                          "type": "Identifier"
+                          "property": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": "line001",
+                            "start": 0,
+                            "type": "Identifier"
+                          }
                         },
                         "start": 0,
                         "type": "MemberExpression",
@@ -7468,39 +7480,45 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                               "type": "Name"
                             },
                             "property": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "moduleId": 0,
-                              "name": "sketch",
-                              "start": 0,
                               "type": "Identifier",
-                              "type": "Identifier"
+                              "property": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "moduleId": 0,
+                                "name": "sketch",
+                                "start": 0,
+                                "type": "Identifier"
+                              }
                             },
                             "start": 0,
                             "type": "MemberExpression",
                             "type": "MemberExpression"
                           },
                           "property": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": "tags",
-                            "start": 0,
                             "type": "Identifier",
-                            "type": "Identifier"
+                            "property": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "tags",
+                              "start": 0,
+                              "type": "Identifier"
+                            }
                           },
                           "start": 0,
                           "type": "MemberExpression",
                           "type": "MemberExpression"
                         },
                         "property": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "line003",
-                          "start": 0,
                           "type": "Identifier",
-                          "type": "Identifier"
+                          "property": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": "line003",
+                            "start": 0,
+                            "type": "Identifier"
+                          }
                         },
                         "start": 0,
                         "type": "MemberExpression",
@@ -7566,39 +7584,45 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                               "type": "Name"
                             },
                             "property": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "moduleId": 0,
-                              "name": "sketch",
-                              "start": 0,
                               "type": "Identifier",
-                              "type": "Identifier"
+                              "property": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "moduleId": 0,
+                                "name": "sketch",
+                                "start": 0,
+                                "type": "Identifier"
+                              }
                             },
                             "start": 0,
                             "type": "MemberExpression",
                             "type": "MemberExpression"
                           },
                           "property": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": "tags",
-                            "start": 0,
                             "type": "Identifier",
-                            "type": "Identifier"
+                            "property": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "tags",
+                              "start": 0,
+                              "type": "Identifier"
+                            }
                           },
                           "start": 0,
                           "type": "MemberExpression",
                           "type": "MemberExpression"
                         },
                         "property": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "line003",
-                          "start": 0,
                           "type": "Identifier",
-                          "type": "Identifier"
+                          "property": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": "line003",
+                            "start": 0,
+                            "type": "Identifier"
+                          }
                         },
                         "start": 0,
                         "type": "MemberExpression",
@@ -8038,39 +8062,45 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                               "type": "Name"
                             },
                             "property": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "moduleId": 0,
-                              "name": "sketch",
-                              "start": 0,
                               "type": "Identifier",
-                              "type": "Identifier"
+                              "property": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "moduleId": 0,
+                                "name": "sketch",
+                                "start": 0,
+                                "type": "Identifier"
+                              }
                             },
                             "start": 0,
                             "type": "MemberExpression",
                             "type": "MemberExpression"
                           },
                           "property": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": "tags",
-                            "start": 0,
                             "type": "Identifier",
-                            "type": "Identifier"
+                            "property": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "tags",
+                              "start": 0,
+                              "type": "Identifier"
+                            }
                           },
                           "start": 0,
                           "type": "MemberExpression",
                           "type": "MemberExpression"
                         },
                         "property": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "line001",
-                          "start": 0,
                           "type": "Identifier",
-                          "type": "Identifier"
+                          "property": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": "line001",
+                            "start": 0,
+                            "type": "Identifier"
+                          }
                         },
                         "start": 0,
                         "type": "MemberExpression",
@@ -8136,39 +8166,45 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                               "type": "Name"
                             },
                             "property": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "moduleId": 0,
-                              "name": "sketch",
-                              "start": 0,
                               "type": "Identifier",
-                              "type": "Identifier"
+                              "property": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "moduleId": 0,
+                                "name": "sketch",
+                                "start": 0,
+                                "type": "Identifier"
+                              }
                             },
                             "start": 0,
                             "type": "MemberExpression",
                             "type": "MemberExpression"
                           },
                           "property": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": "tags",
-                            "start": 0,
                             "type": "Identifier",
-                            "type": "Identifier"
+                            "property": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "tags",
+                              "start": 0,
+                              "type": "Identifier"
+                            }
                           },
                           "start": 0,
                           "type": "MemberExpression",
                           "type": "MemberExpression"
                         },
                         "property": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "line001",
-                          "start": 0,
                           "type": "Identifier",
-                          "type": "Identifier"
+                          "property": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": "line001",
+                            "start": 0,
+                            "type": "Identifier"
+                          }
                         },
                         "start": 0,
                         "type": "MemberExpression",
@@ -8234,39 +8270,45 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                               "type": "Name"
                             },
                             "property": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "moduleId": 0,
-                              "name": "sketch",
-                              "start": 0,
                               "type": "Identifier",
-                              "type": "Identifier"
+                              "property": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "moduleId": 0,
+                                "name": "sketch",
+                                "start": 0,
+                                "type": "Identifier"
+                              }
                             },
                             "start": 0,
                             "type": "MemberExpression",
                             "type": "MemberExpression"
                           },
                           "property": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": "tags",
-                            "start": 0,
                             "type": "Identifier",
-                            "type": "Identifier"
+                            "property": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "tags",
+                              "start": 0,
+                              "type": "Identifier"
+                            }
                           },
                           "start": 0,
                           "type": "MemberExpression",
                           "type": "MemberExpression"
                         },
                         "property": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "line003",
-                          "start": 0,
                           "type": "Identifier",
-                          "type": "Identifier"
+                          "property": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": "line003",
+                            "start": 0,
+                            "type": "Identifier"
+                          }
                         },
                         "start": 0,
                         "type": "MemberExpression",
@@ -8332,39 +8374,45 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                               "type": "Name"
                             },
                             "property": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "moduleId": 0,
-                              "name": "sketch",
-                              "start": 0,
                               "type": "Identifier",
-                              "type": "Identifier"
+                              "property": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "moduleId": 0,
+                                "name": "sketch",
+                                "start": 0,
+                                "type": "Identifier"
+                              }
                             },
                             "start": 0,
                             "type": "MemberExpression",
                             "type": "MemberExpression"
                           },
                           "property": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": "tags",
-                            "start": 0,
                             "type": "Identifier",
-                            "type": "Identifier"
+                            "property": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "tags",
+                              "start": 0,
+                              "type": "Identifier"
+                            }
                           },
                           "start": 0,
                           "type": "MemberExpression",
                           "type": "MemberExpression"
                         },
                         "property": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "line003",
-                          "start": 0,
                           "type": "Identifier",
-                          "type": "Identifier"
+                          "property": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": "line003",
+                            "start": 0,
+                            "type": "Identifier"
+                          }
                         },
                         "start": 0,
                         "type": "MemberExpression",

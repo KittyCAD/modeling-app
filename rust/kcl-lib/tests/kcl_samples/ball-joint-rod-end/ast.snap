@@ -975,16 +975,18 @@ description: Result of parsing ball-joint-rod-end.kcl
               "type": "Name"
             },
             "property": {
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "raw": "1",
-              "start": 0,
               "type": "Literal",
-              "type": "Literal",
-              "value": {
-                "value": 1.0,
-                "suffix": "None"
+              "property": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "raw": "1",
+                "start": 0,
+                "type": "Literal",
+                "value": {
+                  "value": 1.0,
+                  "suffix": "None"
+                }
               }
             },
             "start": 0,

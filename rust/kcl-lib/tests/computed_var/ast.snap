@@ -165,13 +165,15 @@ description: Result of parsing computed_var.kcl
               "type": "Name"
             },
             "property": {
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "name": "i",
-              "start": 0,
               "type": "Identifier",
-              "type": "Identifier"
+              "property": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "i",
+                "start": 0,
+                "type": "Identifier"
+              }
             },
             "start": 0,
             "type": "MemberExpression",
@@ -413,13 +415,15 @@ description: Result of parsing computed_var.kcl
               "type": "Name"
             },
             "property": {
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "name": "foo",
-              "start": 0,
               "type": "Identifier",
-              "type": "Identifier"
+              "property": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "foo",
+                "start": 0,
+                "type": "Identifier"
+              }
             },
             "start": 0,
             "type": "MemberExpression",

@@ -362,16 +362,18 @@ description: Result of parsing array_elem_push.kcl
               "type": "Name"
             },
             "property": {
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "raw": "0",
-              "start": 0,
               "type": "Literal",
-              "type": "Literal",
-              "value": {
-                "value": 0.0,
-                "suffix": "None"
+              "property": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "raw": "0",
+                "start": 0,
+                "type": "Literal",
+                "value": {
+                  "value": 0.0,
+                  "suffix": "None"
+                }
               }
             },
             "start": 0,
@@ -482,16 +484,18 @@ description: Result of parsing array_elem_push.kcl
               "type": "Name"
             },
             "property": {
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "raw": "1",
-              "start": 0,
               "type": "Literal",
-              "type": "Literal",
-              "value": {
-                "value": 1.0,
-                "suffix": "None"
+              "property": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "raw": "1",
+                "start": 0,
+                "type": "Literal",
+                "value": {
+                  "value": 1.0,
+                  "suffix": "None"
+                }
               }
             },
             "start": 0,
@@ -602,16 +606,18 @@ description: Result of parsing array_elem_push.kcl
               "type": "Name"
             },
             "property": {
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "raw": "2",
-              "start": 0,
               "type": "Literal",
-              "type": "Literal",
-              "value": {
-                "value": 2.0,
-                "suffix": "None"
+              "property": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "raw": "2",
+                "start": 0,
+                "type": "Literal",
+                "value": {
+                  "value": 2.0,
+                  "suffix": "None"
+                }
               }
             },
             "start": 0,
@@ -722,16 +728,18 @@ description: Result of parsing array_elem_push.kcl
               "type": "Name"
             },
             "property": {
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "raw": "3",
-              "start": 0,
               "type": "Literal",
-              "type": "Literal",
-              "value": {
-                "value": 3.0,
-                "suffix": "None"
+              "property": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "raw": "3",
+                "start": 0,
+                "type": "Literal",
+                "value": {
+                  "value": 3.0,
+                  "suffix": "None"
+                }
               }
             },
             "start": 0,
@@ -842,16 +850,18 @@ description: Result of parsing array_elem_push.kcl
               "type": "Name"
             },
             "property": {
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "raw": "0",
-              "start": 0,
               "type": "Literal",
-              "type": "Literal",
-              "value": {
-                "value": 0.0,
-                "suffix": "None"
+              "property": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "raw": "0",
+                "start": 0,
+                "type": "Literal",
+                "value": {
+                  "value": 0.0,
+                  "suffix": "None"
+                }
               }
             },
             "start": 0,
@@ -962,16 +972,18 @@ description: Result of parsing array_elem_push.kcl
               "type": "Name"
             },
             "property": {
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "raw": "1",
-              "start": 0,
               "type": "Literal",
-              "type": "Literal",
-              "value": {
-                "value": 1.0,
-                "suffix": "None"
+              "property": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "raw": "1",
+                "start": 0,
+                "type": "Literal",
+                "value": {
+                  "value": 1.0,
+                  "suffix": "None"
+                }
               }
             },
             "start": 0,
@@ -1082,16 +1094,18 @@ description: Result of parsing array_elem_push.kcl
               "type": "Name"
             },
             "property": {
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "raw": "2",
-              "start": 0,
               "type": "Literal",
-              "type": "Literal",
-              "value": {
-                "value": 2.0,
-                "suffix": "None"
+              "property": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "raw": "2",
+                "start": 0,
+                "type": "Literal",
+                "value": {
+                  "value": 2.0,
+                  "suffix": "None"
+                }
               }
             },
             "start": 0,
@@ -1202,16 +1216,18 @@ description: Result of parsing array_elem_push.kcl
               "type": "Name"
             },
             "property": {
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "raw": "3",
-              "start": 0,
               "type": "Literal",
-              "type": "Literal",
-              "value": {
-                "value": 3.0,
-                "suffix": "None"
+              "property": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "raw": "3",
+                "start": 0,
+                "type": "Literal",
+                "value": {
+                  "value": 3.0,
+                  "suffix": "None"
+                }
               }
             },
             "start": 0,
@@ -1322,16 +1338,18 @@ description: Result of parsing array_elem_push.kcl
               "type": "Name"
             },
             "property": {
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "raw": "4",
-              "start": 0,
               "type": "Literal",
-              "type": "Literal",
-              "value": {
-                "value": 4.0,
-                "suffix": "None"
+              "property": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "raw": "4",
+                "start": 0,
+                "type": "Literal",
+                "value": {
+                  "value": 4.0,
+                  "suffix": "None"
+                }
               }
             },
             "start": 0,

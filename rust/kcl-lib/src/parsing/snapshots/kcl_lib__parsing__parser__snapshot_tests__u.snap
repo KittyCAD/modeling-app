@@ -56,52 +56,60 @@ expression: actual
                   "type": "Name"
                 },
                 "property": {
-                  "commentStart": 10,
-                  "end": 13,
-                  "moduleId": 0,
-                  "name": "one",
-                  "start": 10,
                   "type": "Identifier",
-                  "type": "Identifier"
+                  "property": {
+                    "commentStart": 10,
+                    "end": 13,
+                    "moduleId": 0,
+                    "name": "one",
+                    "start": 10,
+                    "type": "Identifier"
+                  }
                 },
                 "start": 7,
                 "type": "MemberExpression",
                 "type": "MemberExpression"
               },
               "property": {
-                "commentStart": 14,
-                "end": 17,
-                "moduleId": 0,
-                "name": "two",
-                "start": 14,
                 "type": "Identifier",
-                "type": "Identifier"
+                "property": {
+                  "commentStart": 14,
+                  "end": 17,
+                  "moduleId": 0,
+                  "name": "two",
+                  "start": 14,
+                  "type": "Identifier"
+                }
               },
               "start": 7,
               "type": "MemberExpression",
               "type": "MemberExpression"
             },
             "property": {
-              "commentStart": 18,
-              "end": 23,
-              "moduleId": 0,
-              "name": "three",
-              "start": 18,
               "type": "Identifier",
-              "type": "Identifier"
+              "property": {
+                "commentStart": 18,
+                "end": 23,
+                "moduleId": 0,
+                "name": "three",
+                "start": 18,
+                "type": "Identifier"
+              }
             },
             "start": 7,
             "type": "MemberExpression",
             "type": "MemberExpression"
           },
           "property": {
-            "commentStart": 24,
-            "end": 28,
-            "moduleId": 0,
-            "name": "four",
-            "start": 24,
             "type": "Identifier",
-            "type": "Identifier"
+            "property": {
+              "commentStart": 24,
+              "end": 28,
+              "moduleId": 0,
+              "name": "four",
+              "start": 24,
+              "type": "Identifier"
+            }
           },
           "start": 7,
           "type": "MemberExpression",

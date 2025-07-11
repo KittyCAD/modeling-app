@@ -2748,26 +2748,30 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                                 "type": "Name"
                               },
                               "property": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "moduleId": 0,
-                                "name": "tags",
-                                "start": 0,
                                 "type": "Identifier",
-                                "type": "Identifier"
+                                "property": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "name": "tags",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                }
                               },
                               "start": 0,
                               "type": "MemberExpression",
                               "type": "MemberExpression"
                             },
                             "property": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "moduleId": 0,
-                              "name": "edge7",
-                              "start": 0,
                               "type": "Identifier",
-                              "type": "Identifier"
+                              "property": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "moduleId": 0,
+                                "name": "edge7",
+                                "start": 0,
+                                "type": "Identifier"
+                              }
                             },
                             "start": 0,
                             "type": "MemberExpression",
@@ -2828,26 +2832,30 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                                 "type": "Name"
                               },
                               "property": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "moduleId": 0,
-                                "name": "tags",
-                                "start": 0,
                                 "type": "Identifier",
-                                "type": "Identifier"
+                                "property": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "name": "tags",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                }
                               },
                               "start": 0,
                               "type": "MemberExpression",
                               "type": "MemberExpression"
                             },
                             "property": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "moduleId": 0,
-                              "name": "edge2",
-                              "start": 0,
                               "type": "Identifier",
-                              "type": "Identifier"
+                              "property": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "moduleId": 0,
+                                "name": "edge2",
+                                "start": 0,
+                                "type": "Identifier"
+                              }
                             },
                             "start": 0,
                             "type": "MemberExpression",
@@ -2908,26 +2916,30 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                                 "type": "Name"
                               },
                               "property": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "moduleId": 0,
-                                "name": "tags",
-                                "start": 0,
                                 "type": "Identifier",
-                                "type": "Identifier"
+                                "property": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "name": "tags",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                }
                               },
                               "start": 0,
                               "type": "MemberExpression",
                               "type": "MemberExpression"
                             },
                             "property": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "moduleId": 0,
-                              "name": "edge3",
-                              "start": 0,
                               "type": "Identifier",
-                              "type": "Identifier"
+                              "property": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "moduleId": 0,
+                                "name": "edge3",
+                                "start": 0,
+                                "type": "Identifier"
+                              }
                             },
                             "start": 0,
                             "type": "MemberExpression",
@@ -2988,26 +3000,30 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                                 "type": "Name"
                               },
                               "property": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "moduleId": 0,
-                                "name": "tags",
-                                "start": 0,
                                 "type": "Identifier",
-                                "type": "Identifier"
+                                "property": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "name": "tags",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                }
                               },
                               "start": 0,
                               "type": "MemberExpression",
                               "type": "MemberExpression"
                             },
                             "property": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "moduleId": 0,
-                              "name": "edge6",
-                              "start": 0,
                               "type": "Identifier",
-                              "type": "Identifier"
+                              "property": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "moduleId": 0,
+                                "name": "edge6",
+                                "start": 0,
+                                "type": "Identifier"
+                              }
                             },
                             "start": 0,
                             "type": "MemberExpression",

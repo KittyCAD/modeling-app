@@ -1180,26 +1180,30 @@ description: Result of parsing sketch_in_object.kcl
                   "type": "Name"
                 },
                 "property": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": "thing1",
-                  "start": 0,
                   "type": "Identifier",
-                  "type": "Identifier"
+                  "property": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": "thing1",
+                    "start": 0,
+                    "type": "Identifier"
+                  }
                 },
                 "start": 0,
                 "type": "MemberExpression",
                 "type": "MemberExpression"
               },
               "property": {
-                "commentStart": 0,
-                "end": 0,
-                "moduleId": 0,
-                "name": "thing2",
-                "start": 0,
                 "type": "Identifier",
-                "type": "Identifier"
+                "property": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": "thing2",
+                  "start": 0,
+                  "type": "Identifier"
+                }
               },
               "start": 0,
               "type": "MemberExpression",

@@ -149,14 +149,16 @@ expression: actual
               "type": "Name"
             },
             "property": {
-              "commentStart": 45,
-              "end": 48,
-              "moduleId": 0,
-              "raw": "\"a\"",
-              "start": 45,
               "type": "Literal",
-              "type": "Literal",
-              "value": "a"
+              "property": {
+                "commentStart": 45,
+                "end": 48,
+                "moduleId": 0,
+                "raw": "\"a\"",
+                "start": 45,
+                "type": "Literal",
+                "value": "a"
+              }
             },
             "start": 41,
             "type": "MemberExpression",
