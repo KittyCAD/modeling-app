@@ -259,7 +259,7 @@ jobs:
         uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           cache: false # Configured below.
-      - uses: taiki-e/install-action@d4635f2de61c8b8104d59cd4aede2060638378cc
+      - uses: taiki-e/install-action@d028bcc176afad59ee1e0b7dbba9789b8a1421f8
         with:
           tool: wasm-pack
       - name: Rust Cache
