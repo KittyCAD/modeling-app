@@ -161,7 +161,7 @@ description: Result of parsing array_elem_pop_fail.kcl
           },
           "init": {
             "commentStart": 0,
-            "computed": false,
+            "computed": true,
             "end": 0,
             "moduleId": 0,
             "object": {

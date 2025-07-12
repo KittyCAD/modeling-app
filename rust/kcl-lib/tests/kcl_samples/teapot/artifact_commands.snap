@@ -1146,7 +1146,8 @@ description: Artifact commands teapot.kcl
         "target": "[uuid]",
         "distance": -80.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1554,5 +1555,6 @@ description: Artifact commands teapot.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

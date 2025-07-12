@@ -11,24 +11,15 @@ import type {
   StateMachineCommandSetSchema,
 } from '@src/lib/commandTypes'
 import { createMachineCommand } from '@src/lib/createMachineCommand'
-import type { authMachine } from '@src/machines/authMachine'
 import { commandBarActor } from '@src/lib/singletons'
-import type { modelingMachine } from '@src/machines/modelingMachine'
-import type { settingsMachine } from '@src/machines/settingsMachine'
-
-// This might not be necessary, AnyStateMachine from xstate is working
-export type AllMachines =
-  | typeof modelingMachine
-  | typeof settingsMachine
-  | typeof authMachine
 
 interface UseStateMachineCommandsArgs<
-  T extends AllMachines,
+  T extends AnyStateMachine,
   S extends StateMachineCommandSetSchema<T>,
 > {
   machineId: T['id']
   state: StateFrom<T>
-  send: Function
+  send: (event: EventFrom<T>) => void
   actor: Actor<T>
   commandBarConfig?: StateMachineCommandSetConfig<T, S>
   onCancel?: () => void

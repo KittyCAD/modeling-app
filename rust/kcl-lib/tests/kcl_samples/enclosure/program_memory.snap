@@ -550,6 +550,108 @@ description: Variables in memory after executing enclosure.kcl
             }
           }
         ],
+        "innerPaths": [
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              163.0,
+              13.0
+            ],
+            "from": [
+              167.0,
+              13.0
+            ],
+            "radius": 4.0,
+            "tag": null,
+            "to": [
+              167.0,
+              13.0
+            ],
+            "type": "Circle",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              163.0,
+              162.0
+            ],
+            "from": [
+              167.0,
+              162.0
+            ],
+            "radius": 4.0,
+            "tag": null,
+            "to": [
+              167.0,
+              162.0
+            ],
+            "type": "Circle",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              262.0,
+              13.0
+            ],
+            "from": [
+              266.0,
+              13.0
+            ],
+            "radius": 4.0,
+            "tag": null,
+            "to": [
+              266.0,
+              13.0
+            ],
+            "type": "Circle",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              262.0,
+              162.0
+            ],
+            "from": [
+              266.0,
+              162.0
+            ],
+            "radius": 4.0,
+            "tag": null,
+            "to": [
+              266.0,
+              162.0
+            ],
+            "type": "Circle",
+            "units": {
+              "type": "Mm"
+            }
+          }
+        ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
@@ -905,6 +1007,108 @@ description: Variables in memory after executing enclosure.kcl
             }
           }
         ],
+        "innerPaths": [
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              163.0,
+              13.0
+            ],
+            "from": [
+              170.0,
+              13.0
+            ],
+            "radius": 7.0,
+            "tag": null,
+            "to": [
+              170.0,
+              13.0
+            ],
+            "type": "Circle",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              163.0,
+              162.0
+            ],
+            "from": [
+              170.0,
+              162.0
+            ],
+            "radius": 7.0,
+            "tag": null,
+            "to": [
+              170.0,
+              162.0
+            ],
+            "type": "Circle",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              262.0,
+              13.0
+            ],
+            "from": [
+              269.0,
+              13.0
+            ],
+            "radius": 7.0,
+            "tag": null,
+            "to": [
+              269.0,
+              13.0
+            ],
+            "type": "Circle",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              262.0,
+              162.0
+            ],
+            "from": [
+              269.0,
+              162.0
+            ],
+            "radius": 7.0,
+            "tag": null,
+            "to": [
+              269.0,
+              162.0
+            ],
+            "type": "Circle",
+            "units": {
+              "type": "Mm"
+            }
+          }
+        ],
         "on": {
           "type": "face",
           "id": "[uuid]",
@@ -1111,6 +1315,108 @@ description: Variables in memory after executing enclosure.kcl
                     0.0
                   ],
                   "type": "ToPoint",
+                  "units": {
+                    "type": "Mm"
+                  }
+                }
+              ],
+              "innerPaths": [
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "ccw": true,
+                  "center": [
+                    163.0,
+                    13.0
+                  ],
+                  "from": [
+                    167.0,
+                    13.0
+                  ],
+                  "radius": 4.0,
+                  "tag": null,
+                  "to": [
+                    167.0,
+                    13.0
+                  ],
+                  "type": "Circle",
+                  "units": {
+                    "type": "Mm"
+                  }
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "ccw": true,
+                  "center": [
+                    163.0,
+                    162.0
+                  ],
+                  "from": [
+                    167.0,
+                    162.0
+                  ],
+                  "radius": 4.0,
+                  "tag": null,
+                  "to": [
+                    167.0,
+                    162.0
+                  ],
+                  "type": "Circle",
+                  "units": {
+                    "type": "Mm"
+                  }
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "ccw": true,
+                  "center": [
+                    262.0,
+                    13.0
+                  ],
+                  "from": [
+                    266.0,
+                    13.0
+                  ],
+                  "radius": 4.0,
+                  "tag": null,
+                  "to": [
+                    266.0,
+                    13.0
+                  ],
+                  "type": "Circle",
+                  "units": {
+                    "type": "Mm"
+                  }
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "ccw": true,
+                  "center": [
+                    262.0,
+                    162.0
+                  ],
+                  "from": [
+                    266.0,
+                    162.0
+                  ],
+                  "radius": 4.0,
+                  "tag": null,
+                  "to": [
+                    266.0,
+                    162.0
+                  ],
+                  "type": "Circle",
                   "units": {
                     "type": "Mm"
                   }
@@ -1851,6 +2157,108 @@ description: Variables in memory after executing enclosure.kcl
           }
         }
       ],
+      "innerPaths": [
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            163.0,
+            13.0
+          ],
+          "from": [
+            167.0,
+            13.0
+          ],
+          "radius": 4.0,
+          "tag": null,
+          "to": [
+            167.0,
+            13.0
+          ],
+          "type": "Circle",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            163.0,
+            162.0
+          ],
+          "from": [
+            167.0,
+            162.0
+          ],
+          "radius": 4.0,
+          "tag": null,
+          "to": [
+            167.0,
+            162.0
+          ],
+          "type": "Circle",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            262.0,
+            13.0
+          ],
+          "from": [
+            266.0,
+            13.0
+          ],
+          "radius": 4.0,
+          "tag": null,
+          "to": [
+            266.0,
+            13.0
+          ],
+          "type": "Circle",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            262.0,
+            162.0
+          ],
+          "from": [
+            266.0,
+            162.0
+          ],
+          "radius": 4.0,
+          "tag": null,
+          "to": [
+            266.0,
+            162.0
+          ],
+          "type": "Circle",
+          "units": {
+            "type": "Mm"
+          }
+        }
+      ],
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
@@ -2062,6 +2470,108 @@ description: Variables in memory after executing enclosure.kcl
           }
         }
       ],
+      "innerPaths": [
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            163.0,
+            13.0
+          ],
+          "from": [
+            170.0,
+            13.0
+          ],
+          "radius": 7.0,
+          "tag": null,
+          "to": [
+            170.0,
+            13.0
+          ],
+          "type": "Circle",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            163.0,
+            162.0
+          ],
+          "from": [
+            170.0,
+            162.0
+          ],
+          "radius": 7.0,
+          "tag": null,
+          "to": [
+            170.0,
+            162.0
+          ],
+          "type": "Circle",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            262.0,
+            13.0
+          ],
+          "from": [
+            269.0,
+            13.0
+          ],
+          "radius": 7.0,
+          "tag": null,
+          "to": [
+            269.0,
+            13.0
+          ],
+          "type": "Circle",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            262.0,
+            162.0
+          ],
+          "from": [
+            269.0,
+            162.0
+          ],
+          "radius": 7.0,
+          "tag": null,
+          "to": [
+            269.0,
+            162.0
+          ],
+          "type": "Circle",
+          "units": {
+            "type": "Mm"
+          }
+        }
+      ],
       "on": {
         "type": "face",
         "id": "[uuid]",
@@ -2268,6 +2778,108 @@ description: Variables in memory after executing enclosure.kcl
                   0.0
                 ],
                 "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              }
+            ],
+            "innerPaths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  163.0,
+                  13.0
+                ],
+                "from": [
+                  167.0,
+                  13.0
+                ],
+                "radius": 4.0,
+                "tag": null,
+                "to": [
+                  167.0,
+                  13.0
+                ],
+                "type": "Circle",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  163.0,
+                  162.0
+                ],
+                "from": [
+                  167.0,
+                  162.0
+                ],
+                "radius": 4.0,
+                "tag": null,
+                "to": [
+                  167.0,
+                  162.0
+                ],
+                "type": "Circle",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  262.0,
+                  13.0
+                ],
+                "from": [
+                  266.0,
+                  13.0
+                ],
+                "radius": 4.0,
+                "tag": null,
+                "to": [
+                  266.0,
+                  13.0
+                ],
+                "type": "Circle",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  262.0,
+                  162.0
+                ],
+                "from": [
+                  266.0,
+                  162.0
+                ],
+                "radius": 4.0,
+                "tag": null,
+                "to": [
+                  266.0,
+                  162.0
+                ],
+                "type": "Circle",
                 "units": {
                   "type": "Mm"
                 }

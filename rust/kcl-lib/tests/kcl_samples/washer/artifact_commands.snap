@@ -223,7 +223,8 @@ description: Artifact commands washer.kcl
         "target": "[uuid]",
         "distance": 0.8128,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -270,5 +271,6 @@ description: Artifact commands washer.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

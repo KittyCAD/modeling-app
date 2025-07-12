@@ -15,9 +15,11 @@ import {
   findAllPreviousVariables,
   findUsesOfTagInPipe,
   getNodeFromPath,
+  getVariableExprsFromSelection,
   hasSketchPipeBeenExtruded,
   isCursorInFunctionDefinition,
   isNodeSafeToReplace,
+  retrieveSelectionsFromOpArg,
   traverse,
 } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
@@ -27,7 +29,7 @@ import { topLevelRange } from '@src/lang/util'
 import type { Identifier, PathToNode } from '@src/lang/wasm'
 import { assertParse, recast } from '@src/lang/wasm'
 import { initPromise } from '@src/lang/wasmUtils'
-import { type Selection } from '@src/lib/selections'
+import type { Selections, Selection } from '@src/lib/selections'
 import { enginelessExecutor } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
 
@@ -599,7 +601,7 @@ describe('Testing traverse and pathToNode', () => {
     ['basic', '2.73'],
     [
       'very nested, array, object, callExpression, array, memberExpression',
-      '.yo',
+      'yo',
     ],
   ])('testing %s', async (_testName, literalOfInterest) => {
     const code = `myVar = 5
@@ -776,5 +778,258 @@ describe('Testing specific sketch getNodeFromPath workflow', () => {
     }
     const result = isCursorInFunctionDefinition(ast, selectionRange)
     expect(result).toEqual(false)
+  })
+})
+
+describe('Testing getVariableExprsFromSelection', () => {
+  it('should find the variable expr in a simple profile selection', async () => {
+    const circleProfileInVar = `sketch001 = startSketchOn(XY)
+profile001 = circle(sketch001, center = [0, 0], radius = 1)
+`
+    const ast = assertParse(circleProfileInVar)
+    const { artifactGraph } = await enginelessExecutor(ast)
+    const artifact = [...artifactGraph.values()].find((a) => a.type === 'path')
+    if (!artifact) {
+      throw new Error('Artifact not found in the graph')
+    }
+    const selections: Selections = {
+      graphSelections: [
+        {
+          codeRef: artifact.codeRef,
+          artifact,
+        },
+      ],
+      otherSelections: [],
+    }
+    const vars = getVariableExprsFromSelection(selections, ast)
+    if (err(vars)) throw vars
+
+    expect(vars.exprs).toHaveLength(1)
+    if (vars.exprs[0].type !== 'Name') {
+      throw new Error(`Expected Name, got ${vars.exprs[0].type}`)
+    }
+
+    expect(vars.exprs[0].name.name).toEqual('profile001')
+    expect(vars.pathIfPipe).toBeUndefined()
+  })
+
+  it('should return the pipe substitution symbol in a variable-less simple profile selection', async () => {
+    const circleProfileInVar = `startSketchOn(XY)
+  |> circle(center = [0, 0], radius = 1)
+`
+    const ast = assertParse(circleProfileInVar)
+    const { artifactGraph } = await enginelessExecutor(ast)
+    const artifact = [...artifactGraph.values()].find((a) => a.type === 'path')
+    if (!artifact) {
+      throw new Error('Artifact not found in the graph')
+    }
+    const selections: Selections = {
+      graphSelections: [
+        {
+          codeRef: artifact.codeRef,
+          artifact,
+        },
+      ],
+      otherSelections: [],
+    }
+    const vars = getVariableExprsFromSelection(selections, ast)
+    if (err(vars)) throw vars
+
+    expect(vars.exprs).toHaveLength(1)
+    expect(vars.exprs[0].type).toEqual('PipeSubstitution')
+
+    expect(vars.pathIfPipe).toBeDefined()
+    expect(vars.pathIfPipe).toEqual([
+      ['body', ''],
+      [0, 'index'],
+      ['expression', 'ExpressionStatement'],
+      ['body', 'PipeExpression'],
+      [1, 'index'],
+    ])
+  })
+
+  it('should find the variable exprs in a multi profile selection ', async () => {
+    const circleProfileInVar = `sketch001 = startSketchOn(XY)
+profile001 = circle(sketch001, center = [0, 0], radius = 1)
+profile002 = circle(sketch001, center = [2, 2], radius = 1)
+`
+    const ast = assertParse(circleProfileInVar)
+    const { artifactGraph } = await enginelessExecutor(ast)
+    const artifacts = [...artifactGraph.values()].filter(
+      (a) => a.type === 'path'
+    )
+    if (!artifacts || artifacts.length !== 2) {
+      throw new Error('Artifact not found in the graph')
+    }
+    const selections: Selections = {
+      graphSelections: artifacts.map((artifact) => {
+        return {
+          codeRef: artifact.codeRef,
+          artifact,
+        }
+      }),
+      otherSelections: [],
+    }
+    const vars = getVariableExprsFromSelection(selections, ast)
+    if (err(vars)) throw vars
+
+    expect(vars.exprs).toHaveLength(2)
+    if (vars.exprs[0].type !== 'Name') {
+      throw new Error(`Expected Name, got ${vars.exprs[0].type}`)
+    }
+
+    if (vars.exprs[1].type !== 'Name') {
+      throw new Error(`Expected Name, got ${vars.exprs[1].type}`)
+    }
+
+    expect(vars.exprs[0].name.name).toEqual('profile001')
+    expect(vars.exprs[1].name.name).toEqual('profile002')
+    expect(vars.pathIfPipe).toBeUndefined()
+  })
+
+  it('should return the pipe substitution symbol and a variable name in a complex multi profile selection', async () => {
+    const circleProfileInVar = `startSketchOn(XY)
+  |> circle(center = [0, 0], radius = 1)
+profile002 = circle(sketch001, center = [2, 2], radius = 1)
+`
+    const ast = assertParse(circleProfileInVar)
+    const { artifactGraph } = await enginelessExecutor(ast)
+    const artifacts = [...artifactGraph.values()].filter(
+      (a) => a.type === 'path'
+    )
+    if (!artifacts || artifacts.length !== 2) {
+      throw new Error('Artifact not found in the graph')
+    }
+    const selections: Selections = {
+      graphSelections: artifacts.map((artifact) => {
+        return {
+          codeRef: artifact.codeRef,
+          artifact,
+        }
+      }),
+      otherSelections: [],
+    }
+    const vars = getVariableExprsFromSelection(selections, ast)
+    if (err(vars)) throw vars
+
+    expect(vars.exprs).toHaveLength(2)
+    if (vars.exprs[0].type !== 'PipeSubstitution') {
+      throw new Error(`Expected PipeSubstitution, got ${vars.exprs[0].type}`)
+    }
+
+    if (vars.exprs[1].type !== 'Name') {
+      throw new Error(`Expected Name, got ${vars.exprs[1].type}`)
+    }
+
+    expect(vars.exprs[1].name.name).toEqual('profile002')
+
+    expect(vars.pathIfPipe).toBeDefined()
+    expect(vars.pathIfPipe).toEqual([
+      ['body', ''],
+      [0, 'index'],
+      ['expression', 'ExpressionStatement'],
+      ['body', 'PipeExpression'],
+      [1, 'index'],
+    ])
+  })
+
+  it('should find the extrude variable expr on profile selection with child look up flag', async () => {
+    const circleProfileInVar = `sketch001 = startSketchOn(XY)
+profile001 = circle(sketch001, center = [0, 0], radius = 1)
+extrude001 = extrude(profile001, length = 1)
+`
+    const ast = assertParse(circleProfileInVar)
+    const { artifactGraph } = await enginelessExecutor(ast)
+    const artifact = [...artifactGraph.values()].find((a) => a.type === 'path')
+    if (!artifact) {
+      throw new Error('Artifact not found in the graph')
+    }
+    const selections: Selections = {
+      graphSelections: [
+        {
+          codeRef: artifact.codeRef,
+          artifact,
+        },
+      ],
+      otherSelections: [],
+    }
+    const nodeToEdit = undefined // no node to edit, just want the variable exprs
+    const lastChildLookup = true // we want to look up the child of the profile variable
+    const vars = getVariableExprsFromSelection(
+      selections,
+      ast,
+      nodeToEdit,
+      lastChildLookup,
+      artifactGraph
+    )
+    if (err(vars)) throw vars
+
+    expect(vars.exprs).toHaveLength(1)
+    if (vars.exprs[0].type !== 'Name') {
+      throw new Error(`Expected Name, got ${vars.exprs[0].type}`)
+    }
+
+    expect(vars.exprs[0].name.name).toEqual('extrude001')
+    expect(vars.pathIfPipe).toBeUndefined()
+  })
+})
+
+describe('Testing retrieveSelectionsFromOpArg', () => {
+  it('should find the profile selection from simple extrude op', async () => {
+    const circleProfileInVar = `sketch001 = startSketchOn(XY)
+profile001 = circle(sketch001, center = [0, 0], radius = 1)
+extrude001 = extrude(profile001, length = 1)
+`
+    const ast = assertParse(circleProfileInVar)
+    const { artifactGraph, operations } = await enginelessExecutor(ast)
+    const op = operations.find(
+      (o) => o.type === 'StdLibCall' && o.name === 'extrude'
+    )
+    if (!op || op.type !== 'StdLibCall' || !op.unlabeledArg) {
+      throw new Error('Extrude operation not found')
+    }
+
+    const selections = retrieveSelectionsFromOpArg(
+      op.unlabeledArg,
+      artifactGraph
+    )
+    if (err(selections)) throw selections
+    expect(selections.graphSelections).toHaveLength(1)
+    const selection = selections.graphSelections[0]
+    if (!selection.artifact) {
+      throw new Error('Artifact not found in the selection')
+    }
+    expect(selection.artifact.type).toEqual('path')
+  })
+
+  it('should find two profile selections from multi-profile revolve op', async () => {
+    const circleProfileInVar = `sketch001 = startSketchOn(XY)
+profile001 = circle(sketch001, center = [3, 0], radius = 1)
+profile002 = circle(sketch001, center = [6, 0], radius = 1)
+revolve001 = revolve([profile001, profile002], axis = X, angle = 180)
+`
+    const ast = assertParse(circleProfileInVar)
+    const { artifactGraph, operations } = await enginelessExecutor(ast)
+    const op = operations.find(
+      (o) => o.type === 'StdLibCall' && o.name === 'revolve'
+    )
+    if (!op || op.type !== 'StdLibCall' || !op.unlabeledArg) {
+      throw new Error('Revolve operation not found')
+    }
+
+    const selections = retrieveSelectionsFromOpArg(
+      op.unlabeledArg,
+      artifactGraph
+    )
+    if (err(selections)) throw selections
+    expect(selections.graphSelections).toHaveLength(2)
+    if (
+      !selections.graphSelections[0].artifact ||
+      !selections.graphSelections[1].artifact
+    ) {
+      throw new Error('Artifact not found in the selection')
+    }
+    expect(selections.graphSelections[0].artifact.type).toEqual('path')
+    expect(selections.graphSelections[1].artifact.type).toEqual('path')
   })
 })

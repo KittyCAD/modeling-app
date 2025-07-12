@@ -78,12 +78,8 @@ export interface IElectronAPI {
       VITE_KITTYCAD_API_TOKEN: string
       VITE_KITTYCAD_SITE_BASE_URL: string
       VITE_KITTYCAD_SITE_APP_URL: string
-      VITE_KITTYCAD_CONNECTION_TIMEOUT_MS: string
       NODE_ENV: string
-      PROD: string
-      DEV: string
       TEST: string
-      CI: string
     }
   }
   kittycad: (access: string, args: any) => any

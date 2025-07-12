@@ -1039,6 +1039,7 @@ pub(crate) async fn inner_start_profile(
         artifact_id: path_id.into(),
         on: sketch_surface.clone(),
         paths: vec![],
+        inner_paths: vec![],
         units,
         mirror: Default::default(),
         meta: vec![args.source_range.into()],
@@ -1748,7 +1749,7 @@ pub async fn subtract_2d(exec_state: &mut ExecState, args: Args) -> Result<KclVa
 }
 
 async fn inner_subtract_2d(
-    sketch: Sketch,
+    mut sketch: Sketch,
     tool: Vec<Sketch>,
     exec_state: &mut ExecState,
     args: Args,
@@ -1764,8 +1765,8 @@ async fn inner_subtract_2d(
             )
             .await?;
 
-        // suggestion (mike)
-        // we also hide the source hole since its essentially "consumed" by this operation
+        // Hide the source hole since it's no longer its own profile,
+        // it's just used to modify some other profile.
         exec_state
             .batch_modeling_cmd(
                 ModelingCmdMeta::from(&args),
@@ -1775,8 +1776,16 @@ async fn inner_subtract_2d(
                 }),
             )
             .await?;
+
+        // NOTE: We don't look at the inner paths of the hole/tool sketch.
+        // So if you have circle A, and it has a circular hole cut out (B),
+        // then you cut A out of an even bigger circle C, we will lose that info.
+        // Not really sure what to do about this.
+        sketch.inner_paths.extend_from_slice(&hole_sketch.paths);
     }
 
+    // Returns the input sketch, exactly as it was, zero modifications.
+    // This means the edges from `tool` are basically ignored, they're not in the output.
     Ok(sketch)
 }
 

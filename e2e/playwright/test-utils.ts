@@ -88,7 +88,9 @@ async function waitForPageLoad(page: Page) {
 }
 
 async function removeCurrentCode(page: Page) {
-  await page.locator('.cm-content').click()
+  // First, hover the element in case the current mouse position is in the way
+  await page.mouse.move(0, 0)
+  await page.locator('.cm-content').click({ delay: 50 })
   await page.keyboard.down('ControlOrMeta')
   await page.keyboard.press('a')
   await page.keyboard.up('ControlOrMeta')
@@ -1187,7 +1189,10 @@ export async function openSettingsExpectLocator(page: Page, selector: string) {
 export async function enableConsoleLogEverything({
   page,
   tronApp,
-}: { page?: Page; tronApp?: ElectronZoo }) {
+}: {
+  page?: Page
+  tronApp?: ElectronZoo
+}) {
   page?.on('console', (msg) => {
     console.log(`[Page-log]: ${msg.text()}`)
   })

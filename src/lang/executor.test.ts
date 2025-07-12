@@ -467,6 +467,7 @@ theExtrude = startSketchOn(XY)
         expect.any(Object),
         expect.any(Object),
         expect.any(Object),
+        expect.any(Object),
         null
       )
     )

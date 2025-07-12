@@ -477,7 +477,8 @@ description: Artifact commands subtract_regression09.kcl
         "faces": null,
         "opposite": {
           "Other": 10.0
-        }
+        },
+        "extrude_method": "merge"
       }
     },
     {
@@ -538,5 +539,6 @@ description: Artifact commands subtract_regression09.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

@@ -195,7 +195,8 @@ description: Artifact commands gridfinity-baseplate.kcl
         "target": "[uuid]",
         "distance": 34.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1926,5 +1927,6 @@ description: Artifact commands gridfinity-baseplate.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

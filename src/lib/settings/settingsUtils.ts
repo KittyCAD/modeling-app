@@ -75,6 +75,8 @@ export function configurationToSettingsPayload(
       mouseControls: mouseControlsToCameraSystem(
         configuration?.settings?.modeling?.mouse_controls
       ),
+      enableTouchControls:
+        configuration?.settings?.modeling?.enable_touch_controls,
       highlightEdges: configuration?.settings?.modeling?.highlight_edges,
       enableSSAO: configuration?.settings?.modeling?.enable_ssao,
       showScaleGrid: configuration?.settings?.modeling?.show_scale_grid,
@@ -119,6 +121,7 @@ export function settingsPayloadToConfiguration(
         mouse_controls: configuration?.modeling?.mouseControls
           ? cameraSystemToMouseControl(configuration?.modeling?.mouseControls)
           : undefined,
+        enable_touch_controls: configuration?.modeling?.enableTouchControls,
         highlight_edges: configuration?.modeling?.highlightEdges,
         enable_ssao: configuration?.modeling?.enableSSAO,
         show_scale_grid: configuration?.modeling?.showScaleGrid,

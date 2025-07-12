@@ -642,7 +642,8 @@ description: Artifact commands mounting-plate.kcl
         "target": "[uuid]",
         "distance": 12.7,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -761,5 +762,6 @@ description: Artifact commands mounting-plate.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

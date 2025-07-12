@@ -255,7 +255,8 @@ description: Artifact commands ball-bearing.kcl
         "target": "[uuid]",
         "distance": 7.9502,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1095,7 +1096,8 @@ description: Artifact commands ball-bearing.kcl
         "target": "[uuid]",
         "distance": 7.9502,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1142,5 +1144,6 @@ description: Artifact commands ball-bearing.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

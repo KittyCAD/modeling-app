@@ -16,7 +16,7 @@ import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
 import { defaultArtifactGraph } from '@src/lang/std/artifactGraph'
 import { isTopLevelModule } from '@src/lang/util'
-import { type ArtifactGraph } from '@src/lang/wasm'
+import type { ArtifactGraph, VariableMap } from '@src/lang/wasm'
 import type { BacktraceItem } from '@rust/kcl-lib/bindings/BacktraceItem'
 import { sourceRangeContains } from '@src/lang/sourceRange'
 
@@ -27,6 +27,7 @@ export class KCLError extends Error {
   msg: string
   kclBacktrace: BacktraceItem[]
   nonFatal: CompilationError[]
+  variables: VariableMap
   operations: Operation[]
   artifactGraph: ArtifactGraph
   filenames: { [x: number]: ModulePath | undefined }
@@ -38,6 +39,7 @@ export class KCLError extends Error {
     sourceRange: SourceRange,
     kclBacktrace: BacktraceItem[],
     nonFatal: CompilationError[],
+    variables: VariableMap,
     operations: Operation[],
     artifactGraph: ArtifactGraph,
     filenames: { [x: number]: ModulePath | undefined },
@@ -49,6 +51,7 @@ export class KCLError extends Error {
     this.sourceRange = sourceRange
     this.kclBacktrace = kclBacktrace
     this.nonFatal = nonFatal
+    this.variables = variables
     this.operations = operations
     this.artifactGraph = artifactGraph
     this.filenames = filenames
@@ -63,6 +66,7 @@ export class KCLLexicalError extends KCLError {
     sourceRange: SourceRange,
     kclBacktrace: BacktraceItem[],
     nonFatal: CompilationError[],
+    variables: VariableMap,
     operations: Operation[],
     artifactGraph: ArtifactGraph,
     filenames: { [x: number]: ModulePath | undefined },
@@ -74,6 +78,7 @@ export class KCLLexicalError extends KCLError {
       sourceRange,
       kclBacktrace,
       nonFatal,
+      variables,
       operations,
       artifactGraph,
       filenames,
@@ -89,6 +94,7 @@ export class KCLInternalError extends KCLError {
     sourceRange: SourceRange,
     kclBacktrace: BacktraceItem[],
     nonFatal: CompilationError[],
+    variables: VariableMap,
     operations: Operation[],
     artifactGraph: ArtifactGraph,
     filenames: { [x: number]: ModulePath | undefined },
@@ -100,6 +106,7 @@ export class KCLInternalError extends KCLError {
       sourceRange,
       kclBacktrace,
       nonFatal,
+      variables,
       operations,
       artifactGraph,
       filenames,
@@ -115,6 +122,7 @@ export class KCLSyntaxError extends KCLError {
     sourceRange: SourceRange,
     kclBacktrace: BacktraceItem[],
     nonFatal: CompilationError[],
+    variables: VariableMap,
     operations: Operation[],
     artifactGraph: ArtifactGraph,
     filenames: { [x: number]: ModulePath | undefined },
@@ -126,6 +134,7 @@ export class KCLSyntaxError extends KCLError {
       sourceRange,
       kclBacktrace,
       nonFatal,
+      variables,
       operations,
       artifactGraph,
       filenames,
@@ -141,6 +150,7 @@ export class KCLSemanticError extends KCLError {
     sourceRange: SourceRange,
     kclBacktrace: BacktraceItem[],
     nonFatal: CompilationError[],
+    variables: VariableMap,
     operations: Operation[],
     artifactGraph: ArtifactGraph,
     filenames: { [x: number]: ModulePath | undefined },
@@ -152,6 +162,7 @@ export class KCLSemanticError extends KCLError {
       sourceRange,
       kclBacktrace,
       nonFatal,
+      variables,
       operations,
       artifactGraph,
       filenames,
@@ -167,6 +178,7 @@ export class KCLTypeError extends KCLError {
     sourceRange: SourceRange,
     kclBacktrace: BacktraceItem[],
     nonFatal: CompilationError[],
+    variables: VariableMap,
     operations: Operation[],
     artifactGraph: ArtifactGraph,
     filenames: { [x: number]: ModulePath | undefined },
@@ -178,6 +190,7 @@ export class KCLTypeError extends KCLError {
       sourceRange,
       kclBacktrace,
       nonFatal,
+      variables,
       operations,
       artifactGraph,
       filenames,
@@ -193,6 +206,7 @@ export class KCLIoError extends KCLError {
     sourceRange: SourceRange,
     kclBacktrace: BacktraceItem[],
     nonFatal: CompilationError[],
+    variables: VariableMap,
     operations: Operation[],
     artifactGraph: ArtifactGraph,
     filenames: { [x: number]: ModulePath | undefined },
@@ -204,6 +218,7 @@ export class KCLIoError extends KCLError {
       sourceRange,
       kclBacktrace,
       nonFatal,
+      variables,
       operations,
       artifactGraph,
       filenames,
@@ -219,6 +234,7 @@ export class KCLUnexpectedError extends KCLError {
     sourceRange: SourceRange,
     kclBacktrace: BacktraceItem[],
     nonFatal: CompilationError[],
+    variables: VariableMap,
     operations: Operation[],
     artifactGraph: ArtifactGraph,
     filenames: { [x: number]: ModulePath | undefined },
@@ -230,6 +246,7 @@ export class KCLUnexpectedError extends KCLError {
       sourceRange,
       kclBacktrace,
       nonFatal,
+      variables,
       operations,
       artifactGraph,
       filenames,
@@ -245,6 +262,7 @@ export class KCLValueAlreadyDefined extends KCLError {
     sourceRange: SourceRange,
     kclBacktrace: BacktraceItem[],
     nonFatal: CompilationError[],
+    variables: VariableMap,
     operations: Operation[],
     artifactGraph: ArtifactGraph,
     filenames: { [x: number]: ModulePath | undefined },
@@ -256,6 +274,7 @@ export class KCLValueAlreadyDefined extends KCLError {
       sourceRange,
       kclBacktrace,
       nonFatal,
+      variables,
       operations,
       artifactGraph,
       filenames,
@@ -271,6 +290,7 @@ export class KCLUndefinedValueError extends KCLError {
     sourceRange: SourceRange,
     kclBacktrace: BacktraceItem[],
     nonFatal: CompilationError[],
+    variables: VariableMap,
     operations: Operation[],
     artifactGraph: ArtifactGraph,
     filenames: { [x: number]: ModulePath | undefined },
@@ -282,6 +302,7 @@ export class KCLUndefinedValueError extends KCLError {
       sourceRange,
       kclBacktrace,
       nonFatal,
+      variables,
       operations,
       artifactGraph,
       filenames,
@@ -343,6 +364,7 @@ export function lspDiagnosticsToKclErrors(
         sourceRange,
         [],
         [],
+        {},
         [],
         defaultArtifactGraph(),
         {},

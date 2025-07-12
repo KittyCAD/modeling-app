@@ -628,7 +628,8 @@ description: Artifact commands french-press.kcl
         "target": "[uuid]",
         "distance": 19.049999999999997,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -833,7 +834,8 @@ description: Artifact commands french-press.kcl
         "target": "[uuid]",
         "distance": 1.27,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1016,7 +1018,8 @@ description: Artifact commands french-press.kcl
         "target": "[uuid]",
         "distance": -1.27,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1072,7 +1075,8 @@ description: Artifact commands french-press.kcl
         "target": "[uuid]",
         "distance": -1.27,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1128,7 +1132,8 @@ description: Artifact commands french-press.kcl
         "target": "[uuid]",
         "distance": -1.27,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1889,7 +1894,8 @@ description: Artifact commands french-press.kcl
         "target": "[uuid]",
         "distance": 1.27,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2038,7 +2044,8 @@ description: Artifact commands french-press.kcl
         "target": "[uuid]",
         "distance": -1.27,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2094,7 +2101,8 @@ description: Artifact commands french-press.kcl
         "target": "[uuid]",
         "distance": -1.27,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2150,7 +2158,8 @@ description: Artifact commands french-press.kcl
         "target": "[uuid]",
         "distance": -1.27,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2206,7 +2215,8 @@ description: Artifact commands french-press.kcl
         "target": "[uuid]",
         "distance": -1.27,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2262,7 +2272,8 @@ description: Artifact commands french-press.kcl
         "target": "[uuid]",
         "distance": -1.27,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2318,7 +2329,8 @@ description: Artifact commands french-press.kcl
         "target": "[uuid]",
         "distance": -1.27,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2374,7 +2386,8 @@ description: Artifact commands french-press.kcl
         "target": "[uuid]",
         "distance": -1.27,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2430,7 +2443,8 @@ description: Artifact commands french-press.kcl
         "target": "[uuid]",
         "distance": -1.27,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2579,7 +2593,8 @@ description: Artifact commands french-press.kcl
         "target": "[uuid]",
         "distance": -1.27,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2635,7 +2650,8 @@ description: Artifact commands french-press.kcl
         "target": "[uuid]",
         "distance": -1.27,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2691,7 +2707,8 @@ description: Artifact commands french-press.kcl
         "target": "[uuid]",
         "distance": -1.27,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2747,7 +2764,8 @@ description: Artifact commands french-press.kcl
         "target": "[uuid]",
         "distance": -1.27,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2908,7 +2926,8 @@ description: Artifact commands french-press.kcl
         "target": "[uuid]",
         "distance": 185.928,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -3540,7 +3559,8 @@ description: Artifact commands french-press.kcl
         "target": "[uuid]",
         "distance": -16.509999999999998,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -3587,5 +3607,6 @@ description: Artifact commands french-press.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

@@ -191,6 +191,33 @@ description: Variables in memory after executing subtract_regression07.kcl
             }
           }
         ],
+        "innerPaths": [
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.0,
+              0.0
+            ],
+            "from": [
+              0.0795,
+              0.0
+            ],
+            "radius": 0.0795,
+            "tag": null,
+            "to": [
+              0.0795,
+              0.0
+            ],
+            "type": "Circle",
+            "units": {
+              "type": "Inches"
+            }
+          }
+        ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
@@ -561,6 +588,33 @@ description: Variables in memory after executing subtract_regression07.kcl
               0.125
             ],
             "type": "ToPoint",
+            "units": {
+              "type": "Inches"
+            }
+          }
+        ],
+        "innerPaths": [
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.0,
+              0.0
+            ],
+            "from": [
+              0.0795,
+              0.0
+            ],
+            "radius": 0.0795,
+            "tag": null,
+            "to": [
+              0.0795,
+              0.0
+            ],
+            "type": "Circle",
             "units": {
               "type": "Inches"
             }
@@ -1015,6 +1069,33 @@ description: Variables in memory after executing subtract_regression07.kcl
             0.125
           ],
           "type": "ToPoint",
+          "units": {
+            "type": "Inches"
+          }
+        }
+      ],
+      "innerPaths": [
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            0.0,
+            0.0
+          ],
+          "from": [
+            0.0795,
+            0.0
+          ],
+          "radius": 0.0795,
+          "tag": null,
+          "to": [
+            0.0795,
+            0.0
+          ],
+          "type": "Circle",
           "units": {
             "type": "Inches"
           }

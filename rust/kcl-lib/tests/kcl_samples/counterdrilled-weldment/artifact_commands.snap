@@ -266,7 +266,8 @@ description: Artifact commands counterdrilled-weldment.kcl
         "target": "[uuid]",
         "distance": 12.7,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -502,7 +503,8 @@ description: Artifact commands counterdrilled-weldment.kcl
         "target": "[uuid]",
         "distance": -4.762499999999999,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -630,7 +632,8 @@ description: Artifact commands counterdrilled-weldment.kcl
         "target": "[uuid]",
         "distance": -7.9375,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -775,7 +778,8 @@ description: Artifact commands counterdrilled-weldment.kcl
         "target": "[uuid]",
         "distance": -4.762499999999999,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -903,7 +907,8 @@ description: Artifact commands counterdrilled-weldment.kcl
         "target": "[uuid]",
         "distance": -7.9375,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1048,7 +1053,8 @@ description: Artifact commands counterdrilled-weldment.kcl
         "target": "[uuid]",
         "distance": -4.762499999999999,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1176,7 +1182,8 @@ description: Artifact commands counterdrilled-weldment.kcl
         "target": "[uuid]",
         "distance": -7.9375,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1321,7 +1328,8 @@ description: Artifact commands counterdrilled-weldment.kcl
         "target": "[uuid]",
         "distance": -4.762499999999999,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1449,7 +1457,8 @@ description: Artifact commands counterdrilled-weldment.kcl
         "target": "[uuid]",
         "distance": -7.9375,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1627,7 +1636,8 @@ description: Artifact commands counterdrilled-weldment.kcl
         "target": "[uuid]",
         "distance": -254.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1914,7 +1924,8 @@ description: Artifact commands counterdrilled-weldment.kcl
         "target": "[uuid]",
         "distance": 50.8,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2158,7 +2169,8 @@ description: Artifact commands counterdrilled-weldment.kcl
         "target": "[uuid]",
         "distance": 2.921,
         "faces": null,
-        "opposite": "Symmetric"
+        "opposite": "Symmetric",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2409,7 +2421,8 @@ description: Artifact commands counterdrilled-weldment.kcl
         "target": "[uuid]",
         "distance": 2.921,
         "faces": null,
-        "opposite": "Symmetric"
+        "opposite": "Symmetric",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2477,5 +2490,6 @@ description: Artifact commands counterdrilled-weldment.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

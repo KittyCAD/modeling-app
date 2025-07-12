@@ -29,7 +29,6 @@ import {
   applyConstraintHorzVert,
   horzVertInfo,
 } from '@src/components/Toolbar/HorzVert'
-import { intersectInfo } from '@src/components/Toolbar/Intersect'
 import {
   applyRemoveConstrainingValues,
   removeConstrainingValuesInfo,
@@ -72,7 +71,7 @@ import {
   addRevolve,
   addSweep,
   getAxisExpressionAndIndex,
-} from '@src/lang/modifyAst/addSweep'
+} from '@src/lang/modifyAst/sweeps'
 import {
   applyIntersectFromTargetOperatorSelections,
   applySubtractFromTargetOperatorSelections,
@@ -155,6 +154,7 @@ import type { Plane } from '@rust/kcl-lib/bindings/Plane'
 import type { Point3d } from '@rust/kcl-lib/bindings/ModelingCmd'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import { letEngineAnimateAndSyncCamAfter } from '@src/clientSideScene/CameraControls'
+import { intersectInfo } from '@src/components/Toolbar/Intersect'
 
 export type SetSelections =
   | {
@@ -2436,23 +2436,10 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const {
-          nodeToEdit,
-          sketches,
-          length,
-          symmetric,
-          bidirectionalLength,
-          twistAngle,
-        } = input
         const { ast } = kclManager
         const astResult = addExtrude({
           ast,
-          sketches,
-          length,
-          symmetric,
-          bidirectionalLength,
-          twistAngle,
-          nodeToEdit,
+          ...input,
         })
         if (err(astResult)) {
           return Promise.reject(new Error("Couldn't add extrude statement"))

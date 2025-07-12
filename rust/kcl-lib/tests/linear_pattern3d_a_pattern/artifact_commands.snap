@@ -155,7 +155,8 @@ description: Artifact commands linear_pattern3d_a_pattern.kcl
         "target": "[uuid]",
         "distance": 1.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1682,5 +1683,6 @@ description: Artifact commands linear_pattern3d_a_pattern.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

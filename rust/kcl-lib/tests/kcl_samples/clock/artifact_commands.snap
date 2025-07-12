@@ -129,7 +129,8 @@ description: Artifact commands clock.kcl
         "target": "[uuid]",
         "distance": 50.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -376,7 +377,8 @@ description: Artifact commands clock.kcl
         "target": "[uuid]",
         "distance": 10.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -632,7 +634,8 @@ description: Artifact commands clock.kcl
         "target": "[uuid]",
         "distance": 10.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -859,7 +862,8 @@ description: Artifact commands clock.kcl
         "target": "[uuid]",
         "distance": 10.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1086,7 +1090,8 @@ description: Artifact commands clock.kcl
         "target": "[uuid]",
         "distance": 10.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1313,7 +1318,8 @@ description: Artifact commands clock.kcl
         "target": "[uuid]",
         "distance": 10.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1540,7 +1546,8 @@ description: Artifact commands clock.kcl
         "target": "[uuid]",
         "distance": 10.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1767,7 +1774,8 @@ description: Artifact commands clock.kcl
         "target": "[uuid]",
         "distance": 10.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1994,7 +2002,8 @@ description: Artifact commands clock.kcl
         "target": "[uuid]",
         "distance": 10.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2255,7 +2264,8 @@ description: Artifact commands clock.kcl
         "target": "[uuid]",
         "distance": 10.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2516,7 +2526,8 @@ description: Artifact commands clock.kcl
         "target": "[uuid]",
         "distance": 10.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2777,7 +2788,8 @@ description: Artifact commands clock.kcl
         "target": "[uuid]",
         "distance": 10.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -3004,7 +3016,8 @@ description: Artifact commands clock.kcl
         "target": "[uuid]",
         "distance": 10.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -3265,7 +3278,8 @@ description: Artifact commands clock.kcl
         "target": "[uuid]",
         "distance": 10.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -3492,7 +3506,8 @@ description: Artifact commands clock.kcl
         "target": "[uuid]",
         "distance": 10.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -3719,7 +3734,8 @@ description: Artifact commands clock.kcl
         "target": "[uuid]",
         "distance": 10.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -3980,7 +3996,8 @@ description: Artifact commands clock.kcl
         "target": "[uuid]",
         "distance": 10.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -4207,7 +4224,8 @@ description: Artifact commands clock.kcl
         "target": "[uuid]",
         "distance": 10.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -4434,7 +4452,8 @@ description: Artifact commands clock.kcl
         "target": "[uuid]",
         "distance": 10.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -4661,7 +4680,8 @@ description: Artifact commands clock.kcl
         "target": "[uuid]",
         "distance": 10.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -4888,7 +4908,8 @@ description: Artifact commands clock.kcl
         "target": "[uuid]",
         "distance": 10.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -5251,7 +5272,8 @@ description: Artifact commands clock.kcl
         "target": "[uuid]",
         "distance": 10.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -5614,7 +5636,8 @@ description: Artifact commands clock.kcl
         "target": "[uuid]",
         "distance": 10.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -5977,7 +6000,8 @@ description: Artifact commands clock.kcl
         "target": "[uuid]",
         "distance": 10.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -6204,7 +6228,8 @@ description: Artifact commands clock.kcl
         "target": "[uuid]",
         "distance": 10.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -6567,7 +6592,8 @@ description: Artifact commands clock.kcl
         "target": "[uuid]",
         "distance": 10.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -6794,7 +6820,8 @@ description: Artifact commands clock.kcl
         "target": "[uuid]",
         "distance": 10.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -7021,7 +7048,8 @@ description: Artifact commands clock.kcl
         "target": "[uuid]",
         "distance": 10.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -7166,7 +7194,8 @@ description: Artifact commands clock.kcl
         "target": "[uuid]",
         "distance": 10.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -7552,7 +7581,8 @@ description: Artifact commands clock.kcl
         "target": "[uuid]",
         "distance": 5.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -7955,7 +7985,8 @@ description: Artifact commands clock.kcl
         "target": "[uuid]",
         "distance": 5.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -8151,7 +8182,8 @@ description: Artifact commands clock.kcl
         "target": "[uuid]",
         "distance": -20.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -8198,5 +8230,6 @@ description: Artifact commands clock.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }
