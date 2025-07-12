@@ -861,7 +861,6 @@ export class SceneEntities {
           pathToNode: segPathToNode,
           isDraftSegment,
           scale,
-          texture: this.sceneInfra.extraSegmentTexture,
           theme: this.sceneInfra._theme,
           isSelected,
           sceneInfra: this.sceneInfra,
@@ -3344,14 +3343,7 @@ export class SceneEntities {
           ])
           const yellow = 0xffff00
           colorSegment(selected, yellow)
-          const extraSegmentGroup = parent.getObjectByName(EXTRA_SEGMENT_HANDLE)
-          if (extraSegmentGroup) {
-            extraSegmentGroup.traverse((child) => {
-              if (child instanceof Points || child instanceof Mesh) {
-                child.material.opacity = dragSelected ? 0 : 1
-              }
-            })
-          }
+          updateExtraSegments(parent, true)
           const orthoFactor = orthoScale(this.sceneInfra.camControls.camera)
 
           let input: SegmentInputs = {
@@ -3504,14 +3496,7 @@ export class SceneEntities {
             : parent?.userData?.baseColor ||
                 getThemeColorForThreeJs(this.sceneInfra._theme)
         )
-        const extraSegmentGroup = parent?.getObjectByName(EXTRA_SEGMENT_HANDLE)
-        if (extraSegmentGroup) {
-          extraSegmentGroup.traverse((child) => {
-            if (child instanceof Points || child instanceof Mesh) {
-              child.material.opacity = 0
-            }
-          })
-        }
+        updateExtraSegments(parent, false)
         if ([X_AXIS, Y_AXIS].includes(selected?.userData?.type)) {
           const obj = selected as Mesh
           const mat = obj.material as MeshBasicMaterial
@@ -3826,6 +3811,17 @@ function colorSegment(object: any, color: number) {
       }
     })
     return
+  }
+}
+
+function updateExtraSegments(parent: Object3D | null, selected: boolean) {
+  const extraSegmentGroup = parent?.getObjectByName(EXTRA_SEGMENT_HANDLE)
+  if (extraSegmentGroup) {
+    extraSegmentGroup.traverse((child) => {
+      if (child instanceof CSS2DObject) {
+        child.element.classList.toggle('selected', selected)
+      }
+    })
   }
 }
 

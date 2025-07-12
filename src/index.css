@@ -286,6 +286,32 @@ code {
   color: rgb(120, 120, 120, 0.8) !important;
 }
 
+.extra-segment-handle {
+  position: absolute;
+  pointer-events: auto;
+  cursor: pointer;
+  width: 12px;
+  height: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  opacity: 0;
+  color: red;
+  background: #ffff00 url("clientSideSceneAssets/extra-segment-texture.svg")
+    center no-repeat;
+  border-radius: 100%;
+  background-size: 10px 10px;
+}
+
+.extra-segment-handle.selected {
+  opacity: 0.7;
+}
+
+.extra-segment-handle:hover {
+  opacity: 1;
+}
+
 .segment-length-label-text {
   transform: translate(var(--x, 0), var(--y, 0)) rotate(var(--degree, 0));
   @apply font-mono body-bg px-2 pt-0.5 rounded-sm border border-chalkboard-110 dark:border-chalkboard-10;

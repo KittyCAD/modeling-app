@@ -1,4 +1,4 @@
-import type { NormalBufferAttributes, Texture } from 'three'
+import type { NormalBufferAttributes } from 'three'
 import {
   BoxGeometry,
   BufferGeometry,
@@ -14,8 +14,6 @@ import {
   LineDashedMaterial,
   Mesh,
   MeshBasicMaterial,
-  Points,
-  PointsMaterial,
   Shape,
   SphereGeometry,
   Vector2,
@@ -103,7 +101,6 @@ interface CreateSegmentArgs {
   isDraftSegment?: boolean
   scale?: number
   callExpName: string
-  texture: Texture
   theme: Themes
   isSelected?: boolean
   sceneInfra: SceneInfra
@@ -152,7 +149,6 @@ class StraightSegment implements SegmentUtils {
     isDraftSegment,
     scale = 1,
     callExpName,
-    texture,
     theme,
     isSelected = false,
     sceneInfra,
@@ -202,7 +198,7 @@ class StraightSegment implements SegmentUtils {
     // All segment types get an extra segment handle,
     // Which is a little plus sign that appears at the origin of the segment
     // and can be dragged to insert a new segment
-    const extraSegmentGroup = createExtraSegmentHandle(scale, texture, theme)
+    const extraSegmentGroup = createExtraSegmentHandle(scale, theme)
 
     // Segment decorators that only apply to non-close segments
     if (callExpName !== 'close') {
@@ -321,7 +317,7 @@ class StraightSegment implements SegmentUtils {
         0
       )
       extraSegmentGroup.scale.set(scale, scale, scale)
-      extraSegmentGroup.visible = isHandlesVisible
+      extraSegmentGroup.visible = true
     }
 
     if (labelGroup) {
@@ -387,7 +383,6 @@ class TangentialArcToSegment implements SegmentUtils {
     pathToNode,
     isDraftSegment,
     scale = 1,
-    texture,
     theme,
     isSelected,
     sceneInfra,
@@ -414,7 +409,7 @@ class TangentialArcToSegment implements SegmentUtils {
     const body = new MeshBasicMaterial({ color })
     const mesh = new Mesh(geometry, body)
     const arrowGroup = createArrowhead(scale, theme, color)
-    const extraSegmentGroup = createExtraSegmentHandle(scale, texture, theme)
+    const extraSegmentGroup = createExtraSegmentHandle(scale, theme)
 
     group.name = TANGENTIAL_ARC_TO_SEGMENT
     mesh.userData.type = meshName
@@ -511,7 +506,7 @@ class TangentialArcToSegment implements SegmentUtils {
         0
       )
       extraSegmentGroup.scale.set(scale, scale, scale)
-      extraSegmentGroup.visible = isHandlesVisible
+      extraSegmentGroup.visible = true
     }
 
     const tangentialArcSegmentBody = group.children.find(
@@ -1718,36 +1713,26 @@ function createCircleThreePointHandle(
   return circleCenterGroup
 }
 
-function createExtraSegmentHandle(
-  scale: number,
-  texture: Texture,
-  theme: Themes
-): Group {
-  const particleMaterial = new PointsMaterial({
-    size: 12, // in pixels
-    map: texture,
-    transparent: true,
-    opacity: 0,
-    depthTest: false,
-  })
+function createExtraSegmentHandle(scale: number, theme: Themes): Group {
   const mat = new MeshBasicMaterial({
     transparent: true,
-    color: getThemeColorForThreeJs(theme),
     opacity: 0,
   })
-  const particleGeometry = new BufferGeometry().setFromPoints([
-    new Vector3(0, 0, 0),
-  ])
-  const sphereMesh = new Mesh(new SphereGeometry(6, 12, 12), mat) // sphere radius in pixels
-  const particle = new Points(particleGeometry, particleMaterial)
-  particle.userData.ignoreColorChange = true
-  particle.userData.type = EXTRA_SEGMENT_HANDLE
 
   const extraSegmentGroup = new Group()
   extraSegmentGroup.userData.type = EXTRA_SEGMENT_HANDLE
   extraSegmentGroup.name = EXTRA_SEGMENT_HANDLE
-  extraSegmentGroup.add(sphereMesh)
-  extraSegmentGroup.add(particle)
+
+  const handleDiv = document.createElement('div')
+  handleDiv.classList.add('extra-segment-handle')
+  handleDiv.style.color = `#${getThemeColorForThreeJs(theme).toString(16).padStart(6, '0')}`
+
+  const cssObject = new CSS2DObject(handleDiv)
+  cssObject.userData.ignoreColorChange = true
+  cssObject.userData.type = EXTRA_SEGMENT_HANDLE
+  cssObject.position.set(0, 0, 0)
+
+  extraSegmentGroup.add(cssObject)
   extraSegmentGroup.scale.set(scale, scale, scale)
   return extraSegmentGroup
 }
