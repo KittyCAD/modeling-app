@@ -601,7 +601,7 @@ describe('Testing traverse and pathToNode', () => {
     ['basic', '2.73'],
     [
       'very nested, array, object, callExpression, array, memberExpression',
-      '.yo',
+      'yo',
     ],
   ])('testing %s', async (_testName, literalOfInterest) => {
     const code = `myVar = 5

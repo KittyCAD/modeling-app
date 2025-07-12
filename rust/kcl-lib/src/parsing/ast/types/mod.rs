@@ -2761,50 +2761,10 @@ impl ObjectProperty {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
-pub enum LiteralIdentifier {
-    Identifier(BoxNode<Identifier>),
-    Literal(BoxNode<Literal>),
-}
-
-impl LiteralIdentifier {
-    pub fn start(&self) -> usize {
-        match self {
-            LiteralIdentifier::Identifier(identifier) => identifier.start,
-            LiteralIdentifier::Literal(literal) => literal.start,
-        }
-    }
-
-    pub fn end(&self) -> usize {
-        match self {
-            LiteralIdentifier::Identifier(identifier) => identifier.end,
-            LiteralIdentifier::Literal(literal) => literal.end,
-        }
-    }
-
-    pub(crate) fn contains_range(&self, range: &SourceRange) -> bool {
-        let sr = SourceRange::from(self);
-        sr.contains_range(range)
-    }
-}
-
-impl From<LiteralIdentifier> for SourceRange {
-    fn from(id: LiteralIdentifier) -> Self {
-        Self::new(id.start(), id.end(), id.module_id())
-    }
-}
-
-impl From<&LiteralIdentifier> for SourceRange {
-    fn from(id: &LiteralIdentifier) -> Self {
-        Self::new(id.start(), id.end(), id.module_id())
-    }
-}
-
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-#[serde(tag = "type")]
 pub struct MemberExpression {
     pub object: Expr,
-    pub property: LiteralIdentifier,
+    pub property: Expr,
+    /// True if `obj[prop]`, false if obj.prop
     pub computed: bool,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -2826,20 +2786,8 @@ impl MemberExpression {
     /// Rename all identifiers that have the old name to the new given name.
     fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
         self.object.rename_identifiers(old_name, new_name);
-
-        match &mut self.property {
-            LiteralIdentifier::Identifier(identifier) => identifier.rename(old_name, new_name),
-            LiteralIdentifier::Literal(_) => {}
-        }
+        self.property.rename_identifiers(old_name, new_name);
     }
-}
-
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-pub struct ObjectKeyInfo {
-    pub key: LiteralIdentifier,
-    pub index: usize,
-    pub computed: bool,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]

@@ -1,6 +1,6 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
-description: Result of parsing invalid_index_fractional.kcl
+description: Result of parsing complex_expr_as_array_index.kcl
 ---
 {
   "Ok": {
@@ -21,6 +21,19 @@ description: Result of parsing invalid_index_fractional.kcl
           "init": {
             "commentStart": 0,
             "elements": [
+              {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "raw": "0",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 0.0,
+                  "suffix": "None"
+                }
+              },
               {
                 "commentStart": 0,
                 "end": 0,
@@ -87,7 +100,7 @@ description: Result of parsing invalid_index_fractional.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "name": "x",
+            "name": "two",
             "start": 0,
             "type": "Identifier"
           },
@@ -118,12 +131,12 @@ description: Result of parsing invalid_index_fractional.kcl
               "commentStart": 0,
               "end": 0,
               "moduleId": 0,
-              "raw": "1.2",
+              "raw": "2",
               "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
-                "value": 1.2,
+                "value": 2.0,
                 "suffix": "None"
               }
             },
@@ -141,6 +154,83 @@ description: Result of parsing invalid_index_fractional.kcl
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 0,
+        "end": 0,
+        "expression": {
+          "arguments": [
+            {
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "isEqualTo",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "raw": "2",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 2.0,
+                  "suffix": "None"
+                }
+              }
+            }
+          ],
+          "callee": {
+            "abs_path": false,
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "assert",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name"
+          },
+          "commentStart": 0,
+          "end": 0,
+          "moduleId": 0,
+          "start": 0,
+          "type": "CallExpressionKw",
+          "type": "CallExpressionKw",
+          "unlabeled": {
+            "abs_path": false,
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "two",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name",
+            "type": "Name"
+          }
+        },
+        "moduleId": 0,
+        "start": 0,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
       }
     ],
     "commentStart": 0,

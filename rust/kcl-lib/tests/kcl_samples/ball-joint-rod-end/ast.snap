@@ -953,7 +953,7 @@ description: Result of parsing ball-joint-rod-end.kcl
           },
           "init": {
             "commentStart": 0,
-            "computed": false,
+            "computed": true,
             "end": 0,
             "moduleId": 0,
             "object": {
