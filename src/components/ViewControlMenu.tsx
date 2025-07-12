@@ -14,15 +14,15 @@ import { kclManager, sceneInfra } from '@src/lib/singletons'
 import { err, reportRejection } from '@src/lib/trap'
 import { useSettings } from '@src/lib/singletons'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
-import type { Selections } from '@src/lib/selections'
 import {
   selectDefaultSketchPlane,
   selectOffsetSketchPlane,
 } from '@src/lib/selections'
+import { getSelectedPlaneId } from '@src/lang/queryAst'
 
 export function useViewControlMenuItems() {
   const { state: modelingState, send: modelingSend } = useModelingContext()
-  const selectedPlaneId = getCurrentPlaneId(
+  const selectedPlaneId = getSelectedPlaneId(
     modelingState.context.selectionRanges
   )
 
@@ -111,22 +111,4 @@ export function ViewControlContextMenu({
       {...props}
     />
   )
-}
-
-function getCurrentPlaneId(selectionRanges: Selections): string | null {
-  const defaultPlane = selectionRanges.otherSelections.find(
-    (selection) => typeof selection === 'object' && 'name' in selection
-  )
-  if (defaultPlane) {
-    return defaultPlane.id
-  }
-
-  const planeSelection = selectionRanges.graphSelections.find(
-    (selection) => selection.artifact?.type === 'plane'
-  )
-  if (planeSelection) {
-    return planeSelection.artifact?.id || null
-  }
-
-  return null
 }

@@ -98,6 +98,7 @@ import {
   valueOrVariable,
   artifactIsPlaneWithPaths,
   isCursorInFunctionDefinition,
+  getSelectedPlaneAsNode,
 } from '@src/lang/queryAst'
 import {
   getFaceCodeRef,
@@ -2596,7 +2597,10 @@ export const modelingMachine = setup({
           insertIndex = nodeToEdit[1][0]
         }
 
-        const selectedPlane = getSelectedPlane(selection)
+        const selectedPlane = getSelectedPlaneAsNode(
+          selection,
+          kclManager.variables
+        )
         if (!selectedPlane) {
           return trap('No plane selected')
         }
@@ -5505,33 +5509,6 @@ export function isEditingExistingSketch({
         item.callee.name.name === 'circleThreePoint'
     )
   return (hasStartProfileAt && maybePipeExpression.body.length > 1) || hasCircle
-}
-
-const getSelectedPlane = (
-  selection: Selections
-): Node<Name> | Node<Literal> | undefined => {
-  const defaultPlane = selection.otherSelections[0]
-  if (
-    defaultPlane &&
-    defaultPlane instanceof Object &&
-    'name' in defaultPlane
-  ) {
-    return createLiteral(defaultPlane.name.toUpperCase())
-  }
-
-  const offsetPlane = selection.graphSelections[0]
-  if (offsetPlane.artifact?.type === 'plane') {
-    const artifactId = offsetPlane.artifact?.id
-    const variableName = Object.entries(kclManager.variables).find(
-      ([_, value]) => {
-        return value?.type === 'Plane' && value.value?.artifactId === artifactId
-      }
-    )
-    const offsetPlaneName = variableName?.[0]
-    return offsetPlaneName ? createLocalName(offsetPlaneName) : undefined
-  }
-
-  return undefined
 }
 
 export function pipeHasCircle({

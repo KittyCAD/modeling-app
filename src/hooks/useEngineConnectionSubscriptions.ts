@@ -109,7 +109,9 @@ export function useEngineConnectionSubscriptions() {
               }
 
               const artifact = kclManager.artifactGraph.get(planeOrFaceId)
-              if (await selectOffsetSketchPlane(artifact)) {
+              const offsetPlaneSelected =
+                await selectOffsetSketchPlane(artifact)
+              if (!err(offsetPlaneSelected) && offsetPlaneSelected) {
                 return
               }
 
