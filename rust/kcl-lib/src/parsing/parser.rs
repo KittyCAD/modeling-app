@@ -2526,6 +2526,7 @@ fn unary_expression(i: &mut TokenSlice) -> ModalResult<Node<UnaryExpression>> {
         })
         .context(expected("a unary expression, e.g. -x or -3"))
         .parse_next(i)?;
+    ignore_whitespace(i);
     let argument = operand.parse_next(i)?;
     Ok(Node::new_node(
         op_token.start,
@@ -5582,6 +5583,7 @@ my14 = 4 ^ 2 - 3 ^ 2 * 2
         r#"incl = [1..10]
         excl = [0..<10]"#
     );
+    snapshot_test!(space_between_unary_and_operand, r#"x = - 1"#);
 }
 
 #[allow(unused)]
