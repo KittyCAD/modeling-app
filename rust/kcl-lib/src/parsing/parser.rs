@@ -2163,6 +2163,7 @@ fn possible_operands(i: &mut TokenSlice) -> ModalResult<Expr> {
         name.map(Box::new).map(Expr::Name),
         array,
         object.map(Box::new).map(Expr::ObjectExpression),
+        if_expr.map(Expr::IfExpression),
         binary_expr_in_parens.map(Box::new).map(Expr::BinaryExpression),
         unnecessarily_bracketed,
     ))
@@ -3450,6 +3451,13 @@ mod tests {
     #[test]
     fn parse_binary_operator_on_array() {
         let tokens = crate::parsing::token::lex("[0] + 1", ModuleId::default()).unwrap();
+        let tokens = tokens.as_slice();
+        binary_expression.parse(tokens).unwrap();
+    }
+
+    #[test]
+    fn parse_binary_operator_with_if_else() {
+        let tokens = crate::parsing::token::lex("40 + if true { 2 } else { 0 }", ModuleId::default()).unwrap();
         let tokens = tokens.as_slice();
         binary_expression.parse(tokens).unwrap();
     }
