@@ -14,7 +14,6 @@ describe('@src/env', () => {
         VITE_KITTYCAD_API_TOKEN: 'redacted',
         VITE_KITTYCAD_SITE_BASE_URL: 'https://dev.zoo.dev',
         VITE_KITTYCAD_SITE_APP_URL: 'https://app.dev.zoo.dev',
-        TEST: 'true',
       }
       const actual = env()
       expect(typeof actual.VITE_KITTYCAD_API_TOKEN).toBe('string')
@@ -34,7 +33,6 @@ describe('@src/env', () => {
       expect(typeof actual.VITE_KITTYCAD_API_TOKEN).toBe('string')
       expect(typeof actual.VITE_KITTYCAD_SITE_BASE_URL).toBe('string')
       expect(typeof actual.VITE_KITTYCAD_SITE_APP_URL).toBe('string')
-      expect(typeof actual.TEST).toBe('string')
     })
   })
   describe('windowElectronProcessEnv', () => {
@@ -55,7 +53,6 @@ describe('@src/env', () => {
               VITE_KITTYCAD_API_TOKEN: 'redacted',
               VITE_KITTYCAD_SITE_BASE_URL: 'https://dev.zoo.dev',
               VITE_KITTYCAD_SITE_APP_URL: 'https://app.dev.zoo.dev',
-              TEST: 'true',
             },
           },
         })
@@ -67,7 +64,6 @@ describe('@src/env', () => {
           VITE_KITTYCAD_API_TOKEN: 'redacted',
           VITE_KITTYCAD_SITE_BASE_URL: 'https://dev.zoo.dev',
           VITE_KITTYCAD_SITE_APP_URL: 'https://app.dev.zoo.dev',
-          TEST: 'true',
         }
         const actual = windowElectronProcessEnv()
         expect(actual).toStrictEqual(expected)
@@ -94,7 +90,6 @@ describe('@src/env', () => {
       expect(typeof actual?.VITE_KITTYCAD_API_TOKEN).toBe('string')
       expect(typeof actual?.VITE_KITTYCAD_SITE_BASE_URL).toBe('string')
       expect(typeof actual?.VITE_KITTYCAD_SITE_APP_URL).toBe('string')
-      expect(typeof actual?.TEST).toBe('string')
     })
   })
 })
