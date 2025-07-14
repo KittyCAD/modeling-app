@@ -490,7 +490,7 @@ export function createApplicationCommands({
         options: Object.keys(SUPPORTED_ENVIRONMENTS).map((name) => {
           return {
             value: name,
-            name: name
+            name: name,
           }
         }),
       },
@@ -520,11 +520,10 @@ export function createApplicationCommands({
       pool: {
         inputType: 'string',
         required: true,
-        defaultValue: () => env().POOL
+        defaultValue: () => env().POOL,
       },
     },
   }
-
 
   return isDesktop()
     ? [
