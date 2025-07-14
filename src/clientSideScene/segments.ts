@@ -1719,7 +1719,6 @@ function createCircleThreePointHandle(
 }
 
 function createExtraSegmentHandle(scale: number, theme: Themes): Group {
-
   const extraSegmentGroup = new Group()
   extraSegmentGroup.userData.type = EXTRA_SEGMENT_HANDLE
   extraSegmentGroup.name = EXTRA_SEGMENT_HANDLE
