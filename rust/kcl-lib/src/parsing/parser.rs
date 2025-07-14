@@ -2155,6 +2155,7 @@ fn expr_allowed_in_pipe_expr(i: &mut TokenSlice) -> ModalResult<Expr> {
 
 fn possible_operands(i: &mut TokenSlice) -> ModalResult<Expr> {
     let mut expr = alt((
+        if_expr.map(Expr::IfExpression),
         unary_expression.map(Box::new).map(Expr::UnaryExpression),
         bool_value.map(Box::new).map(Expr::Literal),
         literal.map(Expr::Literal),
@@ -4890,6 +4891,13 @@ thing(false)
     }
 
     #[test]
+    fn test_mul_if() {
+        let some_program_string = r#"10 * if true { 1 } else { 0}"#;
+        let tokens = crate::parsing::token::lex(some_program_string, ModuleId::default()).unwrap();
+        super::binary_expression_tokens.parse(tokens.as_slice()).unwrap();
+    }
+
+    #[test]
     fn test_error_define_var_as_function() {
         // TODO: https://github.com/KittyCAD/modeling-app/issues/784
         // Improve this error message.
@@ -5126,6 +5134,7 @@ sketch001 = startSketchOn(XZ) |> startProfile(at = [90.45 $struct])"#;
             [52, 53],
         );
     }
+
     #[test]
     fn test_parse_array_random_brace() {
         let some_program_string = r#"
