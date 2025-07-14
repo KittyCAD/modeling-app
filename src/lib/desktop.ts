@@ -477,7 +477,7 @@ const getAppFolderName = () => {
 }
 
 export const getAppSettingsFilePath = async () => {
-  const isTestEnv = window.electron.process.env.IS_PLAYWRIGHT === 'true'
+  const isTestEnv = window.electron.process.env.NODE_ENV === 'test'
   const testSettingsPath = await window.electron.getAppTestProperty(
     'TEST_SETTINGS_FILE_KEY'
   )
@@ -499,7 +499,7 @@ export const getAppSettingsFilePath = async () => {
   return window.electron.path.join(fullPath, SETTINGS_FILE_NAME)
 }
 const getTokenFilePath = async () => {
-  const isTestEnv = window.electron.process.env.IS_PLAYWRIGHT === 'true'
+  const isTestEnv = window.electron.process.env.NODE_ENV === 'test'
   const testSettingsPath = await window.electron.getAppTestProperty(
     'TEST_SETTINGS_FILE_KEY'
   )
@@ -520,7 +520,7 @@ const getTokenFilePath = async () => {
 }
 
 const getTelemetryFilePath = async () => {
-  const isTestEnv = window.electron.process.env.IS_PLAYWRIGHT === 'true'
+  const isTestEnv = window.electron.process.env.NODE_ENV === 'test'
   const testSettingsPath = await window.electron.getAppTestProperty(
     'TEST_SETTINGS_FILE_KEY'
   )
@@ -541,7 +541,7 @@ const getTelemetryFilePath = async () => {
 }
 
 const getRawTelemetryFilePath = async () => {
-  const isTestEnv = window.electron.process.env.IS_PLAYWRIGHT === 'true'
+  const isTestEnv = window.electron.process.env.NODE_ENV === 'test'
   const testSettingsPath = await window.electron.getAppTestProperty(
     'TEST_SETTINGS_FILE_KEY'
   )
@@ -573,7 +573,7 @@ const getProjectSettingsFilePath = async (projectPath: string) => {
 }
 
 export const getInitialDefaultDir = async () => {
-  const isTestEnv = window.electron.process.env.IS_PLAYWRIGHT === 'true'
+  const isTestEnv = window.electron.process.env.NODE_ENV === 'test'
   const testSettingsPath = await window.electron.getAppTestProperty(
     'TEST_SETTINGS_FILE_KEY'
   )
