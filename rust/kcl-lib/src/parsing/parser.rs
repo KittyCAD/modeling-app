@@ -1359,9 +1359,11 @@ fn member_expression_dot(i: &mut TokenSlice) -> ModalResult<(Expr, usize, bool)>
     Ok((property, end, computed))
 }
 
-fn member_expression_subscript_complex_expr(i: &mut TokenSlice) -> ModalResult<(Expr, usize, bool)> {
+fn member_expression_subscript(i: &mut TokenSlice) -> ModalResult<(Expr, usize, bool)> {
     let _ = open_bracket.parse_next(i)?;
+    ignore_whitespace(i);
     let property = expression.parse_next(i)?;
+    ignore_whitespace(i);
     let end = close_bracket.parse_next(i)?.end;
     let computed = true;
     Ok((property, end, computed))
@@ -1371,7 +1373,7 @@ fn member_expression_subscript_complex_expr(i: &mut TokenSlice) -> ModalResult<(
 /// Can be arbitrarily nested, e.g. `people[i]['adam'].age`.
 fn build_member_expression(object: Expr, i: &mut TokenSlice) -> ModalResult<Node<MemberExpression>> {
     // Now a sequence of members.
-    let member = alt((member_expression_dot, member_expression_subscript_complex_expr)).context(expected("a member/property, e.g. size.x and size['height'] and size[0] are all different ways to access a member/property of 'size'"));
+    let member = alt((member_expression_dot, member_expression_subscript)).context(expected("a member/property, e.g. size.x and size['height'] and size[0] are all different ways to access a member/property of 'size'"));
     let mut members: Vec<_> = repeat(1.., member)
         .context(expected("a sequence of at least one members/properties"))
         .parse_next(i)?;
@@ -5689,6 +5691,12 @@ my14 = 4 ^ 2 - 3 ^ 2 * 2
         excl = [0..<10]"#
     );
     snapshot_test!(space_between_unary_and_operand, r#"x = - 1"#);
+    snapshot_test!(
+        space_between_expr_and_array,
+        r#"outer_points = [1, 2, 3]
+i = 0
+outer_points[ if i + 1 < 5 { i + 1 } else { 0 } ]"#
+    );
 }
 
 #[allow(unused)]
