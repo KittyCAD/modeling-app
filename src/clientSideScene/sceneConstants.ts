@@ -70,6 +70,10 @@ export const ARC_SEGMENT_TYPES = [
   ARC_SEGMENT,
 ]
 
+// Colors
+export const SEGMENT_YELLOW = 0xffff00
+export const SEGMENT_BLUE = 0x0000ff
+
 // Helper functions
 export function getParentGroup(
   object: any,

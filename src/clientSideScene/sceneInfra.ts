@@ -5,7 +5,6 @@ import type {
   MeshBasicMaterial,
   Object3D,
   Object3DEventMap,
-  Texture,
 } from 'three'
 import {
   AmbientLight,
@@ -16,7 +15,6 @@ import {
   OrthographicCamera,
   Raycaster,
   Scene,
-  TextureLoader,
   Vector2,
   Vector3,
   WebGLRenderer,

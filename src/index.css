@@ -299,13 +299,19 @@ code {
   opacity: 0;
   color: red;
   background: #ffff00 url("clientSideSceneAssets/extra-segment-texture.svg")
-    center no-repeat;
+    center / 10px 10px no-repeat;
   border-radius: 100%;
   background-size: 10px 10px;
 }
 
-.extra-segment-handle.selected {
+.extra-segment-handle.hoveringLine {
   opacity: 0.7;
+}
+
+.extra-segment-handle.selected:not(.hoveringLine) {
+  opacity: 0.7;
+  background-color: #0000ff;
+  background-image: url("clientSideSceneAssets/extra-segment-texture-selected.svg");
 }
 
 .extra-segment-handle:hover {

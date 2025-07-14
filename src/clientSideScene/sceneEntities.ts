@@ -17,7 +17,6 @@ import {
   OrthographicCamera,
   PerspectiveCamera,
   PlaneGeometry,
-  Points,
   Shape,
   Vector2,
   Vector3,
@@ -67,6 +66,8 @@ import {
   THREE_POINT_ARC_HANDLE3,
   THREE_POINT_ARC_SEGMENT,
   getParentGroup,
+  SEGMENT_BLUE,
+  SEGMENT_YELLOW,
 } from '@src/clientSideScene/sceneConstants'
 import type {
   OnClickCallbackArgs,
@@ -2539,14 +2540,14 @@ export class SceneEntities {
 
           const pipeIndex = pathToNode[pathToNodeIndex + 1][0] as number
           if (addingNewSegmentStatus === 'nothing') {
-            const prevSegment = sketch.paths[pipeIndex - 2]
+            const prevSegment = sketch.paths[pipeIndex - 2] // Is undefined when dragging the first segment
             const mod = addNewSketchLn({
               node: this.kclManager.ast,
               variables: this.kclManager.variables,
               input: {
                 type: 'straight-segment',
                 to: [intersectionPoint.twoD.x, intersectionPoint.twoD.y],
-                from: prevSegment.from,
+                from: prevSegment?.from || [0, 0],
               },
               // TODO assuming it's always a straight segments being added
               // as this is easiest, and we'll need to add "tabbing" behavior
@@ -3341,9 +3342,10 @@ export class SceneEntities {
           this.editorManager.setHighlightRange([
             topLevelRange(node.start, node.end),
           ])
-          const yellow = 0xffff00
-          colorSegment(selected, yellow)
-          updateExtraSegments(parent, true)
+          colorSegment(selected, SEGMENT_YELLOW)
+          const isSelected = parent?.userData?.isSelected
+          updateExtraSegments(parent, 'hoveringLine', true)
+          updateExtraSegments(parent, 'selected', isSelected)
           const orthoFactor = orthoScale(this.sceneInfra.camControls.camera)
 
           let input: SegmentInputs = {
@@ -3492,11 +3494,16 @@ export class SceneEntities {
         colorSegment(
           selected,
           isSelected
-            ? 0x0000ff
+            ? SEGMENT_BLUE
             : parent?.userData?.baseColor ||
                 getThemeColorForThreeJs(this.sceneInfra._theme)
         )
-        updateExtraSegments(parent, false)
+        updateExtraSegments(parent, 'hoveringLine', false)
+        updateExtraSegments(parent, 'selected', isSelected)
+        const color = isSelected
+          ? SEGMENT_BLUE
+          : parent?.userData?.baseColor ||
+            getThemeColorForThreeJs(this.sceneInfra._theme)
         if ([X_AXIS, Y_AXIS].includes(selected?.userData?.type)) {
           const obj = selected as Mesh
           const mat = obj.material as MeshBasicMaterial
@@ -3793,7 +3800,7 @@ function sketchFromPathToNode({
   return sg
 }
 
-function colorSegment(object: any, color: number) {
+function colorSegment(object: Object3D, color: number) {
   const segmentHead = getParentGroup(object, [ARROWHEAD, PROFILE_START])
   if (segmentHead) {
     segmentHead.traverse((child) => {
@@ -3814,12 +3821,17 @@ function colorSegment(object: any, color: number) {
   }
 }
 
-function updateExtraSegments(parent: Object3D | null, selected: boolean) {
+export function updateExtraSegments(
+  parent: Object3D | null,
+  className: string,
+  value: boolean
+) {
   const extraSegmentGroup = parent?.getObjectByName(EXTRA_SEGMENT_HANDLE)
   if (extraSegmentGroup) {
     extraSegmentGroup.traverse((child) => {
       if (child instanceof CSS2DObject) {
-        child.element.classList.toggle('selected', selected)
+        child.element.classList.toggle(className, value)
+        //child.element.classList.toggle('selected', selected)
       }
     })
   }

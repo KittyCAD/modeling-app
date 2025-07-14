@@ -63,6 +63,7 @@ import {
   THREE_POINT_ARC_SEGMENT_DASH,
   getParentGroup,
   CIRCLE_SEGMENT_RADIUS_BODY,
+  SEGMENT_BLUE,
 } from '@src/clientSideScene/sceneConstants'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import {
@@ -160,7 +161,7 @@ class StraightSegment implements SegmentUtils {
     const { from, to } = input
     const baseColor =
       callExpName === 'close' ? 0x444444 : getThemeColorForThreeJs(theme)
-    const color = isSelected ? 0x0000ff : baseColor
+    const color = isSelected ? SEGMENT_BLUE : baseColor
     const meshType = isDraftSegment
       ? STRAIGHT_SEGMENT_DASH
       : STRAIGHT_SEGMENT_BODY
@@ -410,7 +411,7 @@ class TangentialArcToSegment implements SegmentUtils {
       scale,
     })
     const baseColor = getThemeColorForThreeJs(theme)
-    const color = isSelected ? 0x0000ff : baseColor
+    const color = isSelected ? SEGMENT_BLUE : baseColor
     const body = new MeshBasicMaterial({ color })
     const mesh = new Mesh(geometry, body)
     const arrowGroup = createArrowhead(scale, theme, color)
@@ -594,7 +595,7 @@ class CircleSegment implements SegmentUtils {
     }
     const { from, center, radius } = input
     const baseColor = getThemeColorForThreeJs(theme)
-    const color = isSelected ? 0x0000ff : baseColor
+    const color = isSelected ? SEGMENT_BLUE : baseColor
 
     const group = new Group()
     const geometry = createArcGeometry({
@@ -846,7 +847,7 @@ class CircleThreePointSegment implements SegmentUtils {
     )
     const center: [number, number] = [center_x, center_y]
     const baseColor = getThemeColorForThreeJs(theme)
-    const color = isSelected ? 0x0000ff : baseColor
+    const color = isSelected ? SEGMENT_BLUE : baseColor
 
     const group = new Group()
     const geometry = createArcGeometry({
@@ -1054,7 +1055,7 @@ class ArcSegment implements SegmentUtils {
     }
     const { from, to, center, radius, ccw } = input
     const baseColor = getThemeColorForThreeJs(theme)
-    const color = isSelected ? 0x0000ff : baseColor
+    const color = isSelected ? SEGMENT_BLUE : baseColor
 
     // Calculate start and end angles
     const startAngle = Math.atan2(from[1] - center[1], from[0] - center[0])
@@ -1418,7 +1419,7 @@ class ThreePointArcSegment implements SegmentUtils {
     )
     const center: [number, number] = [center_x, center_y]
     const baseColor = getThemeColorForThreeJs(theme)
-    const color = isSelected ? 0x0000ff : baseColor
+    const color = isSelected ? SEGMENT_BLUE : baseColor
 
     // Calculate start and end angles
     const startAngle = Math.atan2(p1[1] - center[1], p1[0] - center[0])
@@ -1634,7 +1635,7 @@ export function createProfileStartHandle({
 
   const geometry = new BoxGeometry(size, size, size) // in pixels scaled later
   const baseColor = getThemeColorForThreeJs(theme)
-  const color = isSelected ? 0x0000ff : baseColor
+  const color = isSelected ? SEGMENT_BLUE : baseColor
   const body = new MeshBasicMaterial({ color })
   const mesh = new Mesh(geometry, body)
 
