@@ -512,7 +512,9 @@ class TangentialArcToSegment implements SegmentUtils {
         0
       )
       extraSegmentGroup.scale.set(scale, scale, scale)
-      extraSegmentGroup.visible = true
+
+      const segmentLengthInScreenSpace = arcInfo.arcLength / scale
+      extraSegmentGroup.visible = segmentLengthInScreenSpace > 70
     }
 
     const tangentialArcSegmentBody = group.children.find(
