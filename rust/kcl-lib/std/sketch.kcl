@@ -223,6 +223,25 @@ export fn startSketchOn(
 ///
 /// example = extrude(exampleSketch, length = 5)
 /// ```
+///
+/// ```kcl
+/// // Create a sketch plane.
+/// mySketch = startSketchOn(XY)
+///
+/// // Start a profile on the sketch plane.
+/// squareProfile1 = startProfile(mySketch, at = [0, 0])
+///   |> line(end = [10, 0])
+///   |> line(end = [0, 10])
+///   |> line(end = [-10, 0])
+///   |> close()
+///
+/// // Start another profile on the same sketch plane.
+/// squareProfile2 = startProfile(mySketch, at = [20, 0])
+///   |> line(end = [10, 0])
+///   |> line(end = [0, 10])
+///   |> line(end = [-10, 0])
+///   |> close()
+/// ```
 @(impl = std_rust)
 export fn startProfile(
   /// What to start the profile on.
