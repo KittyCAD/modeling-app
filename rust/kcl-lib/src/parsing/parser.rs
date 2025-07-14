@@ -43,6 +43,11 @@ thread_local! {
     static CTXT: RefCell<Option<ParseContext>> = const { RefCell::new(None) };
 }
 
+const MISSING_ELSE: &str = "This `if` block needs a matching `else` block";
+const IF_ELSE_CANNOT_BE_EMPTY: &str = "`if` and `else` blocks cannot be empty";
+const ELSE_STRUCTURE: &str = "This `else` should be followed by a {, then a block of code, then a }";
+const ELSE_MUST_END_IN_EXPR: &str = "This `else` block needs to end in an expression, which will be the value if no preceding `if` condition was matched";
+
 pub fn run_parser(i: TokenSlice) -> super::ParseResult {
     let _stats = crate::log::LogPerfStats::new("Parsing");
     ParseContext::init();
@@ -1202,10 +1207,29 @@ fn if_expr(i: &mut TokenSlice) -> ModalResult<BoxNode<IfExpression>> {
     ignore_whitespace(i);
     let _ = close_brace(i)?;
     ignore_whitespace(i);
-    let else_ifs = repeat(0.., else_if).parse_next(i)?;
+    let else_ifs: NodeList<_> = repeat(0.., else_if).parse_next(i)?;
 
     ignore_whitespace(i);
-    let _ = any
+
+    // If there's a non-fatal parser error (e.g. a problem with the `else` branch),
+    // return this after emitting the nonfatal error.
+    let if_with_no_else = || {
+        Ok(Node::boxed(
+            IfExpression {
+                cond: cond.clone(),
+                then_val: then_val.clone(),
+                else_ifs: else_ifs.clone(),
+                final_else: Node::boxed(Default::default(), 0, 0, if_.module_id),
+                digest: Default::default(),
+            },
+            if_.start,
+            if_.end,
+            if_.module_id,
+        ))
+    };
+
+    // Parse the else keyword
+    let else_: ModalResult<_> = any
         .try_map(|token: Token| {
             if matches!(token.token_type, TokenType::Keyword) && token.value == "else" {
                 Ok(token.start)
@@ -1217,17 +1241,38 @@ fn if_expr(i: &mut TokenSlice) -> ModalResult<BoxNode<IfExpression>> {
             }
         })
         .context(expected("the 'else' keyword"))
-        .parse_next(i)?;
-    ignore_whitespace(i);
-    let _ = open_brace(i)?;
+        .parse_next(i);
+    let Ok(else_) = else_ else {
+        ParseContext::err(CompilationError::err(if_.as_source_range(), MISSING_ELSE));
+        return if_with_no_else();
+    };
+    let else_range = SourceRange::new(else_, else_ + 4, if_.module_id);
     ignore_whitespace(i);
 
-    let final_else = program
-        .verify(|block| block.ends_with_expr())
-        .parse_next(i)
-        .map_err(|e| e.cut())
-        .map(Box::new)?;
+    // Parse the else clause
+    if open_brace(i).is_err() {
+        ParseContext::err(CompilationError::err(else_range, ELSE_STRUCTURE));
+        return if_with_no_else();
+    }
     ignore_whitespace(i);
+    let Ok(final_else) = program.parse_next(i).map(Box::new) else {
+        ParseContext::err(CompilationError::err(else_range, IF_ELSE_CANNOT_BE_EMPTY));
+        let _ = opt(close_brace).parse_next(i);
+        return if_with_no_else();
+    };
+    ignore_whitespace(i);
+
+    if final_else.body.is_empty() {
+        ParseContext::err(CompilationError::err(else_range, IF_ELSE_CANNOT_BE_EMPTY));
+        let _ = opt(close_brace).parse_next(i);
+        return if_with_no_else();
+    }
+    if !final_else.ends_with_expr() {
+        ParseContext::err(CompilationError::err(else_range, ELSE_MUST_END_IN_EXPR));
+        let _ = opt(close_brace).parse_next(i);
+        return if_with_no_else();
+    }
+
     let end = close_brace(i)?.end;
     Ok(Node::boxed(
         IfExpression {
@@ -5292,6 +5337,66 @@ bar = 1
             err.message,
             "You've used the parameter labelled 'arg' 2 times in a single function call. You can only set each parameter once! Remove all but one use.",
         );
+    }
+
+    #[test]
+    fn test_sensible_error_when_missing_else() {
+        let program_source = "x = if (true) { 2 }";
+        let expected_src_start = program_source.find("if").unwrap();
+        let cause = must_fail_compilation(program_source);
+        assert!(!cause.was_fatal);
+        assert_eq!(cause.err.message, MISSING_ELSE);
+        assert_eq!(cause.err.source_range.start(), expected_src_start);
+    }
+
+    struct MustFail {
+        err: CompilationError,
+        was_fatal: bool,
+    }
+
+    fn must_fail_compilation(program_source: &str) -> MustFail {
+        let tokens = crate::parsing::token::lex(program_source, ModuleId::default()).unwrap();
+        ParseContext::init();
+        match program.parse(tokens.as_slice()) {
+            // Fatal parse error
+            Err(e) => {
+                let err = e
+                    .into_inner()
+                    .cause
+                    .expect("found a parse error, but no cause. Add a cause.");
+                MustFail { err, was_fatal: true }
+            } // Nonfatal parse error
+            Ok(_) => {
+                let mut e = None;
+                CTXT.with_borrow(|v| e = v.clone().map(|ctxt| ctxt.errors));
+                let err = e
+                    .unwrap()
+                    .first()
+                    .expect("Program succeeded, but it should have failed")
+                    .to_owned();
+                MustFail { err, was_fatal: false }
+            }
+        }
+    }
+
+    #[test]
+    fn test_sensible_error_when_missing_else_brace() {
+        let program_source = "x = if (true) { 2 } else ";
+        let expected_src_start = program_source.find("else").unwrap();
+        let cause = must_fail_compilation(program_source);
+        assert!(!cause.was_fatal);
+        assert_eq!(cause.err.message, ELSE_STRUCTURE);
+        assert_eq!(cause.err.source_range.start(), expected_src_start);
+    }
+
+    #[test]
+    fn test_sensible_error_when_does_not_end_in_expr() {
+        let program_source = "x = if (true) { 2 } else {y = 3}";
+        let expected_src_start = program_source.find("else").unwrap();
+        let cause = must_fail_compilation(program_source);
+        assert!(!cause.was_fatal);
+        assert_eq!(cause.err.message, ELSE_MUST_END_IN_EXPR);
+        assert_eq!(cause.err.source_range.start(), expected_src_start);
     }
 }
 
