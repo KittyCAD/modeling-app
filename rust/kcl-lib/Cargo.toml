@@ -26,7 +26,7 @@ async-trait = { workspace = true }
 base64 = "0.22.1"
 bson = { workspace = true }
 chrono = "0.4.41"
-clap = { version = "4.5.40", default-features = false, optional = true, features = [
+clap = { version = "4.5.41", default-features = false, optional = true, features = [
     "std",
     "derive",
 ] }
