@@ -46,6 +46,7 @@ thread_local! {
 const MISSING_ELSE: &str = "This `if` block needs a matching `else` block";
 const IF_ELSE_CANNOT_BE_EMPTY: &str = "`if` and `else` blocks cannot be empty";
 const ELSE_STRUCTURE: &str = "This `else` should be followed by a {, then a block of code, then a }";
+const ELSE_MUST_END_IN_EXPR: &str = "This `else` block needs to end in an expression, which will be the value if no preceding `if` condition was matched";
 
 pub fn run_parser(i: TokenSlice) -> super::ParseResult {
     let _stats = crate::log::LogPerfStats::new("Parsing");
@@ -1227,6 +1228,7 @@ fn if_expr(i: &mut TokenSlice) -> ModalResult<BoxNode<IfExpression>> {
         ))
     };
 
+    // Parse the else keyword
     let else_: ModalResult<_> = any
         .try_map(|token: Token| {
             if matches!(token.token_type, TokenType::Keyword) && token.value == "else" {
@@ -1246,36 +1248,29 @@ fn if_expr(i: &mut TokenSlice) -> ModalResult<BoxNode<IfExpression>> {
     };
     let else_range = SourceRange::new(else_, else_ + 4, if_.module_id);
     ignore_whitespace(i);
+
+    // Parse the else clause
     if open_brace(i).is_err() {
         ParseContext::err(CompilationError::err(else_range, ELSE_STRUCTURE));
         return if_with_no_else();
     }
     ignore_whitespace(i);
-
     let Ok(final_else) = program.parse_next(i).map(Box::new) else {
-        return Err(ErrMode::Cut(
-            CompilationError::err(
-                else_range,
-                "The `else` block cannot be empty. It needs at least one line, and the final line must be an expression",
-            )
-            .into(),
-        ));
+        ParseContext::err(CompilationError::err(else_range, IF_ELSE_CANNOT_BE_EMPTY));
+        let _ = opt(close_brace).parse_next(i);
+        return if_with_no_else();
     };
     ignore_whitespace(i);
 
     if final_else.body.is_empty() {
-        return Err(ErrMode::Cut(
-            CompilationError::fatal(else_range, IF_ELSE_CANNOT_BE_EMPTY).into(),
-        ));
+        ParseContext::err(CompilationError::err(else_range, IF_ELSE_CANNOT_BE_EMPTY));
+        let _ = opt(close_brace).parse_next(i);
+        return if_with_no_else();
     }
     if !final_else.ends_with_expr() {
-        return Err(ErrMode::Cut(
-            CompilationError::fatal(
-                else_range,
-                "This `else` block needs to end in an expression, which will be the value if no preceding `if` condition was matched",
-            )
-            .into(),
-        ));
+        ParseContext::err(CompilationError::err(else_range, ELSE_MUST_END_IN_EXPR));
+        let _ = opt(close_brace).parse_next(i);
+        return if_with_no_else();
     }
 
     let end = close_brace(i)?.end;
@@ -5389,6 +5384,16 @@ bar = 1
         let cause = must_fail_compilation(program_source);
         assert!(!cause.was_fatal);
         assert_eq!(cause.err.message, ELSE_STRUCTURE);
+        assert_eq!(cause.err.source_range.start(), expected_src_start);
+    }
+
+    #[test]
+    fn test_sensible_error_when_does_not_end_in_expr() {
+        let program_source = "x = if (true) { 2 } else {y = 3}";
+        let expected_src_start = program_source.find("else").unwrap();
+        let cause = must_fail_compilation(program_source);
+        assert!(!cause.was_fatal);
+        assert_eq!(cause.err.message, ELSE_MUST_END_IN_EXPR);
         assert_eq!(cause.err.source_range.start(), expected_src_start);
     }
 }
