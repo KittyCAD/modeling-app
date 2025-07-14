@@ -74,6 +74,8 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
   const token = useToken()
   const navigate = useNavigate()
 
+  console.log('jace - NODE_ENV', env().NODE_ENV)
+
   // So this is a bit weird, we need to initialize the lsp server and client.
   // But the server happens async so we break this into two parts.
   // Below is the client and server promise.
