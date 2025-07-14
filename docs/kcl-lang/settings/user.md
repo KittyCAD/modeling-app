@@ -131,6 +131,13 @@ The controls for how to navigate the 3D view.
 
 **Default:** None
 
+##### enable_touch_controls
+
+Toggle touch controls for 3D view navigation
+
+
+**Default:** None
+
 ##### highlight_edges
 
 Highlight edges of 3D objects?

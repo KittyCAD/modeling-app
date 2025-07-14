@@ -607,6 +607,208 @@ description: Variables in memory after executing exhaust-manifold.kcl
             }
           }
         ],
+        "innerPaths": [
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.0,
+              0.0
+            ],
+            "from": [
+              0.7325,
+              0.0
+            ],
+            "radius": 0.7325,
+            "tag": null,
+            "to": [
+              0.7325,
+              0.0
+            ],
+            "type": "Circle",
+            "units": {
+              "type": "Inches"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              2.0,
+              0.0
+            ],
+            "from": [
+              2.7325,
+              0.0
+            ],
+            "radius": 0.7325,
+            "tag": null,
+            "to": [
+              2.7325,
+              0.0
+            ],
+            "type": "Circle",
+            "units": {
+              "type": "Inches"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              4.0,
+              0.0
+            ],
+            "from": [
+              4.7325,
+              0.0
+            ],
+            "radius": 0.7325,
+            "tag": null,
+            "to": [
+              4.7325,
+              0.0
+            ],
+            "type": "Circle",
+            "units": {
+              "type": "Inches"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              6.0,
+              0.0
+            ],
+            "from": [
+              6.7325,
+              0.0
+            ],
+            "radius": 0.7325,
+            "tag": null,
+            "to": [
+              6.7325,
+              0.0
+            ],
+            "type": "Circle",
+            "units": {
+              "type": "Inches"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              -0.975,
+              -0.975
+            ],
+            "from": [
+              -0.85,
+              -0.975
+            ],
+            "radius": 0.125,
+            "tag": null,
+            "to": [
+              -0.85,
+              -0.975
+            ],
+            "type": "Circle",
+            "units": {
+              "type": "Inches"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.975,
+              0.975
+            ],
+            "from": [
+              1.1,
+              0.975
+            ],
+            "radius": 0.125,
+            "tag": null,
+            "to": [
+              1.1,
+              0.975
+            ],
+            "type": "Circle",
+            "units": {
+              "type": "Inches"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              5.025,
+              0.975
+            ],
+            "from": [
+              5.15,
+              0.975
+            ],
+            "radius": 0.125,
+            "tag": null,
+            "to": [
+              5.15,
+              0.975
+            ],
+            "type": "Circle",
+            "units": {
+              "type": "Inches"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              6.975,
+              -0.975
+            ],
+            "from": [
+              7.1,
+              -0.975
+            ],
+            "radius": 0.125,
+            "tag": null,
+            "to": [
+              7.1,
+              -0.975
+            ],
+            "type": "Circle",
+            "units": {
+              "type": "Inches"
+            }
+          }
+        ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",

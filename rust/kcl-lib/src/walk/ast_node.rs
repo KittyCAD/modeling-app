@@ -229,15 +229,6 @@ impl<'tree> From<&'tree types::BinaryPart> for Node<'tree> {
     }
 }
 
-impl<'tree> From<&'tree types::LiteralIdentifier> for Node<'tree> {
-    fn from(node: &'tree types::LiteralIdentifier) -> Self {
-        match node {
-            types::LiteralIdentifier::Identifier(id) => id.as_ref().into(),
-            types::LiteralIdentifier::Literal(lit) => lit.as_ref().into(),
-        }
-    }
-}
-
 macro_rules! impl_from {
     ($node:ident, $t: ident) => {
         impl<'a> From<NodeRef<'a, types::$t>> for Node<'a> {

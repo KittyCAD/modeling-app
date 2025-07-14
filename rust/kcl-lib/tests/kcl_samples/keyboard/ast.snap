@@ -3068,7 +3068,7 @@ description: Result of parsing keyboard.kcl
                                 "elements": [
                                   {
                                     "commentStart": 0,
-                                    "computed": false,
+                                    "computed": true,
                                     "end": 0,
                                     "moduleId": 0,
                                     "object": {
@@ -3108,7 +3108,7 @@ description: Result of parsing keyboard.kcl
                                   },
                                   {
                                     "commentStart": 0,
-                                    "computed": false,
+                                    "computed": true,
                                     "end": 0,
                                     "moduleId": 0,
                                     "object": {
@@ -10197,7 +10197,7 @@ description: Result of parsing keyboard.kcl
                                     "operator": "+",
                                     "right": {
                                       "commentStart": 0,
-                                      "computed": false,
+                                      "computed": true,
                                       "end": 0,
                                       "moduleId": 0,
                                       "object": {
@@ -10286,7 +10286,7 @@ description: Result of parsing keyboard.kcl
                                     "operator": "+",
                                     "right": {
                                       "commentStart": 0,
-                                      "computed": false,
+                                      "computed": true,
                                       "end": 0,
                                       "moduleId": 0,
                                       "object": {
@@ -10612,7 +10612,7 @@ description: Result of parsing keyboard.kcl
                                 "operator": "+",
                                 "right": {
                                   "commentStart": 0,
-                                  "computed": false,
+                                  "computed": true,
                                   "end": 0,
                                   "moduleId": 0,
                                   "object": {
@@ -10733,7 +10733,7 @@ description: Result of parsing keyboard.kcl
                                 "operator": "+",
                                 "right": {
                                   "commentStart": 0,
-                                  "computed": false,
+                                  "computed": true,
                                   "end": 0,
                                   "moduleId": 0,
                                   "object": {
@@ -11151,7 +11151,7 @@ description: Result of parsing keyboard.kcl
                                 "operator": "+",
                                 "right": {
                                   "commentStart": 0,
-                                  "computed": false,
+                                  "computed": true,
                                   "end": 0,
                                   "moduleId": 0,
                                   "object": {
@@ -11638,7 +11638,7 @@ description: Result of parsing keyboard.kcl
                                 "operator": "+",
                                 "right": {
                                   "commentStart": 0,
-                                  "computed": false,
+                                  "computed": true,
                                   "end": 0,
                                   "moduleId": 0,
                                   "object": {
@@ -12296,7 +12296,7 @@ description: Result of parsing keyboard.kcl
                                     "operator": "+",
                                     "right": {
                                       "commentStart": 0,
-                                      "computed": false,
+                                      "computed": true,
                                       "end": 0,
                                       "moduleId": 0,
                                       "object": {
@@ -12385,7 +12385,7 @@ description: Result of parsing keyboard.kcl
                                     "operator": "+",
                                     "right": {
                                       "commentStart": 0,
-                                      "computed": false,
+                                      "computed": true,
                                       "end": 0,
                                       "moduleId": 0,
                                       "object": {
@@ -13240,7 +13240,7 @@ description: Result of parsing keyboard.kcl
                                     "operator": "+",
                                     "right": {
                                       "commentStart": 0,
-                                      "computed": false,
+                                      "computed": true,
                                       "end": 0,
                                       "moduleId": 0,
                                       "object": {
@@ -13329,7 +13329,7 @@ description: Result of parsing keyboard.kcl
                                     "operator": "+",
                                     "right": {
                                       "commentStart": 0,
-                                      "computed": false,
+                                      "computed": true,
                                       "end": 0,
                                       "moduleId": 0,
                                       "object": {

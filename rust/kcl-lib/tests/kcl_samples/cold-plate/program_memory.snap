@@ -1752,6 +1752,33 @@ description: Variables in memory after executing cold-plate.kcl
             }
           }
         ],
+        "innerPaths": [
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              -3.0,
+              0.625
+            ],
+            "from": [
+              -2.7675,
+              0.625
+            ],
+            "radius": 0.23249999999999998,
+            "tag": null,
+            "to": [
+              -2.7675,
+              0.625
+            ],
+            "type": "Circle",
+            "units": {
+              "type": "Inches"
+            }
+          }
+        ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
