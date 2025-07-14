@@ -197,7 +197,7 @@ test(
     await page.waitForTimeout(500)
 
     await endOfTangentMv()
-
+    await page.waitForTimeout(500)
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
       mask: lowerRightMasks(page),
@@ -208,6 +208,7 @@ test(
     await page.waitForTimeout(500)
     await endOfTangentClk()
     await threePointArcMidPointMv()
+    await page.waitForTimeout(500)
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
       mask: lowerRightMasks(page),
