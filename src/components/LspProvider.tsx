@@ -7,7 +7,6 @@ import {
   LanguageServerClient,
   LspWorkerEventType,
 } from '@kittycad/codemirror-lsp-client'
-import env from '@src/env'
 import React, { createContext, useContext, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import type * as LSP from 'vscode-languageserver-protocol'
@@ -78,7 +77,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
   // But the server happens async so we break this into two parts.
   // Below is the client and server promise.
   const { lspClient: kclLspClient } = useMemo(() => {
-    if (!token || token === '' || env().TEST) {
+    if (!token || token === '') {
       return { lspClient: null }
     }
 
@@ -137,7 +136,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
   // We do not want to restart the server, its just wasteful.
   const kclLSP = useMemo(() => {
     let plugin = null
-    if (isKclLspReady && !env().TEST && kclLspClient) {
+    if (isKclLspReady && kclLspClient) {
       // Set up the lsp plugin.
       const lsp = kcl({
         documentUri: `file:///${PROJECT_ENTRYPOINT}`,
@@ -171,7 +170,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
   }, [kclLspClient, isKclLspReady])
 
   const { lspClient: copilotLspClient } = useMemo(() => {
-    if (!token || token === '' || env().TEST) {
+    if (!token || token === '') {
       return { lspClient: null }
     }
 
@@ -213,7 +212,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
   // We do not want to restart the server, its just wasteful.
   const copilotLSP = useMemo(() => {
     let plugin = null
-    if (isCopilotLspReady && !env().TEST && copilotLspClient) {
+    if (isCopilotLspReady && copilotLspClient) {
       // Set up the lsp plugin.
       const lsp = copilotPlugin({
         documentUri: `file:///${PROJECT_ENTRYPOINT}`,
