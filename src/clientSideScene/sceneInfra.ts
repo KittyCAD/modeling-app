@@ -322,8 +322,6 @@ export class SceneInfra {
     const light = new AmbientLight(0x505050) // soft white light
     this.scene.add(light)
 
-    const textureLoader = new TextureLoader()
-
     SceneInfra.instance = this
   }
 

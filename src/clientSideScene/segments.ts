@@ -199,6 +199,7 @@ class StraightSegment implements SegmentUtils {
     // Which is a little plus sign that appears at the origin of the segment
     // and can be dragged to insert a new segment
     const extraSegmentGroup = createExtraSegmentHandle(scale, theme)
+    extraSegmentGroup.scale.set(scale, scale, scale)
 
     // Segment decorators that only apply to non-close segments
     if (callExpName !== 'close') {
@@ -318,6 +319,7 @@ class StraightSegment implements SegmentUtils {
         from[1] + offsetFromBase.y,
         0
       )
+      extraSegmentGroup.scale.set(scale, scale, scale)
 
       const segmentLengthInScreenSpace = offset.length() / scale
       extraSegmentGroup.visible = segmentLengthInScreenSpace > 130
@@ -1717,14 +1719,18 @@ function createCircleThreePointHandle(
 }
 
 function createExtraSegmentHandle(scale: number, theme: Themes): Group {
-  const mat = new MeshBasicMaterial({
-    transparent: true,
-    opacity: 0,
-  })
 
   const extraSegmentGroup = new Group()
   extraSegmentGroup.userData.type = EXTRA_SEGMENT_HANDLE
   extraSegmentGroup.name = EXTRA_SEGMENT_HANDLE
+
+  const mat = new MeshBasicMaterial({
+    transparent: true,
+    color: getThemeColorForThreeJs(theme),
+    opacity: 0,
+  })
+  const sphereMesh = new Mesh(new SphereGeometry(6, 12, 12), mat) // sphere radius in pixels
+  extraSegmentGroup.add(sphereMesh)
 
   const handleDiv = document.createElement('div')
   handleDiv.classList.add('extra-segment-handle')
@@ -1736,6 +1742,7 @@ function createExtraSegmentHandle(scale: number, theme: Themes): Group {
   cssObject.position.set(0, 0, 0)
 
   extraSegmentGroup.add(cssObject)
+
   extraSegmentGroup.scale.set(scale, scale, scale)
   return extraSegmentGroup
 }
