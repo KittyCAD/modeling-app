@@ -72,7 +72,6 @@ export interface IElectronAPI {
   }
   process: {
     env: {
-      IS_PLAYWRIGHT: string
       VITE_KITTYCAD_API_BASE_URL: string
       VITE_KITTYCAD_API_WEBSOCKET_URL: string
       VITE_KITTYCAD_API_TOKEN: string

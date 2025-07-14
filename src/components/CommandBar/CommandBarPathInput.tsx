@@ -74,7 +74,7 @@ function CommandBarPathInput({
 
   // Fire on component mount, if outside of e2e test context
   useEffect(() => {
-    window.electron.process.env.IS_PLAYWRIGHT !== 'true' &&
+    window.electron.process.env.NODE_ENV !== 'test' &&
       toSync(pickFileThroughNativeDialog, reportRejection)()
   }, [])
 
