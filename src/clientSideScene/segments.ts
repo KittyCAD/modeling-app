@@ -308,7 +308,9 @@ class StraightSegment implements SegmentUtils {
 
     const extraSegmentGroup = group.getObjectByName(EXTRA_SEGMENT_HANDLE)
     if (extraSegmentGroup) {
-      const offsetFromBase = new Vector2(to[0] - from[0], to[1] - from[1])
+      const offset = new Vector2(to[0] - from[0], to[1] - from[1])
+      const offsetFromBase = offset
+        .clone()
         .normalize()
         .multiplyScalar(EXTRA_SEGMENT_OFFSET_PX * scale)
       extraSegmentGroup.position.set(
@@ -316,8 +318,9 @@ class StraightSegment implements SegmentUtils {
         from[1] + offsetFromBase.y,
         0
       )
-      extraSegmentGroup.scale.set(scale, scale, scale)
-      extraSegmentGroup.visible = true
+
+      const segmentLengthInScreenSpace = offset.length() / scale
+      extraSegmentGroup.visible = segmentLengthInScreenSpace > 130
     }
 
     if (labelGroup) {
