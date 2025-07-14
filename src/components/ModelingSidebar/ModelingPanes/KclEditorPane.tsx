@@ -149,7 +149,7 @@ export const KclEditorPane = () => {
     if (copilotLSP) extensions.push(copilotLSP)
 
     // These extensions have proven to mess with vitest
-    if (!env().TEST) {
+    if (env().NODE_ENV !== 'test') {
       extensions.push(
         lintGutter(),
         lineNumbers(),

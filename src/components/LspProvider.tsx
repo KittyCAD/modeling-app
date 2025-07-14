@@ -78,7 +78,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
   // But the server happens async so we break this into two parts.
   // Below is the client and server promise.
   const { lspClient: kclLspClient } = useMemo(() => {
-    if (!token || token === '' || env().TEST) {
+    if (!token || token === '' || env().NODE_ENV === 'test') {
       return { lspClient: null }
     }
 
@@ -137,7 +137,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
   // We do not want to restart the server, its just wasteful.
   const kclLSP = useMemo(() => {
     let plugin = null
-    if (isKclLspReady && !env().TEST && kclLspClient) {
+    if (isKclLspReady && env().NODE_ENV !== 'test' && kclLspClient) {
       // Set up the lsp plugin.
       const lsp = kcl({
         documentUri: `file:///${PROJECT_ENTRYPOINT}`,
@@ -171,7 +171,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
   }, [kclLspClient, isKclLspReady])
 
   const { lspClient: copilotLspClient } = useMemo(() => {
-    if (!token || token === '' || env().TEST) {
+    if (!token || token === '' || env().NODE_ENV === 'test') {
       return { lspClient: null }
     }
 
@@ -213,7 +213,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
   // We do not want to restart the server, its just wasteful.
   const copilotLSP = useMemo(() => {
     let plugin = null
-    if (isCopilotLspReady && !env().TEST && copilotLspClient) {
+    if (isCopilotLspReady && env().NODE_ENV !== 'test' && copilotLspClient) {
       // Set up the lsp plugin.
       const lsp = copilotPlugin({
         documentUri: `file:///${PROJECT_ENTRYPOINT}`,

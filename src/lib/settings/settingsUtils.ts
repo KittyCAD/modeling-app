@@ -548,7 +548,7 @@ export function getSettingInputType(setting: Setting) {
 
 export const jsAppSettings = async (): Promise<DeepPartial<Configuration>> => {
   let jsAppSettings = default_app_settings()
-  if (!env().TEST) {
+  if (env().NODE_ENV !== 'test') {
     // TODO: https://github.com/KittyCAD/modeling-app/issues/6445
     const settings = await import('@src/lib/singletons').then((module) =>
       module.getSettings()

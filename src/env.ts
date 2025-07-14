@@ -5,7 +5,6 @@ type EnvironmentVariables = {
   readonly VITE_KITTYCAD_API_TOKEN: string | undefined
   readonly VITE_KITTYCAD_SITE_BASE_URL: string | undefined
   readonly VITE_KITTYCAD_SITE_APP_URL: string | undefined
-  readonly TEST: string | undefined
 }
 
 export const viteEnv = () => {
@@ -29,10 +28,9 @@ export const processEnv = () => {
   } else if (
     typeof process !== 'undefined' &&
     typeof window !== 'undefined' &&
-    process.env.TEST !== 'true'
+    process.env.NODE_ENV !== 'test'
   ) {
-    // Web, you made window.process, why :(, need process.env.TEST to make sure the frontend gets evaluated.
-    // The frontend can spoof this too :(
+    // Web, you made window.process, why :(
     return undefined
   }
 
@@ -66,7 +64,6 @@ export default (): EnvironmentVariables => {
       (env.VITE_KITTYCAD_SITE_BASE_URL as string) || undefined,
     VITE_KITTYCAD_SITE_APP_URL:
       (env.VITE_KITTYCAD_SITE_APP_URL as string) || undefined,
-    TEST: (env.TEST as string) || undefined,
   }
   return environmentVariables
 }
