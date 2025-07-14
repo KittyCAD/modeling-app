@@ -527,9 +527,7 @@ const getTokenFilePath = async () => {
   return window.electron.path.join(fullPath, TOKEN_FILE_NAME)
 }
 
-export const getEnvironmentConfigurationPath = async (
-  environmentName: EnvironmentName
-) => {
+export const getEnvironmentConfigurationFolderPath = async () => {
   const isTestEnv = window.electron.process.env.IS_PLAYWRIGHT === 'true'
   const testSettingsPath = await window.electron.getAppTestProperty(
     'TEST_SETTINGS_FILE_KEY'
@@ -543,6 +541,13 @@ export const getEnvironmentConfigurationPath = async (
         getAppFolderName(),
         ENVIRONMENT_CONFIGURATION_FOLDER
       )
+  return fullPath
+}
+
+export const getEnvironmentConfigurationPath = async (
+  environmentName: EnvironmentName
+) => {
+  const fullPath = await getEnvironmentConfigurationFolderPath()
   try {
     await window.electron.stat(fullPath)
   } catch (e) {
@@ -893,6 +898,19 @@ export const writeEnvironmentFile = async (
   const result = window.electron.writeFile(environmentFilePath, environment)
   console.log('environment written to disk')
   return result
+}
+
+/**
+ * Sign out of all environments and clear cached environment data
+ */
+export const signOutAndClearAllEnvironmentCaches = async () => {
+  const environmentFilePath = await getEnvironmentFilePath()
+  await window.electron.rm(environmentFilePath)
+  const environmentConfigurationFolderPath =
+    await getEnvironmentConfigurationFolderPath()
+  await window.electron.rm(environmentConfigurationFolderPath, {
+    recursive: true,
+  })
 }
 
 export const writeTelemetryFile = async (content: string) => {

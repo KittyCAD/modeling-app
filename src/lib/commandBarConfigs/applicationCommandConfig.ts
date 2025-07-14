@@ -468,10 +468,12 @@ export function createApplicationCommands({
     onSubmit: (data) => {
       if (data) {
         if (isEnvironmentName(data.environment))
-          writeEnvironmentFile(data.environment).then(() => {
-            // Reload the application and it will trigger the correct sign in workflow for the new environment
-            window.location.reload()
-          })
+          writeEnvironmentFile(data.environment)
+            .then(() => {
+              // Reload the application and it will trigger the correct sign in workflow for the new environment
+              window.location.reload()
+            })
+            .catch(reportRejection)
       }
     },
     args: {
@@ -501,25 +503,25 @@ export function createApplicationCommands({
     name: 'choose-pool',
     displayName: 'Choose pool',
     description: 'Switch between different engine pools',
-    needsReview: false,
+    needsReview: true,
     icon: 'importFile',
     groupId: 'application',
     onSubmit: (data) => {
       if (data) {
         const environmentName = getEnvironmentName()
         if (environmentName)
-          writeEnvironmentConfigurationPool(environmentName, data.pool).then(
-            () => {
+          writeEnvironmentConfigurationPool(environmentName, data.pool)
+            .then(() => {
               // Reload the application and it will trigger the correct sign in workflow for the new environment
               window.location.reload()
-            }
-          )
+            })
+            .catch(reportRejection)
       }
     },
     args: {
       pool: {
         inputType: 'string',
-        required: true,
+        required: false,
         defaultValue: () => env().POOL,
       },
     },

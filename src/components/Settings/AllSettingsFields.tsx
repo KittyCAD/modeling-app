@@ -1,6 +1,6 @@
 import decamelize from 'decamelize'
-import type { ForwardedRef } from 'react'
-import { forwardRef, useMemo } from 'react'
+import type { Dispatch, ForwardedRef } from 'react'
+import { forwardRef, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Fragment } from 'react/jsx-runtime'
@@ -35,10 +35,33 @@ import {
   acceptOnboarding,
   catchOnboardingWarnError,
 } from '@src/routes/Onboarding/utils'
+import { DeleteConfirmationDialog } from '@src/components/ProjectCard/DeleteProjectDialog'
+import { authActor } from '@src/lib/singletons'
 
 interface AllSettingsFieldsProps {
   searchParamTab: SettingsLevel
   isFileSettings: boolean
+}
+
+function SignOutOfEverythingConfirmationDialog({
+  setIsOpen,
+}: {
+  setIsOpen: Dispatch<React.SetStateAction<boolean>>
+}) {
+  return (
+    <DeleteConfirmationDialog
+      title={`Sign out of every environment and clear caches`}
+      onDismiss={() => setIsOpen(false)}
+      onConfirm={() => {
+        authActor.send({ type: 'Log out all and clear caches' })
+        setIsOpen(false)
+      }}
+    >
+      <p className="my-4">
+        Are you sure you want to delete This action cannot be undone.
+      </p>
+    </DeleteConfirmationDialog>
+  )
 }
 
 export const AllSettingsFields = forwardRef(
@@ -49,6 +72,10 @@ export const AllSettingsFields = forwardRef(
     const location = useLocation()
     const navigate = useNavigate()
     const context = useSettings()
+    const [
+      isConfirmingSignOutAndClearEverything,
+      setIsConfirmingSignOutAndClearEverything,
+    ] = useState<boolean>(false)
 
     const projectPath = useMemo(() => {
       const filteredPathname = location.pathname
@@ -277,6 +304,35 @@ export const AllSettingsFields = forwardRef(
               help us prioritize what to build next.
             </p>
           </div>
+          {isDesktop() && (
+            <>
+              <h2
+                id="settings-sign-out-and-clear-everything"
+                className="text-2xl mt-6 font-bold"
+              >
+                Environments
+              </h2>
+              <div className="text-sm mb-12">
+                <div className="flex gap-2 flex-wrap my-4">
+                  <ActionButton
+                    Element="button"
+                    onClick={() =>
+                      setIsConfirmingSignOutAndClearEverything(true)
+                    }
+                    iconStart={{ icon: 'file', className: 'p-1' }}
+                  >
+                    Sign out and clear caches for all environments
+                  </ActionButton>
+                </div>
+              </div>
+
+              {isConfirmingSignOutAndClearEverything && (
+                <SignOutOfEverythingConfirmationDialog
+                  setIsOpen={setIsConfirmingSignOutAndClearEverything}
+                />
+              )}
+            </>
+          )}
         </div>
       </div>
     )

@@ -6,10 +6,12 @@ import env, {
 } from '@src/env'
 import { assign, fromPromise, setup } from 'xstate'
 
+import type { EnvironmentName } from '@src/lib/constants'
 import {
   COOKIE_NAME,
   isEnvironmentName,
   OAUTH2_DEVICE_CLIENT_ID,
+  SUPPORTED_ENVIRONMENTS,
 } from '@src/lib/constants'
 import {
   getUser as getUserDesktop,
@@ -17,6 +19,7 @@ import {
   readEnvironmentConfigurationPool,
   readEnvironmentConfigurationToken,
   readEnvironmentFile,
+  signOutAndClearAllEnvironmentCaches,
   writeEnvironmentConfigurationToken,
   writeEnvironmentFile,
 } from '@src/lib/desktop'
@@ -33,6 +36,9 @@ export interface UserContext {
 export type Events =
   | {
       type: 'Log out'
+    }
+  | {
+      type: 'Log out all and clear caches'
     }
   | {
       type: 'Log in'
@@ -71,6 +77,7 @@ export const authMachine = setup({
       getUser(input)
     ),
     logout: fromPromise(logout),
+    logoutAllEnvironments: fromPromise(logoutAllEnvironments),
   },
 }).createMachine({
   /** @xstate-layout N4IgpgJg5mDOIC5QEECuAXAFgOgMabFwGsBJAMwBkB7KGCEgOwGIIqGxsBLBgNyqI75CRALQAbGnRHcA2gAYAuolAAHKrE7pObZSAAeiAIwAWQ9gBspuQCYAnAGYAHPYCsx+4ccAaEAE9E1q7YcoZyxrYR1m7mcrYAvnE+aFh4BMTk1LSQjExgAE55VHnYKmIAhuhkRQC2qcLikpDSDPJKSCBqGlo67QYI9gDs5tge5o6h5vau7oY+-v3mA9jWco4u5iu21ua2YcYJSRg4Eln0zJkABFQYrbqdmtoMun2GA7YjxuPmLqvGNh5zRCfJaOcyLUzuAYuFyGcwHEDJY6NCAAeQwTEuskUd3UDx6oD6Im2wUcAzkMJ2cjBxlMgIWLmwZLWljecjJTjh8IYVAgcF0iJxXUez0QIgGxhJZIpu2ptL8AWwtje1nCW2iq1shns8MRdXSlGRjEFeKevUQjkcy3sqwGHimbg83nlCF22GMytVUWMMUc8USCKO2BOdCN7Xu3VNBKMKsVFp2hm2vu+1id83slkVrgTxhcW0pNJ1geDkDR6GNEZFCAT1kZZLk9cMLltb0WdPMjewjjC1mzOZCtk5CSAA */
@@ -110,11 +117,31 @@ export const authMachine = setup({
         'Log out': {
           target: 'loggingOut',
         },
+        'Log out all and clear caches': {
+          target: 'loggingOutAllEnvironments',
+        },
       },
     },
     loggingOut: {
       invoke: {
         src: 'logout',
+        onDone: 'loggedOut',
+        onError: {
+          target: 'loggedIn',
+          actions: [
+            ({ event }) => {
+              console.error(
+                'Error while logging out',
+                'error' in event ? `: ${event.error}` : ''
+              )
+            },
+          ],
+        },
+      },
+    },
+    loggingOutAllEnvironments: {
+      invoke: {
+        src: 'logoutAllEnvironments',
         onDone: 'loggedOut',
         onError: {
           target: 'loggedIn',
@@ -284,20 +311,26 @@ async function getAndSyncStoredToken(input: {
   return fileToken
 }
 
-async function logout() {
+async function logout(requestedEnvironmentName?: EnvironmentName) {
   // TODO: 7/10/2025 Remove this months from now, we want to clear the localStorage of the key.
   localStorage.removeItem(TOKEN_PERSIST_KEY)
   if (isDesktop()) {
     try {
-      const environmentName = getEnvironmentName()
+      const environmentName = requestedEnvironmentName || getEnvironmentName()
       let token = ''
       if (environmentName) {
         token = await readEnvironmentConfigurationToken(environmentName)
       }
+      if (!environmentName) {
+        return new Error('Unable to logout, cannot find environment')
+      }
 
+      // Do not use withAPIBaseURL since we need to log out of each environment separately.
+      // Not the URL within our last selected environment
+      const url = SUPPORTED_ENVIRONMENTS[environmentName].API_URL
       if (token) {
         try {
-          await fetch(withAPIBaseURL('/oauth2/token/revoke'), {
+          await fetch(url + '/oauth2/token/revoke', {
             method: 'POST',
             credentials: 'include',
             headers: {
@@ -326,4 +359,24 @@ async function logout() {
     method: 'POST',
     credentials: 'include',
   })
+}
+
+/**
+ * To logout you need to revoke the token via the `oauth2/token/revoke` deleting the token off disk for electron
+ * will not be sufficient.
+ */
+async function logoutAllEnvironments() {
+  if (!isDesktop()) {
+    return new Error('unimplemented for web')
+  }
+
+  for (const key in SUPPORTED_ENVIRONMENTS) {
+    if (isEnvironmentName(key)) {
+      const environmentName: EnvironmentName = key
+      // Make the oauth2/token/revoke request per environment
+      await logout(environmentName)
+    }
+  }
+
+  await signOutAndClearAllEnvironmentCaches()
 }
