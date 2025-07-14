@@ -3500,10 +3500,6 @@ export class SceneEntities {
         )
         updateExtraSegments(parent, 'hoveringLine', false)
         updateExtraSegments(parent, 'selected', isSelected)
-        const color = isSelected
-          ? SEGMENT_BLUE
-          : parent?.userData?.baseColor ||
-            getThemeColorForThreeJs(this.sceneInfra._theme)
         if ([X_AXIS, Y_AXIS].includes(selected?.userData?.type)) {
           const obj = selected as Mesh
           const mat = obj.material as MeshBasicMaterial
