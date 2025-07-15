@@ -44,6 +44,7 @@ Say you have a long pipeline of sketch functions, like this:
 
 ```norun
 startSketchOn(XZ)
+  |> startProfile(at = [0, 0])
   |> line(%, end = [3, 4])
   |> line(%, end = [10, 10])
   |> line(%, end = [-13, -14])
@@ -59,8 +60,9 @@ could be rewritten as
 
 ```norun
 startSketchOn(XZ)
- |> line(end = [3, 4])
- |> line(end = [10, 10])
- |> line(end = [-13, -14])
- |> close()
+  |> startProfile(at = [0, 0])
+  |> line(end = [3, 4])
+  |> line(end = [10, 10])
+  |> line(end = [-13, -14])
+  |> close()
 ```
