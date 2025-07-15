@@ -250,6 +250,8 @@ test.describe('Command bar tests', () => {
     page,
     homePage,
     cmdBar,
+    scene,
+    editor,
   }) => {
     await page.addInitScript(async () => {
       localStorage.setItem(
@@ -265,20 +267,9 @@ test.describe('Command bar tests', () => {
       )
     })
 
-    const u = await getUtils(page)
     await page.setBodyDimensions({ width: 1200, height: 500 })
-
     await homePage.goToModelingScene()
-
-    // Make sure the stream is up
-    await u.openDebugPanel()
-    await u.expectCmdLog('[data-message-type="execution-done"]')
-
-    await expect(
-      page.getByRole('button', { name: 'Start Sketch' })
-    ).not.toBeDisabled()
-    await u.clearCommandLogs()
-    await page.getByRole('button', { name: 'Extrude' }).isEnabled()
+    await scene.settled(cmdBar)
 
     let cmdSearchBar = page.getByPlaceholder('Search commands')
     await page.keyboard.press('ControlOrMeta+K')
@@ -288,16 +279,33 @@ test.describe('Command bar tests', () => {
     await cmdBar.cmdOptions.getByText('Extrude').click()
 
     // Assert that we're on the selection step
-    await expect(page.getByRole('button', { name: 'Profiles' })).toBeDisabled()
+    await cmdBar.expectState({
+      stage: 'arguments',
+      commandName: 'Extrude',
+      currentArgKey: 'sketches',
+      currentArgValue: '',
+      headerArguments: {
+        Profiles: '',
+        Length: '',
+      },
+      highlightedHeaderArg: 'Profiles',
+    })
     // Select a face
-    await page.mouse.move(700, 200)
-    await page.mouse.click(700, 200)
+    await editor.selectText('startProfile(at = [-6.95, 10.98])')
     await cmdBar.progressCmdBar()
 
     // Assert that we're on the distance step
-    await expect(
-      page.getByRole('button', { name: 'length', exact: false })
-    ).toBeDisabled()
+    await cmdBar.expectState({
+      stage: 'arguments',
+      commandName: 'Extrude',
+      currentArgKey: 'length',
+      currentArgValue: '5',
+      headerArguments: {
+        Profiles: '1 profile',
+        Length: '',
+      },
+      highlightedHeaderArg: 'length',
+    })
 
     // Assert that the an alternative variable name is chosen,
     // since the default variable name is already in use (distance)
@@ -305,27 +313,87 @@ test.describe('Command bar tests', () => {
     await expect(page.getByPlaceholder('Variable name')).toHaveValue(
       'length001'
     )
-
-    const continueButton = page.getByRole('button', { name: 'Continue' })
-    const submitButton = page.getByTestId('command-bar-submit')
-    await continueButton.click()
+    await cmdBar.progressCmdBar()
 
     // Review step and argument hotkeys
-    await expect(submitButton).toBeEnabled()
-    await expect(submitButton).toBeFocused()
-    await submitButton.press('Shift+Backspace')
+    await cmdBar.expectState({
+      stage: 'review',
+      commandName: 'Extrude',
+      headerArguments: {
+        Profiles: '1 profile',
+        Length: '5',
+      },
+    })
+    await page.keyboard.press('Shift+Backspace')
 
     // Assert we're back on the distance step
     await expect(
       page.getByRole('button', { name: 'length', exact: false })
     ).toBeDisabled()
 
-    await continueButton.click()
-    await submitButton.click()
+    await cmdBar.progressCmdBar()
 
-    await u.waitForCmdReceive('extrude')
+    // Add optional arg
+    await cmdBar.expectState({
+      stage: 'review',
+      commandName: 'Extrude',
+      headerArguments: {
+        Profiles: '1 profile',
+        Length: '5',
+      },
+    })
+    await cmdBar.clickOptionalArgument('bidirectionalLength')
+    await cmdBar.expectState({
+      stage: 'arguments',
+      commandName: 'Extrude',
+      currentArgKey: 'bidirectionalLength',
+      currentArgValue: '',
+      headerArguments: {
+        Profiles: '1 profile',
+        Length: '5',
+        BidirectionalLength: '',
+      },
+      highlightedHeaderArg: 'bidirectionalLength',
+    })
+    await page.keyboard.type('10') // Set bidirectional length
+    await cmdBar.progressCmdBar()
+    await cmdBar.expectState({
+      stage: 'review',
+      commandName: 'Extrude',
+      headerArguments: {
+        Profiles: '1 profile',
+        Length: '5',
+        BidirectionalLength: '10',
+      },
+    })
 
-    await expect(page.locator('.cm-content')).toContainText(
+    // Clear optional arg
+    await page.getByRole('button', { name: 'BidirectionalLength' }).click()
+    await cmdBar.expectState({
+      stage: 'arguments',
+      commandName: 'Extrude',
+      currentArgKey: 'bidirectionalLength',
+      currentArgValue: '10',
+      headerArguments: {
+        Profiles: '1 profile',
+        Length: '5',
+        BidirectionalLength: '10',
+      },
+      highlightedHeaderArg: 'bidirectionalLength',
+    })
+    await cmdBar.clearNonRequiredButton.click()
+    await cmdBar.expectState({
+      stage: 'review',
+      commandName: 'Extrude',
+      headerArguments: {
+        Profiles: '1 profile',
+        Length: '5',
+      },
+    })
+
+    await cmdBar.progressCmdBar()
+    await scene.settled(cmdBar)
+    await editor.expectEditor.toContain(
       'extrude001 = extrude(sketch001, length = length001)'
     )
   })

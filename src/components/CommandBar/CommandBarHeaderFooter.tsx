@@ -356,7 +356,7 @@ function ClearButton({
       form="arg-form"
       className={`w-fit !p-0 rounded-sm hover:brightness-110 hover:shadow focus:outline-current bg-chalkboard-20/50 dark:bg-chalkboard-80/50 border-chalkboard-20 dark:border-chalkboard-80 ${bgClassName}`}
       tabIndex={0}
-      data-testid="command-bar-step-back"
+      data-testid="command-bar-clear-non-required-button"
       iconStart={{
         icon: 'trash',
         bgClassName: `p-1 rounded-sm bg-chalkboard-20/50 dark:bg-chalkboard-80/50 ${bgClassName}`,
