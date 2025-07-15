@@ -521,7 +521,7 @@ export function createApplicationCommands({
     args: {
       pool: {
         inputType: 'string',
-        required: false
+        required: false,
       },
     },
   }

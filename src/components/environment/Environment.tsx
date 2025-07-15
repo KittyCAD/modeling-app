@@ -11,7 +11,10 @@ export function environmentNameDisplay() {
 
 export function EnvironmentChip() {
   const environmentName = environmentNameDisplay()
-  const shorthand = environmentName && env().NODE_ENV !== 'development' ? environmentName.slice(0,3) : environmentName
+  const shorthand =
+    environmentName && env().NODE_ENV !== 'development'
+      ? environmentName.slice(0, 3)
+      : environmentName
   const pool = env().POOL
   return (
     <div className="flex items-center px-2 py-1 text-xs text-chalkboard-80 dark:text-chalkboard-30 rounded-none border-none hover:bg-chalkboard-30 dark:hover:bg-chalkboard-80 focus:bg-chalkboard-30 dark:focus:bg-chalkboard-80 hover:text-chalkboard-100 dark:hover:text-chalkboard-10 focus:text-chalkboard-100 dark:focus:text-chalkboard-10  focus:outline-none focus-visible:ring-2 focus:ring-primary focus:ring-opacity-50'">
@@ -30,36 +33,39 @@ export function EnvironmentDescription() {
         className={`flex flex-col p-2 mb-2 rounded-t-sm bg-chalkboard-20 text-chalkboard-100`}
       >
         <p className="flex flex-row justify-between">
-        <h2 className="text-sm font-sans font-normal">Environment</h2>
-        <p
-          data-testid="environment"
-          className="text-xs rounded-sm flex flex-row items-center"
-        >
-          {capitaliseFC(environmentName || '')}
-          <ActionButton
-            Element="button"
-            onClick={()=>{
-              const environment = getEnvironmentName()
-              if (environment) {
-                commandBarActor.send({
-                  type: 'Find and select command',
-                  data: {
-                    groupId: 'application',
-                    name: 'switch-environments',
-                    argDefaultValues: {
-                      environment
+          <h2 className="text-sm font-sans font-normal">Environment</h2>
+          <p
+            data-testid="environment"
+            className="text-xs rounded-sm flex flex-row items-center"
+          >
+            {capitaliseFC(environmentName || '')}
+            <ActionButton
+              Element="button"
+              onClick={() => {
+                const environment = getEnvironmentName()
+                if (environment) {
+                  commandBarActor.send({
+                    type: 'Find and select command',
+                    data: {
+                      groupId: 'application',
+                      name: 'switch-environments',
+                      argDefaultValues: {
+                        environment,
+                      },
                     },
-                  },
-                })
-              }
-            }}
-            iconStart={{ icon: 'sketch', bgClassName: '!bg-transparent' }}
-            className="ml-1 pr-0"
-          ></ActionButton>
+                  })
+                }
+              }}
+              iconStart={{ icon: 'sketch', bgClassName: '!bg-transparent' }}
+              className="ml-1 pr-0"
+            ></ActionButton>
+          </p>
         </p>
-    </p>
-        {env().NODE_ENV === 'development' &&(
-          <p className="pt-4 text-chalkboard-60">All values come from your .env files and variables when running a local dev app.</p>
+        {env().NODE_ENV === 'development' && (
+          <p className="pt-4 text-chalkboard-60">
+            All values come from your .env files and variables when running a
+            local dev app.
+          </p>
         )}
       </div>
       <ul>
@@ -88,14 +94,14 @@ export function EnvironmentDescription() {
             <div className="flex flex-row gap-1">
               <ActionButton
                 Element="button"
-                onClick={()=>{
+                onClick={() => {
                   commandBarActor.send({
                     type: 'Find and select command',
                     data: {
                       groupId: 'application',
                       name: 'choose-pool',
                       argDefaultValues: {
-                        pool: env().POOL
+                        pool: env().POOL,
                       },
                     },
                   })
@@ -104,14 +110,15 @@ export function EnvironmentDescription() {
                 <span className="py-2 lg:py-0">Edit</span>
               </ActionButton>
               <ActionButton
-                onClick={()=>{
+                onClick={() => {
                   const environment = getEnvironmentName()
                   if (environment) {
                     writeEnvironmentConfigurationPool(environment, '')
                     window.location.reload()
                   }
-                } }
-                Element="button">
+                }}
+                Element="button"
+              >
                 <span className="py-2 lg:py-0">Clear</span>
               </ActionButton>
             </div>
