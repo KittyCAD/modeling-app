@@ -311,7 +311,7 @@ async function getAndSyncStoredToken(input: {
   return fileToken
 }
 
-async function logout(requestedEnvironmentName?: EnvironmentName) {
+async function logout({event}:{event:any},requestedEnvironmentName?: EnvironmentName) {
   // TODO: 7/10/2025 Remove this months from now, we want to clear the localStorage of the key.
   localStorage.removeItem(TOKEN_PERSIST_KEY)
   if (isDesktop()) {
@@ -325,6 +325,7 @@ async function logout(requestedEnvironmentName?: EnvironmentName) {
         return new Error('Unable to logout, cannot find environment')
       }
 
+      console.log(environmentName, requestedEnvironmentName, getEnvironmentName())
       // Do not use withAPIBaseURL since we need to log out of each environment separately.
       // Not the URL within our last selected environment
       const url = SUPPORTED_ENVIRONMENTS[environmentName].API_URL
@@ -374,7 +375,7 @@ async function logoutAllEnvironments() {
     if (isEnvironmentName(key)) {
       const environmentName: EnvironmentName = key
       // Make the oauth2/token/revoke request per environment
-      await logout(environmentName)
+      await logout({event:''},environmentName)
     }
   }
 
