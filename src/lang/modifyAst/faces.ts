@@ -16,25 +16,32 @@ import {
   retrieveSelectionsFromOpArg,
   valueOrVariable,
 } from '@src/lang/queryAst'
-import type { ArtifactGraph, PathToNode, Program } from '@src/lang/wasm'
+import type {
+  Artifact,
+  ArtifactGraph,
+  PathToNode,
+  Program,
+} from '@src/lang/wasm'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import type { Selection, Selections } from '@src/lib/selections'
 import { err } from '@src/lib/trap'
 import { mutateAstWithTagForSketchSegment } from '@src/lang/modifyAst/addEdgeTreatment'
-import { getArtifactOfTypes, getCapCodeRef } from '@src/lang/std/artifactGraph'
+import {
+  getArtifactOfTypes,
+  getCapCodeRef,
+  getSweepArtifactFromSelection,
+} from '@src/lang/std/artifactGraph'
 import type { OpArg, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
 
 export function addShell({
   ast,
   artifactGraph,
-  solids,
   faces,
   thickness,
   nodeToEdit,
 }: {
   ast: Node<Program>
   artifactGraph: ArtifactGraph
-  solids: Selections
   faces: Selections
   thickness: KclCommandValue
   nodeToEdit?: PathToNode
@@ -48,7 +55,19 @@ export function addShell({
   const modifiedAst = structuredClone(ast)
 
   // 2. Prepare unlabeled and labeled arguments
-  // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
+  // Infering solids from the faces selection, maybe someday we can expose this but no need for now
+  const solids: Selections = {
+    graphSelections: faces.graphSelections.flatMap((f) => {
+      const sweep = getSweepArtifactFromSelection(f, artifactGraph)
+      if (err(sweep) || !sweep) return []
+      return {
+        artifact: sweep as Artifact,
+        codeRef: sweep.codeRef,
+      }
+    }),
+    otherSelections: [],
+  }
+  // Map the sketches selection into a list of kcl expressions to be passed as unlabeled argument
   const lastChildLookup = true
   const vars = getVariableExprsFromSelection(
     solids,

@@ -3041,25 +3041,9 @@ extrude001 = extrude(sketch001, length = 30)
       await toolbar.shellButton.click()
       await cmdBar.expectState({
         stage: 'arguments',
-        currentArgKey: 'solids',
-        currentArgValue: '',
-        headerArguments: {
-          Solids: '',
-          Faces: '',
-          Thickness: '',
-        },
-        highlightedHeaderArg: 'solids',
-        commandName: 'Shell',
-      })
-      const op = await toolbar.getFeatureTreeOperation('Extrude', 0)
-      await op.click({ button: 'left' }) // could also clickOnCap()
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'arguments',
         currentArgKey: 'faces',
         currentArgValue: '',
         headerArguments: {
-          Solids: '1 sweep',
           Faces: '',
           Thickness: '',
         },
@@ -3073,7 +3057,6 @@ extrude001 = extrude(sketch001, length = 30)
         currentArgKey: 'thickness',
         currentArgValue: '5',
         headerArguments: {
-          Solids: '1 sweep',
           Faces: '1 cap',
           Thickness: '',
         },
@@ -3084,7 +3067,6 @@ extrude001 = extrude(sketch001, length = 30)
       await cmdBar.expectState({
         stage: 'review',
         headerArguments: {
-          Solids: '1 sweep',
           Faces: '1 cap',
           Thickness: '5',
         },

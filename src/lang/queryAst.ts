@@ -1056,6 +1056,7 @@ export function getVariableExprsFromSelection(
 ): Error | { exprs: Expr[]; pathIfPipe?: PathToNode } {
   let pathIfPipe: PathToNode | undefined
   const exprs: Expr[] = []
+  const pushedNames = {} as Record<string, boolean>
   for (const s of selection.graphSelections) {
     let variable:
       | {
@@ -1109,7 +1110,11 @@ export function getVariableExprsFromSelection(
       }
 
       // Pointing to different variable case
+      if (pushedNames[name]) {
+        continue
+      }
       exprs.push(createLocalName(name))
+      pushedNames[name] = true
       continue
     } else if (variable.node.type === 'CallExpressionKw') {
       // no variable assignment in that call and not a pipe yet, we'll need to create it

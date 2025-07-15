@@ -112,8 +112,7 @@ export type ModelingCommandSchema = {
   Shell: {
     // Enables editing workflow
     nodeToEdit?: PathToNode
-    // KCL stdlib arguments
-    solids: Selections
+    // KCL stdlib arguments, note that we'll be infering solids from faces here
     faces: Selections
     thickness: KclCommandValue
   }
@@ -585,14 +584,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     args: {
       nodeToEdit: {
         ...nodeToEditProps,
-      },
-      solids: {
-        inputType: 'selection',
-        selectionTypes: ['path', 'sweep'],
-        selectionFilter: ['object'],
-        multiple: true,
-        required: true,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       faces: {
         inputType: 'selection',

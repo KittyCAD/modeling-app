@@ -72,16 +72,6 @@ function createSelectionFromArtifacts(
   }
 }
 
-async function getAstAndSolidSelections(code: string) {
-  const { ast, artifactGraph } = await getAstAndArtifactGraph(code)
-  const artifacts = [...artifactGraph.values()].filter((a) => a.type === 'path')
-  if (artifacts.length === 0) {
-    throw new Error('Artifact not found in the graph')
-  }
-  const solids = createSelectionFromArtifacts(artifacts, artifactGraph)
-  return { artifactGraph, ast, solids }
-}
-
 // More complex shell case
 const multiSolids = `size = 100
 case = startSketchOn(XY)
@@ -116,11 +106,10 @@ extrude001 = extrude(profile001, length = 10)`
   }
 
   it('should add a basic shell call on cylinder end cap', async () => {
-    const { artifactGraph, ast, solids } =
-      await getAstAndSolidSelections(cylinder)
+    const { artifactGraph, ast } = await getAstAndArtifactGraph(cylinder)
     const faces = getCapFromCylinder(artifactGraph)
     const thickness = (await stringToKclExpression('1')) as KclCommandValue
-    const result = addShell({ ast, artifactGraph, solids, faces, thickness })
+    const result = addShell({ ast, artifactGraph, faces, thickness })
     if (err(result)) {
       throw result
     }
@@ -144,10 +133,10 @@ profile001 = startProfile(sketch001, at = [0, 2358.24])
   |> line(endAbsolute = [0, -3434.42])
 p = mirror2d([profile001], axis = Y)
 extrude(p, length = 1000)`
-    const { artifactGraph, ast, solids } = await getAstAndSolidSelections(code)
+    const { artifactGraph, ast } = await getAstAndArtifactGraph(code)
     const faces = getCapFromCylinder(artifactGraph)
     const thickness = (await stringToKclExpression('1')) as KclCommandValue
-    const result = addShell({ ast, artifactGraph, solids, faces, thickness })
+    const result = addShell({ ast, artifactGraph, faces, thickness })
     if (err(result)) {
       throw result
     }
@@ -162,14 +151,13 @@ extrude(p, length = 1000)`
     const code = `${cylinder}
 shell001 = shell(extrude001, faces = END, thickness = 1)
 `
-    const { artifactGraph, ast, solids } = await getAstAndSolidSelections(code)
+    const { artifactGraph, ast } = await getAstAndArtifactGraph(code)
     const faces = getCapFromCylinder(artifactGraph)
     const thickness = (await stringToKclExpression('2')) as KclCommandValue
     const nodeToEdit = createPathToNodeForLastVariable(ast)
     const result = addShell({
       ast,
       artifactGraph,
-      solids,
       faces,
       thickness,
       nodeToEdit,
@@ -212,10 +200,10 @@ extrude001 = extrude(profile001, length = 10)`
   }
 
   it('should add a shell call on box for 2 walls', async () => {
-    const { artifactGraph, ast, solids } = await getAstAndSolidSelections(box)
+    const { artifactGraph, ast } = await getAstAndArtifactGraph(box)
     const faces = getTwoFacesFromBox(artifactGraph)
     const thickness = (await stringToKclExpression('1')) as KclCommandValue
-    const result = addShell({ ast, artifactGraph, solids, faces, thickness })
+    const result = addShell({ ast, artifactGraph, faces, thickness })
     if (err(result)) {
       throw result
     }
@@ -227,8 +215,8 @@ shell001 = shell(extrude001, faces = [seg01, seg02], thickness = 1)`)
   })
 
   it('should edit a shell call on box for 2 walls to a new thickness', async () => {
-    const { artifactGraph, ast, solids } =
-      await getAstAndSolidSelections(`${boxWithTwoTags}
+    const { artifactGraph, ast } =
+      await getAstAndArtifactGraph(`${boxWithTwoTags}
 shell001 = shell(extrude001, faces = [seg01, seg02], thickness = 1)`)
     const faces = getTwoFacesFromBox(artifactGraph)
     const thickness = (await stringToKclExpression('2')) as KclCommandValue
@@ -236,7 +224,6 @@ shell001 = shell(extrude001, faces = [seg01, seg02], thickness = 1)`)
     const result = addShell({
       ast,
       artifactGraph,
-      solids,
       faces,
       thickness,
       nodeToEdit,
@@ -254,16 +241,13 @@ shell001 = shell(extrude001, faces = [seg01, seg02], thickness = 2)`)
   it('should add a shell on two related sweeps end faces', async () => {
     // Code from https://github.com/KittyCAD/modeling-app/blob/21f11c369e1e4bcb6d2514d1150ba5e13138fe32/docs/kcl-std/functions/std-solid-shell.md#L154-L155
     const { ast, artifactGraph } = await getAstAndArtifactGraph(multiSolids)
-    const lastTwoSweeps = [...artifactGraph.values()]
-      .filter((a) => a.type === 'sweep')
-      .slice(-2)
-    const solids = createSelectionFromArtifacts(lastTwoSweeps, artifactGraph)
     const twoCaps = [...artifactGraph.values()]
       .filter((a) => a.type === 'cap' && a.subType === 'end')
       .slice(0, 2)
+      .reverse()
     const faces = createSelectionFromArtifacts(twoCaps, artifactGraph)
     const thickness = (await stringToKclExpression('5')) as KclCommandValue
-    const result = addShell({ ast, artifactGraph, solids, faces, thickness })
+    const result = addShell({ ast, artifactGraph, faces, thickness })
     if (err(result)) {
       throw result
     }

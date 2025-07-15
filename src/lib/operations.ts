@@ -400,7 +400,7 @@ const prepareToEditShell: PrepareToEditCallback = async ({ operation }) => {
     return { reason: "Couldn't retrieve faces argument" }
   }
 
-  const { solids, faces } = result
+  const { faces } = result
 
   // 2. Convert the thickness argument from a string to a KCL expression
   const thickness = await stringToKclExpression(
@@ -417,7 +417,6 @@ const prepareToEditShell: PrepareToEditCallback = async ({ operation }) => {
   // with `nodeToEdit` set, which will let the actor know
   // to edit the node that corresponds to the StdLibCall.
   const argDefaultValues: ModelingCommandSchema['Shell'] = {
-    solids,
     faces,
     thickness,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
