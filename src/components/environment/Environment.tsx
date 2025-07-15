@@ -1,20 +1,30 @@
-import { getEnvironmentName } from '@src/env'
+import { getEnvironmentName, getShorthandEnvironmentName } from '@src/env'
 import { capitaliseFC } from '@src/lib/utils'
 import { ActionButton } from '@src/components/ActionButton'
 import { commandBarActor } from '@src/lib/singletons'
 import env from '@src/env'
 import { writeEnvironmentConfigurationPool } from '@src/lib/desktop'
+import { EnvironmentName, SUPPORTED_ENVIRONMENTS } from '@src/lib/constants'
 
 export function environmentNameDisplay() {
   return env().NODE_ENV === 'development' ? '.env' : getEnvironmentName()
 }
 
+function getShorthandEnvironment (environmentName : EnvironmentName) {
+  if (env().NODE_ENV === 'development') {
+    return '.env'
+  } else if (environmentName === SUPPORTED_ENVIRONMENTS.production.name) {
+    return 'Prod'
+  } else if (environmentName === SUPPORTED_ENVIRONMENTS.development.name) {
+    return 'Dev'
+  }
+
+  return ''
+}
+
 export function EnvironmentChip() {
-  const environmentName = environmentNameDisplay()
-  const shorthand =
-    environmentName && env().NODE_ENV !== 'development'
-      ? environmentName.slice(0, 3)
-      : environmentName
+  const environmentName = getEnvironmentName()
+  const shorthand = environmentName ? getShorthandEnvironment(environmentName) : ''
   const pool = env().POOL
   return (
     <div className="flex items-center px-2 py-1 text-xs text-chalkboard-80 dark:text-chalkboard-30 rounded-none border-none hover:bg-chalkboard-30 dark:hover:bg-chalkboard-80 focus:bg-chalkboard-30 dark:focus:bg-chalkboard-80 hover:text-chalkboard-100 dark:hover:text-chalkboard-10 focus:text-chalkboard-100 dark:focus:text-chalkboard-10  focus:outline-none focus-visible:ring-2 focus:ring-primary focus:ring-opacity-50'">
@@ -38,7 +48,6 @@ export function EnvironmentDescription() {
             data-testid="environment"
             className="text-xs rounded-sm flex flex-row items-center"
           >
-            {capitaliseFC(environmentName || '')}
             <ActionButton
               Element="button"
               onClick={() => {
@@ -56,9 +65,11 @@ export function EnvironmentDescription() {
                   })
                 }
               }}
-              iconStart={{ icon: 'sketch', bgClassName: '!bg-transparent' }}
+              iconEnd={{ icon: 'sketch', bgClassName: '!bg-transparent' }}
               className="ml-1 pr-0"
-            ></ActionButton>
+            >
+              {capitaliseFC(environmentName || '')}
+            </ActionButton>
           </p>
         </p>
         {env().NODE_ENV === 'development' && (
