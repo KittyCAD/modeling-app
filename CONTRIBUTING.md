@@ -332,6 +332,12 @@ Click **Generate release notes** as a starting point to discuss the changelog in
 
 A new `publish-apps-release` workflow will start and you should be able to find it [here](https://github.com/KittyCAD/modeling-app/actions?query=event%3Arelease). On success, the files will be uploaded to the public bucket as well as to the GitHub release, and the announcement on Discord will be sent.
 
-#### 6. Close the issue
+#### 6. Publish the CLI
+
+Clone https://github.com/KittyCAD/cli and update its dependencies on `kittycad-modeling-cmds`, `kcl-lib`, `kcl-derive-docs` and `kcl-test-server` to the latest versions. Also bump the CLI's version under `[package]`. Open a PR and merge it to main.
+
+After merging, run `make tag` and follow its instructions. This should publish a CLI release. Then open <https://github.com/KittyCAD/homebrew-kittycad/pulls> and merge the automatic PR to bump the release in Homebrew.
+
+#### 7. Close the issue
 
 If everything is well and the release is out to the public, the issue tracking the release shall be closed.
