@@ -184,10 +184,10 @@ export default (): EnvironmentVariables => {
   return environmentVariables
 }
 
-export function getViteEnvironmentName (env: EnvironmentVariables) {
+export function getViteEnvironmentName(env: EnvironmentVariables) {
   const url = env.VITE_KITTYCAD_API_BASE_URL
   const NODE_ENV = env.NODE_ENV
-  if (NODE_ENV === 'production' ) {
+  if (NODE_ENV === 'production') {
     return '.env'
   } else if (url === SUPPORTED_ENVIRONMENTS.development.API_URL) {
     return SUPPORTED_ENVIRONMENTS.development.name

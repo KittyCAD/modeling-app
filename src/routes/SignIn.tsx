@@ -12,12 +12,12 @@ import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { Themes, getSystemTheme } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
-import { toSync } from '@src/lib/utils'
+import { toSync, capitaliseFC } from '@src/lib/utils'
 import { authActor, useSettings } from '@src/lib/singletons'
 import { APP_VERSION, generateSignInUrl } from '@src/routes/utils'
 import { withAPIBaseURL, withSiteBaseURL } from '@src/lib/withBaseURL'
 import { updateEnvironment } from '@src/env'
-import env from '@src/env'
+import env, { getEnvironmentName, getViteEnvironmentName } from '@src/env'
 import { writeEnvironmentFile } from '@src/lib/desktop'
 import { AdvancedSignInOptions } from '@src/routes/AdvancedSignInOptions'
 
@@ -37,6 +37,19 @@ const SignIn = () => {
   }
 
   const [userCode, setUserCode] = useState('')
+
+  // Last saved environment
+  const lastSelectedEnvironmentName = getEnvironmentName()
+
+  const viteEnvironmentName = getViteEnvironmentName(env())
+  const environmentName = lastSelectedEnvironmentName || viteEnvironmentName
+  const [selectedEnvironment, setSelectedEnvironment] = useState(environmentName)
+  const [pool, setPool] = useState('')
+  const formattedEnvironmentName =
+    env().NODE_ENV === 'development' && environmentName
+      ? capitaliseFC(selectedEnvironment || environmentName)
+      : '.env'
+
   const {
     app: { theme },
   } = useSettings()
@@ -162,6 +175,11 @@ const SignIn = () => {
                       <AdvancedSignInOptions
                         signInDesktopDevelopment={signInDesktopDevelopment}
                         signInDesktopProduction={signInDesktopProduction}
+                        formattedEnvironmentName={formattedEnvironmentName}
+                        pool={pool}
+                        setPool={setPool}
+                        selectedEnvironment={selectedEnvironment}
+                        setSelectedEnvironment={setSelectedEnvironment}
                       />
                     )}
                   </>
