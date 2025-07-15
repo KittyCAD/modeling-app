@@ -1452,7 +1452,12 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     use super::*;
-    use crate::{ModuleId, errors::KclErrorDetails, execution::memory::Stack};
+    use crate::{
+        ModuleId,
+        errors::KclErrorDetails,
+        exec::NumericType,
+        execution::{memory::Stack, types::RuntimeType},
+    };
 
     /// Convenience function to get a JSON value from memory and unwrap.
     #[track_caller]
@@ -1941,6 +1946,40 @@ extrudes = patternLinear3d(
 clone001 = map(extrudes, f = clone)
 "#;
         parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_array_reduce_nested_array() {
+        let code = r#"
+fn id(@el, accum)  { return accum }
+
+answer = reduce([], initial=[[[0,0]]], f=id)
+"#;
+        let result = parse_execute(code).await.unwrap();
+        assert_eq!(
+            mem_get_json(result.exec_state.stack(), result.mem_env, "answer"),
+            KclValue::HomArray {
+                value: vec![KclValue::HomArray {
+                    value: vec![KclValue::HomArray {
+                        value: vec![
+                            KclValue::Number {
+                                value: 0.0,
+                                ty: NumericType::default(),
+                                meta: vec![SourceRange::new(69, 70, Default::default()).into()],
+                            },
+                            KclValue::Number {
+                                value: 0.0,
+                                ty: NumericType::default(),
+                                meta: vec![SourceRange::new(71, 72, Default::default()).into()],
+                            }
+                        ],
+                        ty: RuntimeType::any(),
+                    }],
+                    ty: RuntimeType::any(),
+                }],
+                ty: RuntimeType::any(),
+            }
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]

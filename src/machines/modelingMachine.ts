@@ -48,7 +48,6 @@ import { updateModelingState } from '@src/lang/modelingWorkflows'
 import {
   addHelix,
   addOffsetPlane,
-  addShell,
   insertNamedConstant,
   replaceValueAtNodePath,
 } from '@src/lang/modifyAst'
@@ -61,7 +60,6 @@ import {
   modifyAstWithEdgeTreatmentAndTag,
   editEdgeTreatment,
   getPathToExtrudeForSegmentSelection,
-  mutateAstWithTagForSketchSegment,
 } from '@src/lang/modifyAst/addEdgeTreatment'
 import {
   addExtrude,
@@ -105,7 +103,6 @@ import type { Coords2d } from '@src/lang/std/sketch'
 import type {
   Artifact,
   CallExpressionKw,
-  Expr,
   KclValue,
   Literal,
   Name,
@@ -148,6 +145,7 @@ import type { Plane } from '@rust/kcl-lib/bindings/Plane'
 import type { Point3d } from '@rust/kcl-lib/bindings/ModelingCmd'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import { letEngineAnimateAndSyncCamAfter } from '@src/clientSideScene/CameraControls'
+import { addShell } from '@src/lang/modifyAst/faces'
 import { intersectInfo } from '@src/components/Toolbar/Intersect'
 
 export type SetSelections =
@@ -2794,173 +2792,19 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        // Extract inputs
-        const ast = kclManager.ast
-        const { selection, thickness, nodeToEdit } = input
-        let variableName: string | undefined = undefined
-        let insertIndex: number | undefined = undefined
-
-        // If this is an edit flow, first we're going to remove the old extrusion
-        if (nodeToEdit && typeof nodeToEdit[1][0] === 'number') {
-          // Extract the plane name from the node to edit
-          const variableNode = getNodeFromPath<VariableDeclaration>(
-            ast,
-            nodeToEdit,
-            'VariableDeclaration'
-          )
-          if (
-            err(variableNode) ||
-            variableNode.node.type !== 'VariableDeclaration'
-          ) {
-            console.error('Error extracting name')
-          } else {
-            variableName = variableNode.node.declaration.id.name
-          }
-
-          // Removing the old statement
-          const newBody = [...ast.body]
-          newBody.splice(nodeToEdit[1][0], 1)
-          ast.body = newBody
-          insertIndex = nodeToEdit[1][0]
-        }
-
-        // Turn the selection into the faces list
-        const clonedAstForGetExtrude = structuredClone(ast)
-        const faces: Expr[] = []
-        let pathToExtrudeNode: PathToNode | undefined = undefined
-        for (const graphSelection of selection.graphSelections) {
-          const extrudeLookupResult = getPathToExtrudeForSegmentSelection(
-            clonedAstForGetExtrude,
-            graphSelection,
-            kclManager.artifactGraph
-          )
-          if (err(extrudeLookupResult)) {
-            return Promise.reject(
-              new Error(
-                "Couldn't find extrude paths from getPathToExtrudeForSegmentSelection",
-                { cause: extrudeLookupResult }
-              )
-            )
-          }
-
-          const extrudeNode = getNodeFromPath<VariableDeclaration>(
-            ast,
-            extrudeLookupResult.pathToExtrudeNode,
-            'VariableDeclaration'
-          )
-          if (err(extrudeNode)) {
-            return new Error("Couldn't find extrude node from selection", {
-              cause: extrudeNode,
-            })
-          }
-
-          const segmentNode = getNodeFromPath<VariableDeclaration>(
-            ast,
-            extrudeLookupResult.pathToSegmentNode,
-            'VariableDeclaration'
-          )
-          if (err(segmentNode)) {
-            return Promise.reject(
-              new Error("Couldn't find segment node from selection", {
-                cause: segmentNode,
-              })
-            )
-          }
-
-          if (extrudeNode.node.declaration.init.type === 'CallExpressionKw') {
-            pathToExtrudeNode = extrudeLookupResult.pathToExtrudeNode
-          } else if (
-            segmentNode.node.declaration.init.type === 'PipeExpression'
-          ) {
-            pathToExtrudeNode = extrudeLookupResult.pathToSegmentNode
-          } else {
-            return Promise.reject(
-              new Error(
-                "Couldn't find extrude node that was either a call expression or a pipe",
-                { cause: segmentNode }
-              )
-            )
-          }
-
-          const selectedArtifact = graphSelection.artifact
-          if (!selectedArtifact) {
-            return Promise.reject(new Error('Bad artifact from selection'))
-          }
-
-          // Check on the selection, and handle the wall vs cap cases
-          let expr: Expr
-          if (selectedArtifact.type === 'cap') {
-            expr = createLiteral(selectedArtifact.subType)
-          } else if (selectedArtifact.type === 'wall') {
-            const tagResult = mutateAstWithTagForSketchSegment(
-              ast,
-              extrudeLookupResult.pathToSegmentNode
-            )
-            if (err(tagResult)) {
-              return Promise.reject(tagResult)
-            }
-
-            const { tag } = tagResult
-            expr = createLocalName(tag)
-          } else {
-            return Promise.reject(
-              new Error('Artifact is neither a cap nor a wall')
-            )
-          }
-
-          faces.push(expr)
-        }
-
-        if (!pathToExtrudeNode) {
-          return Promise.reject(new Error('No path to extrude node found'))
-        }
-
-        const extrudeNode = getNodeFromPath<VariableDeclarator>(
+        const { ast, artifactGraph } = kclManager
+        const astResult = addShell({
+          ...input,
           ast,
-          pathToExtrudeNode,
-          'VariableDeclarator'
-        )
-        if (err(extrudeNode)) {
-          return Promise.reject(
-            new Error("Couldn't find extrude node", {
-              cause: extrudeNode,
-            })
-          )
-        }
-
-        // Perform the shell op
-        const sweepName = extrudeNode.node.id.name
-        const addResult = addShell({
-          node: ast,
-          sweepName,
-          faces: faces,
-          thickness:
-            'variableName' in thickness
-              ? thickness.variableIdentifierAst
-              : thickness.valueAst,
-          insertIndex,
-          variableName,
+          artifactGraph,
         })
-
-        // Insert the thickness variable if the user has provided a variable name
-        if (
-          'variableName' in thickness &&
-          thickness.variableName &&
-          typeof addResult.pathToNode[1][0] === 'number'
-        ) {
-          const insertIndex = Math.min(
-            addResult.pathToNode[1][0],
-            thickness.insertIndex
-          )
-          const newBody = [...addResult.modifiedAst.body]
-          newBody.splice(insertIndex, 0, thickness.variableDeclarationAst)
-          addResult.modifiedAst.body = newBody
-          // Since we inserted a new variable, we need to update the path to the extrude argument
-          addResult.pathToNode[1][0]++
+        if (err(astResult)) {
+          return Promise.reject(astResult)
         }
 
+        const { modifiedAst, pathToNode } = astResult
         await updateModelingState(
-          addResult.modifiedAst,
+          modifiedAst,
           EXECUTION_TYPE_REAL,
           {
             kclManager,
@@ -2968,7 +2812,7 @@ export const modelingMachine = setup({
             codeManager,
           },
           {
-            focusPath: [addResult.pathToNode],
+            focusPath: [pathToNode],
           }
         )
       }

@@ -1090,12 +1090,18 @@ impl KclValue {
         exec_state: &mut ExecState,
     ) -> Result<KclValue, CoercionError> {
         match self {
-            KclValue::Tuple { value, .. } if value.len() == 1 && !matches!(ty, RuntimeType::Tuple(..)) => {
+            KclValue::Tuple { value, .. }
+                if value.len() == 1
+                    && !matches!(ty, RuntimeType::Primitive(PrimitiveType::Any) | RuntimeType::Tuple(..)) =>
+            {
                 if let Ok(coerced) = value[0].coerce(ty, convert_units, exec_state) {
                     return Ok(coerced);
                 }
             }
-            KclValue::HomArray { value, .. } if value.len() == 1 && !matches!(ty, RuntimeType::Array(..)) => {
+            KclValue::HomArray { value, .. }
+                if value.len() == 1
+                    && !matches!(ty, RuntimeType::Primitive(PrimitiveType::Any) | RuntimeType::Array(..)) =>
+            {
                 if let Ok(coerced) = value[0].coerce(ty, convert_units, exec_state) {
                     return Ok(coerced);
                 }
