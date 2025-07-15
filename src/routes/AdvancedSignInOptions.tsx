@@ -33,7 +33,7 @@ export const AdvancedSignInOptions = ({
   pool,
   setPool,
   selectedEnvironment,
-  setSelectedEnvironment
+  setSelectedEnvironment,
 }: {
   signInDesktopDevelopment: AsyncFn<() => void>
   signInDesktopProduction: AsyncFn<() => void>
@@ -46,11 +46,15 @@ export const AdvancedSignInOptions = ({
   const environments = Object.keys(SUPPORTED_ENVIRONMENTS)
   return (
     <div className="flex flex-row items-center">
-      <span
-        className="text-xs text-chalkboard-70 dark:text-chalkboard-30 w-64 h-8"
-      >
+      <span className="text-xs text-chalkboard-70 dark:text-chalkboard-30 w-64 h-8">
         Signing into{' '}
-        <span className="font-bold">{formattedEnvironmentName}</span>{' '} environment{pool !== '' && (<span>, to the <span className="font-bold">{pool}</span> pool</span>)}
+        <span className="font-bold">{formattedEnvironmentName}</span>{' '}
+        environment
+        {pool !== '' && (
+          <span>
+            , to the <span className="font-bold">{pool}</span> pool
+          </span>
+        )}
       </span>
       <Popover className="relative ml-8">
         <Popover.Button
