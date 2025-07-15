@@ -42,8 +42,9 @@ This helps keep your code neat and avoid unnecessary declarations.
 
 Say you have a long pipeline of sketch functions, like this:
 
-```norun
+```kcl
 startSketchOn(XZ)
+  |> startProfile(at = [0, 0])
   |> line(%, end = [3, 4])
   |> line(%, end = [10, 10])
   |> line(%, end = [-13, -14])
@@ -57,10 +58,11 @@ If a function call uses an unlabeled first parameter, it will default to `%` if 
 means that `|> line(%, end = [3, 4])` and `|> line(end = [3, 4])` are equivalent! So the above
 could be rewritten as 
 
-```norun
+```kcl
 startSketchOn(XZ)
- |> line(end = [3, 4])
- |> line(end = [10, 10])
- |> line(end = [-13, -14])
- |> close()
+  |> startProfile(at = [0, 0])
+  |> line(end = [3, 4])
+  |> line(end = [10, 10])
+  |> line(end = [-13, -14])
+  |> close()
 ```
