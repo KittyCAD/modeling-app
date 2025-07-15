@@ -49,12 +49,16 @@ export const defaultGlobalStatusBarItems = ({
         },
       },
   {
+    id: 'environment',
+    component: EnvironmentStatusBarItem,
+  },
+  {
     id: 'telemetry',
     element: 'link',
     icon: 'stopwatch',
     href: location.pathname.includes(PATHS.FILE)
-      ? filePath + PATHS.TELEMETRY + '?tab=project'
-      : PATHS.HOME + PATHS.TELEMETRY,
+        ? filePath + PATHS.TELEMETRY + '?tab=project'
+        : PATHS.HOME + PATHS.TELEMETRY,
     'data-testid': 'telemetry-link',
     label: 'Telemetry',
     hideLabel: true,
@@ -67,8 +71,8 @@ export const defaultGlobalStatusBarItems = ({
     element: 'link',
     icon: 'settings',
     href: location.pathname.includes(PATHS.FILE)
-      ? filePath + PATHS.SETTINGS + '?tab=project'
-      : PATHS.HOME + PATHS.SETTINGS,
+        ? filePath + PATHS.SETTINGS + '?tab=project'
+        : PATHS.HOME + PATHS.SETTINGS,
     'data-testid': 'settings-link',
     label: 'Settings',
   },
@@ -76,10 +80,6 @@ export const defaultGlobalStatusBarItems = ({
     id: 'credits',
     'data-testid': 'billing-remaining-bar',
     component: BillingStatusBarItem,
-  },
-  {
-    id: 'environment',
-    component: EnvironmentStatusBarItem,
   },
 ]
 

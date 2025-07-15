@@ -14,9 +14,7 @@ import { PATHS } from '@src/lib/paths'
 import { authActor } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
-import {
-  environmentNameDisplay,
-} from '@src/components/environment/Environment'
+import { environmentNameDisplay } from '@src/components/environment/Environment'
 import { capitaliseFC } from '@src/lib/utils'
 
 type User = Models['User_type']
@@ -151,9 +149,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
           Element: 'button',
           'data-testid': 'user-sidebar-sign-out',
           children: (
-            <span>
-              Sign out{' '} of {capitaliseFC(environmentName || '')}
-            </span>
+            <span>Sign out of {capitaliseFC(environmentName || '')}</span>
           ),
           onClick: () => send({ type: 'Log out' }),
           className: '', // Just making TS's filter type coercion happy 😠
