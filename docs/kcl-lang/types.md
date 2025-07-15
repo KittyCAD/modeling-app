@@ -51,7 +51,7 @@ way:
 
 ```kcl
 startSketchOn(XZ)
-  |> startProfile(at = origin)
+  |> startProfile(at = [0, 0])
   |> angledLine(angle = 0, length = 191.26, tag = $rectangleSegmentA001)
   |> angledLine(
        angle = segAng(rectangleSegmentA001) - 90,
