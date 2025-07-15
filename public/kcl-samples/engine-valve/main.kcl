@@ -65,7 +65,6 @@ step6 = startSketchOn(step5, face = END)
   |> extrude(length = stepLength)
 step7 = startSketchOn(step6, face = END)
   |> circle(
-       %,
        center = [0, 0],
        radius = stemDiameter / 2 * 0.9,
        tag = $seg02,

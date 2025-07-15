@@ -32,7 +32,6 @@ fn score(radius, length, depth) {
     |> arc(angleStart = 90, angleEnd = 55, radius = profileStartY(%))
     |> angledLine(angle = 55, length = length)
     |> arc(
-         %,
          angleStart = 55,
          angleEnd = 90,
          radius = profileStartY(%) + length,

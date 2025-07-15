@@ -64,7 +64,6 @@ fn boxModuleFn(width) {
 }
 leftSpacerShape = boxModuleFn(width = leftSpacerWidth)
   |> translate(
-       %,
        x = leftSpacerPosition,
        y = 0,
        z = 0,
@@ -83,7 +82,6 @@ switchPlateHeight = 30
 switchPlateThickness = 3
 switchPlateShape = startSketchOn(switchBody, face = END)
   |> startProfile(
-       %,
        at = [
          -switchPlateWidth / 2,
          -switchPlateHeight / 2
@@ -96,7 +94,6 @@ switchPlateShape = startSketchOn(switchBody, face = END)
   |> close()
 switchPlateBody = extrude(switchPlateShape, length = switchPlateThickness)
   |> translate(
-       %,
        x = switchPosition,
        y = 0,
        z = 0,
@@ -107,7 +104,6 @@ switchButtonHeight = 26
 switchButtonWidth = 15
 switchButtonShape = startSketchOn(offsetPlane(-YZ, offset = -switchButtonWidth / 2))
   |> startProfile(
-       %,
        at = [
          switchPlateThickness,
          switchButtonHeight / 2
@@ -123,7 +119,6 @@ switchButtonShape = startSketchOn(offsetPlane(-YZ, offset = -switchButtonWidth /
   |> close()
 switchButtonBody = extrude(switchButtonShape, length = switchButtonWidth)
   |> translate(
-       %,
        x = switchPosition,
        y = 0,
        z = 0,
@@ -135,7 +130,6 @@ secondSpacerWidth = moduleWidth / 2
 secondSpacerPosition = switchPosition + switchWidth / 2 + secondSpacerWidth / 2
 secondSpacerBody = boxModuleFn(width = secondSpacerWidth)
   |> translate(
-       %,
        x = secondSpacerPosition,
        y = 0,
        z = 0,
@@ -150,7 +144,6 @@ firstPowerPlugPosition = secondSpacerPosition + secondSpacerWidth / 2 + powerPlu
 lastPowerPlugPosition = firstPowerPlugPosition + powerPlugWidth * (powerPlugCount - 1)
 powerPlugBody = boxModuleFn(width = powerPlugWidth)
   |> translate(
-       %,
        x = firstPowerPlugPosition,
        y = 0,
        z = 0,
@@ -158,7 +151,6 @@ powerPlugBody = boxModuleFn(width = powerPlugWidth)
 plugShape = startSketchOn(powerPlugBody, face = END)
   |> circle(center = [0, 0], radius = 17)
   |> translate(
-       %,
        x = firstPowerPlugPosition,
        y = 0,
        z = 0,
@@ -168,20 +160,17 @@ plugHoleDistance = 20
 plugHoleShape = startSketchOn(plugBody, face = START)
   |> circle(center = [-plugHoleDistance / 2, 0], radius = 3)
   |> translate(
-       %,
        x = firstPowerPlugPosition,
        y = 0,
        z = 0,
      )
   |> patternLinear2d(
-       %,
        instances = 2,
        distance = plugHoleDistance,
        axis = [1, 0],
      )
 plugHoleBody = extrude(plugHoleShape, length = -5)
   |> patternLinear3d(
-       %,
        instances = powerPlugCount,
        distance = powerPlugWidth,
        axis = [1, 0, 0],
@@ -192,7 +181,6 @@ rightSpacerWidth = nestWidth / 2 - lastPowerPlugPosition - (powerPlugWidth / 2)
 rightSpacerPosition = lastPowerPlugPosition + powerPlugWidth / 2 + rightSpacerWidth / 2
 rightSpacerBody = boxModuleFn(width = rightSpacerWidth)
   |> translate(
-       %,
        x = rightSpacerPosition,
        y = 0,
        z = 0,
@@ -220,19 +208,16 @@ holeShapes = startProfile(
   |> tangentialArc(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
   |> translate(
-       %,
        x = -faceplateWidth / 2 - (supportWidth / 2),
        y = 0,
        z = -holeVerticalDistance,
      )
   |> patternLinear2d(
-       %,
        instances = 3,
        distance = holeVerticalDistance,
        axis = [0, 1],
      )
   |> patternLinear2d(
-       %,
        instances = 2,
        distance = faceplateWidth + supportWidth,
        axis = [1, 0],

@@ -41,7 +41,6 @@ button()
   |> translate(x = -(screenWidth / 2 + tolerance), y = -1, z = screenYPosition - buttonHeight - (tolerance * 2))
 button()
   |> rotate(
-       %,
        roll = 0,
        pitch = 180,
        yaw = 0,
@@ -54,7 +53,6 @@ button()
      )
 button()
   |> rotate(
-       %,
        roll = 0,
        pitch = 180,
        yaw = 0,

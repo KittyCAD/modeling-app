@@ -179,7 +179,6 @@ doorBody = startProfile(doorPlane, at = [doorStart, 0])
   |> patternLinear2d(axis = [1, 0], instances = doorCount, distance = blockSubdivisionWidth)
   |> extrude(length = doorHeight)
   |> patternLinear3d(
-       %,
        instances = 2,
        distance = blockDepth,
        axis = [0, 1, 0],

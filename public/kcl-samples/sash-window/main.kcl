@@ -62,13 +62,11 @@ fn panelFn(plane, offset, width, height, depth, perimeter, divisionThickness, op
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
     |> close()
     |> patternLinear2d(
-         %,
          instances = openingCountHorizontal,
          distance = voidStepHorizontal,
          axis = [1, 0],
        )
     |> patternLinear2d(
-         %,
          instances = openingCountVertical,
          distance = voidStepVertical,
          axis = [0, 1],
@@ -104,13 +102,11 @@ bottomSash = panelFn(
        openingCountVertical = sashOpeningCountVertical,
      )
   |> translate(
-       %,
        x = 0,
        y = 0,
        z = frameWidth / 2 - (sashHeight / 2),
      )
   |> translate(
-       %,
        x = 0,
        y = 0,
        z = sashTravelDistance,
@@ -137,13 +133,11 @@ latchPlateShape = startProfile(
   |> close()
 latchPlateBody = extrude(latchPlateShape, length = latchPlateThickness)
   |> translate(
-       %,
        x = 0,
        y = -frameDepth / 4,
        z = 0,
      )
   |> translate(
-       %,
        x = 0,
        y = 0,
        z = sashTravelDistance,
@@ -160,19 +154,16 @@ latchCylinderShape = startProfile(latchCylinderPlane, at = [40, -1])
   |> close()
 latchCylinderBody = extrude(latchCylinderShape, length = latchCylinderHeight)
   |> translate(
-       %,
        x = 0,
        y = -frameDepth / 4,
        z = 0,
      )
   |> translate(
-       %,
        x = 0,
        y = 0,
        z = sashTravelDistance,
      ) // open / close
   |> rotate(
-       %,
        roll = 0,
        pitch = 0,
        yaw = -90 * windowState,
@@ -191,7 +182,6 @@ topSash = panelFn(
        openingCountVertical = sashOpeningCountVertical,
      )
   |> translate(
-       %,
        x = 0,
        y = 0,
        z = sashHeight / 2 - (frameWidth / 2),

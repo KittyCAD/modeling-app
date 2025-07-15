@@ -74,7 +74,6 @@ bracketProfile = startSketchOn(XZ)
 leftFlangeBoltPattern = startSketchOn(bracketProfile, face = seg04)
   |> circle(center = [-mountingBoltPatternX / 2, overhang], radius = mountingBoltDiameter / 2)
   |> patternLinear2d(
-       %,
        instances = 2,
        distance = mountingBoltPatternY,
        axis = [0, 1],
@@ -85,7 +84,6 @@ leftFlangeBoltPattern = startSketchOn(bracketProfile, face = seg04)
 rightFlangeBoltPattern = startSketchOn(bracketProfile, face = seg06)
   |> circle(center = [mountingBoltPatternX / 2, overhang], radius = mountingBoltDiameter / 2)
   |> patternLinear2d(
-       %,
        instances = 2,
        distance = mountingBoltPatternY,
        axis = [0, 1],
@@ -102,13 +100,11 @@ topFlangeBoltPattern = startSketchOn(bracketProfile, face = seg05)
        radius = componentBoltDiameter / 2,
      )
   |> patternLinear2d(
-       %,
        instances = 2,
        distance = componentBoltPatternX,
        axis = [1, 0],
      )
   |> patternLinear2d(
-       %,
        instances = 2,
        distance = componentBoltPatternY,
        axis = [0, 1],

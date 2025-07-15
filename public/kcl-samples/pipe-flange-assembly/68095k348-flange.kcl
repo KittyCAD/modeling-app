@@ -13,7 +13,6 @@ export fn flange() {
   mountingHoles = startSketchOn(XY)
     |> circle(center = [0, mountingHolePlacementDiameter / 2], radius = mountingHoleDiameter / 2)
     |> patternCircular2d(
-         %,
          instances = 4,
          center = [0, 0],
          arcDegrees = 360,

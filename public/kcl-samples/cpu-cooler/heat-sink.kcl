@@ -23,7 +23,6 @@ endTube = startSketchOn(offsetPlane(XY, offset = fanSize + 38))
   |> subtract2d(tool = circle(center = [-20, fanSize / 4], radius = 2.5))
   |> sweep(path = endTubePath)
   |> patternCircular3d(
-       %,
        instances = 2,
        axis = [0, 0, 1],
        center = [0, 0, 0],
@@ -50,7 +49,6 @@ centerTube = startSketchOn(offsetPlane(XY, offset = fanSize + 38))
   |> subtract2d(tool = circle(center = [-4, fanSize / 2.67], radius = 2.5))
   |> sweep(path = centerTubePath)
   |> patternCircular3d(
-       %,
        instances = 2,
        axis = [0, 0, 1],
        center = [-4 * 2, 0, 0],
@@ -58,7 +56,6 @@ centerTube = startSketchOn(offsetPlane(XY, offset = fanSize + 38))
        rotateDuplicates = true,
      )
   |> patternLinear3d(
-       %,
        instances = 2,
        distance = 4 * 4,
        axis = [1, 0, 0],
@@ -81,7 +78,6 @@ heatFins = startSketchOn(offsetPlane(XY, offset = 45))
   |> close()
   |> extrude(length = 1)
   |> patternLinear3d(
-       %,
        instances = 31,
        distance = (fanSize - 10) / 30,
        axis = [0, 0, 1],

@@ -150,7 +150,6 @@ bodyDiscBell = startProfile(
        ],
      )
   |> arc(
-       %,
        angleStart = -180,
        angleEnd = 0,
        radius = wUndercut / 2,
@@ -169,7 +168,6 @@ bodyDiscBell = startProfile(
 sketchLugs = startSketchOn(bodyDiscBell, face = seg04)
 profileStud = circle(sketchLugs, center = [0, dPitchCircle / 2], radius = dStudDrilling / 2)
   |> patternCircular2d(
-       %,
        instances = nStuds,
        center = [0, 0],
        arcDegrees = 360,

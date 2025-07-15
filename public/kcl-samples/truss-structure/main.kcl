@@ -87,7 +87,6 @@ leg002 = extrude(legProfile002, length = -legHeight - .1)
 // Combine the top frame with the legs and pattern
 fullFrame = newFrame + leg001 + leg002
   |> patternLinear3d(
-       %,
        instances = nFrames,
        distance = crossBeamLength + beamLength,
        axis = [-1, 0, 0],
@@ -107,7 +106,6 @@ profile005 = startProfile(centerCrossBeamSketch, at = [0, segEndY(tag001) - 1])
 // Extrude the center cross beam and pattern to every frame
 centerCrossBeam = extrude(profile005, length = -crossBeamLength)
   |> patternLinear3d(
-       %,
        instances = nFrames - 1,
        distance = crossBeamLength + beamLength,
        axis = [-1, 0, 0],
@@ -135,7 +133,6 @@ profile009 = startProfile(sideCrossBeamSketch, at = [totalWidth / 2, segEndY(tag
 // Extrude the side cross beams and pattern to every frame.
 extrude([profile008, profile009], length = crossBeamLength)
   |> patternLinear3d(
-       %,
        instances = nFrames - 1,
        distance = crossBeamLength + beamLength,
        axis = [-1, 0, 0],

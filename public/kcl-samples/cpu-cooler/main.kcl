@@ -20,7 +20,6 @@ fn translatePart(part) {
   part
     |> translate(x = heatSinkDepth / 2, z = 40 + fanSize / 2)
     |> patternLinear3d(
-         %,
          instances = 2,
          distance = heatSinkDepth + fanHeight,
          axis = [-1, 0, 0],
@@ -33,7 +32,6 @@ translatePart(part = fan)
 
 mountingWire
   |> patternCircular3d(
-       %,
        instances = 2,
        axis = [0, 1, 0],
        center = [0, 0, 40 + fanSize / 2],
@@ -41,7 +39,6 @@ mountingWire
        rotateDuplicates = true,
      )
   |> patternCircular3d(
-       %,
        instances = 2,
        axis = [0, 0, 1],
        center = [0, 0, 0],

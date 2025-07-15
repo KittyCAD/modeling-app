@@ -206,7 +206,6 @@ fn letterI(startX, startY) {
   iLength = 40
   return startSketchOn(offsetPlane(XY, offset = 50))
     |> startProfile(
-         %,
          at = [
            startX - (iWidth / 2),
            startY + iLength / 2
@@ -227,7 +226,6 @@ fn letterX(startX, startY) {
 
   return startSketchOn(offsetPlane(XY, offset = 50))
     |> startProfile(
-         %,
          at = [
            startX - (xWidth / 2),
            startY + xLength / 2
@@ -255,7 +253,6 @@ fn letterV(startX, startY) {
   vLength = 40
   return startSketchOn(offsetPlane(XY, offset = 50))
     |> startProfile(
-         %,
          at = [
            startX - (vWidth / 2),
            startY + vLength / 2
@@ -338,7 +335,6 @@ profile007 = startProfile(
        ],
      )
   |> arc(
-       %,
        interiorAbsolute = [
          nubDiameter / 2 * 1.375 * cos(hourHandAngle + 180),
          nubDiameter / 2 * 1.375 * sin(hourHandAngle + 180)
@@ -350,13 +346,11 @@ profile007 = startProfile(
      )
   |> angledLine(angle = hourHandAngle, length = hourHandArmLength)
   |> angledLine(
-       %,
        angle = hourHandAngle - 90,
        length = hourHandWidth / 2,
        tag = $seg004,
      )
   |> line(
-       %,
        endAbsolute = [
          hourHandLargeDiameter / 2 * cos(hourHandAngle),
          hourHandLargeDiameter / 2 * sin(hourHandAngle)
@@ -383,7 +377,6 @@ profile009 = startProfile(
        ],
      )
   |> arc(
-       %,
        interiorAbsolute = [
          nubDiameter / 2 * 1.375 * cos(minuteHandAngle + 180),
          nubDiameter / 2 * 1.375 * sin(minuteHandAngle + 180)
@@ -395,13 +388,11 @@ profile009 = startProfile(
      )
   |> angledLine(angle = minuteHandAngle, length = minuteHandArmLength)
   |> angledLine(
-       %,
        angle = minuteHandAngle - 90,
        length = minuteHandWidth / 2,
        tag = $seg003,
      )
   |> line(
-       %,
        endAbsolute = [
          minuteHandLargeDiameter / 2 * cos(minuteHandAngle),
          minuteHandLargeDiameter / 2 * sin(minuteHandAngle)
@@ -428,7 +419,6 @@ sketch003 = startSketchOn(clockBody, face = START)
 profile004 = startProfile(sketch003, at = [-slotWidth / 2, 200])
   |> yLine(length = -slotLength)
   |> arc(
-       %,
        radius = screwHeadDiameter / 2 + screwTolerance,
        angleStart = 120,
        angleEnd = 420,
