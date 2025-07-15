@@ -16,8 +16,8 @@ import { reportRejection } from '@src/lib/trap'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import {
   environmentNameDisplay,
-  shouldRender,
 } from '@src/components/environment/Environment'
+import { capitaliseFC } from '@src/lib/utils'
 
 type User = Models['User_type']
 
@@ -152,8 +152,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
           'data-testid': 'user-sidebar-sign-out',
           children: (
             <span>
-              Sign out{' '}
-              {shouldRender(environmentName) ? `of ${environmentName}` : ``}
+              Sign out{' '} of {capitaliseFC(environmentName || '')}
             </span>
           ),
           onClick: () => send({ type: 'Log out' }),

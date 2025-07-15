@@ -7,7 +7,11 @@ import { ActionButton } from '@src/components/ActionButton'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { Logo } from '@src/components/Logo'
 import type { EnvironmentName } from '@src/lib/constants'
-import { APP_NAME, isEnvironmentName, SUPPORTED_ENVIRONMENTS } from '@src/lib/constants'
+import {
+  APP_NAME,
+  isEnvironmentName,
+  SUPPORTED_ENVIRONMENTS,
+} from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { Themes, getSystemTheme } from '@src/lib/theme'
@@ -18,7 +22,12 @@ import { APP_VERSION, generateSignInUrl } from '@src/routes/utils'
 import { withAPIBaseURL, withSiteBaseURL } from '@src/lib/withBaseURL'
 import { updateEnvironment, updateEnvironmentPool } from '@src/env'
 import env, { getEnvironmentName, getViteEnvironmentName } from '@src/env'
-import { readEnvironmentConfigurationPool, writeEnvironmentConfigurationPool, writeEnvironmentConfigurationToken, writeEnvironmentFile } from '@src/lib/desktop'
+import {
+  readEnvironmentConfigurationPool,
+  writeEnvironmentConfigurationPool,
+  writeEnvironmentConfigurationToken,
+  writeEnvironmentFile,
+} from '@src/lib/desktop'
 import { AdvancedSignInOptions } from '@src/routes/AdvancedSignInOptions'
 
 const subtleBorder =
@@ -47,30 +56,34 @@ const SignIn = () => {
     useState(environmentName)
   const [pool, setPool] = useState(env().POOL)
   const formattedEnvironmentName =
-    env().NODE_ENV === 'development' && environmentName
-    ? capitaliseFC(selectedEnvironment || environmentName)
-    : '.env'
+    env().NODE_ENV === 'production' && environmentName
+      ? capitaliseFC(selectedEnvironment || environmentName)
+      : '.env'
 
   // TODO only run on desktop.
-  useEffect(()=>{
+  useEffect(() => {
     if (isEnvironmentName(selectedEnvironment)) {
       if (pool) {
         writeEnvironmentConfigurationPool(selectedEnvironment, pool)
       }
     }
-  },[pool])
+  }, [pool])
 
-  useEffect(()=>{
+  useEffect(() => {
     if (isEnvironmentName(selectedEnvironment)) {
       // Update the pool
-      readEnvironmentConfigurationPool(selectedEnvironment).then((cachedPool)=>{
-        writeEnvironmentFile(selectedEnvironment).then(()=>{
-          updateEnvironmentPool(selectedEnvironment, cachedPool)
-          setPool(cachedPool)
-        }).catch(reportRejection)
-      }).catch(reportRejection)
+      readEnvironmentConfigurationPool(selectedEnvironment)
+        .then((cachedPool) => {
+          writeEnvironmentFile(selectedEnvironment)
+            .then(() => {
+              updateEnvironmentPool(selectedEnvironment, cachedPool)
+              setPool(cachedPool)
+            })
+            .catch(reportRejection)
+        })
+        .catch(reportRejection)
     }
-  },[selectedEnvironment])
+  }, [selectedEnvironment])
 
   const {
     app: { theme },
@@ -136,20 +149,17 @@ const SignIn = () => {
   const signInDesktopProduction = async () => {
     return signInDesktop('production')
   }
-  const getSignInDesktop = useCallback(
-    async ()=>{
-      if (selectedEnvironment === SUPPORTED_ENVIRONMENTS.development.name) {
+  const getSignInDesktop = useCallback(async () => {
+    if (selectedEnvironment === SUPPORTED_ENVIRONMENTS.development.name) {
       await signInDesktopDevelopment()
     } else if (selectedEnvironment === SUPPORTED_ENVIRONMENTS.production.name) {
       await signInDesktopProduction()
     }
     // TODO production-us
-  },[selectedEnvironment]
-  )
+  }, [selectedEnvironment])
 
-  // TODO Fix NODE_ENV to 'development'
   const defaultSignInMethod =
-    env().NODE_ENV === 'production'
+    env().NODE_ENV === 'development'
       ? signInDesktopDevelopment
       : getSignInDesktop
 
@@ -205,7 +215,7 @@ const SignIn = () => {
                       Sign in to get started
                       <CustomIcon name="arrowRight" className="w-6 h-6" />
                     </button>
-                    {env().NODE_ENV === 'development' && (
+                    {env().NODE_ENV === 'production' && (
                       <AdvancedSignInOptions
                         signInDesktopDevelopment={signInDesktopDevelopment}
                         signInDesktopProduction={signInDesktopProduction}
