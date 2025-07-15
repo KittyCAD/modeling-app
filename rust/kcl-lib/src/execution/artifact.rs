@@ -1033,7 +1033,7 @@ fn artifacts_to_update(
                 let path_sweep_id = path.sweep_id.ok_or_else(|| {
                     KclError::new_internal(KclErrorDetails::new(
                         format!(
-                            "Expected a sweep ID on the path when processing Solid3dGetExtrusionFaceInfo command, but we have none: {id:?}, {path:?}"
+                            "Expected a sweep ID on the path when processing Solid3dGetExtrusionFaceInfo command, but we have none:\n{id:#?}\n{path:#?}"
                         ),
                         vec![range],
                     ))
