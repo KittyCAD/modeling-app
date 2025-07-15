@@ -2938,10 +2938,10 @@ description: Variables in memory after executing clock.kcl
             7.054165456091913
           ],
           "tag": {
-            "commentStart": 9875,
-            "end": 9882,
+            "commentStart": 9819,
+            "end": 9826,
             "moduleId": 0,
-            "start": 9875,
+            "start": 9819,
             "type": "TagDeclarator",
             "value": "seg004"
           },
@@ -2964,10 +2964,10 @@ description: Variables in memory after executing clock.kcl
             19.554165456091912
           ],
           "tag": {
-            "commentStart": 10071,
-            "end": 10078,
+            "commentStart": 10005,
+            "end": 10012,
             "moduleId": 0,
-            "start": 10071,
+            "start": 10005,
             "type": "TagDeclarator",
             "value": "seg002"
           },
@@ -3291,10 +3291,10 @@ description: Variables in memory after executing clock.kcl
             -119.46453889126977
           ],
           "tag": {
-            "commentStart": 11392,
-            "end": 11399,
+            "commentStart": 11306,
+            "end": 11313,
             "moduleId": 0,
-            "start": 11392,
+            "start": 11306,
             "type": "TagDeclarator",
             "value": "seg003"
           },
@@ -3317,10 +3317,10 @@ description: Variables in memory after executing clock.kcl
             -120.77114468211543
           ],
           "tag": {
-            "commentStart": 11596,
-            "end": 11603,
+            "commentStart": 11500,
+            "end": 11507,
             "moduleId": 0,
-            "start": 11596,
+            "start": 11500,
             "type": "TagDeclarator",
             "value": "seg005"
           },

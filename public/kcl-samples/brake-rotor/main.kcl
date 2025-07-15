@@ -149,11 +149,7 @@ bodyDiscBell = startProfile(
          tDiscHalf * 2 + tVent
        ],
      )
-  |> arc(
-       angleStart = -180,
-       angleEnd = 0,
-       radius = wUndercut / 2,
-     )
+  |> arc(angleStart = -180, angleEnd = 0, radius = wUndercut / 2)
   |> line(end = [lDraftExterior, hBellAboveDiscFace])
   |> xLine(length = rOuter, tag = $seg04)
   |> yLine(length = -tBell)

@@ -178,11 +178,7 @@ doorBody = startProfile(doorPlane, at = [doorStart, 0])
   |> close()
   |> patternLinear2d(axis = [1, 0], instances = doorCount, distance = blockSubdivisionWidth)
   |> extrude(length = doorHeight)
-  |> patternLinear3d(
-       instances = 2,
-       distance = blockDepth,
-       axis = [0, 1, 0],
-     )
+  |> patternLinear3d(instances = 2, distance = blockDepth, axis = [0, 1, 0])
 
 // side panels
 panelWidth = blockDepth - profileThickness - (doorGap * 2)

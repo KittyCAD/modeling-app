@@ -19,11 +19,7 @@ heatSink
 fn translatePart(part) {
   part
     |> translate(x = heatSinkDepth / 2, z = 40 + fanSize / 2)
-    |> patternLinear3d(
-         instances = 2,
-         distance = heatSinkDepth + fanHeight,
-         axis = [-1, 0, 0],
-       )
+    |> patternLinear3d(instances = 2, distance = heatSinkDepth + fanHeight, axis = [-1, 0, 0])
   return {  }
 }
 translatePart(part = fanHousing)
