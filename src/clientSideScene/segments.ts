@@ -84,7 +84,7 @@ import { getThemeColorForThreeJs } from '@src/lib/theme'
 import { err } from '@src/lib/trap'
 import { isClockwise, normaliseAngle, roundOff } from '@src/lib/utils'
 import { getTangentPointFromPreviousArc } from '@src/lib/utils2d'
-import { commandBarActor } from '@src/lib/singletons'
+import { commandBarActor, kclManager } from '@src/lib/singletons'
 import type {
   SegmentOverlay,
   SegmentOverlayPayload,
@@ -1795,6 +1795,7 @@ function createLengthIndicator({
     })
 
     const canConstrainLength = angleLengthInfo({
+      ast: kclManager.ast,
       selectionRanges: {
         ...selection,
         graphSelections: [selection.graphSelections[0]],

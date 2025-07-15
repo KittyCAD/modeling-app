@@ -159,6 +159,7 @@ import {
   updateRectangleSketch,
 } from '@src/lib/rectangleTool'
 import type RustContext from '@src/lib/rustContext'
+import { updateExtraSegments } from '@src/lib/selections'
 import type { Selections } from '@src/lib/selections'
 import { getEventForSegmentSelection } from '@src/lib/selections'
 import type { Themes } from '@src/lib/theme'
@@ -3814,22 +3815,6 @@ function colorSegment(object: Object3D, color: number) {
       }
     })
     return
-  }
-}
-
-export function updateExtraSegments(
-  parent: Object3D | null,
-  className: string,
-  value: boolean
-) {
-  const extraSegmentGroup = parent?.getObjectByName(EXTRA_SEGMENT_HANDLE)
-  if (extraSegmentGroup) {
-    extraSegmentGroup.traverse((child) => {
-      if (child instanceof CSS2DObject) {
-        child.element.classList.toggle(className, value)
-        //child.element.classList.toggle('selected', selected)
-      }
-    })
   }
 }
 

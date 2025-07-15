@@ -36,7 +36,7 @@ export async function applyConstraintLength({
   exprInsertIndex: number
 }> {
   const ast = kclManager.ast
-  const angleLength = angleLengthInfo({ selectionRanges })
+  const angleLength = angleLengthInfo({ selectionRanges, ast: kclManager.ast })
   if (err(angleLength)) return Promise.reject(angleLength)
   const { transforms } = angleLength
 
@@ -96,7 +96,11 @@ export async function applyConstraintAngleLength({
   pathToNodeMap: PathToNodeMap
   exprInsertIndex: number
 }> {
-  const angleLength = angleLengthInfo({ selectionRanges, angleOrLength })
+  const angleLength = angleLengthInfo({
+    selectionRanges,
+    angleOrLength,
+    ast: kclManager.ast,
+  })
   if (err(angleLength)) return Promise.reject(angleLength)
 
   const { transforms } = angleLength
