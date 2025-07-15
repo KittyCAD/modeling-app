@@ -37,6 +37,34 @@ description: Variables in memory after executing tag_inner_face.kcl
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 329,
+            "end": 334,
+            "moduleId": 0,
+            "start": 329,
+            "type": "TagDeclarator",
+            "value": "yoyo"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
         }
       ],
       "sketch": {
@@ -234,6 +262,10 @@ description: Variables in memory after executing tag_inner_face.kcl
           "seg01": {
             "type": "TagIdentifier",
             "value": "seg01"
+          },
+          "yoyo": {
+            "type": "TagIdentifier",
+            "value": "yoyo"
           }
         },
         "artifactId": "[uuid]",
@@ -448,6 +480,10 @@ description: Variables in memory after executing tag_inner_face.kcl
         "seg01": {
           "type": "TagIdentifier",
           "value": "seg01"
+        },
+        "yoyo": {
+          "type": "TagIdentifier",
+          "value": "yoyo"
         }
       },
       "artifactId": "[uuid]",
@@ -588,6 +624,10 @@ description: Variables in memory after executing tag_inner_face.kcl
         "seg01": {
           "type": "TagIdentifier",
           "value": "seg01"
+        },
+        "yoyo": {
+          "type": "TagIdentifier",
+          "value": "yoyo"
         }
       },
       "artifactId": "[uuid]",

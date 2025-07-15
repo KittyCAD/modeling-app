@@ -16,4 +16,4 @@ profile002 = startProfile(sketch001, at = [0.14, -0.84])
 
 out = subtract2d(profile001, tool = profile002)
 extrude001 = extrude(out, length = 5)
-// sketch002 = startSketchOn(extrude001, face = yoyo)
+sketch002 = startSketchOn(extrude001, face = yoyo)
