@@ -112,7 +112,7 @@ export type ModelingCommandSchema = {
   Shell: {
     // Enables editing workflow
     nodeToEdit?: PathToNode
-    // KCL stdlib arguments, note that we'll be infering solids from faces here
+    // KCL stdlib arguments, note that we'll be inferring solids from faces here
     faces: Selections
     thickness: KclCommandValue
   }

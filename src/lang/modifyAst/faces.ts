@@ -55,7 +55,7 @@ export function addShell({
   const modifiedAst = structuredClone(ast)
 
   // 2. Prepare unlabeled and labeled arguments
-  // Infering solids from the faces selection, maybe someday we can expose this but no need for now
+  // Inferring solids from the faces selection, maybe someday we can expose this but no need for now
   const solids: Selections = {
     graphSelections: faces.graphSelections.flatMap((f) => {
       const sweep = getSweepArtifactFromSelection(f, artifactGraph)
