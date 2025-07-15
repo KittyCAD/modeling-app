@@ -37,11 +37,11 @@ fn tongueBlockFn() {
 
 // Create top-side profile with tongues
 tongueShape = startSketchOn(XY)
-  |> startProfile(%, at = [-insertLength / 2, insertThickness / 2])
+  |> startProfile(at = [-insertLength / 2, insertThickness / 2])
   |> tongueBlockFn()
   |> yLine(length = -insertThickness / 2)
   |> xLine(length = -insertLength)
-  |> close(%)
+  |> close()
 
 // Create bottom-side profile with grooves (inverse of tongue)
 grooveShape = startSketchOn(XY)
@@ -55,7 +55,7 @@ grooveShape = startSketchOn(XY)
   |> tongueBlockFn()
   |> yLine(length = insertThickness / 2 + tongueDepth)
   |> xLine(length = -insertLength)
-  |> close(%)
+  |> close()
 
 // Extrude both tongue and groove profiles to form the final thermal insert block
 insertShape = extrude([tongueShape, grooveShape], length = insertHeight)
