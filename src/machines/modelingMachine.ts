@@ -1,6 +1,7 @@
 import toast from 'react-hot-toast'
 import { Mesh, Vector2, Vector3 } from 'three'
-import { assign, fromPromise, setup } from 'xstate'
+import type { ActorRef, Snapshot } from 'xstate'
+import { assign, fromPromise, sendTo, setup } from 'xstate'
 
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
@@ -132,7 +133,7 @@ import {
   sceneInfra,
 } from '@src/lib/singletons'
 import type { ToolbarModeName } from '@src/lib/toolbar'
-import { err, reportRejection, trap } from '@src/lib/trap'
+import { err, reject, reportRejection, trap } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
 import { isDesktop } from '@src/lib/isDesktop'
 import {
@@ -147,6 +148,10 @@ import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import { letEngineAnimateAndSyncCamAfter } from '@src/clientSideScene/CameraControls'
 import { addShell } from '@src/lang/modifyAst/faces'
 import { intersectInfo } from '@src/components/Toolbar/Intersect'
+
+enum SketchTools {
+  Rectangle = 'rectangle',
+}
 
 export type SetSelections =
   | {
@@ -483,6 +488,10 @@ export type ModelingMachineEvent =
   | {
       type: 'Restore default plane visibility'
     }
+  | {
+      type: 'update sketchDetails'
+      data: SketchDetails | null
+    }
 
 export type MoveDesc = { line: number; snippet: string }
 
@@ -580,6 +589,248 @@ export const modelingMachineDefaultContext: ModelingMachineContext = {
 }
 
 const NO_INPUT_PROVIDED_MESSAGE = 'No input provided'
+
+const setupClientSideSketchSegments = fromPromise(
+  async ({
+    input: { sketchDetails, selectionRanges },
+  }: {
+    input: {
+      sketchDetails: SketchDetails | null
+      selectionRanges: Selections
+    }
+  }) => {
+    if (!sketchDetails) {
+      return
+    }
+    if (!sketchDetails.sketchEntryNodePath?.length) {
+      return
+    }
+    sceneInfra.resetMouseListeners()
+    await sceneEntitiesManager.setupSketch({
+      sketchEntryNodePath: sketchDetails?.sketchEntryNodePath || [],
+      sketchNodePaths: sketchDetails.sketchNodePaths,
+      forward: sketchDetails.zAxis,
+      up: sketchDetails.yAxis,
+      position: sketchDetails.origin,
+      maybeModdedAst: kclManager.ast,
+      selectionRanges,
+    })
+    sceneInfra.resetMouseListeners()
+
+    sceneEntitiesManager.setupSketchIdleCallbacks({
+      sketchEntryNodePath: sketchDetails?.sketchEntryNodePath || [],
+      forward: sketchDetails.zAxis,
+      up: sketchDetails.yAxis,
+      position: sketchDetails.origin,
+      sketchNodePaths: sketchDetails.sketchNodePaths,
+      planeNodePath: sketchDetails.planeNodePath,
+      // We will want to pass sketchTools here
+      // to add their interactions
+    })
+
+    // We will want to update the context with sketchTools.
+    // They'll be used for their .destroy() in tearDownSketch
+    return undefined
+  }
+)
+
+/**
+ * TODO: It's likely this should become a `SketchToolContext` if much are shared between tool actors
+ */
+type RectangleToolContext = {
+  selectionRanges: Selections
+  sketchDetails: SketchDetails | null
+  parentActorRef: ActorRef<
+    Snapshot<unknown>,
+    { type: 'update sketchDetails'; data: SketchDetails | null }
+  >
+}
+const rectangleTool = setup({
+  types: {
+    context: {} as RectangleToolContext,
+    input: {} as RectangleToolContext,
+    events: {} as
+      | { type: 'Finish rectangle' }
+      | {
+          type:
+            | 'Add circle origin'
+            | 'Add circle center'
+            | 'Add center rectangle origin'
+            | 'click in scene'
+            | 'Add first point'
+          data: [x: number, y: number]
+        },
+  },
+  actors: {
+    'setup-client-side-sketch-segments': setupClientSideSketchSegments,
+    'set-up-draft-rectangle': fromPromise(
+      async ({
+        input: { sketchDetails, data },
+      }: {
+        input: Pick<ModelingMachineContext, 'sketchDetails'> & {
+          data: [x: number, y: number]
+        }
+      }): Promise<SketchDetailsUpdate> => {
+        if (!sketchDetails || !data) {
+          return reject('No sketch details or data')
+        }
+
+        const result = await sceneEntitiesManager.setupDraftRectangle(
+          sketchDetails.sketchNodePaths,
+          sketchDetails.planeNodePath,
+          sketchDetails.zAxis,
+          sketchDetails.yAxis,
+          sketchDetails.origin,
+          data
+        )
+        if (err(result)) {
+          return reject(result)
+        }
+        await codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
+
+        return result
+      }
+    ),
+  },
+  actions: {
+    'reset deleteIndex': assign(({ context: { sketchDetails } }) => {
+      if (!sketchDetails) {
+        return {}
+      }
+      return {
+        sketchDetails: {
+          ...sketchDetails,
+          expressionIndexToDelete: -1,
+        },
+      }
+    }),
+    'listen for rectangle origin': ({ context: { sketchDetails } }) => {
+      console.log('FRANK listen for rectangle origin', {
+        sketchDetails,
+        sceneInfra,
+        sceneEntitiesManager,
+      })
+      if (!sketchDetails) {
+        return
+      }
+      const quaternion = quaternionFromUpNForward(
+        new Vector3(...sketchDetails.yAxis),
+        new Vector3(...sketchDetails.zAxis)
+      )
+
+      // Position the click raycast plane
+
+      sceneEntitiesManager.intersectionPlane.setRotationFromQuaternion(
+        quaternion
+      )
+      sceneEntitiesManager.intersectionPlane.position.copy(
+        new Vector3(...(sketchDetails?.origin || [0, 0, 0]))
+      )
+
+      sceneInfra.setCallbacks({
+        onClick: (args) => {
+          if (!args) {
+            return
+          }
+          if (args.mouseEvent.which !== 1) {
+            return
+          }
+          const twoD = args.intersectionPoint?.twoD
+          if (twoD) {
+            sceneInfra.modelingSend({
+              type: 'click in scene',
+              data: sceneEntitiesManager.getSnappedDragPoint(
+                twoD,
+                args.intersects,
+                args.mouseEvent
+              ).snappedPoint,
+            })
+          } else {
+            console.error('No intersection point found')
+          }
+        },
+      })
+    },
+  },
+}).createMachine({
+  context: ({ input }) => ({
+    ...input,
+  }),
+  on: {
+    '*': {
+      actions: ({ event, context }) =>
+        console.log('FRANK rectangleTool event', { event, context }),
+    },
+  },
+  entry: [(props) => console.log('FRANK rectangleTool entry', props)],
+  states: {
+    'Awaiting second corner': {
+      on: {
+        'Finish rectangle': {
+          target: 'Finished Rectangle',
+          actions: 'reset deleteIndex',
+        },
+      },
+    },
+
+    'Awaiting origin': {
+      on: {
+        'click in scene': {
+          target: 'adding draft rectangle',
+          reenter: true,
+        },
+      },
+
+      entry: 'listen for rectangle origin',
+    },
+
+    'Finished Rectangle': {
+      invoke: {
+        id: 'setup-client-side-sketch-segments',
+        src: 'setup-client-side-sketch-segments',
+        input: ({ context }) => ({
+          selectionRanges: context.selectionRanges,
+          sketchDetails: context.sketchDetails,
+        }),
+      },
+      type: 'final',
+    },
+
+    'adding draft rectangle': {
+      invoke: {
+        src: 'set-up-draft-rectangle',
+        id: 'set-up-draft-rectangle',
+        onDone: {
+          target: 'Awaiting second corner',
+          actions: sendTo(
+            ({ context }) => context.parentActorRef,
+            ({ context }) => {
+              return {
+                type: 'update sketchDetails',
+                data: context.sketchDetails,
+              }
+            }
+          ),
+        },
+        onError: 'Awaiting origin',
+        input: ({ context: { sketchDetails }, event }) => {
+          if (event.type !== 'click in scene') {
+            return {
+              sketchDetails,
+              data: [0, 0],
+            }
+          }
+          return {
+            sketchDetails,
+            data: event.data,
+          }
+        },
+      },
+    },
+  },
+
+  initial: 'Awaiting origin',
+})
 
 export const modelingMachine = setup({
   types: {
@@ -2065,45 +2316,7 @@ export const modelingMachine = setup({
         return {} as SetSelections
       }
     ),
-    'setup-client-side-sketch-segments': fromPromise(
-      async ({
-        input: { sketchDetails, selectionRanges },
-      }: {
-        input: {
-          sketchDetails: SketchDetails | null
-          selectionRanges: Selections
-        }
-      }) => {
-        if (!sketchDetails) return
-        if (!sketchDetails.sketchEntryNodePath?.length) return
-        sceneInfra.resetMouseListeners()
-        await sceneEntitiesManager.setupSketch({
-          sketchEntryNodePath: sketchDetails?.sketchEntryNodePath || [],
-          sketchNodePaths: sketchDetails.sketchNodePaths,
-          forward: sketchDetails.zAxis,
-          up: sketchDetails.yAxis,
-          position: sketchDetails.origin,
-          maybeModdedAst: kclManager.ast,
-          selectionRanges,
-        })
-        sceneInfra.resetMouseListeners()
-
-        sceneEntitiesManager.setupSketchIdleCallbacks({
-          sketchEntryNodePath: sketchDetails?.sketchEntryNodePath || [],
-          forward: sketchDetails.zAxis,
-          up: sketchDetails.yAxis,
-          position: sketchDetails.origin,
-          sketchNodePaths: sketchDetails.sketchNodePaths,
-          planeNodePath: sketchDetails.planeNodePath,
-          // We will want to pass sketchTools here
-          // to add their interactions
-        })
-
-        // We will want to update the context with sketchTools.
-        // They'll be used for their .destroy() in tearDownSketch
-        return undefined
-      }
-    ),
+    'setup-client-side-sketch-segments': setupClientSideSketchSegments,
     'animate-to-sketch': fromPromise(
       async ({
         input: { selectionRanges },
@@ -3451,6 +3664,7 @@ export const modelingMachine = setup({
         }
       }
     ),
+    [SketchTools.Rectangle]: rectangleTool,
   },
   // end actors
 }).createMachine({
@@ -4015,66 +4229,35 @@ export const modelingMachine = setup({
         },
 
         'Rectangle tool': {
-          states: {
-            'Awaiting second corner': {
-              on: {
-                'Finish rectangle': {
-                  target: 'Finished Rectangle',
-                  actions: 'reset deleteIndex',
-                },
-              },
+          entry: [(props) => console.log('FRANK rectangle tool enter', props)],
+          invoke: {
+            id: SketchTools.Rectangle,
+            src: SketchTools.Rectangle,
+            input: ({ context, self }) => ({
+              sketchDetails: context.sketchDetails,
+              selectionRanges: context.selectionRanges,
+              parentActorRef: self,
+            }),
+            onDone: {
+              target: 'Rectangle tool',
+              reenter: true,
             },
-
-            'Awaiting origin': {
-              on: {
-                'click in scene': {
-                  target: 'adding draft rectangle',
-                  reenter: true,
-                },
-              },
-
-              entry: 'listen for rectangle origin',
-            },
-
-            'Finished Rectangle': {
-              invoke: {
-                src: 'setup-client-side-sketch-segments',
-                id: 'setup-client-side-sketch-segments',
-                onDone: 'Awaiting origin',
-                input: ({ context: { sketchDetails, selectionRanges } }) => ({
-                  sketchDetails,
-                  selectionRanges,
-                }),
-              },
-            },
-
-            'adding draft rectangle': {
-              invoke: {
-                src: 'set-up-draft-rectangle',
-                id: 'set-up-draft-rectangle',
-                onDone: {
-                  target: 'Awaiting second corner',
-                  actions: 'update sketchDetails',
-                },
-                onError: 'Awaiting origin',
-                input: ({ context: { sketchDetails }, event }) => {
-                  if (event.type !== 'click in scene')
-                    return {
-                      sketchDetails,
-                      data: [0, 0],
-                    }
-                  return {
-                    sketchDetails,
-                    data: event.data,
-                  }
-                },
-              },
+            onError: {
+              target: 'SketchIdle',
+              actions: [
+                (props) =>
+                  console.error('FRANK error during rectangle tool', props),
+              ],
             },
           },
 
-          initial: 'Awaiting origin',
-
           on: {
+            'click in scene': {
+              actions: [
+                sendTo(SketchTools.Rectangle, ({ event }) => event),
+                ({ event }) => console.log('FRANK just sent an event', event),
+              ],
+            },
             'change tool': {
               target: 'Change Tool',
               reenter: true,
@@ -4738,6 +4921,10 @@ export const modelingMachine = setup({
         'Constrain with named value': {
           target: '.Converting to named value',
           guard: 'Can convert to named value',
+        },
+        'update sketchDetails': {
+          actions: ['update sketchDetails'],
+          reenter: false,
         },
       },
 
