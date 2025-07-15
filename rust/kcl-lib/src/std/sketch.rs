@@ -1924,8 +1924,8 @@ pub(crate) async fn inner_elliptic(
                 path: sketch.id.into(),
                 segment: PathSegment::Ellipse {
                     center: KPoint2d::from(untyped_point_to_mm(center_u, from.units)).map(LengthUnit),
-                    major_radius: LengthUnit(from.units.adjust_to(major_radius.to_mm(), UnitLen::Mm).0),
-                    minor_radius: LengthUnit(from.units.adjust_to(minor_radius.to_mm(), UnitLen::Mm).0),
+                    major_radius: LengthUnit(major_radius.to_mm()),
+                    minor_radius: LengthUnit(minor_radius.to_mm()),
                     start_angle,
                     end_angle,
                 },
