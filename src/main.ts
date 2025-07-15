@@ -63,7 +63,6 @@ const args = parseCLIArgs(process.argv)
 // @ts-ignore: TS1343
 const viteEnv = import.meta.env
 const NODE_ENV = process.env.NODE_ENV || viteEnv.MODE
-const IS_PLAYWRIGHT = process.env.IS_PLAYWRIGHT
 
 // dotenv override when present
 dotenv.config({ path: [`.env.${NODE_ENV}.local`, `.env.${NODE_ENV}`] })
@@ -96,7 +95,7 @@ if (process.defaultApp) {
 // Must be done before ready event.
 // Checking against this lock is needed for Windows and Linux, see
 // https://www.electronjs.org/docs/latest/tutorial/launch-app-from-url-in-another-app#windows-and-linux-code
-if (!singleInstanceLock && !IS_PLAYWRIGHT) {
+if (!singleInstanceLock && process.env.NODE_ENV !== 'test') {
   app.quit()
 } else {
   registerStartupListeners()
@@ -592,7 +591,7 @@ const getProjectPathAtStartup = async (
   // startup.
   // Since the args passed are always '.'
   // aka Forge for npm run tron:start live dev or playwright tests, but not dev packaged apps
-  if (MAIN_WINDOW_VITE_DEV_SERVER_URL || IS_PLAYWRIGHT) {
+  if (MAIN_WINDOW_VITE_DEV_SERVER_URL || process.env.NODE_ENV === 'test') {
     return null
   }
 
