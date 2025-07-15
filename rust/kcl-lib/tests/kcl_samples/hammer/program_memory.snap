@@ -15,10 +15,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3345,
-            "end": 3351,
+            "commentStart": 3258,
+            "end": 3264,
             "moduleId": 0,
-            "start": 3345,
+            "start": 3258,
             "type": "TagDeclarator",
             "value": "seg05"
           },
@@ -29,10 +29,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3389,
-            "end": 3401,
+            "commentStart": 3302,
+            "end": 3314,
             "moduleId": 0,
-            "start": 3389,
+            "start": 3302,
             "type": "TagDeclarator",
             "value": "capStart001"
           },
@@ -59,10 +59,10 @@ description: Variables in memory after executing hammer.kcl
             ],
             "radius": 0.45,
             "tag": {
-              "commentStart": 3345,
-              "end": 3351,
+              "commentStart": 3258,
+              "end": 3264,
               "moduleId": 0,
-              "start": 3345,
+              "start": 3258,
               "type": "TagDeclarator",
               "value": "seg05"
             },
