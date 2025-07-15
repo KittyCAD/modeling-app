@@ -25,37 +25,29 @@ fn tongueBlockFn() {
     |> line(end = [-tongueSetback, tongueDepth])
     |> xLine(length = tongueLength)
     |> line(end = [-tongueSetback, -tongueDepth])
-    |> patternLinear2d(
-         %,
-         instances = tongueCount,
-         distance = tongueStep,
-         axis = [1, 0],
-       )
+    |> patternLinear2d(instances = tongueCount, distance = tongueStep, axis = [1, 0])
     |> xLine(length = tongueLength)
   return tongueSingleBlock
 }
 
 // Create top-side profile with tongues
 tongueShape = startSketchOn(XY)
-  |> startProfile(%, at = [-insertLength / 2, insertThickness / 2])
+  |> startProfile(at = [-insertLength / 2, insertThickness / 2])
   |> tongueBlockFn()
   |> yLine(length = -insertThickness / 2)
   |> xLine(length = -insertLength)
-  |> close(%)
+  |> close()
 
 // Create bottom-side profile with grooves (inverse of tongue)
 grooveShape = startSketchOn(XY)
-  |> startProfile(
-       %,
-       at = [
-         -insertLength / 2,
-         -insertThickness / 2 - tongueDepth
-       ],
-     )
+  |> startProfile(at = [
+       -insertLength / 2,
+       -insertThickness / 2 - tongueDepth
+     ])
   |> tongueBlockFn()
   |> yLine(length = insertThickness / 2 + tongueDepth)
   |> xLine(length = -insertLength)
-  |> close(%)
+  |> close()
 
 // Extrude both tongue and groove profiles to form the final thermal insert block
 insertShape = extrude([tongueShape, grooveShape], length = insertHeight)
