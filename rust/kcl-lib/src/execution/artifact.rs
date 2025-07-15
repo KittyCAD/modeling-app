@@ -176,6 +176,13 @@ pub enum SweepSubType {
 pub struct Solid2d {
     pub id: ArtifactId,
     pub path_id: ArtifactId,
+    /// The hole, if any, from a subtract2d() call.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub inner_solid2d_id: Option<ArtifactId>,
+    /// The Solid2d that this is a hole of, if any.  The inverse link of
+    /// `inner_solid2d_id`.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub outer_solid2d_id: Option<ArtifactId>,
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
@@ -396,7 +403,7 @@ impl Artifact {
             Artifact::Plane(a) => a.merge(new),
             Artifact::Path(a) => a.merge(new),
             Artifact::Segment(a) => a.merge(new),
-            Artifact::Solid2d(_) => Some(new),
+            Artifact::Solid2d(a) => a.merge(new),
             Artifact::StartSketchOnFace { .. } => Some(new),
             Artifact::StartSketchOnPlane { .. } => Some(new),
             Artifact::Sweep(a) => a.merge(new),
@@ -469,6 +476,18 @@ impl Sweep {
         };
         merge_ids(&mut self.surface_ids, new.surface_ids);
         merge_ids(&mut self.edge_ids, new.edge_ids);
+
+        None
+    }
+}
+
+impl Solid2d {
+    fn merge(&mut self, new: Artifact) -> Option<Artifact> {
+        let Artifact::Solid2d(new) = new else {
+            return Some(new);
+        };
+        merge_opt_id(&mut self.inner_solid2d_id, new.inner_solid2d_id);
+        merge_opt_id(&mut self.outer_solid2d_id, new.outer_solid2d_id);
 
         None
     }
@@ -868,6 +887,8 @@ fn artifacts_to_update(
                 return_arr.push(Artifact::Solid2d(Solid2d {
                     id: close_path.face_id.into(),
                     path_id,
+                    inner_solid2d_id: None,
+                    outer_solid2d_id: None,
                 }));
                 if let Some(Artifact::Path(path)) = path {
                     let mut new_path = path.clone();
@@ -1084,14 +1105,24 @@ fn artifacts_to_update(
                     let Some(face_id) = face.face_id.map(ArtifactId::new) else {
                         continue;
                     };
-                    let path_sweep_id = path.sweep_id.ok_or_else(|| {
-                        KclError::new_internal(KclErrorDetails::new(
+                    let Some(path_sweep_id) = path.sweep_id else {
+                        // If the path doesn't have a sweep ID, check if the
+                        // Solid2d is a hole.
+                        if let Some(solid2d_id) = path.solid2d_id {
+                            if let Some(Artifact::Solid2d(solid2d)) = artifacts.get(&solid2d_id) {
+                                if solid2d.outer_solid2d_id.is_some() {
+                                    // This is a hole.
+                                    continue;
+                                }
+                            }
+                        };
+                        return Err(KclError::new_internal(KclErrorDetails::new(
                             format!(
                                 "Expected a sweep ID on the path when processing last path's Solid3dGetExtrusionFaceInfo command, but we have none: {id:?}, {path:?}"
                             ),
                             vec![range],
-                        ))
-                    })?;
+                        )));
+                    };
                     let extra_artifact = exec_artifacts.values().find(|a| {
                         if let Artifact::StartSketchOnFace(s) = a {
                             s.face_id == face_id
@@ -1265,6 +1296,25 @@ fn artifacts_to_update(
             })];
             // We could add the reverse graph edge connecting from the edge to
             // the helix here, but it's not useful right now.
+            return Ok(return_arr);
+        }
+        ModelingCmd::Solid2dAddHole(solid2d_add_hole) => {
+            let mut return_arr = Vec::new();
+            // Add the hole to the outer solid2d.
+            let outer_solid2d = artifacts.get(&ArtifactId::new(solid2d_add_hole.object_id));
+            if let Some(Artifact::Solid2d(solid2d)) = outer_solid2d {
+                let mut new_solid2d = solid2d.clone();
+                new_solid2d.inner_solid2d_id = Some(ArtifactId::new(solid2d_add_hole.hole_id));
+                return_arr.push(Artifact::Solid2d(new_solid2d));
+            }
+            // Add the outer to the hole solid2d.
+            let inner_solid2d = artifacts.get(&ArtifactId::new(solid2d_add_hole.hole_id));
+            if let Some(Artifact::Solid2d(solid2d)) = inner_solid2d {
+                let mut new_solid2d = solid2d.clone();
+                new_solid2d.outer_solid2d_id = Some(ArtifactId::new(solid2d_add_hole.object_id));
+                return_arr.push(Artifact::Solid2d(new_solid2d));
+            }
+
             return Ok(return_arr);
         }
         ModelingCmd::BooleanIntersection(_) | ModelingCmd::BooleanSubtract(_) | ModelingCmd::BooleanUnion(_) => {
