@@ -2,9 +2,9 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Error from executing kw_fn_too_few_args.kcl
 ---
-KCL Semantic error
+KCL Argument error
 
-  × semantic: This function requires a parameter y, but you haven't passed it
+  × argument: This function requires a parameter y, but you haven't passed it
   │ one.
    ╭─[1:14]
  1 │ ╭─▶ fn add(x, y) {
@@ -16,9 +16,9 @@ KCL Semantic error
    ·             ─────┬────
    ·                  ╰── tests/kw_fn_too_few_args/input.kcl
    ╰────
-  ╰─▶ KCL Semantic error
+  ╰─▶ KCL Argument error
       
-        × semantic: This function requires a parameter y, but you haven't
+        × argument: This function requires a parameter y, but you haven't
         │ passed it one.
          ╭─[1:14]
        1 │ ╭─▶ fn add(x, y) {

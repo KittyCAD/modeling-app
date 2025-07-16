@@ -612,7 +612,7 @@ fn type_check_params_kw(
                                     // TODO if we have access to the AST for the argument we could choose which example to suggest.
                                     message = format!("{message}\n\nYou may need to add information about the type of the argument, for example:\n  using a numeric suffix: `42{ty}`\n  or using type ascription: `foo(): number({ty})`");
                                 }
-                                KclError::new_semantic(KclErrorDetails::new(
+                                KclError::new_argument(KclErrorDetails::new(
                                     message,
                                     vec![arg.source_range],
                                 ))
@@ -664,7 +664,7 @@ fn type_check_params_kw(
         let first = errors.next().unwrap();
         errors.for_each(|e| exec_state.err(e));
 
-        return Err(KclError::new_semantic(first.into()));
+        return Err(KclError::new_argument(first.into()));
     }
 
     if let Some(arg) = &mut args.unlabeled {
@@ -672,7 +672,7 @@ fn type_check_params_kw(
             let rty = RuntimeType::from_parsed(ty.clone(), exec_state, arg.1.source_range)
                 .map_err(|e| KclError::new_semantic(e.into()))?;
             arg.1.value = arg.1.value.coerce(&rty, true, exec_state).map_err(|_| {
-                KclError::new_semantic(KclErrorDetails::new(
+                KclError::new_argument(KclErrorDetails::new(
                     format!(
                         "The input argument of {} requires {}",
                         fn_name
@@ -728,7 +728,7 @@ fn assign_args_to_params_kw(
                         .add(name.clone(), value, default_val.source_range())?;
                 }
                 None => {
-                    return Err(KclError::new_semantic(KclErrorDetails::new(
+                    return Err(KclError::new_argument(KclErrorDetails::new(
                         format!("This function requires a parameter {name}, but you haven't passed it one."),
                         source_ranges,
                     )));
@@ -742,14 +742,14 @@ fn assign_args_to_params_kw(
 
         let Some(unlabeled) = unlabelled else {
             return Err(if args.kw_args.labeled.contains_key(param_name) {
-                KclError::new_semantic(KclErrorDetails::new(
+                KclError::new_argument(KclErrorDetails::new(
                     format!(
                         "The function does declare a parameter named '{param_name}', but this parameter doesn't use a label. Try removing the `{param_name}:`"
                     ),
                     source_ranges,
                 ))
             } else {
-                KclError::new_semantic(KclErrorDetails::new(
+                KclError::new_argument(KclErrorDetails::new(
                     "This function expects an unlabeled first parameter, but you haven't passed it one.".to_owned(),
                     source_ranges,
                 ))
@@ -775,7 +775,7 @@ fn coerce_result_type(
             let ty = RuntimeType::from_parsed(ret_ty.inner.clone(), exec_state, ret_ty.as_source_range())
                 .map_err(|e| KclError::new_semantic(e.into()))?;
             let val = val.coerce(&ty, true, exec_state).map_err(|_| {
-                KclError::new_semantic(KclErrorDetails::new(
+                KclError::new_type(KclErrorDetails::new(
                     format!(
                         "This function requires its result to be {}",
                         type_err_str(ret_ty, &val, &(&val).into(), exec_state)
@@ -858,7 +858,7 @@ mod test {
                 "all params required, none given, should error",
                 vec![req_param("x")],
                 vec![],
-                Err(KclError::new_semantic(KclErrorDetails::new(
+                Err(KclError::new_argument(KclErrorDetails::new(
                     "This function requires a parameter x, but you haven't passed it one.".to_owned(),
                     vec![SourceRange::default()],
                 ))),
@@ -873,7 +873,7 @@ mod test {
                 "mixed params, too few given",
                 vec![req_param("x"), opt_param("y")],
                 vec![],
-                Err(KclError::new_semantic(KclErrorDetails::new(
+                Err(KclError::new_argument(KclErrorDetails::new(
                     "This function requires a parameter x, but you haven't passed it one.".to_owned(),
                     vec![SourceRange::default()],
                 ))),

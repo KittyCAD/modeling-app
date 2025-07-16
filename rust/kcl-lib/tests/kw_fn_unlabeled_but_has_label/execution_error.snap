@@ -2,9 +2,9 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Error from executing kw_fn_unlabeled_but_has_label.kcl
 ---
-KCL Semantic error
+KCL Argument error
 
-  × semantic: The function does declare a parameter named 'x', but this
+  × argument: The function does declare a parameter named 'x', but this
   │ parameter doesn't use a label. Try removing the `x:`
    ╭─[1:12]
  1 │ ╭─▶ fn add(@x) {
@@ -16,9 +16,9 @@ KCL Semantic error
    ·           ─────┬────
    ·                ╰── tests/kw_fn_unlabeled_but_has_label/input.kcl
    ╰────
-  ╰─▶ KCL Semantic error
+  ╰─▶ KCL Argument error
       
-        × semantic: The function does declare a parameter named 'x', but this
+        × argument: The function does declare a parameter named 'x', but this
         │ parameter doesn't use a label. Try removing the `x:`
          ╭─[1:12]
        1 │ ╭─▶ fn add(@x) {
