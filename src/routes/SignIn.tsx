@@ -20,7 +20,11 @@ import { toSync, capitaliseFC } from '@src/lib/utils'
 import { authActor, useSettings } from '@src/lib/singletons'
 import { APP_VERSION, generateSignInUrl } from '@src/routes/utils'
 import { withAPIBaseURL, withSiteBaseURL } from '@src/lib/withBaseURL'
-import { updateEnvironment, updateEnvironmentPool } from '@src/env'
+import {
+  getEnvironmentNameForDisplay,
+  updateEnvironment,
+  updateEnvironmentPool,
+} from '@src/env'
 import env, { getEnvironmentName, getViteEnvironmentName } from '@src/env'
 import {
   readEnvironmentConfigurationPool,
@@ -49,21 +53,17 @@ const SignIn = () => {
 
   // Last saved environment
   const lastSelectedEnvironmentName = getEnvironmentName()
-
   const viteEnvironmentName = getViteEnvironmentName(env())
   const environmentName = lastSelectedEnvironmentName || viteEnvironmentName
   const [selectedEnvironment, setSelectedEnvironment] =
     useState(environmentName)
-  const [pool, setPool] = useState(env().POOL)
-  const formattedEnvironmentName =
-    env().NODE_ENV === 'production' && environmentName
-      ? capitaliseFC(selectedEnvironment || environmentName)
-      : '.env'
+  const [pool, setPool] = useState(env().POOL || '')
+  const environmentNameDisplay = capitaliseFC(environmentName)
 
   // TODO only run on desktop.
   useEffect(() => {
     if (isEnvironmentName(selectedEnvironment)) {
-      if (pool) {
+      if (pool || pool === '') {
         writeEnvironmentConfigurationPool(selectedEnvironment, pool)
       }
     }
@@ -76,6 +76,7 @@ const SignIn = () => {
         .then((cachedPool) => {
           writeEnvironmentFile(selectedEnvironment)
             .then(() => {
+              updateEnvironment(selectedEnvironment)
               updateEnvironmentPool(selectedEnvironment, cachedPool)
               setPool(cachedPool)
             })
@@ -217,9 +218,7 @@ const SignIn = () => {
                     </button>
                     {env().NODE_ENV === 'production' && (
                       <AdvancedSignInOptions
-                        signInDesktopDevelopment={signInDesktopDevelopment}
-                        signInDesktopProduction={signInDesktopProduction}
-                        formattedEnvironmentName={formattedEnvironmentName}
+                        environmentNameDisplay={environmentNameDisplay}
                         pool={pool}
                         setPool={setPool}
                         selectedEnvironment={selectedEnvironment}

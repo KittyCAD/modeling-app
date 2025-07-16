@@ -4,6 +4,7 @@ import { CustomIcon } from '@src/components/CustomIcon'
 import { Fragment } from 'react'
 import { SUPPORTED_ENVIRONMENTS } from '@src/lib/constants'
 import { ActionIcon } from '@src/components/ActionIcon'
+import { capitaliseFC } from '@src/lib/utils'
 
 function EnvironmentOptionRow({
   copy,
@@ -26,28 +27,22 @@ function EnvironmentOptionRow({
 }
 
 export const AdvancedSignInOptions = ({
-  signInDesktopDevelopment,
-  signInDesktopProduction,
-  formattedEnvironmentName,
+  environmentNameDisplay,
   pool,
   setPool,
   selectedEnvironment,
   setSelectedEnvironment,
 }: {
-  signInDesktopDevelopment: AsyncFn<() => void>
-  signInDesktopProduction: AsyncFn<() => void>
-  formattedEnvironmentName: string
+  environmentNameDisplay: string
   pool: string
   setPool: React.Dispatch<React.SetStateAction<string>>
   selectedEnvironment: string
   setSelectedEnvironment: React.Dispatch<React.SetStateAction<string>>
 }) => {
-  const environments = Object.keys(SUPPORTED_ENVIRONMENTS)
   return (
     <div className="flex flex-row items-center">
       <span className="text-xs text-chalkboard-70 dark:text-chalkboard-30 w-64 h-8">
-        Signing into{' '}
-        <span className="font-bold">{formattedEnvironmentName}</span>{' '}
+        Signing into <span className="font-bold">{environmentNameDisplay}</span>{' '}
         environment
         {pool !== '' && (
           <span>
@@ -90,27 +85,35 @@ export const AdvancedSignInOptions = ({
                 <RadioGroup
                   className="mb-2"
                   value={selectedEnvironment}
-                  onChange={setSelectedEnvironment}
+                  onChange={(event)=>{
+                    setSelectedEnvironment(event)
+                  }}
                 >
                   <RadioGroup.Label className="text-xs text-chalkboard-70 dark:text-chalkboard-30">
                     Environment
                   </RadioGroup.Label>
-                  <RadioGroup.Option value="production">
-                    {({ checked }) =>
-                      EnvironmentOptionRow({ checked, copy: 'Production' })
-                    }
-                  </RadioGroup.Option>
-                  <RadioGroup.Option value="production-us">
+                  <RadioGroup.Option
+                    value={SUPPORTED_ENVIRONMENTS.production.name}
+                  >
                     {({ checked }) =>
                       EnvironmentOptionRow({
                         checked,
-                        copy: 'Production US Regulated',
+                        copy: capitaliseFC(
+                          SUPPORTED_ENVIRONMENTS.production.name
+                        ),
                       })
                     }
                   </RadioGroup.Option>
-                  <RadioGroup.Option value="development">
+                  <RadioGroup.Option
+                    value={SUPPORTED_ENVIRONMENTS.development.name}
+                  >
                     {({ checked }) =>
-                      EnvironmentOptionRow({ checked, copy: 'Development' })
+                      EnvironmentOptionRow({
+                        checked,
+                        copy: capitaliseFC(
+                          SUPPORTED_ENVIRONMENTS.development.name
+                        ),
+                      })
                     }
                   </RadioGroup.Option>
                 </RadioGroup>
