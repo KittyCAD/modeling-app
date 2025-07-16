@@ -62,19 +62,6 @@ export function SettingsSectionsList({
       >
         About
       </button>
-      <button
-        onClick={() =>
-          scrollRef.current
-            ?.querySelector(`#settings-sign-out-and-clear-everything`)
-            ?.scrollIntoView({
-              block: 'center',
-              behavior: 'smooth',
-            })
-        }
-        className="capitalize text-left border-none px-1"
-      >
-        Environments
-      </button>
     </div>
   )
 }

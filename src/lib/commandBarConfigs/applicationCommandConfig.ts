@@ -29,7 +29,6 @@ import {
   writeEnvironmentFile,
 } from '@src/lib/desktop'
 import { getEnvironmentName } from '@src/env'
-import env from '@src/env'
 
 function onSubmitKCLSampleCreation({
   sample,

@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import type { AsyncFn } from '@src/lib/types'
 import { Popover, Transition, RadioGroup, Combobox } from '@headlessui/react'
 import { CustomIcon } from '@src/components/CustomIcon'
