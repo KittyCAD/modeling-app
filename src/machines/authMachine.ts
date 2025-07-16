@@ -181,8 +181,8 @@ async function getUser(input: { token?: string }) {
     // Always use the development.json environment when running in dev mode.
     const environment =
       env().NODE_ENV === 'production'
-      ? await readEnvironmentFile()
-      : 'development'
+        ? await readEnvironmentFile()
+        : 'development'
     if (isEnvironmentName(environment)) {
       updateEnvironment(environment)
     } else {
@@ -195,7 +195,6 @@ async function getUser(input: { token?: string }) {
     const cachedPool = await readEnvironmentConfigurationPool(environment)
     updateEnvironmentPool(environment, cachedPool)
   }
-
 
   let token = ''
   try {

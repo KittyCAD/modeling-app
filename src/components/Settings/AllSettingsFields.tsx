@@ -1,6 +1,6 @@
 import decamelize from 'decamelize'
-import type { Dispatch, ForwardedRef } from 'react'
-import { forwardRef, useMemo, useState } from 'react'
+import type { ForwardedRef } from 'react'
+import { forwardRef, useMemo } from 'react'
 import toast from 'react-hot-toast'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Fragment } from 'react/jsx-runtime'
@@ -35,8 +35,6 @@ import {
   acceptOnboarding,
   catchOnboardingWarnError,
 } from '@src/routes/Onboarding/utils'
-import { DeleteConfirmationDialog } from '@src/components/ProjectCard/DeleteProjectDialog'
-import { authActor } from '@src/lib/singletons'
 
 interface AllSettingsFieldsProps {
   searchParamTab: SettingsLevel

@@ -14,7 +14,6 @@ import { PATHS } from '@src/lib/paths'
 import { authActor } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
-import { capitaliseFC } from '@src/lib/utils'
 import env, { getEnvironmentName, getEnvironmentNameForDisplay } from '@src/env'
 import { commandBarActor } from '@src/lib/singletons'
 
@@ -167,13 +166,17 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
               })
             }
           },
-          className: hideEnvironmentItems ? 'hidden' : ''
+          className: hideEnvironmentItems ? 'hidden' : '',
         },
         {
           id: 'sign-out',
           Element: 'button',
           'data-testid': 'user-sidebar-sign-out',
-          children: <span>Sign out{hideEnvironmentItems ? '' : ` of ${fullEnvironmentName}`}</span>,
+          children: (
+            <span>
+              Sign out{hideEnvironmentItems ? '' : ` of ${fullEnvironmentName}`}
+            </span>
+          ),
           onClick: () => send({ type: 'Log out' }),
           className: '', // Just making TS's filter type coercion happy 😠
         },
@@ -183,7 +186,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
           'data-testid': 'user-sidebar-sign-out',
           children: <span>Sign out of all environments</span>,
           onClick: () => send({ type: 'Log out all' }),
-          className: hideEnvironmentItems ? 'hidden' : ''
+          className: hideEnvironmentItems ? 'hidden' : '',
         },
       ].filter(
         (props) =>

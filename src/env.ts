@@ -1,7 +1,7 @@
 import type { Environment, EnvironmentName } from '@src/lib/constants'
 import { SUPPORTED_ENVIRONMENTS } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
-import { capitaliseFC } from './lib/utils'
+import { capitaliseFC } from '@src/lib/utils'
 
 export type EnvironmentVariableSources = {
   readonly VITE_KITTYCAD_API_BASE_URL: string | undefined

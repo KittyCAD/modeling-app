@@ -110,9 +110,8 @@ function BillingStatusBarItem() {
 }
 
 function EnvironmentStatusBarItem() {
-  return (
-    isDesktop() ?
-    (<Popover className="relative flex items-stretch">
+  return isDesktop() ? (
+    <Popover className="relative flex items-stretch">
       <Popover.Button
         className="m-0 p-0 border-0 flex items-stretch"
         data-testid="billing-remaining-bar"
@@ -122,7 +121,9 @@ function EnvironmentStatusBarItem() {
       <Popover.Panel className="absolute left-0 bottom-full mb-1 w-64 flex flex-col gap-1 align-stretch rounded-lg shadow-lg text-sm">
         <EnvironmentDescription />
       </Popover.Panel>
-    </Popover>) :<></>
+    </Popover>
+  ) : (
+    <></>
   )
 }
 

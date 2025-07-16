@@ -20,16 +20,11 @@ import { toSync, capitaliseFC } from '@src/lib/utils'
 import { authActor, useSettings } from '@src/lib/singletons'
 import { APP_VERSION, generateSignInUrl } from '@src/routes/utils'
 import { withAPIBaseURL, withSiteBaseURL } from '@src/lib/withBaseURL'
-import {
-  getEnvironmentNameForDisplay,
-  updateEnvironment,
-  updateEnvironmentPool,
-} from '@src/env'
+import { updateEnvironment, updateEnvironmentPool } from '@src/env'
 import env, { getEnvironmentName, getViteEnvironmentName } from '@src/env'
 import {
   readEnvironmentConfigurationPool,
   writeEnvironmentConfigurationPool,
-  writeEnvironmentConfigurationToken,
   writeEnvironmentFile,
 } from '@src/lib/desktop'
 import { AdvancedSignInOptions } from '@src/routes/AdvancedSignInOptions'
@@ -64,7 +59,9 @@ const SignIn = () => {
   useEffect(() => {
     if (isEnvironmentName(selectedEnvironment)) {
       if (pool || pool === '') {
-        writeEnvironmentConfigurationPool(selectedEnvironment, pool)
+        writeEnvironmentConfigurationPool(selectedEnvironment, pool).catch(
+          reportRejection
+        )
       }
     }
   }, [pool])

@@ -1,4 +1,3 @@
-import type { AsyncFn } from '@src/lib/types'
 import { Popover, Transition, RadioGroup, Combobox } from '@headlessui/react'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { Fragment } from 'react'
@@ -40,8 +39,7 @@ export const AdvancedSignInOptions = ({
   selectedEnvironment: string
   setSelectedEnvironment: React.Dispatch<React.SetStateAction<string>>
 }) => {
-  return (
-    isDesktop() ? (
+  return isDesktop() ? (
     <div className="flex flex-row items-center">
       <span className="text-xs text-chalkboard-70 dark:text-chalkboard-30 w-64 h-8">
         Signing into <span className="font-bold">{environmentNameDisplay}</span>{' '}
@@ -138,5 +136,7 @@ export const AdvancedSignInOptions = ({
         </Transition>
       </Popover>
     </div>
-    ) : <></>)
+  ) : (
+    <></>
+  )
 }
