@@ -20,6 +20,13 @@ const jestConfig: Config = {
   // TAG: paths, path, baseUrl, alias
   // This is necessary to use tsconfig path aliases.
   moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, { prefix: '<rootDir>/../' }),
+  reporters: [
+    "default",
+    ["jest-junit", {
+      outputDirectory: "test-results",
+      outputName: "junit.xml"
+    }]
+  ],
 }
 
 export default jestConfig

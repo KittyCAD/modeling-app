@@ -65,7 +65,7 @@ flowchart LR
     %% face_code_ref=Missing NodePath
   29["SweepEdge Opposite"]
   30["SweepEdge Adjacent"]
-  34["Sweep Extrusion<br>[1891, 1966, 0]"]
+  34["Sweep Extrusion<br>[1891, 1963, 0]"]
     %% [ProgramBodyItem { index: 16 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }]
   35[Wall]
     %% face_code_ref=Missing NodePath
