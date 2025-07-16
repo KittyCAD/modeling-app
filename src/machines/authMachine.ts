@@ -174,25 +174,28 @@ export const authMachine = setup({
 })
 
 async function getUser(input: { token?: string }) {
-  // TODO: Remove at some point in the future after many deployments.
-  await migrateOldTokenToProductionEnvironmentConfiguration()
+  if (isDesktop()) {
+    // TODO: Remove at some point in the future after many deployments.
+    await migrateOldTokenToProductionEnvironmentConfiguration()
 
-  // Always use the development.json environment when running in dev mode.
-  const environment =
-    env().NODE_ENV === 'production'
+    // Always use the development.json environment when running in dev mode.
+    const environment =
+      env().NODE_ENV === 'production'
       ? await readEnvironmentFile()
       : 'development'
-  if (isEnvironmentName(environment)) {
-    updateEnvironment(environment)
-  } else {
-    return Promise.reject(
-      new Error('Unable to update environment from disk cache')
-    )
+    if (isEnvironmentName(environment)) {
+      updateEnvironment(environment)
+    } else {
+      return Promise.reject(
+        new Error('Unable to update environment from disk cache')
+      )
+    }
+
+    // Update the pool
+    const cachedPool = await readEnvironmentConfigurationPool(environment)
+    updateEnvironmentPool(environment, cachedPool)
   }
 
-  // Update the pool
-  const cachedPool = await readEnvironmentConfigurationPool(environment)
-  updateEnvironmentPool(environment, cachedPool)
 
   let token = ''
   try {

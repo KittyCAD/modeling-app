@@ -30,6 +30,9 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
   const send = authActor.send
   const fullEnvironmentName = getEnvironmentNameForDisplay(env())
 
+  // Do not show the environment items on web
+  const hideEnvironmentItems = env().NODE_ENV === 'production' || !isDesktop()
+
   // We filter this memoized list so that no orphan "break" elements are rendered.
   const userMenuItems = useMemo<(ActionButtonProps | 'break')[]>(
     () =>
@@ -164,12 +167,13 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
               })
             }
           },
+          className: hideEnvironmentItems ? 'hidden' : ''
         },
         {
           id: 'sign-out',
           Element: 'button',
           'data-testid': 'user-sidebar-sign-out',
-          children: <span>Sign out of {fullEnvironmentName}</span>,
+          children: <span>Sign out{hideEnvironmentItems ? '' : ` of ${fullEnvironmentName}`}</span>,
           onClick: () => send({ type: 'Log out' }),
           className: '', // Just making TS's filter type coercion happy 😠
         },
@@ -179,7 +183,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
           'data-testid': 'user-sidebar-sign-out',
           children: <span>Sign out of all environments</span>,
           onClick: () => send({ type: 'Log out all' }),
-          className: '', // Just making TS's filter type coercion happy 😠
+          className: hideEnvironmentItems ? 'hidden' : ''
         },
       ].filter(
         (props) =>

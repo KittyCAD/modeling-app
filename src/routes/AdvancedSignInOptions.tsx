@@ -5,6 +5,7 @@ import { Fragment } from 'react'
 import { SUPPORTED_ENVIRONMENTS } from '@src/lib/constants'
 import { ActionIcon } from '@src/components/ActionIcon'
 import { capitaliseFC } from '@src/lib/utils'
+import { isDesktop } from '@src/lib/isDesktop'
 
 function EnvironmentOptionRow({
   copy,
@@ -40,6 +41,7 @@ export const AdvancedSignInOptions = ({
   setSelectedEnvironment: React.Dispatch<React.SetStateAction<string>>
 }) => {
   return (
+    isDesktop() ? (
     <div className="flex flex-row items-center">
       <span className="text-xs text-chalkboard-70 dark:text-chalkboard-30 w-64 h-8">
         Signing into <span className="font-bold">{environmentNameDisplay}</span>{' '}
@@ -136,5 +138,5 @@ export const AdvancedSignInOptions = ({
         </Transition>
       </Popover>
     </div>
-  )
+    ) : <></>)
 }
