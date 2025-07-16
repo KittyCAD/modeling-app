@@ -10,6 +10,6 @@ import width, thickness, height, knobDiameter, knobHeight, knobFilletRadius from
 // Create the knob sketch and revolve
 startSketchOn(XY)
   |> circle(center = [0, 0], radius = knobDiameter / 2, tag = $knobBend)
-  |> extrude(%, length = knobHeight)
+  |> extrude(length = knobHeight)
   |> fillet(radius = knobFilletRadius, tags = [getOppositeEdge(knobBend)])
-  |> appearance(%, color = "#afbf36")
+  |> appearance(color = "#afbf36")

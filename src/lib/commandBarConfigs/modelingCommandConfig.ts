@@ -112,8 +112,8 @@ export type ModelingCommandSchema = {
   Shell: {
     // Enables editing workflow
     nodeToEdit?: PathToNode
-    // KCL stdlib arguments
-    selection: Selections
+    // KCL stdlib arguments, note that we'll be inferring solids from faces here
+    faces: Selections
     thickness: KclCommandValue
   }
   Fillet: {
@@ -585,7 +585,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       nodeToEdit: {
         ...nodeToEditProps,
       },
-      selection: {
+      faces: {
         inputType: 'selection',
         selectionTypes: ['cap', 'wall'],
         multiple: true,
