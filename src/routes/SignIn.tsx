@@ -213,7 +213,7 @@ const SignIn = () => {
                       Sign in to get started
                       <CustomIcon name="arrowRight" className="w-6 h-6" />
                     </button>
-                    {env().NODE_ENV === 'production' && (
+                    {env().NODE_ENV === 'development' && (
                       <AdvancedSignInOptions
                         environmentNameDisplay={environmentNameDisplay}
                         pool={pool}
