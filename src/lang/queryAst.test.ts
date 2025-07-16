@@ -1061,4 +1061,35 @@ revolve001 = revolve([profile001, profile002], axis = X, angle = 180)
     expect(selections.graphSelections[0].artifact.type).toEqual('path')
     expect(selections.graphSelections[1].artifact.type).toEqual('path')
   })
+
+  it('should find the solids selection from a variable-less transform call', async () => {
+    const redExtrusion = `sketch001 = startSketchOn(XZ)
+profile001 = circle(
+  sketch001,
+  center = [0, 0],
+  radius = 100
+)
+extrude001 = extrude(profile001, length = 100)
+appearance(extrude001, color = '#FF0000')`
+    const ast = assertParse(redExtrusion)
+    const { artifactGraph, operations } = await enginelessExecutor(ast)
+    const op = operations.find(
+      (o) => o.type === 'StdLibCall' && o.name === 'appearance'
+    )
+    if (!op || op.type !== 'StdLibCall' || !op.unlabeledArg) {
+      throw new Error('Appearance operation not found')
+    }
+
+    const selections = retrieveSelectionsFromOpArg(
+      op.unlabeledArg,
+      artifactGraph
+    )
+    if (err(selections)) throw selections
+    expect(selections.graphSelections).toHaveLength(1)
+    const selection = selections.graphSelections[0]
+    if (!selection.artifact) {
+      throw new Error('Artifact not found in the selection')
+    }
+    expect(selection.artifact.type).toEqual('sweep')
+  })
 })

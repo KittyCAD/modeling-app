@@ -64,7 +64,6 @@ async function getKclCommandValue(value: string) {
 
 async function runNewAstAndCheckForSweep(ast: Node<Program>) {
   const { artifactGraph } = await enginelessExecutor(ast)
-  console.log('artifactGraph', artifactGraph)
   const sweepArtifact = artifactGraph.values().find((a) => a.type === 'sweep')
   expect(sweepArtifact).toBeDefined()
 }

@@ -1781,6 +1781,7 @@ async function prepareToEditAppearance({ operation }: EnterEditFlowProps) {
     operation.unlabeledArg,
     kclManager.artifactGraph
   )
+  console.log('objects', objects)
   if (err(objects)) {
     return { reason: "Couldn't retrieve objects" }
   }

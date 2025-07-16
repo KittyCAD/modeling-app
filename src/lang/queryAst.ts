@@ -1151,7 +1151,6 @@ export function retrieveSelectionsFromOpArg(
 ): Error | Selections {
   const error = new Error("Couldn't retrieve sketches from operation")
   let artifactIds: string[] = []
-  console.log('opArg.value.type', opArg.value.type)
   if (opArg.value.type === 'Solid' || opArg.value.type === 'Sketch') {
     artifactIds = [opArg.value.value.artifactId]
   } else if (opArg.value.type === 'ImportedGeometry') {
@@ -1165,7 +1164,6 @@ export function retrieveSelectionsFromOpArg(
   }
 
   const graphSelections: Selection[] = []
-  console.log('artifactIds', artifactIds)
   for (const artifactId of artifactIds) {
     const artifact = artifactGraph.get(artifactId)
     if (!artifact) {
@@ -1183,7 +1181,6 @@ export function retrieveSelectionsFromOpArg(
     })
   }
 
-  console.log('graphSelections', graphSelections)
   if (graphSelections.length === 0) {
     return error
   }

@@ -3229,6 +3229,7 @@ profile001 = circle(
 )
 extrude001 = extrude(profile001, length = 100)
 `
+    page.on('console', console.log)
     const declaration = `appearance(extrude001, color = '#FF0000')`
     const editedDeclaration = `appearance(extrude001, color = '#00FF00')`
     await context.addInitScript((initialCode) => {
@@ -3325,6 +3326,7 @@ extrude001 = extrude(profile001, length = 100)
       await op.click({ button: 'left' })
       await page.keyboard.press('Delete')
       await scene.settled(cmdBar)
+      await editor.expectEditor.not.toContain(declaration)
       await editor.expectEditor.not.toContain(editedDeclaration)
     })
   })
