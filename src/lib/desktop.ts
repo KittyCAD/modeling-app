@@ -909,11 +909,15 @@ export const setTokenToEmptyStringForAllEnvironments = async () => {
   // This will not revoke the token at the API level, only remove the cached value from disk.
   // This is not a true logout function, please use the AuthMachine
   const environments = Object.keys(SUPPORTED_ENVIRONMENTS)
-  for (let i =0; i < environments.length; i ++) {
+  for (let i = 0; i < environments.length; i++) {
     const environmentName = environments[i]
     if (isEnvironmentName(environmentName)) {
       const emptyStringToken = ''
-      await writeEnvironmentConfigurationToken(environmentName, emptyStringToken)
+      await writeEnvironmentConfigurationToken(
+        environmentName,
+        emptyStringToken
+      )
+      console.log('cleaning', environmentName)
     }
   }
 }

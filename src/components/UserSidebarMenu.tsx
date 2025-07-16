@@ -149,9 +149,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
         {
           id: 'change-environment',
           Element: 'button',
-          children: (
-            <span>Change environment</span>
-          ),
+          children: <span>Change environment</span>,
           onClick: () => {
             const environment = getEnvironmentName()
             if (environment) {
@@ -166,8 +164,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
                 },
               })
             }
-          }
-
+          },
         },
         {
           id: 'sign-out',
@@ -183,10 +180,8 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
           id: 'sign-out-all',
           Element: 'button',
           'data-testid': 'user-sidebar-sign-out',
-          children: (
-            <span>Sign out of all environments</span>
-          ),
-          onClick: () => send({ type: 'Log out' }),
+          children: <span>Sign out of all environments</span>,
+          onClick: () => send({ type: 'Log out all' }),
           className: '', // Just making TS's filter type coercion happy 😠
         },
       ].filter(
