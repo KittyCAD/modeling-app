@@ -153,7 +153,8 @@ export function useViewControlMenuItems() {
     [
       VIEW_NAMES_SEMANTIC,
       shouldLockView,
-      selectedPlaneId, hasValidSelection,
+      selectedPlaneId,
+      hasValidSelection,
       modelingState.context.selectionRanges.graphSelections,
       modelingState.context.store.openPanes,
     ]
