@@ -758,13 +758,6 @@ export const readTokenFile = async () => {
   return ''
 }
 
-export const writeTokenFile = async (token: string) => {
-  const tokenFilePath = await getTokenFilePath()
-  if (err(token)) return Promise.reject(token)
-  const result = window.electron.writeFile(tokenFilePath, token)
-  console.log('token written to disk')
-  return result
-}
 
 /**
  * Store credentials in
