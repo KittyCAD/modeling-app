@@ -1051,6 +1051,11 @@ fn artifacts_to_update(
                 };
                 last_path = Some(path);
                 let Some(path_sweep_id) = path.sweep_id else {
+                    // If the path doesn't have a sweep ID, check if it's a
+                    // hole.
+                    if path.outer_path_id.is_some() {
+                        continue; // hole not handled
+                    }
                     return Err(KclError::new_internal(KclErrorDetails::new(
                         format!(
                             "Expected a sweep ID on the path when processing Solid3dGetExtrusionFaceInfo command, but we have none:\n{id:#?}\n{path:#?}"
@@ -1105,6 +1110,11 @@ fn artifacts_to_update(
                         continue;
                     };
                     let Some(path_sweep_id) = path.sweep_id else {
+                        // If the path doesn't have a sweep ID, check if it's a
+                        // hole.
+                        if path.outer_path_id.is_some() {
+                            continue; // hole not handled
+                        }
                         return Err(KclError::new_internal(KclErrorDetails::new(
                             format!(
                                 "Expected a sweep ID on the path when processing last path's Solid3dGetExtrusionFaceInfo command, but we have none:\n{id:#?}\n{path:#?}"
