@@ -3,14 +3,14 @@ import { SUPPORTED_ENVIRONMENTS } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import { capitaliseFC } from './lib/utils'
 
-type EnvironmentVariableSources = {
+export type EnvironmentVariableSources = {
   readonly VITE_KITTYCAD_API_BASE_URL: string | undefined
   readonly VITE_KITTYCAD_API_WEBSOCKET_URL: string | undefined
   readonly VITE_KITTYCAD_SITE_BASE_URL: string | undefined
   readonly POOL: string | undefined
 }
 
-type EnvironmentVariables = {
+export type EnvironmentVariables = {
   readonly NODE_ENV: string | undefined
   readonly VITE_KITTYCAD_API_BASE_URL: string | undefined
   readonly VITE_KITTYCAD_API_WEBSOCKET_URL: string | undefined

@@ -1,4 +1,4 @@
-import env, { getEnvironmentNameForDisplay } from '@src/env'
+import env, { EnvironmentVariables, getEnvironmentNameForDisplay } from '@src/env'
 import { vi } from 'vitest'
 import {
   viteEnv,
@@ -24,7 +24,9 @@ describe('@src/env', () => {
           VITE_KITTYCAD_API_BASE_URL: '.env.development(.local)',
           VITE_KITTYCAD_API_WEBSOCKET_URL: '.env.development(.local)',
           VITE_KITTYCAD_SITE_BASE_URL: '.env.development(.local)',
+          POOL: ''
         },
+        POOL: ''
       }
       const actual = env()
       // Gotcha: If this fails you need a token in .env.development.local
@@ -129,6 +131,98 @@ describe('@src/env', () => {
         expect(actual).toBe(expected)
         // restore global state to the default value
         updateEnvironment(null)
+      })
+    })
+    describe('getEnvironmentNameForDisplay', () => {
+      it('should return .env when NODE_ENV is development', ()=> {
+        const expected = '.env'
+        const env : EnvironmentVariables = {
+          NODE_ENV: 'development',
+          VITE_KITTYCAD_API_BASE_URL: 'https://api.dev.zoo.dev',
+          VITE_KITTYCAD_API_WEBSOCKET_URL:
+            'wss://api.dev.zoo.dev/ws/modeling/commands',
+          VITE_KITTYCAD_API_TOKEN: 'redacted',
+          VITE_KITTYCAD_SITE_BASE_URL: 'https://dev.zoo.dev',
+          VITE_KITTYCAD_SITE_APP_URL: 'https://app.dev.zoo.dev',
+          SOURCES: {
+            VITE_KITTYCAD_API_BASE_URL: '.env.development(.local)',
+            VITE_KITTYCAD_API_WEBSOCKET_URL: '.env.development(.local)',
+            VITE_KITTYCAD_SITE_BASE_URL: '.env.development(.local)',
+            POOL: ''
+          },
+          POOL: ''
+        }
+        const actual = getEnvironmentNameForDisplay(env)
+        expect(actual).toBe(expected)
+      })
+      it('should return Production when NODE_ENV is production and environment is production', ()=> {
+        const expected = 'Production'
+        const env : EnvironmentVariables = {
+          NODE_ENV: 'production',
+          VITE_KITTYCAD_API_BASE_URL: 'https://api.dev.zoo.dev',
+          VITE_KITTYCAD_API_WEBSOCKET_URL:
+          'wss://api.dev.zoo.dev/ws/modeling/commands',
+          VITE_KITTYCAD_API_TOKEN: 'redacted',
+          VITE_KITTYCAD_SITE_BASE_URL: 'https://dev.zoo.dev',
+          VITE_KITTYCAD_SITE_APP_URL: 'https://app.dev.zoo.dev',
+          SOURCES: {
+            VITE_KITTYCAD_API_BASE_URL: '.env.development(.local)',
+            VITE_KITTYCAD_API_WEBSOCKET_URL: '.env.development(.local)',
+            VITE_KITTYCAD_SITE_BASE_URL: '.env.development(.local)',
+            POOL: ''
+          },
+          POOL: ''
+        }
+        updateEnvironment('production')
+        const actual = getEnvironmentNameForDisplay(env)
+        updateEnvironment(null)
+        expect(actual).toBe(expected)
+      })
+      it('should return Development when NODE_ENV is production and environment is development', ()=> {
+        const expected = 'Development'
+        const env : EnvironmentVariables = {
+          NODE_ENV: 'production',
+          VITE_KITTYCAD_API_BASE_URL: 'https://api.dev.zoo.dev',
+          VITE_KITTYCAD_API_WEBSOCKET_URL:
+            'wss://api.dev.zoo.dev/ws/modeling/commands',
+          VITE_KITTYCAD_API_TOKEN: 'redacted',
+          VITE_KITTYCAD_SITE_BASE_URL: 'https://dev.zoo.dev',
+          VITE_KITTYCAD_SITE_APP_URL: 'https://app.dev.zoo.dev',
+          SOURCES: {
+            VITE_KITTYCAD_API_BASE_URL: '.env.development(.local)',
+            VITE_KITTYCAD_API_WEBSOCKET_URL: '.env.development(.local)',
+            VITE_KITTYCAD_SITE_BASE_URL: '.env.development(.local)',
+            POOL: ''
+          },
+          POOL: ''
+        }
+        updateEnvironment('development')
+        const actual = getEnvironmentNameForDisplay(env)
+        updateEnvironment(null)
+        expect(actual).toBe(expected)
+      })
+      it('should return empty string when NODE_ENV is production and environment is null', ()=> {
+        const expected = ''
+        const env : EnvironmentVariables = {
+          NODE_ENV: 'production',
+          VITE_KITTYCAD_API_BASE_URL: 'https://api.dev.zoo.dev',
+          VITE_KITTYCAD_API_WEBSOCKET_URL:
+            'wss://api.dev.zoo.dev/ws/modeling/commands',
+          VITE_KITTYCAD_API_TOKEN: 'redacted',
+          VITE_KITTYCAD_SITE_BASE_URL: 'https://dev.zoo.dev',
+          VITE_KITTYCAD_SITE_APP_URL: 'https://app.dev.zoo.dev',
+          SOURCES: {
+            VITE_KITTYCAD_API_BASE_URL: '.env.development(.local)',
+            VITE_KITTYCAD_API_WEBSOCKET_URL: '.env.development(.local)',
+            VITE_KITTYCAD_SITE_BASE_URL: '.env.development(.local)',
+            POOL: ''
+          },
+          POOL: ''
+        }
+        updateEnvironment(null)
+        const actual = getEnvironmentNameForDisplay(env)
+        updateEnvironment(null)
+        expect(actual).toBe(expected)
       })
     })
   })
