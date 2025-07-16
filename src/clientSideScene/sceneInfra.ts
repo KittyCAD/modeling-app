@@ -455,9 +455,9 @@ export class SceneInfra {
       return
     }
     this.currentMouseVector.x =
-      (mouseEvent.clientX / mouseEvent.currentTarget.clientWidth) * 2 - 1
+      (mouseEvent.offsetX / mouseEvent.currentTarget.clientWidth) * 2 - 1
     this.currentMouseVector.y =
-      -(mouseEvent.clientY / mouseEvent.currentTarget.clientHeight) * 2 + 1
+      -(mouseEvent.offsetY / mouseEvent.currentTarget.clientHeight) * 2 + 1
 
     const planeIntersectPoint = this.getPlaneIntersectPoint()
     const intersects = this.raycastRing()
@@ -623,9 +623,9 @@ export class SceneInfra {
       return
     }
     this.currentMouseVector.x =
-      (event.clientX / event.currentTarget.clientWidth) * 2 - 1
+      (event.offsetX / event.currentTarget.clientWidth) * 2 - 1
     this.currentMouseVector.y =
-      -(event.clientY / event.currentTarget.clientHeight) * 2 + 1
+      -(event.offsetY / event.currentTarget.clientHeight) * 2 + 1
 
     const mouseDownVector = this.currentMouseVector.clone()
     const intersect = this.raycastRing()[0]
@@ -648,9 +648,9 @@ export class SceneInfra {
       return
     }
     this.currentMouseVector.x =
-      (mouseEvent.clientX / mouseEvent.currentTarget.clientWidth) * 2 - 1
+      (mouseEvent.offsetX / mouseEvent.currentTarget.clientWidth) * 2 - 1
     this.currentMouseVector.y =
-      -(mouseEvent.clientY / mouseEvent.currentTarget.clientHeight) * 2 + 1
+      -(mouseEvent.offsetY / mouseEvent.currentTarget.clientHeight) * 2 + 1
     const planeIntersectPoint = this.getPlaneIntersectPoint()
     const intersects = this.raycastRing()
 
