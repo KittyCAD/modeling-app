@@ -29,12 +29,12 @@ windowWidth = facadeWidth / windowCount
 // Helper function: Creates a box from a center plane with given width and height
 fn boxFn(plane, width, height) {
   shape = startSketchOn(plane)
-    |> startProfile(%, at = [-width / 2, -width / 2])
-    |> line(%, end = [0, width])
-    |> line(%, end = [width, 0])
-    |> line(%, end = [0, -width])
+    |> startProfile(at = [-width / 2, -width / 2])
+    |> line(end = [0, width])
+    |> line(end = [width, 0])
+    |> line(end = [0, -width])
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-    |> close(%)
+    |> close()
   body = extrude(shape, length = height)
   return body
 }
@@ -50,44 +50,44 @@ fn transformFn(@i) {
 // Create building base
 baseThickness = 0.2
 baseSlab = boxFn(plane = XY, width = slabWidth, height = -baseThickness)
-  |> appearance(%, color = "#dbd7d2")
+  |> appearance(color = "#dbd7d2")
 
 // Create ground platform beneath the base
 groundSize = 50
 groundBody = boxFn(plane = offsetPlane(XY, offset = -baseThickness), width = groundSize, height = -5)
-  |> appearance(%, color = "#3a3631")
+  |> appearance(color = "#3a3631")
 
 // Create a single slab with handrail height to be reused with pattern
 slabAndHandrailGeometry = boxFn(plane = offsetPlane(XY, offset = floorHeight - slabThickness), width = slabWidth, height = slabThickness + handrailHeight)
 slabVoidStart = -slabWidth / 2 + handrailThickness
 slabVoidWidth = slabWidth - (handrailThickness * 2)
 slabVoidShape = startSketchOn(slabAndHandrailGeometry, face = END)
-  |> startProfile(%, at = [slabVoidStart, slabVoidStart])
-  |> line(%, end = [0, slabVoidWidth])
-  |> line(%, end = [slabVoidWidth, 0])
-  |> line(%, end = [0, -slabVoidWidth])
+  |> startProfile(at = [slabVoidStart, slabVoidStart])
+  |> line(end = [0, slabVoidWidth])
+  |> line(end = [slabVoidWidth, 0])
+  |> line(end = [0, -slabVoidWidth])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close(%)
+  |> close()
 
 // Generate and pattern slabs with voids across all floors
 slabBody = extrude(slabVoidShape, length = -handrailHeight)
   |> patternTransform(instances = floorCount, transform = transformFn)
-  |> appearance(%, color = "#dbd7d2")
+  |> appearance(color = "#dbd7d2")
 
 // Create structural core of the tower
 coreLength = 10
 coreWidth = 8
 core = startSketchOn(XY)
-  |> startProfile(%, at = [-coreLength / 2, -coreWidth / 2])
-  |> line(%, end = [0, coreWidth])
-  |> line(%, end = [coreLength, 0])
-  |> line(%, end = [-0.22, -coreWidth])
+  |> startProfile(at = [-coreLength / 2, -coreWidth / 2])
+  |> line(end = [0, coreWidth])
+  |> line(end = [coreLength, 0])
+  |> line(end = [-0.22, -coreWidth])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close(%)
-  |> extrude(%, length = coreHeight)
+  |> close()
+  |> extrude(length = coreHeight)
 
 // Create facade panels for each floor
 facadeStart = facadeWidth / 2
 facadeGeometry = boxFn(plane = XY, width = facadeWidth, height = facadeHeight)
   |> patternTransform(instances = floorCount, transform = transformFn)
-  |> appearance(%, color = "#151819")
+  |> appearance(color = "#151819")

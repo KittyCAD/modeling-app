@@ -18,5 +18,9 @@ export default defineConfig({
     deps: {
       external: [/playwright/],
     },
+    reporters: ['default', 'junit'],
+    outputFile: {
+      junit: 'test-results/junit.xml',
+    },
   },
 })

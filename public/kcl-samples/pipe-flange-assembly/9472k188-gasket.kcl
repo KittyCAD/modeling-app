@@ -9,11 +9,11 @@ import gasketOutsideDiameter, gasketInnerDiameter, gasketThickness from "paramet
 
 // Create the base of the gasket
 gasketBase = startSketchOn(XY)
-  |> circle(%, center = [0, 0], radius = gasketOutsideDiameter / 2)
-  |> extrude(%, length = gasketThickness)
+  |> circle(center = [0, 0], radius = gasketOutsideDiameter / 2)
+  |> extrude(length = gasketThickness)
 
 // Extrude a circular hole through the gasket base
 startSketchOn(gasketBase, face = END)
-  |> circle(%, center = [0, 0], radius = gasketInnerDiameter / 2)
-  |> extrude(%, length = -gasketThickness)
-  |> appearance(%, color = "#d0cb3e")
+  |> circle(center = [0, 0], radius = gasketInnerDiameter / 2)
+  |> extrude(length = -gasketThickness)
+  |> appearance(color = "#d0cb3e")

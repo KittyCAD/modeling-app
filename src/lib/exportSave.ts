@@ -15,7 +15,7 @@ const save_ = async (file: ModelingAppFile, toastId: string) => {
         extensions.push(extension)
       }
 
-      if (window.electron.process.env.IS_PLAYWRIGHT) {
+      if (window.electron.process.env.NODE_ENV === 'test') {
         // Skip file picker, save to the test dir downloads directory
         const testSettingsPath = await window.electron.getAppTestProperty(
           'TEST_SETTINGS_FILE_KEY'

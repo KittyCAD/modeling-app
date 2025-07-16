@@ -29,26 +29,19 @@ gasket
 washer()
   |> translate(x = mountingHolePlacementDiameter / 2, y = 0, z = flangeBaseThickness)
   |> patternCircular3d(
-       %,
        instances = 4,
        axis = [0, 0, 1],
        center = [0, 0, 0],
        arcDegrees = 360,
        rotateDuplicates = false,
      )
-  |> patternLinear3d(
-       %,
-       instances = 2,
-       distance = -(flangeBaseThickness * 2 + flangeBackHeight * 2 + gasketThickness + washerThickness),
-       axis = [0, 0, 1],
-     )
+  |> patternLinear3d(instances = 2, distance = -(flangeBaseThickness * 2 + flangeBackHeight * 2 + gasketThickness + washerThickness), axis = [0, 0, 1])
 
 // Place four bolts
 bolt()
   |> translate(x = mountingHolePlacementDiameter / 2, y = 0, z = flangeBaseThickness + washerThickness)
   |> rotate(roll = 90, pitch = 0, yaw = 0)
   |> patternCircular3d(
-       %,
        instances = 4,
        axis = [0, 0, 1],
        center = [0, 0, 0],
@@ -60,7 +53,6 @@ bolt()
 hexNut()
   |> translate(x = mountingHolePlacementDiameter / 2, y = 0, z = -(flangeBackHeight * 2 + gasketThickness + flangeBaseThickness + washerThickness + hexNutThickness))
   |> patternCircular3d(
-       %,
        instances = 4,
        axis = [0, 0, 1],
        center = [0, 0, 0],
@@ -70,14 +62,8 @@ hexNut()
 
 // Place both pieces of pipe
 pipe()
-  |> rotate(
-       %,
-       roll = -90,
-       pitch = 0,
-       yaw = 0,
-     )
+  |> rotate(roll = -90, pitch = 0, yaw = 0)
   |> translate(
-       %,
        x = 0,
        y = 0,
        z = flangeBaseThickness + flangeFrontHeight - 0.5,
@@ -85,14 +71,8 @@ pipe()
      )
 
 pipe()
-  |> rotate(
-       %,
-       roll = 90,
-       pitch = 0,
-       yaw = 0,
-     )
+  |> rotate(roll = 90, pitch = 0, yaw = 0)
   |> translate(
-       %,
        x = 0,
        y = 0,
        z = -(flangeBackHeight * 2 + gasketThickness + flangeBaseThickness + flangeFrontHeight - 0.5),

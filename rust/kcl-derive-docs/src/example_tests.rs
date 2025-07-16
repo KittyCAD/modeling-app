@@ -162,6 +162,7 @@ pub const TEST_NAMES: &[&str] = &[
     "std-sketch-startProfile-0",
     "std-sketch-startProfile-1",
     "std-sketch-startProfile-2",
+    "std-sketch-startProfile-3",
     "std-sketch-startSketchOn-0",
     "std-sketch-startSketchOn-1",
     "std-sketch-startSketchOn-2",
