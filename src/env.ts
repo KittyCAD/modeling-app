@@ -67,14 +67,15 @@ export const getEnvironmentNameForDisplay = (env: EnvironmentVariables) => {
  * When you need to display the shorthand for the environment name
  * Prod, Dev, etc...
  */
-export const getShorthandEnvironmentNameForDisplay = (env: EnvironmentVariables) => {
+export const getShorthandEnvironmentNameForDisplay = (
+  env: EnvironmentVariables
+) => {
   if (env.NODE_ENV === 'development') {
     return '.env'
   }
   const shorthand = getEnvironmentFromThisFile()?.shorthand
   return shorthand ? capitaliseFC(shorthand) : ''
 }
-
 
 export const viteEnv = () => {
   // It turns out import.meta.env is a really fucky env var passing method.

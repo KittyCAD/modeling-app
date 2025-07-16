@@ -141,7 +141,7 @@ describe('@src/env', () => {
       NODE_ENV: 'development',
       VITE_KITTYCAD_API_BASE_URL: 'https://api.dev.zoo.dev',
       VITE_KITTYCAD_API_WEBSOCKET_URL:
-      'wss://api.dev.zoo.dev/ws/modeling/commands',
+        'wss://api.dev.zoo.dev/ws/modeling/commands',
       VITE_KITTYCAD_API_TOKEN: 'redacted',
       VITE_KITTYCAD_SITE_BASE_URL: 'https://dev.zoo.dev',
       VITE_KITTYCAD_SITE_APP_URL: 'https://app.dev.zoo.dev',
@@ -157,18 +157,18 @@ describe('@src/env', () => {
     describe('getEnvironmentNameForDisplay', () => {
       it('should return .env when NODE_ENV is development', () => {
         const expected = '.env'
-        const env : EnvironmentVariables = {
+        const env: EnvironmentVariables = {
           ...duplicateThisEnv,
-          NODE_ENV: 'development'
+          NODE_ENV: 'development',
         }
         const actual = getEnvironmentNameForDisplay(env)
         expect(actual).toBe(expected)
       })
       it('should return Production when NODE_ENV is production and environment is production', () => {
         const expected = 'Production'
-        const env : EnvironmentVariables = {
+        const env: EnvironmentVariables = {
           ...duplicateThisEnv,
-          NODE_ENV: 'production'
+          NODE_ENV: 'production',
         }
         updateEnvironment('production')
         const actual = getEnvironmentNameForDisplay(env)
@@ -177,9 +177,9 @@ describe('@src/env', () => {
       })
       it('should return Development when NODE_ENV is production and environment is development', () => {
         const expected = 'Development'
-        const env : EnvironmentVariables = {
+        const env: EnvironmentVariables = {
           ...duplicateThisEnv,
-          NODE_ENV: 'production'
+          NODE_ENV: 'production',
         }
         updateEnvironment('development')
         const actual = getEnvironmentNameForDisplay(env)
@@ -188,9 +188,9 @@ describe('@src/env', () => {
       })
       it('should return empty string when NODE_ENV is production and environment is null', () => {
         const expected = ''
-        const env : EnvironmentVariables = {
+        const env: EnvironmentVariables = {
           ...duplicateThisEnv,
-          NODE_ENV: 'production'
+          NODE_ENV: 'production',
         }
         updateEnvironment(null)
         const actual = getEnvironmentNameForDisplay(env)
@@ -201,18 +201,18 @@ describe('@src/env', () => {
     describe('getShorthandEnvironmentNameForDisplay', () => {
       it('should return .env when NODE_ENV is development', () => {
         const expected = '.env'
-        const env : EnvironmentVariables = {
+        const env: EnvironmentVariables = {
           ...duplicateThisEnv,
-          NODE_ENV: 'development'
+          NODE_ENV: 'development',
         }
         const actual = getShorthandEnvironmentNameForDisplay(env)
         expect(actual).toBe(expected)
       })
       it('should return Prod when NODE_ENV is production and environment is production', () => {
         const expected = 'Prod'
-        const env : EnvironmentVariables = {
+        const env: EnvironmentVariables = {
           ...duplicateThisEnv,
-          NODE_ENV: 'production'
+          NODE_ENV: 'production',
         }
         updateEnvironment('production')
         const actual = getShorthandEnvironmentNameForDisplay(env)
@@ -221,9 +221,9 @@ describe('@src/env', () => {
       })
       it('should return Dev when NODE_ENV is production and environment is development', () => {
         const expected = 'Dev'
-        const env : EnvironmentVariables = {
+        const env: EnvironmentVariables = {
           ...duplicateThisEnv,
-          NODE_ENV: 'production'
+          NODE_ENV: 'production',
         }
         updateEnvironment('development')
         const actual = getShorthandEnvironmentNameForDisplay(env)
@@ -232,9 +232,9 @@ describe('@src/env', () => {
       })
       it('should return empty string when NODE_ENV is production and environment is null', () => {
         const expected = ''
-        const env : EnvironmentVariables = {
+        const env: EnvironmentVariables = {
           ...duplicateThisEnv,
-          NODE_ENV: 'production'
+          NODE_ENV: 'production',
         }
         updateEnvironment(null)
         const actual = getShorthandEnvironmentNameForDisplay(env)

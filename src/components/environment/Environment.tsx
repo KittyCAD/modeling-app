@@ -1,4 +1,8 @@
-import { getEnvironmentName, getEnvironmentNameForDisplay, getShorthandEnvironmentNameForDisplay } from '@src/env'
+import {
+  getEnvironmentName,
+  getEnvironmentNameForDisplay,
+  getShorthandEnvironmentNameForDisplay,
+} from '@src/env'
 import { ActionButton } from '@src/components/ActionButton'
 import { commandBarActor } from '@src/lib/singletons'
 import env from '@src/env'

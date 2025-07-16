@@ -251,7 +251,7 @@ export const SUPPORTED_ENVIRONMENTS: { [key in EnvironmentName]: Environment } =
       WEBSOCKET_URL: 'wss://api.dev.zoo.dev/ws/modeling/commands',
       name: 'development',
       pool: '',
-      shorthand: 'dev'
+      shorthand: 'dev',
     },
     production: {
       API_URL: 'https://api.zoo.dev',
@@ -259,7 +259,7 @@ export const SUPPORTED_ENVIRONMENTS: { [key in EnvironmentName]: Environment } =
       WEBSOCKET_URL: 'wss://api.zoo.dev/ws/modeling/commands',
       name: 'production',
       pool: '',
-      shorthand: 'prod'
+      shorthand: 'prod',
     },
   })
 
