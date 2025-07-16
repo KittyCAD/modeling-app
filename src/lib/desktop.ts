@@ -758,7 +758,6 @@ export const readTokenFile = async () => {
   return ''
 }
 
-
 /**
  * Store credentials in
  *  - envs/
