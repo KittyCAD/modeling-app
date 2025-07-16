@@ -1,5 +1,4 @@
-import type {
-  EnvironmentVariables} from '@src/env'
+import type { EnvironmentVariables } from '@src/env'
 import env, {
   getEnvironmentNameForDisplay,
   getShorthandEnvironmentNameForDisplay,

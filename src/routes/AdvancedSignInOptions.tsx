@@ -85,7 +85,7 @@ export const AdvancedSignInOptions = ({
                 <RadioGroup
                   className="mb-2"
                   value={selectedEnvironment}
-                  onChange={(event)=>{
+                  onChange={(event) => {
                     setSelectedEnvironment(event)
                   }}
                 >
