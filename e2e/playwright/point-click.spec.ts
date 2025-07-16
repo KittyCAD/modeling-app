@@ -3220,16 +3220,9 @@ sketch002 = startSketchOn(extrude001, face = rectangleSegmentA001)
     toolbar,
     cmdBar,
   }) => {
-    const initialCode = `@settings(defaultLengthUnit = in)
-sketch001 = startSketchOn(XZ)
-profile001 = circle(
-  sketch001,
-  center = [0, 0],
-  radius = 100
-)
-extrude001 = extrude(profile001, length = 100)
-`
-    page.on('console', console.log)
+    const initialCode = `sketch001 = startSketchOn(XY)
+profile001 = circle(sketch001, center = [0, 0], radius = 1)
+extrude001 = extrude(profile001, length = 1)`
     const declaration = `appearance(extrude001, color = '#FF0000')`
     const editedDeclaration = `appearance(extrude001, color = '#00FF00')`
     await context.addInitScript((initialCode) => {

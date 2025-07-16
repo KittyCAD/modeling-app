@@ -297,7 +297,6 @@ export function addAppearance({
     lastChildLookup,
     artifactGraph
   )
-  console.log('vars', vars)
   if (err(vars)) {
     return vars
   }
