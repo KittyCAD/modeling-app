@@ -45,6 +45,7 @@ import {
 } from '@src/lib/selections'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import { findOperationPlaneArtifact, isOffsetPlane } from '@src/lang/queryAst'
+import { err } from '@src/lib/trap'
 
 export const FeatureTreePane = () => {
   const isEditorMounted = useSelector(kclEditorActor, editorIsMountedSelector)
@@ -360,14 +361,17 @@ const OperationItem = (props: {
     )
   }, [kclContext.diagnostics.length])
 
-  function selectOperation() {
+  async function selectOperation() {
     if (props.sketchNoFace) {
       if (isOffsetPlane(props.item)) {
         const artifact = findOperationPlaneArtifact(
           props.item,
           kclManager.artifactGraph
         )
-        void selectOffsetSketchPlane(artifact)
+        const result = await selectOffsetSketchPlane(artifact)
+        if (err(result)) {
+          console.error(result)
+        }
       }
     } else {
       if (props.item.type === 'GroupEnd') {
@@ -622,7 +626,9 @@ const OperationItem = (props: {
       variableName={variableName}
       valueDetail={valueDetail}
       menuItems={menuItems}
-      onClick={selectOperation}
+      onClick={() => {
+        void selectOperation()
+      }}
       onDoubleClick={props.sketchNoFace ? undefined : enterEditFlow} // no double click in "Sketch no face" mode
       errors={errors}
       greyedOut={!enabled}

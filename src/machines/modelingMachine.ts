@@ -43,7 +43,6 @@ import {
   horzVertDistanceInfo,
 } from '@src/components/Toolbar/SetHorzVertDistance'
 import { angleLengthInfo } from '@src/components/Toolbar/angleLengthInfo'
-import { createLiteral, createLocalName } from '@src/lang/create'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
 import {
   addClone,
