@@ -259,6 +259,10 @@ description: Variables in memory after executing flush_batch_on_end.kcl
         "arc000": {
           "type": "TagIdentifier",
           "value": "arc000"
+        },
+        "arc001": {
+          "type": "TagIdentifier",
+          "value": "arc001"
         }
       },
       "artifactId": "[uuid]",
@@ -286,6 +290,20 @@ description: Variables in memory after executing flush_batch_on_end.kcl
             "start": 360,
             "type": "TagDeclarator",
             "value": "arc000"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 515,
+            "end": 522,
+            "moduleId": 0,
+            "start": 515,
+            "type": "TagDeclarator",
+            "value": "arc001"
           },
           "type": "extrudeArc"
         }
@@ -421,6 +439,10 @@ description: Variables in memory after executing flush_batch_on_end.kcl
           "arc000": {
             "type": "TagIdentifier",
             "value": "arc000"
+          },
+          "arc001": {
+            "type": "TagIdentifier",
+            "value": "arc001"
           }
         },
         "artifactId": "[uuid]",
@@ -571,6 +593,10 @@ description: Variables in memory after executing flush_batch_on_end.kcl
         "arc000": {
           "type": "TagIdentifier",
           "value": "arc000"
+        },
+        "arc001": {
+          "type": "TagIdentifier",
+          "value": "arc001"
         }
       },
       "artifactId": "[uuid]",

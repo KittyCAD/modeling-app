@@ -51,6 +51,13 @@ description: Variables in memory after executing subtract_regression07.kcl
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudeArc"
         }
       ],
       "sketch": {
@@ -453,6 +460,13 @@ description: Variables in memory after executing subtract_regression07.kcl
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudeArc"
         }
       ],
       "sketch": {

@@ -1960,6 +1960,13 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 "value": "edge24"
               },
               "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
             }
           ],
           "sketch": {
@@ -2287,6 +2294,13 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 "value": "edge24"
               },
               "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
             }
           ],
           "sketch": {
@@ -2619,6 +2633,13 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 "value": "edge14"
               },
               "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
             }
           ],
           "sketch": {
@@ -2946,6 +2967,13 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 "value": "edge14"
               },
               "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
             }
           ],
           "sketch": {
