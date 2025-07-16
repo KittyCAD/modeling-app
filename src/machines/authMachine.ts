@@ -317,10 +317,17 @@ async function getAndSyncStoredToken(input: {
   return fileToken
 }
 
-async function logout(
-  { event }: { event: any },
-  requestedEnvironmentName?: EnvironmentName
-) {
+/**
+ * Logout function that will do a default logout within the AuthMachine
+ */
+async function logout() {
+  return logoutEnvironment()
+}
+
+/**
+ * Logout function that will do a specific environment logout if environment name is passed in
+ */
+async function logoutEnvironment(requestedEnvironmentName?: EnvironmentName) {
   // TODO: 7/10/2025 Remove this months from now, we want to clear the localStorage of the key.
   localStorage.removeItem(TOKEN_PERSIST_KEY)
   if (isDesktop()) {
@@ -383,7 +390,7 @@ async function logoutAllEnvironments() {
     if (isEnvironmentName(key)) {
       const environmentName: EnvironmentName = key
       // Make the oauth2/token/revoke request per environment
-      await logout({ event: '' }, environmentName)
+      await logoutEnvironment(environmentName)
     }
   }
 

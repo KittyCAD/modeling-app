@@ -529,7 +529,7 @@ const getTokenFilePath = async () => {
 }
 
 export const getEnvironmentConfigurationFolderPath = async () => {
-  const isTestEnv = window.electron.process.env.IS_PLAYWRIGHT === 'true'
+  const isTestEnv = window.electron.process.env.NODE_ENV === 'test'
   const testSettingsPath = await window.electron.getAppTestProperty(
     'TEST_SETTINGS_FILE_KEY'
   )
@@ -562,7 +562,7 @@ export const getEnvironmentConfigurationPath = async (
 }
 
 export const getEnvironmentFilePath = async () => {
-  const isTestEnv = window.electron.process.env.IS_PLAYWRIGHT === 'true'
+  const isTestEnv = window.electron.process.env.NODE_ENV === 'test'
   const testSettingsPath = await window.electron.getAppTestProperty(
     'TEST_SETTINGS_FILE_KEY'
   )
