@@ -1,4 +1,8 @@
-import env, { EnvironmentVariables, getEnvironmentNameForDisplay } from '@src/env'
+import env, {
+  EnvironmentVariables,
+  getEnvironmentNameForDisplay,
+  getShorthandEnvironmentNameForDisplay,
+} from '@src/env'
 import { vi } from 'vitest'
 import {
   viteEnv,
@@ -24,9 +28,9 @@ describe('@src/env', () => {
           VITE_KITTYCAD_API_BASE_URL: '.env.development(.local)',
           VITE_KITTYCAD_API_WEBSOCKET_URL: '.env.development(.local)',
           VITE_KITTYCAD_SITE_BASE_URL: '.env.development(.local)',
-          POOL: ''
+          POOL: '',
         },
-        POOL: ''
+        POOL: '',
       }
       const actual = env()
       // Gotcha: If this fails you need a token in .env.development.local
@@ -133,94 +137,107 @@ describe('@src/env', () => {
         updateEnvironment(null)
       })
     })
+    const duplicateThisEnv: EnvironmentVariables = {
+      NODE_ENV: 'development',
+      VITE_KITTYCAD_API_BASE_URL: 'https://api.dev.zoo.dev',
+      VITE_KITTYCAD_API_WEBSOCKET_URL:
+      'wss://api.dev.zoo.dev/ws/modeling/commands',
+      VITE_KITTYCAD_API_TOKEN: 'redacted',
+      VITE_KITTYCAD_SITE_BASE_URL: 'https://dev.zoo.dev',
+      VITE_KITTYCAD_SITE_APP_URL: 'https://app.dev.zoo.dev',
+      SOURCES: {
+        VITE_KITTYCAD_API_BASE_URL: '.env.development(.local)',
+        VITE_KITTYCAD_API_WEBSOCKET_URL: '.env.development(.local)',
+        VITE_KITTYCAD_SITE_BASE_URL: '.env.development(.local)',
+        POOL: '',
+      },
+      POOL: '',
+    }
+
     describe('getEnvironmentNameForDisplay', () => {
-      it('should return .env when NODE_ENV is development', ()=> {
+      it('should return .env when NODE_ENV is development', () => {
         const expected = '.env'
         const env : EnvironmentVariables = {
-          NODE_ENV: 'development',
-          VITE_KITTYCAD_API_BASE_URL: 'https://api.dev.zoo.dev',
-          VITE_KITTYCAD_API_WEBSOCKET_URL:
-            'wss://api.dev.zoo.dev/ws/modeling/commands',
-          VITE_KITTYCAD_API_TOKEN: 'redacted',
-          VITE_KITTYCAD_SITE_BASE_URL: 'https://dev.zoo.dev',
-          VITE_KITTYCAD_SITE_APP_URL: 'https://app.dev.zoo.dev',
-          SOURCES: {
-            VITE_KITTYCAD_API_BASE_URL: '.env.development(.local)',
-            VITE_KITTYCAD_API_WEBSOCKET_URL: '.env.development(.local)',
-            VITE_KITTYCAD_SITE_BASE_URL: '.env.development(.local)',
-            POOL: ''
-          },
-          POOL: ''
+          ...duplicateThisEnv,
+          NODE_ENV: 'development'
         }
         const actual = getEnvironmentNameForDisplay(env)
         expect(actual).toBe(expected)
       })
-      it('should return Production when NODE_ENV is production and environment is production', ()=> {
+      it('should return Production when NODE_ENV is production and environment is production', () => {
         const expected = 'Production'
         const env : EnvironmentVariables = {
-          NODE_ENV: 'production',
-          VITE_KITTYCAD_API_BASE_URL: 'https://api.dev.zoo.dev',
-          VITE_KITTYCAD_API_WEBSOCKET_URL:
-          'wss://api.dev.zoo.dev/ws/modeling/commands',
-          VITE_KITTYCAD_API_TOKEN: 'redacted',
-          VITE_KITTYCAD_SITE_BASE_URL: 'https://dev.zoo.dev',
-          VITE_KITTYCAD_SITE_APP_URL: 'https://app.dev.zoo.dev',
-          SOURCES: {
-            VITE_KITTYCAD_API_BASE_URL: '.env.development(.local)',
-            VITE_KITTYCAD_API_WEBSOCKET_URL: '.env.development(.local)',
-            VITE_KITTYCAD_SITE_BASE_URL: '.env.development(.local)',
-            POOL: ''
-          },
-          POOL: ''
+          ...duplicateThisEnv,
+          NODE_ENV: 'production'
         }
         updateEnvironment('production')
         const actual = getEnvironmentNameForDisplay(env)
         updateEnvironment(null)
         expect(actual).toBe(expected)
       })
-      it('should return Development when NODE_ENV is production and environment is development', ()=> {
+      it('should return Development when NODE_ENV is production and environment is development', () => {
         const expected = 'Development'
         const env : EnvironmentVariables = {
-          NODE_ENV: 'production',
-          VITE_KITTYCAD_API_BASE_URL: 'https://api.dev.zoo.dev',
-          VITE_KITTYCAD_API_WEBSOCKET_URL:
-            'wss://api.dev.zoo.dev/ws/modeling/commands',
-          VITE_KITTYCAD_API_TOKEN: 'redacted',
-          VITE_KITTYCAD_SITE_BASE_URL: 'https://dev.zoo.dev',
-          VITE_KITTYCAD_SITE_APP_URL: 'https://app.dev.zoo.dev',
-          SOURCES: {
-            VITE_KITTYCAD_API_BASE_URL: '.env.development(.local)',
-            VITE_KITTYCAD_API_WEBSOCKET_URL: '.env.development(.local)',
-            VITE_KITTYCAD_SITE_BASE_URL: '.env.development(.local)',
-            POOL: ''
-          },
-          POOL: ''
+          ...duplicateThisEnv,
+          NODE_ENV: 'production'
         }
         updateEnvironment('development')
         const actual = getEnvironmentNameForDisplay(env)
         updateEnvironment(null)
         expect(actual).toBe(expected)
       })
-      it('should return empty string when NODE_ENV is production and environment is null', ()=> {
+      it('should return empty string when NODE_ENV is production and environment is null', () => {
         const expected = ''
         const env : EnvironmentVariables = {
-          NODE_ENV: 'production',
-          VITE_KITTYCAD_API_BASE_URL: 'https://api.dev.zoo.dev',
-          VITE_KITTYCAD_API_WEBSOCKET_URL:
-            'wss://api.dev.zoo.dev/ws/modeling/commands',
-          VITE_KITTYCAD_API_TOKEN: 'redacted',
-          VITE_KITTYCAD_SITE_BASE_URL: 'https://dev.zoo.dev',
-          VITE_KITTYCAD_SITE_APP_URL: 'https://app.dev.zoo.dev',
-          SOURCES: {
-            VITE_KITTYCAD_API_BASE_URL: '.env.development(.local)',
-            VITE_KITTYCAD_API_WEBSOCKET_URL: '.env.development(.local)',
-            VITE_KITTYCAD_SITE_BASE_URL: '.env.development(.local)',
-            POOL: ''
-          },
-          POOL: ''
+          ...duplicateThisEnv,
+          NODE_ENV: 'production'
         }
         updateEnvironment(null)
         const actual = getEnvironmentNameForDisplay(env)
+        updateEnvironment(null)
+        expect(actual).toBe(expected)
+      })
+    })
+    describe('getShorthandEnvironmentNameForDisplay', () => {
+      it('should return .env when NODE_ENV is development', () => {
+        const expected = '.env'
+        const env : EnvironmentVariables = {
+          ...duplicateThisEnv,
+          NODE_ENV: 'development'
+        }
+        const actual = getShorthandEnvironmentNameForDisplay(env)
+        expect(actual).toBe(expected)
+      })
+      it('should return Prod when NODE_ENV is production and environment is production', () => {
+        const expected = 'Prod'
+        const env : EnvironmentVariables = {
+          ...duplicateThisEnv,
+          NODE_ENV: 'production'
+        }
+        updateEnvironment('production')
+        const actual = getShorthandEnvironmentNameForDisplay(env)
+        updateEnvironment(null)
+        expect(actual).toBe(expected)
+      })
+      it('should return Dev when NODE_ENV is production and environment is development', () => {
+        const expected = 'Dev'
+        const env : EnvironmentVariables = {
+          ...duplicateThisEnv,
+          NODE_ENV: 'production'
+        }
+        updateEnvironment('development')
+        const actual = getShorthandEnvironmentNameForDisplay(env)
+        updateEnvironment(null)
+        expect(actual).toBe(expected)
+      })
+      it('should return empty string when NODE_ENV is production and environment is null', () => {
+        const expected = ''
+        const env : EnvironmentVariables = {
+          ...duplicateThisEnv,
+          NODE_ENV: 'production'
+        }
+        updateEnvironment(null)
+        const actual = getShorthandEnvironmentNameForDisplay(env)
         updateEnvironment(null)
         expect(actual).toBe(expected)
       })

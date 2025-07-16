@@ -1,30 +1,12 @@
-import { getEnvironmentName, getEnvironmentNameForDisplay } from '@src/env'
-import { capitaliseFC } from '@src/lib/utils'
+import { getEnvironmentName, getEnvironmentNameForDisplay, getShorthandEnvironmentNameForDisplay } from '@src/env'
 import { ActionButton } from '@src/components/ActionButton'
 import { commandBarActor } from '@src/lib/singletons'
 import env from '@src/env'
 import { writeEnvironmentConfigurationPool } from '@src/lib/desktop'
-import type { EnvironmentName } from '@src/lib/constants'
-import { SUPPORTED_ENVIRONMENTS } from '@src/lib/constants'
 import { reportRejection } from '@src/lib/trap'
 
-function getShorthandEnvironment(environmentName: EnvironmentName) {
-  if (env().NODE_ENV === 'development') {
-    return '.env'
-  } else if (environmentName === SUPPORTED_ENVIRONMENTS.production.name) {
-    return 'Prod'
-  } else if (environmentName === SUPPORTED_ENVIRONMENTS.development.name) {
-    return 'Dev'
-  }
-
-  return ''
-}
-
 export function EnvironmentChip() {
-  const environmentName = getEnvironmentName()
-  const shorthand = environmentName
-    ? getShorthandEnvironment(environmentName)
-    : ''
+  const shorthand = getShorthandEnvironmentNameForDisplay(env())
   const pool = env().POOL
   return (
     <div className="flex items-center px-2 py-1 text-xs text-chalkboard-80 dark:text-chalkboard-30 rounded-none border-none hover:bg-chalkboard-30 dark:hover:bg-chalkboard-80 focus:bg-chalkboard-30 dark:focus:bg-chalkboard-80 hover:text-chalkboard-100 dark:hover:text-chalkboard-10 focus:text-chalkboard-100 dark:focus:text-chalkboard-10  focus:outline-none focus-visible:ring-2 focus:ring-primary focus:ring-opacity-50'">
