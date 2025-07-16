@@ -220,11 +220,10 @@ export function ModelingSidebar() {
     <Resizable
       className={`group z-10 flex flex-col ${pointerEventsCssClass} ${context.store?.openPanes.length ? undefined : '!w-auto'}`}
       defaultSize={{
-        width: context.store?.openPanes.length ? '550px' : undefined,
+        width: '550px',
         height: 'auto',
       }}
       minWidth={context.store?.openPanes.length ? 200 : undefined}
-      maxWidth={window.innerWidth - 10}
       handleWrapperClass="sidebar-resize-handles"
       enable={{
         right: true,
@@ -443,6 +442,7 @@ function ResizeHandle(props: HTMLProps<HTMLDivElement>) {
       {...props}
       className={'group/grip absolute inset-0 ' + props.className}
     >
+      <div className="hidden group-hover/grip:block absolute bg-chalkboard-30 dark:bg-chalkboard-70 w-[1px] h-auto left-1/2 top-0 bottom-0" />
       <div
         className={
           'hidden group-hover/grip:block py-1 absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 rounded-sm w-fit group-hover/grip:bg-chalkboard-30 group-hover/grip:dark:bg-chalkboard-70 bg-transparent transition-colors border border-transparent group-hover/grip:border-chalkboard-40 dark:group-hover/grip:border-chalkboard-90 duration-75 transition-ease-out delay-100'

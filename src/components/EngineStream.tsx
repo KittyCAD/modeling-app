@@ -620,7 +620,7 @@ export const EngineStream = (props: {
           isRetrying={timeoutId !== undefined && !firstRun}
           retryAttemptCountdown={attemptTimes[1]}
           dataTestId="loading-engine"
-          className="fixed inset-0 h-screen"
+          className="absolute inset-0 h-screen"
         >
           Connecting and setting up scene...
         </Loading>
