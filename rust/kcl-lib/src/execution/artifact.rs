@@ -130,11 +130,11 @@ pub struct Path {
     pub composite_solid_id: Option<ArtifactId>,
     /// The hole, if any, from a subtract2d() call.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub inner_solid2d_id: Option<ArtifactId>,
-    /// The Solid2d that this is a hole of, if any.
-    /// The inverse link of `inner_solid2d_id`.
+    pub inner_path_id: Option<ArtifactId>,
+    /// The `Path` that this is a hole of, if any. The inverse link of
+    /// `inner_path_id`.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub outer_solid2d_id: Option<ArtifactId>,
+    pub outer_path_id: Option<ArtifactId>,
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
@@ -403,7 +403,7 @@ impl Artifact {
             Artifact::Plane(a) => a.merge(new),
             Artifact::Path(a) => a.merge(new),
             Artifact::Segment(a) => a.merge(new),
-            Artifact::Solid2d(a) => Some(new),
+            Artifact::Solid2d(_) => Some(new),
             Artifact::StartSketchOnFace { .. } => Some(new),
             Artifact::StartSketchOnPlane { .. } => Some(new),
             Artifact::Sweep(a) => a.merge(new),
@@ -450,8 +450,8 @@ impl Path {
         merge_ids(&mut self.seg_ids, new.seg_ids);
         merge_opt_id(&mut self.solid2d_id, new.solid2d_id);
         merge_opt_id(&mut self.composite_solid_id, new.composite_solid_id);
-        merge_opt_id(&mut self.inner_solid2d_id, new.inner_solid2d_id);
-        merge_opt_id(&mut self.outer_solid2d_id, new.outer_solid2d_id);
+        merge_opt_id(&mut self.inner_path_id, new.inner_path_id);
+        merge_opt_id(&mut self.outer_path_id, new.outer_path_id);
 
         None
     }
@@ -814,8 +814,8 @@ fn artifacts_to_update(
                 solid2d_id: None,
                 code_ref,
                 composite_solid_id: None,
-                inner_solid2d_id: None,
-                outer_solid2d_id: None,
+                inner_path_id: None,
+                outer_path_id: None,
             }));
             let plane = artifacts.get(&ArtifactId::new(*current_plane_id));
             if let Some(Artifact::Plane(plane)) = plane {
@@ -935,8 +935,8 @@ fn artifacts_to_update(
                         solid2d_id: None,
                         code_ref: code_ref.clone(),
                         composite_solid_id: None,
-                        inner_solid2d_id: None,
-                        outer_solid2d_id: None,
+                        inner_path_id: None,
+                        outer_path_id: None,
                     }
                 };
 
@@ -1044,9 +1044,9 @@ fn artifacts_to_update(
                 };
                 last_path = Some(path);
                 let Some(path_sweep_id) = path.sweep_id else {
-                    // If the path doesn't have a sweep ID, check if the
-                    // Solid2d is a hole.
-                    if path.outer_solid2d_id.is_some() {
+                    // If the path doesn't have a sweep ID, check if it's a
+                    // hole.
+                    if path.outer_path_id.is_some() {
                         // This is a hole.
                         continue;
                     }
@@ -1104,9 +1104,9 @@ fn artifacts_to_update(
                         continue;
                     };
                     let Some(path_sweep_id) = path.sweep_id else {
-                        // If the path doesn't have a sweep ID, check if the
-                        // Solid2d is a hole.
-                        if path.outer_solid2d_id.is_some() {
+                        // If the path doesn't have a sweep ID, check if it's a
+                        // hole.
+                        if path.outer_path_id.is_some() {
                             // This is a hole.
                             continue;
                         }
@@ -1294,27 +1294,20 @@ fn artifacts_to_update(
         }
         ModelingCmd::Solid2dAddHole(solid2d_add_hole) => {
             let mut return_arr = Vec::new();
-            // Add the hole to the outer solid2d.
-            let outer_solid2d = artifacts.get(&ArtifactId::new(solid2d_add_hole.object_id));
-            println!("ADAM: Processing AddHole cmd");
-            println!("ADAM: The hole's object ID has an artifact: {outer_solid2d:?}");
-            if let Some(Artifact::Path(solid2d)) = outer_solid2d {
-                let mut new_solid2d = solid2d.clone();
-                new_solid2d.inner_solid2d_id = Some(ArtifactId::new(solid2d_add_hole.hole_id));
-                println!("ADAM: Found outer path");
-                return_arr.push(Artifact::Path(new_solid2d));
+            // Add the hole to the outer.
+            let outer_path = artifacts.get(&ArtifactId::new(solid2d_add_hole.object_id));
+            if let Some(Artifact::Path(path)) = outer_path {
+                let mut new_path = path.clone();
+                new_path.inner_path_id = Some(ArtifactId::new(solid2d_add_hole.hole_id));
+                return_arr.push(Artifact::Path(new_path));
             }
-            // Add the outer to the hole solid2d.
+            // Add the outer to the hole.
             let inner_solid2d = artifacts.get(&ArtifactId::new(solid2d_add_hole.hole_id));
-            println!("ADAM: The hole's hole ID has an artifact: {inner_solid2d:?}");
-            if let Some(Artifact::Path(solid2d)) = inner_solid2d {
-                let mut new_solid2d = solid2d.clone();
-                new_solid2d.outer_solid2d_id = Some(ArtifactId::new(solid2d_add_hole.object_id));
-                println!("ADAM: Found inner path");
-                return_arr.push(Artifact::Path(new_solid2d));
+            if let Some(Artifact::Path(path)) = inner_solid2d {
+                let mut new_path = path.clone();
+                new_path.outer_path_id = Some(ArtifactId::new(solid2d_add_hole.object_id));
+                return_arr.push(Artifact::Path(new_path));
             }
-            // println!("ADAM: {return_arr:#?}");
-
             return Ok(return_arr);
         }
         ModelingCmd::BooleanIntersection(_) | ModelingCmd::BooleanSubtract(_) | ModelingCmd::BooleanUnion(_) => {

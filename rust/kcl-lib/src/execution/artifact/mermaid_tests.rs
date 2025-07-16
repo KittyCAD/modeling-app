@@ -73,12 +73,18 @@ impl Artifact {
                 ids
             }
             Artifact::Plane(_) => Vec::new(),
-            Artifact::Path(a) => vec![a.plane_id],
-            Artifact::Segment(a) => vec![a.path_id],
-            Artifact::Solid2d(a) => {
-                let ids = vec![a.path_id];
+            Artifact::Path(a) => {
+                let mut ids = vec![a.plane_id];
+                if let Some(inner_path_id) = a.inner_path_id {
+                    ids.push(inner_path_id);
+                }
+                if let Some(outer_path_id) = a.outer_path_id {
+                    ids.push(outer_path_id);
+                }
                 ids
             }
+            Artifact::Segment(a) => vec![a.path_id],
+            Artifact::Solid2d(a) => vec![a.path_id],
             Artifact::StartSketchOnFace(a) => vec![a.face_id],
             Artifact::StartSketchOnPlane(a) => vec![a.plane_id],
             Artifact::Sweep(a) => vec![a.path_id],
@@ -106,7 +112,8 @@ impl Artifact {
             }
             Artifact::Plane(a) => a.path_ids.clone(),
             Artifact::Path(a) => {
-                // Note: Don't include these since they're parents: plane_id.
+                // Note: Don't include these since they're parents: plane_id,
+                // inner_path_id, outer_path_id.
                 let mut ids = a.seg_ids.clone();
                 if let Some(sweep_id) = a.sweep_id {
                     ids.push(sweep_id);
@@ -133,8 +140,7 @@ impl Artifact {
                 ids
             }
             Artifact::Solid2d(_) => {
-                // Note: Don't include these since they're parents: path_id,
-                // inner_solid2d_id, outer_solid2d_id.
+                // Note: Don't include these since they're parents: path_id.
                 Vec::new()
             }
             Artifact::StartSketchOnFace { .. } => {
