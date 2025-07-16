@@ -13,12 +13,13 @@ smallTriangle = startProfile(sketch001, at = [0.14, -0.84])
 out = subtract2d(bigTriangle, tool = smallTriangle)
 extrude001 = extrude(out, length = 2)
 
-// Start a sketch on the inner face and extrude it.
-startSketchOn(extrude001, face = innerFace)
-  |> startProfile(at = [0.25, 0])
-  |> angledLine(angle = 0, length = 0.57, tag = $rectangleSegmentA001)
-  |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 0.67)
-  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
-  |> extrude(length = 1)
+// Uncomment this once Serena's engine PR merges
+// // Start a sketch on the inner face and extrude it.
+// startSketchOn(extrude001, face = innerFace)
+//   |> startProfile(at = [0.25, 0])
+//   |> angledLine(angle = 0, length = 0.57, tag = $rectangleSegmentA001)
+//   |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 0.67)
+//   |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
+//   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+//   |> close()
+//   |> extrude(length = 1)

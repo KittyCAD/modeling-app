@@ -131,10 +131,6 @@ description: Variables in memory after executing tag_inner_face.kcl
         }
       },
       "tags": {
-        "innerFace": {
-          "type": "TagIdentifier",
-          "value": "innerFace"
-        },
         "outerFace": {
           "type": "TagIdentifier",
           "value": "outerFace"
@@ -172,34 +168,6 @@ description: Variables in memory after executing tag_inner_face.kcl
             "start": 184,
             "type": "TagDeclarator",
             "value": "outerFace"
-          },
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": null,
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": null,
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 336,
-            "end": 346,
-            "moduleId": 0,
-            "start": 336,
-            "type": "TagDeclarator",
-            "value": "innerFace"
           },
           "type": "extrudePlane"
         },
@@ -403,10 +371,6 @@ description: Variables in memory after executing tag_inner_face.kcl
           }
         },
         "tags": {
-          "innerFace": {
-            "type": "TagIdentifier",
-            "value": "innerFace"
-          },
           "outerFace": {
             "type": "TagIdentifier",
             "value": "outerFace"
@@ -626,10 +590,6 @@ description: Variables in memory after executing tag_inner_face.kcl
         }
       },
       "tags": {
-        "innerFace": {
-          "type": "TagIdentifier",
-          "value": "innerFace"
-        },
         "outerFace": {
           "type": "TagIdentifier",
           "value": "outerFace"
@@ -646,11 +606,6 @@ description: Variables in memory after executing tag_inner_face.kcl
     "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "outerFace"
-  },
-  "rectangleSegmentA001": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "rectangleSegmentA001"
   },
   "sketch001": {
     "type": "Plane",
