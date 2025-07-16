@@ -94,6 +94,15 @@ export const EngineStream = (props: {
 
   useEffect(() => {
     // Will cause a useEffect loop if not checked for.
+    if (engineStreamState.context.containerElementRef.current !== null) return
+    engineStreamActor.send({
+      type: EngineStreamTransition.SetContainerElementRef,
+      containerElementRef: { current: videoWrapperRef.current },
+    })
+  }, [videoWrapperRef.current, engineStreamState])
+
+  useEffect(() => {
+    // Will cause a useEffect loop if not checked for.
     if (engineStreamState.context.videoRef.current !== null) return
     engineStreamActor.send({
       type: EngineStreamTransition.SetVideoRef,
@@ -298,6 +307,8 @@ export const EngineStream = (props: {
     // But if the user resizes, and we're stopped or paused, then we want
     // to try to restart the stream!
 
+    const wrapper = engineStreamState.context.containerElementRef?.current
+    if (!wrapper) return
     const video = engineStreamState.context.videoRef?.current
     if (!video) return
     const canvas = engineStreamState.context.canvasRef?.current
@@ -312,8 +323,8 @@ export const EngineStream = (props: {
         last.current = Date.now()
 
         if (
-          (Math.abs(video.width - window.innerWidth) > 4 ||
-            Math.abs(video.height - window.innerHeight) > 4) &&
+          (Math.abs(video.width - wrapper.clientWidth) > 4 ||
+            Math.abs(video.height - wrapper.clientHeight) > 4) &&
           engineStreamState.matches(EngineStreamState.Playing)
         ) {
           timeoutStart.current = Date.now()
@@ -322,7 +333,7 @@ export const EngineStream = (props: {
       })
     })
 
-    observer.observe(document.body)
+    observer.observe(wrapper)
 
     return () => {
       observer.disconnect()
@@ -562,7 +573,7 @@ export const EngineStream = (props: {
     // eslint-disable-next-line jsx-a11y/no-static-element-interactions
     <div
       ref={videoWrapperRef}
-      className="fixed inset-0 z-0"
+      className="absolute inset-[-4px] z-0"
       id="stream"
       data-testid="stream"
       onMouseUp={handleMouseUp}

@@ -22,6 +22,7 @@ export enum EngineStreamTransition {
   // Our dependencies to set
   SetPool = 'set-pool',
   SetAuthToken = 'set-auth-token',
+  SetContainerElementRef = 'set-container-element-ref',
   SetVideoRef = 'set-video-ref',
   SetCanvasRef = 'set-canvas-ref',
   SetMediaStream = 'set-media-stream',
@@ -39,6 +40,7 @@ export enum EngineStreamTransition {
 export interface EngineStreamContext {
   pool: string | null
   authToken: string | undefined
+  containerElementRef: MutableRefObject<HTMLDivElement | null>
   videoRef: MutableRefObject<HTMLVideoElement | null>
   canvasRef: MutableRefObject<HTMLCanvasElement | null>
   mediaStream: MediaStream | null
@@ -48,6 +50,7 @@ export interface EngineStreamContext {
 export const engineStreamContextCreate = (): EngineStreamContext => ({
   pool: null,
   authToken: undefined,
+  containerElementRef: { current: null },
   videoRef: { current: null },
   canvasRef: { current: null },
   mediaStream: null,
@@ -99,12 +102,13 @@ export const engineStreamMachine = setup({
         }
       }) => {
         if (!context.authToken) return Promise.reject()
+        if (!context.containerElementRef.current) return Promise.reject()
         if (!context.videoRef.current) return Promise.reject()
         if (!context.canvasRef.current) return Promise.reject()
 
         const { width, height } = getDimensions(
-          window.innerWidth,
-          window.innerHeight
+          context.containerElementRef.current.clientWidth,
+          context.containerElementRef.current.clientHeight
         )
 
         context.videoRef.current.width = width
@@ -271,6 +275,14 @@ export const engineStreamMachine = setup({
           target: EngineStreamState.WaitingForDependencies,
           actions: [
             assign({ authToken: ({ context, event }) => event.authToken }),
+          ],
+        },
+        [EngineStreamTransition.SetContainerElementRef]: {
+          target: EngineStreamState.WaitingForDependencies,
+          actions: [
+            assign({
+              containerElementRef: ({ event }) => event.containerElementRef,
+            }),
           ],
         },
         [EngineStreamTransition.SetVideoRef]: {
