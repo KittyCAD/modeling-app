@@ -18,6 +18,7 @@ import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
   ENVIRONMENT_CONFIGURATION_FOLDER,
   ENVIRONMENT_FILE_NAME,
+  isEnvironmentName,
   PROJECT_ENTRYPOINT,
   PROJECT_FOLDER,
   PROJECT_IMAGE_NAME,
@@ -903,14 +904,18 @@ export const writeEnvironmentFile = async (
 /**
  * Sign out of all environments and clear cached environment data
  */
-export const signOutAndClearAllEnvironmentCaches = async () => {
-  const environmentFilePath = await getEnvironmentFilePath()
-  await window.electron.rm(environmentFilePath)
-  const environmentConfigurationFolderPath =
-    await getEnvironmentConfigurationFolderPath()
-  await window.electron.rm(environmentConfigurationFolderPath, {
-    recursive: true,
-  })
+export const setTokenToEmptyStringForAllEnvironments = async () => {
+  // Make sure you call the oauth2/token/revoke before you call this.
+  // This will not revoke the token at the API level, only remove the cached value from disk.
+  // This is not a true logout function, please use the AuthMachine
+  const environments = Object.keys(SUPPORTED_ENVIRONMENTS)
+  for (let i =0; i < environments.length; i ++) {
+    const environmentName = environments[i]
+    if (isEnvironmentName(environmentName)) {
+      const emptyStringToken = ''
+      await writeEnvironmentConfigurationToken(environmentName, emptyStringToken)
+    }
+  }
 }
 
 export const writeTelemetryFile = async (content: string) => {

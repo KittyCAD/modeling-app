@@ -19,7 +19,7 @@ import {
   readEnvironmentConfigurationPool,
   readEnvironmentConfigurationToken,
   readEnvironmentFile,
-  signOutAndClearAllEnvironmentCaches,
+  setTokenToEmptyStringForAllEnvironments,
   writeEnvironmentConfigurationToken,
   writeEnvironmentFile,
 } from '@src/lib/desktop'
@@ -38,7 +38,7 @@ export type Events =
       type: 'Log out'
     }
   | {
-      type: 'Log out all and clear caches'
+      type: 'Log out all'
     }
   | {
       type: 'Log in'
@@ -117,7 +117,7 @@ export const authMachine = setup({
         'Log out': {
           target: 'loggingOut',
         },
-        'Log out all and clear caches': {
+        'Log out all': {
           target: 'loggingOutAllEnvironments',
         },
       },
@@ -386,5 +386,5 @@ async function logoutAllEnvironments() {
     }
   }
 
-  await signOutAndClearAllEnvironmentCaches()
+  await setTokenToEmptyStringForAllEnvironments()
 }

@@ -43,7 +43,6 @@ interface AllSettingsFieldsProps {
   isFileSettings: boolean
 }
 
-
 export const AllSettingsFields = forwardRef(
   (
     { searchParamTab, isFileSettings }: AllSettingsFieldsProps,

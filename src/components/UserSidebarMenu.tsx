@@ -16,6 +16,8 @@ import { reportRejection } from '@src/lib/trap'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import { environmentNameDisplay } from '@src/components/environment/Environment'
 import { capitaliseFC } from '@src/lib/utils'
+import { getEnvironmentName } from '@src/env'
+import { commandBarActor } from '@src/lib/singletons'
 
 type User = Models['User_type']
 
@@ -145,11 +147,44 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
         },
         'break',
         {
+          id: 'change-environment',
+          Element: 'button',
+          children: (
+            <span>Change environment</span>
+          ),
+          onClick: () => {
+            const environment = getEnvironmentName()
+            if (environment) {
+              commandBarActor.send({
+                type: 'Find and select command',
+                data: {
+                  groupId: 'application',
+                  name: 'switch-environments',
+                  argDefaultValues: {
+                    environment,
+                  },
+                },
+              })
+            }
+          }
+
+        },
+        {
           id: 'sign-out',
           Element: 'button',
           'data-testid': 'user-sidebar-sign-out',
           children: (
             <span>Sign out of {capitaliseFC(environmentName || '')}</span>
+          ),
+          onClick: () => send({ type: 'Log out' }),
+          className: '', // Just making TS's filter type coercion happy 😠
+        },
+        {
+          id: 'sign-out-all',
+          Element: 'button',
+          'data-testid': 'user-sidebar-sign-out',
+          children: (
+            <span>Sign out of all environments</span>
           ),
           onClick: () => send({ type: 'Log out' }),
           className: '', // Just making TS's filter type coercion happy 😠
