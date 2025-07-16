@@ -1,6 +1,7 @@
 import type { Environment, EnvironmentName } from '@src/lib/constants'
 import { SUPPORTED_ENVIRONMENTS } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
+import { capitaliseFC } from './lib/utils'
 
 type EnvironmentVariableSources = {
   readonly VITE_KITTYCAD_API_BASE_URL: string | undefined
@@ -52,9 +53,16 @@ const getEnvironmentFromThisFile = () => {
   return ENVIRONMENT
 }
 
-/** Get the runtime environment */
+/** Get the runtime environment, useful for knowing the key for the environment you are in */
 export const getEnvironmentName = () => {
   return ENVIRONMENT?.name || null
+}
+
+/**
+ * When you need to display the full environment name within React
+ */
+export const getEnvironmentNameForDisplay = (env : EnvironmentVariables) => {
+  return env.NODE_ENV === 'development' ? '.env' : capitaliseFC(getEnvironmentName() || '')
 }
 
 export const viteEnv = () => {

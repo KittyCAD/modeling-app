@@ -1,4 +1,4 @@
-import { getEnvironmentName } from '@src/env'
+import { getEnvironmentName, getEnvironmentNameForDisplay } from '@src/env'
 import { capitaliseFC } from '@src/lib/utils'
 import { ActionButton } from '@src/components/ActionButton'
 import { commandBarActor } from '@src/lib/singletons'
@@ -7,10 +7,6 @@ import { writeEnvironmentConfigurationPool } from '@src/lib/desktop'
 import type { EnvironmentName } from '@src/lib/constants'
 import { SUPPORTED_ENVIRONMENTS } from '@src/lib/constants'
 import { reportRejection } from '@src/lib/trap'
-
-export function environmentNameDisplay() {
-  return env().NODE_ENV === 'development' ? '.env' : getEnvironmentName()
-}
 
 function getShorthandEnvironment(environmentName: EnvironmentName) {
   if (env().NODE_ENV === 'development') {
@@ -40,7 +36,7 @@ export function EnvironmentChip() {
 }
 
 export function EnvironmentDescription() {
-  const environmentName = environmentNameDisplay()
+  const fullEnvironmentName = getEnvironmentNameForDisplay(env())
   return (
     <div className="absolute left-2 bottom-full mb-1 flex-col gap-1 align-stretch bg-chalkboard-10 dark:bg-chalkboard-90 rounded shadow-lg border border-solid border-chalkboard-20/50 dark:border-chalkboard-80/50 text-sm">
       <div
@@ -72,7 +68,7 @@ export function EnvironmentDescription() {
               iconEnd={{ icon: 'sketch', bgClassName: '!bg-transparent' }}
               className="ml-1 pr-0"
             >
-              {capitaliseFC(environmentName || '')}
+              {fullEnvironmentName}
             </ActionButton>
           </p>
         </p>

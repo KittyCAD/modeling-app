@@ -18,7 +18,6 @@ import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import {
   EnvironmentChip,
   EnvironmentDescription,
-  environmentNameDisplay,
 } from '@src/components/environment/Environment'
 
 export const defaultGlobalStatusBarItems = ({
@@ -111,7 +110,6 @@ function BillingStatusBarItem() {
 }
 
 function EnvironmentStatusBarItem() {
-  const environmentName = environmentNameDisplay()
   return (
     <Popover className="relative flex items-stretch">
       <Popover.Button

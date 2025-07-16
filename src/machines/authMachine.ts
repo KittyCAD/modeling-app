@@ -178,7 +178,10 @@ async function getUser(input: { token?: string }) {
   await migrateOldTokenToProductionEnvironmentConfiguration()
 
   // Always use the development.json environment when running in dev mode.
-  const environment = env().NODE_ENV === 'production' ? await readEnvironmentFile() : 'development'
+  const environment =
+    env().NODE_ENV === 'production'
+      ? await readEnvironmentFile()
+      : 'development'
   if (isEnvironmentName(environment)) {
     updateEnvironment(environment)
   } else {

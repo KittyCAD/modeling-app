@@ -14,9 +14,8 @@ import { PATHS } from '@src/lib/paths'
 import { authActor } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
-import { environmentNameDisplay } from '@src/components/environment/Environment'
 import { capitaliseFC } from '@src/lib/utils'
-import { getEnvironmentName } from '@src/env'
+import env, { getEnvironmentName, getEnvironmentNameForDisplay } from '@src/env'
 import { commandBarActor } from '@src/lib/singletons'
 
 type User = Models['User_type']
@@ -29,7 +28,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
   const [imageLoadFailed, setImageLoadFailed] = useState(false)
   const navigate = useNavigate()
   const send = authActor.send
-  const environmentName = environmentNameDisplay()
+  const fullEnvironmentName = getEnvironmentNameForDisplay(env())
 
   // We filter this memoized list so that no orphan "break" elements are rendered.
   const userMenuItems = useMemo<(ActionButtonProps | 'break')[]>(
@@ -171,7 +170,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
           Element: 'button',
           'data-testid': 'user-sidebar-sign-out',
           children: (
-            <span>Sign out of {capitaliseFC(environmentName || '')}</span>
+            <span>Sign out of {fullEnvironmentName}</span>
           ),
           onClick: () => send({ type: 'Log out' }),
           className: '', // Just making TS's filter type coercion happy 😠
