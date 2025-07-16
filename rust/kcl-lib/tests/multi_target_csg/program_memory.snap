@@ -181,6 +181,20 @@ description: Variables in memory after executing multi_target_csg.kcl
           "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 685,
+            "end": 693,
+            "moduleId": 0,
+            "start": 685,
+            "type": "TagDeclarator",
+            "value": "hole001"
+          },
+          "type": "extrudeArc"
         }
       ],
       "sketch": {
@@ -471,6 +485,12 @@ description: Variables in memory after executing multi_target_csg.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": []
+          }
+        },
+        "tags": {
+          "hole001": {
+            "type": "TagIdentifier",
+            "value": "hole001"
           }
         },
         "artifactId": "[uuid]",
@@ -1308,6 +1328,12 @@ description: Variables in memory after executing multi_target_csg.kcl
         "__geoMeta": {
           "id": "[uuid]",
           "sourceRange": []
+        }
+      },
+      "tags": {
+        "hole001": {
+          "type": "TagIdentifier",
+          "value": "hole001"
         }
       },
       "artifactId": "[uuid]",

@@ -1817,6 +1817,13 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [],
+          "tag": null,
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
           "tag": {
             "commentStart": 2896,
             "end": 2908,
@@ -2048,6 +2055,13 @@ description: Variables in memory after executing surgical-drill-guide.kcl
             "type": "TagDeclarator",
             "value": "seg08"
           },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
           "type": "extrudeArc"
         },
         {
