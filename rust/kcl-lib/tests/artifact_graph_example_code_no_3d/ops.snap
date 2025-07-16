@@ -77,7 +77,8 @@ description: Operations executed artifact_graph_example_code_no_3d.kcl
         "type": "Number",
         "value": 3.141592653589793,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       "visibility": "export",

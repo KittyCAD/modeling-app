@@ -14,7 +14,8 @@ description: Operations executed pipe_substitution_inside_function_called_from_p
         "type": "Number",
         "value": 3.141592653589793,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       "visibility": "export",

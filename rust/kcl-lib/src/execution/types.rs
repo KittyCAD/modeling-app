@@ -2359,7 +2359,8 @@ u = min([3rad, 4in])
 a = 1rad
 b = 180 / PI * a + 360
 "#;
-
+// When PI is unknown: 180/pi * 1 + 360
+// When PI is Count:   180/pi * 1 + 360*(pi/180) = 1 + 360*(pi/180)
         let result = parse_execute(program).await.unwrap();
 
         assert_value_and_type("a", &result, 1.0, NumericType::radians());

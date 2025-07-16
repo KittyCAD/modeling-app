@@ -90,7 +90,8 @@ description: Operations executed error_inside_fn_also_has_source_range_of_call_s
         "type": "Number",
         "value": 3.141592653589793,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       "visibility": "export",

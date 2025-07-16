@@ -2611,7 +2611,8 @@ description: Operations executed gridfinity-bins.kcl
         "type": "Number",
         "value": 3.141592653589793,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       "visibility": "export",

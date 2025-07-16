@@ -57,7 +57,8 @@ description: Operations executed kw_fn_too_few_args.kcl
         "type": "Number",
         "value": 3.141592653589793,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       "visibility": "export",
