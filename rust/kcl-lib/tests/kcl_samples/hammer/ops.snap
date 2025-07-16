@@ -992,6 +992,47 @@ description: Operations executed hammer.kcl
         ]
       },
       "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "appearance",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "color": {
+          "value": {
+            "type": "String",
+            "value": "#f14f04"
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 10
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 1
+          }
+        ]
+      },
+      "sourceRange": []
     }
   ],
   "std::appearance": [],
@@ -1068,6 +1109,32 @@ description: Operations executed hammer.kcl
       "value": {
         "type": "String",
         "value": "end"
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "NEW",
+      "value": {
+        "type": "String",
+        "value": "new"
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "MERGE",
+      "value": {
+        "type": "String",
+        "value": "merge"
       },
       "visibility": "export",
       "nodePath": {

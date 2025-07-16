@@ -155,7 +155,8 @@ description: Artifact commands dodecahedron.kcl
         "target": "[uuid]",
         "distance": 50800.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -396,7 +397,8 @@ description: Artifact commands dodecahedron.kcl
         "target": "[uuid]",
         "distance": 50802.53999999999,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -637,7 +639,8 @@ description: Artifact commands dodecahedron.kcl
         "target": "[uuid]",
         "distance": 50805.08,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -878,7 +881,8 @@ description: Artifact commands dodecahedron.kcl
         "target": "[uuid]",
         "distance": 50807.619999999995,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1119,7 +1123,8 @@ description: Artifact commands dodecahedron.kcl
         "target": "[uuid]",
         "distance": 50810.159999999996,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1360,7 +1365,8 @@ description: Artifact commands dodecahedron.kcl
         "target": "[uuid]",
         "distance": 50812.7,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1601,7 +1607,8 @@ description: Artifact commands dodecahedron.kcl
         "target": "[uuid]",
         "distance": 50815.24,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1842,7 +1849,8 @@ description: Artifact commands dodecahedron.kcl
         "target": "[uuid]",
         "distance": 50817.78,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2083,7 +2091,8 @@ description: Artifact commands dodecahedron.kcl
         "target": "[uuid]",
         "distance": 50820.31999999999,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2324,7 +2333,8 @@ description: Artifact commands dodecahedron.kcl
         "target": "[uuid]",
         "distance": 50822.86,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2565,7 +2575,8 @@ description: Artifact commands dodecahedron.kcl
         "target": "[uuid]",
         "distance": 50802.794,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2806,7 +2817,8 @@ description: Artifact commands dodecahedron.kcl
         "target": "[uuid]",
         "distance": 50803.047999999995,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {

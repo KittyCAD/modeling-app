@@ -535,7 +535,8 @@ description: Artifact commands t-slot-rail.kcl
         "target": "[uuid]",
         "distance": -609.5999999999999,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {

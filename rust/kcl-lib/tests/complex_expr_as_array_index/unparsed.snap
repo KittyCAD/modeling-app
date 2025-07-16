@@ -1,0 +1,7 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing complex_expr_as_array_index.kcl
+---
+arr = [0, 1, 2, 3]
+two = arr[2]
+assert(two, isEqualTo = 2)

@@ -456,6 +456,47 @@ description: Operations executed keyboard.kcl
     },
     {
       "type": "StdLibCall",
+      "name": "appearance",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "color": {
+          "value": {
+            "type": "String",
+            "value": "#0f0f0f"
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 12
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 8
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
       "name": "fillet",
       "unlabeledArg": {
         "value": {
@@ -851,6 +892,60 @@ description: Operations executed keyboard.kcl
     },
     {
       "type": "StdLibCall",
+      "name": "appearance",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "color": {
+          "value": {
+            "type": "String",
+            "value": "#23af93"
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 20
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 11
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
       "name": "patternLinear3d",
       "unlabeledArg": {
         "value": {
@@ -1183,6 +1278,60 @@ description: Operations executed keyboard.kcl
           {
             "type": "PipeBodyItem",
             "index": 10
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "appearance",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "color": {
+          "value": {
+            "type": "String",
+            "value": "#b0b0b0"
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 20
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 11
           }
         ]
       },
@@ -1529,6 +1678,60 @@ description: Operations executed keyboard.kcl
     },
     {
       "type": "StdLibCall",
+      "name": "appearance",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "color": {
+          "value": {
+            "type": "String",
+            "value": "#23af93"
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 20
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 11
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
       "name": "patternLinear3d",
       "unlabeledArg": {
         "value": {
@@ -1861,6 +2064,60 @@ description: Operations executed keyboard.kcl
           {
             "type": "PipeBodyItem",
             "index": 10
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "appearance",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "color": {
+          "value": {
+            "type": "String",
+            "value": "#b0b0b0"
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 20
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 11
           }
         ]
       },
@@ -2207,6 +2464,60 @@ description: Operations executed keyboard.kcl
     },
     {
       "type": "StdLibCall",
+      "name": "appearance",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "color": {
+          "value": {
+            "type": "String",
+            "value": "#b0b0b0"
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 20
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 11
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
       "name": "patternLinear3d",
       "unlabeledArg": {
         "value": {
@@ -2539,6 +2850,60 @@ description: Operations executed keyboard.kcl
           {
             "type": "PipeBodyItem",
             "index": 10
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "appearance",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "color": {
+          "value": {
+            "type": "String",
+            "value": "#b0b0b0"
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 20
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 11
           }
         ]
       },
@@ -2885,6 +3250,60 @@ description: Operations executed keyboard.kcl
     },
     {
       "type": "StdLibCall",
+      "name": "appearance",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "color": {
+          "value": {
+            "type": "String",
+            "value": "#23af93"
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 20
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 11
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
       "name": "patternLinear3d",
       "unlabeledArg": {
         "value": {
@@ -3217,6 +3636,60 @@ description: Operations executed keyboard.kcl
           {
             "type": "PipeBodyItem",
             "index": 10
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "appearance",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "color": {
+          "value": {
+            "type": "String",
+            "value": "#23af93"
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 20
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 11
           }
         ]
       },
@@ -3563,6 +4036,60 @@ description: Operations executed keyboard.kcl
     },
     {
       "type": "StdLibCall",
+      "name": "appearance",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "color": {
+          "value": {
+            "type": "String",
+            "value": "#b0b0b0"
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 20
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 11
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
       "name": "patternLinear3d",
       "unlabeledArg": {
         "value": {
@@ -3895,6 +4422,60 @@ description: Operations executed keyboard.kcl
           {
             "type": "PipeBodyItem",
             "index": 10
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "appearance",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "color": {
+          "value": {
+            "type": "String",
+            "value": "#23af93"
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 20
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 11
           }
         ]
       },
@@ -4241,6 +4822,60 @@ description: Operations executed keyboard.kcl
     },
     {
       "type": "StdLibCall",
+      "name": "appearance",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "color": {
+          "value": {
+            "type": "String",
+            "value": "#b0b0b0"
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 20
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 11
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
       "name": "patternLinear3d",
       "unlabeledArg": {
         "value": {
@@ -4573,6 +5208,60 @@ description: Operations executed keyboard.kcl
           {
             "type": "PipeBodyItem",
             "index": 10
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "appearance",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "color": {
+          "value": {
+            "type": "String",
+            "value": "#b0b0b0"
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 20
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 11
           }
         ]
       },
@@ -4919,6 +5608,60 @@ description: Operations executed keyboard.kcl
     },
     {
       "type": "StdLibCall",
+      "name": "appearance",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "color": {
+          "value": {
+            "type": "String",
+            "value": "#23af93"
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 20
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 11
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
       "name": "patternLinear3d",
       "unlabeledArg": {
         "value": {
@@ -5251,6 +5994,60 @@ description: Operations executed keyboard.kcl
           {
             "type": "PipeBodyItem",
             "index": 10
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "appearance",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "color": {
+          "value": {
+            "type": "String",
+            "value": "#b0b0b0"
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 20
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 11
           }
         ]
       },
@@ -5597,6 +6394,60 @@ description: Operations executed keyboard.kcl
     },
     {
       "type": "StdLibCall",
+      "name": "appearance",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "color": {
+          "value": {
+            "type": "String",
+            "value": "#b0b0b0"
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 20
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 11
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
       "name": "patternLinear3d",
       "unlabeledArg": {
         "value": {
@@ -5929,6 +6780,60 @@ description: Operations executed keyboard.kcl
           {
             "type": "PipeBodyItem",
             "index": 10
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "appearance",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "color": {
+          "value": {
+            "type": "String",
+            "value": "#b0b0b0"
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 20
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 11
           }
         ]
       },
@@ -6275,6 +7180,60 @@ description: Operations executed keyboard.kcl
     },
     {
       "type": "StdLibCall",
+      "name": "appearance",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "color": {
+          "value": {
+            "type": "String",
+            "value": "#b0b0b0"
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 20
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 11
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
       "name": "patternLinear3d",
       "unlabeledArg": {
         "value": {
@@ -6607,6 +7566,60 @@ description: Operations executed keyboard.kcl
           {
             "type": "PipeBodyItem",
             "index": 10
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "appearance",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "color": {
+          "value": {
+            "type": "String",
+            "value": "#23af93"
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 20
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 11
           }
         ]
       },
@@ -6953,6 +7966,60 @@ description: Operations executed keyboard.kcl
     },
     {
       "type": "StdLibCall",
+      "name": "appearance",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "color": {
+          "value": {
+            "type": "String",
+            "value": "#23af93"
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 20
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 11
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
       "name": "patternLinear3d",
       "unlabeledArg": {
         "value": {
@@ -7285,6 +8352,60 @@ description: Operations executed keyboard.kcl
           {
             "type": "PipeBodyItem",
             "index": 10
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "appearance",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "color": {
+          "value": {
+            "type": "String",
+            "value": "#b0b0b0"
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 20
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 11
           }
         ]
       },
@@ -7631,6 +8752,60 @@ description: Operations executed keyboard.kcl
     },
     {
       "type": "StdLibCall",
+      "name": "appearance",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "color": {
+          "value": {
+            "type": "String",
+            "value": "#23af93"
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 20
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 11
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
       "name": "patternLinear3d",
       "unlabeledArg": {
         "value": {
@@ -7950,6 +9125,60 @@ description: Operations executed keyboard.kcl
       "sourceRange": []
     },
     {
+      "type": "StdLibCall",
+      "name": "appearance",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "color": {
+          "value": {
+            "type": "String",
+            "value": "#0f0f0f"
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 43
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 19
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
       "type": "GroupEnd"
     },
     {
@@ -8150,6 +9379,60 @@ description: Operations executed keyboard.kcl
     },
     {
       "type": "StdLibCall",
+      "name": "appearance",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "color": {
+          "value": {
+            "type": "String",
+            "value": "#0f0f0f"
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 44
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 7
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
       "name": "startSketchOn",
       "unlabeledArg": {
         "value": {
@@ -8250,6 +9533,60 @@ description: Operations executed keyboard.kcl
           {
             "type": "PipeBodyItem",
             "index": 6
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "appearance",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "color": {
+          "value": {
+            "type": "String",
+            "value": "#0f0f0f"
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 44
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 7
           }
         ]
       },
@@ -8456,6 +9793,60 @@ description: Operations executed keyboard.kcl
     },
     {
       "type": "StdLibCall",
+      "name": "appearance",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "color": {
+          "value": {
+            "type": "String",
+            "value": "#0f0f0f"
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 44
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 7
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
       "name": "startSketchOn",
       "unlabeledArg": {
         "value": {
@@ -8562,6 +9953,60 @@ description: Operations executed keyboard.kcl
       "sourceRange": []
     },
     {
+      "type": "StdLibCall",
+      "name": "appearance",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "color": {
+          "value": {
+            "type": "String",
+            "value": "#0f0f0f"
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 44
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 7
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
       "type": "GroupEnd"
     }
   ],
@@ -8639,6 +10084,32 @@ description: Operations executed keyboard.kcl
       "value": {
         "type": "String",
         "value": "end"
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "NEW",
+      "value": {
+        "type": "String",
+        "value": "new"
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "MERGE",
+      "value": {
+        "type": "String",
+        "value": "merge"
       },
       "visibility": "export",
       "nodePath": {

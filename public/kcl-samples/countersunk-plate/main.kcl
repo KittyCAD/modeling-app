@@ -33,7 +33,7 @@ plateBody = startSketchOn(XY)
   |> tangentialArc(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
   |> subtract2d(tool = circle(center = [0, 0], radius = centerHoleDiameter / 2 * 1.5))
-  |> extrude(%, length = plateThickness)
+  |> extrude(length = plateThickness)
 
 // Function to create a countersunk hole
 fn countersink(@holePosition) {

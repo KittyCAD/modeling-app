@@ -1162,7 +1162,8 @@ description: Artifact commands brake-rotor.kcl
         "target": "[uuid]",
         "distance": 10.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1389,7 +1390,8 @@ description: Artifact commands brake-rotor.kcl
         "target": "[uuid]",
         "distance": 10.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2735,7 +2737,8 @@ description: Artifact commands brake-rotor.kcl
         "target": "[uuid]",
         "distance": 10.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -3155,7 +3158,8 @@ description: Artifact commands brake-rotor.kcl
         "target": "[uuid]",
         "distance": -7.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -3211,7 +3215,8 @@ description: Artifact commands brake-rotor.kcl
         "target": "[uuid]",
         "distance": -7.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -3267,7 +3272,8 @@ description: Artifact commands brake-rotor.kcl
         "target": "[uuid]",
         "distance": -7.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -3323,7 +3329,8 @@ description: Artifact commands brake-rotor.kcl
         "target": "[uuid]",
         "distance": -7.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -3379,7 +3386,8 @@ description: Artifact commands brake-rotor.kcl
         "target": "[uuid]",
         "distance": -7.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {

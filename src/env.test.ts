@@ -20,10 +20,6 @@ describe('@src/env', () => {
         VITE_KITTYCAD_API_TOKEN: 'redacted',
         VITE_KITTYCAD_SITE_BASE_URL: 'https://dev.zoo.dev',
         VITE_KITTYCAD_SITE_APP_URL: 'https://app.dev.zoo.dev',
-        PROD: undefined,
-        TEST: 'true',
-        DEV: '1',
-        CI: 'true',
         SOURCES: {
           VITE_KITTYCAD_API_BASE_URL: '.env.development(.local)',
           VITE_KITTYCAD_API_WEBSOCKET_URL: '.env.development(.local)',
@@ -35,8 +31,6 @@ describe('@src/env', () => {
       expect(typeof actual.VITE_KITTYCAD_API_TOKEN).toBe('string')
       //@ts-ignore I do not want this token in our logs for any reason.
       actual.VITE_KITTYCAD_API_TOKEN = 'redacted'
-      //@ts-ignore need to hard code this for localhost and CI
-      actual.CI = 'true'
       expect(actual).toStrictEqual(expected)
     })
   })
@@ -52,10 +46,6 @@ describe('@src/env', () => {
       expect(typeof actual.VITE_KITTYCAD_API_TOKEN).toBe('string')
       expect(typeof actual.VITE_KITTYCAD_SITE_BASE_URL).toBe('string')
       expect(typeof actual.VITE_KITTYCAD_SITE_APP_URL).toBe('string')
-      expect(typeof actual.PROD).toBe('boolean')
-      expect(typeof actual.TEST).toBe('string')
-      expect(typeof actual.DEV).toBe('boolean')
-      // Don't check CI...
     })
   })
   describe('windowElectronProcessEnv', () => {
@@ -76,10 +66,6 @@ describe('@src/env', () => {
               VITE_KITTYCAD_API_TOKEN: 'redacted',
               VITE_KITTYCAD_SITE_BASE_URL: 'https://dev.zoo.dev',
               VITE_KITTYCAD_SITE_APP_URL: 'https://app.dev.zoo.dev',
-              PROD: undefined,
-              TEST: 'true',
-              DEV: '1',
-              CI: undefined,
             },
           },
         })
@@ -91,10 +77,6 @@ describe('@src/env', () => {
           VITE_KITTYCAD_API_TOKEN: 'redacted',
           VITE_KITTYCAD_SITE_BASE_URL: 'https://dev.zoo.dev',
           VITE_KITTYCAD_SITE_APP_URL: 'https://app.dev.zoo.dev',
-          PROD: undefined,
-          TEST: 'true',
-          DEV: '1',
-          CI: undefined,
         }
         const actual = windowElectronProcessEnv()
         expect(actual).toStrictEqual(expected)
@@ -122,10 +104,6 @@ describe('@src/env', () => {
       expect(typeof actual?.VITE_KITTYCAD_API_TOKEN).toBe('string')
       expect(typeof actual?.VITE_KITTYCAD_SITE_BASE_URL).toBe('string')
       expect(typeof actual?.VITE_KITTYCAD_SITE_APP_URL).toBe('string')
-      expect(typeof actual?.PROD).toBe('string')
-      expect(typeof actual?.TEST).toBe('string')
-      expect(typeof actual?.DEV).toBe('string')
-      // Don't check CI...
     })
   })
 

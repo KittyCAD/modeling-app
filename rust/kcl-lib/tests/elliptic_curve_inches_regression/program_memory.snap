@@ -1,0 +1,374 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing elliptic_curve_inches_regression.kcl
+---
+{
+  "plane000": {
+    "type": "Object",
+    "value": {
+      "origin": {
+        "type": "HomArray",
+        "value": [
+          {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Inches"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Inches"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Inches"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          }
+        ]
+      },
+      "xAxis": {
+        "type": "HomArray",
+        "value": [
+          {
+            "type": "Number",
+            "value": 1.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Inches"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Inches"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Inches"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          }
+        ]
+      },
+      "yAxis": {
+        "type": "HomArray",
+        "value": [
+          {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Inches"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          {
+            "type": "Number",
+            "value": -1.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Inches"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Inches"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "sketch000": {
+    "type": "Plane",
+    "value": {
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
+      "origin": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": {
+          "type": "Inches"
+        }
+      },
+      "value": "Custom",
+      "xAxis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": {
+          "type": "Unknown"
+        }
+      },
+      "yAxis": {
+        "x": 0.0,
+        "y": -1.0,
+        "z": 0.0,
+        "units": {
+          "type": "Unknown"
+        }
+      },
+      "zAxis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": -1.0,
+        "units": {
+          "type": "Unknown"
+        }
+      }
+    }
+  },
+  "sketch000Profile003": {
+    "type": "Sketch",
+    "value": {
+      "type": "Sketch",
+      "id": "[uuid]",
+      "paths": [
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            0.0,
+            60.855171
+          ],
+          "from": [
+            90.65875528983305,
+            60.85517063645204
+          ],
+          "major_radius": 2302.732377,
+          "minor_radius": 426.8591158,
+          "tag": null,
+          "to": [
+            -90.658755,
+            60.855171
+          ],
+          "type": "Ellipse",
+          "units": {
+            "type": "Inches"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -90.658755,
+            60.855171
+          ],
+          "tag": null,
+          "to": [
+            -40.454074999999996,
+            34.182681
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Inches"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -40.454074999999996,
+            34.182681
+          ],
+          "tag": null,
+          "to": [
+            13.334875000000004,
+            47.374937
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Inches"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            13.334875000000004,
+            47.374937
+          ],
+          "tag": null,
+          "to": [
+            61.470926000000006,
+            36.332651
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Inches"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            61.470926000000006,
+            36.332651
+          ],
+          "tag": null,
+          "to": [
+            90.65875500000001,
+            60.85517
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Inches"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            90.65875500000001,
+            60.85517
+          ],
+          "tag": null,
+          "to": [
+            90.65875528983305,
+            60.85517063645204
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Inches"
+          }
+        }
+      ],
+      "on": {
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0,
+          "units": {
+            "type": "Inches"
+          }
+        },
+        "type": "plane",
+        "value": "Custom",
+        "xAxis": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0,
+          "units": {
+            "type": "Unknown"
+          }
+        },
+        "yAxis": {
+          "x": 0.0,
+          "y": -1.0,
+          "z": 0.0,
+          "units": {
+            "type": "Unknown"
+          }
+        },
+        "zAxis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": -1.0,
+          "units": {
+            "type": "Unknown"
+          }
+        }
+      },
+      "start": {
+        "from": [
+          90.65875528983305,
+          60.85517063645204
+        ],
+        "to": [
+          90.65875528983305,
+          60.85517063645204
+        ],
+        "units": {
+          "type": "Inches"
+        },
+        "tag": null,
+        "__geoMeta": {
+          "id": "[uuid]",
+          "sourceRange": []
+        }
+      },
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
+      "units": {
+        "type": "Inches"
+      }
+    }
+  }
+}

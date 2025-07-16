@@ -758,6 +758,82 @@ description: Operations executed rotate_after_fillet.kcl
       "sourceRange": []
     },
     {
+      "type": "StdLibCall",
+      "name": "appearance",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "color": {
+          "value": {
+            "type": "String",
+            "value": "#4dd043"
+          },
+          "sourceRange": []
+        },
+        "metalness": {
+          "value": {
+            "type": "Number",
+            "value": 90.0,
+            "ty": {
+              "type": "Known",
+              "type": "Count"
+            }
+          },
+          "sourceRange": []
+        },
+        "roughness": {
+          "value": {
+            "type": "Number",
+            "value": 90.0,
+            "ty": {
+              "type": "Known",
+              "type": "Count"
+            }
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 7
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 4
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
       "type": "GroupEnd"
     },
     {
@@ -914,6 +990,32 @@ description: Operations executed rotate_after_fillet.kcl
       "value": {
         "type": "String",
         "value": "end"
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "NEW",
+      "value": {
+        "type": "String",
+        "value": "new"
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "MERGE",
+      "value": {
+        "type": "String",
+        "value": "merge"
       },
       "visibility": "export",
       "nodePath": {

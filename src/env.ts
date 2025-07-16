@@ -17,10 +17,6 @@ type EnvironmentVariables = {
   readonly VITE_KITTYCAD_API_TOKEN: string | undefined
   readonly VITE_KITTYCAD_SITE_BASE_URL: string | undefined
   readonly VITE_KITTYCAD_SITE_APP_URL: string | undefined
-  readonly PROD: string | undefined
-  readonly TEST: string | undefined
-  readonly DEV: string | undefined
-  readonly CI: string | undefined
   readonly SOURCES: EnvironmentVariableSources
   readonly POOL: string | undefined
 }
@@ -85,16 +81,7 @@ export const processEnv = () => {
   if (typeof process === 'undefined') {
     // Web, no window.process or process
     return undefined
-  } else if (
-    typeof process !== 'undefined' &&
-    typeof window !== 'undefined' &&
-    process.env.TEST !== 'true'
-  ) {
-    // Web, you made window.process, why :(, need process.env.TEST to make sure the frontend gets evaluated.
-    // The frontend can spoof this too :(
-    return undefined
   }
-
   return process.env
 }
 
@@ -108,20 +95,10 @@ export const processEnv = () => {
 export default (): EnvironmentVariables => {
   // Compute the possible environment variables, order operation is important
   // runtime (TODO) > process.env > window.electron.process.env > import.meta.env
-
   const viteOnly = viteEnv()
   const windowElectronProcessEnvOnly = windowElectronProcessEnv()
   const processEnvOnly = processEnv()
   const env = processEnvOnly || windowElectronProcessEnvOnly || viteOnly
-  // Vite uses Booleans and process.env uses strings
-  let PROD = env.PROD
-  if (typeof PROD === 'boolean') {
-    PROD = Number(PROD).toString()
-  }
-  let DEV = env.DEV
-  if (typeof DEV === 'boolean') {
-    DEV = Number(DEV).toString()
-  }
 
   /**
    * Resolve the API, Site, and Websocket URL
@@ -175,7 +152,7 @@ export default (): EnvironmentVariables => {
   }
 
   const environmentVariables: EnvironmentVariables = {
-    NODE_ENV: (env.NODE_ENV as string) || undefined,
+    NODE_ENV: (env.NODE_ENV as string) || viteOnly.MODE || undefined,
     VITE_KITTYCAD_API_BASE_URL: (API_URL as string) || undefined,
     VITE_KITTYCAD_API_WEBSOCKET_URL: (WEBSOCKET_URL as string) || undefined,
     VITE_KITTYCAD_API_TOKEN:
@@ -183,10 +160,6 @@ export default (): EnvironmentVariables => {
     VITE_KITTYCAD_SITE_BASE_URL: (SITE_URL as string) || undefined,
     VITE_KITTYCAD_SITE_APP_URL:
       (env.VITE_KITTYCAD_SITE_APP_URL as string) || undefined,
-    PROD: PROD || undefined,
-    TEST: (env.TEST as string) || undefined,
-    DEV: DEV || undefined,
-    CI: (env.CI as string) || undefined,
     SOURCES: sources,
     POOL: pool,
   }

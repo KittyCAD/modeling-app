@@ -24,13 +24,13 @@ lugHoles = startSketchOn(rotorBump, face = END)
        instances = lugCount,
        rotateDuplicates = true,
      )
-  |> extrude(%, length = -(rotorInnerDiameterThickness + rotorSinglePlateThickness))
+  |> extrude(length = -(rotorInnerDiameterThickness + rotorSinglePlateThickness))
   |> appearance(color = "#dbcd70", roughness = 90, metalness = 90)
 
 // (update when boolean is available)
 centerSpacer = startSketchOn(rotor, face = START)
-  |> circle(%, center = [0, 0], radius = .25)
-  |> extrude(%, length = spacerLength)
+  |> circle(center = [0, 0], radius = .25)
+  |> extrude(length = spacerLength)
 
 secondaryRotorSketch = startSketchOn(centerSpacer, face = END)
   |> circle(center = [0, 0], radius = rotorDiameter / 2)

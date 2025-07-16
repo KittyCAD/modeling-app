@@ -842,7 +842,7 @@ impl ExecutorContext {
             .map_err(KclErrorWithOutputs::no_outputs)?;
 
         for modules in import_graph::import_graph(&universe, self)
-            .map_err(|err| exec_state.error_with_outputs(err, default_planes.clone()))?
+            .map_err(|err| exec_state.error_with_outputs(err, None, default_planes.clone()))?
             .into_iter()
         {
             #[cfg(not(target_arch = "wasm32"))]
@@ -982,7 +982,7 @@ impl ExecutorContext {
                         exec_state.global.module_infos[&module_id].restore_repr(repr);
                     }
                     Err(e) => {
-                        return Err(exec_state.error_with_outputs(e, default_planes));
+                        return Err(exec_state.error_with_outputs(e, None, default_planes));
                     }
                 }
             }
@@ -1020,7 +1020,7 @@ impl ExecutorContext {
             exec_state,
         )
         .await
-        .map_err(|err| exec_state.error_with_outputs(err, default_planes))?;
+        .map_err(|err| exec_state.error_with_outputs(err, None, default_planes))?;
 
         Ok((universe, root_imports))
     }
@@ -1130,7 +1130,7 @@ impl ExecutorContext {
         ));
         crate::log::log(format!("Engine stats: {:?}", self.engine.stats()));
 
-        let env_ref = result.map_err(|e| exec_state.error_with_outputs(e, default_planes))?;
+        let env_ref = result.map_err(|(err, env_ref)| exec_state.error_with_outputs(err, env_ref, default_planes))?;
 
         if !self.is_mock() {
             let mut mem = exec_state.stack().deep_clone();
@@ -1149,7 +1149,7 @@ impl ExecutorContext {
         program: NodeRef<'_, crate::parsing::ast::types::Program>,
         exec_state: &mut ExecState,
         preserve_mem: bool,
-    ) -> Result<EnvironmentRef, KclError> {
+    ) -> Result<EnvironmentRef, (KclError, Option<EnvironmentRef>)> {
         // Don't early return!  We need to build other outputs regardless of
         // whether execution failed.
 
@@ -1159,7 +1159,8 @@ impl ExecutorContext {
         let start_op = exec_state.global.root_module_artifacts.operations.len();
 
         self.eval_prelude(exec_state, SourceRange::from(program).start_as_range())
-            .await?;
+            .await
+            .map_err(|e| (e, None))?;
 
         let exec_result = self
             .exec_module_body(
@@ -1176,13 +1177,13 @@ impl ExecutorContext {
                 exec_state.global.root_module_artifacts.extend(module_artifacts);
                 env_ref
             })
-            .map_err(|(err, module_artifacts)| {
+            .map_err(|(err, env_ref, module_artifacts)| {
                 if let Some(module_artifacts) = module_artifacts {
                     // We need to extend because it may already have operations
                     // from imports.
                     exec_state.global.root_module_artifacts.extend(module_artifacts);
                 }
-                err
+                (err, env_ref)
             });
 
         #[cfg(feature = "artifact-graph")]
@@ -1208,7 +1209,13 @@ impl ExecutorContext {
         }
 
         // Ensure all the async commands completed.
-        self.engine.ensure_async_commands_completed().await?;
+        self.engine.ensure_async_commands_completed().await.map_err(|e| {
+            match &exec_result {
+                Ok(env_ref) => (e, Some(*env_ref)),
+                // Prefer the execution error.
+                Err((exec_err, env_ref)) => (exec_err.clone(), *env_ref),
+            }
+        })?;
 
         // If we errored out and early-returned, there might be commands which haven't been executed
         // and should be dropped.
@@ -1216,7 +1223,7 @@ impl ExecutorContext {
 
         match exec_state.build_artifact_graph(&self.engine, program).await {
             Ok(_) => exec_result,
-            Err(err) => exec_result.and(Err(err)),
+            Err(err) => exec_result.and_then(|env_ref| Err((err, Some(env_ref)))),
         }
     }
 
@@ -1445,7 +1452,12 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     use super::*;
-    use crate::{ModuleId, errors::KclErrorDetails, execution::memory::Stack};
+    use crate::{
+        ModuleId,
+        errors::KclErrorDetails,
+        exec::NumericType,
+        execution::{memory::Stack, types::RuntimeType},
+    };
 
     /// Convenience function to get a JSON value from memory and unwrap.
     #[track_caller]
@@ -1934,6 +1946,40 @@ extrudes = patternLinear3d(
 clone001 = map(extrudes, f = clone)
 "#;
         parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_array_reduce_nested_array() {
+        let code = r#"
+fn id(@el, accum)  { return accum }
+
+answer = reduce([], initial=[[[0,0]]], f=id)
+"#;
+        let result = parse_execute(code).await.unwrap();
+        assert_eq!(
+            mem_get_json(result.exec_state.stack(), result.mem_env, "answer"),
+            KclValue::HomArray {
+                value: vec![KclValue::HomArray {
+                    value: vec![KclValue::HomArray {
+                        value: vec![
+                            KclValue::Number {
+                                value: 0.0,
+                                ty: NumericType::default(),
+                                meta: vec![SourceRange::new(69, 70, Default::default()).into()],
+                            },
+                            KclValue::Number {
+                                value: 0.0,
+                                ty: NumericType::default(),
+                                meta: vec![SourceRange::new(71, 72, Default::default()).into()],
+                            }
+                        ],
+                        ty: RuntimeType::any(),
+                    }],
+                    ty: RuntimeType::any(),
+                }],
+                ty: RuntimeType::any(),
+            }
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]

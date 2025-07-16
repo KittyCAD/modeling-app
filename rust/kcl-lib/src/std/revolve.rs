@@ -205,6 +205,7 @@ async fn inner_revolve(
                     start: tag_start.as_ref(),
                     end: tag_end.as_ref(),
                 },
+                kittycad_modeling_cmds::shared::ExtrudeMethod::Merge,
                 exec_state,
                 &args,
                 edge_id,

@@ -1790,6 +1790,47 @@ description: Operations executed prosthetic-hip.kcl
     },
     {
       "type": "StdLibCall",
+      "name": "appearance",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "color": {
+          "value": {
+            "type": "String",
+            "value": "#d64398"
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 29
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 12
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
       "name": "startSketchOn",
       "unlabeledArg": {
         "value": {
@@ -2057,6 +2098,47 @@ description: Operations executed prosthetic-hip.kcl
     },
     {
       "type": "StdLibCall",
+      "name": "appearance",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "color": {
+          "value": {
+            "type": "String",
+            "value": "#3cadd3"
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 30
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 12
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
       "name": "startSketchOn",
       "unlabeledArg": {
         "value": {
@@ -2317,6 +2399,47 @@ description: Operations executed prosthetic-hip.kcl
           {
             "type": "PipeBodyItem",
             "index": 11
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "appearance",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "color": {
+          "value": {
+            "type": "String",
+            "value": "#a55e2c"
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 31
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 12
           }
         ]
       },
@@ -2397,6 +2520,32 @@ description: Operations executed prosthetic-hip.kcl
       "value": {
         "type": "String",
         "value": "end"
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "NEW",
+      "value": {
+        "type": "String",
+        "value": "new"
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "MERGE",
+      "value": {
+        "type": "String",
+        "value": "merge"
       },
       "visibility": "export",
       "nodePath": {

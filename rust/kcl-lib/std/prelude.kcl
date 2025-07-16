@@ -70,6 +70,13 @@ export START = 'start': TaggedFace
 /// Identifies the ending face of an extrusion. I.e., the new face created by an extrusion.
 export END = 'end': TaggedFace
 
+/// Specifies that a new object is created during extrusion.
+export NEW = "new": string
+
+/// Specifies that the extrusion will be pulled into or pushed out of the existing object,
+/// modifying it without creating a new object.
+export MERGE = "merge": string
+
 /// Create a helix.
 ///
 /// ```

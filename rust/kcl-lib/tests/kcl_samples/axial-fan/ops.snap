@@ -770,6 +770,32 @@ description: Operations executed axial-fan.kcl
     },
     {
       "type": "StdLibCall",
+      "name": "appearance",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "color": {
+          "value": {
+            "type": "String",
+            "value": "#a55e2c"
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
       "name": "fillet",
       "unlabeledArg": {
         "value": {
@@ -941,6 +967,32 @@ description: Operations executed axial-fan.kcl
                 ]
               }
             }
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "appearance",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "color": {
+          "value": {
+            "type": "String",
+            "value": "#f3e2d8"
           },
           "sourceRange": []
         }
@@ -1272,6 +1324,32 @@ description: Operations executed axial-fan.kcl
     },
     {
       "type": "StdLibCall",
+      "name": "appearance",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "color": {
+          "value": {
+            "type": "String",
+            "value": "#f3e2d8"
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
       "name": "patternCircular3d",
       "unlabeledArg": {
         "value": {
@@ -1563,6 +1641,32 @@ description: Operations executed axial-fan.kcl
     },
     {
       "type": "StdLibCall",
+      "name": "appearance",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "color": {
+          "value": {
+            "type": "String",
+            "value": "#021b55"
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
       "name": "fillet",
       "unlabeledArg": {
         "value": {
@@ -1688,6 +1792,32 @@ description: Operations executed axial-fan.kcl
                 "type": "Degrees"
               }
             }
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "appearance",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "color": {
+          "value": {
+            "type": "String",
+            "value": "#dbc89e"
           },
           "sourceRange": []
         }
@@ -1862,6 +1992,32 @@ description: Operations executed axial-fan.kcl
       "value": {
         "type": "String",
         "value": "end"
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "NEW",
+      "value": {
+        "type": "String",
+        "value": "new"
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "MERGE",
+      "value": {
+        "type": "String",
+        "value": "merge"
       },
       "visibility": "export",
       "nodePath": {

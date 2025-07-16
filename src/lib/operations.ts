@@ -1,6 +1,7 @@
 import type { OpKclValue, Operation } from '@rust/kcl-lib/bindings/Operation'
 
 import type { CustomIconName } from '@src/components/CustomIcon'
+import { retrieveFaceSelectionsFromOpArgs } from '@src/lang/modifyAst/faces'
 import {
   getNodeFromPath,
   findPipesWithImportAlias,
@@ -9,7 +10,6 @@ import {
 import type { Artifact } from '@src/lang/std/artifactGraph'
 import {
   getArtifactOfTypes,
-  getCapCodeRef,
   getEdgeCutConsumedCodeRef,
   getSweepEdgeCodeRef,
   getWallCodeRef,
@@ -31,7 +31,7 @@ import {
   retrieveArgFromPipedCallExpression,
 } from '@src/lib/kclHelpers'
 import { isDefaultPlaneStr } from '@src/lib/planes'
-import type { Selection, Selections } from '@src/lib/selections'
+import type { Selections } from '@src/lib/selections'
 import { codeManager, kclManager, rustContext } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
 import type { CommandBarMachineEvent } from '@src/machines/commandBarMachine'
@@ -186,6 +186,15 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({ operation }) => {
     twistAngle = result
   }
 
+  // method argument from a string to boolean
+  let method: string | undefined
+  if ('method' in operation.labeledArgs && operation.labeledArgs.method) {
+    method = codeManager.code.slice(
+      operation.labeledArgs.method.sourceRange[0],
+      operation.labeledArgs.method.sourceRange[1]
+    )
+  }
+
   // 3. Assemble the default argument values for the command,
   // with `nodeToEdit` set, which will let the actor know
   // to edit the node that corresponds to the StdLibCall.
@@ -195,6 +204,7 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({ operation }) => {
     symmetric,
     bidirectionalLength,
     twistAngle,
+    method,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
   return {
@@ -367,123 +377,55 @@ const prepareToEditEdgeTreatment: PrepareToEditCallback = async ({
  * Gather up the argument values for the Shell command
  * to be used in the command bar edit flow.
  */
-const prepareToEditShell: PrepareToEditCallback =
-  async function prepareToEditShell({ operation }) {
-    const baseCommand = {
-      name: 'Shell',
-      groupId: 'modeling',
-    }
-
-    if (
-      operation.type !== 'StdLibCall' ||
-      !operation.labeledArgs ||
-      !operation.unlabeledArg ||
-      !('thickness' in operation.labeledArgs) ||
-      !('faces' in operation.labeledArgs) ||
-      !operation.labeledArgs.thickness ||
-      !operation.labeledArgs.faces ||
-      operation.labeledArgs.faces.value.type !== 'Array'
-    ) {
-      return baseCommand
-    }
-
-    let value
-    if (operation.unlabeledArg.value.type === 'Solid') {
-      value = operation.unlabeledArg.value.value
-    } else if (
-      operation.unlabeledArg.value.type === 'Array' &&
-      operation.unlabeledArg.value.value[0].type === 'Solid'
-    ) {
-      value = operation.unlabeledArg.value.value[0].value
-    } else {
-      return baseCommand
-    }
-
-    // Build an artifact map here of eligible artifacts corresponding to our current sweep
-    // that we can query in another loop later
-    const sweepId = value.artifactId
-    const candidates: Map<string, Selection> = new Map()
-    for (const artifact of kclManager.artifactGraph.values()) {
-      if (
-        artifact.type === 'cap' &&
-        artifact.sweepId === sweepId &&
-        artifact.subType
-      ) {
-        const codeRef = getCapCodeRef(artifact, kclManager.artifactGraph)
-        if (err(codeRef)) {
-          return baseCommand
-        }
-
-        candidates.set(artifact.subType, {
-          artifact,
-          codeRef,
-        })
-      } else if (
-        artifact.type === 'wall' &&
-        artifact.sweepId === sweepId &&
-        artifact.segId
-      ) {
-        const segArtifact = getArtifactOfTypes(
-          { key: artifact.segId, types: ['segment'] },
-          kclManager.artifactGraph
-        )
-        if (err(segArtifact)) {
-          return baseCommand
-        }
-
-        const { codeRef } = segArtifact
-        candidates.set(artifact.segId, {
-          artifact,
-          codeRef,
-        })
-      }
-    }
-
-    // Loop over face value to retrieve the corresponding artifacts and build the graphSelections
-    const faceValues = operation.labeledArgs.faces.value.value
-    const graphSelections: Selection[] = []
-    for (const v of faceValues) {
-      if (v.type === 'String' && v.value && candidates.has(v.value)) {
-        graphSelections.push(candidates.get(v.value)!)
-      } else if (
-        v.type === 'TagIdentifier' &&
-        v.artifact_id &&
-        candidates.has(v.artifact_id)
-      ) {
-        graphSelections.push(candidates.get(v.artifact_id)!)
-      } else {
-        return baseCommand
-      }
-    }
-
-    // Convert the thickness argument from a string to a KCL expression
-    const thickness = await stringToKclExpression(
-      codeManager.code.slice(
-        operation.labeledArgs?.['thickness']?.sourceRange[0],
-        operation.labeledArgs?.['thickness']?.sourceRange[1]
-      )
-    )
-
-    if (err(thickness) || 'errors' in thickness) {
-      return baseCommand
-    }
-
-    // Assemble the default argument values for the Shell command,
-    // with `nodeToEdit` set, which will let the Extrude actor know
-    // to edit the node that corresponds to the StdLibCall.
-    const argDefaultValues: ModelingCommandSchema['Shell'] = {
-      thickness,
-      selection: {
-        graphSelections,
-        otherSelections: [],
-      },
-      nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
-    }
-    return {
-      ...baseCommand,
-      argDefaultValues,
-    }
+const prepareToEditShell: PrepareToEditCallback = async ({ operation }) => {
+  const baseCommand = {
+    name: 'Shell',
+    groupId: 'modeling',
   }
+  if (operation.type !== 'StdLibCall') {
+    return { reason: 'Wrong operation type' }
+  }
+
+  // 1. Map the unlabeled and faces arguments to solid2d selections
+  if (!operation.unlabeledArg || !operation.labeledArgs?.faces) {
+    return { reason: `Couldn't retrieve operation arguments` }
+  }
+
+  const result = retrieveFaceSelectionsFromOpArgs(
+    operation.unlabeledArg,
+    operation.labeledArgs.faces,
+    kclManager.artifactGraph
+  )
+  if (err(result)) {
+    return { reason: "Couldn't retrieve faces argument" }
+  }
+
+  const { faces } = result
+
+  // 2. Convert the thickness argument from a string to a KCL expression
+  const thickness = await stringToKclExpression(
+    codeManager.code.slice(
+      operation.labeledArgs?.['thickness']?.sourceRange[0],
+      operation.labeledArgs?.['thickness']?.sourceRange[1]
+    )
+  )
+  if (err(thickness) || 'errors' in thickness) {
+    return { reason: "Couldn't retrieve thickness argument" }
+  }
+
+  // 3. Assemble the default argument values for the command,
+  // with `nodeToEdit` set, which will let the actor know
+  // to edit the node that corresponds to the StdLibCall.
+  const argDefaultValues: ModelingCommandSchema['Shell'] = {
+    faces,
+    thickness,
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
+  }
+  return {
+    ...baseCommand,
+    argDefaultValues,
+  }
+}
 
 const prepareToEditOffsetPlane: PrepareToEditCallback = async ({
   operation,
@@ -1098,6 +1040,10 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
  * for use in the feature tree UI.
  */
 export const stdLibMap: Record<string, StdLibCallInfo> = {
+  appearance: {
+    label: 'Appearance',
+    icon: 'text',
+  },
   chamfer: {
     label: 'Chamfer',
     icon: 'chamfer3d',

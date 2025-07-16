@@ -4718,10 +4718,10 @@ description: Variables in memory after executing wing-spar.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4950,
-                "end": 4956,
+                "commentStart": 4911,
+                "end": 4917,
                 "moduleId": 0,
-                "start": 4950,
+                "start": 4911,
                 "type": "TagDeclarator",
                 "value": "seg14"
               },
@@ -4791,10 +4791,10 @@ description: Variables in memory after executing wing-spar.kcl
                   -24.0
                 ],
                 "tag": {
-                  "commentStart": 4950,
-                  "end": 4956,
+                  "commentStart": 4911,
+                  "end": 4917,
                   "moduleId": 0,
-                  "start": 4950,
+                  "start": 4911,
                   "type": "TagDeclarator",
                   "value": "seg14"
                 },
@@ -5694,10 +5694,10 @@ description: Variables in memory after executing wing-spar.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4950,
-                "end": 4956,
+                "commentStart": 4911,
+                "end": 4917,
                 "moduleId": 0,
-                "start": 4950,
+                "start": 4911,
                 "type": "TagDeclarator",
                 "value": "seg14"
               },
@@ -5767,10 +5767,10 @@ description: Variables in memory after executing wing-spar.kcl
                   -24.0
                 ],
                 "tag": {
-                  "commentStart": 4950,
-                  "end": 4956,
+                  "commentStart": 4911,
+                  "end": 4917,
                   "moduleId": 0,
-                  "start": 4950,
+                  "start": 4911,
                   "type": "TagDeclarator",
                   "value": "seg14"
                 },
@@ -6670,10 +6670,10 @@ description: Variables in memory after executing wing-spar.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4950,
-                "end": 4956,
+                "commentStart": 4911,
+                "end": 4917,
                 "moduleId": 0,
-                "start": 4950,
+                "start": 4911,
                 "type": "TagDeclarator",
                 "value": "seg14"
               },
@@ -6743,10 +6743,10 @@ description: Variables in memory after executing wing-spar.kcl
                   -24.0
                 ],
                 "tag": {
-                  "commentStart": 4950,
-                  "end": 4956,
+                  "commentStart": 4911,
+                  "end": 4917,
                   "moduleId": 0,
-                  "start": 4950,
+                  "start": 4911,
                   "type": "TagDeclarator",
                   "value": "seg14"
                 },
@@ -7646,10 +7646,10 @@ description: Variables in memory after executing wing-spar.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4950,
-                "end": 4956,
+                "commentStart": 4911,
+                "end": 4917,
                 "moduleId": 0,
-                "start": 4950,
+                "start": 4911,
                 "type": "TagDeclarator",
                 "value": "seg14"
               },
@@ -7719,10 +7719,10 @@ description: Variables in memory after executing wing-spar.kcl
                   -24.0
                 ],
                 "tag": {
-                  "commentStart": 4950,
-                  "end": 4956,
+                  "commentStart": 4911,
+                  "end": 4917,
                   "moduleId": 0,
-                  "start": 4950,
+                  "start": 4911,
                   "type": "TagDeclarator",
                   "value": "seg14"
                 },
@@ -9469,146 +9469,28 @@ description: Variables in memory after executing wing-spar.kcl
                 }
               }
             ],
-            "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
-              "origin": {
-                "x": 0.0,
-                "y": -8.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "type": "plane",
-              "value": "Custom",
-              "xAxis": {
-                "x": -1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
-              }
-            },
-            "start": {
-              "from": [
-                355.0,
-                0.0
-              ],
-              "to": [
-                355.0,
-                0.0
-              ],
-              "units": {
-                "type": "Mm"
-              },
-              "tag": null,
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              }
-            },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "height": -8.0,
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
-          "sectional": false
-        }
-      },
-      {
-        "type": "Solid",
-        "value": {
-          "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudeArc"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudeArc"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudeArc"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudeArc"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudeArc"
-            }
-          ],
-          "sketch": {
-            "type": "Sketch",
-            "id": "[uuid]",
-            "paths": [
+            "innerPaths": [
               {
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": []
                 },
-                "from": [
-                  355.0,
-                  0.0
+                "ccw": true,
+                "center": [
+                  62.0,
+                  9.0
                 ],
+                "from": [
+                  79.0,
+                  9.0
+                ],
+                "radius": 17.0,
                 "tag": null,
                 "to": [
-                  205.0,
-                  30.0
+                  79.0,
+                  9.0
                 ],
-                "type": "ToPoint",
+                "type": "Circle",
                 "units": {
                   "type": "Mm"
                 }
@@ -9620,19 +9502,20 @@ description: Variables in memory after executing wing-spar.kcl
                 },
                 "ccw": true,
                 "center": [
-                  88.20866141732283,
-                  -553.956692913386
+                  113.0,
+                  10.0
                 ],
                 "from": [
-                  205.0,
-                  30.0
+                  132.0,
+                  10.0
                 ],
+                "radius": 19.0,
                 "tag": null,
                 "to": [
-                  33.0,
-                  39.0
+                  132.0,
+                  10.0
                 ],
-                "type": "TangentialArcTo",
+                "type": "Circle",
                 "units": {
                   "type": "Mm"
                 }
@@ -9644,19 +9527,20 @@ description: Variables in memory after executing wing-spar.kcl
                 },
                 "ccw": true,
                 "center": [
-                  36.38195865143124,
-                  2.6768042180197185
+                  164.0,
+                  9.0
                 ],
                 "from": [
-                  33.0,
-                  39.0
+                  181.0,
+                  9.0
                 ],
+                "radius": 17.0,
                 "tag": null,
                 "to": [
-                  0.0,
-                  0.0
+                  181.0,
+                  9.0
                 ],
-                "type": "TangentialArcTo",
+                "type": "Circle",
                 "units": {
                   "type": "Mm"
                 }
@@ -9668,19 +9552,20 @@ description: Variables in memory after executing wing-spar.kcl
                 },
                 "ccw": true,
                 "center": [
-                  17.95147732750078,
-                  1.320780738891011
+                  228.0,
+                  5.0
                 ],
                 "from": [
-                  0.0,
-                  0.0
+                  239.0,
+                  5.0
                 ],
+                "radius": 11.0,
                 "tag": null,
                 "to": [
-                  14.890169809910931,
-                  -16.416986772347485
+                  239.0,
+                  5.0
                 ],
-                "type": "TangentialArc",
+                "type": "Circle",
                 "units": {
                   "type": "Mm"
                 }
@@ -9692,62 +9577,20 @@ description: Variables in memory after executing wing-spar.kcl
                 },
                 "ccw": true,
                 "center": [
-                  114.77062641685475,
-                  562.3083807481049
+                  260.0,
+                  3.5
                 ],
                 "from": [
-                  14.890169809910931,
-                  -16.416986772347485
+                  266.5,
+                  3.5
                 ],
+                "radius": 6.5,
                 "tag": null,
                 "to": [
-                  205.0,
-                  -18.0
+                  266.5,
+                  3.5
                 ],
-                "type": "TangentialArcTo",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "ccw": false,
-                "center": [
-                  538.3589792951932,
-                  -2161.99149412661
-                ],
-                "from": [
-                  205.0,
-                  -18.0
-                ],
-                "tag": null,
-                "to": [
-                  355.0,
-                  0.0
-                ],
-                "type": "TangentialArcTo",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  355.0,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  355.0,
-                  0.0
-                ],
-                "type": "ToPoint",
+                "type": "Circle",
                 "units": {
                   "type": "Mm"
                 }
@@ -10037,146 +9880,28 @@ description: Variables in memory after executing wing-spar.kcl
                 }
               }
             ],
-            "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
-              "origin": {
-                "x": 0.0,
-                "y": -8.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "type": "plane",
-              "value": "Custom",
-              "xAxis": {
-                "x": -1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
-              }
-            },
-            "start": {
-              "from": [
-                355.0,
-                0.0
-              ],
-              "to": [
-                355.0,
-                0.0
-              ],
-              "units": {
-                "type": "Mm"
-              },
-              "tag": null,
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              }
-            },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "height": -8.0,
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
-          "sectional": false
-        }
-      },
-      {
-        "type": "Solid",
-        "value": {
-          "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudeArc"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudeArc"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudeArc"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudeArc"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudeArc"
-            }
-          ],
-          "sketch": {
-            "type": "Sketch",
-            "id": "[uuid]",
-            "paths": [
+            "innerPaths": [
               {
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": []
                 },
-                "from": [
-                  355.0,
-                  0.0
+                "ccw": true,
+                "center": [
+                  62.0,
+                  9.0
                 ],
+                "from": [
+                  79.0,
+                  9.0
+                ],
+                "radius": 17.0,
                 "tag": null,
                 "to": [
-                  205.0,
-                  30.0
+                  79.0,
+                  9.0
                 ],
-                "type": "ToPoint",
+                "type": "Circle",
                 "units": {
                   "type": "Mm"
                 }
@@ -10188,19 +9913,20 @@ description: Variables in memory after executing wing-spar.kcl
                 },
                 "ccw": true,
                 "center": [
-                  88.20866141732283,
-                  -553.956692913386
+                  113.0,
+                  10.0
                 ],
                 "from": [
-                  205.0,
-                  30.0
+                  132.0,
+                  10.0
                 ],
+                "radius": 19.0,
                 "tag": null,
                 "to": [
-                  33.0,
-                  39.0
+                  132.0,
+                  10.0
                 ],
-                "type": "TangentialArcTo",
+                "type": "Circle",
                 "units": {
                   "type": "Mm"
                 }
@@ -10212,19 +9938,20 @@ description: Variables in memory after executing wing-spar.kcl
                 },
                 "ccw": true,
                 "center": [
-                  36.38195865143124,
-                  2.6768042180197185
+                  164.0,
+                  9.0
                 ],
                 "from": [
-                  33.0,
-                  39.0
+                  181.0,
+                  9.0
                 ],
+                "radius": 17.0,
                 "tag": null,
                 "to": [
-                  0.0,
-                  0.0
+                  181.0,
+                  9.0
                 ],
-                "type": "TangentialArcTo",
+                "type": "Circle",
                 "units": {
                   "type": "Mm"
                 }
@@ -10236,19 +9963,20 @@ description: Variables in memory after executing wing-spar.kcl
                 },
                 "ccw": true,
                 "center": [
-                  17.95147732750078,
-                  1.320780738891011
+                  228.0,
+                  5.0
                 ],
                 "from": [
-                  0.0,
-                  0.0
+                  239.0,
+                  5.0
                 ],
+                "radius": 11.0,
                 "tag": null,
                 "to": [
-                  14.890169809910931,
-                  -16.416986772347485
+                  239.0,
+                  5.0
                 ],
-                "type": "TangentialArc",
+                "type": "Circle",
                 "units": {
                   "type": "Mm"
                 }
@@ -10260,62 +9988,20 @@ description: Variables in memory after executing wing-spar.kcl
                 },
                 "ccw": true,
                 "center": [
-                  114.77062641685475,
-                  562.3083807481049
+                  260.0,
+                  3.5
                 ],
                 "from": [
-                  14.890169809910931,
-                  -16.416986772347485
+                  266.5,
+                  3.5
                 ],
+                "radius": 6.5,
                 "tag": null,
                 "to": [
-                  205.0,
-                  -18.0
+                  266.5,
+                  3.5
                 ],
-                "type": "TangentialArcTo",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "ccw": false,
-                "center": [
-                  538.3589792951932,
-                  -2161.99149412661
-                ],
-                "from": [
-                  205.0,
-                  -18.0
-                ],
-                "tag": null,
-                "to": [
-                  355.0,
-                  0.0
-                ],
-                "type": "TangentialArcTo",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  355.0,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  355.0,
-                  0.0
-                ],
-                "type": "ToPoint",
+                "type": "Circle",
                 "units": {
                   "type": "Mm"
                 }
@@ -10600,6 +10286,955 @@ description: Variables in memory after executing wing-spar.kcl
                   0.0
                 ],
                 "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              }
+            ],
+            "innerPaths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  62.0,
+                  9.0
+                ],
+                "from": [
+                  79.0,
+                  9.0
+                ],
+                "radius": 17.0,
+                "tag": null,
+                "to": [
+                  79.0,
+                  9.0
+                ],
+                "type": "Circle",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  113.0,
+                  10.0
+                ],
+                "from": [
+                  132.0,
+                  10.0
+                ],
+                "radius": 19.0,
+                "tag": null,
+                "to": [
+                  132.0,
+                  10.0
+                ],
+                "type": "Circle",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  164.0,
+                  9.0
+                ],
+                "from": [
+                  181.0,
+                  9.0
+                ],
+                "radius": 17.0,
+                "tag": null,
+                "to": [
+                  181.0,
+                  9.0
+                ],
+                "type": "Circle",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  228.0,
+                  5.0
+                ],
+                "from": [
+                  239.0,
+                  5.0
+                ],
+                "radius": 11.0,
+                "tag": null,
+                "to": [
+                  239.0,
+                  5.0
+                ],
+                "type": "Circle",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  260.0,
+                  3.5
+                ],
+                "from": [
+                  266.5,
+                  3.5
+                ],
+                "radius": 6.5,
+                "tag": null,
+                "to": [
+                  266.5,
+                  3.5
+                ],
+                "type": "Circle",
+                "units": {
+                  "type": "Mm"
+                }
+              }
+            ],
+            "on": {
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
+              "origin": {
+                "x": 0.0,
+                "y": -8.0,
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              "type": "plane",
+              "value": "Custom",
+              "xAxis": {
+                "x": -1.0,
+                "y": 0.0,
+                "z": 0.0,
+                "units": {
+                  "type": "Unknown"
+                }
+              },
+              "yAxis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0,
+                "units": {
+                  "type": "Unknown"
+                }
+              },
+              "zAxis": {
+                "x": 0.0,
+                "y": -1.0,
+                "z": 0.0,
+                "units": {
+                  "type": "Unknown"
+                }
+              }
+            },
+            "start": {
+              "from": [
+                355.0,
+                0.0
+              ],
+              "to": [
+                355.0,
+                0.0
+              ],
+              "units": {
+                "type": "Mm"
+              },
+              "tag": null,
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": []
+              }
+            },
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          "height": -8.0,
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
+          "units": {
+            "type": "Mm"
+          },
+          "sectional": false
+        }
+      },
+      {
+        "type": "Solid",
+        "value": {
+          "type": "Solid",
+          "id": "[uuid]",
+          "artifactId": "[uuid]",
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            }
+          ],
+          "sketch": {
+            "type": "Sketch",
+            "id": "[uuid]",
+            "paths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  355.0,
+                  0.0
+                ],
+                "tag": null,
+                "to": [
+                  205.0,
+                  30.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  88.20866141732283,
+                  -553.956692913386
+                ],
+                "from": [
+                  205.0,
+                  30.0
+                ],
+                "tag": null,
+                "to": [
+                  33.0,
+                  39.0
+                ],
+                "type": "TangentialArcTo",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  36.38195865143124,
+                  2.6768042180197185
+                ],
+                "from": [
+                  33.0,
+                  39.0
+                ],
+                "tag": null,
+                "to": [
+                  0.0,
+                  0.0
+                ],
+                "type": "TangentialArcTo",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  17.95147732750078,
+                  1.320780738891011
+                ],
+                "from": [
+                  0.0,
+                  0.0
+                ],
+                "tag": null,
+                "to": [
+                  14.890169809910931,
+                  -16.416986772347485
+                ],
+                "type": "TangentialArc",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  114.77062641685475,
+                  562.3083807481049
+                ],
+                "from": [
+                  14.890169809910931,
+                  -16.416986772347485
+                ],
+                "tag": null,
+                "to": [
+                  205.0,
+                  -18.0
+                ],
+                "type": "TangentialArcTo",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": false,
+                "center": [
+                  538.3589792951932,
+                  -2161.99149412661
+                ],
+                "from": [
+                  205.0,
+                  -18.0
+                ],
+                "tag": null,
+                "to": [
+                  355.0,
+                  0.0
+                ],
+                "type": "TangentialArcTo",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  355.0,
+                  0.0
+                ],
+                "tag": null,
+                "to": [
+                  355.0,
+                  0.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              }
+            ],
+            "innerPaths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  62.0,
+                  9.0
+                ],
+                "from": [
+                  79.0,
+                  9.0
+                ],
+                "radius": 17.0,
+                "tag": null,
+                "to": [
+                  79.0,
+                  9.0
+                ],
+                "type": "Circle",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  113.0,
+                  10.0
+                ],
+                "from": [
+                  132.0,
+                  10.0
+                ],
+                "radius": 19.0,
+                "tag": null,
+                "to": [
+                  132.0,
+                  10.0
+                ],
+                "type": "Circle",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  164.0,
+                  9.0
+                ],
+                "from": [
+                  181.0,
+                  9.0
+                ],
+                "radius": 17.0,
+                "tag": null,
+                "to": [
+                  181.0,
+                  9.0
+                ],
+                "type": "Circle",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  228.0,
+                  5.0
+                ],
+                "from": [
+                  239.0,
+                  5.0
+                ],
+                "radius": 11.0,
+                "tag": null,
+                "to": [
+                  239.0,
+                  5.0
+                ],
+                "type": "Circle",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  260.0,
+                  3.5
+                ],
+                "from": [
+                  266.5,
+                  3.5
+                ],
+                "radius": 6.5,
+                "tag": null,
+                "to": [
+                  266.5,
+                  3.5
+                ],
+                "type": "Circle",
+                "units": {
+                  "type": "Mm"
+                }
+              }
+            ],
+            "on": {
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
+              "origin": {
+                "x": 0.0,
+                "y": -8.0,
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              "type": "plane",
+              "value": "Custom",
+              "xAxis": {
+                "x": -1.0,
+                "y": 0.0,
+                "z": 0.0,
+                "units": {
+                  "type": "Unknown"
+                }
+              },
+              "yAxis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0,
+                "units": {
+                  "type": "Unknown"
+                }
+              },
+              "zAxis": {
+                "x": 0.0,
+                "y": -1.0,
+                "z": 0.0,
+                "units": {
+                  "type": "Unknown"
+                }
+              }
+            },
+            "start": {
+              "from": [
+                355.0,
+                0.0
+              ],
+              "to": [
+                355.0,
+                0.0
+              ],
+              "units": {
+                "type": "Mm"
+              },
+              "tag": null,
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": []
+              }
+            },
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          "height": -8.0,
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
+          "units": {
+            "type": "Mm"
+          },
+          "sectional": false
+        }
+      },
+      {
+        "type": "Solid",
+        "value": {
+          "type": "Solid",
+          "id": "[uuid]",
+          "artifactId": "[uuid]",
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            }
+          ],
+          "sketch": {
+            "type": "Sketch",
+            "id": "[uuid]",
+            "paths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  355.0,
+                  0.0
+                ],
+                "tag": null,
+                "to": [
+                  205.0,
+                  30.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  88.20866141732283,
+                  -553.956692913386
+                ],
+                "from": [
+                  205.0,
+                  30.0
+                ],
+                "tag": null,
+                "to": [
+                  33.0,
+                  39.0
+                ],
+                "type": "TangentialArcTo",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  36.38195865143124,
+                  2.6768042180197185
+                ],
+                "from": [
+                  33.0,
+                  39.0
+                ],
+                "tag": null,
+                "to": [
+                  0.0,
+                  0.0
+                ],
+                "type": "TangentialArcTo",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  17.95147732750078,
+                  1.320780738891011
+                ],
+                "from": [
+                  0.0,
+                  0.0
+                ],
+                "tag": null,
+                "to": [
+                  14.890169809910931,
+                  -16.416986772347485
+                ],
+                "type": "TangentialArc",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  114.77062641685475,
+                  562.3083807481049
+                ],
+                "from": [
+                  14.890169809910931,
+                  -16.416986772347485
+                ],
+                "tag": null,
+                "to": [
+                  205.0,
+                  -18.0
+                ],
+                "type": "TangentialArcTo",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": false,
+                "center": [
+                  538.3589792951932,
+                  -2161.99149412661
+                ],
+                "from": [
+                  205.0,
+                  -18.0
+                ],
+                "tag": null,
+                "to": [
+                  355.0,
+                  0.0
+                ],
+                "type": "TangentialArcTo",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  355.0,
+                  0.0
+                ],
+                "tag": null,
+                "to": [
+                  355.0,
+                  0.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              }
+            ],
+            "innerPaths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  62.0,
+                  9.0
+                ],
+                "from": [
+                  79.0,
+                  9.0
+                ],
+                "radius": 17.0,
+                "tag": null,
+                "to": [
+                  79.0,
+                  9.0
+                ],
+                "type": "Circle",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  113.0,
+                  10.0
+                ],
+                "from": [
+                  132.0,
+                  10.0
+                ],
+                "radius": 19.0,
+                "tag": null,
+                "to": [
+                  132.0,
+                  10.0
+                ],
+                "type": "Circle",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  164.0,
+                  9.0
+                ],
+                "from": [
+                  181.0,
+                  9.0
+                ],
+                "radius": 17.0,
+                "tag": null,
+                "to": [
+                  181.0,
+                  9.0
+                ],
+                "type": "Circle",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  228.0,
+                  5.0
+                ],
+                "from": [
+                  239.0,
+                  5.0
+                ],
+                "radius": 11.0,
+                "tag": null,
+                "to": [
+                  239.0,
+                  5.0
+                ],
+                "type": "Circle",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  260.0,
+                  3.5
+                ],
+                "from": [
+                  266.5,
+                  3.5
+                ],
+                "radius": 6.5,
+                "tag": null,
+                "to": [
+                  266.5,
+                  3.5
+                ],
+                "type": "Circle",
                 "units": {
                   "type": "Mm"
                 }

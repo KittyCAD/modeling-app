@@ -78,6 +78,7 @@ export type ModelingCommandSchema = {
     symmetric?: boolean
     bidirectionalLength?: KclCommandValue
     twistAngle?: KclCommandValue
+    method?: string
   }
   Sweep: {
     // Enables editing workflow
@@ -111,8 +112,8 @@ export type ModelingCommandSchema = {
   Shell: {
     // Enables editing workflow
     nodeToEdit?: PathToNode
-    // KCL stdlib arguments
-    selection: Selections
+    // KCL stdlib arguments, note that we'll be inferring solids from faces here
+    faces: Selections
     thickness: KclCommandValue
   }
   Fillet: {
@@ -434,6 +435,14 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'kcl',
         required: false,
       },
+      method: {
+        inputType: 'options',
+        required: false,
+        options: [
+          { name: 'New', value: 'NEW' },
+          { name: 'Merge', value: 'MERGE' },
+        ],
+      },
     },
   },
   Sweep: {
@@ -576,7 +585,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       nodeToEdit: {
         ...nodeToEditProps,
       },
-      selection: {
+      faces: {
         inputType: 'selection',
         selectionTypes: ['cap', 'wall'],
         multiple: true,

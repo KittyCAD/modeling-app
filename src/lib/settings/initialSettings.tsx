@@ -24,7 +24,6 @@ import { Themes } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
 import { isEnumMember } from '@src/lib/types'
 import { capitaliseFC, isArray, toSync } from '@src/lib/utils'
-import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 
 /**
  * A setting that can be set at the user or project level
@@ -222,7 +221,7 @@ export function createSettings() {
        * Stream resource saving behavior toggle
        */
       streamIdleMode: new Setting<number | undefined>({
-        defaultValue: IS_STAGING_OR_DEBUG ? 30 * 1000 : 5 * MS_IN_MINUTE,
+        defaultValue: 5 * MS_IN_MINUTE,
         hideOnLevel: 'project',
         hideOnPlatform: 'both',
         description: 'Save bandwidth & battery',
@@ -431,6 +430,19 @@ export function createSettings() {
             </ul>
           </>
         ),
+      }),
+      /** Whether to enable the touch listeners for controlling the camera, which run separate from the mouse control listeners
+       *
+       */
+      enableTouchControls: new Setting<boolean>({
+        defaultValue: true,
+        hideOnLevel: 'project',
+        description:
+          'Enable touch events to navigate the 3D scene. When enabled, orbit with one-finger drag, pan with two-finger drag, and zoom with pinch.',
+        validate: (v) => typeof v === 'boolean',
+        commandConfig: {
+          inputType: 'boolean',
+        },
       }),
       /**
        * Projection method applied to the 3D view, perspective or orthographic

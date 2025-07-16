@@ -403,7 +403,8 @@ description: Artifact commands subtract_regression12.kcl
         "faces": null,
         "opposite": {
           "Other": 5.08
-        }
+        },
+        "extrude_method": "merge"
       }
     },
     {

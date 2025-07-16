@@ -113,6 +113,7 @@ export async function applyConstraintAbsDistance({
     await getModalInfo({
       value: forceVal,
       valueName: constraint === 'yAbs' ? 'yDis' : 'xDis',
+      selectionRanges,
     })
   if (!isExprBinaryPart(valueNode))
     return Promise.reject('Invalid valueNode, is not a BinaryPart')

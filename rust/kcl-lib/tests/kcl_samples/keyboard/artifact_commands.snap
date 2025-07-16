@@ -172,7 +172,8 @@ description: Artifact commands keyboard.kcl
         "target": "[uuid]",
         "distance": 345.44,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -577,7 +578,8 @@ description: Artifact commands keyboard.kcl
         "target": "[uuid]",
         "distance": 3.8099999999999996,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -633,7 +635,8 @@ description: Artifact commands keyboard.kcl
         "target": "[uuid]",
         "distance": 3.8099999999999996,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -689,7 +692,8 @@ description: Artifact commands keyboard.kcl
         "target": "[uuid]",
         "distance": 3.8099999999999996,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -745,7 +749,8 @@ description: Artifact commands keyboard.kcl
         "target": "[uuid]",
         "distance": 3.8099999999999996,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1031,7 +1036,8 @@ description: Artifact commands keyboard.kcl
         "target": "[uuid]",
         "distance": 2.54,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1344,7 +1350,8 @@ description: Artifact commands keyboard.kcl
         "target": "[uuid]",
         "distance": 2.54,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1716,7 +1723,8 @@ description: Artifact commands keyboard.kcl
         "target": "[uuid]",
         "distance": 2.54,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2029,7 +2037,8 @@ description: Artifact commands keyboard.kcl
         "target": "[uuid]",
         "distance": 2.54,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2342,7 +2351,8 @@ description: Artifact commands keyboard.kcl
         "target": "[uuid]",
         "distance": 2.54,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2655,7 +2665,8 @@ description: Artifact commands keyboard.kcl
         "target": "[uuid]",
         "distance": 2.54,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2968,7 +2979,8 @@ description: Artifact commands keyboard.kcl
         "target": "[uuid]",
         "distance": 2.54,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -3281,7 +3293,8 @@ description: Artifact commands keyboard.kcl
         "target": "[uuid]",
         "distance": 2.54,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -3594,7 +3607,8 @@ description: Artifact commands keyboard.kcl
         "target": "[uuid]",
         "distance": 2.54,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -4169,7 +4183,8 @@ description: Artifact commands keyboard.kcl
         "target": "[uuid]",
         "distance": 2.54,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -4482,7 +4497,8 @@ description: Artifact commands keyboard.kcl
         "target": "[uuid]",
         "distance": 2.54,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -4795,7 +4811,8 @@ description: Artifact commands keyboard.kcl
         "target": "[uuid]",
         "distance": 2.54,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -5399,7 +5416,8 @@ description: Artifact commands keyboard.kcl
         "target": "[uuid]",
         "distance": 2.54,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -5712,7 +5730,8 @@ description: Artifact commands keyboard.kcl
         "target": "[uuid]",
         "distance": 2.54,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -6025,7 +6044,8 @@ description: Artifact commands keyboard.kcl
         "target": "[uuid]",
         "distance": 2.54,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -6658,7 +6678,8 @@ description: Artifact commands keyboard.kcl
         "target": "[uuid]",
         "distance": 2.54,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -6971,7 +6992,8 @@ description: Artifact commands keyboard.kcl
         "target": "[uuid]",
         "distance": 2.54,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -7633,7 +7655,8 @@ description: Artifact commands keyboard.kcl
         "target": "[uuid]",
         "distance": 2.54,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -7946,7 +7969,8 @@ description: Artifact commands keyboard.kcl
         "target": "[uuid]",
         "distance": 2.54,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -8259,7 +8283,8 @@ description: Artifact commands keyboard.kcl
         "target": "[uuid]",
         "distance": 2.54,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -8892,7 +8917,8 @@ description: Artifact commands keyboard.kcl
         "target": "[uuid]",
         "distance": 2.54,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -9319,7 +9345,8 @@ description: Artifact commands keyboard.kcl
         "target": "[uuid]",
         "distance": -0.7619999999999999,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -9548,7 +9575,8 @@ description: Artifact commands keyboard.kcl
         "target": "[uuid]",
         "distance": -0.7619999999999999,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -9777,7 +9805,8 @@ description: Artifact commands keyboard.kcl
         "target": "[uuid]",
         "distance": -0.7619999999999999,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -10006,7 +10035,8 @@ description: Artifact commands keyboard.kcl
         "target": "[uuid]",
         "distance": -0.7619999999999999,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -10235,7 +10265,8 @@ description: Artifact commands keyboard.kcl
         "target": "[uuid]",
         "distance": -0.7619999999999999,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {

@@ -642,7 +642,8 @@ description: Artifact commands axial-fan.kcl
         "target": "[uuid]",
         "distance": 4.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -899,7 +900,8 @@ description: Artifact commands axial-fan.kcl
         "target": "[uuid]",
         "distance": -4.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -955,7 +957,8 @@ description: Artifact commands axial-fan.kcl
         "target": "[uuid]",
         "distance": -4.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1011,7 +1014,8 @@ description: Artifact commands axial-fan.kcl
         "target": "[uuid]",
         "distance": -4.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1067,7 +1071,8 @@ description: Artifact commands axial-fan.kcl
         "target": "[uuid]",
         "distance": -4.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1294,7 +1299,8 @@ description: Artifact commands axial-fan.kcl
         "target": "[uuid]",
         "distance": 17.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1422,7 +1428,8 @@ description: Artifact commands axial-fan.kcl
         "target": "[uuid]",
         "distance": -17.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2043,7 +2050,8 @@ description: Artifact commands axial-fan.kcl
         "target": "[uuid]",
         "distance": 4.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2171,7 +2179,8 @@ description: Artifact commands axial-fan.kcl
         "target": "[uuid]",
         "distance": 16.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2299,7 +2308,8 @@ description: Artifact commands axial-fan.kcl
         "target": "[uuid]",
         "distance": -16.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -3613,7 +3623,8 @@ description: Artifact commands axial-fan.kcl
         "target": "[uuid]",
         "distance": 17.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -3844,7 +3855,8 @@ description: Artifact commands axial-fan.kcl
         "target": "[uuid]",
         "distance": 3.8,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {

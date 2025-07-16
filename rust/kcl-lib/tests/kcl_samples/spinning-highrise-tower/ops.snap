@@ -741,6 +741,47 @@ description: Operations executed spinning-highrise-tower.kcl
       "type": "GroupEnd"
     },
     {
+      "type": "StdLibCall",
+      "name": "appearance",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "color": {
+          "value": {
+            "type": "String",
+            "value": "#dbd7d2"
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 19
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 1
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
       "type": "VariableDeclaration",
       "name": "groundSize",
       "value": {
@@ -999,6 +1040,47 @@ description: Operations executed spinning-highrise-tower.kcl
     },
     {
       "type": "GroupEnd"
+    },
+    {
+      "type": "StdLibCall",
+      "name": "appearance",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "color": {
+          "value": {
+            "type": "String",
+            "value": "#3a3631"
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 21
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 1
+          }
+        ]
+      },
+      "sourceRange": []
     },
     {
       "type": "StdLibCall",
@@ -2100,6 +2182,148 @@ description: Operations executed spinning-highrise-tower.kcl
       "sourceRange": []
     },
     {
+      "type": "StdLibCall",
+      "name": "appearance",
+      "unlabeledArg": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            },
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            },
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            },
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            },
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            },
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            },
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            },
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            },
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            },
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            },
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            },
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            },
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            },
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            },
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            },
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            },
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "color": {
+          "value": {
+            "type": "String",
+            "value": "#dbd7d2"
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 26
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 2
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
       "type": "VariableDeclaration",
       "name": "coreLength",
       "value": {
@@ -3176,6 +3400,148 @@ description: Operations executed spinning-highrise-tower.kcl
         ]
       },
       "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "appearance",
+      "unlabeledArg": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            },
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            },
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            },
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            },
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            },
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            },
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            },
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            },
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            },
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            },
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            },
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            },
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            },
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            },
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            },
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            },
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "color": {
+          "value": {
+            "type": "String",
+            "value": "#151819"
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 31
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 2
+          }
+        ]
+      },
+      "sourceRange": []
     }
   ],
   "std::appearance": [],
@@ -3252,6 +3618,32 @@ description: Operations executed spinning-highrise-tower.kcl
       "value": {
         "type": "String",
         "value": "end"
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "NEW",
+      "value": {
+        "type": "String",
+        "value": "new"
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "MERGE",
+      "value": {
+        "type": "String",
+        "value": "merge"
       },
       "visibility": "export",
       "nodePath": {

@@ -290,6 +290,33 @@ description: Variables in memory after executing pipe-with-bend.kcl
             }
           }
         ],
+        "innerPaths": [
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              30.0,
+              0.0
+            ],
+            "from": [
+              35.0,
+              0.0
+            ],
+            "radius": 5.0,
+            "tag": null,
+            "to": [
+              35.0,
+              0.0
+            ],
+            "type": "Circle",
+            "units": {
+              "type": "Inches"
+            }
+          }
+        ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
@@ -385,6 +412,33 @@ description: Variables in memory after executing pipe-with-bend.kcl
           "tag": null,
           "to": [
             40.0,
+            0.0
+          ],
+          "type": "Circle",
+          "units": {
+            "type": "Inches"
+          }
+        }
+      ],
+      "innerPaths": [
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            30.0,
+            0.0
+          ],
+          "from": [
+            35.0,
+            0.0
+          ],
+          "radius": 5.0,
+          "tag": null,
+          "to": [
+            35.0,
             0.0
           ],
           "type": "Circle",
