@@ -255,13 +255,11 @@ pub(crate) async fn do_post_extrude<'a>(
         }
     }
 
-    assert_eq!(face_infos.len(), 8);
     let Faces {
         sides: face_id_map,
         start_cap_id,
         end_cap_id,
     } = analyze_faces(exec_state, args, face_infos).await;
-    assert_eq!(face_id_map.len(), 6);
     println!("ADAM: Curve -> Face ID map from engine");
     let outer_paths: indexmap::IndexSet<_> = sketch.paths.iter().map(|p| p.get_id()).collect();
     let inner_paths: indexmap::IndexSet<_> = sketch.inner_paths.iter().map(|p| p.get_id()).collect();

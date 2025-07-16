@@ -128,6 +128,13 @@ pub struct Path {
     /// this can be used as input for another composite solid.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub composite_solid_id: Option<ArtifactId>,
+    /// The hole, if any, from a subtract2d() call.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub inner_solid2d_id: Option<ArtifactId>,
+    /// The Solid2d that this is a hole of, if any.
+    /// The inverse link of `inner_solid2d_id`.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub outer_solid2d_id: Option<ArtifactId>,
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
@@ -176,13 +183,6 @@ pub enum SweepSubType {
 pub struct Solid2d {
     pub id: ArtifactId,
     pub path_id: ArtifactId,
-    /// The hole, if any, from a subtract2d() call.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub inner_solid2d_id: Option<ArtifactId>,
-    /// The Solid2d that this is a hole of, if any.  The inverse link of
-    /// `inner_solid2d_id`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub outer_solid2d_id: Option<ArtifactId>,
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
@@ -403,7 +403,7 @@ impl Artifact {
             Artifact::Plane(a) => a.merge(new),
             Artifact::Path(a) => a.merge(new),
             Artifact::Segment(a) => a.merge(new),
-            Artifact::Solid2d(a) => a.merge(new),
+            Artifact::Solid2d(a) => Some(new),
             Artifact::StartSketchOnFace { .. } => Some(new),
             Artifact::StartSketchOnPlane { .. } => Some(new),
             Artifact::Sweep(a) => a.merge(new),
@@ -450,6 +450,8 @@ impl Path {
         merge_ids(&mut self.seg_ids, new.seg_ids);
         merge_opt_id(&mut self.solid2d_id, new.solid2d_id);
         merge_opt_id(&mut self.composite_solid_id, new.composite_solid_id);
+        merge_opt_id(&mut self.inner_solid2d_id, new.inner_solid2d_id);
+        merge_opt_id(&mut self.outer_solid2d_id, new.outer_solid2d_id);
 
         None
     }
@@ -476,18 +478,6 @@ impl Sweep {
         };
         merge_ids(&mut self.surface_ids, new.surface_ids);
         merge_ids(&mut self.edge_ids, new.edge_ids);
-
-        None
-    }
-}
-
-impl Solid2d {
-    fn merge(&mut self, new: Artifact) -> Option<Artifact> {
-        let Artifact::Solid2d(new) = new else {
-            return Some(new);
-        };
-        merge_opt_id(&mut self.inner_solid2d_id, new.inner_solid2d_id);
-        merge_opt_id(&mut self.outer_solid2d_id, new.outer_solid2d_id);
 
         None
     }
@@ -824,6 +814,8 @@ fn artifacts_to_update(
                 solid2d_id: None,
                 code_ref,
                 composite_solid_id: None,
+                inner_solid2d_id: None,
+                outer_solid2d_id: None,
             }));
             let plane = artifacts.get(&ArtifactId::new(*current_plane_id));
             if let Some(Artifact::Plane(plane)) = plane {
@@ -887,8 +879,6 @@ fn artifacts_to_update(
                 return_arr.push(Artifact::Solid2d(Solid2d {
                     id: close_path.face_id.into(),
                     path_id,
-                    inner_solid2d_id: None,
-                    outer_solid2d_id: None,
                 }));
                 if let Some(Artifact::Path(path)) = path {
                     let mut new_path = path.clone();
@@ -945,6 +935,8 @@ fn artifacts_to_update(
                         solid2d_id: None,
                         code_ref: code_ref.clone(),
                         composite_solid_id: None,
+                        inner_solid2d_id: None,
+                        outer_solid2d_id: None,
                     }
                 };
 
@@ -1051,14 +1043,20 @@ fn artifacts_to_update(
                     continue;
                 };
                 last_path = Some(path);
-                let path_sweep_id = path.sweep_id.ok_or_else(|| {
-                    KclError::new_internal(KclErrorDetails::new(
+                let Some(path_sweep_id) = path.sweep_id else {
+                    // If the path doesn't have a sweep ID, check if the
+                    // Solid2d is a hole.
+                    if path.outer_solid2d_id.is_some() {
+                        // This is a hole.
+                        continue;
+                    }
+                    return Err(KclError::new_internal(KclErrorDetails::new(
                         format!(
                             "Expected a sweep ID on the path when processing Solid3dGetExtrusionFaceInfo command, but we have none:\n{id:#?}\n{path:#?}"
                         ),
                         vec![range],
-                    ))
-                })?;
+                    )));
+                };
                 let extra_artifact = exec_artifacts.values().find(|a| {
                     if let Artifact::StartSketchOnFace(s) = a {
                         s.face_id == face_id
@@ -1108,17 +1106,13 @@ fn artifacts_to_update(
                     let Some(path_sweep_id) = path.sweep_id else {
                         // If the path doesn't have a sweep ID, check if the
                         // Solid2d is a hole.
-                        if let Some(solid2d_id) = path.solid2d_id {
-                            if let Some(Artifact::Solid2d(solid2d)) = artifacts.get(&solid2d_id) {
-                                if solid2d.outer_solid2d_id.is_some() {
-                                    // This is a hole.
-                                    continue;
-                                }
-                            }
-                        };
+                        if path.outer_solid2d_id.is_some() {
+                            // This is a hole.
+                            continue;
+                        }
                         return Err(KclError::new_internal(KclErrorDetails::new(
                             format!(
-                                "Expected a sweep ID on the path when processing last path's Solid3dGetExtrusionFaceInfo command, but we have none: {id:?}, {path:?}"
+                                "Expected a sweep ID on the path when processing last path's Solid3dGetExtrusionFaceInfo command, but we have none:\n{id:#?}\n{path:#?}"
                             ),
                             vec![range],
                         )));
@@ -1302,18 +1296,24 @@ fn artifacts_to_update(
             let mut return_arr = Vec::new();
             // Add the hole to the outer solid2d.
             let outer_solid2d = artifacts.get(&ArtifactId::new(solid2d_add_hole.object_id));
-            if let Some(Artifact::Solid2d(solid2d)) = outer_solid2d {
+            println!("ADAM: Processing AddHole cmd");
+            println!("ADAM: The hole's object ID has an artifact: {outer_solid2d:?}");
+            if let Some(Artifact::Path(solid2d)) = outer_solid2d {
                 let mut new_solid2d = solid2d.clone();
                 new_solid2d.inner_solid2d_id = Some(ArtifactId::new(solid2d_add_hole.hole_id));
-                return_arr.push(Artifact::Solid2d(new_solid2d));
+                println!("ADAM: Found outer path");
+                return_arr.push(Artifact::Path(new_solid2d));
             }
             // Add the outer to the hole solid2d.
             let inner_solid2d = artifacts.get(&ArtifactId::new(solid2d_add_hole.hole_id));
-            if let Some(Artifact::Solid2d(solid2d)) = inner_solid2d {
+            println!("ADAM: The hole's hole ID has an artifact: {inner_solid2d:?}");
+            if let Some(Artifact::Path(solid2d)) = inner_solid2d {
                 let mut new_solid2d = solid2d.clone();
                 new_solid2d.outer_solid2d_id = Some(ArtifactId::new(solid2d_add_hole.object_id));
-                return_arr.push(Artifact::Solid2d(new_solid2d));
+                println!("ADAM: Found inner path");
+                return_arr.push(Artifact::Path(new_solid2d));
             }
+            // println!("ADAM: {return_arr:#?}");
 
             return Ok(return_arr);
         }

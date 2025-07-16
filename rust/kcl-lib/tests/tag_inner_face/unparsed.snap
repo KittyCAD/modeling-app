@@ -4,16 +4,25 @@ description: Result of unparsing tag_inner_face.kcl
 ---
 @settings(defaultLengthUnit = in)
 
-sketch001 = startSketchOn(-YZ)
-profile001 = startProfile(sketch001, at = [-1, -1.16])
+sketch001 = startSketchOn(XZ)
+bigTriangle = startProfile(sketch001, at = [-1, -1.16])
   |> xLine(length = 4.32)
-  |> line(end = [-0.37, 3.38], tag = $seg01)
+  |> line(end = [-0.37, 3.38], tag = $outerFace)
   |> close()
-profile002 = startProfile(sketch001, at = [0.14, -0.84])
+smallTriangle = startProfile(sketch001, at = [0.14, -0.84])
   |> line(end = [2.33, 2.13])
-  |> line(end = [0.37, -2.03], tag = $yoyo)
+  |> line(end = [0.37, -2.03], tag = $innerFace)
   |> close()
 
-out = subtract2d(profile001, tool = profile002)
-extrude001 = extrude(out, length = 5)
-sketch002 = startSketchOn(extrude001, face = yoyo)
+out = subtract2d(bigTriangle, tool = smallTriangle)
+extrude001 = extrude(out, length = 2)
+
+// Start a sketch on the inner face and extrude it.
+startSketchOn(extrude001, face = innerFace)
+  |> startProfile(at = [0.25, 0])
+  |> angledLine(angle = 0, length = 0.57, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 0.67)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> extrude(length = 1)

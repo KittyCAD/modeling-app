@@ -76,13 +76,7 @@ impl Artifact {
             Artifact::Path(a) => vec![a.plane_id],
             Artifact::Segment(a) => vec![a.path_id],
             Artifact::Solid2d(a) => {
-                let mut ids = vec![a.path_id];
-                if let Some(inner_solid2d_id) = a.inner_solid2d_id {
-                    ids.push(inner_solid2d_id);
-                }
-                if let Some(outer_solid2d_id) = a.outer_solid2d_id {
-                    ids.push(outer_solid2d_id);
-                }
+                let ids = vec![a.path_id];
                 ids
             }
             Artifact::StartSketchOnFace(a) => vec![a.face_id],
