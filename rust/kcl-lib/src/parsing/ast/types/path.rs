@@ -266,7 +266,7 @@ impl NodePath {
                 }
                 if node.property.contains_range(&range) {
                     path.push(Step::MemberExpressionProperty);
-                    return Some(path);
+                    return NodePath::from_expr(&node.property, range, path);
                 }
             }
             Expr::UnaryExpression(node) => {

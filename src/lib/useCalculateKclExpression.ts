@@ -1,6 +1,4 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-
-import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useKclContext } from '@src/lang/KclProvider'
 import { findUniqueName } from '@src/lang/create'
 import type { PrevVariable } from '@src/lang/queryAst'
@@ -12,6 +10,7 @@ import { getCalculatedKclExpressionValue } from '@src/lib/kclHelpers'
 import { kclManager } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
 import { getInVariableCase } from '@src/lib/utils'
+import type { Selections } from '@src/lib/selections'
 
 const isValidVariableName = (name: string) =>
   /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(name)
@@ -25,10 +24,12 @@ export function useCalculateKclExpression({
   value,
   initialVariableName: valueName = '',
   sourceRange,
+  selectionRanges,
 }: {
   value: string
   initialVariableName?: string
   sourceRange?: SourceRange
+  selectionRanges: Selections
 }): {
   inputRef: React.RefObject<HTMLInputElement>
   valueNode: Expr | null
@@ -45,12 +46,10 @@ export function useCalculateKclExpression({
   // has completed
   const [isExecuting, setIsExecuting] = useState(false)
   const { variables, code } = useKclContext()
-  const { context } = useModelingContext()
   // If there is no selection, use the end of the code
   // so all variables are available
-  const selectionRange:
-    | (typeof context)['selectionRanges']['graphSelections'][number]['codeRef']['range']
-    | undefined = context.selectionRanges.graphSelections[0]?.codeRef?.range
+  const selectionRange: SourceRange | undefined =
+    selectionRanges.graphSelections[0]?.codeRef?.range
   // If there is no selection, use the end of the code
   // If we don't memoize this, we risk an infinite set/read state loop
   const endingSourceRange = useMemo(

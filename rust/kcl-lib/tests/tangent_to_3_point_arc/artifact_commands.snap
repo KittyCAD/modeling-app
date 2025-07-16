@@ -139,5 +139,6 @@ description: Artifact commands tangent_to_3_point_arc.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

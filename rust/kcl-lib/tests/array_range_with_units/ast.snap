@@ -119,7 +119,7 @@ description: Result of parsing array_range_with_units.kcl
           "type": "CallExpressionKw",
           "unlabeled": {
             "commentStart": 0,
-            "computed": false,
+            "computed": true,
             "end": 0,
             "moduleId": 0,
             "object": {
@@ -218,7 +218,7 @@ description: Result of parsing array_range_with_units.kcl
           "type": "CallExpressionKw",
           "unlabeled": {
             "commentStart": 0,
-            "computed": false,
+            "computed": true,
             "end": 0,
             "moduleId": 0,
             "object": {
@@ -317,7 +317,7 @@ description: Result of parsing array_range_with_units.kcl
           "type": "CallExpressionKw",
           "unlabeled": {
             "commentStart": 0,
-            "computed": false,
+            "computed": true,
             "end": 0,
             "moduleId": 0,
             "object": {

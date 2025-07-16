@@ -450,7 +450,11 @@ const OperationItem = (props: {
   }
 
   function deleteOperation() {
-    if (props.item.type === 'StdLibCall' || props.item.type === 'GroupBegin') {
+    if (
+      props.item.type === 'StdLibCall' ||
+      props.item.type === 'GroupBegin' ||
+      props.item.type === 'VariableDeclaration'
+    ) {
       props.send({
         type: 'deleteOperation',
         data: {
@@ -589,6 +593,12 @@ const OperationItem = (props: {
             >
               Clone
             </ContextMenuItem>,
+          ]
+        : []),
+      ...(props.item.type === 'StdLibCall' ||
+      props.item.type === 'GroupBegin' ||
+      props.item.type === 'VariableDeclaration'
+        ? [
             <ContextMenuItem
               onClick={deleteOperation}
               hotkey="Delete"

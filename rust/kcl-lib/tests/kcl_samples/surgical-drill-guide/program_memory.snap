@@ -1879,6 +1879,33 @@ description: Variables in memory after executing surgical-drill-guide.kcl
             }
           }
         ],
+        "innerPaths": [
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.0,
+              53.15127018922193
+            ],
+            "from": [
+              2.0,
+              53.15127018922193
+            ],
+            "radius": 2.0,
+            "tag": null,
+            "to": [
+              2.0,
+              53.15127018922193
+            ],
+            "type": "Circle",
+            "units": {
+              "type": "Mm"
+            }
+          }
+        ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
@@ -2081,6 +2108,33 @@ description: Variables in memory after executing surgical-drill-guide.kcl
             },
             "to": [
               16.216216216216214,
+              150.0
+            ],
+            "type": "Circle",
+            "units": {
+              "type": "Mm"
+            }
+          }
+        ],
+        "innerPaths": [
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.0,
+              150.0
+            ],
+            "from": [
+              3.2,
+              150.0
+            ],
+            "radius": 3.2,
+            "tag": null,
+            "to": [
+              3.2,
               150.0
             ],
             "type": "Circle",

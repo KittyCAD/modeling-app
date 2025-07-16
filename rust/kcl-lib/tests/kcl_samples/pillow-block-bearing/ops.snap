@@ -705,6 +705,32 @@ description: Operations executed pillow-block-bearing.kcl
     },
     {
       "type": "StdLibCall",
+      "name": "appearance",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "color": {
+          "value": {
+            "type": "String",
+            "value": "#121212"
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
       "name": "revolve",
       "unlabeledArg": {
         "value": {
@@ -799,6 +825,32 @@ description: Operations executed pillow-block-bearing.kcl
                 ]
               }
             }
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "appearance",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "color": {
+          "value": {
+            "type": "String",
+            "value": "#f0f0f0"
           },
           "sourceRange": []
         }
@@ -1172,6 +1224,32 @@ description: Operations executed pillow-block-bearing.kcl
                 "type": "Degrees"
               }
             }
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "appearance",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "color": {
+          "value": {
+            "type": "String",
+            "value": "#1e62eb"
           },
           "sourceRange": []
         }
@@ -2337,6 +2415,32 @@ description: Operations executed pillow-block-bearing.kcl
         "steps": []
       },
       "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "NEW",
+      "value": {
+        "type": "String",
+        "value": "new"
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "MERGE",
+      "value": {
+        "type": "String",
+        "value": "merge"
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
     }
   ],
   "std::sketch": [],
@@ -2345,5 +2449,6 @@ description: Operations executed pillow-block-bearing.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

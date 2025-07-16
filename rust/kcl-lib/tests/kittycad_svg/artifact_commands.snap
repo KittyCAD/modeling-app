@@ -4881,7 +4881,8 @@ description: Artifact commands kittycad_svg.kcl
         "target": "[uuid]",
         "distance": 1.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -4928,5 +4929,6 @@ description: Artifact commands kittycad_svg.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

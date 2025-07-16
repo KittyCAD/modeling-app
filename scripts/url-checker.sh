@@ -53,4 +53,4 @@ while read line; do
         problematic+="$status\t$line\n"
     fi
 done < <(echo "$uniqued")
-echo -e $problematic | column -t
+echo -e $problematic

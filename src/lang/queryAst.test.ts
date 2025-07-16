@@ -606,7 +606,7 @@ describe('Testing traverse and pathToNode', () => {
     ['basic', '2.73'],
     [
       'very nested, array, object, callExpression, array, memberExpression',
-      '.yo',
+      'yo',
     ],
   ])('testing %s', async (_testName, literalOfInterest) => {
     const code = `myVar = 5
@@ -1033,6 +1033,35 @@ profile001 = circle(sketch001, center = [0, 0], radius = 1)
 
     expect(vars.exprs[0].name.name).toEqual('profile001')
     expect(vars.pathIfPipe).toBeUndefined()
+  })
+
+  // Test for https://github.com/KittyCAD/modeling-app/issues/7669
+  it('should find only one variable expr for two selections pointing to the same variable', async () => {
+    const circleProfileInVar = `sketch001 = startSketchOn(XY)
+profile001 = circle(sketch001, center = [0, 0], radius = 1)
+`
+    const ast = assertParse(circleProfileInVar)
+    const { artifactGraph } = await enginelessExecutor(ast)
+    const artifact = [...artifactGraph.values()].find((a) => a.type === 'path')
+    if (!artifact) {
+      throw new Error('Artifact not found in the graph')
+    }
+    const selections: Selections = {
+      graphSelections: [
+        {
+          codeRef: artifact.codeRef,
+          artifact,
+        },
+        {
+          codeRef: artifact.codeRef,
+          artifact,
+        }, // duplicate selection
+      ],
+      otherSelections: [],
+    }
+    const vars = getVariableExprsFromSelection(selections, ast)
+    if (err(vars)) throw vars
+    expect(vars.exprs).toHaveLength(1)
   })
 
   it('should return the pipe substitution symbol in a variable-less simple profile selection', async () => {

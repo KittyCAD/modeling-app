@@ -1833,7 +1833,7 @@ description: Result of parsing enclosure.kcl
                                 "elements": [
                                   {
                                     "commentStart": 0,
-                                    "computed": false,
+                                    "computed": true,
                                     "end": 0,
                                     "moduleId": 0,
                                     "object": {
@@ -1873,7 +1873,7 @@ description: Result of parsing enclosure.kcl
                                   },
                                   {
                                     "commentStart": 0,
-                                    "computed": false,
+                                    "computed": true,
                                     "end": 0,
                                     "moduleId": 0,
                                     "object": {
@@ -2030,7 +2030,7 @@ description: Result of parsing enclosure.kcl
                                       "elements": [
                                         {
                                           "commentStart": 0,
-                                          "computed": false,
+                                          "computed": true,
                                           "end": 0,
                                           "moduleId": 0,
                                           "object": {
@@ -2070,7 +2070,7 @@ description: Result of parsing enclosure.kcl
                                         },
                                         {
                                           "commentStart": 0,
-                                          "computed": false,
+                                          "computed": true,
                                           "end": 0,
                                           "moduleId": 0,
                                           "object": {

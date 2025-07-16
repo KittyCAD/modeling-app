@@ -282,7 +282,8 @@ description: Artifact commands fillet-and-shell.kcl
         "target": "[uuid]",
         "distance": 8.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -644,7 +645,8 @@ description: Artifact commands fillet-and-shell.kcl
         "target": "[uuid]",
         "distance": 4.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -942,7 +944,8 @@ description: Artifact commands fillet-and-shell.kcl
         "target": "[uuid]",
         "distance": 4.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1240,7 +1243,8 @@ description: Artifact commands fillet-and-shell.kcl
         "target": "[uuid]",
         "distance": 4.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1538,7 +1542,8 @@ description: Artifact commands fillet-and-shell.kcl
         "target": "[uuid]",
         "distance": 4.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1598,5 +1603,6 @@ description: Artifact commands fillet-and-shell.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

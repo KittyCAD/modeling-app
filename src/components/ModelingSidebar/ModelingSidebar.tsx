@@ -131,7 +131,7 @@ export function ModelingSidebar() {
       id: 'refresh',
       title: 'Refresh app',
       sidebarName: 'Refresh app',
-      icon: 'arrowRotateRight',
+      icon: 'exclamationMark',
       keybinding: 'Mod + R',
       // eslint-disable-next-line @typescript-eslint/no-misused-promises
       action: async () => {

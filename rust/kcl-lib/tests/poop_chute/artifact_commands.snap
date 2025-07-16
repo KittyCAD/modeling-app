@@ -639,7 +639,8 @@ description: Artifact commands poop_chute.kcl
         "target": "[uuid]",
         "distance": 1.5,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -686,5 +687,6 @@ description: Artifact commands poop_chute.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

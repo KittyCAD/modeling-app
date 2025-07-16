@@ -29,12 +29,7 @@ headSideProfile = startSketchOn(XZ)
 headTopProfile = startSketchOn(offsetPlane(XY, offset = 13))
 leftSideCut = startProfile(headTopProfile, at = [-4, -1.6])
   |> line(endAbsolute = [segEndX(seg02), -segLen(seg02) / 2])
-  |> arc(
-       %,
-       angleStart = 180,
-       angleEnd = 270,
-       radius = .05,
-     )
+  |> arc(angleStart = 180, angleEnd = 270, radius = .05)
   |> xLine(endAbsolute = segEndX(seg04))
   |> arc(interiorAbsolute = [segEndX(seg03) - .1, lastSegY(%) + .03], endAbsolute = [segEndX(seg03), lastSegY(%)])
   |> tangentialArc(endAbsolute = [3.39, -1.15])
@@ -54,12 +49,7 @@ rearCut = startProfile(headTopProfile, at = [3.39, -0.56])
 
 rightSideCut = startProfile(headTopProfile, at = [-4, 1.6])
   |> line(endAbsolute = [segEndX(seg02), segLen(seg02) / 2])
-  |> arc(
-       %,
-       angleStart = -180,
-       angleEnd = -270,
-       radius = .05,
-     )
+  |> arc(angleStart = -180, angleEnd = -270, radius = .05)
   |> xLine(endAbsolute = segEndX(seg04))
   |> arc(interiorAbsolute = [segEndX(seg03) - .1, lastSegY(%) - .03], endAbsolute = [segEndX(seg03), lastSegY(%)])
   |> tangentialArc(endAbsolute = [3.39, 1.15])
@@ -81,12 +71,7 @@ firstProfiles = subtract(
 
 // Extrude a polygon through the center of the hammer head to create the mounting hole for the handle
 handleHole = startSketchOn(XY)
-  |> polygon(
-       %,
-       radius = .28,
-       numSides = 10,
-       center = [0, 0],
-     )
+  |> polygon(radius = .28, numSides = 10, center = [0, 0])
   |> extrude(length = 14)
 
 // Add an additional fillet feature to support the handle, and union it to the rest of the head

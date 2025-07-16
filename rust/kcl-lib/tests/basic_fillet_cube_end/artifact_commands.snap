@@ -155,7 +155,8 @@ description: Artifact commands basic_fillet_cube_end.kcl
         "target": "[uuid]",
         "distance": 10.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -232,5 +233,6 @@ description: Artifact commands basic_fillet_cube_end.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

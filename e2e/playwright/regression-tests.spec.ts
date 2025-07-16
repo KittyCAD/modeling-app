@@ -280,6 +280,7 @@ extrude001 = extrude(sketch001, length = 50)
     // This bug happens when there is a diagnostic in the editor and you try to
     // edit text below it.
     // Or delete a huge chunk of text and then try to edit below it.
+    await page.keyboard.press('ControlOrMeta+ArrowDown')
     await page.keyboard.press('End')
     await page.keyboard.down('Shift')
     await page.keyboard.press('ArrowUp')

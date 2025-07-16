@@ -25,10 +25,13 @@ You might also want the [KCL language reference](/docs/kcl-lang) or the [KCL gui
 * [`turns::turns`](/docs/kcl-std/modules/std-turns)
 * [`types`](/docs/kcl-std/modules/std-types)
 * [`units::units`](/docs/kcl-std/modules/std-units)
+* [`vector::vector`](/docs/kcl-std/modules/std-vector)
 
 ## Functions and constants
 
 * [`END`](/docs/kcl-std/consts/std-END)
+* [`MERGE`](/docs/kcl-std/consts/std-MERGE)
+* [`NEW`](/docs/kcl-std/consts/std-NEW)
 * [`START`](/docs/kcl-std/consts/std-START)
 * [`X`](/docs/kcl-std/consts/std-X)
 * [`XY`](/docs/kcl-std/consts/std-XY)

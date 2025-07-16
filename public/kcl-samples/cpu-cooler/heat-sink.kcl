@@ -23,7 +23,6 @@ endTube = startSketchOn(offsetPlane(XY, offset = fanSize + 38))
   |> subtract2d(tool = circle(center = [-20, fanSize / 4], radius = 2.5))
   |> sweep(path = endTubePath)
   |> patternCircular3d(
-       %,
        instances = 2,
        axis = [0, 0, 1],
        center = [0, 0, 0],
@@ -50,19 +49,13 @@ centerTube = startSketchOn(offsetPlane(XY, offset = fanSize + 38))
   |> subtract2d(tool = circle(center = [-4, fanSize / 2.67], radius = 2.5))
   |> sweep(path = centerTubePath)
   |> patternCircular3d(
-       %,
        instances = 2,
        axis = [0, 0, 1],
        center = [-4 * 2, 0, 0],
        arcDegrees = 360,
        rotateDuplicates = true,
      )
-  |> patternLinear3d(
-       %,
-       instances = 2,
-       distance = 4 * 4,
-       axis = [1, 0, 0],
-     )
+  |> patternLinear3d(instances = 2, distance = 4 * 4, axis = [1, 0, 0])
 
 // Draw a heat fin with built-in clips to secure the mounting wire. Pattern the fin upwards by the height of the fan
 heatFins = startSketchOn(offsetPlane(XY, offset = 45))
@@ -80,12 +73,7 @@ heatFins = startSketchOn(offsetPlane(XY, offset = 45))
   |> mirror2d(axis = Y)
   |> close()
   |> extrude(length = 1)
-  |> patternLinear3d(
-       %,
-       instances = 31,
-       distance = (fanSize - 10) / 30,
-       axis = [0, 0, 1],
-     )
+  |> patternLinear3d(instances = 31, distance = (fanSize - 10) / 30, axis = [0, 0, 1])
 
 // Create the mounting base for the CPU cooler. The base should consist of two pieces that secure around each of the tubes at the bottom
 coolerBase = startSketchOn(-XZ)

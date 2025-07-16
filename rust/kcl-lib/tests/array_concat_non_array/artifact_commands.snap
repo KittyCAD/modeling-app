@@ -14,5 +14,6 @@ description: Artifact commands array_concat_non_array.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

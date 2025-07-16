@@ -52,6 +52,7 @@ export function useConvertToVariable(range?: SourceRange) {
     try {
       const { variableName } = await getVarNameModal({
         valueName: valueName || 'var',
+        selectionRanges: context.selectionRanges,
       })
 
       const { modifiedAst: _modifiedAst, pathToReplacedNode } =

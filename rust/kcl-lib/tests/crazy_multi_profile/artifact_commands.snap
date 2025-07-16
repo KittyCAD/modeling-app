@@ -155,7 +155,8 @@ description: Artifact commands crazy_multi_profile.kcl
         "target": "[uuid]",
         "distance": 20.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -718,7 +719,8 @@ description: Artifact commands crazy_multi_profile.kcl
         "target": "[uuid]",
         "distance": 4.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1279,7 +1281,8 @@ description: Artifact commands crazy_multi_profile.kcl
         "target": "[uuid]",
         "distance": 2.5,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1367,5 +1370,6 @@ description: Artifact commands crazy_multi_profile.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

@@ -362,7 +362,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                                     "end": 0,
                                     "left": {
                                       "commentStart": 0,
-                                      "computed": false,
+                                      "computed": true,
                                       "end": 0,
                                       "moduleId": 0,
                                       "object": {
@@ -451,7 +451,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                                     "end": 0,
                                     "left": {
                                       "commentStart": 0,
-                                      "computed": false,
+                                      "computed": true,
                                       "end": 0,
                                       "moduleId": 0,
                                       "object": {
@@ -589,7 +589,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                                     "end": 0,
                                     "left": {
                                       "commentStart": 0,
-                                      "computed": false,
+                                      "computed": true,
                                       "end": 0,
                                       "moduleId": 0,
                                       "object": {
@@ -678,7 +678,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                                     "end": 0,
                                     "left": {
                                       "commentStart": 0,
-                                      "computed": false,
+                                      "computed": true,
                                       "end": 0,
                                       "moduleId": 0,
                                       "object": {
@@ -816,7 +816,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                                     "end": 0,
                                     "left": {
                                       "commentStart": 0,
-                                      "computed": false,
+                                      "computed": true,
                                       "end": 0,
                                       "moduleId": 0,
                                       "object": {
@@ -905,7 +905,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                                     "end": 0,
                                     "left": {
                                       "commentStart": 0,
-                                      "computed": false,
+                                      "computed": true,
                                       "end": 0,
                                       "moduleId": 0,
                                       "object": {
@@ -1043,7 +1043,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                                     "end": 0,
                                     "left": {
                                       "commentStart": 0,
-                                      "computed": false,
+                                      "computed": true,
                                       "end": 0,
                                       "moduleId": 0,
                                       "object": {
@@ -1132,7 +1132,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
                                     "end": 0,
                                     "left": {
                                       "commentStart": 0,
-                                      "computed": false,
+                                      "computed": true,
                                       "end": 0,
                                       "moduleId": 0,
                                       "object": {

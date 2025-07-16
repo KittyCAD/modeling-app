@@ -1061,6 +1061,7 @@ export function getVariableExprsFromSelection(
 ): Error | { exprs: Expr[]; pathIfPipe?: PathToNode } {
   let pathIfPipe: PathToNode | undefined
   const exprs: Expr[] = []
+  const pushedNames = {} as Record<string, boolean>
   for (const s of selection.graphSelections) {
     let variable:
       | {
@@ -1093,7 +1094,7 @@ export function getVariableExprsFromSelection(
       variable = directLookup
     }
 
-    if (variable?.node.declaration?.id) {
+    if (variable.node.type === 'VariableDeclaration') {
       const name = variable.node.declaration.id.name
       if (nodeToEdit) {
         const result = getNodeFromPath<VariableDeclaration>(
@@ -1114,7 +1115,16 @@ export function getVariableExprsFromSelection(
       }
 
       // Pointing to different variable case
+      if (pushedNames[name]) {
+        continue
+      }
       exprs.push(createLocalName(name))
+      pushedNames[name] = true
+      continue
+    } else if (variable.node.type === 'CallExpressionKw') {
+      // no variable assignment in that call and not a pipe yet, we'll need to create it
+      exprs.push(createPipeSubstitution())
+      pathIfPipe = variable.deepPath
       continue
     }
 
