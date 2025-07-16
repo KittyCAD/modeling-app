@@ -258,6 +258,13 @@ description: Variables in memory after executing pipe-with-bend.kcl
           "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudeArc"
         }
       ],
       "sketch": {
