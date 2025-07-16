@@ -1188,7 +1188,7 @@ export function retrieveSelectionsFromOpArg(
   return { graphSelections, otherSelections: [] } as Selections
 }
 
-export function findOperationArtifact(
+export function findOperationPlaneArtifact(
   operation: StdLibCallOp,
   artifactGraph: ArtifactGraph
 ) {

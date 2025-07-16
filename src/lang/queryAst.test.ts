@@ -13,7 +13,7 @@ import {
   doesSceneHaveExtrudedSketch,
   doesSceneHaveSweepableSketch,
   findAllPreviousVariables,
-  findOperationArtifact,
+  findOperationPlaneArtifact,
   findUsesOfTagInPipe,
   getNodeFromPath,
   getSelectedPlaneId,
@@ -817,7 +817,7 @@ part001 = startSketchOn(plane001)
     expect(offsetPlaneOp).toBeTruthy()
 
     if (offsetPlaneOp && isOffsetPlane(offsetPlaneOp)) {
-      const artifact = findOperationArtifact(offsetPlaneOp, artifactGraph)
+      const artifact = findOperationPlaneArtifact(offsetPlaneOp, artifactGraph)
 
       expect(artifact).toBeTruthy()
       expect(artifact?.type).toBe('plane')

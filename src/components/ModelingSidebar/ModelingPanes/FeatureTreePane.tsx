@@ -44,7 +44,7 @@ import {
   selectOffsetSketchPlane,
 } from '@src/lib/selections'
 import type { DefaultPlaneStr } from '@src/lib/planes'
-import { findOperationArtifact, isOffsetPlane } from '@src/lang/queryAst'
+import { findOperationPlaneArtifact, isOffsetPlane } from '@src/lang/queryAst'
 
 export const FeatureTreePane = () => {
   const isEditorMounted = useSelector(kclEditorActor, editorIsMountedSelector)
@@ -363,7 +363,7 @@ const OperationItem = (props: {
   function selectOperation() {
     if (props.sketchNoFace) {
       if (isOffsetPlane(props.item)) {
-        const artifact = findOperationArtifact(
+        const artifact = findOperationPlaneArtifact(
           props.item,
           kclManager.artifactGraph
         )
@@ -466,7 +466,7 @@ const OperationItem = (props: {
 
   function startSketchOnOffsetPlane() {
     if (isOffsetPlane(props.item)) {
-      const artifact = findOperationArtifact(
+      const artifact = findOperationPlaneArtifact(
         props.item,
         kclManager.artifactGraph
       )
