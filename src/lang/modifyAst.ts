@@ -47,6 +47,7 @@ import type {
   ArrayExpression,
   CallExpressionKw,
   Expr,
+  ExpressionStatement,
   Literal,
   PathToNode,
   PipeExpression,
@@ -335,64 +336,6 @@ export function mutateObjExpProp(
     }
   }
   return false
-}
-
-export function addShell({
-  node,
-  sweepName,
-  faces,
-  thickness,
-  insertIndex,
-  variableName,
-}: {
-  node: Node<Program>
-  sweepName: string
-  faces: Expr[]
-  thickness: Expr
-  insertIndex?: number
-  variableName?: string
-}): { modifiedAst: Node<Program>; pathToNode: PathToNode } {
-  const modifiedAst = structuredClone(node)
-  const name =
-    variableName ?? findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.SHELL)
-  const shell = createCallExpressionStdLibKw(
-    'shell',
-    createLocalName(sweepName),
-    [
-      createLabeledArg('faces', createArrayExpression(faces)),
-      createLabeledArg('thickness', thickness),
-    ]
-  )
-
-  const variable = createVariableDeclaration(name, shell)
-  const insertAt =
-    insertIndex !== undefined
-      ? insertIndex
-      : modifiedAst.body.length
-        ? modifiedAst.body.length
-        : 0
-
-  if (modifiedAst.body.length) {
-    modifiedAst.body.splice(insertAt, 0, variable)
-  } else {
-    modifiedAst.body.push(variable)
-  }
-
-  const argIndex = 0
-  const pathToNode: PathToNode = [
-    ['body', ''],
-    [insertAt, 'index'],
-    ['declaration', 'VariableDeclaration'],
-    ['init', 'VariableDeclarator'],
-    ['arguments', 'CallExpressionKw'],
-    [argIndex, ARG_INDEX_FIELD],
-    ['arg', LABELED_ARG_FIELD],
-  ]
-
-  return {
-    modifiedAst,
-    pathToNode,
-  }
 }
 
 export function sketchOnExtrudedFace(
@@ -1275,7 +1218,28 @@ export function setCallInAst(
       if (err(pipe)) {
         return pipe
       }
-      pipe.node.body.push(call)
+
+      if (pipe.node.type === 'PipeExpression') {
+        pipe.node.body.push(call)
+      } else if (pipe.node.type === 'CallExpressionKw') {
+        const expression = getNodeFromPath<ExpressionStatement>(
+          ast,
+          pathIfPipe,
+          'ExpressionStatement'
+        )
+        if (err(expression) || expression.node.type !== 'ExpressionStatement') {
+          return new Error('Could not retrieve ExpressionStatement')
+        }
+
+        expression.node.expression = createPipeExpression([
+          expression.node.expression,
+          call,
+        ])
+      } else {
+        return new Error(
+          'Expected pipeIfPipe to be a PipeExpression or CallExpressionKw'
+        )
+      }
       pathToNode = pathIfPipe
     } else {
       const name = findUniqueName(ast, call.callee.name.name)

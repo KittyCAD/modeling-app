@@ -78,12 +78,7 @@ fn keyFn(originStart, keyWidth, keyHeight, repeats, color) {
     |> extrude(length = keyDepth)
     |> appearance(color = color)
     // Repeat key when desired. This will default to zero
-    |> patternLinear3d(
-         %,
-         instances = repeats + 1,
-         distance = keyWidth + spacing,
-         axis = [1, 0, 0],
-       )
+    |> patternLinear3d(instances = repeats + 1, distance = keyWidth + spacing, axis = [1, 0, 0])
   return sketch001
 }
 

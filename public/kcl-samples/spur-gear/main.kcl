@@ -53,7 +53,6 @@ fn spurGear(nTeeth, module, pressureAngle, gearHeight) {
     |> line(endAbsolute = polar(angle = 360 / nTeeth, length = baseDiameter / 2))
     // Pattern the sketch about the center by the specified number of teeth, then close the sketch
     |> patternCircular2d(
-         %,
          instances = nTeeth,
          center = [0, 0],
          arcDegrees = 360,

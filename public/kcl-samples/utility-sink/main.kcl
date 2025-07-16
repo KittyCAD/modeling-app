@@ -145,19 +145,19 @@ sinkBodyInside = startProfile(
 
 // tap
 tapPlate = startSketchOn(offsetPlane(XY, offset = tableHeight))
-  |> circle(%, center = [blockWidth / 2, tableDepth - 55], radius = 40)
+  |> circle(center = [blockWidth / 2, tableDepth - 55], radius = 40)
   |> patternLinear2d(axis = [1, 0], instances = sinkCount, distance = sinkSpacing)
   |> extrude(length = 5)
 tapPillar = startSketchOn(offsetPlane(XY, offset = tableHeight))
-  |> circle(%, center = [blockWidth / 2, tableDepth - 55], radius = 15)
+  |> circle(center = [blockWidth / 2, tableDepth - 55], radius = 15)
   |> patternLinear2d(axis = [1, 0], instances = sinkCount, distance = sinkSpacing)
   |> extrude(length = 170)
 tapNose = startSketchOn(offsetPlane(XZ, offset = 55 - tableDepth))
-  |> circle(%, center = [blockWidth / 2, tableHeight + 100], radius = 10)
+  |> circle(center = [blockWidth / 2, tableHeight + 100], radius = 10)
   |> patternLinear2d(axis = [1, 0], instances = sinkCount, distance = sinkSpacing)
   |> extrude(length = sinkWidth / 2.5)
 tapHandle = startSketchOn(offsetPlane(XZ, offset = 55 - tableDepth))
-  |> circle(%, center = [blockWidth / 2, tableHeight + 150], radius = 4)
+  |> circle(center = [blockWidth / 2, tableHeight + 150], radius = 4)
   |> patternLinear2d(axis = [1, 0], instances = sinkCount, distance = sinkSpacing)
   |> extrude(length = 70)
 
@@ -178,12 +178,7 @@ doorBody = startProfile(doorPlane, at = [doorStart, 0])
   |> close()
   |> patternLinear2d(axis = [1, 0], instances = doorCount, distance = blockSubdivisionWidth)
   |> extrude(length = doorHeight)
-  |> patternLinear3d(
-       %,
-       instances = 2,
-       distance = blockDepth,
-       axis = [0, 1, 0],
-     )
+  |> patternLinear3d(instances = 2, distance = blockDepth, axis = [0, 1, 0])
 
 // side panels
 panelWidth = blockDepth - profileThickness - (doorGap * 2)

@@ -40,7 +40,7 @@ bracketBody = startSketchOn(XZ)
   |> xLine(length = thickness, tag = $seg05)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg06)
   |> close()
-  |> extrude(%, length = width)
+  |> extrude(length = width)
 
 // Add mounting holes to mount to the shelf
 shelfMountingHoles = startSketchOn(bracketBody, face = seg03)
@@ -53,7 +53,7 @@ shelfMountingHoles = startSketchOn(bracketBody, face = seg03)
      )
   |> patternLinear2d(instances = 2, distance = -(extBendRadius + shelfMountingHolePlacementOffset) + shelfMountLength - shelfMountingHolePlacementOffset, axis = [-1, 0])
   |> patternLinear2d(instances = 2, distance = width - (shelfMountingHolePlacementOffset * 2), axis = [0, 1])
-  |> extrude(%, length = -thickness - .01)
+  |> extrude(length = -thickness - .01)
 
 // Add mounting holes to mount to the wall
 wallMountingHoles = startSketchOn(bracketBody, face = seg04)
@@ -65,7 +65,7 @@ wallMountingHoles = startSketchOn(bracketBody, face = seg04)
        radius = wallMountingHoleDiameter / 2,
      )
   |> patternLinear2d(instances = 2, distance = width - (wallMountingHolePlacementOffset * 2), axis = [0, 1])
-  |> extrude(%, length = -thickness - 0.1)
+  |> extrude(length = -thickness - 0.1)
 
 // Apply bends
 fillet(bracketBody, radius = extBendRadius, tags = [getNextAdjacentEdge(seg03)])
