@@ -1,4 +1,4 @@
-import env from '@src/env'
+import env, { getEnvironmentNameForDisplay } from '@src/env'
 import { vi } from 'vitest'
 import {
   viteEnv,

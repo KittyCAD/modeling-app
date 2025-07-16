@@ -61,8 +61,10 @@ export const getEnvironmentName = () => {
 /**
  * When you need to display the full environment name within React
  */
-export const getEnvironmentNameForDisplay = (env : EnvironmentVariables) => {
-  return env.NODE_ENV === 'development' ? '.env' : capitaliseFC(getEnvironmentName() || '')
+export const getEnvironmentNameForDisplay = (env: EnvironmentVariables) => {
+  return env.NODE_ENV === 'development'
+    ? '.env'
+    : capitaliseFC(getEnvironmentName() || '')
 }
 
 export const viteEnv = () => {
