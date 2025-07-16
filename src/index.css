@@ -298,7 +298,7 @@ code {
   font-size: 12px;
   opacity: 0;
   color: red;
-  background: #ffff00 url("clientSideSceneAssets/extra-segment-texture.svg")
+  background: #ffff00 url("/clientSideSceneAssets/extra-segment-texture.svg")
     center / 10px 10px no-repeat;
   border-radius: 100%;
   background-size: 10px 10px;
@@ -311,7 +311,7 @@ code {
 .extra-segment-handle.selected:not(.hoveringLine) {
   opacity: 0.7;
   background-color: #0000ff;
-  background-image: url("clientSideSceneAssets/extra-segment-texture-selected.svg");
+  background-image: url("/clientSideSceneAssets/extra-segment-texture-selected.svg");
 }
 
 .extra-segment-handle:hover {
