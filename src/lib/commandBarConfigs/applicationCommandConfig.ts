@@ -461,25 +461,17 @@ export function createApplicationCommands({
     icon: 'importFile',
     groupId: 'application',
     onSubmit: (data) => {
-      // TODO: Kevin
       if (data) {
-        writeEnvironmentFile('').catch(reportRejection)
+        writeEnvironmentFile(data.environment).then(()=>{
+          // Reload the application and it will trigger the correct sign in workflow for the new environment
+          window.location.reload()
+        }).catch(reportRejection)
       }
     },
     args: {
       environment: {
-        inputType: 'options',
+        inputType: 'string',
         required: true,
-        valueSummary(value) {
-          const MAX_LENGTH = 12
-          if (typeof value === 'string') {
-            return value.length > MAX_LENGTH
-              ? value.substring(0, MAX_LENGTH) + '...'
-              : value
-          }
-          return value
-        },
-        options: [],
       },
     },
   }

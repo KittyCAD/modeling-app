@@ -60,6 +60,10 @@ export const updateEnvironmentPool = (
   }
 }
 
+export const getEnvironmentDomainFromDisk = () => {
+  return ENVIRONMENT?.domain
+}
+
 // Do not export the entire Environment! Use env()
 const getEnvironmentFromThisFile = () => {
   return ENVIRONMENT
