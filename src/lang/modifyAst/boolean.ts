@@ -1,146 +1,196 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
-import type EditorManager from '@src/editor/manager'
-import type { KclManager } from '@src/lang/KclSingleton'
-import type CodeManager from '@src/lang/codeManager'
 import {
-  createArrayExpression,
   createCallExpressionStdLibKw,
   createLabeledArg,
-  createLocalName,
-  createVariableDeclaration,
-  findUniqueName,
 } from '@src/lang/create'
-import { updateModelingState } from '@src/lang/modelingWorkflows'
-import { getNodeFromPath } from '@src/lang/queryAst'
+import {
+  getNodeFromPath,
+  getVariableExprsFromSelection,
+} from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import { getFaceCodeRef } from '@src/lang/std/artifactGraph'
-import type { EngineCommandManager } from '@src/lang/std/engineConnection'
 import type {
   Artifact,
   ArtifactGraph,
+  PathToNode,
   Program,
   VariableDeclaration,
 } from '@src/lang/wasm'
-import { EXECUTION_TYPE_REAL } from '@src/lib/constants'
 import type { Selections } from '@src/lib/selections'
 import { err } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
+import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
+import {
+  createVariableExpressionsArray,
+  setCallInAst,
+} from '@src/lang/modifyAst'
 
-export async function applySubtractFromTargetOperatorSelections(
-  solids: Selections,
-  tools: Selections,
-  dependencies: {
-    kclManager: KclManager
-    engineCommandManager: EngineCommandManager
-    codeManager: CodeManager
-    editorManager: EditorManager
-  }
-): Promise<Error | void> {
-  const ast = dependencies.kclManager.ast
-  const lastSolidsVars = getLastVariableDeclarationsFromSelections(
-    solids,
-    ast,
-    dependencies.kclManager.artifactGraph
-  )
-  if (err(lastSolidsVars) || lastSolidsVars.length < 1) {
-    return new Error('Not enough or invalid solids variables found')
-  }
-
-  const lastToolsVars = getLastVariableDeclarationsFromSelections(
-    tools,
-    ast,
-    dependencies.kclManager.artifactGraph
-  )
-  if (err(lastToolsVars) || lastToolsVars.length < 1) {
-    return new Error('Not enough or invalid tools variables found')
-  }
-
-  const modifiedAst = booleanSubtractAstMod({
-    ast,
-    solids: lastSolidsVars,
-    tools: lastToolsVars,
-  })
-
-  await updateModelingState(modifiedAst, EXECUTION_TYPE_REAL, dependencies)
-}
-
-export async function applyUnionFromTargetOperatorSelections(
-  solids: Selections,
-  dependencies: {
-    kclManager: KclManager
-    engineCommandManager: EngineCommandManager
-    codeManager: CodeManager
-    editorManager: EditorManager
-  }
-): Promise<Error | void> {
-  const ast = dependencies.kclManager.ast
-  const lastVars = getLastVariableDeclarationsFromSelections(
-    solids,
-    ast,
-    dependencies.kclManager.artifactGraph
-  )
-  if (err(lastVars) || lastVars.length < 2) {
-    return new Error('Not enough or invalid solids variables found')
-  }
-
-  const modifiedAst = booleanUnionAstMod({
-    ast,
-    solids: lastVars,
-  })
-  await updateModelingState(modifiedAst, EXECUTION_TYPE_REAL, dependencies)
-}
-
-export async function applyIntersectFromTargetOperatorSelections(
-  solids: Selections,
-  dependencies: {
-    kclManager: KclManager
-    engineCommandManager: EngineCommandManager
-    codeManager: CodeManager
-    editorManager: EditorManager
-  }
-): Promise<Error | void> {
-  const ast = dependencies.kclManager.ast
-  const lastVars = getLastVariableDeclarationsFromSelections(
-    solids,
-    ast,
-    dependencies.kclManager.artifactGraph
-  )
-  if (err(lastVars) || lastVars.length < 2) {
-    return new Error('Not enough or invalid solids variables found')
-  }
-
-  const modifiedAst = booleanIntersectAstMod({
-    ast,
-    solids: lastVars,
-  })
-  await updateModelingState(modifiedAst, EXECUTION_TYPE_REAL, dependencies)
-}
-
-function getLastVariableDeclarationsFromSelections(
-  selections: Selections,
-  ast: Node<Program>,
+export function addUnion({
+  ast,
+  artifactGraph,
+  solids,
+  nodeToEdit,
+}: {
+  ast: Node<Program>
   artifactGraph: ArtifactGraph
-): Error | VariableDeclaration[] {
-  const artifacts: Artifact[] = []
-  for (const selection of selections.graphSelections) {
-    if (selection.artifact) {
-      artifacts.push(selection.artifact)
-    }
-  }
+  solids: Selections
+  nodeToEdit?: PathToNode
+}): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
+  // 1. Clone the ast so we can edit it
+  const modifiedAst = structuredClone(ast)
 
-  const orderedChildrenEach = artifacts.map((artifact) =>
-    findAllChildrenAndOrderByPlaceInCode(artifact, artifactGraph)
+  // 2. Prepare unlabeled arguments (no exposed labeled arguments for boolean yet)
+  const lastChildLookup = true
+  const vars = getVariableExprsFromSelection(
+    solids,
+    modifiedAst,
+    nodeToEdit,
+    lastChildLookup,
+    artifactGraph
   )
-
-  const lastVars: VariableDeclaration[] = []
-  for (const orderedArtifactLeaves of orderedChildrenEach) {
-    const lastVar = getLastVariable(orderedArtifactLeaves, ast)
-    if (!lastVar) continue
-    lastVars.push(lastVar.variableDeclaration.node)
+  if (err(vars)) {
+    return vars
   }
 
-  return lastVars
+  const objectsExpr = createVariableExpressionsArray(vars.exprs)
+  const call = createCallExpressionStdLibKw('union', objectsExpr, [])
+
+  // 3. If edit, we assign the new function call declaration to the existing node,
+  // otherwise just push to the end
+  const pathToNode = setCallInAst({
+    ast: modifiedAst,
+    call,
+    pathToEdit: nodeToEdit,
+    pathIfNewPipe: vars.pathIfPipe,
+    variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.SOLID,
+  })
+  if (err(pathToNode)) {
+    return pathToNode
+  }
+
+  return {
+    modifiedAst,
+    pathToNode,
+  }
+}
+
+export function addIntersect({
+  ast,
+  artifactGraph,
+  solids,
+  nodeToEdit,
+}: {
+  ast: Node<Program>
+  artifactGraph: ArtifactGraph
+  solids: Selections
+  nodeToEdit?: PathToNode
+}): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
+  // 1. Clone the ast so we can edit it
+  const modifiedAst = structuredClone(ast)
+
+  // 2. Prepare unlabeled arguments (no exposed labeled arguments for boolean yet)
+  const lastChildLookup = true
+  const vars = getVariableExprsFromSelection(
+    solids,
+    modifiedAst,
+    nodeToEdit,
+    lastChildLookup,
+    artifactGraph
+  )
+  if (err(vars)) {
+    return vars
+  }
+
+  const objectsExpr = createVariableExpressionsArray(vars.exprs)
+  const call = createCallExpressionStdLibKw('intersect', objectsExpr, [])
+
+  // 3. If edit, we assign the new function call declaration to the existing node,
+  // otherwise just push to the end
+  const pathToNode = setCallInAst({
+    ast: modifiedAst,
+    call,
+    pathToEdit: nodeToEdit,
+    pathIfNewPipe: vars.pathIfPipe,
+    variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.SOLID,
+  })
+  if (err(pathToNode)) {
+    return pathToNode
+  }
+
+  return {
+    modifiedAst,
+    pathToNode,
+  }
+}
+
+export function addSubtract({
+  ast,
+  artifactGraph,
+  solids,
+  tools,
+  nodeToEdit,
+}: {
+  ast: Node<Program>
+  artifactGraph: ArtifactGraph
+  solids: Selections
+  tools: Selections
+  nodeToEdit?: PathToNode
+}): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
+  // 1. Clone the ast so we can edit it
+  const modifiedAst = structuredClone(ast)
+
+  // 2. Prepare unlabeled and labeled arguments
+  const lastChildLookup = true
+  const vars = getVariableExprsFromSelection(
+    solids,
+    modifiedAst,
+    nodeToEdit,
+    lastChildLookup,
+    artifactGraph
+  )
+  if (err(vars)) {
+    return vars
+  }
+
+  const toolVars = getVariableExprsFromSelection(
+    tools,
+    modifiedAst,
+    nodeToEdit,
+    lastChildLookup,
+    artifactGraph
+  )
+  if (err(toolVars)) {
+    return toolVars
+  }
+
+  const objectsExpr = createVariableExpressionsArray(vars.exprs)
+  const toolsExpr = createVariableExpressionsArray(toolVars.exprs)
+  if (toolsExpr === null) {
+    return new Error('No tools provided for subtraction operation')
+  }
+
+  const call = createCallExpressionStdLibKw('subtract', objectsExpr, [
+    createLabeledArg('tools', toolsExpr),
+  ])
+
+  // 3. If edit, we assign the new function call declaration to the existing node,
+  // otherwise just push to the end
+  const pathToNode = setCallInAst({
+    ast: modifiedAst,
+    call,
+    pathToEdit: nodeToEdit,
+    pathIfNewPipe: vars.pathIfPipe,
+    variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.SOLID,
+  })
+  if (err(pathToNode)) {
+    return pathToNode
+  }
+
+  return {
+    modifiedAst,
+    pathToNode,
+  }
 }
 
 /** returns all children of a given artifact, and sorts them DESC by start sourceRange
@@ -252,80 +302,4 @@ export function getLastVariable(
     }
   }
   return null
-}
-
-export function booleanSubtractAstMod({
-  ast,
-  solids,
-  tools,
-}: {
-  ast: Node<Program>
-  solids: VariableDeclaration[]
-  tools: VariableDeclaration[]
-}): Node<Program> {
-  const newAst = structuredClone(ast)
-  const newVarName = findUniqueName(newAst, 'solid')
-  const createArrExpr = (varDecs: VariableDeclaration[]) => {
-    const names = varDecs.map((varDec) =>
-      createLocalName(varDec.declaration.id.name)
-    )
-    return names.length === 1 ? names[0] : createArrayExpression(names)
-  }
-  const solidsArrayExpression = createArrExpr(solids)
-  const toolsArrayExpression = createArrExpr(tools)
-
-  const newVarDec = createVariableDeclaration(
-    newVarName,
-    createCallExpressionStdLibKw('subtract', solidsArrayExpression, [
-      createLabeledArg('tools', toolsArrayExpression),
-    ])
-  )
-  newAst.body.push(newVarDec)
-  return newAst
-}
-
-export function booleanUnionAstMod({
-  ast,
-  solids,
-}: {
-  ast: Node<Program>
-  solids: VariableDeclaration[]
-}): Node<Program> {
-  const newAst = structuredClone(ast)
-  const newVarName = findUniqueName(newAst, 'solid')
-  const createArrExpr = (varDecs: VariableDeclaration[]) =>
-    createArrayExpression(
-      varDecs.map((varDec) => createLocalName(varDec.declaration.id.name))
-    )
-  const solidsArrayExpression = createArrExpr(solids)
-
-  const newVarDec = createVariableDeclaration(
-    newVarName,
-    createCallExpressionStdLibKw('union', solidsArrayExpression, [])
-  )
-  newAst.body.push(newVarDec)
-  return newAst
-}
-
-export function booleanIntersectAstMod({
-  ast,
-  solids,
-}: {
-  ast: Node<Program>
-  solids: VariableDeclaration[]
-}): Node<Program> {
-  const newAst = structuredClone(ast)
-  const newVarName = findUniqueName(newAst, 'solid')
-  const createArrExpr = (varDecs: VariableDeclaration[]) =>
-    createArrayExpression(
-      varDecs.map((varDec) => createLocalName(varDec.declaration.id.name))
-    )
-  const solidsArrayExpression = createArrExpr(solids)
-
-  const newVarDec = createVariableDeclaration(
-    newVarName,
-    createCallExpressionStdLibKw('intersect', solidsArrayExpression, [])
-  )
-  newAst.body.push(newVarDec)
-  return newAst
 }
