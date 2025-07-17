@@ -1,8 +1,5 @@
 import type { Models } from '@kittycad/lib'
-import env, {
-  updateEnvironment,
-  updateEnvironmentPool,
-} from '@src/env'
+import env, { updateEnvironment, updateEnvironmentPool } from '@src/env'
 import { assign, fromPromise, setup } from 'xstate'
 import { COOKIE_NAME, OAUTH2_DEVICE_CLIENT_ID } from '@src/lib/constants'
 import {
@@ -310,7 +307,8 @@ async function logoutEnvironment(requestedEnvironmentName?: string) {
   localStorage.removeItem(TOKEN_PERSIST_KEY)
   if (isDesktop()) {
     try {
-      const environmentName = requestedEnvironmentName || env().VITE_KITTYCAD_BASE_DOMAIN
+      const environmentName =
+        requestedEnvironmentName || env().VITE_KITTYCAD_BASE_DOMAIN
       let token = ''
       if (environmentName) {
         token = await readEnvironmentConfigurationToken(environmentName)
