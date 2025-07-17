@@ -19,12 +19,35 @@ pub fn bench_parse(c: &mut Criterion) {
     }
 }
 
-criterion_group!(benches, bench_parse);
+pub fn bench_mock(c: &mut Criterion) {
+    for (name, file) in [
+        ("medium_sketch", MEDIUM_SKETCH),
+        ("mike_stress_test_program", MIKE_STRESS_TEST_PROGRAM),
+    ] {
+        let program = kcl_lib::Program::parse_no_errs(black_box(file)).unwrap();
+        c.bench_function(&format!("mock_execute_{name}"), move |b| {
+            let rt = tokio::runtime::Runtime::new().unwrap();
+            b.iter(|| {
+                if let Err(err) = rt.block_on(async {
+                    let ctx = kcl_lib::ExecutorContext::new_mock(None).await;
+                    ctx.run_mock(black_box(&program), false).await?;
+                    ctx.close().await;
+                    Ok::<(), anyhow::Error>(())
+                }) {
+                    panic!("Failed to execute program: {err}");
+                }
+            })
+        });
+    }
+}
+
+criterion_group!(benches, bench_parse, bench_mock);
 criterion_main!(benches);
 
 const KITT_PROGRAM: &str = include_str!("../e2e/executor/inputs/kittycad_svg.kcl");
 const PIPES_PROGRAM: &str = include_str!("../e2e/executor/inputs/pipes_on_pipes.kcl");
 const CUBE_PROGRAM: &str = include_str!("../e2e/executor/inputs/cube.kcl");
 const MATH_PROGRAM: &str = include_str!("../e2e/executor/inputs/math.kcl");
+const MEDIUM_SKETCH: &str = include_str!("../e2e/executor/inputs/medium_sketch.kcl");
 const MIKE_STRESS_TEST_PROGRAM: &str = include_str!("../tests/mike_stress_test/input.kcl");
 const LSYSTEM_KOCH_SNOWFLAKE_PROGRAM: &str = include_str!("../e2e/executor/inputs/lsystem.kcl");
