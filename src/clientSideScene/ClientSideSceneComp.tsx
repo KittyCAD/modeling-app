@@ -131,6 +131,19 @@ export const ClientSideScene = ({
     }
   }, [])
 
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const observer = new ResizeObserver(() => {
+      sceneInfra.onWindowResize()
+      sceneInfra.camControls.onWindowResize()
+    })
+    observer.observe(canvas)
+    return () => {
+      observer.disconnect()
+    }
+  }, [])
+
   let cursor = 'default'
   if (state.matches('Sketch')) {
     if (

@@ -272,7 +272,6 @@ export class CameraControls {
     this.domElement.addEventListener('wheel', this.onMouseWheel)
     this.initTouchControls(this.enableTouchControls)
 
-    window.addEventListener('resize', this.onWindowResize)
     this.onWindowResize()
 
     this.update()
@@ -396,12 +395,10 @@ export class CameraControls {
   onWindowResize = () => {
     if (this.camera instanceof PerspectiveCamera) {
       this.camera.aspect =
-        this.engineCommandManager.streamDimensions.width /
-        this.engineCommandManager.streamDimensions.height
+        this.domElement.clientWidth / this.domElement.clientHeight
     } else if (this.camera instanceof OrthographicCamera) {
-      const aspect =
-        this.engineCommandManager.streamDimensions.width /
-        this.engineCommandManager.streamDimensions.height
+      const aspect = this.domElement.clientWidth / this.domElement.clientHeight
+
       this.camera.left = -ORTHOGRAPHIC_CAMERA_SIZE * aspect
       this.camera.right = ORTHOGRAPHIC_CAMERA_SIZE * aspect
       this.camera.top = ORTHOGRAPHIC_CAMERA_SIZE
