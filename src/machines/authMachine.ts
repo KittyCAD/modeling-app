@@ -5,8 +5,6 @@ import env, {
   updateEnvironmentPool,
 } from '@src/env'
 import { assign, fromPromise, setup } from 'xstate'
-
-import type { EnvironmentName } from '@src/lib/constants'
 import { COOKIE_NAME, OAUTH2_DEVICE_CLIENT_ID } from '@src/lib/constants'
 import {
   getUser as getUserDesktop,

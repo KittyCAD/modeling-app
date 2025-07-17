@@ -30,7 +30,6 @@ import type { DeepPartial } from '@src/lib/types'
 import { getInVariableCase } from '@src/lib/utils'
 import { IS_STAGING } from '@src/routes/utils'
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
-import env from '@src/env'
 
 export async function renameProjectDirectory(
   projectPath: string,

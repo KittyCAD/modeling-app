@@ -461,8 +461,9 @@ export function createApplicationCommands({
     icon: 'importFile',
     groupId: 'application',
     onSubmit: (data) => {
-      // TODO:
+      // TODO: Kevin
       if (data) {
+        writeEnvironmentFile('').catch(reportRejection)
       }
     },
     args: {

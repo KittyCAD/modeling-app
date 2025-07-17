@@ -1,29 +1,7 @@
-import { Popover, Transition, RadioGroup, Combobox } from '@headlessui/react'
+import { Popover, Transition, Combobox } from '@headlessui/react'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { Fragment } from 'react'
-import { ActionIcon } from '@src/components/ActionIcon'
-import { capitaliseFC } from '@src/lib/utils'
 import { isDesktop } from '@src/lib/isDesktop'
-
-function EnvironmentOptionRow({
-  copy,
-  checked,
-}: { copy: string; checked: boolean }) {
-  return (
-    <p
-      className={`cursor-pointer text-xs w-full p-1 rounded flex flew-row justify-between ${checked ? 'bg-blue-200' : ''}`}
-    >
-      {copy}
-      {checked && (
-        <ActionIcon
-          className="rounded"
-          iconClassName="w-4 h-4"
-          icon="checkmark"
-        />
-      )}
-    </p>
-  )
-}
 
 export const AdvancedSignInOptions = ({
   environmentNameDisplay,

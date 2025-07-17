@@ -145,12 +145,12 @@ export default (): EnvironmentVariables => {
     NODE_ENV: (env.NODE_ENV as string) || viteOnly.MODE || undefined,
     VITE_KITTYCAD_BASE_DOMAIN:
       (env.VITE_KITTYCAD_BASE_DOMAIN as string) || undefined,
-    VITE_KITTYCAD_API_BASE_URL: (API_URL) || undefined,
-    VITE_KITTYCAD_API_WEBSOCKET_URL: (WEBSOCKET_URL) || undefined,
+    VITE_KITTYCAD_API_BASE_URL: API_URL || undefined,
+    VITE_KITTYCAD_API_WEBSOCKET_URL: WEBSOCKET_URL || undefined,
     VITE_KITTYCAD_API_TOKEN:
       (env.VITE_KITTYCAD_API_TOKEN as string) || undefined,
-    VITE_KITTYCAD_SITE_BASE_URL: (SITE_URL) || undefined,
-    VITE_KITTYCAD_SITE_APP_URL: (APP_URL) || undefined,
+    VITE_KITTYCAD_SITE_BASE_URL: SITE_URL || undefined,
+    VITE_KITTYCAD_SITE_APP_URL: APP_URL || undefined,
     POOL: pool,
   }
 
