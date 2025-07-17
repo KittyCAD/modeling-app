@@ -173,7 +173,7 @@ impl Context {
                 "Could not create KCL executor context. {TRUE_BUG} Details: {e}"
             )))
         })?;
-        ctx.run_mock(program, use_prev_memory).await
+        ctx.run_mock(&program, use_prev_memory).await
     }
 
     /// Export a scene to a file.

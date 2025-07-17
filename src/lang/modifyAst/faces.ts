@@ -32,6 +32,7 @@ import {
   getSweepArtifactFromSelection,
 } from '@src/lang/std/artifactGraph'
 import type { OpArg, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
+import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 
 export function addShell({
   ast,
@@ -103,12 +104,13 @@ export function addShell({
 
   // 3. If edit, we assign the new function call declaration to the existing node,
   // otherwise just push to the end
-  const pathToNode = setCallInAst(
-    modifiedAst,
+  const pathToNode = setCallInAst({
+    ast: modifiedAst,
     call,
-    nodeToEdit,
-    vars.pathIfPipe
-  )
+    pathToEdit: nodeToEdit,
+    pathIfNewPipe: vars.pathIfPipe,
+    variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.SHELL,
+  })
   if (err(pathToNode)) {
     return pathToNode
   }

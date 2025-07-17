@@ -557,10 +557,13 @@ impl ExecutorContext {
 
     pub async fn run_mock(
         &self,
-        program: crate::Program,
+        program: &crate::Program,
         use_prev_memory: bool,
     ) -> Result<ExecOutcome, KclErrorWithOutputs> {
-        assert!(self.is_mock());
+        assert!(
+            self.is_mock(),
+            "To use mock execution, instantiate via ExecutorContext::new_mock, not ::new"
+        );
 
         let mut exec_state = ExecState::new(self);
         if use_prev_memory {
@@ -579,7 +582,7 @@ impl ExecutorContext {
         // part of the scene).
         exec_state.mut_stack().push_new_env_for_scope();
 
-        let result = self.inner_run(&program, &mut exec_state, true).await?;
+        let result = self.inner_run(program, &mut exec_state, true).await?;
 
         // Restore any temporary variables, then save any newly created variables back to
         // memory in case another run wants to use them. Note this is just saved to the preserved
@@ -2375,7 +2378,7 @@ w = f() + f()
 
         let ctx2 = ExecutorContext::new_mock(None).await;
         let program2 = crate::Program::parse_no_errs("z = x + 1").unwrap();
-        let result = ctx2.run_mock(program2, true).await.unwrap();
+        let result = ctx2.run_mock(&program2, true).await.unwrap();
         assert_eq!(result.variables.get("z").unwrap().as_f64().unwrap(), 3.0);
 
         ctx.close().await;
@@ -2389,13 +2392,13 @@ w = f() + f()
         let code = "sk = startSketchOn(XY)
         |> startProfile(at = [0, 0])";
         let program = crate::Program::parse_no_errs(code).unwrap();
-        let result = ctx.run_mock(program, false).await.unwrap();
+        let result = ctx.run_mock(&program, false).await.unwrap();
         let ids = result.artifact_graph.iter().map(|(k, _)| *k).collect::<Vec<_>>();
         assert!(!ids.is_empty(), "IDs should not be empty");
 
         let ctx2 = ExecutorContext::new_mock(None).await;
         let program2 = crate::Program::parse_no_errs(code).unwrap();
-        let result = ctx2.run_mock(program2, false).await.unwrap();
+        let result = ctx2.run_mock(&program2, false).await.unwrap();
         let ids2 = result.artifact_graph.iter().map(|(k, _)| *k).collect::<Vec<_>>();
 
         assert_eq!(ids, ids2, "Generated IDs should match");
@@ -2419,7 +2422,7 @@ profile001 = startProfile(sketch001, at = [0, 0])
 
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let mock_program = crate::Program::parse_no_errs(code).unwrap();
-        let mock_result = mock_ctx.run_mock(mock_program, true).await.unwrap();
+        let mock_result = mock_ctx.run_mock(&mock_program, true).await.unwrap();
         assert_eq!(mock_result.operations.len(), 1);
 
         let code2 = code.to_owned()
