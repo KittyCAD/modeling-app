@@ -43,15 +43,10 @@ const SignIn = () => {
 
   // Last saved environment
   // TODO: Reduce this logic
-  const lastSelectedEnvironmentName = env().VITE_KITTYCAD_BASE_DOMAIN
-  const viteEnvironmentName = env().VITE_KITTYCAD_API_BASE_URL
-  const environmentName = lastSelectedEnvironmentName || viteEnvironmentName
+  const lastSelectedEnvironmentName = env().VITE_KITTYCAD_BASE_DOMAIN || ''
   const [selectedEnvironment, setSelectedEnvironment] =
-    useState(environmentName)
+    useState(lastSelectedEnvironmentName)
   const [pool, setPool] = useState(env().POOL || '')
-  const environmentNameDisplay = environmentName || ''
-
-  console.log('env', env())
   // TODO only run on desktop.
   /* useEffect(() => {
    *   if (pool || pool === '') {
@@ -96,6 +91,9 @@ const SignIn = () => {
   )
 
   const signInDesktop = async () => {
+    updateEnvironment(selectedEnvironment)
+    updateEnvironmentPool(selectedEnvironment, pool)
+
     // We want to invoke our command to login via device auth.
     const userCodeToDisplay = await window.electron
       .startDeviceFlow(withAPIBaseURL(location.search))
@@ -116,6 +114,7 @@ const SignIn = () => {
       return
     }
 
+    writeEnvironmentFile(selectedEnvironment)
     authActor.send({ type: 'Log in', token })
   }
 
@@ -178,7 +177,6 @@ const SignIn = () => {
                     </button>
                     {env().NODE_ENV === 'development' && (
                       <AdvancedSignInOptions
-                        environmentNameDisplay={environmentNameDisplay}
                         pool={pool}
                         setPool={setPool}
                         selectedEnvironment={selectedEnvironment}

@@ -4,13 +4,11 @@ import { Fragment } from 'react'
 import { isDesktop } from '@src/lib/isDesktop'
 
 export const AdvancedSignInOptions = ({
-  environmentNameDisplay,
   pool,
   setPool,
   selectedEnvironment,
   setSelectedEnvironment,
 }: {
-  environmentNameDisplay: string
   pool: string
   setPool: React.Dispatch<React.SetStateAction<string>>
   selectedEnvironment: string
@@ -19,7 +17,7 @@ export const AdvancedSignInOptions = ({
   return isDesktop() ? (
     <div className="flex flex-row items-center">
       <span className="text-xs text-chalkboard-70 dark:text-chalkboard-30 w-64 h-8">
-        Signing into <span className="font-bold">{environmentNameDisplay}</span>{' '}
+        Signing into <span className="font-bold">{selectedEnvironment}</span>{' '}
         environment
         {pool !== '' && (
           <span>
@@ -59,7 +57,19 @@ export const AdvancedSignInOptions = ({
           >
             {({ close }) => (
               <>
-                <p>TODO A INPUT FIELD</p>
+                <div className="flex flex-col items-start py-0.5">
+                  <span className="text-xs text-chalkboard-70 dark:text-chalkboard-30">
+                    Domain
+                  </span>
+                </div>
+                <Combobox value={selectedEnvironment} onChange={setSelectedEnvironment}>
+                  <Combobox.Input
+                    className="
+                               gap-1 rounded h-9 mr-auto max-h-min min-w-max border py-1 flex items-center dark:hover:bg-chalkboard-90 text-xs text-chalkboard-70 dark:text-chalkboard-30"
+                    placeholder="auto"
+                    onChange={(event) => setSelectedEnvironment(event.target.value)}
+                  />
+                </Combobox>
                 <div className="flex flex-col items-start py-0.5">
                   <span className="text-xs text-chalkboard-70 dark:text-chalkboard-30">
                     Connection pool
