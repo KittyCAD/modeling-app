@@ -2,9 +2,9 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Error from executing panic_repro_cube.kcl
 ---
-KCL Semantic error
+KCL Argument error
 
-  × semantic: The input argument of `getNextAdjacentEdge` requires a value
+  × argument: The input argument of `getNextAdjacentEdge` requires a value
   │ with type `TaggedEdge`, but found a unique ID (uuid) (with type `Edge`).
     ╭─[43:5]
  42 │     // these double wrapped functions are the point of this test
@@ -14,9 +14,9 @@ KCL Semantic error
     ·                            ╰── tests/panic_repro_cube/input.kcl
  44 │     getNextAdjacentEdge(getNextAdjacentEdge(seg02))
     ╰────
-  ╰─▶ KCL Semantic error
+  ╰─▶ KCL Argument error
       
-        × semantic: The input argument of `getNextAdjacentEdge` requires a
+        × argument: The input argument of `getNextAdjacentEdge` requires a
         │ value with type `TaggedEdge`, but found a unique ID (uuid) (with
         │ type `Edge`).
           ╭─[43:25]

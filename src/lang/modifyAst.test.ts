@@ -1058,7 +1058,7 @@ profile001 = circle(sketch001, center = [0, 0], radius = 1)
     const call = createCallExpressionStdLibKw('extrude', exprs, [
       createLabeledArg('length', createLiteral(5)),
     ])
-    const pathToNode = setCallInAst(ast, call)
+    const pathToNode = setCallInAst({ ast, call, variableIfNewDecl: 'extrude' })
     if (err(pathToNode)) {
       throw pathToNode
     }
@@ -1092,7 +1092,11 @@ profile001 = circle(sketch001, center = [0, 0], radius = 1)
     const call = createCallExpressionStdLibKw('extrude', exprs, [
       createLabeledArg('length', createLiteral(5)),
     ])
-    const pathToNode = setCallInAst(ast, call, undefined, vars.pathIfPipe)
+    const pathToNode = setCallInAst({
+      ast,
+      call,
+      pathIfNewPipe: vars.pathIfPipe,
+    })
     if (err(pathToNode)) {
       throw pathToNode
     }
@@ -1126,7 +1130,12 @@ profile001 = circle(sketch001, center = [0, 0], radius = 1)
     const call = createCallExpressionStdLibKw('extrude', exprs, [
       createLabeledArg('length', createLiteral(5)),
     ])
-    const pathToNode = setCallInAst(ast, call, undefined, vars.pathIfPipe)
+    const pathToNode = setCallInAst({
+      ast,
+      call,
+      pathIfNewPipe: vars.pathIfPipe,
+      variableIfNewDecl: 'extrude',
+    })
     if (err(pathToNode)) {
       throw pathToNode
     }

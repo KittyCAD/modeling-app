@@ -4,7 +4,6 @@ import type { CustomIconName } from '@src/components/CustomIcon'
 import { retrieveFaceSelectionsFromOpArgs } from '@src/lang/modifyAst/faces'
 import {
   getNodeFromPath,
-  findPipesWithImportAlias,
   retrieveSelectionsFromOpArg,
 } from '@src/lang/queryAst'
 import type { Artifact } from '@src/lang/std/artifactGraph'
@@ -26,10 +25,7 @@ import type {
   ModelingCommandSchema,
 } from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import type { KclCommandValue, KclExpression } from '@src/lib/commandTypes'
-import {
-  stringToKclExpression,
-  retrieveArgFromPipedCallExpression,
-} from '@src/lib/kclHelpers'
+import { stringToKclExpression } from '@src/lib/kclHelpers'
 import { isDefaultPlaneStr } from '@src/lib/planes'
 import type { Selections } from '@src/lib/selections'
 import { codeManager, kclManager, rustContext } from '@src/lib/singletons'
@@ -1043,6 +1039,7 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   appearance: {
     label: 'Appearance',
     icon: 'text',
+    prepareToEdit: prepareToEditAppearance,
   },
   chamfer: {
     label: 'Chamfer',
@@ -1161,6 +1158,8 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   scale: {
     label: 'Scale',
     icon: 'scale',
+    prepareToEdit: prepareToEditScale,
+    supportsTransform: true,
   },
   shell: {
     label: 'Shell',
@@ -1474,103 +1473,195 @@ export async function enterEditFlow({
   )
 }
 
-export async function enterAppearanceFlow({
-  operation,
-}: EnterEditFlowProps): Promise<Error | CommandBarMachineEvent> {
-  if (operation.type !== 'StdLibCall') {
-    return new Error(
-      'Appearance setting not yet supported for user-defined functions or modules. Please edit in the code editor.'
-    )
-  }
-  const stdLibInfo = stdLibMap[operation.name]
-
-  if (stdLibInfo && stdLibInfo.supportsAppearance) {
-    const argDefaultValues = {
-      nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
-    }
-    return {
-      type: 'Find and select command',
-      data: {
-        name: 'Appearance',
-        groupId: 'modeling',
-        argDefaultValues,
-      },
-    }
-  }
-
-  return new Error(
-    'Appearance setting not yet supported for this operation. Please edit in the code editor.'
-  )
-}
-
 async function prepareToEditTranslate({ operation }: EnterEditFlowProps) {
   const baseCommand = {
     name: 'Translate',
     groupId: 'modeling',
   }
-  const isModuleImport = operation.type === 'GroupBegin'
   const isSupportedStdLibCall =
     operation.type === 'StdLibCall' &&
     stdLibMap[operation.name]?.supportsTransform
-  if (!isModuleImport && !isSupportedStdLibCall) {
+  if (!isSupportedStdLibCall) {
     return {
       reason: 'Unsupported operation type. Please edit in the code editor.',
     }
   }
 
-  const nodeToEdit = pathToNodeFromRustNodePath(operation.nodePath)
-  let x: KclExpression | undefined = undefined
-  let y: KclExpression | undefined = undefined
-  let z: KclExpression | undefined = undefined
-  const pipeLookupFromOperation = getNodeFromPath<PipeExpression>(
-    kclManager.ast,
-    nodeToEdit,
-    'PipeExpression'
+  // 1. Map the unlabeled arguments to selections
+  if (!operation.unlabeledArg) {
+    return { reason: `Couldn't retrieve operation arguments` }
+  }
+
+  const objects = retrieveSelectionsFromOpArg(
+    operation.unlabeledArg,
+    kclManager.artifactGraph
   )
-  let pipe: PipeExpression | undefined
-  const ast = kclManager.ast
-  if (
-    err(pipeLookupFromOperation) ||
-    pipeLookupFromOperation.node.type !== 'PipeExpression'
-  ) {
-    // Look for the last pipe with the import alias and a call to translate
-    const pipes = findPipesWithImportAlias(ast, nodeToEdit, 'translate')
-    pipe = pipes.at(-1)?.expression
-  } else {
-    pipe = pipeLookupFromOperation.node
+  if (err(objects)) {
+    return { reason: "Couldn't retrieve objects" }
   }
 
-  if (pipe) {
-    const translate = pipe.body.find(
-      (n) => n.type === 'CallExpressionKw' && n.callee.name.name === 'translate'
+  // 2. Convert the x y z arguments from a string to a KCL expression
+  let x: KclCommandValue | undefined = undefined
+  let y: KclCommandValue | undefined = undefined
+  let z: KclCommandValue | undefined = undefined
+  let global: boolean | undefined
+  if (operation.labeledArgs.x) {
+    const result = await stringToKclExpression(
+      codeManager.code.slice(
+        operation.labeledArgs.x.sourceRange[0],
+        operation.labeledArgs.x.sourceRange[1]
+      )
     )
-    if (translate?.type === 'CallExpressionKw') {
-      x = await retrieveArgFromPipedCallExpression(translate, 'x')
-      y = await retrieveArgFromPipedCallExpression(translate, 'y')
-      z = await retrieveArgFromPipedCallExpression(translate, 'z')
+    if (err(result) || 'errors' in result) {
+      return { reason: "Couldn't retrieve x argument" }
     }
+    x = result
   }
 
-  // Won't be used since we provide nodeToEdit
-  const selection: Selections = { graphSelections: [], otherSelections: [] }
-  const argDefaultValues = { nodeToEdit, selection, x, y, z }
+  if (operation.labeledArgs.y) {
+    const result = await stringToKclExpression(
+      codeManager.code.slice(
+        operation.labeledArgs.y.sourceRange[0],
+        operation.labeledArgs.y.sourceRange[1]
+      )
+    )
+    if (err(result) || 'errors' in result) {
+      return { reason: "Couldn't retrieve y argument" }
+    }
+    y = result
+  }
+
+  if (operation.labeledArgs.z) {
+    const result = await stringToKclExpression(
+      codeManager.code.slice(
+        operation.labeledArgs.z.sourceRange[0],
+        operation.labeledArgs.z.sourceRange[1]
+      )
+    )
+    if (err(result) || 'errors' in result) {
+      return { reason: "Couldn't retrieve z argument" }
+    }
+    z = result
+  }
+
+  if (operation.labeledArgs.global) {
+    global =
+      codeManager.code.slice(
+        operation.labeledArgs.global.sourceRange[0],
+        operation.labeledArgs.global.sourceRange[1]
+      ) === 'true'
+  }
+
+  // 3. Assemble the default argument values for the command,
+  // with `nodeToEdit` set, which will let the actor know
+  // to edit the node that corresponds to the StdLibCall.
+  const argDefaultValues: ModelingCommandSchema['Translate'] = {
+    objects,
+    x,
+    y,
+    z,
+    global,
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
+  }
   return {
     ...baseCommand,
     argDefaultValues,
   }
 }
 
-export async function enterTranslateFlow({
-  operation,
-}: EnterEditFlowProps): Promise<Error | CommandBarMachineEvent> {
-  const data = await prepareToEditTranslate({ operation })
-  if ('reason' in data) {
-    return new Error(data.reason)
+async function prepareToEditScale({ operation }: EnterEditFlowProps) {
+  const baseCommand = {
+    name: 'Scale',
+    groupId: 'modeling',
+  }
+  const isSupportedStdLibCall =
+    operation.type === 'StdLibCall' &&
+    stdLibMap[operation.name]?.supportsTransform
+  if (!isSupportedStdLibCall) {
+    return {
+      reason: 'Unsupported operation type. Please edit in the code editor.',
+    }
   }
 
+  // 1. Map the unlabeled arguments to selections
+  if (!operation.unlabeledArg) {
+    return { reason: `Couldn't retrieve operation arguments` }
+  }
+
+  const objects = retrieveSelectionsFromOpArg(
+    operation.unlabeledArg,
+    kclManager.artifactGraph
+  )
+  if (err(objects)) {
+    return { reason: "Couldn't retrieve objects" }
+  }
+
+  // 2. Convert the x y z arguments from a string to a KCL expression
+  let x: KclCommandValue | undefined = undefined
+  let y: KclCommandValue | undefined = undefined
+  let z: KclCommandValue | undefined = undefined
+  let global: boolean | undefined
+  if (operation.labeledArgs.x) {
+    const result = await stringToKclExpression(
+      codeManager.code.slice(
+        operation.labeledArgs.x.sourceRange[0],
+        operation.labeledArgs.x.sourceRange[1]
+      )
+    )
+    if (err(result) || 'errors' in result) {
+      return { reason: "Couldn't retrieve x argument" }
+    }
+    x = result
+  }
+
+  if (operation.labeledArgs.y) {
+    const result = await stringToKclExpression(
+      codeManager.code.slice(
+        operation.labeledArgs.y.sourceRange[0],
+        operation.labeledArgs.y.sourceRange[1]
+      )
+    )
+    if (err(result) || 'errors' in result) {
+      return { reason: "Couldn't retrieve y argument" }
+    }
+    y = result
+  }
+
+  if (operation.labeledArgs.z) {
+    const result = await stringToKclExpression(
+      codeManager.code.slice(
+        operation.labeledArgs.z.sourceRange[0],
+        operation.labeledArgs.z.sourceRange[1]
+      )
+    )
+    if (err(result) || 'errors' in result) {
+      return { reason: "Couldn't retrieve z argument" }
+    }
+    z = result
+  }
+
+  if (operation.labeledArgs.global) {
+    global =
+      codeManager.code.slice(
+        operation.labeledArgs.global.sourceRange[0],
+        operation.labeledArgs.global.sourceRange[1]
+      ) === 'true'
+  }
+
+  // 3. Assemble the default argument values for the command,
+  // with `nodeToEdit` set, which will let the actor know
+  // to edit the node that corresponds to the StdLibCall.
+  const argDefaultValues: ModelingCommandSchema['Scale'] = {
+    objects,
+    x,
+    y,
+    z,
+    global,
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
+  }
   return {
-    type: 'Find and select command',
-    data,
+    ...baseCommand,
+    argDefaultValues,
   }
 }
 
@@ -1579,96 +1670,171 @@ async function prepareToEditRotate({ operation }: EnterEditFlowProps) {
     name: 'Rotate',
     groupId: 'modeling',
   }
-  const isModuleImport = operation.type === 'GroupBegin'
   const isSupportedStdLibCall =
     operation.type === 'StdLibCall' &&
     stdLibMap[operation.name]?.supportsTransform
-  if (!isModuleImport && !isSupportedStdLibCall) {
+  if (!isSupportedStdLibCall) {
     return {
       reason: 'Unsupported operation type. Please edit in the code editor.',
     }
   }
 
-  const nodeToEdit = pathToNodeFromRustNodePath(operation.nodePath)
-  let roll: KclExpression | undefined = undefined
-  let pitch: KclExpression | undefined = undefined
-  let yaw: KclExpression | undefined = undefined
-  const pipeLookupFromOperation = getNodeFromPath<PipeExpression>(
-    kclManager.ast,
-    nodeToEdit,
-    'PipeExpression'
+  // 1. Map the unlabeled arguments to selections
+  if (!operation.unlabeledArg) {
+    return { reason: `Couldn't retrieve operation arguments` }
+  }
+
+  const objects = retrieveSelectionsFromOpArg(
+    operation.unlabeledArg,
+    kclManager.artifactGraph
   )
-  let pipe: PipeExpression | undefined
-  const ast = kclManager.ast
-  if (
-    err(pipeLookupFromOperation) ||
-    pipeLookupFromOperation.node.type !== 'PipeExpression'
-  ) {
-    // Look for the last pipe with the import alias and a call to rotate
-    const pipes = findPipesWithImportAlias(ast, nodeToEdit, 'rotate')
-    pipe = pipes.at(-1)?.expression
-  } else {
-    pipe = pipeLookupFromOperation.node
+  if (err(objects)) {
+    return { reason: "Couldn't retrieve objects" }
   }
 
-  if (pipe) {
-    const rotate = pipe.body.find(
-      (n) => n.type === 'CallExpressionKw' && n.callee.name.name === 'rotate'
+  // 2. Convert the x y z arguments from a string to a KCL expression
+  let roll: KclCommandValue | undefined = undefined
+  let pitch: KclCommandValue | undefined = undefined
+  let yaw: KclCommandValue | undefined = undefined
+  let global: boolean | undefined
+  if (operation.labeledArgs.roll) {
+    const result = await stringToKclExpression(
+      codeManager.code.slice(
+        operation.labeledArgs.roll.sourceRange[0],
+        operation.labeledArgs.roll.sourceRange[1]
+      )
     )
-    if (rotate?.type === 'CallExpressionKw') {
-      roll = await retrieveArgFromPipedCallExpression(rotate, 'roll')
-      pitch = await retrieveArgFromPipedCallExpression(rotate, 'pitch')
-      yaw = await retrieveArgFromPipedCallExpression(rotate, 'yaw')
+    if (err(result) || 'errors' in result) {
+      return { reason: "Couldn't retrieve roll argument" }
     }
+    roll = result
   }
 
-  // Won't be used since we provide nodeToEdit
-  const selection: Selections = { graphSelections: [], otherSelections: [] }
-  const argDefaultValues = { nodeToEdit, selection, roll, pitch, yaw }
+  if (operation.labeledArgs.pitch) {
+    const result = await stringToKclExpression(
+      codeManager.code.slice(
+        operation.labeledArgs.pitch.sourceRange[0],
+        operation.labeledArgs.pitch.sourceRange[1]
+      )
+    )
+    if (err(result) || 'errors' in result) {
+      return { reason: "Couldn't retrieve pitch argument" }
+    }
+    pitch = result
+  }
+
+  if (operation.labeledArgs.yaw) {
+    const result = await stringToKclExpression(
+      codeManager.code.slice(
+        operation.labeledArgs.yaw.sourceRange[0],
+        operation.labeledArgs.yaw.sourceRange[1]
+      )
+    )
+    if (err(result) || 'errors' in result) {
+      return { reason: "Couldn't retrieve yaw argument" }
+    }
+    yaw = result
+  }
+
+  if (operation.labeledArgs.global) {
+    global =
+      codeManager.code.slice(
+        operation.labeledArgs.global.sourceRange[0],
+        operation.labeledArgs.global.sourceRange[1]
+      ) === 'true'
+  }
+
+  // 3. Assemble the default argument values for the command,
+  // with `nodeToEdit` set, which will let the actor know
+  // to edit the node that corresponds to the StdLibCall.
+  const argDefaultValues: ModelingCommandSchema['Rotate'] = {
+    objects,
+    roll,
+    pitch,
+    yaw,
+    global,
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
+  }
   return {
     ...baseCommand,
     argDefaultValues,
   }
 }
 
-export async function enterRotateFlow({
-  operation,
-}: EnterEditFlowProps): Promise<Error | CommandBarMachineEvent> {
-  const data = await prepareToEditRotate({ operation })
-  if ('reason' in data) {
-    return new Error(data.reason)
+async function prepareToEditAppearance({ operation }: EnterEditFlowProps) {
+  const baseCommand = {
+    name: 'Appearance',
+    groupId: 'modeling',
+  }
+  if (operation.type !== 'StdLibCall') {
+    return {
+      reason: 'Unsupported operation type. Please edit in the code editor.',
+    }
   }
 
-  return {
-    type: 'Find and select command',
-    data,
+  // 1. Map the unlabeled arguments to selections
+  if (!operation.unlabeledArg) {
+    return { reason: `Couldn't retrieve operation arguments` }
   }
-}
 
-export async function enterCloneFlow({
-  operation,
-}: EnterEditFlowProps): Promise<Error | CommandBarMachineEvent> {
-  const isModuleImport = operation.type === 'GroupBegin'
-  const isSupportedStdLibCall =
-    operation.type === 'StdLibCall' &&
-    stdLibMap[operation.name]?.supportsTransform
-  if (!isModuleImport && !isSupportedStdLibCall) {
-    return new Error(
-      'Unsupported operation type. Please edit in the code editor.'
+  const objects = retrieveSelectionsFromOpArg(
+    operation.unlabeledArg,
+    kclManager.artifactGraph
+  )
+  if (err(objects)) {
+    return { reason: "Couldn't retrieve objects" }
+  }
+
+  // 2. Convert the color argument from a string to a KCL expression
+  // TODO: other args
+  if (!operation.labeledArgs.color) {
+    return { reason: "Couldn't find color argument" }
+  }
+  let color = codeManager.code.slice(
+    operation.labeledArgs.color.sourceRange[0],
+    operation.labeledArgs.color.sourceRange[1]
+  )
+
+  let metalness: KclCommandValue | undefined
+  if (operation.labeledArgs.metalness) {
+    const result = await stringToKclExpression(
+      codeManager.code.slice(
+        operation.labeledArgs.metalness.sourceRange[0],
+        operation.labeledArgs.metalness.sourceRange[1]
+      )
     )
+    if (err(result) || 'errors' in result) {
+      return { reason: "Couldn't retrieve metalness argument" }
+    }
+    metalness = result
   }
 
-  const nodeToEdit = pathToNodeFromRustNodePath(operation.nodePath)
+  let roughness: KclCommandValue | undefined
+  if (operation.labeledArgs.roughness) {
+    const result = await stringToKclExpression(
+      codeManager.code.slice(
+        operation.labeledArgs.roughness.sourceRange[0],
+        operation.labeledArgs.roughness.sourceRange[1]
+      )
+    )
+    if (err(result) || 'errors' in result) {
+      return { reason: "Couldn't retrieve roughness argument" }
+    }
+    roughness = result
+  }
 
-  // Won't be used since we provide nodeToEdit
-  const selection: Selections = { graphSelections: [], otherSelections: [] }
-  const argDefaultValues = { nodeToEdit, selection }
+  // 3. Assemble the default argument values for the command,
+  // with `nodeToEdit` set, which will let the actor know
+  // to edit the node that corresponds to the StdLibCall.
+  const argDefaultValues: ModelingCommandSchema['Appearance'] = {
+    objects,
+    color,
+    metalness,
+    roughness,
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
+  }
   return {
-    type: 'Find and select command',
-    data: {
-      name: 'Clone',
-      groupId: 'modeling',
-      argDefaultValues,
-    },
+    ...baseCommand,
+    argDefaultValues,
   }
 }
