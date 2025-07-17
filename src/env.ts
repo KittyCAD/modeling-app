@@ -1,6 +1,6 @@
 import { isDesktop } from '@src/lib/isDesktop'
 import { capitaliseFC } from '@src/lib/utils'
-import { EnvironmentConfigurationRuntime } from './lib/constants'
+import type { EnvironmentConfigurationRuntime } from '@src/lib/constants'
 
 function generateDomainsFromBaseDomain(baseDomain: string) {
   return {
@@ -133,20 +133,24 @@ export default (): EnvironmentVariables => {
    */
   const environment = getEnvironmentFromThisFile()
   if (isDesktop() && environment) {
-    let { API_URL, SITE_URL, WEBSOCKET_URL, APP_URL } =
-      generateDomainsFromBaseDomain(environment.domain)
+    const environmentDomains = generateDomainsFromBaseDomain(environment.domain)
+    API_URL = environmentDomains.API_URL
+    SITE_URL = environmentDomains.SITE_URL
+    WEBSOCKET_URL = environmentDomains.WEBSOCKET_URL
+    APP_URL = environmentDomains.APP_URL
     pool = environment && environment.pool ? environment.pool : ''
   }
 
   const environmentVariables: EnvironmentVariables = {
     NODE_ENV: (env.NODE_ENV as string) || viteOnly.MODE || undefined,
-    VITE_KITTYCAD_BASE_DOMAIN: (env.VITE_KITTYCAD_BASE_DOMAIN as string) || undefined,
-    VITE_KITTYCAD_API_BASE_URL: (API_URL as string) || undefined,
-    VITE_KITTYCAD_API_WEBSOCKET_URL: (WEBSOCKET_URL as string) || undefined,
+    VITE_KITTYCAD_BASE_DOMAIN:
+      (env.VITE_KITTYCAD_BASE_DOMAIN as string) || undefined,
+    VITE_KITTYCAD_API_BASE_URL: (API_URL) || undefined,
+    VITE_KITTYCAD_API_WEBSOCKET_URL: (WEBSOCKET_URL) || undefined,
     VITE_KITTYCAD_API_TOKEN:
       (env.VITE_KITTYCAD_API_TOKEN as string) || undefined,
-    VITE_KITTYCAD_SITE_BASE_URL: (SITE_URL as string) || undefined,
-    VITE_KITTYCAD_SITE_APP_URL: (APP_URL as string) || undefined,
+    VITE_KITTYCAD_SITE_BASE_URL: (SITE_URL) || undefined,
+    VITE_KITTYCAD_SITE_APP_URL: (APP_URL) || undefined,
     POOL: pool,
   }
 

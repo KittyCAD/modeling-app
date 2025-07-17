@@ -50,7 +50,7 @@ const SignIn = () => {
   const [pool, setPool] = useState(env().POOL || '')
   const environmentNameDisplay = environmentName || ''
 
-  console.log('env',env())
+  console.log('env', env())
   // TODO only run on desktop.
   /* useEffect(() => {
    *   if (pool || pool === '') {
