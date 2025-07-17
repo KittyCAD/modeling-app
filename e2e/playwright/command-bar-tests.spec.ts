@@ -727,8 +727,6 @@ theta = 45deg
     )
   })
 
-  // TODO: add pw test for clear non-required arg button
-
   test('Command palette can be opened via query parameter', async ({
     page,
     homePage,
