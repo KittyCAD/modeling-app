@@ -1074,6 +1074,8 @@ export function getVariableExprsFromSelection(
       )
       const lastChildVariable = getLastVariable(children, ast)
       if (!lastChildVariable) {
+        console.log('artifact', s.artifact)
+        console.log('lastChildVariable not found')
         continue
       }
 
@@ -1085,11 +1087,13 @@ export function getVariableExprsFromSelection(
         'VariableDeclaration'
       )
       if (err(directLookup)) {
+        console.log('directLookup not found', directLookup)
         continue
       }
 
       variable = directLookup
     }
+    console.log('variable', variable)
 
     if (variable.node.type === 'VariableDeclaration') {
       const name = variable.node.declaration.id.name
@@ -1440,10 +1444,10 @@ export function findAllChildrenAndOrderByPlaceInCode(
     const currentId = stack.pop()!
     const current = artifactGraph.get(currentId)
     if (current?.type === 'path') {
-      pushToSomething(currentId, current?.sweepId)
-      pushToSomething(currentId, current?.segIds)
+      pushToSomething(currentId, current.sweepId)
+      pushToSomething(currentId, current.segIds)
     } else if (current?.type === 'sweep') {
-      pushToSomething(currentId, current?.surfaceIds)
+      pushToSomething(currentId, current.surfaceIds)
       const path = artifactGraph.get(current.pathId)
       if (path && path.type === 'path') {
         const compositeSolidId = path.compositeSolidId
@@ -1454,14 +1458,17 @@ export function findAllChildrenAndOrderByPlaceInCode(
     } else if (current?.type === 'wall' || current?.type === 'cap') {
       pushToSomething(currentId, current?.pathIds)
     } else if (current?.type === 'segment') {
-      pushToSomething(currentId, current?.edgeCutId)
-      pushToSomething(currentId, current?.surfaceId)
+      pushToSomething(currentId, current.edgeCutId)
+      pushToSomething(currentId, current.surfaceId)
     } else if (current?.type === 'edgeCut') {
-      pushToSomething(currentId, current?.surfaceId)
+      pushToSomething(currentId, current.surfaceId)
     } else if (current?.type === 'startSketchOnPlane') {
-      pushToSomething(currentId, current?.planeId)
+      pushToSomething(currentId, current.planeId)
     } else if (current?.type === 'plane') {
       pushToSomething(currentId, current.pathIds)
+    } else if (current?.type === 'compositeSolid') {
+      pushToSomething(currentId, current.solidIds)
+      pushToSomething(currentId, current.toolIds)
     }
   }
 
@@ -1484,8 +1491,10 @@ export function getLastVariable(
   orderedDescArtifacts: Artifact[],
   ast: Node<Program>
 ) {
+  console.log('artifacts', orderedDescArtifacts)
   for (const artifact of orderedDescArtifacts) {
     const codeRef = getFaceCodeRef(artifact)
+    console.log('getLastVariable codeRef', codeRef)
     if (codeRef) {
       const pathToNode = getNodePathFromSourceRange(ast, codeRef.range)
       const varDec = getNodeFromPath<VariableDeclaration>(
