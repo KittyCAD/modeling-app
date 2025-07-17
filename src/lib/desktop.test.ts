@@ -229,7 +229,7 @@ describe('desktop utilities', () => {
       })
       mockElectron.packageJson.name = 'zoo-modeling-app'
       const expected: EnvironmentConfiguration = {
-        name: 'development',
+        domain: 'development',
         pool: '',
         token: '',
       }
@@ -246,7 +246,7 @@ describe('desktop utilities', () => {
       })
       mockElectron.packageJson.name = 'zoo-modeling-app'
       const expected: EnvironmentConfiguration = {
-        name: 'production',
+        domain: 'production',
         pool: '',
         token: '',
       }

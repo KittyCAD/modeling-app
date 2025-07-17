@@ -1,5 +1,5 @@
 import type { CSSProperties } from 'react'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import { Link } from 'react-router-dom'
 
@@ -17,11 +17,7 @@ import { APP_VERSION, generateSignInUrl } from '@src/routes/utils'
 import { withAPIBaseURL, withSiteBaseURL } from '@src/lib/withBaseURL'
 import { updateEnvironment, updateEnvironmentPool } from '@src/env'
 import env from '@src/env'
-import {
-  readEnvironmentConfigurationPool,
-  writeEnvironmentConfigurationPool,
-  writeEnvironmentFile,
-} from '@src/lib/desktop'
+import { writeEnvironmentFile } from '@src/lib/desktop'
 import { AdvancedSignInOptions } from '@src/routes/AdvancedSignInOptions'
 
 const subtleBorder =
@@ -44,32 +40,10 @@ const SignIn = () => {
   // Last saved environment
   // TODO: Reduce this logic
   const lastSelectedEnvironmentName = env().VITE_KITTYCAD_BASE_DOMAIN || ''
-  const [selectedEnvironment, setSelectedEnvironment] =
-    useState(lastSelectedEnvironmentName)
+  const [selectedEnvironment, setSelectedEnvironment] = useState(
+    lastSelectedEnvironmentName
+  )
   const [pool, setPool] = useState(env().POOL || '')
-  // TODO only run on desktop.
-  /* useEffect(() => {
-   *   if (pool || pool === '') {
-   *     writeEnvironmentConfigurationPool(selectedEnvironment, pool).catch(
-   *       reportRejection
-   *     )
-   *   }
-   * }, [pool])
-
-   * useEffect(() => {
-   *   // Update the pool
-   *   readEnvironmentConfigurationPool(selectedEnvironment)
-   *     .then((cachedPool) => {
-   *       writeEnvironmentFile(selectedEnvironment)
-   *         .then(() => {
-   *           updateEnvironment(selectedEnvironment)
-   *           updateEnvironmentPool(selectedEnvironment, cachedPool)
-   *           setPool(cachedPool)
-   *         })
-   *         .catch(reportRejection)
-   *     })
-   *     .catch(reportRejection)
-   * }, [selectedEnvironment]) */
 
   const {
     app: { theme },
@@ -114,7 +88,7 @@ const SignIn = () => {
       return
     }
 
-    writeEnvironmentFile(selectedEnvironment)
+    writeEnvironmentFile(selectedEnvironment).catch(reportRejection)
     authActor.send({ type: 'Log in', token })
   }
 

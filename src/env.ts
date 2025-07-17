@@ -1,5 +1,4 @@
 import { isDesktop } from '@src/lib/isDesktop'
-import { capitaliseFC } from '@src/lib/utils'
 import type { EnvironmentConfigurationRuntime } from '@src/lib/constants'
 
 function generateDomainsFromBaseDomain(baseDomain: string) {

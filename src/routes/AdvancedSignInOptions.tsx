@@ -62,12 +62,17 @@ export const AdvancedSignInOptions = ({
                     Domain
                   </span>
                 </div>
-                <Combobox value={selectedEnvironment} onChange={setSelectedEnvironment}>
+                <Combobox
+                  value={selectedEnvironment}
+                  onChange={setSelectedEnvironment}
+                >
                   <Combobox.Input
                     className="
                                gap-1 rounded h-9 mr-auto max-h-min min-w-max border py-1 flex items-center dark:hover:bg-chalkboard-90 text-xs text-chalkboard-70 dark:text-chalkboard-30"
                     placeholder="auto"
-                    onChange={(event) => setSelectedEnvironment(event.target.value)}
+                    onChange={(event) =>
+                      setSelectedEnvironment(event.target.value)
+                    }
                   />
                 </Combobox>
                 <div className="flex flex-col items-start py-0.5">

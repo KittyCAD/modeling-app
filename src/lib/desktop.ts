@@ -861,19 +861,19 @@ export const setTokenToEmptyStringForAllEnvironments = async () => {
   // Make sure you call the oauth2/token/revoke before you call this.
   // This will not revoke the token at the API level, only remove the cached value from disk.
   // This is not a true logout function, please use the AuthMachine
-  const environments = []
+  // const environments = []
   // TODO: Kevin
-  for (let i = 0; i < environments.length; i++) {
-    const environmentName = environments[i]
-    if (isEnvironmentName(environmentName)) {
-      const emptyStringToken = ''
-      await writeEnvironmentConfigurationToken(
-        environmentName,
-        emptyStringToken
-      )
-      console.log('cleaning', environmentName)
-    }
-  }
+  // for (let i = 0; i < environments.length; i++) {
+  //   const environmentName = environments[i]
+  //   if (isEnvironmentName(environmentName)) {
+  //     const emptyStringToken = ''
+  //     await writeEnvironmentConfigurationToken(
+  //       environmentName,
+  //       emptyStringToken
+  //     )
+  //     console.log('cleaning', environmentName)
+  //   }
+  // }
 }
 
 export const writeTelemetryFile = async (content: string) => {
