@@ -7,10 +7,7 @@ import env, {
 import { assign, fromPromise, setup } from 'xstate'
 
 import type { EnvironmentName } from '@src/lib/constants'
-import {
-  COOKIE_NAME,
-  OAUTH2_DEVICE_CLIENT_ID,
-} from '@src/lib/constants'
+import { COOKIE_NAME, OAUTH2_DEVICE_CLIENT_ID } from '@src/lib/constants'
 import {
   getUser as getUserDesktop,
   readEnvironmentConfigurationPool,
@@ -172,11 +169,7 @@ export const authMachine = setup({
 
 async function getUser(input: { token?: string }) {
   if (isDesktop()) {
-    // Always use the development.json environment when running in dev mode.
-    const environment =
-      env().NODE_ENV === 'production'
-        ? await readEnvironmentFile()
-        : 'development'
+    const environment = await readEnvironmentFile()
     updateEnvironment(environment)
 
     // Update the pool

@@ -288,7 +288,7 @@ contextBridge.exposeInMainWorld('electron', {
       {},
       exposeProcessEnvs([
         'NODE_ENV',
-        'VITE_BASE_DOMAIN',
+        'VITE_KITTYCAD_BASE_DOMAIN',
         'VITE_KITTYCAD_API_WEBSOCKET_URL',
         'VITE_KITTYCAD_API_TOKEN',
       ])

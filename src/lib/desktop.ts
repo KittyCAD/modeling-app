@@ -10,9 +10,7 @@ import {
   parseProjectSettings,
 } from '@src/lang/wasm'
 import { initPromise, relevantFileExtensions } from '@src/lang/wasmUtils'
-import type {
-  EnvironmentConfiguration,
-} from '@src/lib/constants'
+import type { EnvironmentConfiguration } from '@src/lib/constants'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
   ENVIRONMENT_CONFIGURATION_FOLDER,
@@ -814,7 +812,7 @@ export const getEnvironmentConfigurationObject = async (
 }
 
 export const readEnvironmentConfigurationPool = async (
-  environmentName: EnvironmentName
+  environmentName: string
 ) => {
   const environmentConfiguration =
     await readEnvironmentConfigurationFile(environmentName)
@@ -822,7 +820,7 @@ export const readEnvironmentConfigurationPool = async (
 }
 
 export const readEnvironmentConfigurationToken = async (
-  environmentName: EnvironmentName
+  environmentName: string
 ) => {
   const environmentConfiguration =
     await readEnvironmentConfigurationFile(environmentName)

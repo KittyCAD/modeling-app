@@ -43,36 +43,37 @@ const SignIn = () => {
 
   // Last saved environment
   const lastSelectedEnvironmentName = getEnvironmentName()
-  const viteEnvironmentName = getViteEnvironmentName(env())
+  const viteEnvironmentName = env().VITE_KITTYCAD_API_BASE_URL
   const environmentName = lastSelectedEnvironmentName || viteEnvironmentName
   const [selectedEnvironment, setSelectedEnvironment] =
     useState(environmentName)
   const [pool, setPool] = useState(env().POOL || '')
-  const environmentNameDisplay = capitaliseFC(environmentName)
+  const environmentNameDisplay = environmentName || ''
 
+  console.log('env',env())
   // TODO only run on desktop.
-  useEffect(() => {
-    if (pool || pool === '') {
-      writeEnvironmentConfigurationPool(selectedEnvironment, pool).catch(
-        reportRejection
-      )
-    }
-  }, [pool])
+  /* useEffect(() => {
+   *   if (pool || pool === '') {
+   *     writeEnvironmentConfigurationPool(selectedEnvironment, pool).catch(
+   *       reportRejection
+   *     )
+   *   }
+   * }, [pool])
 
-  useEffect(() => {
-    // Update the pool
-    readEnvironmentConfigurationPool(selectedEnvironment)
-      .then((cachedPool) => {
-        writeEnvironmentFile(selectedEnvironment)
-          .then(() => {
-            updateEnvironment(selectedEnvironment)
-            updateEnvironmentPool(selectedEnvironment, cachedPool)
-            setPool(cachedPool)
-          })
-          .catch(reportRejection)
-      })
-      .catch(reportRejection)
-  }, [selectedEnvironment])
+   * useEffect(() => {
+   *   // Update the pool
+   *   readEnvironmentConfigurationPool(selectedEnvironment)
+   *     .then((cachedPool) => {
+   *       writeEnvironmentFile(selectedEnvironment)
+   *         .then(() => {
+   *           updateEnvironment(selectedEnvironment)
+   *           updateEnvironmentPool(selectedEnvironment, cachedPool)
+   *           setPool(cachedPool)
+   *         })
+   *         .catch(reportRejection)
+   *     })
+   *     .catch(reportRejection)
+   * }, [selectedEnvironment]) */
 
   const {
     app: { theme },

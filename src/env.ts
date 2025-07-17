@@ -13,6 +13,7 @@ function generateDomainsFromBaseDomain(baseDomain: string) {
 
 export type EnvironmentVariables = {
   readonly NODE_ENV: string | undefined
+  readonly VITE_KITTYCAD_BASE_DOMAIN: string | undefined
   readonly VITE_KITTYCAD_API_BASE_URL: string | undefined
   readonly VITE_KITTYCAD_API_WEBSOCKET_URL: string | undefined
   readonly VITE_KITTYCAD_API_TOKEN: string | undefined
@@ -121,25 +122,9 @@ export default (): EnvironmentVariables => {
   const processEnvOnly = processEnv()
   const env = processEnvOnly || windowElectronProcessEnvOnly || viteOnly
 
-  /**
-   * Resolve the API, Site, and Websocket URL
-   * This is computed during runtime for Desktop.
-   * Web will have hard coded values from the VITE .env
-   * electron will get this from the sign in page and the local disk cache
-   *
-   *
-   * catch 22: If you are in the sign in page and there are URLs, they should
-   * point to the VITE .env file for that build
-   *
-   * e.g. View this sample -> button would be pointing to production if built with the production .env
-   */
   let { API_URL, SITE_URL, WEBSOCKET_URL, APP_URL } =
     generateDomainsFromBaseDomain(env.VITE_KITTYCAD_BASE_DOMAIN)
-
-  // let API_URL = env.VITE_KITTYCAD_API_BASE_URL
-  // let SITE_URL = env.VITE_KITTYCAD_SITE_BASE_URL
-  // let WEBSOCKET_URL = env.VITE_KITTYCAD_API_WEBSOCKET_URL
-  const pool = ENVIRONMENT && ENVIRONMENT.pool ? ENVIRONMENT.pool : ''
+  let pool = ''
 
   /**
    * If you are desktop, see if you have any runtime environment which can be read from disk and
@@ -150,10 +135,12 @@ export default (): EnvironmentVariables => {
   if (isDesktop() && environment) {
     let { API_URL, SITE_URL, WEBSOCKET_URL, APP_URL } =
       generateDomainsFromBaseDomain(environment.domain)
+    pool = environment && environment.pool ? environment.pool : ''
   }
 
   const environmentVariables: EnvironmentVariables = {
     NODE_ENV: (env.NODE_ENV as string) || viteOnly.MODE || undefined,
+    VITE_KITTYCAD_BASE_DOMAIN: (env.VITE_KITTYCAD_BASE_DOMAIN as string) || undefined,
     VITE_KITTYCAD_API_BASE_URL: (API_URL as string) || undefined,
     VITE_KITTYCAD_API_WEBSOCKET_URL: (WEBSOCKET_URL as string) || undefined,
     VITE_KITTYCAD_API_TOKEN:
@@ -164,17 +151,4 @@ export default (): EnvironmentVariables => {
   }
 
   return environmentVariables
-}
-
-export function getViteEnvironmentName(env: EnvironmentVariables) {
-  const url = env.VITE_KITTYCAD_API_BASE_URL
-  const NODE_ENV = env.NODE_ENV
-  if (NODE_ENV === 'development') {
-    return '.env'
-  } else if (url === SUPPORTED_ENVIRONMENTS.development.API_URL) {
-    return SUPPORTED_ENVIRONMENTS.development.name
-  } else if (url === SUPPORTED_ENVIRONMENTS.production.API_URL) {
-    return SUPPORTED_ENVIRONMENTS.production.name
-  }
-  return ''
 }
