@@ -1,11 +1,6 @@
 import { executeAstMock } from '@src/lang/langHelpers'
-import {
-  type CallExpressionKw,
-  formatNumberValue,
-  parse,
-  resultIsOk,
-} from '@src/lang/wasm'
-import type { KclCommandValue, KclExpression } from '@src/lib/commandTypes'
+import { formatNumberValue, parse, resultIsOk } from '@src/lang/wasm'
+import type { KclExpression } from '@src/lib/commandTypes'
 import { rustContext } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
 
@@ -73,24 +68,4 @@ export async function stringToKclExpression(value: string) {
     valueCalculated: calculatedResult.valueAsString,
     valueText: value,
   } satisfies KclExpression
-}
-
-export async function retrieveArgFromPipedCallExpression(
-  callExpression: CallExpressionKw,
-  name: string
-): Promise<KclCommandValue | undefined> {
-  const arg = callExpression.arguments.find(
-    (a) => a.label?.type === 'Identifier' && a.label?.name === name
-  )
-  if (
-    arg?.type === 'LabeledArg' &&
-    (arg.arg.type === 'Name' || arg.arg.type === 'Literal')
-  ) {
-    const value = arg.arg.type === 'Name' ? arg.arg.name.name : arg.arg.raw
-    const result = await stringToKclExpression(value)
-    if (!(err(result) || 'errors' in result)) {
-      return result
-    }
-  }
-  return undefined
 }
