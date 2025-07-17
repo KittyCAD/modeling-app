@@ -9,7 +9,6 @@ import { assign, fromPromise, setup } from 'xstate'
 import type { EnvironmentName } from '@src/lib/constants'
 import {
   COOKIE_NAME,
-  isEnvironmentName,
   OAUTH2_DEVICE_CLIENT_ID,
 } from '@src/lib/constants'
 import {
@@ -178,13 +177,7 @@ async function getUser(input: { token?: string }) {
       env().NODE_ENV === 'production'
         ? await readEnvironmentFile()
         : 'development'
-    if (isEnvironmentName(environment)) {
-      updateEnvironment(environment)
-    } else {
-      return Promise.reject(
-        new Error('Unable to update environment from disk cache')
-      )
-    }
+    updateEnvironment(environment)
 
     // Update the pool
     const cachedPool = await readEnvironmentConfigurationPool(environment)

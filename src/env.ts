@@ -34,7 +34,7 @@ export const updateEnvironment = (environment: string | null) => {
     } else {
       ENVIRONMENT = {
         domain: environment,
-        pool: ''
+        pool: '',
       }
     }
   }

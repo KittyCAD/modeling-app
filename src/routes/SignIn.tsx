@@ -6,9 +6,7 @@ import { Link } from 'react-router-dom'
 import { ActionButton } from '@src/components/ActionButton'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { Logo } from '@src/components/Logo'
-import {
-  APP_NAME,
-} from '@src/lib/constants'
+import { APP_NAME } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { Themes, getSystemTheme } from '@src/lib/theme'

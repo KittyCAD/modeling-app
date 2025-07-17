@@ -12,19 +12,16 @@ import {
 import { initPromise, relevantFileExtensions } from '@src/lang/wasmUtils'
 import type {
   EnvironmentConfiguration,
-  EnvironmentName,
 } from '@src/lib/constants'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
   ENVIRONMENT_CONFIGURATION_FOLDER,
   ENVIRONMENT_FILE_NAME,
-  isEnvironmentName,
   PROJECT_ENTRYPOINT,
   PROJECT_FOLDER,
   PROJECT_IMAGE_NAME,
   PROJECT_SETTINGS_FILE_NAME,
   SETTINGS_FILE_NAME,
-  SUPPORTED_ENVIRONMENTS,
   TELEMETRY_FILE_NAME,
   TELEMETRY_RAW_FILE_NAME,
   TOKEN_FILE_NAME,
@@ -867,7 +864,8 @@ export const setTokenToEmptyStringForAllEnvironments = async () => {
   // Make sure you call the oauth2/token/revoke before you call this.
   // This will not revoke the token at the API level, only remove the cached value from disk.
   // This is not a true logout function, please use the AuthMachine
-  const environments = Object.keys(SUPPORTED_ENVIRONMENTS)
+  const environments = []
+  // TODO: Kevin
   for (let i = 0; i < environments.length; i++) {
     const environmentName = environments[i]
     if (isEnvironmentName(environmentName)) {
