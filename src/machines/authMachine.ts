@@ -15,7 +15,6 @@ import {
 } from '@src/lib/constants'
 import {
   getUser as getUserDesktop,
-  migrateOldTokenToProductionEnvironmentConfiguration,
   readEnvironmentConfigurationPool,
   readEnvironmentConfigurationToken,
   readEnvironmentFile,
@@ -175,9 +174,6 @@ export const authMachine = setup({
 
 async function getUser(input: { token?: string }) {
   if (isDesktop()) {
-    // TODO: Remove at some point in the future after many deployments.
-    await migrateOldTokenToProductionEnvironmentConfiguration()
-
     // Always use the development.json environment when running in dev mode.
     const environment =
       env().NODE_ENV === 'production'

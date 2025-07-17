@@ -3,11 +3,13 @@ import { SUPPORTED_ENVIRONMENTS } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import { capitaliseFC } from '@src/lib/utils'
 
-export type EnvironmentVariableSources = {
-  readonly VITE_KITTYCAD_API_BASE_URL: string | undefined
-  readonly VITE_KITTYCAD_API_WEBSOCKET_URL: string | undefined
-  readonly VITE_KITTYCAD_SITE_BASE_URL: string | undefined
-  readonly POOL: string | undefined
+function generateDomainsFromBaseDomain (baseDomain: string) {
+  return {
+    API_URL:`https://api.${baseDomain}`,
+    SITE_URL:`https://${baseDomain}`,
+    WEBSOCKET_URL:`wss://api.${baseDomain}/ws/modeling/commands`,
+    APP_URL:`https://api.${baseDomain}`
+  }
 }
 
 export type EnvironmentVariables = {
@@ -17,7 +19,6 @@ export type EnvironmentVariables = {
   readonly VITE_KITTYCAD_API_TOKEN: string | undefined
   readonly VITE_KITTYCAD_SITE_BASE_URL: string | undefined
   readonly VITE_KITTYCAD_SITE_APP_URL: string | undefined
-  readonly SOURCES: EnvironmentVariableSources
   readonly POOL: string | undefined
 }
 
@@ -126,25 +127,12 @@ export default (): EnvironmentVariables => {
    *
    * e.g. View this sample -> button would be pointing to production if built with the production .env
    */
-  let API_URL = env.VITE_KITTYCAD_API_BASE_URL
-  let SITE_URL = env.VITE_KITTYCAD_SITE_BASE_URL
-  let WEBSOCKET_URL = env.VITE_KITTYCAD_API_WEBSOCKET_URL
+  let {API_URL, SITE_URL, WEBSOCKET_URL, APP_URL} = generateDomainsFromBaseDomain(env.VITE_KITTYCAD_BASE_DOMAIN)
 
-  const viteSource = '.env.development(.local)'
-  const supportedEnvironmentSource = 'Supported Environment configuration'
+  // let API_URL = env.VITE_KITTYCAD_API_BASE_URL
+  // let SITE_URL = env.VITE_KITTYCAD_SITE_BASE_URL
+  // let WEBSOCKET_URL = env.VITE_KITTYCAD_API_WEBSOCKET_URL
   const pool = ENVIRONMENT && ENVIRONMENT.pool ? ENVIRONMENT.pool : ''
-  const poolSource = pool ? supportedEnvironmentSource : ''
-
-  /**
-   * Initialize sources
-   * TODO: If you package for development environment it will read .env instead of vite from packaged binary?
-   */
-  let sources: EnvironmentVariableSources = {
-    VITE_KITTYCAD_API_BASE_URL: viteSource,
-    VITE_KITTYCAD_SITE_BASE_URL: viteSource,
-    VITE_KITTYCAD_API_WEBSOCKET_URL: viteSource,
-    POOL: poolSource,
-  }
 
   /**
    * If you are desktop, see if you have any runtime environment which can be read from disk and
@@ -152,17 +140,8 @@ export default (): EnvironmentVariables => {
    * A built binary will allow the user to sign into different environments on the desktop
    */
   const environment = getEnvironmentFromThisFile()
-  if (env.NODE_ENV === 'production' && isDesktop() && environment) {
-    API_URL = environment.API_URL
-    SITE_URL = environment.SITE_URL
-    WEBSOCKET_URL = environment.WEBSOCKET_URL
-
-    sources = {
-      VITE_KITTYCAD_API_BASE_URL: supportedEnvironmentSource,
-      VITE_KITTYCAD_SITE_BASE_URL: supportedEnvironmentSource,
-      VITE_KITTYCAD_API_WEBSOCKET_URL: supportedEnvironmentSource,
-      POOL: poolSource,
-    }
+  if (isDesktop() && environment) {
+    let {API_URL, SITE_URL, WEBSOCKET_URL, APP_URL} = generateDomainsFromBaseDomain(environment)
   }
 
   const environmentVariables: EnvironmentVariables = {
@@ -173,8 +152,7 @@ export default (): EnvironmentVariables => {
       (env.VITE_KITTYCAD_API_TOKEN as string) || undefined,
     VITE_KITTYCAD_SITE_BASE_URL: (SITE_URL as string) || undefined,
     VITE_KITTYCAD_SITE_APP_URL:
-      (env.VITE_KITTYCAD_SITE_APP_URL as string) || undefined,
-    SOURCES: sources,
+      (APP_URL as string) || undefined,
     POOL: pool,
   }
 

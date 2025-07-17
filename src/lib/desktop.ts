@@ -546,7 +546,7 @@ export const getEnvironmentConfigurationFolderPath = async () => {
 }
 
 export const getEnvironmentConfigurationPath = async (
-  environmentName: EnvironmentName
+  environmentName: string
 ) => {
   const fullPath = await getEnvironmentConfigurationFolderPath()
   try {
@@ -758,15 +758,8 @@ export const readTokenFile = async () => {
   return ''
 }
 
-/**
- * Store credentials in
- *  - envs/
- *      - development.json
- *      - production.json
- *      - production-us.json
- */
 export const readEnvironmentConfigurationFile = async (
-  environmentName: EnvironmentName
+  environmentName: string
 ): Promise<EnvironmentConfiguration | null> => {
   const path = await getEnvironmentConfigurationPath(environmentName)
   if (window.electron.exists(path)) {
@@ -780,7 +773,7 @@ export const readEnvironmentConfigurationFile = async (
 }
 
 export const writeEnvironmentConfigurationToken = async (
-  environmentName: EnvironmentName,
+  environmentName: string,
   token: string
 ) => {
   const path = await getEnvironmentConfigurationPath(environmentName)
@@ -794,7 +787,7 @@ export const writeEnvironmentConfigurationToken = async (
 }
 
 export const writeEnvironmentConfigurationPool = async (
-  environmentName: EnvironmentName,
+  environmentName: string,
   pool: string
 ) => {
   const path = await getEnvironmentConfigurationPath(environmentName)
@@ -808,7 +801,7 @@ export const writeEnvironmentConfigurationPool = async (
 }
 
 export const getEnvironmentConfigurationObject = async (
-  environmentName: EnvironmentName
+  environmentName: string
 ) => {
   let environmentConfiguration =
     await readEnvironmentConfigurationFile(environmentName)
@@ -816,7 +809,7 @@ export const getEnvironmentConfigurationObject = async (
     const initialConfiguration: EnvironmentConfiguration = {
       token: '',
       pool: '',
-      name: environmentName,
+      domain: environmentName,
     }
     environmentConfiguration = initialConfiguration
   }
@@ -856,35 +849,11 @@ export const readEnvironmentFile = async () => {
 }
 
 /**
- * We stored the login token as token.txt and now it will be stored as
- * envs/production.json
- *
- * We see if we can migrate and delete this file to follow the new login flow.
- * This will help fix users from having to login whenever this code gets deployed
- *
- * TODO: Delete this function at some point in the future.
- *
- */
-export const migrateOldTokenToProductionEnvironmentConfiguration = async () => {
-  const token = await readTokenFile()
-
-  // No token to migrate, exit the function
-  if (!token || env().NODE_ENV !== 'production') return
-
-  // Migrate any previous token to the envs/production.json cache
-  const environmentName = SUPPORTED_ENVIRONMENTS.production.name
-  await writeEnvironmentConfigurationToken(environmentName, token)
-  await writeEnvironmentFile(environmentName)
-  const tokenPath = await getTokenFilePath()
-  await window.electron.rm(tokenPath)
-}
-
-/**
  * We store the environment file on disk because we store the token.txt across app installs
  * otherwise we would not know what environment they logged into when the app does the updater
  */
 export const writeEnvironmentFile = async (
-  environment: EnvironmentName | ''
+  environment: string
 ) => {
   const environmentFilePath = await getEnvironmentFilePath()
   if (err(environment)) return Promise.reject(environment)
