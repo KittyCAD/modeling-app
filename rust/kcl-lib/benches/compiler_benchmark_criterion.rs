@@ -19,7 +19,10 @@ pub fn bench_parse(c: &mut Criterion) {
     }
 }
 
-pub fn bench_mock(c: &mut Criterion) {
+/// This benchmarks the same sort of code that the ZDS app uses when users
+/// drag a point/line around in sketch mode. This benchmark should correlate with
+/// user-perceived latency in sketch mode.
+pub fn bench_mock_warmed_up(c: &mut Criterion) {
     for (name, file) in [
         ("medium_sketch", MEDIUM_SKETCH),
         ("mike_stress_test_program", MIKE_STRESS_TEST_PROGRAM),
@@ -28,9 +31,13 @@ pub fn bench_mock(c: &mut Criterion) {
         c.bench_function(&format!("mock_execute_{name}"), move |b| {
             let rt = tokio::runtime::Runtime::new().unwrap();
             let ctx = rt.block_on(async { kcl_lib::ExecutorContext::new_mock(None).await });
+            // First run outside the benchmark measurement, to initialize KCL memory.
+            let _out = rt.block_on(async { ctx.run_mock(&program, false).await.unwrap() });
             b.iter(|| {
                 if let Err(err) = rt.block_on(async {
-                    ctx.run_mock(black_box(&program), false).await?;
+                    // Subsequent runs set use_previous_memory to true, because that's what the app
+                    // uses in production.
+                    ctx.run_mock(black_box(&program), true).await?;
                     ctx.close().await;
                     Ok::<(), anyhow::Error>(())
                 }) {
@@ -41,7 +48,7 @@ pub fn bench_mock(c: &mut Criterion) {
     }
 }
 
-criterion_group!(benches, bench_parse, bench_mock);
+criterion_group!(benches, bench_parse, bench_mock_warmed_up);
 criterion_main!(benches);
 
 const KITT_PROGRAM: &str = include_str!("../e2e/executor/inputs/kittycad_svg.kcl");
