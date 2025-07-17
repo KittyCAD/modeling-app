@@ -24,9 +24,9 @@ pub fn bench_mock(c: &mut Criterion) {
         ("medium_sketch", MEDIUM_SKETCH),
         ("mike_stress_test_program", MIKE_STRESS_TEST_PROGRAM),
     ] {
+        let program = kcl_lib::Program::parse_no_errs(black_box(file)).unwrap();
         c.bench_function(&format!("mock_execute_{name}"), move |b| {
             let rt = tokio::runtime::Runtime::new().unwrap();
-            let program = kcl_lib::Program::parse_no_errs(black_box(file)).unwrap();
             b.iter(|| {
                 if let Err(err) = rt.block_on(async {
                     let ctx = kcl_lib::ExecutorContext::new_mock(None).await;
