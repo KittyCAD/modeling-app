@@ -25,6 +25,7 @@ import {
   stdLibMap,
 } from '@src/lib/operations'
 import {
+  commandBarActor,
   editorManager,
   kclManager,
   rustContext,
@@ -72,6 +73,36 @@ export const FeatureTreePane = () => {
         },
         scrollToError: () => {
           editorManager.scrollToFirstErrorDiagnosticIfExists()
+        },
+        sendTranslateCommand: () => {
+          commandBarActor.send({
+            type: 'Find and select command',
+            data: { name: 'Translate', groupId: 'modeling' },
+          })
+        },
+        sendRotateCommand: () => {
+          commandBarActor.send({
+            type: 'Find and select command',
+            data: { name: 'Rotate', groupId: 'modeling' },
+          })
+        },
+        sendScaleCommand: () => {
+          commandBarActor.send({
+            type: 'Find and select command',
+            data: { name: 'Scale', groupId: 'modeling' },
+          })
+        },
+        sendCloneCommand: () => {
+          commandBarActor.send({
+            type: 'Find and select command',
+            data: { name: 'Clone', groupId: 'modeling' },
+          })
+        },
+        sendAppearanceCommand: () => {
+          commandBarActor.send({
+            type: 'Find and select command',
+            data: { name: 'Appearance', groupId: 'modeling' },
+          })
         },
         sendSelectionEvent: ({ context }) => {
           if (!context.targetSourceRange) {
@@ -379,10 +410,6 @@ const OperationItem = (props: {
     }
   }
 
-  /**
-   * For now we can only enter the "edit" flow for the startSketchOn operation.
-   * TODO: https://github.com/KittyCAD/modeling-app/issues/4442
-   */
   function enterEditFlow() {
     if (
       props.item.type === 'StdLibCall' ||
@@ -426,6 +453,18 @@ const OperationItem = (props: {
     if (props.item.type === 'StdLibCall' || props.item.type === 'GroupBegin') {
       props.send({
         type: 'enterRotateFlow',
+        data: {
+          targetSourceRange: sourceRangeFromRust(props.item.sourceRange),
+          currentOperation: props.item,
+        },
+      })
+    }
+  }
+
+  function enterScaleFlow() {
+    if (props.item.type === 'StdLibCall' || props.item.type === 'GroupBegin') {
+      props.send({
+        type: 'enterScaleFlow',
         data: {
           targetSourceRange: sourceRangeFromRust(props.item.sourceRange),
           currentOperation: props.item,
@@ -565,7 +604,7 @@ const OperationItem = (props: {
                 !stdLibMap[props.item.name]?.supportsTransform
               }
             >
-              Set translate
+              Translate
             </ContextMenuItem>,
             <ContextMenuItem
               onClick={enterRotateFlow}
@@ -575,7 +614,17 @@ const OperationItem = (props: {
                 !stdLibMap[props.item.name]?.supportsTransform
               }
             >
-              Set rotate
+              Rotate
+            </ContextMenuItem>,
+            <ContextMenuItem
+              onClick={enterScaleFlow}
+              data-testid="context-menu-set-scale"
+              disabled={
+                props.item.type !== 'GroupBegin' &&
+                !stdLibMap[props.item.name]?.supportsTransform
+              }
+            >
+              Scale
             </ContextMenuItem>,
             <ContextMenuItem
               onClick={enterCloneFlow}
