@@ -27,9 +27,9 @@ pub fn bench_mock(c: &mut Criterion) {
         let program = kcl_lib::Program::parse_no_errs(black_box(file)).unwrap();
         c.bench_function(&format!("mock_execute_{name}"), move |b| {
             let rt = tokio::runtime::Runtime::new().unwrap();
+            let ctx = rt.block_on(async { kcl_lib::ExecutorContext::new_mock(None).await });
             b.iter(|| {
                 if let Err(err) = rt.block_on(async {
-                    let ctx = kcl_lib::ExecutorContext::new_mock(None).await;
                     ctx.run_mock(black_box(&program), false).await?;
                     ctx.close().await;
                     Ok::<(), anyhow::Error>(())
