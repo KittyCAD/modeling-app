@@ -1,6 +1,5 @@
 import type { Models } from '@kittycad/lib'
 import env, {
-  getEnvironmentName,
   updateEnvironment,
   updateEnvironmentPool,
 } from '@src/env'
@@ -257,7 +256,7 @@ async function getAndSyncStoredToken(input: {
     return VITE_KITTYCAD_API_TOKEN
   }
 
-  const environmentName = getEnvironmentName()
+  const environmentName = env().VITE_KITTYCAD_BASE_DOMAIN
 
   // Find possible tokens
   const inputToken = input.token && input.token !== '' ? input.token : ''
@@ -311,7 +310,7 @@ async function logoutEnvironment(requestedEnvironmentName?: string) {
   localStorage.removeItem(TOKEN_PERSIST_KEY)
   if (isDesktop()) {
     try {
-      const environmentName = requestedEnvironmentName || getEnvironmentName()
+      const environmentName = requestedEnvironmentName || env().VITE_KITTYCAD_BASE_DOMAIN
       let token = ''
       if (environmentName) {
         token = await readEnvironmentConfigurationToken(environmentName)

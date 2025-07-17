@@ -24,7 +24,7 @@ import {
   writeEnvironmentConfigurationPool,
   writeEnvironmentFile,
 } from '@src/lib/desktop'
-import { getEnvironmentName } from '@src/env'
+import env from '@src/env'
 
 function onSubmitKCLSampleCreation({
   sample,
@@ -493,7 +493,7 @@ export function createApplicationCommands({
     groupId: 'application',
     onSubmit: (data) => {
       if (data) {
-        const environmentName = getEnvironmentName()
+        const environmentName = env().VITE_KITTYCAD_BASE_DOMAIN
         if (environmentName)
           writeEnvironmentConfigurationPool(environmentName, data.pool)
             .then(() => {

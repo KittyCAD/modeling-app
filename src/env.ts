@@ -27,6 +27,11 @@ let ENVIRONMENT: EnvironmentConfigurationRuntime | null = null
 
 /** Update the runtime environment */
 export const updateEnvironment = (environment: string | null) => {
+  if (environment === '') {
+    console.log('reject updating environment', environment)
+    return
+  }
+
   if (environment === null) {
     ENVIRONMENT = null
   } else {
@@ -46,6 +51,10 @@ export const updateEnvironmentPool = (
   environmentName: string,
   pool: string
 ) => {
+  if (environmentName === '') {
+    console.log('reject updating pool,  environment:', environmentName)
+    return
+  }
   if (!ENVIRONMENT) return
   if (ENVIRONMENT.domain === environmentName) {
     ENVIRONMENT.pool = pool
@@ -55,34 +64,6 @@ export const updateEnvironmentPool = (
 // Do not export the entire Environment! Use env()
 const getEnvironmentFromThisFile = () => {
   return ENVIRONMENT
-}
-
-/** Get the runtime environment, useful for knowing the key for the environment you are in */
-export const getEnvironmentName = () => {
-  return ENVIRONMENT?.domain || null
-}
-
-/**
- * When you need to display the full environment name within React
- */
-export const getEnvironmentNameForDisplay = (env: EnvironmentVariables) => {
-  return env.NODE_ENV === 'development'
-    ? '.env'
-    : capitaliseFC(getEnvironmentName() || '')
-}
-
-/**
- * When you need to display the shorthand for the environment name
- * Prod, Dev, etc...
- */
-export const getShorthandEnvironmentNameForDisplay = (
-  env: EnvironmentVariables
-) => {
-  if (env.NODE_ENV === 'development') {
-    return '.env'
-  }
-  const shorthand = getEnvironmentFromThisFile()?.shorthand
-  return shorthand ? capitaliseFC(shorthand) : ''
 }
 
 export const viteEnv = () => {
@@ -132,7 +113,7 @@ export default (): EnvironmentVariables => {
    * A built binary will allow the user to sign into different environments on the desktop
    */
   const environment = getEnvironmentFromThisFile()
-  if (isDesktop() && environment) {
+  if (isDesktop() && environment && environment.domain) {
     const environmentDomains = generateDomainsFromBaseDomain(environment.domain)
     API_URL = environmentDomains.API_URL
     SITE_URL = environmentDomains.SITE_URL
@@ -140,6 +121,8 @@ export default (): EnvironmentVariables => {
     APP_URL = environmentDomains.APP_URL
     pool = environment && environment.pool ? environment.pool : ''
   }
+
+  // TODO: Override any manual ones
 
   const environmentVariables: EnvironmentVariables = {
     NODE_ENV: (env.NODE_ENV as string) || viteOnly.MODE || undefined,

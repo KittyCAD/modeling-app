@@ -1,8 +1,3 @@
-import {
-  getEnvironmentName,
-  getEnvironmentNameForDisplay,
-  getShorthandEnvironmentNameForDisplay,
-} from '@src/env'
 import { ActionButton } from '@src/components/ActionButton'
 import { commandBarActor } from '@src/lib/singletons'
 import env from '@src/env'
@@ -10,7 +5,7 @@ import { writeEnvironmentConfigurationPool } from '@src/lib/desktop'
 import { reportRejection } from '@src/lib/trap'
 
 export function EnvironmentChip() {
-  const shorthand = getShorthandEnvironmentNameForDisplay(env())
+  const shorthand = env().VITE_KITTYCAD_BASE_DOMAIN
   const pool = env().POOL
   return (
     <div className="flex items-center px-2 py-1 text-xs text-chalkboard-80 dark:text-chalkboard-30 rounded-none border-none hover:bg-chalkboard-30 dark:hover:bg-chalkboard-80 focus:bg-chalkboard-30 dark:focus:bg-chalkboard-80 hover:text-chalkboard-100 dark:hover:text-chalkboard-10 focus:text-chalkboard-100 dark:focus:text-chalkboard-10  focus:outline-none focus-visible:ring-2 focus:ring-primary focus:ring-opacity-50">
@@ -22,7 +17,7 @@ export function EnvironmentChip() {
 }
 
 export function EnvironmentDescription() {
-  const fullEnvironmentName = getEnvironmentNameForDisplay(env())
+  const fullEnvironmentName = env().VITE_KITTYCAD_BASE_DOMAIN
   return (
     <div className="absolute left-2 bottom-full mb-1 flex-col gap-1 align-stretch bg-chalkboard-10 dark:bg-chalkboard-90 rounded shadow-lg border border-solid border-chalkboard-20/50 dark:border-chalkboard-80/50 text-sm">
       <div
@@ -37,7 +32,7 @@ export function EnvironmentDescription() {
             <ActionButton
               Element="button"
               onClick={() => {
-                const environment = getEnvironmentName()
+                const environment = env().VITE_KITTYCAD_BASE_DOMAIN
                 if (environment) {
                   commandBarActor.send({
                     type: 'Find and select command',
@@ -108,7 +103,7 @@ export function EnvironmentDescription() {
               </ActionButton>
               <ActionButton
                 onClick={() => {
-                  const environment = getEnvironmentName()
+                  const environment = env().VITE_KITTYCAD_BASE_DOMAIN
                   if (environment) {
                     writeEnvironmentConfigurationPool(environment, '')
                       .then(() => {

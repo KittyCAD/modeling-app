@@ -14,7 +14,7 @@ import { PATHS } from '@src/lib/paths'
 import { authActor } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
-import env, { getEnvironmentName, getEnvironmentNameForDisplay } from '@src/env'
+import env from '@src/env'
 import { commandBarActor } from '@src/lib/singletons'
 
 type User = Models['User_type']
@@ -27,7 +27,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
   const [imageLoadFailed, setImageLoadFailed] = useState(false)
   const navigate = useNavigate()
   const send = authActor.send
-  const fullEnvironmentName = getEnvironmentNameForDisplay(env())
+  const fullEnvironmentName = env().VITE_KITTYCAD_BASE_DOMAIN
 
   // Do not show the environment items on web
   const hideEnvironmentItems = env().NODE_ENV === 'production' || !isDesktop()
@@ -152,7 +152,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
           Element: 'button',
           children: <span>Change environment</span>,
           onClick: () => {
-            const environment = getEnvironmentName()
+            const environment = env().VITE_KITTYCAD_BASE_DOMAIN
             if (environment) {
               commandBarActor.send({
                 type: 'Find and select command',

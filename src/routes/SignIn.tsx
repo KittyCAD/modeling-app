@@ -11,12 +11,12 @@ import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { Themes, getSystemTheme } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
-import { toSync} from '@src/lib/utils'
+import { toSync } from '@src/lib/utils'
 import { authActor, useSettings } from '@src/lib/singletons'
 import { APP_VERSION, generateSignInUrl } from '@src/routes/utils'
 import { withAPIBaseURL, withSiteBaseURL } from '@src/lib/withBaseURL'
 import { updateEnvironment, updateEnvironmentPool } from '@src/env'
-import env, { getEnvironmentName} from '@src/env'
+import env from '@src/env'
 import {
   readEnvironmentConfigurationPool,
   writeEnvironmentConfigurationPool,
@@ -42,7 +42,8 @@ const SignIn = () => {
   const [userCode, setUserCode] = useState('')
 
   // Last saved environment
-  const lastSelectedEnvironmentName = getEnvironmentName()
+  // TODO: Reduce this logic
+  const lastSelectedEnvironmentName = env().VITE_KITTYCAD_BASE_DOMAIN
   const viteEnvironmentName = env().VITE_KITTYCAD_API_BASE_URL
   const environmentName = lastSelectedEnvironmentName || viteEnvironmentName
   const [selectedEnvironment, setSelectedEnvironment] =
