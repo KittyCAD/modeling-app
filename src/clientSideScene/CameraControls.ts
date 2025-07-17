@@ -127,6 +127,8 @@ export class CameraControls {
   interactionGuards: MouseGuard = cameraMouseDragGuards.Zoo
   isFovAnimationInProgress = false
   perspectiveFovBeforeOrtho = 45
+  touchControlManager: HammerManager | null = null
+  enableTouchControls = true
   // TODO: proper dependency injection
   getSettings: (() => SettingsType) | null = null
 
@@ -268,7 +270,7 @@ export class CameraControls {
     this.domElement.addEventListener('pointermove', this.onMouseMove)
     this.domElement.addEventListener('pointerup', this.onMouseUp)
     this.domElement.addEventListener('wheel', this.onMouseWheel)
-    this.setUpMultiTouch(this.domElement)
+    this.initTouchControls(this.enableTouchControls)
 
     window.addEventListener('resize', this.onWindowResize)
     this.onWindowResize()
@@ -1369,7 +1371,7 @@ export class CameraControls {
    *
    * TODO: Add support for sketch mode touch camera movements
    */
-  setUpMultiTouch = (domElement: HTMLCanvasElement) => {
+  setUpTouchControls = (domElement: HTMLCanvasElement) => {
     /** Amount in px needed to pan before recognizer runs */
     const panDistanceThreshold = 3
     /** Amount in scale delta needed to pinch before recognizer runs */
@@ -1522,6 +1524,16 @@ export class CameraControls {
     hammertime.on('pinchend pinchcancel doublepanend', (event) => {
       this.onMouseUpInner(event.srcEvent as PointerEvent)
     })
+
+    return hammertime
+  }
+
+  initTouchControls = (shouldEnable?: boolean) => {
+    if (this.touchControlManager === null) {
+      this.touchControlManager = this.setUpTouchControls(this.domElement)
+    }
+
+    this.touchControlManager.set({ enable: shouldEnable })
   }
 }
 

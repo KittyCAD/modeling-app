@@ -149,12 +149,7 @@ bodyDiscBell = startProfile(
          tDiscHalf * 2 + tVent
        ],
      )
-  |> arc(
-       %,
-       angleStart = -180,
-       angleEnd = 0,
-       radius = wUndercut / 2,
-     )
+  |> arc(angleStart = -180, angleEnd = 0, radius = wUndercut / 2)
   |> line(end = [lDraftExterior, hBellAboveDiscFace])
   |> xLine(length = rOuter, tag = $seg04)
   |> yLine(length = -tBell)
@@ -162,14 +157,13 @@ bodyDiscBell = startProfile(
   |> line(end = [-lDraftInterior, -hBellAboveDiscFace])
   |> line(end = [0, -2]) // Wall thickness.
   |> xLine(length = -1 * (tBell + wUndercut))
-  |> close(%)
+  |> close()
   |> revolve(axis = Y)
 
 // Drill lug holes.
 sketchLugs = startSketchOn(bodyDiscBell, face = seg04)
 profileStud = circle(sketchLugs, center = [0, dPitchCircle / 2], radius = dStudDrilling / 2)
   |> patternCircular2d(
-       %,
        instances = nStuds,
        center = [0, 0],
        arcDegrees = 360,

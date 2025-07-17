@@ -279,6 +279,21 @@ description: Variables in memory after executing walkie-talkie.kcl
       }
     }
   },
+  "seg1": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "seg1"
+  },
+  "seg2": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "seg2"
+  },
+  "seg3": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "seg3"
+  },
   "speakerBoxHeight": {
     "type": "Number",
     "value": 1.25,

@@ -17,14 +17,10 @@ use crate::{
     },
     fmt,
     modules::{ModuleId, ModulePath, ModuleRepr},
-    parsing::{
-        ast::types::{
-            Annotation, ArrayExpression, ArrayRangeExpression, AscribedExpression, BinaryExpression, BinaryOperator,
-            BinaryPart, BodyItem, Expr, IfExpression, ImportPath, ImportSelector, ItemVisibility, LiteralIdentifier,
-            LiteralValue, MemberExpression, Name, Node, NodeRef, ObjectExpression, PipeExpression, Program,
-            TagDeclarator, Type, UnaryExpression, UnaryOperator,
-        },
-        token::NumericSuffix,
+    parsing::ast::types::{
+        Annotation, ArrayExpression, ArrayRangeExpression, AscribedExpression, BinaryExpression, BinaryOperator,
+        BinaryPart, BodyItem, Expr, IfExpression, ImportPath, ImportSelector, ItemVisibility, MemberExpression, Name,
+        Node, NodeRef, ObjectExpression, PipeExpression, Program, TagDeclarator, Type, UnaryExpression, UnaryOperator,
     },
     source_range::SourceRange,
     std::args::TyF64,
@@ -88,7 +84,7 @@ impl ExecutorContext {
         path: &ModulePath,
     ) -> Result<
         (Option<KclValue>, EnvironmentRef, Vec<String>, ModuleArtifactState),
-        (KclError, Option<ModuleArtifactState>),
+        (KclError, Option<EnvironmentRef>, Option<ModuleArtifactState>),
     > {
         crate::log::log(format!("enter module {path} {}", exec_state.stack()));
 
@@ -100,7 +96,7 @@ impl ExecutorContext {
         let no_prelude = self
             .handle_annotations(program.inner_attrs.iter(), crate::execution::BodyType::Root, exec_state)
             .await
-            .map_err(|err| (err, None))?;
+            .map_err(|err| (err, None, None))?;
 
         if !preserve_mem {
             exec_state.mut_stack().push_new_root_env(!no_prelude);
@@ -125,7 +121,7 @@ impl ExecutorContext {
         crate::log::log(format!("leave {path}"));
 
         result
-            .map_err(|err| (err, Some(module_artifacts.clone())))
+            .map_err(|err| (err, Some(env_ref), Some(module_artifacts.clone())))
             .map(|result| (result, env_ref, local_state.module_exports, module_artifacts))
     }
 
@@ -644,7 +640,7 @@ impl ExecutorContext {
 
         // TODO: ModuleArtifactState is getting dropped here when there's an
         // error.  Should we propagate it for non-root modules?
-        result.map_err(|(err, _)| {
+        result.map_err(|(err, _, _)| {
             if let KclError::ImportCycle { .. } = err {
                 // It was an import cycle.  Keep the original message.
                 err.override_source_ranges(vec![source_range])
@@ -984,16 +980,67 @@ impl Node<Name> {
 
 impl Node<MemberExpression> {
     async fn get_result(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
-        let property = Property::try_from(self.computed, self.property.clone(), exec_state, self.into())?;
         let meta = Metadata {
             source_range: SourceRange::from(self),
         };
+        let property = Property::try_from(
+            self.computed,
+            self.property.clone(),
+            exec_state,
+            self.into(),
+            ctx,
+            &meta,
+            &[],
+            StatementKind::Expression,
+        )
+        .await?;
         let object = ctx
             .execute_expr(&self.object, exec_state, &meta, &[], StatementKind::Expression)
             .await?;
 
         // Check the property and object match -- e.g. ints for arrays, strs for objects.
         match (object, property, self.computed) {
+            (KclValue::Plane { value: plane }, Property::String(property), false) => match property.as_str() {
+                "zAxis" => {
+                    let (p, u) = plane.info.z_axis.as_3_dims();
+                    Ok(KclValue::array_from_point3d(
+                        p,
+                        NumericType::Known(crate::exec::UnitType::Length(u)),
+                        vec![meta],
+                    ))
+                }
+                "yAxis" => {
+                    let (p, u) = plane.info.y_axis.as_3_dims();
+                    Ok(KclValue::array_from_point3d(
+                        p,
+                        NumericType::Known(crate::exec::UnitType::Length(u)),
+                        vec![meta],
+                    ))
+                }
+                "xAxis" => {
+                    let (p, u) = plane.info.x_axis.as_3_dims();
+                    Ok(KclValue::array_from_point3d(
+                        p,
+                        NumericType::Known(crate::exec::UnitType::Length(u)),
+                        vec![meta],
+                    ))
+                }
+                "origin" => {
+                    let (p, u) = plane.info.origin.as_3_dims();
+                    Ok(KclValue::array_from_point3d(
+                        p,
+                        NumericType::Known(crate::exec::UnitType::Length(u)),
+                        vec![meta],
+                    ))
+                }
+                other => Err(KclError::new_undefined_value(
+                    KclErrorDetails::new(
+                        format!("Property '{other}' not found in plane"),
+                        vec![self.clone().into()],
+                    ),
+                    None,
+                )),
+            },
             (KclValue::Object { value: map, meta: _ }, Property::String(property), false) => {
                 if let Some(value) = map.get(&property) {
                     Ok(value.to_owned())
@@ -1013,7 +1060,22 @@ impl Node<MemberExpression> {
                     vec![self.clone().into()],
                 )))
             }
-            (KclValue::Object { .. }, p, _) => {
+            (KclValue::Object { value: map, .. }, p @ Property::UInt(i), _) => {
+                if i == 0
+                    && let Some(value) = map.get("x")
+                {
+                    return Ok(value.to_owned());
+                }
+                if i == 1
+                    && let Some(value) = map.get("y")
+                {
+                    return Ok(value.to_owned());
+                }
+                if i == 2
+                    && let Some(value) = map.get("z")
+                {
+                    return Ok(value.to_owned());
+                }
                 let t = p.type_name();
                 let article = article_for(t);
                 Err(KclError::new_semantic(KclErrorDetails::new(
@@ -1670,87 +1732,62 @@ enum Property {
 }
 
 impl Property {
-    fn try_from(
+    #[allow(clippy::too_many_arguments)]
+    async fn try_from<'a>(
         computed: bool,
-        value: LiteralIdentifier,
-        exec_state: &ExecState,
+        value: Expr,
+        exec_state: &mut ExecState,
         sr: SourceRange,
+        ctx: &ExecutorContext,
+        metadata: &Metadata,
+        annotations: &[Node<Annotation>],
+        statement_kind: StatementKind<'a>,
     ) -> Result<Self, KclError> {
         let property_sr = vec![sr];
-        let property_src: SourceRange = value.clone().into();
-        match value {
-            LiteralIdentifier::Identifier(identifier) => {
-                let name = &identifier.name;
-                if !computed {
-                    // This is dot syntax. Treat the property as a literal.
-                    Ok(Property::String(name.to_string()))
-                } else {
-                    // This is bracket syntax. Actually evaluate memory to
-                    // compute the property.
-                    let prop = exec_state.stack().get(name, property_src)?;
-                    jvalue_to_prop(prop, property_sr, name)
-                }
-            }
-            LiteralIdentifier::Literal(literal) => {
-                let value = literal.value.clone();
-                match value {
-                    n @ LiteralValue::Number { value, suffix } => {
-                        if !matches!(suffix, NumericSuffix::None | NumericSuffix::Count) {
-                            return Err(KclError::new_semantic(KclErrorDetails::new(
-                                format!("{n} is not a valid index, indices must be non-dimensional numbers"),
-                                property_sr,
-                            )));
-                        }
-                        if let Some(x) = crate::try_f64_to_usize(value) {
-                            Ok(Property::UInt(x))
-                        } else {
-                            Err(KclError::new_semantic(KclErrorDetails::new(
-                                format!("{n} is not a valid index, indices must be whole numbers >= 0"),
-                                property_sr,
-                            )))
-                        }
-                    }
-                    _ => Err(KclError::new_semantic(KclErrorDetails::new(
-                        "Only numbers (>= 0) can be indexes".to_owned(),
-                        vec![sr],
-                    ))),
-                }
-            }
+        if !computed {
+            let Expr::Name(identifier) = value else {
+                // Should actually be impossible because the parser would reject it.
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    "Object expressions like `obj.property` must use simple identifier names, not complex expressions"
+                        .to_owned(),
+                    property_sr,
+                )));
+            };
+            return Ok(Property::String(identifier.to_string()));
         }
-    }
-}
 
-fn jvalue_to_prop(value: &KclValue, property_sr: Vec<SourceRange>, name: &str) -> Result<Property, KclError> {
-    let make_err =
-        |message: String| Err::<Property, _>(KclError::new_semantic(KclErrorDetails::new(message, property_sr)));
-    match value {
-        n @ KclValue::Number { value: num, ty, .. } => {
-            if !matches!(
-                ty,
-                NumericType::Known(crate::exec::UnitType::Count) | NumericType::Default { .. } | NumericType::Any
-            ) {
-                return make_err(format!(
-                    "arrays can only be indexed by non-dimensioned numbers, found {}",
-                    n.human_friendly_type()
-                ));
+        let prop_value = ctx
+            .execute_expr(&value, exec_state, metadata, annotations, statement_kind)
+            .await?;
+        match prop_value {
+            KclValue::Number { value, ty, meta: _ } => {
+                if !matches!(
+                    ty,
+                    NumericType::Unknown
+                        | NumericType::Default { .. }
+                        | NumericType::Known(crate::exec::UnitType::Count)
+                ) {
+                    return Err(KclError::new_semantic(KclErrorDetails::new(
+                        format!(
+                            "{value} is not a valid index, indices must be non-dimensional numbers. If you're sure this is correct, you can add `: number(Count)` to tell KCL this number is an index"
+                        ),
+                        property_sr,
+                    )));
+                }
+                if let Some(x) = crate::try_f64_to_usize(value) {
+                    Ok(Property::UInt(x))
+                } else {
+                    Err(KclError::new_semantic(KclErrorDetails::new(
+                        format!("{value} is not a valid index, indices must be whole numbers >= 0"),
+                        property_sr,
+                    )))
+                }
             }
-            let num = *num;
-            if num < 0.0 {
-                return make_err(format!("'{num}' is negative, so you can't index an array with it"));
-            }
-            let nearest_int = crate::try_f64_to_usize(num);
-            if let Some(nearest_int) = nearest_int {
-                Ok(Property::UInt(nearest_int))
-            } else {
-                make_err(format!(
-                    "'{num}' is not an integer, so you can't index an array with it"
-                ))
-            }
+            _ => Err(KclError::new_semantic(KclErrorDetails::new(
+                "Only numbers (>= 0) can be indexes".to_owned(),
+                vec![sr],
+            ))),
         }
-        KclValue::String { value: x, meta: _ } => Ok(Property::String(x.to_owned())),
-        _ => make_err(format!(
-            "{name} is not a valid property/index, you can only use a string to get the property of an object, or an int (>= 0) to get an item in an array"
-        )),
     }
 }
 
@@ -2204,5 +2241,13 @@ z = x[y]
 y = x[0mm + 1]
 "#;
         parse_execute(ast).await.unwrap_err();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn getting_property_of_plane() {
+        // let ast = include_str!("../../tests/inputs/planestuff.kcl");
+        let ast = std::fs::read_to_string("tests/inputs/planestuff.kcl").unwrap();
+
+        parse_execute(&ast).await.unwrap();
     }
 }

@@ -189,7 +189,8 @@ description: Artifact commands parametric.kcl
         "target": "[uuid]",
         "distance": 9.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -236,5 +237,6 @@ description: Artifact commands parametric.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

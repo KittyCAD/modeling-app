@@ -129,7 +129,8 @@ description: Artifact commands translate_after_fillet.kcl
         "target": "[uuid]",
         "distance": -0.625,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -347,7 +348,8 @@ description: Artifact commands translate_after_fillet.kcl
         "target": "[uuid]",
         "distance": -0.46875,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -475,7 +477,8 @@ description: Artifact commands translate_after_fillet.kcl
         "target": "[uuid]",
         "distance": 2.5,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -593,5 +596,6 @@ description: Artifact commands translate_after_fillet.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

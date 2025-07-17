@@ -129,7 +129,8 @@ description: Artifact commands pipe.kcl
         "target": "[uuid]",
         "distance": 152.39999999999998,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -257,7 +258,8 @@ description: Artifact commands pipe.kcl
         "target": "[uuid]",
         "distance": -152.39999999999998,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -321,5 +323,6 @@ description: Artifact commands pipe.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

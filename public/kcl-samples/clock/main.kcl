@@ -65,7 +65,7 @@ clockRidge = extrude(profile002, length = ridgeThickness, tagEnd = $capEnd001)
          getCommonEdge(faces = [seg01, capEnd001])
        ],
      )
-  |> appearance(%, color = "#ab4321")
+  |> appearance(color = "#ab4321")
 
 // Create an object that has all of the x and y starting positions of every number
 numberObject = {
@@ -205,19 +205,16 @@ fn letterI(startX, startY) {
   iWidth = 8
   iLength = 40
   return startSketchOn(offsetPlane(XY, offset = 50))
-    |> startProfile(
-         %,
-         at = [
-           startX - (iWidth / 2),
-           startY + iLength / 2
-         ],
-       )
-    |> xLine(%, length = iWidth)
-    |> yLine(%, length = -iLength)
-    |> xLine(%, length = -iWidth)
-    |> close(%)
-    |> extrude(%, length = numberThickness)
-    |> appearance(%, color = "#140f0f")
+    |> startProfile(at = [
+         startX - (iWidth / 2),
+         startY + iLength / 2
+       ])
+    |> xLine(length = iWidth)
+    |> yLine(length = -iLength)
+    |> xLine(length = -iWidth)
+    |> close()
+    |> extrude(length = numberThickness)
+    |> appearance(color = "#140f0f")
 }
 
 // Function for the letter X
@@ -226,27 +223,24 @@ fn letterX(startX, startY) {
   xLength = 40
 
   return startSketchOn(offsetPlane(XY, offset = 50))
-    |> startProfile(
-         %,
-         at = [
-           startX - (xWidth / 2),
-           startY + xLength / 2
-         ],
-       )
-    |> xLine(%, length = xWidth / 6)
-    |> angledLine(%, angle = -70, lengthY = xLength * 1 / 3)
-    |> angledLine(%, angle = 70, lengthY = xLength * 1 / 3)
-    |> xLine(%, length = xWidth / 6)
-    |> angledLine(%, angle = 70 + 180, lengthY = xLength * 1 / 2)
-    |> angledLine(%, angle = -70, lengthY = xLength * 1 / 2)
-    |> xLine(%, length = -xWidth / 6)
-    |> angledLine(%, angle = -70 - 180, lengthY = xLength * 1 / 3)
-    |> angledLine(%, angle = 70 + 180, lengthY = xLength * 1 / 3)
-    |> xLine(%, length = -xWidth / 6)
-    |> angledLine(%, angle = 70, lengthY = xLength * 1 / 2)
-    |> close(%)
-    |> extrude(%, length = numberThickness)
-    |> appearance(%, color = "#140f0f")
+    |> startProfile(at = [
+         startX - (xWidth / 2),
+         startY + xLength / 2
+       ])
+    |> xLine(length = xWidth / 6)
+    |> angledLine(angle = -70, lengthY = xLength * 1 / 3)
+    |> angledLine(angle = 70, lengthY = xLength * 1 / 3)
+    |> xLine(length = xWidth / 6)
+    |> angledLine(angle = 70 + 180, lengthY = xLength * 1 / 2)
+    |> angledLine(angle = -70, lengthY = xLength * 1 / 2)
+    |> xLine(length = -xWidth / 6)
+    |> angledLine(angle = -70 - 180, lengthY = xLength * 1 / 3)
+    |> angledLine(angle = 70 + 180, lengthY = xLength * 1 / 3)
+    |> xLine(length = -xWidth / 6)
+    |> angledLine(angle = 70, lengthY = xLength * 1 / 2)
+    |> close()
+    |> extrude(length = numberThickness)
+    |> appearance(color = "#140f0f")
 }
 
 // Function for the letter V
@@ -254,21 +248,18 @@ fn letterV(startX, startY) {
   vWidth = 25
   vLength = 40
   return startSketchOn(offsetPlane(XY, offset = 50))
-    |> startProfile(
-         %,
-         at = [
-           startX - (vWidth / 2),
-           startY + vLength / 2
-         ],
-       )
-    |> xLine(%, length = vWidth * 1 / 3)
-    |> line(%, end = [vWidth / 6, -vLength / 2])
-    |> line(%, end = [vWidth / 6, vLength / 2])
-    |> xLine(%, length = vWidth * 1 / 3)
-    |> line(%, end = [-vWidth * 1 / 2, -vLength])
-    |> close(%)
-    |> extrude(%, length = numberThickness)
-    |> appearance(%, color = "#140f0f")
+    |> startProfile(at = [
+         startX - (vWidth / 2),
+         startY + vLength / 2
+       ])
+    |> xLine(length = vWidth * 1 / 3)
+    |> line(end = [vWidth / 6, -vLength / 2])
+    |> line(end = [vWidth / 6, vLength / 2])
+    |> xLine(length = vWidth * 1 / 3)
+    |> line(end = [-vWidth * 1 / 2, -vLength])
+    |> close()
+    |> extrude(length = numberThickness)
+    |> appearance(color = "#140f0f")
 }
 
 // Create the numbers on the face of the clock
@@ -326,7 +317,7 @@ letterI(startX = numberObject.twelve.i2[0], startY = numberObject.twelve.i2[1])
 // Create nub for the minute and hour hands
 startSketchOn(clockBody, face = END)
   |> circle(center = [0, 0], diameter = nubDiameter)
-  |> extrude(%, length = numHeight)
+  |> extrude(length = numHeight)
 
 // Create the hour hand
 sketch005 = startSketchOn(offsetPlane(XY, offset = 55))
@@ -338,7 +329,6 @@ profile007 = startProfile(
        ],
      )
   |> arc(
-       %,
        interiorAbsolute = [
          nubDiameter / 2 * 1.375 * cos(hourHandAngle + 180),
          nubDiameter / 2 * 1.375 * sin(hourHandAngle + 180)
@@ -348,30 +338,24 @@ profile007 = startProfile(
          nubDiameter / 2 * 1.375 * sin(hourHandAngle + 340)
        ],
      )
-  |> angledLine(%, angle = hourHandAngle, length = hourHandArmLength)
-  |> angledLine(
-       %,
-       angle = hourHandAngle - 90,
-       length = hourHandWidth / 2,
-       tag = $seg004,
-     )
+  |> angledLine(angle = hourHandAngle, length = hourHandArmLength)
+  |> angledLine(angle = hourHandAngle - 90, length = hourHandWidth / 2, tag = $seg004)
   |> line(
-       %,
        endAbsolute = [
          hourHandLargeDiameter / 2 * cos(hourHandAngle),
          hourHandLargeDiameter / 2 * sin(hourHandAngle)
        ],
        tag = $seg002,
      )
-  |> angledLine(%, angle = segAng(seg002) + 120, length = segLen(seg002))
-  // |> angledLineThatIntersects(%, angle = segAng(seg002) + hourHandAngle - 90, intersectTag = seg004)
-  |> angledLine(%, angle = hourHandAngle - 90, length = segLen(seg004))
-  |> line(%, endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close(%)
+  |> angledLine(angle = segAng(seg002) + 120, length = segLen(seg002))
+  // |> angledLineThatIntersects(angle = segAng(seg002) + hourHandAngle - 90, intersectTag = seg004)
+  |> angledLine(angle = hourHandAngle - 90, length = segLen(seg004))
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
 profile008 = circle(sketch005, center = [0, 0], diameter = nubDiameter)
 subtract2d(profile007, tool = profile008)
-  |> extrude(%, length = 5)
-  |> appearance(%, color = "#404040")
+  |> extrude(length = 5)
+  |> appearance(color = "#404040")
 
 // create the minute hand
 sketch006 = startSketchOn(offsetPlane(XY, offset = 50))
@@ -383,7 +367,6 @@ profile009 = startProfile(
        ],
      )
   |> arc(
-       %,
        interiorAbsolute = [
          nubDiameter / 2 * 1.375 * cos(minuteHandAngle + 180),
          nubDiameter / 2 * 1.375 * sin(minuteHandAngle + 180)
@@ -393,29 +376,23 @@ profile009 = startProfile(
          nubDiameter / 2 * 1.375 * sin(minuteHandAngle + 340)
        ],
      )
-  |> angledLine(%, angle = minuteHandAngle, length = minuteHandArmLength)
-  |> angledLine(
-       %,
-       angle = minuteHandAngle - 90,
-       length = minuteHandWidth / 2,
-       tag = $seg003,
-     )
+  |> angledLine(angle = minuteHandAngle, length = minuteHandArmLength)
+  |> angledLine(angle = minuteHandAngle - 90, length = minuteHandWidth / 2, tag = $seg003)
   |> line(
-       %,
        endAbsolute = [
          minuteHandLargeDiameter / 2 * cos(minuteHandAngle),
          minuteHandLargeDiameter / 2 * sin(minuteHandAngle)
        ],
        tag = $seg005,
      )
-  |> angledLine(%, angle = segAng(seg005) + 120, length = segLen(seg005))
-  |> angledLine(%, angle = minuteHandAngle - 90, length = segLen(seg003))
-  |> line(%, endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close(%)
+  |> angledLine(angle = segAng(seg005) + 120, length = segLen(seg005))
+  |> angledLine(angle = minuteHandAngle - 90, length = segLen(seg003))
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
 profile010 = circle(sketch006, center = [0, 0], diameter = 30)
 subtract2d(profile009, tool = profile010)
-  |> extrude(%, length = 5)
-  |> appearance(%, color = "#404040")
+  |> extrude(length = 5)
+  |> appearance(color = "#404040")
 
 // Define parameters of the screw slot for hanging the clock
 screwHeadDiameter = 9.53
@@ -427,15 +404,10 @@ slotLength = 40
 sketch003 = startSketchOn(clockBody, face = START)
 profile004 = startProfile(sketch003, at = [-slotWidth / 2, 200])
   |> yLine(length = -slotLength)
-  |> arc(
-       %,
-       radius = screwHeadDiameter / 2 + screwTolerance,
-       angleStart = 120,
-       angleEnd = 420,
-     )
-  |> yLine(%, length = slotLength)
+  |> arc(radius = screwHeadDiameter / 2 + screwTolerance, angleStart = 120, angleEnd = 420)
+  |> yLine(length = slotLength)
   |> tangentialArc(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-  |> extrude(%, length = -20)
+  |> extrude(length = -20)
 
 // todo: create cavity for the screw to slide into (need csg update)

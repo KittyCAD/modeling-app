@@ -470,7 +470,8 @@ description: Artifact commands sheet-metal-bracket.kcl
         "target": "[uuid]",
         "distance": 139.7,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -682,7 +683,8 @@ description: Artifact commands sheet-metal-bracket.kcl
         "target": "[uuid]",
         "distance": -3.175,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -738,7 +740,8 @@ description: Artifact commands sheet-metal-bracket.kcl
         "target": "[uuid]",
         "distance": -3.175,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -906,7 +909,8 @@ description: Artifact commands sheet-metal-bracket.kcl
         "target": "[uuid]",
         "distance": -3.175,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -962,7 +966,8 @@ description: Artifact commands sheet-metal-bracket.kcl
         "target": "[uuid]",
         "distance": -3.175,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1210,7 +1215,8 @@ description: Artifact commands sheet-metal-bracket.kcl
         "target": "[uuid]",
         "distance": -3.175,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1266,7 +1272,8 @@ description: Artifact commands sheet-metal-bracket.kcl
         "target": "[uuid]",
         "distance": -3.175,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1322,7 +1329,8 @@ description: Artifact commands sheet-metal-bracket.kcl
         "target": "[uuid]",
         "distance": -3.175,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1378,7 +1386,8 @@ description: Artifact commands sheet-metal-bracket.kcl
         "target": "[uuid]",
         "distance": -3.175,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1506,7 +1515,8 @@ description: Artifact commands sheet-metal-bracket.kcl
         "target": "[uuid]",
         "distance": -3.175,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1553,5 +1563,6 @@ description: Artifact commands sheet-metal-bracket.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

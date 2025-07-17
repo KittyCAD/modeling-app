@@ -8,6 +8,7 @@ use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity};
 use crate::execution::{ArtifactCommand, ArtifactGraph, Operation};
 use crate::{
     ModuleId,
+    exec::KclValue,
     execution::DefaultPlanes,
     lsp::IntoDiagnostic,
     modules::{ModulePath, ModuleSource},
@@ -99,6 +100,8 @@ pub enum KclError {
     Semantic { details: KclErrorDetails },
     #[error("import cycle: {details:?}")]
     ImportCycle { details: KclErrorDetails },
+    #[error("argument: {details:?}")]
+    Argument { details: KclErrorDetails },
     #[error("type: {details:?}")]
     Type { details: KclErrorDetails },
     #[error("i/o: {details:?}")]
@@ -133,6 +136,9 @@ impl From<KclErrorWithOutputs> for KclError {
 pub struct KclErrorWithOutputs {
     pub error: KclError,
     pub non_fatal: Vec<CompilationError>,
+    /// Variables in the top-level of the root module. Note that functions will
+    /// have an invalid env ref.
+    pub variables: IndexMap<String, KclValue>,
     #[cfg(feature = "artifact-graph")]
     pub operations: Vec<Operation>,
     // TODO: Remove this field.  Doing so breaks the ts-rs output for some
@@ -151,6 +157,7 @@ impl KclErrorWithOutputs {
     pub fn new(
         error: KclError,
         non_fatal: Vec<CompilationError>,
+        variables: IndexMap<String, KclValue>,
         #[cfg(feature = "artifact-graph")] operations: Vec<Operation>,
         #[cfg(feature = "artifact-graph")] artifact_commands: Vec<ArtifactCommand>,
         #[cfg(feature = "artifact-graph")] artifact_graph: ArtifactGraph,
@@ -161,6 +168,7 @@ impl KclErrorWithOutputs {
         Self {
             error,
             non_fatal,
+            variables,
             #[cfg(feature = "artifact-graph")]
             operations,
             #[cfg(feature = "artifact-graph")]
@@ -176,6 +184,7 @@ impl KclErrorWithOutputs {
         Self {
             error,
             non_fatal: Default::default(),
+            variables: Default::default(),
             #[cfg(feature = "artifact-graph")]
             operations: Default::default(),
             #[cfg(feature = "artifact-graph")]
@@ -305,6 +314,7 @@ impl miette::Diagnostic for ReportWithOutputs {
             KclError::Syntax { .. } => "Syntax",
             KclError::Semantic { .. } => "Semantic",
             KclError::ImportCycle { .. } => "ImportCycle",
+            KclError::Argument { .. } => "Argument",
             KclError::Type { .. } => "Type",
             KclError::Io { .. } => "I/O",
             KclError::Unexpected { .. } => "Unexpected",
@@ -355,6 +365,7 @@ impl miette::Diagnostic for Report {
             KclError::Syntax { .. } => "Syntax",
             KclError::Semantic { .. } => "Semantic",
             KclError::ImportCycle { .. } => "ImportCycle",
+            KclError::Argument { .. } => "Argument",
             KclError::Type { .. } => "Type",
             KclError::Io { .. } => "I/O",
             KclError::Unexpected { .. } => "Unexpected",
@@ -432,6 +443,10 @@ impl KclError {
         KclError::ImportCycle { details }
     }
 
+    pub fn new_argument(details: KclErrorDetails) -> KclError {
+        KclError::Argument { details }
+    }
+
     pub fn new_semantic(details: KclErrorDetails) -> KclError {
         KclError::Semantic { details }
     }
@@ -475,6 +490,7 @@ impl KclError {
             KclError::Syntax { .. } => "syntax",
             KclError::Semantic { .. } => "semantic",
             KclError::ImportCycle { .. } => "import cycle",
+            KclError::Argument { .. } => "argument",
             KclError::Type { .. } => "type",
             KclError::Io { .. } => "i/o",
             KclError::Unexpected { .. } => "unexpected",
@@ -492,6 +508,7 @@ impl KclError {
             KclError::Syntax { details: e } => e.source_ranges.clone(),
             KclError::Semantic { details: e } => e.source_ranges.clone(),
             KclError::ImportCycle { details: e } => e.source_ranges.clone(),
+            KclError::Argument { details: e } => e.source_ranges.clone(),
             KclError::Type { details: e } => e.source_ranges.clone(),
             KclError::Io { details: e } => e.source_ranges.clone(),
             KclError::Unexpected { details: e } => e.source_ranges.clone(),
@@ -510,6 +527,7 @@ impl KclError {
             KclError::Syntax { details: e } => &e.message,
             KclError::Semantic { details: e } => &e.message,
             KclError::ImportCycle { details: e } => &e.message,
+            KclError::Argument { details: e } => &e.message,
             KclError::Type { details: e } => &e.message,
             KclError::Io { details: e } => &e.message,
             KclError::Unexpected { details: e } => &e.message,
@@ -527,6 +545,7 @@ impl KclError {
             | KclError::Syntax { details: e }
             | KclError::Semantic { details: e }
             | KclError::ImportCycle { details: e }
+            | KclError::Argument { details: e }
             | KclError::Type { details: e }
             | KclError::Io { details: e }
             | KclError::Unexpected { details: e }
@@ -545,6 +564,7 @@ impl KclError {
             | KclError::Syntax { details: e }
             | KclError::Semantic { details: e }
             | KclError::ImportCycle { details: e }
+            | KclError::Argument { details: e }
             | KclError::Type { details: e }
             | KclError::Io { details: e }
             | KclError::Unexpected { details: e }
@@ -574,6 +594,7 @@ impl KclError {
             | KclError::Syntax { details: e }
             | KclError::Semantic { details: e }
             | KclError::ImportCycle { details: e }
+            | KclError::Argument { details: e }
             | KclError::Type { details: e }
             | KclError::Io { details: e }
             | KclError::Unexpected { details: e }

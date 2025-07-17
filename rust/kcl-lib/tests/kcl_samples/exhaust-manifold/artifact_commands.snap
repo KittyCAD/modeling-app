@@ -2728,7 +2728,8 @@ description: Artifact commands exhaust-manifold.kcl
         "target": "[uuid]",
         "distance": 3.175,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2855,5 +2856,6 @@ description: Artifact commands exhaust-manifold.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

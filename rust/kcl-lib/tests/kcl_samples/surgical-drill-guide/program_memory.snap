@@ -245,6 +245,14 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                         "units": {
                           "type": "Unknown"
                         }
+                      },
+                      "zAxis": {
+                        "x": 0.0,
+                        "y": -1.0,
+                        "z": 0.0,
+                        "units": {
+                          "type": "Unknown"
+                        }
                       }
                     },
                     "start": {
@@ -611,6 +619,14 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                         "units": {
                           "type": "Unknown"
                         }
+                      },
+                      "zAxis": {
+                        "x": 0.0,
+                        "y": 0.0,
+                        "z": 1.0,
+                        "units": {
+                          "type": "Unknown"
+                        }
                       }
                     },
                     "start": {
@@ -821,6 +837,14 @@ description: Variables in memory after executing surgical-drill-guide.kcl
             "units": {
               "type": "Unknown"
             }
+          },
+          "zAxis": {
+            "x": 0.0,
+            "y": -1.0,
+            "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
           }
         },
         "start": {
@@ -926,6 +950,14 @@ description: Variables in memory after executing surgical-drill-guide.kcl
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
+          },
+          "zAxis": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 1.0,
             "units": {
               "type": "Unknown"
             }
@@ -1076,6 +1108,14 @@ description: Variables in memory after executing surgical-drill-guide.kcl
             "units": {
               "type": "Unknown"
             }
+          },
+          "zAxis": {
+            "x": 0.0,
+            "y": -1.0,
+            "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
           }
         },
         "start": {
@@ -1181,6 +1221,14 @@ description: Variables in memory after executing surgical-drill-guide.kcl
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
+          },
+          "zAxis": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 1.0,
             "units": {
               "type": "Unknown"
             }
@@ -1623,6 +1671,14 @@ description: Variables in memory after executing surgical-drill-guide.kcl
             "units": {
               "type": "Unknown"
             }
+          },
+          "zAxis": {
+            "x": 1.0,
+            "y": 0.0,
+            "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
           }
         },
         "start": {
@@ -1761,6 +1817,13 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [],
+          "tag": null,
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
           "tag": {
             "commentStart": 2896,
             "end": 2908,
@@ -1823,6 +1886,33 @@ description: Variables in memory after executing surgical-drill-guide.kcl
             }
           }
         ],
+        "innerPaths": [
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.0,
+              53.15127018922193
+            ],
+            "from": [
+              2.0,
+              53.15127018922193
+            ],
+            "radius": 2.0,
+            "tag": null,
+            "to": [
+              2.0,
+              53.15127018922193
+            ],
+            "type": "Circle",
+            "units": {
+              "type": "Mm"
+            }
+          }
+        ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
@@ -1848,6 +1938,14 @@ description: Variables in memory after executing surgical-drill-guide.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
+            "units": {
+              "type": "Unknown"
+            }
+          },
+          "zAxis": {
+            "x": 0.0,
+            "y": -1.0,
+            "z": 0.0,
             "units": {
               "type": "Unknown"
             }
@@ -1963,6 +2061,13 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [],
+          "tag": null,
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
           "tag": {
             "commentStart": 4200,
             "end": 4212,
@@ -2025,6 +2130,33 @@ description: Variables in memory after executing surgical-drill-guide.kcl
             }
           }
         ],
+        "innerPaths": [
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.0,
+              150.0
+            ],
+            "from": [
+              3.2,
+              150.0
+            ],
+            "radius": 3.2,
+            "tag": null,
+            "to": [
+              3.2,
+              150.0
+            ],
+            "type": "Circle",
+            "units": {
+              "type": "Mm"
+            }
+          }
+        ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
@@ -2050,6 +2182,14 @@ description: Variables in memory after executing surgical-drill-guide.kcl
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
+          },
+          "zAxis": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 1.0,
             "units": {
               "type": "Unknown"
             }
@@ -2544,6 +2684,14 @@ description: Variables in memory after executing surgical-drill-guide.kcl
             "units": {
               "type": "Unknown"
             }
+          },
+          "zAxis": {
+            "x": 1.0,
+            "y": 0.0,
+            "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
           }
         },
         "start": {
@@ -2863,6 +3011,14 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                   "units": {
                     "type": "Unknown"
                   }
+                },
+                "zAxis": {
+                  "x": 0.0,
+                  "y": -1.0,
+                  "z": 0.0,
+                  "units": {
+                    "type": "Unknown"
+                  }
                 }
               },
               "start": {
@@ -3126,6 +3282,14 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                   "x": 0.0,
                   "y": 1.0,
                   "z": 0.0,
+                  "units": {
+                    "type": "Unknown"
+                  }
+                },
+                "zAxis": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 1.0,
                   "units": {
                     "type": "Unknown"
                   }

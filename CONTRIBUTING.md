@@ -65,7 +65,7 @@ If you're not a Zoo employee you won't be able to access the dev environment, yo
 
 ### Development environment variables
 
-The Copilot LSP plugin in the editor requires a Zoo API token to run. In production, we authenticate this with a token via cookie in the browser and device auth token in the desktop environment, but this token is inaccessible in the dev browser version because the cookie is considered "cross-site" (from `localhost` to `zoo.dev`). There is an optional environment variable called `VITE_KC_DEV_TOKEN` that you can populate with a dev token in a `.env.development.local` file to not check it into Git, which will use that token instead of other methods for the LSP service.
+The Copilot LSP plugin in the editor requires a Zoo API token to run. In production, we authenticate this with a token via cookie in the browser and device auth token in the desktop environment, but this token is inaccessible in the dev browser version because the cookie is considered "cross-site" (from `localhost` to `zoo.dev`). There is an optional environment variable called `VITE_KITTYCAD_API_TOKEN` that you can populate with a dev token in a `.env.development.local` file to not check it into Git, which will use that token instead of other methods for the LSP service.
 
 ### Developing in Chrome
 
@@ -96,7 +96,7 @@ To package the app for your platform with electron-builder, run `npm run tronb:p
 
 Prepare these system dependencies:
 
-- Set $token from https://zoo.dev/account/api-tokens
+- Set `$VITE_KITTYCAD_API_TOKEN` from https://zoo.dev/account/api-tokens
 
 #### Snapshot tests (Google Chrome on Ubuntu only)
 
@@ -259,7 +259,7 @@ If the application needs to overwrite the known file on disk use this pattern. T
 - `npm run circular-deps:overwrite`
 - `npm run url-checker:overwrite`
 
-#### Diff baseline and current 
+#### Diff baseline and current
 
 These commands will write a /tmp/ file on disk and compare it to the known file in the repository. This command will also be used in the CI CD pipeline for automated checks
 
@@ -332,6 +332,12 @@ Click **Generate release notes** as a starting point to discuss the changelog in
 
 A new `publish-apps-release` workflow will start and you should be able to find it [here](https://github.com/KittyCAD/modeling-app/actions?query=event%3Arelease). On success, the files will be uploaded to the public bucket as well as to the GitHub release, and the announcement on Discord will be sent.
 
-#### 6. Close the issue
+#### 6. Publish the CLI
+
+Clone https://github.com/KittyCAD/cli and update its dependencies on `kittycad-modeling-cmds`, `kcl-lib`, `kcl-derive-docs` and `kcl-test-server` to the latest versions. Also bump the CLI's version under `[package]`. Open a PR and merge it to main.
+
+After merging, run `make tag` and follow its instructions. This should publish a CLI release. Then open <https://github.com/KittyCAD/homebrew-kittycad/pulls> and merge the automatic PR to bump the release in Homebrew.
+
+#### 7. Close the issue
 
 If everything is well and the release is out to the public, the issue tracking the release shall be closed.

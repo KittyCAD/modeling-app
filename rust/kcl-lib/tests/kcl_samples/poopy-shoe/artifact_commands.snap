@@ -639,7 +639,8 @@ description: Artifact commands poopy-shoe.kcl
         "target": "[uuid]",
         "distance": 22.224999999999998,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -817,7 +818,8 @@ description: Artifact commands poopy-shoe.kcl
         "target": "[uuid]",
         "distance": 3.175,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1107,7 +1109,8 @@ description: Artifact commands poopy-shoe.kcl
         "target": "[uuid]",
         "distance": 3.175,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1337,7 +1340,8 @@ description: Artifact commands poopy-shoe.kcl
         "target": "[uuid]",
         "distance": 3.175,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1491,7 +1495,8 @@ description: Artifact commands poopy-shoe.kcl
         "target": "[uuid]",
         "distance": 3.175,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1645,7 +1650,8 @@ description: Artifact commands poopy-shoe.kcl
         "target": "[uuid]",
         "distance": 69.85,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1841,7 +1847,8 @@ description: Artifact commands poopy-shoe.kcl
         "target": "[uuid]",
         "distance": -3.175,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1888,5 +1895,6 @@ description: Artifact commands poopy-shoe.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

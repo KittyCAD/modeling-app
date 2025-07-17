@@ -130,7 +130,7 @@ expression: actual
               "operator": "-",
               "right": {
                 "commentStart": 41,
-                "computed": false,
+                "computed": true,
                 "end": 49,
                 "moduleId": 0,
                 "object": {

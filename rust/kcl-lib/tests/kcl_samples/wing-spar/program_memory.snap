@@ -928,6 +928,14 @@ description: Variables in memory after executing wing-spar.kcl
                       "units": {
                         "type": "Unknown"
                       }
+                    },
+                    "zAxis": {
+                      "x": 0.0,
+                      "y": 1.0,
+                      "z": 0.0,
+                      "units": {
+                        "type": "Unknown"
+                      }
                     }
                   },
                   "start": {
@@ -1914,6 +1922,14 @@ description: Variables in memory after executing wing-spar.kcl
                       "units": {
                         "type": "Unknown"
                       }
+                    },
+                    "zAxis": {
+                      "x": 0.0,
+                      "y": 1.0,
+                      "z": 0.0,
+                      "units": {
+                        "type": "Unknown"
+                      }
                     }
                   },
                   "start": {
@@ -2900,6 +2916,14 @@ description: Variables in memory after executing wing-spar.kcl
                       "units": {
                         "type": "Unknown"
                       }
+                    },
+                    "zAxis": {
+                      "x": 0.0,
+                      "y": 1.0,
+                      "z": 0.0,
+                      "units": {
+                        "type": "Unknown"
+                      }
                     }
                   },
                   "start": {
@@ -3883,6 +3907,14 @@ description: Variables in memory after executing wing-spar.kcl
                       "x": 0.0,
                       "y": 0.0,
                       "z": 1.0,
+                      "units": {
+                        "type": "Unknown"
+                      }
+                    },
+                    "zAxis": {
+                      "x": 0.0,
+                      "y": 1.0,
+                      "z": 0.0,
                       "units": {
                         "type": "Unknown"
                       }
@@ -4567,6 +4599,14 @@ description: Variables in memory after executing wing-spar.kcl
             "units": {
               "type": "Unknown"
             }
+          },
+          "zAxis": {
+            "x": 0.0,
+            "y": 1.0,
+            "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
           }
         },
         "start": {
@@ -4678,10 +4718,10 @@ description: Variables in memory after executing wing-spar.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4950,
-                "end": 4956,
+                "commentStart": 4911,
+                "end": 4917,
                 "moduleId": 0,
-                "start": 4950,
+                "start": 4911,
                 "type": "TagDeclarator",
                 "value": "seg14"
               },
@@ -4751,10 +4791,10 @@ description: Variables in memory after executing wing-spar.kcl
                   -24.0
                 ],
                 "tag": {
-                  "commentStart": 4950,
-                  "end": 4956,
+                  "commentStart": 4911,
+                  "end": 4917,
                   "moduleId": 0,
-                  "start": 4950,
+                  "start": 4911,
                   "type": "TagDeclarator",
                   "value": "seg14"
                 },
@@ -5532,6 +5572,14 @@ description: Variables in memory after executing wing-spar.kcl
                       "x": 0.0,
                       "y": 0.0,
                       "z": 1.0,
+                      "units": {
+                        "type": "Unknown"
+                      }
+                    },
+                    "zAxis": {
+                      "x": 0.0,
+                      "y": 1.0,
+                      "z": 0.0,
                       "units": {
                         "type": "Unknown"
                       }
@@ -5646,10 +5694,10 @@ description: Variables in memory after executing wing-spar.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4950,
-                "end": 4956,
+                "commentStart": 4911,
+                "end": 4917,
                 "moduleId": 0,
-                "start": 4950,
+                "start": 4911,
                 "type": "TagDeclarator",
                 "value": "seg14"
               },
@@ -5719,10 +5767,10 @@ description: Variables in memory after executing wing-spar.kcl
                   -24.0
                 ],
                 "tag": {
-                  "commentStart": 4950,
-                  "end": 4956,
+                  "commentStart": 4911,
+                  "end": 4917,
                   "moduleId": 0,
-                  "start": 4950,
+                  "start": 4911,
                   "type": "TagDeclarator",
                   "value": "seg14"
                 },
@@ -6500,6 +6548,14 @@ description: Variables in memory after executing wing-spar.kcl
                       "x": 0.0,
                       "y": 0.0,
                       "z": 1.0,
+                      "units": {
+                        "type": "Unknown"
+                      }
+                    },
+                    "zAxis": {
+                      "x": 0.0,
+                      "y": 1.0,
+                      "z": 0.0,
                       "units": {
                         "type": "Unknown"
                       }
@@ -6614,10 +6670,10 @@ description: Variables in memory after executing wing-spar.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4950,
-                "end": 4956,
+                "commentStart": 4911,
+                "end": 4917,
                 "moduleId": 0,
-                "start": 4950,
+                "start": 4911,
                 "type": "TagDeclarator",
                 "value": "seg14"
               },
@@ -6687,10 +6743,10 @@ description: Variables in memory after executing wing-spar.kcl
                   -24.0
                 ],
                 "tag": {
-                  "commentStart": 4950,
-                  "end": 4956,
+                  "commentStart": 4911,
+                  "end": 4917,
                   "moduleId": 0,
-                  "start": 4950,
+                  "start": 4911,
                   "type": "TagDeclarator",
                   "value": "seg14"
                 },
@@ -7468,6 +7524,14 @@ description: Variables in memory after executing wing-spar.kcl
                       "x": 0.0,
                       "y": 0.0,
                       "z": 1.0,
+                      "units": {
+                        "type": "Unknown"
+                      }
+                    },
+                    "zAxis": {
+                      "x": 0.0,
+                      "y": 1.0,
+                      "z": 0.0,
                       "units": {
                         "type": "Unknown"
                       }
@@ -7582,10 +7646,10 @@ description: Variables in memory after executing wing-spar.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4950,
-                "end": 4956,
+                "commentStart": 4911,
+                "end": 4917,
                 "moduleId": 0,
-                "start": 4950,
+                "start": 4911,
                 "type": "TagDeclarator",
                 "value": "seg14"
               },
@@ -7655,10 +7719,10 @@ description: Variables in memory after executing wing-spar.kcl
                   -24.0
                 ],
                 "tag": {
-                  "commentStart": 4950,
-                  "end": 4956,
+                  "commentStart": 4911,
+                  "end": 4917,
                   "moduleId": 0,
-                  "start": 4950,
+                  "start": 4911,
                   "type": "TagDeclarator",
                   "value": "seg14"
                 },
@@ -8436,6 +8500,14 @@ description: Variables in memory after executing wing-spar.kcl
                       "x": 0.0,
                       "y": 0.0,
                       "z": 1.0,
+                      "units": {
+                        "type": "Unknown"
+                      }
+                    },
+                    "zAxis": {
+                      "x": 0.0,
+                      "y": 1.0,
+                      "z": 0.0,
                       "units": {
                         "type": "Unknown"
                       }
@@ -9116,6 +9188,14 @@ description: Variables in memory after executing wing-spar.kcl
             "units": {
               "type": "Unknown"
             }
+          },
+          "zAxis": {
+            "x": 0.0,
+            "y": 1.0,
+            "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
           }
         },
         "start": {
@@ -9224,6 +9304,41 @@ description: Variables in memory after executing wing-spar.kcl
               "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
             }
           ],
           "sketch": {
@@ -9389,6 +9504,133 @@ description: Variables in memory after executing wing-spar.kcl
                 }
               }
             ],
+            "innerPaths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  62.0,
+                  9.0
+                ],
+                "from": [
+                  79.0,
+                  9.0
+                ],
+                "radius": 17.0,
+                "tag": null,
+                "to": [
+                  79.0,
+                  9.0
+                ],
+                "type": "Circle",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  113.0,
+                  10.0
+                ],
+                "from": [
+                  132.0,
+                  10.0
+                ],
+                "radius": 19.0,
+                "tag": null,
+                "to": [
+                  132.0,
+                  10.0
+                ],
+                "type": "Circle",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  164.0,
+                  9.0
+                ],
+                "from": [
+                  181.0,
+                  9.0
+                ],
+                "radius": 17.0,
+                "tag": null,
+                "to": [
+                  181.0,
+                  9.0
+                ],
+                "type": "Circle",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  228.0,
+                  5.0
+                ],
+                "from": [
+                  239.0,
+                  5.0
+                ],
+                "radius": 11.0,
+                "tag": null,
+                "to": [
+                  239.0,
+                  5.0
+                ],
+                "type": "Circle",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  260.0,
+                  3.5
+                ],
+                "from": [
+                  266.5,
+                  3.5
+                ],
+                "radius": 6.5,
+                "tag": null,
+                "to": [
+                  266.5,
+                  3.5
+                ],
+                "type": "Circle",
+                "units": {
+                  "type": "Mm"
+                }
+              }
+            ],
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
@@ -9414,6 +9656,14 @@ description: Variables in memory after executing wing-spar.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
+                "units": {
+                  "type": "Unknown"
+                }
+              },
+              "zAxis": {
+                "x": 0.0,
+                "y": -1.0,
+                "z": 0.0,
                 "units": {
                   "type": "Unknown"
                 }
@@ -9500,6 +9750,41 @@ description: Variables in memory after executing wing-spar.kcl
               "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
             }
           ],
           "sketch": {
@@ -9665,6 +9950,133 @@ description: Variables in memory after executing wing-spar.kcl
                 }
               }
             ],
+            "innerPaths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  62.0,
+                  9.0
+                ],
+                "from": [
+                  79.0,
+                  9.0
+                ],
+                "radius": 17.0,
+                "tag": null,
+                "to": [
+                  79.0,
+                  9.0
+                ],
+                "type": "Circle",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  113.0,
+                  10.0
+                ],
+                "from": [
+                  132.0,
+                  10.0
+                ],
+                "radius": 19.0,
+                "tag": null,
+                "to": [
+                  132.0,
+                  10.0
+                ],
+                "type": "Circle",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  164.0,
+                  9.0
+                ],
+                "from": [
+                  181.0,
+                  9.0
+                ],
+                "radius": 17.0,
+                "tag": null,
+                "to": [
+                  181.0,
+                  9.0
+                ],
+                "type": "Circle",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  228.0,
+                  5.0
+                ],
+                "from": [
+                  239.0,
+                  5.0
+                ],
+                "radius": 11.0,
+                "tag": null,
+                "to": [
+                  239.0,
+                  5.0
+                ],
+                "type": "Circle",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  260.0,
+                  3.5
+                ],
+                "from": [
+                  266.5,
+                  3.5
+                ],
+                "radius": 6.5,
+                "tag": null,
+                "to": [
+                  266.5,
+                  3.5
+                ],
+                "type": "Circle",
+                "units": {
+                  "type": "Mm"
+                }
+              }
+            ],
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
@@ -9690,6 +10102,14 @@ description: Variables in memory after executing wing-spar.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
+                "units": {
+                  "type": "Unknown"
+                }
+              },
+              "zAxis": {
+                "x": 0.0,
+                "y": -1.0,
+                "z": 0.0,
                 "units": {
                   "type": "Unknown"
                 }
@@ -9776,6 +10196,41 @@ description: Variables in memory after executing wing-spar.kcl
               "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
             }
           ],
           "sketch": {
@@ -9941,6 +10396,133 @@ description: Variables in memory after executing wing-spar.kcl
                 }
               }
             ],
+            "innerPaths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  62.0,
+                  9.0
+                ],
+                "from": [
+                  79.0,
+                  9.0
+                ],
+                "radius": 17.0,
+                "tag": null,
+                "to": [
+                  79.0,
+                  9.0
+                ],
+                "type": "Circle",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  113.0,
+                  10.0
+                ],
+                "from": [
+                  132.0,
+                  10.0
+                ],
+                "radius": 19.0,
+                "tag": null,
+                "to": [
+                  132.0,
+                  10.0
+                ],
+                "type": "Circle",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  164.0,
+                  9.0
+                ],
+                "from": [
+                  181.0,
+                  9.0
+                ],
+                "radius": 17.0,
+                "tag": null,
+                "to": [
+                  181.0,
+                  9.0
+                ],
+                "type": "Circle",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  228.0,
+                  5.0
+                ],
+                "from": [
+                  239.0,
+                  5.0
+                ],
+                "radius": 11.0,
+                "tag": null,
+                "to": [
+                  239.0,
+                  5.0
+                ],
+                "type": "Circle",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  260.0,
+                  3.5
+                ],
+                "from": [
+                  266.5,
+                  3.5
+                ],
+                "radius": 6.5,
+                "tag": null,
+                "to": [
+                  266.5,
+                  3.5
+                ],
+                "type": "Circle",
+                "units": {
+                  "type": "Mm"
+                }
+              }
+            ],
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
@@ -9966,6 +10548,14 @@ description: Variables in memory after executing wing-spar.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
+                "units": {
+                  "type": "Unknown"
+                }
+              },
+              "zAxis": {
+                "x": 0.0,
+                "y": -1.0,
+                "z": 0.0,
                 "units": {
                   "type": "Unknown"
                 }
@@ -10052,6 +10642,41 @@ description: Variables in memory after executing wing-spar.kcl
               "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
             }
           ],
           "sketch": {
@@ -10217,6 +10842,133 @@ description: Variables in memory after executing wing-spar.kcl
                 }
               }
             ],
+            "innerPaths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  62.0,
+                  9.0
+                ],
+                "from": [
+                  79.0,
+                  9.0
+                ],
+                "radius": 17.0,
+                "tag": null,
+                "to": [
+                  79.0,
+                  9.0
+                ],
+                "type": "Circle",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  113.0,
+                  10.0
+                ],
+                "from": [
+                  132.0,
+                  10.0
+                ],
+                "radius": 19.0,
+                "tag": null,
+                "to": [
+                  132.0,
+                  10.0
+                ],
+                "type": "Circle",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  164.0,
+                  9.0
+                ],
+                "from": [
+                  181.0,
+                  9.0
+                ],
+                "radius": 17.0,
+                "tag": null,
+                "to": [
+                  181.0,
+                  9.0
+                ],
+                "type": "Circle",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  228.0,
+                  5.0
+                ],
+                "from": [
+                  239.0,
+                  5.0
+                ],
+                "radius": 11.0,
+                "tag": null,
+                "to": [
+                  239.0,
+                  5.0
+                ],
+                "type": "Circle",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  260.0,
+                  3.5
+                ],
+                "from": [
+                  266.5,
+                  3.5
+                ],
+                "radius": 6.5,
+                "tag": null,
+                "to": [
+                  266.5,
+                  3.5
+                ],
+                "type": "Circle",
+                "units": {
+                  "type": "Mm"
+                }
+              }
+            ],
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
@@ -10242,6 +10994,14 @@ description: Variables in memory after executing wing-spar.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
+                "units": {
+                  "type": "Unknown"
+                }
+              },
+              "zAxis": {
+                "x": 0.0,
+                "y": -1.0,
+                "z": 0.0,
                 "units": {
                   "type": "Unknown"
                 }
@@ -10328,6 +11088,41 @@ description: Variables in memory after executing wing-spar.kcl
               "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
             }
           ],
           "sketch": {
@@ -10493,6 +11288,133 @@ description: Variables in memory after executing wing-spar.kcl
                 }
               }
             ],
+            "innerPaths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  62.0,
+                  9.0
+                ],
+                "from": [
+                  79.0,
+                  9.0
+                ],
+                "radius": 17.0,
+                "tag": null,
+                "to": [
+                  79.0,
+                  9.0
+                ],
+                "type": "Circle",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  113.0,
+                  10.0
+                ],
+                "from": [
+                  132.0,
+                  10.0
+                ],
+                "radius": 19.0,
+                "tag": null,
+                "to": [
+                  132.0,
+                  10.0
+                ],
+                "type": "Circle",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  164.0,
+                  9.0
+                ],
+                "from": [
+                  181.0,
+                  9.0
+                ],
+                "radius": 17.0,
+                "tag": null,
+                "to": [
+                  181.0,
+                  9.0
+                ],
+                "type": "Circle",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  228.0,
+                  5.0
+                ],
+                "from": [
+                  239.0,
+                  5.0
+                ],
+                "radius": 11.0,
+                "tag": null,
+                "to": [
+                  239.0,
+                  5.0
+                ],
+                "type": "Circle",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  260.0,
+                  3.5
+                ],
+                "from": [
+                  266.5,
+                  3.5
+                ],
+                "radius": 6.5,
+                "tag": null,
+                "to": [
+                  266.5,
+                  3.5
+                ],
+                "type": "Circle",
+                "units": {
+                  "type": "Mm"
+                }
+              }
+            ],
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
@@ -10518,6 +11440,14 @@ description: Variables in memory after executing wing-spar.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
+                "units": {
+                  "type": "Unknown"
+                }
+              },
+              "zAxis": {
+                "x": 0.0,
+                "y": -1.0,
+                "z": 0.0,
                 "units": {
                   "type": "Unknown"
                 }
@@ -10662,6 +11592,14 @@ description: Variables in memory after executing wing-spar.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
+        "units": {
+          "type": "Unknown"
+        }
+      },
+      "zAxis": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0,
         "units": {
           "type": "Unknown"
         }

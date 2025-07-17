@@ -196,6 +196,7 @@ impl EngineConnection {
                 target,
                 faces: _, // Engine team: start using this once the frontend and engine both use it.
                 opposite: _,
+                extrude_method: _,
             }) => {
                 format!(
                     r#"

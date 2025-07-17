@@ -73,23 +73,13 @@ bracketProfile = startSketchOn(XZ)
 // Cut the bolt pattern in the left base flange
 leftFlangeBoltPattern = startSketchOn(bracketProfile, face = seg04)
   |> circle(center = [-mountingBoltPatternX / 2, overhang], radius = mountingBoltDiameter / 2)
-  |> patternLinear2d(
-       %,
-       instances = 2,
-       distance = mountingBoltPatternY,
-       axis = [0, 1],
-     )
+  |> patternLinear2d(instances = 2, distance = mountingBoltPatternY, axis = [0, 1])
   |> extrude(length = -thickness)
 
 // Cut the bolt pattern in the right base flange
 rightFlangeBoltPattern = startSketchOn(bracketProfile, face = seg06)
   |> circle(center = [mountingBoltPatternX / 2, overhang], radius = mountingBoltDiameter / 2)
-  |> patternLinear2d(
-       %,
-       instances = 2,
-       distance = mountingBoltPatternY,
-       axis = [0, 1],
-     )
+  |> patternLinear2d(instances = 2, distance = mountingBoltPatternY, axis = [0, 1])
   |> extrude(length = -thickness)
 
 // Provision the top flange with holes to mount an object
@@ -101,18 +91,8 @@ topFlangeBoltPattern = startSketchOn(bracketProfile, face = seg05)
        ],
        radius = componentBoltDiameter / 2,
      )
-  |> patternLinear2d(
-       %,
-       instances = 2,
-       distance = componentBoltPatternX,
-       axis = [1, 0],
-     )
-  |> patternLinear2d(
-       %,
-       instances = 2,
-       distance = componentBoltPatternY,
-       axis = [0, 1],
-     )
+  |> patternLinear2d(instances = 2, distance = componentBoltPatternX, axis = [1, 0])
+  |> patternLinear2d(instances = 2, distance = componentBoltPatternY, axis = [0, 1])
   |> extrude(length = -thickness)
 
 // Place a hole at the center of the component bolt pattern to reduce mass

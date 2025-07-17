@@ -26,6 +26,8 @@ myXY = {
 ```
 
 Any object with appropriate `origin`, `xAxis`, and `yAxis` fields can be used as a plane.
+The plane's Z axis (i.e. which way is "up") will be the cross product X x Y. In other words,
+KCL planes follow the right-hand rule.
 
 
 

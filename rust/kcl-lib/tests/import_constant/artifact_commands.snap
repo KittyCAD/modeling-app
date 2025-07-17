@@ -15,5 +15,6 @@ description: Artifact commands import_constant.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

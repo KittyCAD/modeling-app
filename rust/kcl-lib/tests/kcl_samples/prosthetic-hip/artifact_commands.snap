@@ -1456,7 +1456,8 @@ description: Artifact commands prosthetic-hip.kcl
         "target": "[uuid]",
         "distance": 6.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2400,5 +2401,6 @@ description: Artifact commands prosthetic-hip.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

@@ -119,7 +119,7 @@ test.describe('Can create sketches on all planes and their back sides', () => {
     },
     {
       plane: '-XZ',
-      coords: { x: 700, y: 80 },
+      coords: { x: 560, y: 150 },
       description: 'back of blue plane',
     },
   ]
@@ -272,7 +272,7 @@ yzPlane = offsetPlane(YZ, offset = 0.05)
     },
     {
       plane: '-XZ',
-      coords: { x: 700, y: 80 },
+      coords: { x: 560, y: 150 },
       description: 'back of blue plane',
     },
   ]

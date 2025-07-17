@@ -1,0 +1,10 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing array_index_oob.kcl
+---
+{
+  "arr": {
+    "type": "HomArray",
+    "value": []
+  }
+}

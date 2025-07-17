@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   nix-flake-check:
-    runs-on: ubuntu-latest
+    runs-on: namespace-profile-ubuntu-2-cores
     steps:
       - uses: actions/checkout@v4
         with:
@@ -26,7 +26,7 @@ jobs:
           nix flake check --all-systems
 
   nix-build-linux:
-    runs-on: ubuntu-latest
+    runs-on: namespace-profile-ubuntu-2-cores
     steps:
       - uses: actions/checkout@v4
         with:
@@ -40,7 +40,7 @@ jobs:
         run: nix build .
 
   nix-build-macos:
-    runs-on: macos-latest
+    runs-on: namespace-profile-macos-6-cores
     steps:
       - uses: actions/checkout@v4
         with:

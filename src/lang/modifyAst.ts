@@ -47,6 +47,7 @@ import type {
   ArrayExpression,
   CallExpressionKw,
   Expr,
+  ExpressionStatement,
   Literal,
   PathToNode,
   PipeExpression,
@@ -337,64 +338,6 @@ export function mutateObjExpProp(
   return false
 }
 
-export function addShell({
-  node,
-  sweepName,
-  faces,
-  thickness,
-  insertIndex,
-  variableName,
-}: {
-  node: Node<Program>
-  sweepName: string
-  faces: Expr[]
-  thickness: Expr
-  insertIndex?: number
-  variableName?: string
-}): { modifiedAst: Node<Program>; pathToNode: PathToNode } {
-  const modifiedAst = structuredClone(node)
-  const name =
-    variableName ?? findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.SHELL)
-  const shell = createCallExpressionStdLibKw(
-    'shell',
-    createLocalName(sweepName),
-    [
-      createLabeledArg('faces', createArrayExpression(faces)),
-      createLabeledArg('thickness', thickness),
-    ]
-  )
-
-  const variable = createVariableDeclaration(name, shell)
-  const insertAt =
-    insertIndex !== undefined
-      ? insertIndex
-      : modifiedAst.body.length
-        ? modifiedAst.body.length
-        : 0
-
-  if (modifiedAst.body.length) {
-    modifiedAst.body.splice(insertAt, 0, variable)
-  } else {
-    modifiedAst.body.push(variable)
-  }
-
-  const argIndex = 0
-  const pathToNode: PathToNode = [
-    ['body', ''],
-    [insertAt, 'index'],
-    ['declaration', 'VariableDeclaration'],
-    ['init', 'VariableDeclarator'],
-    ['arguments', 'CallExpressionKw'],
-    [argIndex, ARG_INDEX_FIELD],
-    ['arg', LABELED_ARG_FIELD],
-  ]
-
-  return {
-    modifiedAst,
-    pathToNode,
-  }
-}
-
 export function sketchOnExtrudedFace(
   node: Node<Program>,
   sketchPathToNode: PathToNode,
@@ -483,13 +426,13 @@ export function sketchOnExtrudedFace(
  */
 export function addOffsetPlane({
   node,
-  defaultPlane,
+  plane,
   insertIndex,
   offset,
   planeName,
 }: {
   node: Node<Program>
-  defaultPlane: DefaultPlaneStr
+  plane: Node<Literal> | Node<Name> // Can be DefaultPlaneStr or string for offsetPlanes
   insertIndex?: number
   offset: Expr
   planeName?: string
@@ -500,11 +443,9 @@ export function addOffsetPlane({
 
   const newPlane = createVariableDeclaration(
     newPlaneName,
-    createCallExpressionStdLibKw(
-      'offsetPlane',
-      createLiteral(defaultPlane.toUpperCase()),
-      [createLabeledArg('offset', offset)]
-    )
+    createCallExpressionStdLibKw('offsetPlane', plane, [
+      createLabeledArg('offset', offset),
+    ])
   )
 
   const insertAt =
@@ -1208,4 +1149,106 @@ export function insertVariableAndOffsetPathToNode(
       pathToNode[1][0]++
     }
   }
+}
+
+// Create an array expression for variables,
+// or keep it null if all are PipeSubstitutions
+export function createVariableExpressionsArray(exprs: Expr[]): Expr | null {
+  let expr: Expr | null = null
+  if (exprs.every((s) => s.type === 'PipeSubstitution')) {
+    // Keeping null so we don't even put it the % sign
+  } else if (exprs.length === 1) {
+    expr = exprs[0]
+  } else {
+    expr = createArrayExpression(exprs)
+  }
+  return expr
+}
+
+// Create a path to node to the last variable declaroator of an ast
+// Optionally, can point to the first kwarg of the CallExpressionKw
+export function createPathToNodeForLastVariable(
+  ast: Node<Program>,
+  toFirstKwarg = true
+): PathToNode {
+  const argIndex = 0 // first kwarg for all sweeps here
+  const pathToCall: PathToNode = [
+    ['body', ''],
+    [ast.body.length - 1, 'index'],
+    ['declaration', 'VariableDeclaration'],
+    ['init', 'VariableDeclarator'],
+  ]
+  if (toFirstKwarg) {
+    pathToCall.push(
+      ['arguments', 'CallExpressionKw'],
+      [argIndex, ARG_INDEX_FIELD],
+      ['arg', LABELED_ARG_FIELD]
+    )
+  }
+
+  return pathToCall
+}
+
+export function setCallInAst(
+  ast: Node<Program>,
+  call: Node<CallExpressionKw>,
+  nodeToEdit?: PathToNode,
+  pathIfPipe?: PathToNode
+): Error | PathToNode {
+  let pathToNode: PathToNode | undefined
+  if (nodeToEdit) {
+    const result = getNodeFromPath<CallExpressionKw>(
+      ast,
+      nodeToEdit,
+      'CallExpressionKw'
+    )
+    if (err(result)) {
+      return result
+    }
+
+    Object.assign(result.node, call)
+    pathToNode = nodeToEdit
+  } else {
+    if (!call.unlabeled && pathIfPipe) {
+      const pipe = getNodeFromPath<PipeExpression>(
+        ast,
+        pathIfPipe,
+        'PipeExpression'
+      )
+      if (err(pipe)) {
+        return pipe
+      }
+
+      if (pipe.node.type === 'PipeExpression') {
+        pipe.node.body.push(call)
+      } else if (pipe.node.type === 'CallExpressionKw') {
+        const expression = getNodeFromPath<ExpressionStatement>(
+          ast,
+          pathIfPipe,
+          'ExpressionStatement'
+        )
+        if (err(expression) || expression.node.type !== 'ExpressionStatement') {
+          return new Error('Could not retrieve ExpressionStatement')
+        }
+
+        expression.node.expression = createPipeExpression([
+          expression.node.expression,
+          call,
+        ])
+      } else {
+        return new Error(
+          'Expected pipeIfPipe to be a PipeExpression or CallExpressionKw'
+        )
+      }
+      pathToNode = pathIfPipe
+    } else {
+      const name = findUniqueName(ast, call.callee.name.name)
+      const declaration = createVariableDeclaration(name, call)
+      ast.body.push(declaration)
+      const toFirstKwarg = call.arguments.length > 0
+      pathToNode = createPathToNodeForLastVariable(ast, toFirstKwarg)
+    }
+  }
+
+  return pathToNode
 }

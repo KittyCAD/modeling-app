@@ -190,6 +190,170 @@ description: Variables in memory after executing helium-tank.kcl
             }
           }
         ],
+        "innerPaths": [
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              0.0,
+              4.625
+            ],
+            "tag": null,
+            "to": [
+              -0.1,
+              4.625
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Inches"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              -0.10000000000000028,
+              -0.0
+            ],
+            "from": [
+              -0.1,
+              4.625
+            ],
+            "tag": null,
+            "to": [
+              -2.7527910181235886,
+              3.7885782048365866
+            ],
+            "type": "TangentialArc",
+            "units": {
+              "type": "Inches"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": false,
+            "center": [
+              -2.8244880726674695,
+              3.8909722103727105
+            ],
+            "from": [
+              -2.7527910181235886,
+              3.7885782048365866
+            ],
+            "tag": {
+              "commentStart": 2738,
+              "end": 2744,
+              "moduleId": 0,
+              "start": 2738,
+              "type": "TagDeclarator",
+              "value": "seg06"
+            },
+            "to": [
+              -2.9475890417939956,
+              3.9126782325810767
+            ],
+            "type": "TangentialArc",
+            "units": {
+              "type": "Inches"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -2.9475890417939956,
+              3.9126782325810767
+            ],
+            "tag": null,
+            "to": [
+              -2.7243270990793707,
+              5.1788596293110585
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Inches"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": false,
+            "center": [
+              -2.6012261299528445,
+              5.157153607102692
+            ],
+            "from": [
+              -2.7243270990793707,
+              5.1788596293110585
+            ],
+            "tag": {
+              "commentStart": 2887,
+              "end": 2893,
+              "moduleId": 0,
+              "start": 2887,
+              "type": "TagDeclarator",
+              "value": "seg07"
+            },
+            "to": [
+              -2.6012261299528445,
+              5.282153607102692
+            ],
+            "type": "TangentialArc",
+            "units": {
+              "type": "Inches"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -2.6012261299528445,
+              5.282153607102692
+            ],
+            "tag": null,
+            "to": [
+              0.0,
+              5.282153607102692
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Inches"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              0.0,
+              5.282153607102692
+            ],
+            "tag": null,
+            "to": [
+              0.0,
+              4.625
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Inches"
+            }
+          }
+        ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
@@ -215,6 +379,14 @@ description: Variables in memory after executing helium-tank.kcl
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
+          },
+          "zAxis": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 1.0,
             "units": {
               "type": "Unknown"
             }
@@ -460,6 +632,14 @@ description: Variables in memory after executing helium-tank.kcl
           "units": {
             "type": "Unknown"
           }
+        },
+        "zAxis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0,
+          "units": {
+            "type": "Unknown"
+          }
         }
       },
       "start": {
@@ -671,6 +851,170 @@ description: Variables in memory after executing helium-tank.kcl
             }
           }
         ],
+        "innerPaths": [
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              0.0,
+              4.625
+            ],
+            "tag": null,
+            "to": [
+              -0.1,
+              4.625
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Inches"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              -0.10000000000000028,
+              -0.0
+            ],
+            "from": [
+              -0.1,
+              4.625
+            ],
+            "tag": null,
+            "to": [
+              -2.7527910181235886,
+              3.7885782048365866
+            ],
+            "type": "TangentialArc",
+            "units": {
+              "type": "Inches"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": false,
+            "center": [
+              -2.8244880726674695,
+              3.8909722103727105
+            ],
+            "from": [
+              -2.7527910181235886,
+              3.7885782048365866
+            ],
+            "tag": {
+              "commentStart": 2738,
+              "end": 2744,
+              "moduleId": 0,
+              "start": 2738,
+              "type": "TagDeclarator",
+              "value": "seg06"
+            },
+            "to": [
+              -2.9475890417939956,
+              3.9126782325810767
+            ],
+            "type": "TangentialArc",
+            "units": {
+              "type": "Inches"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -2.9475890417939956,
+              3.9126782325810767
+            ],
+            "tag": null,
+            "to": [
+              -2.7243270990793707,
+              5.1788596293110585
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Inches"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": false,
+            "center": [
+              -2.6012261299528445,
+              5.157153607102692
+            ],
+            "from": [
+              -2.7243270990793707,
+              5.1788596293110585
+            ],
+            "tag": {
+              "commentStart": 2887,
+              "end": 2893,
+              "moduleId": 0,
+              "start": 2887,
+              "type": "TagDeclarator",
+              "value": "seg07"
+            },
+            "to": [
+              -2.6012261299528445,
+              5.282153607102692
+            ],
+            "type": "TangentialArc",
+            "units": {
+              "type": "Inches"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -2.6012261299528445,
+              5.282153607102692
+            ],
+            "tag": null,
+            "to": [
+              0.0,
+              5.282153607102692
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Inches"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              0.0,
+              5.282153607102692
+            ],
+            "tag": null,
+            "to": [
+              0.0,
+              4.625
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Inches"
+            }
+          }
+        ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
@@ -696,6 +1040,14 @@ description: Variables in memory after executing helium-tank.kcl
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
+          },
+          "zAxis": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 1.0,
             "units": {
               "type": "Unknown"
             }
@@ -918,6 +1270,170 @@ description: Variables in memory after executing helium-tank.kcl
             }
           }
         ],
+        "innerPaths": [
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              0.0,
+              4.625
+            ],
+            "tag": null,
+            "to": [
+              -0.1,
+              4.625
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Inches"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              -0.10000000000000028,
+              -0.0
+            ],
+            "from": [
+              -0.1,
+              4.625
+            ],
+            "tag": null,
+            "to": [
+              -2.7527910181235886,
+              3.7885782048365866
+            ],
+            "type": "TangentialArc",
+            "units": {
+              "type": "Inches"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": false,
+            "center": [
+              -2.8244880726674695,
+              3.8909722103727105
+            ],
+            "from": [
+              -2.7527910181235886,
+              3.7885782048365866
+            ],
+            "tag": {
+              "commentStart": 2738,
+              "end": 2744,
+              "moduleId": 0,
+              "start": 2738,
+              "type": "TagDeclarator",
+              "value": "seg06"
+            },
+            "to": [
+              -2.9475890417939956,
+              3.9126782325810767
+            ],
+            "type": "TangentialArc",
+            "units": {
+              "type": "Inches"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -2.9475890417939956,
+              3.9126782325810767
+            ],
+            "tag": null,
+            "to": [
+              -2.7243270990793707,
+              5.1788596293110585
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Inches"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": false,
+            "center": [
+              -2.6012261299528445,
+              5.157153607102692
+            ],
+            "from": [
+              -2.7243270990793707,
+              5.1788596293110585
+            ],
+            "tag": {
+              "commentStart": 2887,
+              "end": 2893,
+              "moduleId": 0,
+              "start": 2887,
+              "type": "TagDeclarator",
+              "value": "seg07"
+            },
+            "to": [
+              -2.6012261299528445,
+              5.282153607102692
+            ],
+            "type": "TangentialArc",
+            "units": {
+              "type": "Inches"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -2.6012261299528445,
+              5.282153607102692
+            ],
+            "tag": null,
+            "to": [
+              0.0,
+              5.282153607102692
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Inches"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              0.0,
+              5.282153607102692
+            ],
+            "tag": null,
+            "to": [
+              0.0,
+              4.625
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Inches"
+            }
+          }
+        ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
@@ -943,6 +1459,14 @@ description: Variables in memory after executing helium-tank.kcl
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
+          },
+          "zAxis": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 1.0,
             "units": {
               "type": "Unknown"
             }
@@ -1082,6 +1606,14 @@ description: Variables in memory after executing helium-tank.kcl
             "units": {
               "type": "Unknown"
             }
+          },
+          "zAxis": {
+            "x": 0.0,
+            "y": -1.0,
+            "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
           }
         },
         "start": {
@@ -1130,6 +1662,13 @@ description: Variables in memory after executing helium-tank.kcl
           "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudeArc"
         }
       ],
       "sketch": {
@@ -1154,6 +1693,33 @@ description: Variables in memory after executing helium-tank.kcl
             "tag": null,
             "to": [
               4.736842105263158,
+              0.0775
+            ],
+            "type": "Circle",
+            "units": {
+              "type": "Inches"
+            }
+          }
+        ],
+        "innerPaths": [
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.0,
+              0.0775
+            ],
+            "from": [
+              4.636842105263159,
+              0.0775
+            ],
+            "radius": 4.636842105263159,
+            "tag": null,
+            "to": [
+              4.636842105263159,
               0.0775
             ],
             "type": "Circle",
@@ -1187,6 +1753,14 @@ description: Variables in memory after executing helium-tank.kcl
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
+          },
+          "zAxis": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 1.0,
             "units": {
               "type": "Unknown"
             }
@@ -1296,6 +1870,13 @@ description: Variables in memory after executing helium-tank.kcl
           "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudeArc"
         }
       ],
       "sketch": {
@@ -1320,6 +1901,33 @@ description: Variables in memory after executing helium-tank.kcl
             "tag": null,
             "to": [
               4.75,
+              0.0625
+            ],
+            "type": "Circle",
+            "units": {
+              "type": "Inches"
+            }
+          }
+        ],
+        "innerPaths": [
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.0,
+              0.0625
+            ],
+            "from": [
+              4.65,
+              0.0625
+            ],
+            "radius": 4.65,
+            "tag": null,
+            "to": [
+              4.65,
               0.0625
             ],
             "type": "Circle",
@@ -1353,6 +1961,14 @@ description: Variables in memory after executing helium-tank.kcl
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
+          },
+          "zAxis": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 1.0,
             "units": {
               "type": "Unknown"
             }
@@ -2037,6 +2653,14 @@ description: Variables in memory after executing helium-tank.kcl
             "units": {
               "type": "Unknown"
             }
+          },
+          "zAxis": {
+            "x": 1.0,
+            "y": 0.0,
+            "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
           }
         },
         "start": {
@@ -2554,6 +3178,14 @@ description: Variables in memory after executing helium-tank.kcl
           "units": {
             "type": "Unknown"
           }
+        },
+        "zAxis": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0,
+          "units": {
+            "type": "Unknown"
+          }
         }
       },
       "start": {
@@ -2697,6 +3329,14 @@ description: Variables in memory after executing helium-tank.kcl
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
+          },
+          "zAxis": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 1.0,
             "units": {
               "type": "Unknown"
             }
@@ -2866,6 +3506,14 @@ description: Variables in memory after executing helium-tank.kcl
             "units": {
               "type": "Unknown"
             }
+          },
+          "zAxis": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 1.0,
+            "units": {
+              "type": "Unknown"
+            }
           }
         },
         "start": {
@@ -2944,6 +3592,13 @@ description: Variables in memory after executing helium-tank.kcl
           "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudeArc"
         }
       ],
       "sketch": {
@@ -2968,6 +3623,33 @@ description: Variables in memory after executing helium-tank.kcl
             "tag": null,
             "to": [
               0.034722222222222224,
+              2.525
+            ],
+            "type": "Circle",
+            "units": {
+              "type": "Feet"
+            }
+          }
+        ],
+        "innerPaths": [
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.0,
+              2.525
+            ],
+            "from": [
+              0.032051282051282055,
+              2.525
+            ],
+            "radius": 0.032051282051282055,
+            "tag": null,
+            "to": [
+              0.032051282051282055,
               2.525
             ],
             "type": "Circle",
@@ -3001,6 +3683,14 @@ description: Variables in memory after executing helium-tank.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
+            "units": {
+              "type": "Unknown"
+            }
+          },
+          "zAxis": {
+            "x": 1.0,
+            "y": 0.0,
+            "z": 0.0,
             "units": {
               "type": "Unknown"
             }

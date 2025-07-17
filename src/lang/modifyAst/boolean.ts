@@ -175,13 +175,13 @@ export function findAllChildrenAndOrderByPlaceInCode(
     if (isArray(childrenIdOrIds)) {
       if (childrenIdOrIds.length) {
         stack.push(...childrenIdOrIds)
-        result.push(resultId)
       }
+      result.push(resultId)
     } else {
       if (childrenIdOrIds) {
         stack.push(childrenIdOrIds)
-        result.push(resultId)
       }
+      result.push(resultId)
     }
   }
 
@@ -214,7 +214,8 @@ export function findAllChildrenAndOrderByPlaceInCode(
     }
   }
 
-  const codeRefArtifacts = getArtifacts(result)
+  const resultSet = new Set(result)
+  const codeRefArtifacts = getArtifacts(Array.from(resultSet))
   const orderedByCodeRefDest = codeRefArtifacts.sort((a, b) => {
     const aCodeRef = getFaceCodeRef(a)
     const bCodeRef = getFaceCodeRef(b)

@@ -56,6 +56,90 @@ description: Variables in memory after executing food-service-spatula.kcl
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudeArc"
         }
       ],
       "sketch": {
@@ -171,6 +255,323 @@ description: Variables in memory after executing food-service-spatula.kcl
             }
           }
         ],
+        "innerPaths": [
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -25.0,
+              5.0
+            ],
+            "tag": null,
+            "to": [
+              -55.0,
+              5.0000000000000036
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              -55.0,
+              0.000000000000003552713678800501
+            ],
+            "from": [
+              -55.0,
+              5.0000000000000036
+            ],
+            "tag": null,
+            "to": [
+              -55.0,
+              -4.9999999999999964
+            ],
+            "type": "TangentialArc",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -55.0,
+              -4.9999999999999964
+            ],
+            "tag": null,
+            "to": [
+              -25.0,
+              -5.0
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              -25.0,
+              0.0
+            ],
+            "from": [
+              -25.0,
+              -5.0
+            ],
+            "tag": null,
+            "to": [
+              -25.0,
+              5.0
+            ],
+            "type": "TangentialArcTo",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -25.0,
+              5.0
+            ],
+            "tag": null,
+            "to": [
+              -25.0,
+              5.0
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -24.833425848836807,
+              22.99722453489577
+            ],
+            "tag": null,
+            "to": [
+              -54.83342584883681,
+              23.99722453489576
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              -55.0,
+              18.99999999999999
+            ],
+            "from": [
+              -54.83342584883681,
+              23.99722453489576
+            ],
+            "tag": null,
+            "to": [
+              -55.166574151163196,
+              14.002775465104218
+            ],
+            "type": "TangentialArc",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -55.166574151163196,
+              14.002775465104218
+            ],
+            "tag": null,
+            "to": [
+              -25.166574151163196,
+              13.002775465104227
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              -25.000000000000007,
+              18.0
+            ],
+            "from": [
+              -25.166574151163196,
+              13.002775465104227
+            ],
+            "tag": null,
+            "to": [
+              -24.833425848836807,
+              22.99722453489577
+            ],
+            "type": "TangentialArcTo",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -24.833425848836807,
+              22.99722453489577
+            ],
+            "tag": null,
+            "to": [
+              -24.833425848836807,
+              22.99722453489577
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -25.16657415116319,
+              -13.002775465104229
+            ],
+            "tag": null,
+            "to": [
+              -55.16657415116319,
+              -14.002775465104225
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              -54.99999999999999,
+              -18.999999999999996
+            ],
+            "from": [
+              -55.16657415116319,
+              -14.002775465104225
+            ],
+            "tag": null,
+            "to": [
+              -54.8334258488368,
+              -23.997224534895768
+            ],
+            "type": "TangentialArc",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -54.8334258488368,
+              -23.997224534895768
+            ],
+            "tag": null,
+            "to": [
+              -24.833425848836796,
+              -22.99722453489577
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              -24.999999999999986,
+              -18.0
+            ],
+            "from": [
+              -24.833425848836796,
+              -22.99722453489577
+            ],
+            "tag": null,
+            "to": [
+              -25.16657415116319,
+              -13.002775465104229
+            ],
+            "type": "TangentialArcTo",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -25.16657415116319,
+              -13.002775465104229
+            ],
+            "tag": null,
+            "to": [
+              -25.16657415116319,
+              -13.002775465104229
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          }
+        ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
@@ -196,6 +597,14 @@ description: Variables in memory after executing food-service-spatula.kcl
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
+          },
+          "zAxis": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 1.0,
             "units": {
               "type": "Unknown"
             }
@@ -409,6 +818,14 @@ description: Variables in memory after executing food-service-spatula.kcl
           "units": {
             "type": "Unknown"
           }
+        },
+        "zAxis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0,
+          "units": {
+            "type": "Unknown"
+          }
         }
       },
       "start": {
@@ -468,6 +885,14 @@ description: Variables in memory after executing food-service-spatula.kcl
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
+        "units": {
+          "type": "Unknown"
+        }
+      },
+      "zAxis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0,
         "units": {
           "type": "Unknown"
         }
@@ -803,6 +1228,14 @@ description: Variables in memory after executing food-service-spatula.kcl
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
+          },
+          "zAxis": {
+            "x": 0.9396927112094517,
+            "y": -0.0,
+            "z": 0.342019894888923,
             "units": {
               "type": "Unknown"
             }
@@ -1315,6 +1748,14 @@ description: Variables in memory after executing food-service-spatula.kcl
                 "units": {
                   "type": "Unknown"
                 }
+              },
+              "zAxis": {
+                "x": 0.9396927112094517,
+                "y": -0.0,
+                "z": 0.342019894888923,
+                "units": {
+                  "type": "Unknown"
+                }
               }
             },
             "start": {
@@ -1634,6 +2075,14 @@ description: Variables in memory after executing food-service-spatula.kcl
           "units": {
             "type": "Unknown"
           }
+        },
+        "zAxis": {
+          "x": 0.9396927112094517,
+          "y": -0.0,
+          "z": 0.342019894888923,
+          "units": {
+            "type": "Unknown"
+          }
         }
       },
       "start": {
@@ -1693,6 +2142,14 @@ description: Variables in memory after executing food-service-spatula.kcl
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
+        "units": {
+          "type": "Unknown"
+        }
+      },
+      "zAxis": {
+        "x": 0.9396927112094517,
+        "y": -0.0,
+        "z": 0.342019894888923,
         "units": {
           "type": "Unknown"
         }
@@ -1973,6 +2430,14 @@ description: Variables in memory after executing food-service-spatula.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
+            "units": {
+              "type": "Unknown"
+            }
+          },
+          "zAxis": {
+            "x": 0.0,
+            "y": -1.0,
+            "z": 0.0,
             "units": {
               "type": "Unknown"
             }
@@ -2389,6 +2854,14 @@ description: Variables in memory after executing food-service-spatula.kcl
           "units": {
             "type": "Unknown"
           }
+        },
+        "zAxis": {
+          "x": 0.0,
+          "y": -1.0,
+          "z": 0.0,
+          "units": {
+            "type": "Unknown"
+          }
         }
       },
       "start": {
@@ -2452,6 +2925,14 @@ description: Variables in memory after executing food-service-spatula.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
+        "units": {
+          "type": "Unknown"
+        }
+      },
+      "zAxis": {
+        "x": 0.0,
+        "y": -1.0,
+        "z": 0.0,
         "units": {
           "type": "Unknown"
         }
@@ -2802,6 +3283,14 @@ description: Variables in memory after executing food-service-spatula.kcl
               "units": {
                 "type": "Unknown"
               }
+            },
+            "zAxis": {
+              "x": 0.9396927112094517,
+              "y": -0.0,
+              "z": 0.342019894888923,
+              "units": {
+                "type": "Unknown"
+              }
             }
           },
           "start": {
@@ -2991,6 +3480,14 @@ description: Variables in memory after executing food-service-spatula.kcl
           "units": {
             "type": "Unknown"
           }
+        },
+        "zAxis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0,
+          "units": {
+            "type": "Unknown"
+          }
         }
       },
       "start": {
@@ -3155,6 +3652,14 @@ description: Variables in memory after executing food-service-spatula.kcl
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
+          "units": {
+            "type": "Unknown"
+          }
+        },
+        "zAxis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0,
           "units": {
             "type": "Unknown"
           }
@@ -3325,6 +3830,14 @@ description: Variables in memory after executing food-service-spatula.kcl
           "units": {
             "type": "Unknown"
           }
+        },
+        "zAxis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0,
+          "units": {
+            "type": "Unknown"
+          }
         }
       },
       "start": {
@@ -3467,6 +3980,323 @@ description: Variables in memory after executing food-service-spatula.kcl
           }
         }
       ],
+      "innerPaths": [
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -25.0,
+            5.0
+          ],
+          "tag": null,
+          "to": [
+            -55.0,
+            5.0000000000000036
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            -55.0,
+            0.000000000000003552713678800501
+          ],
+          "from": [
+            -55.0,
+            5.0000000000000036
+          ],
+          "tag": null,
+          "to": [
+            -55.0,
+            -4.9999999999999964
+          ],
+          "type": "TangentialArc",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -55.0,
+            -4.9999999999999964
+          ],
+          "tag": null,
+          "to": [
+            -25.0,
+            -5.0
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            -25.0,
+            0.0
+          ],
+          "from": [
+            -25.0,
+            -5.0
+          ],
+          "tag": null,
+          "to": [
+            -25.0,
+            5.0
+          ],
+          "type": "TangentialArcTo",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -25.0,
+            5.0
+          ],
+          "tag": null,
+          "to": [
+            -25.0,
+            5.0
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -24.833425848836807,
+            22.99722453489577
+          ],
+          "tag": null,
+          "to": [
+            -54.83342584883681,
+            23.99722453489576
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            -55.0,
+            18.99999999999999
+          ],
+          "from": [
+            -54.83342584883681,
+            23.99722453489576
+          ],
+          "tag": null,
+          "to": [
+            -55.166574151163196,
+            14.002775465104218
+          ],
+          "type": "TangentialArc",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -55.166574151163196,
+            14.002775465104218
+          ],
+          "tag": null,
+          "to": [
+            -25.166574151163196,
+            13.002775465104227
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            -25.000000000000007,
+            18.0
+          ],
+          "from": [
+            -25.166574151163196,
+            13.002775465104227
+          ],
+          "tag": null,
+          "to": [
+            -24.833425848836807,
+            22.99722453489577
+          ],
+          "type": "TangentialArcTo",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -24.833425848836807,
+            22.99722453489577
+          ],
+          "tag": null,
+          "to": [
+            -24.833425848836807,
+            22.99722453489577
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -25.16657415116319,
+            -13.002775465104229
+          ],
+          "tag": null,
+          "to": [
+            -55.16657415116319,
+            -14.002775465104225
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            -54.99999999999999,
+            -18.999999999999996
+          ],
+          "from": [
+            -55.16657415116319,
+            -14.002775465104225
+          ],
+          "tag": null,
+          "to": [
+            -54.8334258488368,
+            -23.997224534895768
+          ],
+          "type": "TangentialArc",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -54.8334258488368,
+            -23.997224534895768
+          ],
+          "tag": null,
+          "to": [
+            -24.833425848836796,
+            -22.99722453489577
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            -24.999999999999986,
+            -18.0
+          ],
+          "from": [
+            -24.833425848836796,
+            -22.99722453489577
+          ],
+          "tag": null,
+          "to": [
+            -25.16657415116319,
+            -13.002775465104229
+          ],
+          "type": "TangentialArcTo",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -25.16657415116319,
+            -13.002775465104229
+          ],
+          "tag": null,
+          "to": [
+            -25.16657415116319,
+            -13.002775465104229
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        }
+      ],
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
@@ -3492,6 +4322,14 @@ description: Variables in memory after executing food-service-spatula.kcl
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
+          "units": {
+            "type": "Unknown"
+          }
+        },
+        "zAxis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0,
           "units": {
             "type": "Unknown"
           }

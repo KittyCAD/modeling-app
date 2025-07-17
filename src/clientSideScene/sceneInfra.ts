@@ -278,16 +278,17 @@ export class SceneInfra {
 
     // RENDERER
     this.renderer = new WebGLRenderer({ antialias: true, alpha: true }) // Enable transparency
-    this.renderer.setSize(window.innerWidth, window.innerHeight)
     this.renderer.setClearColor(0x000000, 0) // Set clear color to black with 0 alpha (fully transparent)
 
     // LABEL RENDERER
     this.labelRenderer = new CSS2DRenderer()
-    this.labelRenderer.setSize(window.innerWidth, window.innerHeight)
     this.labelRenderer.domElement.style.position = 'absolute'
     this.labelRenderer.domElement.style.top = '0px'
     this.labelRenderer.domElement.style.pointerEvents = 'none'
+    this.renderer.domElement.style.width = '100%'
+    this.renderer.domElement.style.height = '100%'
     this.labelRenderer.domElement.className = 'z-sketchSegmentIndicators'
+
     window.addEventListener('resize', this.onWindowResize)
 
     this.camControls = new CameraControls(
@@ -343,9 +344,22 @@ export class SceneInfra {
     axisGroup?.name === 'gridHelper' && axisGroup.scale.set(scale, scale, scale)
   }
 
+  // Called after canvas is attached to the DOM and on each resize.
+  // Note: would be better to use ResizeObserver instead of window.onresize
+  // See:
+  // https://webglfundamentals.org/webgl/lessons/webgl-resizing-the-canvas.html
   onWindowResize = () => {
-    this.renderer.setSize(window.innerWidth, window.innerHeight)
-    this.labelRenderer.setSize(window.innerWidth, window.innerHeight)
+    const cssSize = [
+      this.renderer.domElement.clientWidth,
+      this.renderer.domElement.clientHeight,
+    ]
+    // Note: could cap the resolution on mobile devices if needed.
+    const canvasResolution = [
+      Math.round(cssSize[0] * window.devicePixelRatio),
+      Math.round(cssSize[1] * window.devicePixelRatio),
+    ]
+    this.renderer.setSize(canvasResolution[0], canvasResolution[1], false)
+    this.labelRenderer.setSize(cssSize[0], cssSize[1])
   }
 
   animate = () => {

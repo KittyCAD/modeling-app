@@ -22,7 +22,7 @@ expression: actual
           "elements": [
             {
               "commentStart": 11,
-              "computed": false,
+              "computed": true,
               "end": 19,
               "moduleId": 0,
               "object": {
