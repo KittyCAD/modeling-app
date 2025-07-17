@@ -1,7 +1,6 @@
 import { Popover, Transition, RadioGroup, Combobox } from '@headlessui/react'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { Fragment } from 'react'
-import { SUPPORTED_ENVIRONMENTS } from '@src/lib/constants'
 import { ActionIcon } from '@src/components/ActionIcon'
 import { capitaliseFC } from '@src/lib/utils'
 import { isDesktop } from '@src/lib/isDesktop'
@@ -82,41 +81,7 @@ export const AdvancedSignInOptions = ({
           >
             {({ close }) => (
               <>
-                <RadioGroup
-                  className="mb-2"
-                  value={selectedEnvironment}
-                  onChange={(event) => {
-                    setSelectedEnvironment(event)
-                  }}
-                >
-                  <RadioGroup.Label className="text-xs text-chalkboard-70 dark:text-chalkboard-30">
-                    Environment
-                  </RadioGroup.Label>
-                  <RadioGroup.Option
-                    value={SUPPORTED_ENVIRONMENTS.production.name}
-                  >
-                    {({ checked }) =>
-                      EnvironmentOptionRow({
-                        checked,
-                        copy: capitaliseFC(
-                          SUPPORTED_ENVIRONMENTS.production.name
-                        ),
-                      })
-                    }
-                  </RadioGroup.Option>
-                  <RadioGroup.Option
-                    value={SUPPORTED_ENVIRONMENTS.development.name}
-                  >
-                    {({ checked }) =>
-                      EnvironmentOptionRow({
-                        checked,
-                        copy: capitaliseFC(
-                          SUPPORTED_ENVIRONMENTS.development.name
-                        ),
-                      })
-                    }
-                  </RadioGroup.Option>
-                </RadioGroup>
+                <p>TODO A INPUT FIELD</p>
                 <div className="flex flex-col items-start py-0.5">
                   <span className="text-xs text-chalkboard-70 dark:text-chalkboard-30">
                     Connection pool

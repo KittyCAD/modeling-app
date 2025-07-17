@@ -1,14 +1,13 @@
-import type { Environment, EnvironmentName } from '@src/lib/constants'
-import { SUPPORTED_ENVIRONMENTS } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import { capitaliseFC } from '@src/lib/utils'
+import { EnvironmentConfigurationRuntime } from './lib/constants'
 
-function generateDomainsFromBaseDomain (baseDomain: string) {
+function generateDomainsFromBaseDomain(baseDomain: string) {
   return {
-    API_URL:`https://api.${baseDomain}`,
-    SITE_URL:`https://${baseDomain}`,
-    WEBSOCKET_URL:`wss://api.${baseDomain}/ws/modeling/commands`,
-    APP_URL:`https://api.${baseDomain}`
+    API_URL: `https://api.${baseDomain}`,
+    SITE_URL: `https://${baseDomain}`,
+    WEBSOCKET_URL: `wss://api.${baseDomain}/ws/modeling/commands`,
+    APP_URL: `https://api.${baseDomain}`,
   }
 }
 
@@ -23,24 +22,31 @@ export type EnvironmentVariables = {
 }
 
 /** Store the environment in memory to be accessed during runtime */
-let ENVIRONMENT: Environment | null = null
+let ENVIRONMENT: EnvironmentConfigurationRuntime | null = null
 
 /** Update the runtime environment */
-export const updateEnvironment = (environment: EnvironmentName | null) => {
+export const updateEnvironment = (environment: string | null) => {
   if (environment === null) {
     ENVIRONMENT = null
   } else {
-    ENVIRONMENT = SUPPORTED_ENVIRONMENTS[environment]
+    if (ENVIRONMENT) {
+      ENVIRONMENT.domain = environment
+    } else {
+      ENVIRONMENT = {
+        domain: environment,
+        pool: ''
+      }
+    }
   }
   console.log('updating environment', environment)
 }
 
 export const updateEnvironmentPool = (
-  environmentName: EnvironmentName,
+  environmentName: string,
   pool: string
 ) => {
   if (!ENVIRONMENT) return
-  if (ENVIRONMENT.name === environmentName) {
+  if (ENVIRONMENT.domain === environmentName) {
     ENVIRONMENT.pool = pool
   }
 }
@@ -52,7 +58,7 @@ const getEnvironmentFromThisFile = () => {
 
 /** Get the runtime environment, useful for knowing the key for the environment you are in */
 export const getEnvironmentName = () => {
-  return ENVIRONMENT?.name || null
+  return ENVIRONMENT?.domain || null
 }
 
 /**
@@ -127,7 +133,8 @@ export default (): EnvironmentVariables => {
    *
    * e.g. View this sample -> button would be pointing to production if built with the production .env
    */
-  let {API_URL, SITE_URL, WEBSOCKET_URL, APP_URL} = generateDomainsFromBaseDomain(env.VITE_KITTYCAD_BASE_DOMAIN)
+  let { API_URL, SITE_URL, WEBSOCKET_URL, APP_URL } =
+    generateDomainsFromBaseDomain(env.VITE_KITTYCAD_BASE_DOMAIN)
 
   // let API_URL = env.VITE_KITTYCAD_API_BASE_URL
   // let SITE_URL = env.VITE_KITTYCAD_SITE_BASE_URL
@@ -141,7 +148,8 @@ export default (): EnvironmentVariables => {
    */
   const environment = getEnvironmentFromThisFile()
   if (isDesktop() && environment) {
-    let {API_URL, SITE_URL, WEBSOCKET_URL, APP_URL} = generateDomainsFromBaseDomain(environment)
+    let { API_URL, SITE_URL, WEBSOCKET_URL, APP_URL } =
+      generateDomainsFromBaseDomain(environment.domain)
   }
 
   const environmentVariables: EnvironmentVariables = {
@@ -151,8 +159,7 @@ export default (): EnvironmentVariables => {
     VITE_KITTYCAD_API_TOKEN:
       (env.VITE_KITTYCAD_API_TOKEN as string) || undefined,
     VITE_KITTYCAD_SITE_BASE_URL: (SITE_URL as string) || undefined,
-    VITE_KITTYCAD_SITE_APP_URL:
-      (APP_URL as string) || undefined,
+    VITE_KITTYCAD_SITE_APP_URL: (APP_URL as string) || undefined,
     POOL: pool,
   }
 

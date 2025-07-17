@@ -12,8 +12,6 @@ import {
 import { getUniqueProjectName } from '@src/lib/desktopFS'
 import {
   IS_ML_EXPERIMENTAL,
-  isEnvironmentName,
-  SUPPORTED_ENVIRONMENTS,
 } from '@src/lib/constants'
 import toast from 'react-hot-toast'
 import { reportRejection } from '@src/lib/trap'
@@ -465,15 +463,8 @@ export function createApplicationCommands({
     icon: 'importFile',
     groupId: 'application',
     onSubmit: (data) => {
-      if (data) {
-        if (isEnvironmentName(data.environment))
-          writeEnvironmentFile(data.environment)
-            .then(() => {
-              // Reload the application and it will trigger the correct sign in workflow for the new environment
-              window.location.reload()
-            })
-            .catch(reportRejection)
-      }
+      // TODO:
+      if (data) {}
     },
     args: {
       environment: {
@@ -488,12 +479,7 @@ export function createApplicationCommands({
           }
           return value
         },
-        options: Object.keys(SUPPORTED_ENVIRONMENTS).map((name) => {
-          return {
-            value: name,
-            name: name,
-          }
-        }),
+        options: []
       },
     },
   }

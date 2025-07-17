@@ -852,9 +852,7 @@ export const readEnvironmentFile = async () => {
  * We store the environment file on disk because we store the token.txt across app installs
  * otherwise we would not know what environment they logged into when the app does the updater
  */
-export const writeEnvironmentFile = async (
-  environment: string
-) => {
+export const writeEnvironmentFile = async (environment: string) => {
   const environmentFilePath = await getEnvironmentFilePath()
   if (err(environment)) return Promise.reject(environment)
   const result = window.electron.writeFile(environmentFilePath, environment)

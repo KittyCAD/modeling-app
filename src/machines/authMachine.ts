@@ -11,7 +11,6 @@ import {
   COOKIE_NAME,
   isEnvironmentName,
   OAUTH2_DEVICE_CLIENT_ID,
-  SUPPORTED_ENVIRONMENTS,
 } from '@src/lib/constants'
 import {
   getUser as getUserDesktop,
@@ -323,7 +322,7 @@ async function logout() {
 /**
  * Logout function that will do a specific environment logout if environment name is passed in
  */
-async function logoutEnvironment(requestedEnvironmentName?: EnvironmentName) {
+async function logoutEnvironment(requestedEnvironmentName?: string) {
   // TODO: 7/10/2025 Remove this months from now, we want to clear the localStorage of the key.
   localStorage.removeItem(TOKEN_PERSIST_KEY)
   if (isDesktop()) {
@@ -339,7 +338,8 @@ async function logoutEnvironment(requestedEnvironmentName?: EnvironmentName) {
 
       // Do not use withAPIBaseURL since we need to log out of each environment separately.
       // Not the URL within our last selected environment
-      const url = SUPPORTED_ENVIRONMENTS[environmentName].API_URL
+      // TODO: Kevin?
+      const url = environmentName
       if (token) {
         try {
           await fetch(url + '/oauth2/token/revoke', {
@@ -382,13 +382,11 @@ async function logoutAllEnvironments() {
     return new Error('unimplemented for web')
   }
 
-  for (const key in SUPPORTED_ENVIRONMENTS) {
-    if (isEnvironmentName(key)) {
-      const environmentName: EnvironmentName = key
-      // Make the oauth2/token/revoke request per environment
-      await logoutEnvironment(environmentName)
-    }
-  }
+  // TODO: Kevin LS on disk. Only way.
+  //     const environmentName: EnvironmentName = key
+  //     // Make the oauth2/token/revoke request per environment
+  //     await logoutEnvironment(environmentName)
+  //   }
 
   await setTokenToEmptyStringForAllEnvironments()
 }

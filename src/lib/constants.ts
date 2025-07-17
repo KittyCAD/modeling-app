@@ -237,4 +237,13 @@ export type EnvironmentConfiguration = {
   token: string // authentication token from signing in. Can be empty string
 }
 
+/**
+ * Signed in environment data, when you sign in on desktop
+ * you will get one of these written to disk.
+ */
+export type EnvironmentConfigurationRuntime = {
+  domain: string // same name as the file development for development.json
+  pool: string // can be the empty string to indicate no pool for engine
+}
+
 export const ENVIRONMENT_CONFIGURATION_FOLDER = 'envs'

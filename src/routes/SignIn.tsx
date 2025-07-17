@@ -6,11 +6,8 @@ import { Link } from 'react-router-dom'
 import { ActionButton } from '@src/components/ActionButton'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { Logo } from '@src/components/Logo'
-import type { EnvironmentName } from '@src/lib/constants'
 import {
   APP_NAME,
-  isEnvironmentName,
-  SUPPORTED_ENVIRONMENTS,
 } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
@@ -57,30 +54,26 @@ const SignIn = () => {
 
   // TODO only run on desktop.
   useEffect(() => {
-    if (isEnvironmentName(selectedEnvironment)) {
-      if (pool || pool === '') {
-        writeEnvironmentConfigurationPool(selectedEnvironment, pool).catch(
-          reportRejection
-        )
-      }
+    if (pool || pool === '') {
+      writeEnvironmentConfigurationPool(selectedEnvironment, pool).catch(
+        reportRejection
+      )
     }
   }, [pool])
 
   useEffect(() => {
-    if (isEnvironmentName(selectedEnvironment)) {
-      // Update the pool
-      readEnvironmentConfigurationPool(selectedEnvironment)
-        .then((cachedPool) => {
-          writeEnvironmentFile(selectedEnvironment)
-            .then(() => {
-              updateEnvironment(selectedEnvironment)
-              updateEnvironmentPool(selectedEnvironment, cachedPool)
-              setPool(cachedPool)
-            })
-            .catch(reportRejection)
-        })
-        .catch(reportRejection)
-    }
+    // Update the pool
+    readEnvironmentConfigurationPool(selectedEnvironment)
+      .then((cachedPool) => {
+        writeEnvironmentFile(selectedEnvironment)
+          .then(() => {
+            updateEnvironment(selectedEnvironment)
+            updateEnvironmentPool(selectedEnvironment, cachedPool)
+            setPool(cachedPool)
+          })
+          .catch(reportRejection)
+      })
+      .catch(reportRejection)
   }, [selectedEnvironment])
 
   const {
@@ -102,15 +95,7 @@ const SignIn = () => {
     [theme.current]
   )
 
-  const signInDesktop = async (environmentName: EnvironmentName) => {
-    updateEnvironment(environmentName)
-    const environment = env()
-    if (!environment) {
-      console.error('Unable to login, failed to fetch environment.')
-      toast.error('Unable to login, failed to fetch environment.')
-      return
-    }
-
+  const signInDesktop = async () => {
     // We want to invoke our command to login via device auth.
     const userCodeToDisplay = await window.electron
       .startDeviceFlow(withAPIBaseURL(location.search))
@@ -131,7 +116,6 @@ const SignIn = () => {
       return
     }
 
-    await writeEnvironmentFile(environmentName)
     authActor.send({ type: 'Log in', token })
   }
 
@@ -139,27 +123,6 @@ const SignIn = () => {
     authActor.send({ type: 'Log out' })
     setUserCode('')
   }
-
-  const signInDesktopDevelopment = async () => {
-    return signInDesktop('development')
-  }
-
-  const signInDesktopProduction = async () => {
-    return signInDesktop('production')
-  }
-  const getSignInDesktop = useCallback(async () => {
-    if (selectedEnvironment === SUPPORTED_ENVIRONMENTS.development.name) {
-      await signInDesktopDevelopment()
-    } else if (selectedEnvironment === SUPPORTED_ENVIRONMENTS.production.name) {
-      await signInDesktopProduction()
-    }
-    // TODO production-us
-  }, [selectedEnvironment])
-
-  const defaultSignInMethod =
-    env().NODE_ENV === 'development'
-      ? signInDesktopDevelopment
-      : getSignInDesktop
 
   return (
     <main
@@ -203,7 +166,7 @@ const SignIn = () => {
                 {!userCode ? (
                   <>
                     <button
-                      onClick={toSync(defaultSignInMethod, reportRejection)}
+                      onClick={toSync(signInDesktop, reportRejection)}
                       className={
                         'm-0 mt-8 w-fit flex gap-4 items-center px-3 py-1 ' +
                         '!border-transparent !text-lg !text-chalkboard-10 !bg-primary hover:hue-rotate-15'
