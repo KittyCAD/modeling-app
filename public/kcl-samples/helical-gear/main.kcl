@@ -60,7 +60,6 @@ fn helicalGear(nTeeth, module, pressureAngle, helixAngle, gearHeight) {
 
       // Pattern the sketch about the center by the specified number of teeth, then close the sketch
       |> patternCircular2d(
-           %,
            instances = nTeeth,
            center = [0, 0],
            arcDegrees = 360,

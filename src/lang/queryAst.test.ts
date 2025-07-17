@@ -813,6 +813,35 @@ profile001 = circle(sketch001, center = [0, 0], radius = 1)
     expect(vars.pathIfPipe).toBeUndefined()
   })
 
+  // Test for https://github.com/KittyCAD/modeling-app/issues/7669
+  it('should find only one variable expr for two selections pointing to the same variable', async () => {
+    const circleProfileInVar = `sketch001 = startSketchOn(XY)
+profile001 = circle(sketch001, center = [0, 0], radius = 1)
+`
+    const ast = assertParse(circleProfileInVar)
+    const { artifactGraph } = await enginelessExecutor(ast)
+    const artifact = [...artifactGraph.values()].find((a) => a.type === 'path')
+    if (!artifact) {
+      throw new Error('Artifact not found in the graph')
+    }
+    const selections: Selections = {
+      graphSelections: [
+        {
+          codeRef: artifact.codeRef,
+          artifact,
+        },
+        {
+          codeRef: artifact.codeRef,
+          artifact,
+        }, // duplicate selection
+      ],
+      otherSelections: [],
+    }
+    const vars = getVariableExprsFromSelection(selections, ast)
+    if (err(vars)) throw vars
+    expect(vars.exprs).toHaveLength(1)
+  })
+
   it('should return the pipe substitution symbol in a variable-less simple profile selection', async () => {
     const circleProfileInVar = `startSketchOn(XY)
   |> circle(center = [0, 0], radius = 1)
@@ -1031,5 +1060,36 @@ revolve001 = revolve([profile001, profile002], axis = X, angle = 180)
     }
     expect(selections.graphSelections[0].artifact.type).toEqual('path')
     expect(selections.graphSelections[1].artifact.type).toEqual('path')
+  })
+
+  it('should find the solids selection from a variable-less transform call', async () => {
+    const redExtrusion = `sketch001 = startSketchOn(XZ)
+profile001 = circle(
+  sketch001,
+  center = [0, 0],
+  radius = 100
+)
+extrude001 = extrude(profile001, length = 100)
+appearance(extrude001, color = '#FF0000')`
+    const ast = assertParse(redExtrusion)
+    const { artifactGraph, operations } = await enginelessExecutor(ast)
+    const op = operations.find(
+      (o) => o.type === 'StdLibCall' && o.name === 'appearance'
+    )
+    if (!op || op.type !== 'StdLibCall' || !op.unlabeledArg) {
+      throw new Error('Appearance operation not found')
+    }
+
+    const selections = retrieveSelectionsFromOpArg(
+      op.unlabeledArg,
+      artifactGraph
+    )
+    if (err(selections)) throw selections
+    expect(selections.graphSelections).toHaveLength(1)
+    const selection = selections.graphSelections[0]
+    if (!selection.artifact) {
+      throw new Error('Artifact not found in the selection')
+    }
+    expect(selection.artifact.type).toEqual('sweep')
   })
 })

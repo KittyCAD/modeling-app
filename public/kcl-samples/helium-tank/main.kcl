@@ -115,9 +115,4 @@ mountingStrap = startSketchOn(offsetPlane(XY, offset = tankHeight * 0.67))
 
 // Create a second instance of the bracket and strap at a lower point on the tank
 [bracket, mountingStrap]
-  |> patternLinear3d(
-       %,
-       instances = 2,
-       distance = tankHeight * 0.33,
-       axis = [0, 0, -1],
-     )
+  |> patternLinear3d(instances = 2, distance = tankHeight * 0.33, axis = [0, 0, -1])

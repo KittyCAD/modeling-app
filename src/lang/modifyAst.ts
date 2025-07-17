@@ -6,6 +6,7 @@ import type { NonCodeMeta } from '@rust/kcl-lib/bindings/NonCodeMeta'
 import {
   createArrayExpression,
   createCallExpressionStdLibKw,
+  createExpressionStatement,
   createIdentifier,
   createImportAsSelector,
   createImportStatement,
@@ -47,6 +48,7 @@ import type {
   ArrayExpression,
   CallExpressionKw,
   Expr,
+  ExpressionStatement,
   Literal,
   PathToNode,
   PipeExpression,
@@ -337,64 +339,6 @@ export function mutateObjExpProp(
   return false
 }
 
-export function addShell({
-  node,
-  sweepName,
-  faces,
-  thickness,
-  insertIndex,
-  variableName,
-}: {
-  node: Node<Program>
-  sweepName: string
-  faces: Expr[]
-  thickness: Expr
-  insertIndex?: number
-  variableName?: string
-}): { modifiedAst: Node<Program>; pathToNode: PathToNode } {
-  const modifiedAst = structuredClone(node)
-  const name =
-    variableName ?? findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.SHELL)
-  const shell = createCallExpressionStdLibKw(
-    'shell',
-    createLocalName(sweepName),
-    [
-      createLabeledArg('faces', createArrayExpression(faces)),
-      createLabeledArg('thickness', thickness),
-    ]
-  )
-
-  const variable = createVariableDeclaration(name, shell)
-  const insertAt =
-    insertIndex !== undefined
-      ? insertIndex
-      : modifiedAst.body.length
-        ? modifiedAst.body.length
-        : 0
-
-  if (modifiedAst.body.length) {
-    modifiedAst.body.splice(insertAt, 0, variable)
-  } else {
-    modifiedAst.body.push(variable)
-  }
-
-  const argIndex = 0
-  const pathToNode: PathToNode = [
-    ['body', ''],
-    [insertAt, 'index'],
-    ['declaration', 'VariableDeclaration'],
-    ['init', 'VariableDeclarator'],
-    ['arguments', 'CallExpressionKw'],
-    [argIndex, ARG_INDEX_FIELD],
-    ['arg', LABELED_ARG_FIELD],
-  ]
-
-  return {
-    modifiedAst,
-    pathToNode,
-  }
-}
-
 export function sketchOnExtrudedFace(
   node: Node<Program>,
   sketchPathToNode: PathToNode,
@@ -645,39 +589,6 @@ export function addHelix({
     ['arguments', 'CallExpressionKw'],
     [argIndex, ARG_INDEX_FIELD],
     ['arg', LABELED_ARG_FIELD],
-  ]
-
-  return {
-    modifiedAst,
-    pathToNode,
-  }
-}
-
-/**
- * Add clone statement
- */
-export function addClone({
-  ast,
-  geometryName,
-  variableName,
-}: {
-  ast: Node<Program>
-  geometryName: string
-  variableName: string
-}): { modifiedAst: Node<Program>; pathToNode: PathToNode } {
-  const modifiedAst = structuredClone(ast)
-  const variable = createVariableDeclaration(
-    variableName,
-    createCallExpressionStdLibKw('clone', createLocalName(geometryName), [])
-  )
-
-  modifiedAst.body.push(variable)
-  const insertAt = modifiedAst.body.length - 1
-  const pathToNode: PathToNode = [
-    ['body', ''],
-    [insertAt, 'index'],
-    ['declaration', 'VariableDeclaration'],
-    ['init', 'VariableDeclarator'],
   ]
 
   return {
@@ -1246,17 +1157,24 @@ export function createPathToNodeForLastVariable(
   return pathToCall
 }
 
-export function setCallInAst(
-  ast: Node<Program>,
-  call: Node<CallExpressionKw>,
-  nodeToEdit?: PathToNode,
-  pathIfPipe?: PathToNode
-): Error | PathToNode {
+export function setCallInAst({
+  ast,
+  call,
+  pathToEdit,
+  pathIfNewPipe,
+  variableIfNewDecl,
+}: {
+  ast: Node<Program>
+  call: Node<CallExpressionKw>
+  pathToEdit?: PathToNode
+  pathIfNewPipe?: PathToNode
+  variableIfNewDecl?: string
+}): Error | PathToNode {
   let pathToNode: PathToNode | undefined
-  if (nodeToEdit) {
+  if (pathToEdit) {
     const result = getNodeFromPath<CallExpressionKw>(
       ast,
-      nodeToEdit,
+      pathToEdit,
       'CallExpressionKw'
     )
     if (err(result)) {
@@ -1264,26 +1182,51 @@ export function setCallInAst(
     }
 
     Object.assign(result.node, call)
-    pathToNode = nodeToEdit
-  } else {
-    if (!call.unlabeled && pathIfPipe) {
-      const pipe = getNodeFromPath<PipeExpression>(
-        ast,
-        pathIfPipe,
-        'PipeExpression'
-      )
-      if (err(pipe)) {
-        return pipe
-      }
-      pipe.node.body.push(call)
-      pathToNode = pathIfPipe
-    } else {
-      const name = findUniqueName(ast, call.callee.name.name)
-      const declaration = createVariableDeclaration(name, call)
-      ast.body.push(declaration)
-      const toFirstKwarg = call.arguments.length > 0
-      pathToNode = createPathToNodeForLastVariable(ast, toFirstKwarg)
+    pathToNode = pathToEdit
+  } else if (pathIfNewPipe) {
+    const pipe = getNodeFromPath<PipeExpression>(
+      ast,
+      pathIfNewPipe,
+      'PipeExpression'
+    )
+    if (err(pipe)) {
+      return pipe
     }
+    if (pipe.node.type === 'PipeExpression') {
+      pipe.node.body.push(call)
+    } else if (pipe.node.type === 'CallExpressionKw') {
+      const expression = getNodeFromPath<ExpressionStatement>(
+        ast,
+        pathIfNewPipe,
+        'ExpressionStatement'
+      )
+      if (err(expression) || expression.node.type !== 'ExpressionStatement') {
+        return new Error('Could not retrieve ExpressionStatement')
+      }
+
+      expression.node.expression = createPipeExpression([
+        expression.node.expression,
+        call,
+      ])
+    } else {
+      return new Error(
+        'Expected pipeIfPipe to be a PipeExpression or CallExpressionKw'
+      )
+    }
+    pathToNode = pathIfNewPipe
+  } else if (variableIfNewDecl) {
+    const name = findUniqueName(ast, variableIfNewDecl)
+    const declaration = createVariableDeclaration(name, call)
+    ast.body.push(declaration)
+    const toFirstKwarg = call.arguments.length > 0
+    pathToNode = createPathToNodeForLastVariable(ast, toFirstKwarg)
+  } else {
+    ast.body.push(createExpressionStatement(call))
+    pathToNode = [
+      ['body', ''],
+      [ast.body.length - 1, 'index'],
+      ['expression', 'ExpressionStatement'],
+    ]
   }
 
   return pathToNode

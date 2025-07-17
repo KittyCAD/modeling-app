@@ -1065,14 +1065,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
-                          "unlabeled": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "start": 0,
-                            "type": "PipeSubstitution",
-                            "type": "PipeSubstitution"
-                          }
+                          "unlabeled": null
                         },
                         {
                           "arguments": [
@@ -1152,14 +1145,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
-                          "unlabeled": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "start": 0,
-                            "type": "PipeSubstitution",
-                            "type": "PipeSubstitution"
-                          }
+                          "unlabeled": null
                         },
                         {
                           "arguments": [
@@ -1239,14 +1225,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
-                          "unlabeled": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "start": 0,
-                            "type": "PipeSubstitution",
-                            "type": "PipeSubstitution"
-                          }
+                          "unlabeled": null
                         },
                         {
                           "arguments": [
@@ -1335,14 +1314,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
-                          "unlabeled": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "start": 0,
-                            "type": "PipeSubstitution",
-                            "type": "PipeSubstitution"
-                          }
+                          "unlabeled": null
                         },
                         {
                           "arguments": [
@@ -1486,14 +1458,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
-                          "unlabeled": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "start": 0,
-                            "type": "PipeSubstitution",
-                            "type": "PipeSubstitution"
-                          }
+                          "unlabeled": null
                         }
                       ],
                       "commentStart": 0,
@@ -2188,14 +2153,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
-                "unlabeled": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "start": 0,
-                  "type": "PipeSubstitution",
-                  "type": "PipeSubstitution"
-                }
+                "unlabeled": null
               }
             ],
             "commentStart": 0,
@@ -2518,14 +2476,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
-                "unlabeled": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "start": 0,
-                  "type": "PipeSubstitution",
-                  "type": "PipeSubstitution"
-                }
+                "unlabeled": null
               }
             ],
             "commentStart": 0,
@@ -3177,14 +3128,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
-                "unlabeled": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "start": 0,
-                  "type": "PipeSubstitution",
-                  "type": "PipeSubstitution"
-                }
+                "unlabeled": null
               },
               {
                 "arguments": [
@@ -3264,14 +3208,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
-                "unlabeled": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "start": 0,
-                  "type": "PipeSubstitution",
-                  "type": "PipeSubstitution"
-                }
+                "unlabeled": null
               },
               {
                 "arguments": [
@@ -3351,14 +3288,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
-                "unlabeled": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "start": 0,
-                  "type": "PipeSubstitution",
-                  "type": "PipeSubstitution"
-                }
+                "unlabeled": null
               },
               {
                 "arguments": [
@@ -3447,14 +3377,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
-                "unlabeled": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "start": 0,
-                  "type": "PipeSubstitution",
-                  "type": "PipeSubstitution"
-                }
+                "unlabeled": null
               },
               {
                 "arguments": [
@@ -3598,14 +3521,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
-                "unlabeled": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "start": 0,
-                  "type": "PipeSubstitution",
-                  "type": "PipeSubstitution"
-                }
+                "unlabeled": null
               }
             ],
             "commentStart": 0,
@@ -3876,14 +3792,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
-                "unlabeled": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "start": 0,
-                  "type": "PipeSubstitution",
-                  "type": "PipeSubstitution"
-                }
+                "unlabeled": null
               }
             ],
             "commentStart": 0,
@@ -4201,14 +4110,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
-                "unlabeled": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "start": 0,
-                  "type": "PipeSubstitution",
-                  "type": "PipeSubstitution"
-                }
+                "unlabeled": null
               },
               {
                 "arguments": [
@@ -4288,14 +4190,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
-                "unlabeled": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "start": 0,
-                  "type": "PipeSubstitution",
-                  "type": "PipeSubstitution"
-                }
+                "unlabeled": null
               },
               {
                 "arguments": [
@@ -4375,14 +4270,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
-                "unlabeled": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "start": 0,
-                  "type": "PipeSubstitution",
-                  "type": "PipeSubstitution"
-                }
+                "unlabeled": null
               },
               {
                 "arguments": [
@@ -4480,14 +4368,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
-                "unlabeled": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "start": 0,
-                  "type": "PipeSubstitution",
-                  "type": "PipeSubstitution"
-                }
+                "unlabeled": null
               },
               {
                 "arguments": [
@@ -4631,14 +4512,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
-                "unlabeled": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "start": 0,
-                  "type": "PipeSubstitution",
-                  "type": "PipeSubstitution"
-                }
+                "unlabeled": null
               },
               {
                 "arguments": [
@@ -4695,14 +4569,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
-                "unlabeled": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "start": 0,
-                  "type": "PipeSubstitution",
-                  "type": "PipeSubstitution"
-                }
+                "unlabeled": null
               }
             ],
             "commentStart": 0,
@@ -5069,14 +4936,7 @@ description: Result of parsing spinning-highrise-tower.kcl
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
-                "unlabeled": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "start": 0,
-                  "type": "PipeSubstitution",
-                  "type": "PipeSubstitution"
-                }
+                "unlabeled": null
               }
             ],
             "commentStart": 0,
