@@ -1201,7 +1201,6 @@ extrude001 = extrude(profile001, length = 100)`
       await cmdBar.progressCmdBar()
       await page.keyboard.insertText('1')
       await cmdBar.progressCmdBar()
-      await page.keyboard.insertText('100')
       await cmdBar.expectState({
         stage: 'review',
         headerArguments: {
@@ -1210,6 +1209,20 @@ extrude001 = extrude(profile001, length = 100)`
           AngleStart: '0',
           Revolutions: '20',
           Radius: '1',
+        },
+        commandName: 'Helix',
+      })
+      await cmdBar.clickOptionalArgument('ccw')
+      await cmdBar.selectOption({ name: 'True' }).click()
+      await cmdBar.expectState({
+        stage: 'review',
+        headerArguments: {
+          Mode: 'Edge',
+          Edge: `1 sweepEdge`,
+          AngleStart: '0',
+          Revolutions: '20',
+          Radius: '1',
+          CounterClockWise: '',
         },
         commandName: 'Helix',
       })
@@ -1226,6 +1239,7 @@ extrude001 = extrude(profile001, length = 100)`
           revolutions = 20,
           angleStart = 0,
           radius = 1,
+          ccw = true,
         )`,
         { shouldNormalise: true }
       )
@@ -1247,6 +1261,7 @@ extrude001 = extrude(profile001, length = 100)`
           AngleStart: '0',
           Revolutions: '20',
           Radius: initialInput,
+          CounterClockWise: '',
         },
         highlightedHeaderArg: 'radius',
       })
@@ -1258,6 +1273,7 @@ extrude001 = extrude(profile001, length = 100)`
           AngleStart: '0',
           Revolutions: '20',
           Radius: newInput,
+          CounterClockWise: '',
         },
         commandName: 'Helix',
       })
@@ -1275,14 +1291,13 @@ extrude001 = extrude(profile001, length = 100)`
         },
         highlightedHeaderArg: 'CounterClockWise',
       })
-      await cmdBar.selectOption({ name: 'True' }).click()
+      await cmdBar.selectOption({ name: 'False' }).click()
       await cmdBar.expectState({
         stage: 'review',
         headerArguments: {
           AngleStart: '0',
           Revolutions: '20',
           Radius: newInput,
-          CounterClockWise: '',
         },
         commandName: 'Helix',
       })
@@ -1296,7 +1311,6 @@ extrude001 = extrude(profile001, length = 100)`
           revolutions = 20,
           angleStart = 0,
           radius = 5,
-          ccw = true,
         )`,
         { shouldNormalise: true }
       )

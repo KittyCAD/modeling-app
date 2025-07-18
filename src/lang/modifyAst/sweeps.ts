@@ -1,4 +1,5 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type { OpArg, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
 
 import {
   createCallExpressionStdLibKw,
@@ -21,11 +22,20 @@ import {
   valueOrVariable,
 } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
-import type { PathToNode, Program, VariableDeclaration } from '@src/lang/wasm'
+import type {
+  ArtifactGraph,
+  PathToNode,
+  Program,
+  VariableDeclaration,
+} from '@src/lang/wasm'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import type { Selections } from '@src/lib/selections'
 import { err } from '@src/lib/trap'
+import {
+  getArtifactOfTypes,
+  getSweepEdgeCodeRef,
+} from '@src/lang/std/artifactGraph'
 
 export function addExtrude({
   ast,
@@ -414,4 +424,97 @@ export function getAxisExpressionAndIndex(
     generatedAxis,
     axisIndexIfAxis,
   }
+}
+
+// Sort of an invert from getAxisExpressionAndIndex
+export function retrieveAxisOrEdgeSelectionsFromOpArg(
+  opArg: OpArg,
+  artifactGraph: ArtifactGraph
+):
+  | Error
+  | {
+      axisOrEdge: 'Axis' | 'Edge'
+      axis?: string
+      edge?: Selections
+    } {
+  let axisOrEdge: 'Axis' | 'Edge' | undefined
+  let axis: string | undefined
+  let edge: Selections | undefined
+  const axisValue = opArg.value
+  const nonZero = (val: OpKclValue): number => {
+    if (val.type === 'Number') {
+      return val.value
+    } else {
+      return 0
+    }
+  }
+  if (axisValue.type === 'Object') {
+    // default axis casee
+    axisOrEdge = 'Axis'
+    const direction = axisValue.value['direction']
+    if (!direction || direction.type !== 'Array') {
+      return new Error('No direction vector for axis')
+    }
+    if (nonZero(direction.value[0])) {
+      axis = 'X'
+    } else if (nonZero(direction.value[1])) {
+      axis = 'Y'
+    } else {
+      return new Error('Bad direction vector for axis')
+    }
+  } else if (axisValue.type === 'TagIdentifier' && axisValue.artifact_id) {
+    // segment case
+    axisOrEdge = 'Edge'
+    const artifact = getArtifactOfTypes(
+      {
+        key: axisValue.artifact_id,
+        types: ['segment'],
+      },
+      artifactGraph
+    )
+    if (err(artifact)) {
+      return new Error("Couldn't find related edge artifact")
+    }
+
+    edge = {
+      graphSelections: [
+        {
+          artifact,
+          codeRef: artifact.codeRef,
+        },
+      ],
+      otherSelections: [],
+    }
+  } else if (axisValue.type === 'Uuid') {
+    // sweepEdge case
+    axisOrEdge = 'Edge'
+    const artifact = getArtifactOfTypes(
+      {
+        key: axisValue.value,
+        types: ['sweepEdge'],
+      },
+      artifactGraph
+    )
+    if (err(artifact)) {
+      return new Error("Couldn't find related edge artifact")
+    }
+
+    const codeRef = getSweepEdgeCodeRef(artifact, artifactGraph)
+    if (err(codeRef)) {
+      return new Error("Couldn't find related edge code ref")
+    }
+
+    edge = {
+      graphSelections: [
+        {
+          artifact,
+          codeRef,
+        },
+      ],
+      otherSelections: [],
+    }
+  } else {
+    return new Error('The type of the axis argument is unsupported')
+  }
+  return { axisOrEdge, axis, edge }
 }
