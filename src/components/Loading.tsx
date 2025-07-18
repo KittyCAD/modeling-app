@@ -204,7 +204,7 @@ const Loading = ({
   if (isDummy) {
     return (
       <div
-        className={`body-bg flex ${isCompact ? 'flex-row gap-2' : 'flex-col'} items-center justify-center ${colorClass} ${className}`}
+        className={`flex ${isCompact ? 'flex-row gap-2' : 'flex-col'} items-center justify-center ${colorClass} ${className}`}
         data-testid={dataTestId ? dataTestId : 'loading'}
       >
         <Spinner className={isCompact ? 'w-4 h-4' : 'w-8 w-8'} />

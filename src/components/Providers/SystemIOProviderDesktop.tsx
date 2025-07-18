@@ -17,6 +17,7 @@ import {
   engineCommandManager,
 } from '@src/lib/singletons'
 import { BillingTransition } from '@src/machines/billingMachine'
+import { PromptType } from '@src/lib/prompt'
 import {
   MlEphantManagerStates,
   MlEphantManagerTransitions,
@@ -272,17 +273,6 @@ export function SystemIOMachineLogicListenerDesktop() {
     }, [requestedTextToCadGeneration])
   }
 
-  const createCorrespondingFileForPromptWithId = (prompt: Prompt) => {
-    systemIOActor.send({
-      type: SystemIOMachineEvents.importFileFromURL,
-      data: {
-        requestedProjectName: promptProjectName,
-        requestedCode: prompt.code,
-        requestedFileNameWithExtension: PROJECT_ENTRYPOINT,
-      },
-    })
-  }
-
   useEffect(() => {
     const subscription = mlEphantManagerActor.subscribe((next) => {
       if (
@@ -299,15 +289,51 @@ export function SystemIOMachineLogicListenerDesktop() {
 
       next.context.promptsInProgressToCompleted.promptsBelongingToProject.forEach(
         (promptId: Prompt['id']) => {
-          const prompt = context.promptsPool.get(promptId)
+          const prompt = next.context.promptsPool.get(promptId)
           if (prompt === undefined) return
-          const promptsMeta = context.promptsMeta.get(prompt.id)
-          if (promptsMeta === undefined) {
+          const promptMeta = next.context.promptsMeta.get(prompt.id)
+          if (promptMeta === undefined) {
             console.warn('No metadata for this prompt - ignoring.')
             return
           }
 
-          createCorrespondingFileForPromptWithId(prompt)
+          if (promptMeta.type === PromptType.Create) {
+            systemIOActor.send({
+              type: SystemIOMachineEvents.importFileFromURL,
+              data: {
+                requestedProjectName: promptProjectName,
+                requestedCode: prompt.code,
+                requestedFileNameWithExtension: PROJECT_ENTRYPOINT,
+              },
+            })
+          } else {
+            const requestedFiles: RequestedKCLFile[] = Object.entries(
+              prompt.outputs
+            ).map(([relativePath, fileContents]) => {
+              const lastSep = relativePath.lastIndexOf(window.electron.sep)
+              let pathPart = relativePath.slice(0, lastSep)
+              let filePart = relativePath.slice(lastSep)
+              if (lastSep < 0) {
+                pathPart = ''
+                filePart = relativePath
+              }
+              return {
+                requestedCode: fileContents,
+                requestedFileName: filePart,
+                requestedProjectName:
+                  promptMeta.project.name + window.electron.sep + pathPart,
+              }
+            })
+            systemIOActor.send({
+              type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToFile,
+              data: {
+                files: requestedFiles,
+                // The navigation to the currently selected file doesn't work?
+                // TODO: ping kevin again.
+                override: true,
+              },
+            })
+          }
         }
       )
     })

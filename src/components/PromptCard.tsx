@@ -71,7 +71,7 @@ export const PromptCardStatus = (props: {
 }) => {
   const loading = (
     <Loading isCompact={true} isDummy={true}>
-      In progress
+      Thinking
     </Loading>
   )
   const status: { [key: Prompt['status']]: ReactNode } = {

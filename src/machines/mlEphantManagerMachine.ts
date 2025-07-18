@@ -4,6 +4,8 @@ import type { ActorRefFrom } from 'xstate'
 import { ACTOR_IDS } from '@src/machines/machineConstants'
 import { S, transitions } from '@src/machines/utils'
 
+import type { Selections } from '@src/lib/selections'
+import type { Project } from '@src/lib/project'
 import type { Prompt } from '@src/lib/prompt'
 import { generateFakeSubmittedPrompt, PromptType } from '@src/lib/prompt'
 
@@ -43,13 +45,17 @@ export type MlEphantManagerEvents =
     }
   | {
       type: MlEphantManagerTransitions.PromptCreateModel
-      projectPathForPromptOutput: string
+      projectForPromptOutput: Project
       prompt: string
     }
   | {
       type: MlEphantManagerTransitions.PromptEditModel
-      projectId: string
+      projectForPromptOutput: Project
       prompt: string
+      fileSelectedDuringPrompting: string
+      projectFiles: Project[]
+      selections: Selections
+      artifactGraph: ArtifactGraph
     }
   | {
       type: MlEphantManagerTransitions.PromptRate
@@ -92,7 +98,10 @@ export interface MlEphantManagerContext {
       type: PromptType
 
       // Where the prompt's output should be placed on completion.
-      projectPath: string
+      project: Project
+
+      // The file that was the "target" during prompting.
+      targetFile: string
     }
   >
 }
@@ -160,6 +169,14 @@ export const mlEphantManagerMachine = setup({
 
         return new Promise((resolve) => {
           setTimeout(() => {
+            // const response = await submitTextToCadCreateRequest(
+            // prompt,
+            // projectName,
+            // token
+            // )
+            // project.conversationId = response.conversationId
+            // writeToFile(project)
+
             const result = generateFakeSubmittedPrompt()
             result.status = 'in_progress'
 
@@ -175,7 +192,7 @@ export const mlEphantManagerMachine = setup({
             promptsBelongingToProject.add(result.id)
             promptsMeta.set(result.id, {
               type: PromptType.Create,
-              projectPath: args.input.event.projectPathForPromptOutput,
+              project: args.input.event.projectForPromptOutput,
             })
 
             resolve({
@@ -185,7 +202,8 @@ export const mlEphantManagerMachine = setup({
             })
           }, 1000)
         })
-      },
+      }
+    ),
     [MlEphantManagerTransitions.PromptEditModel]: fromPromise(
       async function (args: {
         system: any
@@ -198,26 +216,46 @@ export const mlEphantManagerMachine = setup({
         if (context.apiTokenMlephant === undefined)
           return Promise.reject('missing api token')
 
-          const result = generateFakeSubmittedPrompt()
-          result.status = 'in_progress'
+        // const requestData = constructMultiFileIterationRequestWithPromptHelpers({
+        //  // Need to implement, could be undefined if not created with text to cad.
+        //   conversationId: project.conversationId,
+        //   prompt,
+        //   selections,
+        //   projectFiles,
+        //   token,
+        //   artifactGraph,
+        //   projectName,
+        // })
+        // const response = await submitTextToCadMultiFileIterationRequest(requestData, token)
+        // if no conversation id:
+        // project.conversationId = response.conversation_id
+        // writeTofile(project)
 
-          const promptsPool = context.promptsPool
-          const promptsBelongingToProject = new Set(
-            context.promptsBelongingToProject
-          )
-          const promptsMeta = new Map(context.promptsMeta)
+        const result = generateFakeSubmittedPrompt()
+        result.status = 'in_progress'
+        result.outputs = {
+          'ok/yes/lol.kcl': 'sothesuteho',
+          'sub/sub/main.kcl': 's = 30',
+        }
 
-          promptsPool.set(result.id, result)
-          promptsBelongingToProject.add(result.id)
-          promptsMeta.set(result.id, {
-            type: PromptType.Edit,
-            projectPath: args.input.event.projectPathForPromptOutput,
-          })
+        const promptsPool = context.promptsPool
+        const promptsBelongingToProject = new Set(
+          context.promptsBelongingToProject
+        )
+        const promptsMeta = new Map(context.promptsMeta)
 
-          resolve({
-            promptsBelongingToProject,
-            promptsMeta,
-          })
+        promptsPool.set(result.id, result)
+        promptsBelongingToProject.add(result.id)
+        promptsMeta.set(result.id, {
+          type: PromptType.Edit,
+          targetFile: args.input.event.fileSelectedDuringPrompting,
+          project: args.input.event.projectForPromptOutput,
+        })
+
+        return {
+          promptsBelongingToProject,
+          promptsMeta,
+        }
       }
     ),
     [MlEphantManagerTransitions.GetPromptsPendingStatuses]: fromPromise(
@@ -333,6 +371,7 @@ export const mlEphantManagerMachine = setup({
               on: transitions([
                 MlEphantManagerTransitions.GetPromptsThatCreatedProjects,
                 MlEphantManagerTransitions.PromptCreateModel,
+                MlEphantManagerTransitions.PromptEditModel,
               ]),
             },
             [MlEphantManagerTransitions.GetPromptsThatCreatedProjects]: {
@@ -356,6 +395,21 @@ export const mlEphantManagerMachine = setup({
                   context: args.context,
                 }),
                 src: MlEphantManagerTransitions.PromptCreateModel,
+                onDone: {
+                  target: S.Await,
+                  actions: assign(({ event }) => event.output),
+                },
+                onError: { target: S.Await },
+              },
+            },
+            [MlEphantManagerTransitions.PromptEditModel]: {
+              invoke: {
+                input: (args) => ({
+                  event:
+                    args.event as XSEvent<MlEphantManagerTransitions.PromptEditModel>,
+                  context: args.context,
+                }),
+                src: MlEphantManagerTransitions.PromptEditModel,
                 onDone: {
                   target: S.Await,
                   actions: assign(({ event }) => event.output),
