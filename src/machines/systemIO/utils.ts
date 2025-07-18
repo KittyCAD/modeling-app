@@ -1,3 +1,4 @@
+import { PROJECT_ENTRYPOINT } from '@src/lib/constants'
 import { joinOSPaths } from '@src/lib/paths'
 import { getUniqueProjectName } from '@src/lib/desktopFS'
 import { getAllSubDirectoriesAtProjectRoot } from '@src/machines/systemIO/snapshotContext'
@@ -169,30 +170,31 @@ export const determineProjectFilePathFromPrompt = (args: {
   return finalPath
 }
 
-export const collectProjectFiles = async (
-  selectedFileContents: string,
-  fileNames: any,
+export const collectProjectFiles = async (args: {
+  selectedFileContents: string
+  fileNames: any
+  targetFile?: string
   projectContext?: any
-) => {
+}) => {
   let projectFiles: FileMeta[] = [
     {
       type: 'kcl',
       relPath: 'main.kcl',
       absPath: 'main.kcl',
-      fileContents,
+      fileContents: args.selectedFileContents,
       execStateFileNamesIndex: 0,
     },
   ]
   const execStateNameToIndexMap: { [fileName: string]: number } = {}
-  Object.entries(fileNames).forEach(([index, val]) => {
+  Object.entries(args.fileNames).forEach(([index, val]) => {
     if (val?.type === 'Local') {
       execStateNameToIndexMap[val.value] = Number(index)
     }
   })
   let basePath = ''
-  if (isDesktop() && projectContext?.children) {
+  if (isDesktop() && args.projectContext?.children) {
     // Use the entire project directory as the basePath for prompt to edit, do not use relative subdir paths
-    basePath = projectContext?.path
+    basePath = args.projectContext?.path
     const filePromises: Promise<FileMeta | null>[] = []
     let uploadSize = 0
     const recursivelyPushFilePromises = (files: FileEntry[]) => {
@@ -257,7 +259,7 @@ export const collectProjectFiles = async (
   }
   // route to main.kcl by default for web and desktop
   let filePath: string = PROJECT_ENTRYPOINT
-  const possibleFileName = file?.path
+  const possibleFileName = args.targetFile?.path
   if (possibleFileName && isDesktop()) {
     // When prompt to edit finishes, try to route to the file they were in otherwise go to main.kcl
     filePath = window.electron.path.relative(basePath, possibleFileName)
