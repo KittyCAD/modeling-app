@@ -462,10 +462,12 @@ export function createApplicationCommands({
     groupId: 'application',
     onSubmit: (data) => {
       if (data) {
-        writeEnvironmentFile(data.environment).then(()=>{
-          // Reload the application and it will trigger the correct sign in workflow for the new environment
-          window.location.reload()
-        }).catch(reportRejection)
+        writeEnvironmentFile(data.environment)
+          .then(() => {
+            // Reload the application and it will trigger the correct sign in workflow for the new environment
+            window.location.reload()
+          })
+          .catch(reportRejection)
       }
     },
     args: {

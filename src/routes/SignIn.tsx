@@ -15,7 +15,11 @@ import { toSync } from '@src/lib/utils'
 import { authActor, useSettings } from '@src/lib/singletons'
 import { APP_VERSION, generateSignInUrl } from '@src/routes/utils'
 import { withAPIBaseURL, withSiteBaseURL } from '@src/lib/withBaseURL'
-import { getEnvironmentDomainFromDisk, updateEnvironment, updateEnvironmentPool } from '@src/env'
+import {
+  getEnvironmentDomainFromDisk,
+  updateEnvironment,
+  updateEnvironmentPool,
+} from '@src/env'
 import env from '@src/env'
 import { writeEnvironmentFile } from '@src/lib/desktop'
 import { AdvancedSignInOptions } from '@src/routes/AdvancedSignInOptions'
