@@ -721,6 +721,12 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             WebSocketResponse::Success(success) => Ok(success.resp),
             WebSocketResponse::Failure(fail) => {
                 let _request_id = fail.request_id;
+                if fail.errors.is_empty() {
+                    return Err(KclError::new_engine(KclErrorDetails::new(
+                        "Failure response with no error details".to_owned(),
+                        vec![source_range],
+                    )));
+                }
                 Err(KclError::new_engine(KclErrorDetails::new(
                     fail.errors
                         .iter()
@@ -768,6 +774,12 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
                             vec![],
                         ))
                     })?;
+                    if errors.is_empty() {
+                        return Err(KclError::new_engine(KclErrorDetails::new(
+                            "Failure response for batch with no error details".to_owned(),
+                            vec![source_range],
+                        )));
+                    }
                     return Err(KclError::new_engine(KclErrorDetails::new(
                         errors.iter().map(|e| e.message.clone()).collect::<Vec<_>>().join("\n"),
                         vec![source_range],
