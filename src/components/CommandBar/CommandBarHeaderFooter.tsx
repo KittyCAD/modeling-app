@@ -18,7 +18,11 @@ import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
 function CommandBarHeaderFooter({
   children,
   stepBack,
-}: React.PropsWithChildren<object> & { stepBack: () => void }) {
+  clear,
+}: React.PropsWithChildren<object> & {
+  stepBack: () => void
+  clear?: () => void
+}) {
   const commandBarState = useCommandBarState()
   const {
     context: { selectedCommand, currentArgument, argumentsToSubmit },
@@ -38,6 +42,10 @@ function CommandBarHeaderFooter({
   }, [selectedCommand])
   const isReviewing = commandBarState.matches('Review')
   const [showShortcuts, setShowShortcuts] = useState(false)
+  const isCurrentArgRequired =
+    typeof currentArgument?.required === 'function'
+      ? currentArgument.required(commandBarState.context)
+      : currentArgument?.required
 
   useHotkeys(
     'alt',
@@ -221,8 +229,10 @@ function CommandBarHeaderFooter({
         </div>
         <CommandBarDivider />
         {children}
-        <div className="px-4 pb-2 flex justify-between items-center gap-2">
+        <div className="px-4 pb-2 flex items-center gap-2">
           <StepBackButton stepBack={stepBack} />
+          {!isCurrentArgRequired && clear && <ClearButton clear={clear} />}
+          <div className="flex-grow"></div>
           {isReviewing ? (
             <ReviewingButton
               bgClassName={
@@ -330,6 +340,32 @@ function StepBackButton({
         <kbd className="hotkey ml-4 dark:!bg-chalkboard-80">Shift</kbd>
         <kbd className="hotkey ml-2 dark:!bg-chalkboard-80">Bksp</kbd>
       </Tooltip>
+    </ActionButton>
+  )
+}
+
+function ClearButton({
+  bgClassName,
+  iconClassName,
+  clear,
+}: ButtonProps & { clear: () => void }) {
+  return (
+    <ActionButton
+      Element="button"
+      type="button"
+      form="arg-form"
+      className={`w-fit !p-0 rounded-sm hover:brightness-110 hover:shadow focus:outline-current bg-chalkboard-20/50 dark:bg-chalkboard-80/50 border-chalkboard-20 dark:border-chalkboard-80 ${bgClassName}`}
+      tabIndex={0}
+      data-testid="command-bar-clear-non-required-button"
+      iconStart={{
+        icon: 'trash',
+        bgClassName: `p-1 rounded-sm bg-chalkboard-20/50 dark:bg-chalkboard-80/50 ${bgClassName}`,
+        iconClassName: `${iconClassName}`,
+      }}
+      onClick={clear}
+    >
+      <span className={`pr-2 ${iconClassName}`}>Clear</span>
+      <Tooltip position="bottom">Clear</Tooltip>
     </ActionButton>
   )
 }

@@ -25,6 +25,7 @@ import {
   stdLibMap,
 } from '@src/lib/operations'
 import {
+  commandBarActor,
   editorManager,
   kclManager,
   rustContext,
@@ -39,12 +40,13 @@ import {
   kclEditorActor,
   selectionEventSelector,
 } from '@src/machines/kclEditorMachine'
-import type { Plane } from '@rust/kcl-lib/bindings/Artifact'
 import {
   selectDefaultSketchPlane,
   selectOffsetSketchPlane,
 } from '@src/lib/selections'
 import type { DefaultPlaneStr } from '@src/lib/planes'
+import { findOperationPlaneArtifact, isOffsetPlane } from '@src/lang/queryAst'
+import { err } from '@src/lib/trap'
 
 export const FeatureTreePane = () => {
   const isEditorMounted = useSelector(kclEditorActor, editorIsMountedSelector)
@@ -72,6 +74,36 @@ export const FeatureTreePane = () => {
         },
         scrollToError: () => {
           editorManager.scrollToFirstErrorDiagnosticIfExists()
+        },
+        sendTranslateCommand: () => {
+          commandBarActor.send({
+            type: 'Find and select command',
+            data: { name: 'Translate', groupId: 'modeling' },
+          })
+        },
+        sendRotateCommand: () => {
+          commandBarActor.send({
+            type: 'Find and select command',
+            data: { name: 'Rotate', groupId: 'modeling' },
+          })
+        },
+        sendScaleCommand: () => {
+          commandBarActor.send({
+            type: 'Find and select command',
+            data: { name: 'Scale', groupId: 'modeling' },
+          })
+        },
+        sendCloneCommand: () => {
+          commandBarActor.send({
+            type: 'Find and select command',
+            data: { name: 'Clone', groupId: 'modeling' },
+          })
+        },
+        sendAppearanceCommand: () => {
+          commandBarActor.send({
+            type: 'Find and select command',
+            data: { name: 'Appearance', groupId: 'modeling' },
+          })
         },
         sendSelectionEvent: ({ context }) => {
           if (!context.targetSourceRange) {
@@ -360,11 +392,17 @@ const OperationItem = (props: {
     )
   }, [kclContext.diagnostics.length])
 
-  function selectOperation() {
+  async function selectOperation() {
     if (props.sketchNoFace) {
       if (isOffsetPlane(props.item)) {
-        const artifact = findOperationArtifact(props.item)
-        void selectOffsetSketchPlane(artifact)
+        const artifact = findOperationPlaneArtifact(
+          props.item,
+          kclManager.artifactGraph
+        )
+        const result = await selectOffsetSketchPlane(artifact)
+        if (err(result)) {
+          console.error(result)
+        }
       }
     } else {
       if (props.item.type === 'GroupEnd') {
@@ -379,10 +417,6 @@ const OperationItem = (props: {
     }
   }
 
-  /**
-   * For now we can only enter the "edit" flow for the startSketchOn operation.
-   * TODO: https://github.com/KittyCAD/modeling-app/issues/4442
-   */
   function enterEditFlow() {
     if (
       props.item.type === 'StdLibCall' ||
@@ -434,6 +468,18 @@ const OperationItem = (props: {
     }
   }
 
+  function enterScaleFlow() {
+    if (props.item.type === 'StdLibCall' || props.item.type === 'GroupBegin') {
+      props.send({
+        type: 'enterScaleFlow',
+        data: {
+          targetSourceRange: sourceRangeFromRust(props.item.sourceRange),
+          currentOperation: props.item,
+        },
+      })
+    }
+  }
+
   function enterCloneFlow() {
     if (props.item.type === 'StdLibCall' || props.item.type === 'GroupBegin') {
       props.send({
@@ -463,7 +509,10 @@ const OperationItem = (props: {
 
   function startSketchOnOffsetPlane() {
     if (isOffsetPlane(props.item)) {
-      const artifact = findOperationArtifact(props.item)
+      const artifact = findOperationPlaneArtifact(
+        props.item,
+        kclManager.artifactGraph
+      )
       if (artifact?.id) {
         sceneInfra.modelingSend({
           type: 'Enter sketch',
@@ -565,7 +614,7 @@ const OperationItem = (props: {
                 !stdLibMap[props.item.name]?.supportsTransform
               }
             >
-              Set translate
+              Translate
             </ContextMenuItem>,
             <ContextMenuItem
               onClick={enterRotateFlow}
@@ -575,7 +624,17 @@ const OperationItem = (props: {
                 !stdLibMap[props.item.name]?.supportsTransform
               }
             >
-              Set rotate
+              Rotate
+            </ContextMenuItem>,
+            <ContextMenuItem
+              onClick={enterScaleFlow}
+              data-testid="context-menu-set-scale"
+              disabled={
+                props.item.type !== 'GroupBegin' &&
+                !stdLibMap[props.item.name]?.supportsTransform
+              }
+            >
+              Scale
             </ContextMenuItem>,
             <ContextMenuItem
               onClick={enterCloneFlow}
@@ -616,7 +675,9 @@ const OperationItem = (props: {
       variableName={variableName}
       valueDetail={valueDetail}
       menuItems={menuItems}
-      onClick={selectOperation}
+      onClick={() => {
+        void selectOperation()
+      }}
       onDoubleClick={props.sketchNoFace ? undefined : enterEditFlow} // no double click in "Sketch no face" mode
       errors={errors}
       greyedOut={!enabled}
@@ -724,18 +785,4 @@ const DefaultPlanes = () => {
       <div className="h-px bg-chalkboard-50/20 my-2" />
     </div>
   )
-}
-
-type StdLibCallOp = Extract<Operation, { type: 'StdLibCall' }>
-
-const isOffsetPlane = (item: Operation): item is StdLibCallOp => {
-  return item.type === 'StdLibCall' && item.name === 'offsetPlane'
-}
-
-const findOperationArtifact = (item: StdLibCallOp) => {
-  const nodePath = JSON.stringify(item.nodePath)
-  const artifact = [...kclManager.artifactGraph.values()].find(
-    (a) => JSON.stringify((a as Plane).codeRef?.nodePath) === nodePath
-  )
-  return artifact
 }
