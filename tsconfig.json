@@ -33,7 +33,7 @@
     "module": "commonjs",
     "moduleResolution": "node",
     "resolveJsonModule": true,
-    "composite": true,
+    "composite": false,
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx"

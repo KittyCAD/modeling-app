@@ -2,7 +2,10 @@ import { useEffect, useRef } from 'react'
 
 import { showSketchOnImportToast } from '@src/components/SketchOnImportToast'
 import { useModelingContext } from '@src/hooks/useModelingContext'
-import { getNodeFromPath } from '@src/lang/queryAst'
+import {
+  findAllChildrenAndOrderByPlaceInCode,
+  getNodeFromPath,
+} from '@src/lang/queryAst'
 import type { SegmentArtifact } from '@src/lang/std/artifactGraph'
 import {
   getArtifactOfTypes,
@@ -36,7 +39,6 @@ import type {
 } from '@src/machines/modelingMachine'
 import toast from 'react-hot-toast'
 import { getStringAfterLastSeparator } from '@src/lib/paths'
-import { findAllChildrenAndOrderByPlaceInCode } from '@src/lang/modifyAst/boolean'
 
 export function useEngineConnectionSubscriptions() {
   const { send, context, state } = useModelingContext()
@@ -109,7 +111,9 @@ export function useEngineConnectionSubscriptions() {
               }
 
               const artifact = kclManager.artifactGraph.get(planeOrFaceId)
-              if (await selectOffsetSketchPlane(artifact)) {
+              const offsetPlaneSelected =
+                await selectOffsetSketchPlane(artifact)
+              if (!err(offsetPlaneSelected) && offsetPlaneSelected) {
                 return
               }
 

@@ -32,16 +32,28 @@ flowchart LR
     %% face_code_ref=Missing NodePath
   15[Wall]
     %% face_code_ref=Missing NodePath
-  16["Cap Start"]
+  16[Wall]
     %% face_code_ref=Missing NodePath
-  17["Cap End"]
+  17[Wall]
     %% face_code_ref=Missing NodePath
-  18["SweepEdge Opposite"]
-  19["SweepEdge Adjacent"]
-  20["SweepEdge Opposite"]
-  21["SweepEdge Adjacent"]
-  22["SweepEdge Opposite"]
-  23["SweepEdge Adjacent"]
+  18[Wall]
+    %% face_code_ref=Missing NodePath
+  19["Cap Start"]
+    %% face_code_ref=Missing NodePath
+  20["Cap End"]
+    %% face_code_ref=Missing NodePath
+  21["SweepEdge Opposite"]
+  22["SweepEdge Adjacent"]
+  23["SweepEdge Opposite"]
+  24["SweepEdge Adjacent"]
+  25["SweepEdge Opposite"]
+  26["SweepEdge Adjacent"]
+  27["SweepEdge Opposite"]
+  28["SweepEdge Adjacent"]
+  29["SweepEdge Opposite"]
+  30["SweepEdge Adjacent"]
+  31["SweepEdge Opposite"]
+  32["SweepEdge Adjacent"]
   1 --- 2
   1 --- 7
   2 --- 3
@@ -51,21 +63,34 @@ flowchart LR
   7 --- 2
   2 ---- 12
   3 --- 13
-  3 x--> 16
-  3 --- 18
-  3 --- 19
+  3 x--> 19
+  3 --- 21
+  3 --- 22
   4 --- 14
-  4 x--> 16
-  4 --- 20
-  4 --- 21
+  4 x--> 19
+  4 --- 23
+  4 --- 24
   5 --- 15
-  5 x--> 16
-  5 --- 22
-  5 --- 23
+  5 x--> 19
+  5 --- 25
+  5 --- 26
   7 --- 8
   7 --- 9
   7 --- 10
   7 --- 11
+  7 x---> 12
+  8 --- 16
+  8 x--> 19
+  8 --- 27
+  8 --- 28
+  9 --- 17
+  9 x--> 19
+  9 --- 29
+  9 --- 30
+  10 --- 18
+  10 x--> 19
+  10 --- 31
+  10 --- 32
   12 --- 13
   12 --- 14
   12 --- 15
@@ -77,16 +102,37 @@ flowchart LR
   12 --- 21
   12 --- 22
   12 --- 23
-  13 --- 18
-  13 --- 19
-  23 <--x 13
-  19 <--x 14
-  14 --- 20
-  14 --- 21
-  21 <--x 15
-  15 --- 22
-  15 --- 23
-  18 <--x 17
-  20 <--x 17
-  22 <--x 17
+  12 --- 24
+  12 --- 25
+  12 --- 26
+  12 --- 27
+  12 --- 28
+  12 --- 29
+  12 --- 30
+  12 --- 31
+  12 --- 32
+  13 --- 21
+  13 --- 22
+  26 <--x 13
+  22 <--x 14
+  14 --- 23
+  14 --- 24
+  24 <--x 15
+  15 --- 25
+  15 --- 26
+  16 --- 27
+  16 --- 28
+  32 <--x 16
+  28 <--x 17
+  17 --- 29
+  17 --- 30
+  30 <--x 18
+  18 --- 31
+  18 --- 32
+  21 <--x 20
+  23 <--x 20
+  25 <--x 20
+  27 <--x 20
+  29 <--x 20
+  31 <--x 20
 ```

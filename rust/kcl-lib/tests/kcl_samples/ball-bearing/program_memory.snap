@@ -3678,6 +3678,13 @@ description: Variables in memory after executing ball-bearing.kcl
           "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudeArc"
         }
       ],
       "sketch": {
@@ -5236,6 +5243,13 @@ description: Variables in memory after executing ball-bearing.kcl
       "id": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudeArc"
+        },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
