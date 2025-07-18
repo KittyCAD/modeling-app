@@ -3,7 +3,6 @@ import { commandBarActor } from '@src/lib/singletons'
 import env from '@src/env'
 import { writeEnvironmentConfigurationPool } from '@src/lib/desktop'
 import { reportRejection } from '@src/lib/trap'
-import { IS_DEBUG } from '@src/routes/utils'
 
 export function EnvironmentChip() {
   const shorthand = env().VITE_KITTYCAD_BASE_DOMAIN
