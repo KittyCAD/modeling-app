@@ -18,6 +18,10 @@ use crate::{
     std::args::{FromKclValue, TyF64},
 };
 
+/// KCL strings that can be considered values of the `TaggedFace`
+/// [`PrimitiveType`].
+const TAGGED_FACE_STRINGS: [&str; 4] = ["start", "end", "START", "END"];
+
 #[derive(Debug, Clone, PartialEq)]
 pub enum RuntimeType {
     Primitive(PrimitiveType),
@@ -1234,9 +1238,7 @@ impl KclValue {
             },
             PrimitiveType::TaggedFace => match self {
                 KclValue::TagIdentifier { .. } => Ok(self.clone()),
-                s @ KclValue::String { value, .. } if ["start", "end", "START", "END"].contains(&&**value) => {
-                    Ok(s.clone())
-                }
+                s @ KclValue::String { value, .. } if TAGGED_FACE_STRINGS.contains(&&**value) => Ok(s.clone()),
                 _ => Err(self.into()),
             },
             PrimitiveType::Axis2d => match self {
@@ -1500,7 +1502,14 @@ impl KclValue {
         match self {
             KclValue::Bool { .. } => Some(RuntimeType::Primitive(PrimitiveType::Boolean)),
             KclValue::Number { ty, .. } => Some(RuntimeType::Primitive(PrimitiveType::Number(*ty))),
-            KclValue::String { .. } => Some(RuntimeType::Primitive(PrimitiveType::String)),
+            KclValue::String { value, .. } => {
+                let string_ty = RuntimeType::Primitive(PrimitiveType::String);
+                Some(if TAGGED_FACE_STRINGS.contains(&value.as_str()) {
+                    RuntimeType::Union(vec![RuntimeType::Primitive(PrimitiveType::TaggedFace), string_ty])
+                } else {
+                    string_ty
+                })
+            }
             KclValue::Object { value, .. } => {
                 let properties = value
                     .iter()
@@ -2288,6 +2297,24 @@ mod test {
                 assert_eq!(*ty, expected_ty);
             }
             _ => unreachable!(),
+        }
+    }
+
+    #[test]
+    fn test_tagged_face_strings() {
+        for s in TAGGED_FACE_STRINGS {
+            assert_eq!(
+                KclValue::String {
+                    value: s.to_owned(),
+                    meta: Default::default(),
+                }
+                .principal_type()
+                .unwrap(),
+                RuntimeType::Union(vec![
+                    RuntimeType::Primitive(PrimitiveType::TaggedFace),
+                    RuntimeType::Primitive(PrimitiveType::String),
+                ])
+            );
         }
     }
 
