@@ -3128,6 +3128,15 @@ export class SceneEntities {
           })
         }
         callbacks.push(startProfileCallBack)
+        let minIndex = -1
+        if (draftInfo) {
+          sketchNodePaths.forEach((path) => {
+            const currentIndex = Number(path[1][0])
+            if (currentIndex < minIndex || minIndex === -1) {
+              minIndex = currentIndex
+            }
+          })
+        }
 
         callbacks.push(
           ...sgPaths.map((group, index) =>
@@ -3138,7 +3147,8 @@ export class SceneEntities {
               modifiedAst,
               orthoFactor,
               sketch,
-              snappedToTangent
+              snappedToTangent,
+              minIndex
             )
           )
         )
@@ -3165,7 +3175,8 @@ export class SceneEntities {
     modifiedAst: Program,
     orthoFactor: number,
     sketch: Sketch,
-    snappedToTangent: boolean = false
+    snappedToTangent: boolean = false,
+    truncatedExpressionIndexOffset: number
   ): (() => SegmentOverlayPayload | null) => {
     const segPathToNode = getNodePathFromSourceRange(
       modifiedAst,
@@ -3260,6 +3271,7 @@ export class SceneEntities {
         sceneInfra: this.sceneInfra,
         ast: modifiedAst,
         code: this.codeManager.code,
+        truncatedExpressionIndexOffset,
       })
     if (callBack && !err(callBack)) return callBack
 

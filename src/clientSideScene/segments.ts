@@ -128,6 +128,7 @@ interface UpdateSegmentArgs {
   // Add optional AST and code for constraint checking
   ast?: Program
   code?: string
+  truncatedExpressionIndexOffset?: number
 }
 
 interface CreateSegmentResult {
@@ -332,6 +333,7 @@ class StraightSegment implements SegmentUtils {
     sceneInfra,
     ast,
     code,
+    truncatedExpressionIndexOffset,
   }) => {
     if (input.type !== 'straight-segment')
       return new Error('Invalid segment type')
@@ -341,7 +343,13 @@ class StraightSegment implements SegmentUtils {
 
     // Check if segment is fully constrained and update color if needed
     if (ast && code) {
-      const pathToNode = group.userData.pathToNode
+      const pathToNode = structuredClone(group.userData.pathToNode)
+      if (
+        truncatedExpressionIndexOffset &&
+        truncatedExpressionIndexOffset !== -1
+      ) {
+        pathToNode[1][0] = pathToNode[1][0] - truncatedExpressionIndexOffset
+      }
       const isFullyConstrained =
         group.userData.callExpName === 'close'
           ? true
