@@ -874,7 +874,7 @@ export const listAllEnvironments = async () => {
 export const listAllEnvironmentsWithTokens = async () => {
   const environments = await listAllEnvironments()
   const environmentsWithTokens = []
-  for (let i = 0; i < environments.length; i++){
+  for (let i = 0; i < environments.length; i++) {
     const environment = environments[i]
     const token = await readEnvironmentConfigurationToken(environment)
     if (token) {

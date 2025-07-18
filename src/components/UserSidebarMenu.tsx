@@ -33,14 +33,16 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
   const fullEnvironmentName = env().VITE_KITTYCAD_BASE_DOMAIN
   const [hasMultipleEnvironments, setHasMultipleEnvironments] = useState(false)
 
-  useEffect(()=>{
+  useEffect(() => {
     if (!didListEnvironments) {
       didListEnvironments = true
-      listAllEnvironmentsWithTokens().then((environmentsWithTokens)=>{
-        setHasMultipleEnvironments(environmentsWithTokens.length > 1)
-      }).catch(reportRejection)
+      listAllEnvironmentsWithTokens()
+        .then((environmentsWithTokens) => {
+          setHasMultipleEnvironments(environmentsWithTokens.length > 1)
+        })
+        .catch(reportRejection)
     }
-  },[])
+  }, [])
 
   // Do not show the environment items on web
   const hideEnvironmentItems = !isDesktop()
@@ -199,7 +201,8 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
           'data-testid': 'user-sidebar-sign-out',
           children: <span>Sign out of all environments</span>,
           onClick: () => send({ type: 'Log out all' }),
-          className: hideEnvironmentItems || !hasMultipleEnvironments ? 'hidden' : '',
+          className:
+            hideEnvironmentItems || !hasMultipleEnvironments ? 'hidden' : '',
         },
       ].filter(
         (props) =>

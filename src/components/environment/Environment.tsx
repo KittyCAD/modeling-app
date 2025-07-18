@@ -95,21 +95,23 @@ export function EnvironmentDescription() {
               >
                 <span className="py-2 lg:py-0">Edit</span>
               </ActionButton>
-              <ActionButton
-                onClick={() => {
-                  const environment = env().VITE_KITTYCAD_BASE_DOMAIN
-                  if (environment) {
-                    writeEnvironmentConfigurationPool(environment, '')
-                      .then(() => {
-                        window.location.reload()
-                      })
-                      .catch(reportRejection)
-                  }
-                }}
-                Element="button"
-              >
-                <span className="py-2 lg:py-0">Clear</span>
-              </ActionButton>
+              {env().POOL !== '' && (
+                <ActionButton
+                  onClick={() => {
+                    const environment = env().VITE_KITTYCAD_BASE_DOMAIN
+                    if (environment) {
+                      writeEnvironmentConfigurationPool(environment, '')
+                        .then(() => {
+                          window.location.reload()
+                        })
+                        .catch(reportRejection)
+                    }
+                  }}
+                  Element="button"
+                >
+                  <span className="py-2 lg:py-0">Clear</span>
+                </ActionButton>
+              )}
             </div>
           </p>
         </li>
