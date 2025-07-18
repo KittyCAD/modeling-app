@@ -740,8 +740,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           !['Edge'].includes(context.argumentsToSubmit.mode as string),
       },
       cylinder: {
+        ...objectsTypesAndFilters,
         inputType: 'selection',
-        selectionTypes: ['wall'],
         multiple: false,
         required: (context) =>
           ['Cylinder'].includes(context.argumentsToSubmit.mode as string),

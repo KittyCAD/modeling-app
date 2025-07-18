@@ -1553,7 +1553,7 @@ extrude001 = extrude(profile001, length = 100)
         stage: 'review',
         headerArguments: {
           Mode: 'Cylinder',
-          Cylinder: '1 face',
+          Cylinder: '1 path',
           AngleStart: '360',
           Revolutions: '1',
         },
