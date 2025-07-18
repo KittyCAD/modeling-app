@@ -2,7 +2,11 @@ import type { FunctionExpression } from '@rust/kcl-lib/bindings/FunctionExpressi
 import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { TypeDeclaration } from '@rust/kcl-lib/bindings/TypeDeclaration'
-import { createLocalName, createPipeSubstitution } from '@src/lang/create'
+import {
+  createLiteral,
+  createLocalName,
+  createPipeSubstitution,
+} from '@src/lang/create'
 import type { ToolTip } from '@src/lang/langHelpers'
 import { splitPathAtLastIndex } from '@src/lang/modifyAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
@@ -51,11 +55,12 @@ import type { KclSettingsAnnotation } from '@src/lib/settings/settingsTypes'
 import { err } from '@src/lib/trap'
 import { getAngle, isArray } from '@src/lib/utils'
 
-import type { OpArg } from '@rust/kcl-lib/bindings/Operation'
+import type { OpArg, Operation } from '@rust/kcl-lib/bindings/Operation'
 import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import type { UnaryExpression } from 'typescript'
 import type { NumericType } from '@rust/kcl-lib/bindings/NumericType'
+import type { Plane } from '@rust/kcl-lib/bindings/Artifact'
 import {
   findAllChildrenAndOrderByPlaceInCode,
   getLastVariable,
@@ -1123,7 +1128,12 @@ export function getVariableExprsFromSelection(
       continue
     }
 
-    // TODO: handle imported geometry case
+    // import case
+    const importNodeAndAlias = findImportNodeAndAlias(ast, s.codeRef.pathToNode)
+    if (importNodeAndAlias) {
+      exprs.push(createLocalName(importNodeAndAlias.alias))
+      continue
+    }
 
     // No variable case
     exprs.push(createPipeSubstitution())
@@ -1137,7 +1147,7 @@ export function getVariableExprsFromSelection(
   return { exprs, pathIfPipe }
 }
 
-// Go from the sketches argument in a KCL sweep call declaration
+// Go from the sketches argument in a KCL call declaration
 // to a list of graph selections, useful for edit flows.
 // Somewhat of an inverse of getVariableExprsFromSelection.
 export function retrieveSelectionsFromOpArg(
@@ -1181,6 +1191,74 @@ export function retrieveSelectionsFromOpArg(
   }
 
   return { graphSelections, otherSelections: [] } as Selections
+}
+
+export function findOperationPlaneArtifact(
+  operation: StdLibCallOp,
+  artifactGraph: ArtifactGraph
+) {
+  const nodePath = JSON.stringify(operation.nodePath)
+  const artifact = [...artifactGraph.values()].find(
+    (a) => JSON.stringify((a as Plane).codeRef?.nodePath) === nodePath
+  )
+  return artifact
+}
+
+export function isOffsetPlane(item: Operation): item is StdLibCallOp {
+  return item.type === 'StdLibCall' && item.name === 'offsetPlane'
+}
+
+export type StdLibCallOp = Extract<Operation, { type: 'StdLibCall' }>
+
+// Returns the id of the currently selected plane, either a default plane or an offset plane, or null if no planes are selected.
+export function getSelectedPlaneId(selectionRanges: Selections): string | null {
+  const defaultPlane = selectionRanges.otherSelections.find(
+    (selection) => typeof selection === 'object' && 'name' in selection
+  )
+  if (defaultPlane) {
+    // Found a default plane in the selection
+    return defaultPlane.id
+  }
+
+  const planeSelection = selectionRanges.graphSelections.find(
+    (selection) => selection.artifact?.type === 'plane'
+  )
+  if (planeSelection) {
+    // Found an offset plane in the selection
+    return planeSelection.artifact?.id || null
+  }
+
+  return null
+}
+
+export function getSelectedPlaneAsNode(
+  selection: Selections,
+  variables: VariableMap
+): Node<Name> | Node<Literal> | undefined {
+  const defaultPlane = selection.otherSelections.find(
+    (selection) => typeof selection === 'object' && 'name' in selection
+  )
+  if (
+    defaultPlane &&
+    defaultPlane instanceof Object &&
+    'name' in defaultPlane
+  ) {
+    return createLiteral(defaultPlane.name.toUpperCase())
+  }
+
+  const offsetPlane = selection.graphSelections.find(
+    (sel) => sel.artifact?.type === 'plane'
+  )
+  if (offsetPlane?.artifact?.type === 'plane') {
+    const artifactId = offsetPlane.artifact.id
+    const variableName = Object.entries(variables).find(([_, value]) => {
+      return value?.type === 'Plane' && value.value?.artifactId === artifactId
+    })
+    const offsetPlaneName = variableName?.[0]
+    return offsetPlaneName ? createLocalName(offsetPlaneName) : undefined
+  }
+
+  return undefined
 }
 
 export function locateVariableWithCallOrPipe(
