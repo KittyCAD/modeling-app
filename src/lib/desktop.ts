@@ -770,6 +770,7 @@ export const writeEnvironmentConfigurationToken = async (
   environmentName: string,
   token: string
 ) => {
+  environmentName = environmentName.trim()
   const path = await getEnvironmentConfigurationPath(environmentName)
   const environmentConfiguration =
     await getEnvironmentConfigurationObject(environmentName)
@@ -784,6 +785,7 @@ export const writeEnvironmentConfigurationPool = async (
   environmentName: string,
   pool: string
 ) => {
+  pool = pool.trim()
   const path = await getEnvironmentConfigurationPath(environmentName)
   const environmentConfiguration =
     await getEnvironmentConfigurationObject(environmentName)
@@ -815,7 +817,8 @@ export const readEnvironmentConfigurationPool = async (
 ) => {
   const environmentConfiguration =
     await readEnvironmentConfigurationFile(environmentName)
-  return environmentConfiguration ? environmentConfiguration.pool : ''
+  if (!environmentConfiguration?.pool) return ''
+  return environmentConfiguration.pool.trim()
 }
 
 export const readEnvironmentConfigurationToken = async (
@@ -823,7 +826,8 @@ export const readEnvironmentConfigurationToken = async (
 ) => {
   const environmentConfiguration =
     await readEnvironmentConfigurationFile(environmentName)
-  return environmentConfiguration ? environmentConfiguration.token : ''
+  if (!environmentConfiguration?.token) return ''
+  return environmentConfiguration.token.trim()
 }
 
 export const readEnvironmentFile = async () => {
@@ -837,8 +841,7 @@ export const readEnvironmentFile = async () => {
       }
     )
     if (!environment) return ''
-    const environmentTrimmed = environment.replace(/[\r\n]+/g, '')
-    return environmentTrimmed
+    return environment.trim()
   }
   return ''
 }
@@ -848,6 +851,7 @@ export const readEnvironmentFile = async () => {
  * otherwise we would not know what environment they logged into when the app does the updater
  */
 export const writeEnvironmentFile = async (environment: string) => {
+  environment = environment.trim()
   const environmentFilePath = await getEnvironmentFilePath()
   if (err(environment)) return Promise.reject(environment)
   const result = window.electron.writeFile(environmentFilePath, environment)
@@ -858,11 +862,26 @@ export const writeEnvironmentFile = async (environment: string) => {
 export const listAllEnvironments = async () => {
   const environmentFolder = await getEnvironmentConfigurationFolderPath()
   const files = await window.electron.readdir(environmentFolder)
-  return files.filter((fileName: string)=>{
-    return fileName.endsWith('.json')
-  }).map((fileName: string)=>{
-    return fileName.replace('.json', '')
-  })
+  return files
+    .filter((fileName: string) => {
+      return fileName.endsWith('.json')
+    })
+    .map((fileName: string) => {
+      return fileName.replace('.json', '')
+    })
+}
+
+export const listAllEnvironmentsWithTokens = async () => {
+  const environments = await listAllEnvironments()
+  const environmentsWithTokens = []
+  for (let i = 0; i < environments.length; i++){
+    const environment = environments[i]
+    const token = await readEnvironmentConfigurationToken(environment)
+    if (token) {
+      environmentsWithTokens.push(environment)
+    }
+  }
+  return environmentsWithTokens
 }
 
 export const writeTelemetryFile = async (content: string) => {

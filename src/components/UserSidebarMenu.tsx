@@ -1,6 +1,6 @@
 import { Popover, Transition } from '@headlessui/react'
 import type { Models } from '@kittycad/lib'
-import { Fragment, useMemo, useState } from 'react'
+import { Fragment, useEffect, useMemo, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 import type { ActionButtonProps } from '@src/components/ActionButton'
@@ -16,9 +16,11 @@ import { reportRejection } from '@src/lib/trap'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import env from '@src/env'
 import { commandBarActor } from '@src/lib/singletons'
-import {listAllEnvironments} from '@src/lib/desktop'
+import { listAllEnvironmentsWithTokens } from '@src/lib/desktop'
 
 type User = Models['User_type']
+
+let didListEnvironments = false
 
 const UserSidebarMenu = ({ user }: { user?: User }) => {
   const platform = usePlatform()
@@ -29,6 +31,16 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
   const navigate = useNavigate()
   const send = authActor.send
   const fullEnvironmentName = env().VITE_KITTYCAD_BASE_DOMAIN
+  const [hasMultipleEnvironments, setHasMultipleEnvironments] = useState(false)
+
+  useEffect(()=>{
+    if (!didListEnvironments) {
+      didListEnvironments = true
+      listAllEnvironmentsWithTokens().then((environmentsWithTokens)=>{
+        setHasMultipleEnvironments(environmentsWithTokens.length > 1)
+      }).catch(reportRejection)
+    }
+  },[])
 
   // Do not show the environment items on web
   const hideEnvironmentItems = !isDesktop()
@@ -187,14 +199,14 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
           'data-testid': 'user-sidebar-sign-out',
           children: <span>Sign out of all environments</span>,
           onClick: () => send({ type: 'Log out all' }),
-          className: hideEnvironmentItems ? 'hidden' : '',
+          className: hideEnvironmentItems || !hasMultipleEnvironments ? 'hidden' : '',
         },
       ].filter(
         (props) =>
           props === 'break' ||
           (typeof props !== 'string' && !props.className?.includes('hidden'))
       ) as (ActionButtonProps | 'break')[],
-    [platform, location, filePath, navigate, send]
+    [platform, location, filePath, navigate, send, hasMultipleEnvironments]
   )
 
   // This image host goes down sometimes. We will instead rewrite the

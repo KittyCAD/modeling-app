@@ -8,7 +8,6 @@ import {
   readEnvironmentConfigurationPool,
   readEnvironmentConfigurationToken,
   readEnvironmentFile,
-  setTokenToEmptyStringForAllEnvironments,
   writeEnvironmentConfigurationToken,
   writeEnvironmentFile,
 } from '@src/lib/desktop'
