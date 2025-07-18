@@ -20,10 +20,10 @@ flowchart LR
     24["Segment<br>[920, 972, 3]"]
     25[Solid2d]
   end
-  subgraph path32 [Path]
-    32["Path<br>[1199, 1255, 3]"]
-    33["Segment<br>[1199, 1255, 3]"]
-    34[Solid2d]
+  subgraph path31 [Path]
+    31["Path<br>[1199, 1255, 3]"]
+    32["Segment<br>[1199, 1255, 3]"]
+    33[Solid2d]
   end
   subgraph path40 [Path]
     40["Path<br>[1359, 1416, 3]"]
@@ -45,10 +45,10 @@ flowchart LR
     61["Segment<br>[920, 972, 3]"]
     62[Solid2d]
   end
-  subgraph path69 [Path]
-    69["Path<br>[1199, 1255, 3]"]
-    70["Segment<br>[1199, 1255, 3]"]
-    71[Solid2d]
+  subgraph path68 [Path]
+    68["Path<br>[1199, 1255, 3]"]
+    69["Segment<br>[1199, 1255, 3]"]
+    70[Solid2d]
   end
   subgraph path77 [Path]
     77["Path<br>[1359, 1416, 3]"]
@@ -144,17 +144,17 @@ flowchart LR
   26["Sweep Extrusion<br>[1020, 1057, 3]"]
   27[Wall]
     %% face_code_ref=Missing NodePath
-  28["Cap Start"]
-  29["Cap End"]
-  30["SweepEdge Opposite"]
-  31["SweepEdge Adjacent"]
-  35["Sweep Extrusion<br>[1263, 1297, 3]"]
-  36[Wall]
+  28["SweepEdge Opposite"]
+  29["SweepEdge Adjacent"]
+  30["Plane<br>[1199, 1255, 3]"]
+  34["Sweep Extrusion<br>[1263, 1297, 3]"]
+  35[Wall]
     %% face_code_ref=Missing NodePath
-  37["Cap End"]
+  36["Cap End"]
     %% face_code_ref=Missing NodePath
-  38["SweepEdge Opposite"]
-  39["SweepEdge Adjacent"]
+  37["SweepEdge Opposite"]
+  38["SweepEdge Adjacent"]
+  39["Plane<br>[1359, 1416, 3]"]
   43["Sweep Extrusion<br>[1424, 1459, 3]"]
   44[Wall]
     %% face_code_ref=Missing NodePath
@@ -171,17 +171,17 @@ flowchart LR
   63["Sweep Extrusion<br>[1020, 1057, 3]"]
   64[Wall]
     %% face_code_ref=Missing NodePath
-  65["Cap Start"]
-  66["Cap End"]
-  67["SweepEdge Opposite"]
-  68["SweepEdge Adjacent"]
-  72["Sweep Extrusion<br>[1263, 1297, 3]"]
-  73[Wall]
+  65["SweepEdge Opposite"]
+  66["SweepEdge Adjacent"]
+  67["Plane<br>[1199, 1255, 3]"]
+  71["Sweep Extrusion<br>[1263, 1297, 3]"]
+  72[Wall]
     %% face_code_ref=Missing NodePath
-  74["Cap End"]
+  73["Cap End"]
     %% face_code_ref=Missing NodePath
-  75["SweepEdge Opposite"]
-  76["SweepEdge Adjacent"]
+  74["SweepEdge Opposite"]
+  75["SweepEdge Adjacent"]
+  76["Plane<br>[1359, 1416, 3]"]
   80["Sweep Extrusion<br>[1424, 1459, 3]"]
   81[Wall]
     %% face_code_ref=Missing NodePath
@@ -359,42 +359,42 @@ flowchart LR
   18 --- 19
   19 --- 20
   19 --- 21
+  23 x--> 19
+  20 x--> 30
   22 --- 23
   23 --- 24
   23 --- 25
   23 ---- 26
   24 --- 27
-  24 x--> 28
-  24 --- 30
-  24 --- 31
+  24 --- 28
+  24 --- 29
+  24 x--> 30
   26 --- 27
   26 --- 28
   26 --- 29
-  26 --- 30
-  26 --- 31
-  27 --- 30
-  27 --- 31
-  28 --- 32
-  33 <--x 28
-  28 <--x 228
-  30 <--x 29
-  29 --- 40
-  41 <--x 29
-  29 <--x 229
-  32 --- 33
-  32 --- 34
-  32 ---- 35
-  33 --- 36
-  33 --- 38
-  33 --- 39
-  35 --- 36
+  27 --- 28
+  27 --- 29
+  28 x--> 39
+  30 --- 31
+  32 <--x 30
+  30 <--x 228
+  31 --- 32
+  31 --- 33
+  31 ---- 34
+  32 --- 35
+  32 --- 37
+  32 --- 38
+  34 --- 35
+  34 --- 36
+  34 --- 37
+  34 --- 38
   35 --- 37
   35 --- 38
-  35 --- 39
-  36 --- 38
-  36 --- 39
-  38 <--x 37
-  53 <--x 37
+  37 <--x 36
+  53 <--x 36
+  39 --- 40
+  41 <--x 39
+  39 <--x 229
   40 --- 41
   40 --- 42
   40 ---- 43
@@ -425,42 +425,42 @@ flowchart LR
   55 --- 56
   56 --- 57
   56 --- 58
+  60 x--> 56
+  57 x--> 67
   59 --- 60
   60 --- 61
   60 --- 62
   60 ---- 63
   61 --- 64
-  61 x--> 65
-  61 --- 67
-  61 --- 68
+  61 --- 65
+  61 --- 66
+  61 x--> 67
   63 --- 64
   63 --- 65
   63 --- 66
-  63 --- 67
-  63 --- 68
-  64 --- 67
-  64 --- 68
-  65 --- 69
-  70 <--x 65
-  65 <--x 231
-  67 <--x 66
-  66 --- 77
-  78 <--x 66
-  66 <--x 232
-  69 --- 70
-  69 --- 71
-  69 ---- 72
-  70 --- 73
-  70 --- 75
-  70 --- 76
-  72 --- 73
+  64 --- 65
+  64 --- 66
+  65 x--> 76
+  67 --- 68
+  69 <--x 67
+  67 <--x 231
+  68 --- 69
+  68 --- 70
+  68 ---- 71
+  69 --- 72
+  69 --- 74
+  69 --- 75
+  71 --- 72
+  71 --- 73
+  71 --- 74
+  71 --- 75
   72 --- 74
   72 --- 75
-  72 --- 76
-  73 --- 75
-  73 --- 76
-  75 <--x 74
-  90 <--x 74
+  74 <--x 73
+  90 <--x 73
+  76 --- 77
+  78 <--x 76
+  76 <--x 232
   77 --- 78
   77 --- 79
   77 ---- 80

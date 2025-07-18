@@ -172,6 +172,34 @@ export class KCLSemanticError extends KCLError {
   }
 }
 
+export class KCLArgumentError extends KCLError {
+  constructor(
+    msg: string,
+    sourceRange: SourceRange,
+    kclBacktrace: BacktraceItem[],
+    nonFatal: CompilationError[],
+    variables: VariableMap,
+    operations: Operation[],
+    artifactGraph: ArtifactGraph,
+    filenames: { [x: number]: ModulePath | undefined },
+    defaultPlanes: DefaultPlanes | null
+  ) {
+    super(
+      'argument',
+      msg,
+      sourceRange,
+      kclBacktrace,
+      nonFatal,
+      variables,
+      operations,
+      artifactGraph,
+      filenames,
+      defaultPlanes
+    )
+    Object.setPrototypeOf(this, KCLArgumentError.prototype)
+  }
+}
+
 export class KCLTypeError extends KCLError {
   constructor(
     msg: string,
