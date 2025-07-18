@@ -1,60 +1,36 @@
 import type { ReactNode } from 'react'
 import { useRef, useEffect, useState } from 'react'
-import { PromptCard } from '@src/components/PromptCard'
 import type { Prompt } from '@src/lib/prompt'
-import { MlEphantManagerTransitions } from '@src/machines/mlEphantManagerMachine'
+import type { FileMeta } from '@src/lib/types'
+import { PromptCard } from '@src/components/PromptCard'
+import { CustomIcon } from '@src/components/CustomIcon'
 
 export interface MlEphantConversationProps {
   prompts: Prompt[]
-  hasSelection?: boolean
+  onProcess: (requestedPrompt: string) => void
   disabled?: boolean
 }
 
 interface MlEphantConversationInputProps {
-  onProcess: (requestedPrompt: string) => void
-  hasSelection: MlEphantConversationProps['hasSelection']
+  onProcess: MlEphantConversationProps['onProcess']
   disabled?: boolean
-}
-
-const Clone = (props) => {
-  const refDiv = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    if (props.xref.current && refDiv.current) {
-      const styleSnapshot = window.getComputedStyle(props.xref.current)
-
-      for (let key of styleSnapshot) {
-        refDiv.current.style[key] = styleSnapshot[key]
-      }
-    }
-
-    // Unset so classes can be used instead.
-    refDiv.current.style.display = ''
-    refDiv.current.style.width = ''
-    refDiv.current.style.inlineSize = ''
-    refDiv.current.setAttribute('tabindex', -1)
-    refDiv.current.focus()
-  }, [props.xref.current, refDiv.current])
-
-  return (
-    <div ref={refDiv} className={props.className}>
-      {props.children}
-    </div>
-  )
 }
 
 export const MlEphantConversationInput = (
   props: MlEphantConversationInputProps
 ) => {
-  const refTextarea = useRef<HTMLTextArea>(null)
-  const [value, setValue] = useState('')
+  const refDiv = useRef<HTMLDivElement>(null)
+  const [heightConvo, setHeightConvo] = useState(0)
   const [lettersForAnimation, setLettersForAnimation] = useState<ReactNode[]>(
     []
   )
   const [isAnimating, setAnimating] = useState(false)
 
   const onClick = () => {
+    const value = refDiv.current?.innerText
     if (!value) return
+    setHeightConvo(refDiv.current.getBoundingClientRect().height)
+
     props.onProcess(value)
     setLettersForAnimation(
       value.split('').map((c, index) => (
@@ -70,7 +46,7 @@ export const MlEphantConversationInput = (
       ))
     )
     setAnimating(true)
-    setValue('')
+    refDiv.current.innerText = ''
 
     setTimeout(() => {
       setAnimating(false)
@@ -79,34 +55,38 @@ export const MlEphantConversationInput = (
 
   useEffect(() => {
     if (!isAnimating) {
-      refTextarea.current.focus()
+      refDiv.current.focus()
     }
   }, [isAnimating])
 
   return (
     <div className="flex flex-col p-4 gap-2">
       <div className="text-sm text-chalkboard-60">Enter a prompt</div>
-      <div className="flex flex-row gap-2 items-start">
-        <textarea
-          ref={refTextarea}
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-          className={`w-full p-2 ${isAnimating ? 'hidden' : ''}`}
+      <div className="p-2 border flex flex-col gap-2">
+        <div
+          contentEditable={true}
+          autoCapitalize="off"
+          autoComplete="off"
+          autoCorrect="off"
+          spellCheck="false"
+          ref={refDiv}
+          className={`outline-none w-full overflow-auto ${isAnimating ? 'hidden' : ''}`}
+          style={{ height: '2lh' }}
           placeholder="Help get me started on..."
-        ></textarea>
-        <Clone
-          xref={refTextarea}
-          className={`${isAnimating ? '' : 'hidden'} w-full p-2`}
+        ></div>
+        <div
+          className={`${isAnimating ? '' : 'hidden'} overflow-hidden w-full p-2`}
+          style={{ height: heightConvo }}
         >
           {lettersForAnimation}
-        </Clone>
-        <div className="flex items-start">
+        </div>
+        <div className="flex justify-end">
           <button
             disabled={props.disabled}
             onClick={onClick}
-            className="w-20 m-0 bg-ml-green p-2"
+            className="w-10 m-0 bg-ml-green p-2 flex justify-center"
           >
-            {props.hasSelection ? 'Edit' : 'Submit'}
+            <CustomIcon name="arrowUp" className="w-5 h-5 animate-bounce" />
           </button>
         </div>
       </div>
@@ -127,24 +107,6 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
       ].scrollIntoView()
     }
   }, [props.prompts.length])
-
-  const onProcess = async (requestedPrompt: string) => {
-    if (!props.hasSelection) {
-      mlEphantManagerActor.send({
-        type: MlEphantManagerTransitions.PromptCreateModel,
-        prompt: requestedPrompt,
-      })
-    } else {
-      const projectFiles = await collectProjectFiles()
-      mlEphantManagerActor.send({
-        type: MlEphantManagerTransitions.PromptEditModel,
-        prompt: requestedPrompt,
-        selections: props.selections,
-        projectFiles,
-        artifactGraph: props.artifactGraph,
-      })
-    }
-  }
 
   const promptCards = props.prompts.map((prompt) => (
     <PromptCard
@@ -170,8 +132,7 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
           <div className="border-t">
             <MlEphantConversationInput
               disabled={props.disabled}
-              hasSelection={props.hasSelection}
-              onProcess={onProcess}
+              onProcess={props.onProcess}
             />
           </div>
         </div>
