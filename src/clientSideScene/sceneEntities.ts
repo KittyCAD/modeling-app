@@ -3316,7 +3316,7 @@ export class SceneEntities {
 
   mouseEnterLeaveCallbacks() {
     return {
-      onMouseEnter: ({ selected, dragSelected }: OnMouseEnterLeaveArgs) => {
+      onMouseEnter: ({ selected }: OnMouseEnterLeaveArgs) => {
         if ([X_AXIS, Y_AXIS].includes(selected?.userData?.type)) {
           const obj = selected as Mesh
           const mat = obj.material as MeshBasicMaterial
@@ -3348,7 +3348,7 @@ export class SceneEntities {
           if (extraSegmentGroup) {
             extraSegmentGroup.traverse((child) => {
               if (child instanceof Points || child instanceof Mesh) {
-                child.material.opacity = dragSelected ? 0 : 1
+                child.material.opacity = 1
               }
             })
           }

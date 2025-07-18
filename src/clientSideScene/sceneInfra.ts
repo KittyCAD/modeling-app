@@ -53,7 +53,6 @@ type SendType = ReturnType<typeof useModelingContext>['send']
 
 export interface OnMouseEnterLeaveArgs {
   selected: Object3D<Object3DEventMap>
-  dragSelected?: Object3D<Object3DEventMap>
   mouseEvent: MouseEvent
   /** The intersection of the mouse with the THREEjs raycast plane */
   intersectionPoint?: {
@@ -502,7 +501,7 @@ export class SceneInfra {
       })
     }
 
-    if (intersects[0]) {
+    if (intersects[0] && !this.selected) {
       const firstIntersectObject = intersects[0].object
       const planeIntersectPoint = this.getPlaneIntersectPoint()
       const intersectionPoint = {
@@ -523,15 +522,13 @@ export class SceneInfra {
         this.hoveredObject = firstIntersectObject
         await this.onMouseEnter({
           selected: this.hoveredObject,
-          dragSelected: this.selected?.object,
           mouseEvent: mouseEvent,
           intersectionPoint,
         })
-        if (!this.selected)
-          this.updateMouseState({
-            type: 'isHovering',
-            on: this.hoveredObject,
-          })
+        this.updateMouseState({
+          type: 'isHovering',
+          on: this.hoveredObject,
+        })
       }
     } else {
       if (this.hoveredObject) {
@@ -539,7 +536,6 @@ export class SceneInfra {
         this.hoveredObject = null
         await this.onMouseLeave({
           selected: hoveredObj,
-          dragSelected: this.selected?.object,
           mouseEvent: mouseEvent,
         })
         if (!this.selected) this.updateMouseState({ type: 'idle' })
