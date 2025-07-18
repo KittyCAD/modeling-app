@@ -16,6 +16,7 @@ import { reportRejection } from '@src/lib/trap'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import env from '@src/env'
 import { commandBarActor } from '@src/lib/singletons'
+import {listAllEnvironments} from '@src/lib/desktop'
 
 type User = Models['User_type']
 

@@ -4,6 +4,7 @@ import { assign, fromPromise, setup } from 'xstate'
 import { COOKIE_NAME, OAUTH2_DEVICE_CLIENT_ID } from '@src/lib/constants'
 import {
   getUser as getUserDesktop,
+  listAllEnvironments,
   readEnvironmentConfigurationPool,
   readEnvironmentConfigurationToken,
   readEnvironmentFile,
@@ -362,12 +363,10 @@ async function logoutAllEnvironments() {
   if (!isDesktop()) {
     return new Error('unimplemented for web')
   }
-
-  // TODO: Kevin LS on disk. Only way.
-  //     const environmentName: EnvironmentName = key
-  //     // Make the oauth2/token/revoke request per environment
-  //     await logoutEnvironment(environmentName)
-  //   }
-
-  await setTokenToEmptyStringForAllEnvironments()
+  const environments = await listAllEnvironments()
+  for (let i = 0; i < environments.length; i++) {
+    const environmentName = environments[i]
+    // Make the oauth2/token/revoke request per environment
+    await logoutEnvironment(environmentName)
+  }
 }
