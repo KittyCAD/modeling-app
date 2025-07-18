@@ -1277,7 +1277,7 @@ extrude001 = extrude(profile001, length = 100)`
         },
         commandName: 'Helix',
       })
-      await cmdBar.clickOptionalArgument('ccw')
+      await page.getByRole('button', { name: 'CounterClockWise' }).click()
       await cmdBar.expectState({
         commandName: 'Helix',
         stage: 'arguments',
