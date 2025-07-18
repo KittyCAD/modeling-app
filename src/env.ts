@@ -102,8 +102,9 @@ export default (): EnvironmentVariables => {
   const processEnvOnly = processEnv()
   const env = processEnvOnly || windowElectronProcessEnvOnly || viteOnly
 
+  let BASE_DOMAIN = env.VITE_KITTYCAD_BASE_DOMAIN
   let { API_URL, SITE_URL, WEBSOCKET_URL, APP_URL } =
-    generateDomainsFromBaseDomain(env.VITE_KITTYCAD_BASE_DOMAIN)
+    generateDomainsFromBaseDomain(BASE_DOMAIN)
   let pool = ''
 
   /**
@@ -119,14 +120,14 @@ export default (): EnvironmentVariables => {
     WEBSOCKET_URL = environmentDomains.WEBSOCKET_URL
     APP_URL = environmentDomains.APP_URL
     pool = environment && environment.pool ? environment.pool : ''
+    BASE_DOMAIN = environment.domain
   }
 
   // TODO: Override any manual ones
 
   const environmentVariables: EnvironmentVariables = {
     NODE_ENV: (env.NODE_ENV as string) || viteOnly.MODE || undefined,
-    VITE_KITTYCAD_BASE_DOMAIN:
-      (env.VITE_KITTYCAD_BASE_DOMAIN as string) || undefined,
+    VITE_KITTYCAD_BASE_DOMAIN: BASE_DOMAIN || undefined,
     VITE_KITTYCAD_API_BASE_URL: API_URL || undefined,
     VITE_KITTYCAD_API_WEBSOCKET_URL: WEBSOCKET_URL || undefined,
     VITE_KITTYCAD_API_TOKEN:
