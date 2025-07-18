@@ -6,7 +6,7 @@ function generateDomainsFromBaseDomain(baseDomain: string) {
     API_URL: `https://api.${baseDomain}`,
     SITE_URL: `https://${baseDomain}`,
     WEBSOCKET_URL: `wss://api.${baseDomain}/ws/modeling/commands`,
-    APP_URL: `https://api.${baseDomain}`,
+    APP_URL: `https://app.${baseDomain}`,
   }
 }
 

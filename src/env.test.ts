@@ -8,6 +8,7 @@ describe('@src/env', () => {
       // vite > node.js
       const expected = {
         NODE_ENV: 'test',
+        VITE_KITTYCAD_BASE_DOMAIN: 'dev.zoo.dev',
         VITE_KITTYCAD_API_BASE_URL: 'https://api.dev.zoo.dev',
         VITE_KITTYCAD_API_WEBSOCKET_URL:
           'wss://api.dev.zoo.dev/ws/modeling/commands',
