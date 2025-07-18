@@ -919,28 +919,120 @@ export class CameraControls {
     })
   }
 
+  async setCameraViewTop() {
+    const distance = this.camera.position.distanceTo(this.target)
+
+    const topDownView: CameraViewState_type = {
+      // Identity quaternion.
+      pivot_rotation: {
+        x: 0,
+        y: 0,
+        z: 0,
+        w: 1,
+      },
+      pivot_position: {
+        x: this.target.x,
+        y: this.target.y,
+        z: this.target.z,
+      },
+      eye_offset: distance,
+      fov_y: 45,
+      ortho_scale_factor: 1.0,
+      is_ortho: true,
+      ortho_scale_enabled: true,
+      world_coord_system: 'right_handed_up_z',
+    }
+
+    // Update camera.
+    await this.engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_set_view',
+        view: topDownView,
+      },
+    })
+
+    // Pull through the camera settings to update gizmo.
+    await this.engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_get_settings',
+      },
+    })
+  }
+
+  async setCameraViewBottom() {
+    const distance = this.camera.position.distanceTo(this.target)
+
+    const bottomUpView: CameraViewState_type = {
+      // 180° rotation around X axis to flip upside down.
+      pivot_rotation: {
+        x: 1,
+        y: 0,
+        z: 0,
+        w: 0,
+      },
+      pivot_position: {
+        x: this.target.x,
+        y: this.target.y,
+        z: this.target.z,
+      },
+      eye_offset: distance,
+      fov_y: 45,
+      ortho_scale_factor: 1.0,
+      is_ortho: true,
+      ortho_scale_enabled: true,
+      world_coord_system: 'right_handed_up_z',
+    }
+
+    // Update camera.
+    await this.engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_set_view',
+        view: bottomUpView,
+      },
+    })
+
+    // Pull through the camera settings to update gizmo.
+    await this.engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_get_settings',
+      },
+    })
+  }
+
   async updateCameraToAxis(
     axis: 'x' | 'y' | 'z' | '-x' | '-y' | '-z'
   ): Promise<void> {
     const distance = this.camera.position.distanceTo(this.target)
 
     const vantage = this.target.clone()
-    let up = { x: 0, y: 0, z: 1 }
+    const up = { x: 0, y: 0, z: 1 }
 
     if (axis === 'x') {
       vantage.x += distance
     } else if (axis === 'y') {
       vantage.y += distance
     } else if (axis === 'z') {
-      vantage.z += distance
-      up = { x: -1, y: 0, z: 0 }
+      await this.setCameraViewTop()
+      return
+      // vantage.z += distance
+      // up = { x: -1, y: 0, z: 0 }
     } else if (axis === '-x') {
       vantage.x -= distance
     } else if (axis === '-y') {
       vantage.y -= distance
     } else if (axis === '-z') {
-      vantage.z -= distance
-      up = { x: -1, y: 0, z: 0 }
+      await this.setCameraViewBottom()
+      return
+      // vantage.z -= distance
+      // up = { x: -1, y: 0, z: 0 }
     }
 
     await this.engineCommandManager.sendSceneCommand({
