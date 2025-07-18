@@ -753,3 +753,15 @@ export async function engineViewIsometricWithoutGeometryPresent({
     },
   })
 }
+
+export function returnSelfOrGetHostNameFromURL(requestedEnvironment: string) {
+  let environment = requestedEnvironment.trim()
+  try {
+    const tryToMakeAURL = new URL(requestedEnvironment)
+    environment = tryToMakeAURL.hostname
+  } catch (e) {
+    // it is fine if it isn't a URL
+    console.log(e)
+  }
+  return environment
+}

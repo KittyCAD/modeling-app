@@ -12,7 +12,7 @@ export const AdvancedSignInOptions = ({
   pool: string
   setPool: React.Dispatch<React.SetStateAction<string>>
   selectedEnvironment: string
-  setSelectedEnvironment: React.Dispatch<React.SetStateAction<string>>
+  setSelectedEnvironment: (environment: string) => void
 }) => {
   return isDesktop() ? (
     <div className="flex flex-row items-center">

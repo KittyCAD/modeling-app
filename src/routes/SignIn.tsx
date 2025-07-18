@@ -11,7 +11,7 @@ import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { Themes, getSystemTheme } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
-import { toSync } from '@src/lib/utils'
+import { returnSelfOrGetHostNameFromURL, toSync } from '@src/lib/utils'
 import { authActor, useSettings } from '@src/lib/singletons'
 import { APP_VERSION, generateSignInUrl } from '@src/routes/utils'
 import { withAPIBaseURL, withSiteBaseURL } from '@src/lib/withBaseURL'
@@ -51,13 +51,20 @@ const SignIn = () => {
   )
   const [pool, setPool] = useState(env().POOL || '')
 
+  // See if the user added a real URL if they did, auto take the hostname!
+  const setSelectedEnvironmentFormatter = (requestedEnvironment: string) => {
+    const requestedEnvironmentFormatted =
+      returnSelfOrGetHostNameFromURL(requestedEnvironment)
+    setSelectedEnvironment(requestedEnvironmentFormatted)
+  }
+
   useEffect(() => {
     if (isDesktop() && !didReadFromDiskCacheForEnvironment) {
       didReadFromDiskCacheForEnvironment = true
       readEnvironmentFile()
         .then((environment) => {
           if (environment) {
-            setSelectedEnvironment(environment)
+            setSelectedEnvironmentFormatter(environment)
             return environment
           }
         })
@@ -187,7 +194,7 @@ const SignIn = () => {
                         pool={pool}
                         setPool={setPool}
                         selectedEnvironment={selectedEnvironment}
-                        setSelectedEnvironment={setSelectedEnvironment}
+                        setSelectedEnvironment={setSelectedEnvironmentFormatter}
                       />
                     )}
                   </>

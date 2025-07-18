@@ -25,6 +25,7 @@ import {
   writeEnvironmentFile,
 } from '@src/lib/desktop'
 import env from '@src/env'
+import { returnSelfOrGetHostNameFromURL } from '@src/lib/utils'
 
 function onSubmitKCLSampleCreation({
   sample,
@@ -462,7 +463,10 @@ export function createApplicationCommands({
     groupId: 'application',
     onSubmit: (data) => {
       if (data) {
-        writeEnvironmentFile(data.environment)
+        const requestedEnvironmentFormatted = returnSelfOrGetHostNameFromURL(
+          data.environment
+        )
+        writeEnvironmentFile(requestedEnvironmentFormatted)
           .then(() => {
             // Reload the application and it will trigger the correct sign in workflow for the new environment
             window.location.reload()
