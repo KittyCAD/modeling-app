@@ -60,7 +60,7 @@ impl Program {
                 for attr in body_item.get_attrs() {
                     result.push_str(&attr.recast(options, indentation_level));
                 }
-                result.push_str(&match body_item.clone() {
+                result.push_str(&match body_item {
                     BodyItem::ImportStatement(stmt) => stmt.recast(options, indentation_level),
                     BodyItem::ExpressionStatement(expression_statement) => {
                         expression_statement
