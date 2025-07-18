@@ -161,14 +161,21 @@ export function addSubtract({
   const call = createCallExpressionStdLibKw('subtract', objectsExpr, [
     createLabeledArg('tools', toolsExpr),
   ])
+  if (vars.pathIfPipe && toolVars.pathIfPipe) {
+    return new Error(
+      'Cannot use both solids and tools in a subtraction operation with a pipe'
+    )
+  }
+
+  const pathIfNewPipe = vars.pathIfPipe ?? toolVars.pathIfPipe
 
   // 3. If edit, we assign the new function call declaration to the existing node,
   // otherwise just push to the end
   const pathToNode = setCallInAst({
     ast: modifiedAst,
     call,
+    pathIfNewPipe,
     pathToEdit: nodeToEdit,
-    pathIfNewPipe: vars.pathIfPipe,
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.SOLID,
   })
   if (err(pathToNode)) {
