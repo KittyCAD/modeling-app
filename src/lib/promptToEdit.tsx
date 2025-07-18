@@ -60,21 +60,22 @@ type TextToCadErrorResponse = {
   message: string
 }
 
-export async function submitTextToCadMultiFileIterationRequest({
+export async function submitTextToCadMultiFileIterationRequest(
+  request: {
     body: {
       prompt: string
       source_ranges: Models['SourceRangePrompt_type'][]
       project_name?: string
       kcl_version: string
-    },
-    files: KittyCadLibFile[],
+    }
+    files: KittyCadLibFile[]
   },
   token: string
 ): Promise<TextToCadMultiFileIteration_type | Error> {
   const formData = new FormData()
-  formData.append('body', JSON.stringify(body))
+  formData.append('body', JSON.stringify(request.body))
 
-  files.forEach((file) => {
+  request.files.forEach((file) => {
     formData.append('files', file.data, file.name)
   })
 
