@@ -1533,7 +1533,6 @@ export class EngineCommandManager extends EventTarget {
     additionalSettings +=
       '&show_grid=' + (this.settings.showScaleGrid ? 'true' : 'false')
     const pool = !this.settings.pool ? '' : `&pool=${this.settings.pool}`
-    // const pool = 'pr-3613'
     const url = withWebSocketURL(
       `?video_res_width=${width}&video_res_height=${height}${additionalSettings}${pool}`
     )
