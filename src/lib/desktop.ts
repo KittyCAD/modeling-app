@@ -837,7 +837,8 @@ export const readEnvironmentFile = async () => {
       }
     )
     if (!environment) return ''
-    return environment
+    const environmentTrimmed = environment.replace(/[\r\n]+/g, '');
+    return environmentTrimmed
   }
   return ''
 }

@@ -1,5 +1,5 @@
 import type { CSSProperties } from 'react'
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { Link } from 'react-router-dom'
 
@@ -16,17 +16,18 @@ import { authActor, useSettings } from '@src/lib/singletons'
 import { APP_VERSION, generateSignInUrl } from '@src/routes/utils'
 import { withAPIBaseURL, withSiteBaseURL } from '@src/lib/withBaseURL'
 import {
-  getEnvironmentDomainFromDisk,
   updateEnvironment,
   updateEnvironmentPool,
 } from '@src/env'
 import env from '@src/env'
-import { writeEnvironmentFile } from '@src/lib/desktop'
+import { readEnvironmentConfigurationPool, readEnvironmentFile, writeEnvironmentFile } from '@src/lib/desktop'
 import { AdvancedSignInOptions } from '@src/routes/AdvancedSignInOptions'
 
 const subtleBorder =
   'border border-solid border-chalkboard-30 dark:border-chalkboard-80'
 const cardArea = `${subtleBorder} rounded-lg px-6 py-3 text-chalkboard-70 dark:text-chalkboard-30`
+
+let didReadFromDiskCacheForEnvironment = false
 
 const SignIn = () => {
   // Only create the native file menus on desktop
@@ -38,7 +39,6 @@ const SignIn = () => {
       .catch(reportRejection)
     window.electron.disableMenu('Help.Show all commands').catch(reportRejection)
   }
-
   const [userCode, setUserCode] = useState('')
 
   // Last saved environment
@@ -48,6 +48,20 @@ const SignIn = () => {
     lastSelectedEnvironmentName
   )
   const [pool, setPool] = useState(env().POOL || '')
+
+  useEffect(()=>{
+    if (isDesktop() && !didReadFromDiskCacheForEnvironment) {
+      didReadFromDiskCacheForEnvironment = true
+      readEnvironmentFile().then((environment)=>{
+        setSelectedEnvironment(environment)
+        return environment
+      }).then((environment)=>{
+        readEnvironmentConfigurationPool(environment).then((pool)=>{
+          setPool(pool)
+        })
+      }).catch(reportRejection)
+    }
+  },[])
 
   const {
     app: { theme },
