@@ -3176,7 +3176,7 @@ export class SceneEntities {
     orthoFactor: number,
     sketch: Sketch,
     snappedToTangent: boolean = false,
-    truncatedExpressionIndexOffset: number
+    truncatedExpressionIndexOffset?: number
   ): (() => SegmentOverlayPayload | null) => {
     const segPathToNode = getNodePathFromSourceRange(
       modifiedAst,
