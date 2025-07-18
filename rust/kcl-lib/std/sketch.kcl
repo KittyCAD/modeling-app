@@ -255,6 +255,8 @@ export fn startProfile(
 
 /// Sketch a rectangle.
 ///
+/// A rectangle can be defined by its width, height, and location. Either the center or corner must be provided, but not both, to specify its location.
+///
 /// ```
 /// exampleSketch = startSketchOn(-XZ)
 ///   |> rectangle(center = [0, 0], width = 10, height = 5)
@@ -275,13 +277,14 @@ export fn rectangle(
   /// Rectangle's height along Y axis.
   height: number(Length),
   /// The center of the rectangle.
+  /// Either `corner` or `center` is required.
   /// Incompatible with `corner`.
   @(snippetArray = ["0", "0"])
   center?: Point2d,
   /// The corner of the rectangle.
+  /// Either `corner` or `center` is required.
   /// Incompatible with `center`.
-  /// This will be the corner which is most negative on
-  /// both X and Y axes.
+  /// This will be the corner which is most negative on both X and Y axes.
   @(snippetArray = ["0", "0"])
   corner?: Point2d,
 ): Sketch {}
