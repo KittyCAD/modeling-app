@@ -1074,8 +1074,6 @@ export function getVariableExprsFromSelection(
       )
       const lastChildVariable = getLastVariable(children, ast)
       if (!lastChildVariable) {
-        console.log('artifact', s.artifact)
-        console.log('lastChildVariable not found')
         continue
       }
 
@@ -1087,13 +1085,11 @@ export function getVariableExprsFromSelection(
         'VariableDeclaration'
       )
       if (err(directLookup)) {
-        console.log('directLookup not found', directLookup)
         continue
       }
 
       variable = directLookup
     }
-    console.log('variable', variable)
 
     if (variable.node.type === 'VariableDeclaration') {
       const name = variable.node.declaration.id.name
@@ -1491,10 +1487,8 @@ export function getLastVariable(
   orderedDescArtifacts: Artifact[],
   ast: Node<Program>
 ) {
-  console.log('artifacts', orderedDescArtifacts)
   for (const artifact of orderedDescArtifacts) {
     const codeRef = getFaceCodeRef(artifact)
-    console.log('getLastVariable codeRef', codeRef)
     if (codeRef) {
       const pathToNode = getNodePathFromSourceRange(ast, codeRef.range)
       const varDec = getNodeFromPath<VariableDeclaration>(
