@@ -30,7 +30,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
   const fullEnvironmentName = env().VITE_KITTYCAD_BASE_DOMAIN
 
   // Do not show the environment items on web
-  const hideEnvironmentItems = env().NODE_ENV === 'production' || !isDesktop()
+  const hideEnvironmentItems = !isDesktop()
 
   // We filter this memoized list so that no orphan "break" elements are rendered.
   const userMenuItems = useMemo<(ActionButtonProps | 'break')[]>(
