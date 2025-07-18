@@ -15,12 +15,14 @@ import { toSync } from '@src/lib/utils'
 import { authActor, useSettings } from '@src/lib/singletons'
 import { APP_VERSION, generateSignInUrl } from '@src/routes/utils'
 import { withAPIBaseURL, withSiteBaseURL } from '@src/lib/withBaseURL'
-import {
-  updateEnvironment,
-  updateEnvironmentPool,
-} from '@src/env'
+import { updateEnvironment, updateEnvironmentPool } from '@src/env'
 import env from '@src/env'
-import { readEnvironmentConfigurationPool, readEnvironmentFile, writeEnvironmentFile } from '@src/lib/desktop'
+import {
+  readEnvironmentConfigurationPool,
+  readEnvironmentFile,
+  writeEnvironmentConfigurationPool,
+  writeEnvironmentFile,
+} from '@src/lib/desktop'
 import { AdvancedSignInOptions } from '@src/routes/AdvancedSignInOptions'
 
 const subtleBorder =
@@ -49,19 +51,29 @@ const SignIn = () => {
   )
   const [pool, setPool] = useState(env().POOL || '')
 
-  useEffect(()=>{
+  useEffect(() => {
     if (isDesktop() && !didReadFromDiskCacheForEnvironment) {
       didReadFromDiskCacheForEnvironment = true
-      readEnvironmentFile().then((environment)=>{
-        setSelectedEnvironment(environment)
-        return environment
-      }).then((environment)=>{
-        readEnvironmentConfigurationPool(environment).then((pool)=>{
-          setPool(pool)
+      readEnvironmentFile()
+        .then((environment) => {
+          if (environment) {
+            setSelectedEnvironment(environment)
+            return environment
+          }
         })
-      }).catch(reportRejection)
+        .then((environment) => {
+          const defaultOrDiskEnvironment = environment || selectedEnvironment
+          if (defaultOrDiskEnvironment) {
+            readEnvironmentConfigurationPool(defaultOrDiskEnvironment)
+              .then((pool) => {
+                setPool(pool)
+              })
+              .catch(reportRejection)
+          }
+        })
+        .catch(reportRejection)
     }
-  },[])
+  }, [])
 
   const {
     app: { theme },
@@ -107,6 +119,9 @@ const SignIn = () => {
     }
 
     writeEnvironmentFile(selectedEnvironment).catch(reportRejection)
+    writeEnvironmentConfigurationPool(selectedEnvironment, pool).catch(
+      reportRejection
+    )
     authActor.send({ type: 'Log in', token })
   }
 
