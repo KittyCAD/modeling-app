@@ -248,17 +248,11 @@ export function ModelingSidebar() {
       <div id="app-sidebar" className="flex flex-row flex-1">
         <ul
           className={
-            'relative pointer-events-auto p-0 col-start-1 col-span-1 flex flex-col ' +
+            'relative pointer-events-auto p-0 col-start-1 col-span-1 flex flex-col items-stretch ' +
             'bg-chalkboard-10 border-r border-chalkboard-30 dark:bg-chalkboard-90 dark:border-chalkboard-80 '
           }
         >
-          <ul
-            id="pane-buttons-section"
-            className={
-              'w-fit p-2 flex flex-col gap-2 ' +
-              (context.store?.openPanes.length >= 1 ? 'pr-0.5' : '')
-            }
-          >
+          <ul id="pane-buttons-section" className="flex flex-col items-stretch">
             {filteredPanes.map((pane) => (
               <ModelingPaneButton
                 key={pane.id}
@@ -273,10 +267,7 @@ export function ModelingSidebar() {
           {filteredActions.length > 0 && (
             <>
               <hr className="w-full border-chalkboard-30 dark:border-chalkboard-80" />
-              <ul
-                id="sidebar-actions"
-                className="w-fit p-2 flex flex-col gap-2"
-              >
+              <ul id="sidebar-actions" className="flex flex-col">
                 {filteredActions.map((action) => (
                   <ModelingPaneButton
                     key={action.id}
@@ -361,11 +352,11 @@ function ModelingPaneButton({
   return (
     <div
       id={paneConfig.id + '-button-holder'}
-      className="relative"
+      className="relative py-[1px]"
       data-onboarding-id={`${paneConfig.id}-pane-button`}
     >
       <button
-        className="group pointer-events-auto flex items-center justify-center border-transparent dark:border-transparent disabled:!border-transparent p-0 m-0 rounded-sm !outline-0"
+        className={`group pointer-events-auto flex items-center justify-center border-0 border-r-2 rounded-none border-transparent dark:border-transparent p-2 m-0 !outline-0 ${paneIsOpen ? ' !border-primary' : ''}`}
         onClick={onClick}
         name={paneConfig.sidebarName}
         data-testid={paneConfig.id + SIDEBAR_BUTTON_SUFFIX}
@@ -375,12 +366,8 @@ function ModelingPaneButton({
       >
         <ActionIcon
           icon={paneConfig.icon}
-          className={paneConfig.iconClassName || ''}
           size={paneConfig.iconSize || 'md'}
-          iconClassName={paneIsOpen ? ' !text-chalkboard-10' : ''}
-          bgClassName={
-            'rounded-sm ' + (paneIsOpen ? '!bg-primary' : '!bg-transparent')
-          }
+          bgClassName="rounded-sm !bg-transparent"
         />
         <span className="sr-only">
           {paneConfig.sidebarName}
