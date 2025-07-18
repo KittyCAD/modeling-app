@@ -277,13 +277,11 @@ export fn rectangle(
   /// Rectangle's height along Y axis.
   height: number(Length),
   /// The center of the rectangle.
-  /// Either `corner` or `center` is required.
-  /// Incompatible with `corner`.
+  /// Either `corner` or `center` is required, but not both.
   @(snippetArray = ["0", "0"])
   center?: Point2d,
   /// The corner of the rectangle.
-  /// Either `corner` or `center` is required.
-  /// Incompatible with `center`.
+  /// Either `corner` or `center` is required, but not both.
   /// This will be the corner which is most negative on both X and Y axes.
   @(snippetArray = ["0", "0"])
   corner?: Point2d,
