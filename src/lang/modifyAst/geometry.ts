@@ -109,10 +109,10 @@ export function addHelix({
   const call = createCallExpressionStdLibKw('helix', unlabeledArgs, [
     ...axisExpr,
     ...cylinderExpr,
-    ...radiusExpr,
-    ...lengthExpr,
     createLabeledArg('revolutions', valueOrVariable(revolutions)),
     createLabeledArg('angleStart', valueOrVariable(angleStart)),
+    ...radiusExpr,
+    ...lengthExpr,
     ...ccwExpr,
   ])
 
