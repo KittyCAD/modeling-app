@@ -3,6 +3,7 @@ import { commandBarActor } from '@src/lib/singletons'
 import env from '@src/env'
 import { writeEnvironmentConfigurationPool } from '@src/lib/desktop'
 import { reportRejection } from '@src/lib/trap'
+import { IS_DEBUG } from '@src/routes/utils'
 
 export function EnvironmentChip() {
   const shorthand = env().VITE_KITTYCAD_BASE_DOMAIN
@@ -53,12 +54,6 @@ export function EnvironmentDescription() {
             </ActionButton>
           </p>
         </p>
-        {env().NODE_ENV === 'development' && (
-          <p className="pt-4 text-chalkboard-60">
-            All values come from your .env files and variables when running a
-            local dev app.
-          </p>
-        )}
       </div>
       <ul>
         <li className="flex flex-col px-2 py-2 gap-1 last:mb-0 ">
