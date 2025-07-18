@@ -182,7 +182,7 @@ const SignIn = () => {
                       Sign in to get started
                       <CustomIcon name="arrowRight" className="w-6 h-6" />
                     </button>
-                    {env().NODE_ENV === 'development' && (
+                    {isDesktop() && (
                       <AdvancedSignInOptions
                         pool={pool}
                         setPool={setPool}
