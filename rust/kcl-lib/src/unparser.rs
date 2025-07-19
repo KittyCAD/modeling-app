@@ -561,29 +561,31 @@ impl ArrayExpression {
         }
 
         // Otherwise, we format a multi-line representation.
+        let mut output = "[\n".to_owned();
         let inner_indentation = if ctxt == ExprContext::Pipe {
             options.get_indentation_offset_pipe(indentation_level + 1)
         } else {
             options.get_indentation(indentation_level + 1)
         };
-        let formatted_array_lines = format_items
-            .iter()
-            .map(|s| {
-                format!(
-                    "{inner_indentation}{}{}",
-                    if let Some(x) = s.strip_suffix(" ") { x } else { s },
-                    if s.ends_with('\n') { "" } else { "\n" }
-                )
-            })
-            .collect::<Vec<String>>()
-            .join("")
-            .to_owned();
+        for format_item in format_items {
+            output.push_str(&inner_indentation);
+            output.push_str(if let Some(x) = format_item.strip_suffix(" ") {
+                x
+            } else {
+                &format_item
+            });
+            if !format_item.ends_with('\n') {
+                output.push('\n')
+            }
+        }
         let end_indent = if ctxt == ExprContext::Pipe {
             options.get_indentation_offset_pipe(indentation_level)
         } else {
             options.get_indentation(indentation_level)
         };
-        format!("[\n{formatted_array_lines}{end_indent}]")
+        output.push_str(&end_indent);
+        output.push(']');
+        output
     }
 }
 
