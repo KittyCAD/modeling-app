@@ -324,6 +324,8 @@ export class SceneEntities {
         group: segment,
         scale: factor,
         sceneInfra: this.sceneInfra,
+        // Note: AST and code not available in onCamChange, so constraints won't be checked here
+        // This is primarily for scaling changes
       })
       callBack && !err(callBack) && callbacks.push(callBack)
       if (segment.name === PROFILE_START) {
@@ -729,6 +731,8 @@ export class SceneEntities {
           scale,
           theme: this.sceneInfra._theme,
           isDraft: false,
+          ast: maybeModdedAst,
+          code: this.codeManager.code,
         })
         _profileStart.layers.set(SKETCH_LAYER)
         _profileStart.traverse((child) => {
@@ -866,6 +870,8 @@ export class SceneEntities {
           isSelected,
           sceneInfra: this.sceneInfra,
           selection,
+          ast: maybeModdedAst,
+          code: this.codeManager.code,
         })
         if (err(result)) return
         const { group: _group, updateOverlaysCallback } = result
@@ -3124,6 +3130,15 @@ export class SceneEntities {
           })
         }
         callbacks.push(startProfileCallBack)
+        let minIndex = -1
+        if (draftInfo) {
+          sketchNodePaths.forEach((path) => {
+            const currentIndex = Number(path[1][0])
+            if (currentIndex < minIndex || minIndex === -1) {
+              minIndex = currentIndex
+            }
+          })
+        }
 
         callbacks.push(
           ...sgPaths.map((group, index) =>
@@ -3134,7 +3149,8 @@ export class SceneEntities {
               modifiedAst,
               orthoFactor,
               sketch,
-              snappedToTangent
+              snappedToTangent,
+              minIndex
             )
           )
         )
@@ -3163,7 +3179,8 @@ export class SceneEntities {
     modifiedAst: Program,
     orthoFactor: number,
     sketch: Sketch,
-    snappedToTangent: boolean = false
+    snappedToTangent: boolean = false,
+    truncatedExpressionIndexOffset?: number
   ): (() => SegmentOverlayPayload | null) => {
     const segPathToNode = getNodePathFromSourceRange(
       modifiedAst,
@@ -3256,6 +3273,9 @@ export class SceneEntities {
         scale: factor,
         prevSegment: sgPaths[index - 1],
         sceneInfra: this.sceneInfra,
+        ast: modifiedAst,
+        code: this.codeManager.code,
+        truncatedExpressionIndexOffset,
       })
     if (callBack && !err(callBack)) return callBack
 
