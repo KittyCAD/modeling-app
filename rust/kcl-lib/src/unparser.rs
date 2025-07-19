@@ -794,7 +794,7 @@ impl Node<PipeExpression> {
             .map(|(index, statement)| {
                 let indentation = options.get_indentation(indentation_level + 1);
                 let mut s = statement.recast(options, indentation_level + 1, ExprContext::Pipe);
-                let non_code_meta = self.non_code_meta.clone();
+                let non_code_meta = &self.non_code_meta;
                 if let Some(non_code_meta_value) = non_code_meta.non_code_nodes.get(&index) {
                     for val in non_code_meta_value {
                         let formatted = if val.end == self.end {
