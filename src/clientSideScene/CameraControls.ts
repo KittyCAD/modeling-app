@@ -272,7 +272,6 @@ export class CameraControls {
     this.domElement.addEventListener('wheel', this.onMouseWheel)
     this.initTouchControls(this.enableTouchControls)
 
-    window.addEventListener('resize', this.onWindowResize)
     this.onWindowResize()
 
     this.update()
@@ -395,9 +394,11 @@ export class CameraControls {
 
   onWindowResize = () => {
     if (this.camera instanceof PerspectiveCamera) {
-      this.camera.aspect = window.innerWidth / window.innerHeight
+      this.camera.aspect =
+        this.domElement.clientWidth / this.domElement.clientHeight
     } else if (this.camera instanceof OrthographicCamera) {
-      const aspect = window.innerWidth / window.innerHeight
+      const aspect = this.domElement.clientWidth / this.domElement.clientHeight
+
       this.camera.left = -ORTHOGRAPHIC_CAMERA_SIZE * aspect
       this.camera.right = ORTHOGRAPHIC_CAMERA_SIZE * aspect
       this.camera.top = ORTHOGRAPHIC_CAMERA_SIZE
@@ -586,7 +587,9 @@ export class CameraControls {
     const { x: px, y: py, z: pz } = this.camera.position
     const { x: qx, y: qy, z: qz, w: qw } = this.camera.quaternion
     const oldCamUp = this.camera.up.clone()
-    const aspect = window.innerWidth / window.innerHeight
+    const aspect =
+      this.engineCommandManager.streamDimensions.width /
+      this.engineCommandManager.streamDimensions.height
     this.lastPerspectiveFov = this.camera.fov
     const { z_near, z_far } = calculateNearFarFromFOV(this.lastPerspectiveFov)
     this.camera = new OrthographicCamera(
@@ -624,7 +627,8 @@ export class CameraControls {
     const previousCamUp = this.camera.up.clone()
     this.camera = new PerspectiveCamera(
       this.lastPerspectiveFov,
-      window.innerWidth / window.innerHeight,
+      this.engineCommandManager.streamDimensions.width /
+        this.engineCommandManager.streamDimensions.height,
       z_near,
       z_far
     )

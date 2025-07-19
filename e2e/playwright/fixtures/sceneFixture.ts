@@ -77,89 +77,153 @@ export class SceneFixture {
       .toEqual(expected)
   }
 
+  convertPagePositionToStream = async (
+    x: number,
+    y: number,
+    format: 'pixels' | 'ratio' = 'pixels'
+  ) => {
+    const viewportSize = this.page.viewportSize()
+    const streamBoundingBox = await this.streamWrapper.boundingBox()
+    if (viewportSize === null) {
+      throw Error('No viewport')
+    }
+    if (streamBoundingBox === null) {
+      throw Error('No stream to click')
+    }
+    const resolvedX =
+      (x / (format === 'pixels' ? viewportSize.width : 1)) *
+        streamBoundingBox.width +
+      streamBoundingBox.x
+    const resolvedY =
+      (y / (format === 'pixels' ? viewportSize.height : 1)) *
+        streamBoundingBox.height +
+      streamBoundingBox.y
+
+    return {
+      x: resolvedX,
+      y: resolvedY,
+    }
+  }
+
   makeMouseHelpers = (
     x: number,
     y: number,
-    { steps }: { steps: number } = { steps: 20 }
+    { steps, format }: { steps: number; format: 'pixels' | 'ratio' } = {
+      steps: 20,
+      format: 'pixels',
+    }
   ): [ClickHandler, MoveHandler, DblClickHandler] =>
     [
-      (clickParams?: MouseParams) => {
+      async (clickParams?: MouseParams) => {
+        const resolvedPoint = await this.convertPagePositionToStream(
+          x,
+          y,
+          format
+        )
         if (clickParams?.pixelDiff) {
           return doAndWaitForImageDiff(
             this.page,
             () =>
               clickParams?.shouldDbClick
-                ? this.page.mouse.dblclick(x, y, {
+                ? this.page.mouse.dblclick(resolvedPoint.x, resolvedPoint.y, {
                     delay: clickParams?.delay || 0,
                   })
-                : this.page.mouse.click(x, y, {
+                : this.page.mouse.click(resolvedPoint.x, resolvedPoint.y, {
                     delay: clickParams?.delay || 0,
                   }),
             clickParams.pixelDiff
           )
         }
         return clickParams?.shouldDbClick
-          ? this.page.mouse.dblclick(x, y, { delay: clickParams?.delay || 0 })
-          : this.page.mouse.click(x, y, { delay: clickParams?.delay || 0 })
+          ? this.page.mouse.dblclick(resolvedPoint.x, resolvedPoint.y, {
+              delay: clickParams?.delay || 0,
+            })
+          : this.page.mouse.click(resolvedPoint.x, resolvedPoint.y, {
+              delay: clickParams?.delay || 0,
+            })
       },
-      (moveParams?: MouseParams) => {
+      async (moveParams?: MouseParams) => {
+        const resolvedPoint = await this.convertPagePositionToStream(
+          x,
+          y,
+          format
+        )
         if (moveParams?.pixelDiff) {
           return doAndWaitForImageDiff(
             this.page,
-            () => this.page.mouse.move(x, y, { steps }),
+            () =>
+              this.page.mouse.move(resolvedPoint.x, resolvedPoint.y, { steps }),
             moveParams.pixelDiff
           )
         }
-        return this.page.mouse.move(x, y, { steps })
+        return this.page.mouse.move(resolvedPoint.x, resolvedPoint.y, { steps })
       },
-      (clickParams?: MouseParams) => {
+      async (clickParams?: MouseParams) => {
+        const resolvedPoint = await this.convertPagePositionToStream(
+          x,
+          y,
+          format
+        )
         if (clickParams?.pixelDiff) {
           return doAndWaitForImageDiff(
             this.page,
-            () => this.page.mouse.dblclick(x, y),
+            () => this.page.mouse.dblclick(resolvedPoint.x, resolvedPoint.y),
             clickParams.pixelDiff
           )
         }
-        return this.page.mouse.dblclick(x, y)
+        return this.page.mouse.dblclick(resolvedPoint.x, resolvedPoint.y)
       },
     ] as const
   makeDragHelpers = (
     x: number,
     y: number,
-    { steps }: { steps: number } = { steps: 20 }
+    { steps, format }: { steps: number; format: 'pixels' | 'ratio' } = {
+      steps: 20,
+      format: 'pixels',
+    }
   ): [DragToHandler, DragFromHandler] =>
     [
-      (dragToParams: MouseDragToParams) => {
+      async (dragToParams: MouseDragToParams) => {
+        const resolvedPoint = await this.convertPagePositionToStream(
+          x,
+          y,
+          format
+        )
         if (dragToParams?.pixelDiff) {
           return doAndWaitForImageDiff(
             this.page,
             () =>
               this.page.dragAndDrop('#stream', '#stream', {
                 sourcePosition: dragToParams.fromPoint,
-                targetPosition: { x, y },
+                targetPosition: { x: resolvedPoint.x, y: resolvedPoint.y },
               }),
             dragToParams.pixelDiff
           )
         }
         return this.page.dragAndDrop('#stream', '#stream', {
           sourcePosition: dragToParams.fromPoint,
-          targetPosition: { x, y },
+          targetPosition: { x: resolvedPoint.x, y: resolvedPoint.y },
         })
       },
-      (dragFromParams: MouseDragFromParams) => {
+      async (dragFromParams: MouseDragFromParams) => {
+        const resolvedPoint = await this.convertPagePositionToStream(
+          x,
+          y,
+          format
+        )
         if (dragFromParams?.pixelDiff) {
           return doAndWaitForImageDiff(
             this.page,
             () =>
               this.page.dragAndDrop('#stream', '#stream', {
-                sourcePosition: { x, y },
+                sourcePosition: { x: resolvedPoint.x, y: resolvedPoint.y },
                 targetPosition: dragFromParams.toPoint,
               }),
             dragFromParams.pixelDiff
           )
         }
         return this.page.dragAndDrop('#stream', '#stream', {
-          sourcePosition: { x, y },
+          sourcePosition: { x: resolvedPoint.x, y: resolvedPoint.y },
           targetPosition: dragFromParams.toPoint,
         })
       },
