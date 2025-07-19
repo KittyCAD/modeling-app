@@ -1,4 +1,4 @@
-use std::fmt::Write;
+use std::{borrow::Cow, fmt::Write};
 
 use crate::{
     KclError, ModuleId,
@@ -62,11 +62,10 @@ impl Program {
                 }
                 result.push_str(&match body_item {
                     BodyItem::ImportStatement(stmt) => stmt.recast(options, indentation_level),
-                    BodyItem::ExpressionStatement(expression_statement) => {
-                        expression_statement
-                            .expression
-                            .recast(options, indentation_level, ExprContext::Other)
-                    }
+                    BodyItem::ExpressionStatement(expression_statement) => expression_statement
+                        .expression
+                        .recast(options, indentation_level, ExprContext::Other)
+                        .to_string(),
                     BodyItem::VariableDeclaration(variable_declaration) => {
                         variable_declaration.recast(options, indentation_level)
                     }
@@ -280,7 +279,12 @@ pub(crate) enum ExprContext {
 }
 
 impl Expr {
-    pub(crate) fn recast(&self, options: &FormatOptions, indentation_level: usize, mut ctxt: ExprContext) -> String {
+    pub(crate) fn recast(
+        &self,
+        options: &FormatOptions,
+        indentation_level: usize,
+        mut ctxt: ExprContext,
+    ) -> Cow<'_, str> {
         let is_decl = matches!(ctxt, ExprContext::Decl);
         if is_decl {
             // Just because this expression is being bound to a variable, doesn't mean that every child
@@ -289,34 +293,35 @@ impl Expr {
             ctxt = ExprContext::Other;
         }
         match &self {
-            Expr::BinaryExpression(bin_exp) => bin_exp.recast(options, indentation_level, ctxt),
-            Expr::ArrayExpression(array_exp) => array_exp.recast(options, indentation_level, ctxt),
-            Expr::ArrayRangeExpression(range_exp) => range_exp.recast(options, indentation_level, ctxt),
-            Expr::ObjectExpression(obj_exp) => obj_exp.recast(options, indentation_level, ctxt),
-            Expr::MemberExpression(mem_exp) => mem_exp.recast(options, indentation_level, ctxt),
             Expr::Literal(literal) => literal.recast(),
+            Expr::BinaryExpression(bin_exp) => bin_exp.recast(options, indentation_level, ctxt),
+            Expr::ArrayExpression(array_exp) => array_exp.recast(options, indentation_level, ctxt).into(),
+            Expr::ArrayRangeExpression(range_exp) => range_exp.recast(options, indentation_level, ctxt).into(),
+            Expr::ObjectExpression(obj_exp) => obj_exp.recast(options, indentation_level, ctxt).into(),
+            Expr::MemberExpression(mem_exp) => mem_exp.recast(options, indentation_level, ctxt),
             Expr::FunctionExpression(func_exp) => {
                 let mut result = if is_decl { String::new() } else { "fn".to_owned() };
                 result += &func_exp.recast(options, indentation_level);
-                result
+                result.into()
             }
-            Expr::CallExpressionKw(call_exp) => call_exp.recast(options, indentation_level, ctxt),
+            Expr::CallExpressionKw(call_exp) => call_exp.recast(options, indentation_level, ctxt).into(),
             Expr::Name(name) => {
                 let result = name.to_string();
                 match deprecation(&result, DeprecationKind::Const) {
-                    Some(suggestion) => suggestion.to_owned(),
-                    None => result,
+                    Some(suggestion) => Cow::Borrowed(suggestion),
+                    None => result.into(),
                 }
             }
-            Expr::TagDeclarator(tag) => tag.recast(),
-            Expr::PipeExpression(pipe_exp) => pipe_exp.recast(options, indentation_level),
-            Expr::UnaryExpression(unary_exp) => unary_exp.recast(options, indentation_level, ctxt),
-            Expr::IfExpression(e) => e.recast(options, indentation_level, ctxt),
-            Expr::PipeSubstitution(_) => crate::parsing::PIPE_SUBSTITUTION_OPERATOR.to_string(),
+            Expr::TagDeclarator(tag) => tag.recast().into(),
+            Expr::PipeExpression(pipe_exp) => pipe_exp.recast(options, indentation_level).into(),
+            Expr::UnaryExpression(unary_exp) => unary_exp.recast(options, indentation_level, ctxt).into(),
+            Expr::IfExpression(e) => e.recast(options, indentation_level, ctxt).into(),
+            Expr::PipeSubstitution(_) => Cow::Borrowed(crate::parsing::PIPE_SUBSTITUTION_OPERATOR),
             Expr::LabelledExpression(e) => {
                 let mut result = e.expr.recast(options, indentation_level, ctxt);
-                result += " as ";
-                result += &e.label.name;
+                let r = result.to_mut();
+                r.push_str(" as ");
+                r.push_str(&e.label.name);
                 result
             }
             Expr::AscribedExpression(e) => e.recast(options, indentation_level, ctxt),
@@ -328,45 +333,48 @@ impl Expr {
 }
 
 impl AscribedExpression {
-    fn recast(&self, options: &FormatOptions, indentation_level: usize, ctxt: ExprContext) -> String {
+    fn recast(&self, options: &FormatOptions, indentation_level: usize, ctxt: ExprContext) -> Cow<'_, str> {
         let mut result = self.expr.recast(options, indentation_level, ctxt);
         if matches!(
             self.expr,
             Expr::BinaryExpression(..) | Expr::PipeExpression(..) | Expr::UnaryExpression(..)
         ) {
-            result = format!("({result})");
+            result = format!("({result})").into();
         }
-        result += ": ";
-        result += &self.ty.to_string();
+        let r = result.to_mut();
+        r.push_str(": ");
+        write!(r, "{}", self.ty).expect("writing to a string should always succeed, no IO here");
         result
     }
 }
 
 impl BinaryPart {
-    fn recast(&self, options: &FormatOptions, indentation_level: usize, ctxt: ExprContext) -> String {
+    fn recast(&self, options: &FormatOptions, indentation_level: usize, ctxt: ExprContext) -> Cow<'_, str> {
         match &self {
             BinaryPart::Literal(literal) => literal.recast(),
             BinaryPart::Name(name) => {
                 let result = name.to_string();
                 match deprecation(&result, DeprecationKind::Const) {
-                    Some(suggestion) => suggestion.to_owned(),
-                    None => result,
+                    Some(suggestion) => suggestion.into(),
+                    None => result.into(),
                 }
             }
             BinaryPart::BinaryExpression(binary_expression) => {
                 binary_expression.recast(options, indentation_level, ctxt)
             }
-            BinaryPart::CallExpressionKw(call_expression) => {
-                call_expression.recast(options, indentation_level, ExprContext::Other)
+            BinaryPart::CallExpressionKw(call_expression) => call_expression
+                .recast(options, indentation_level, ExprContext::Other)
+                .into(),
+            BinaryPart::UnaryExpression(unary_expression) => {
+                unary_expression.recast(options, indentation_level, ctxt).into()
             }
-            BinaryPart::UnaryExpression(unary_expression) => unary_expression.recast(options, indentation_level, ctxt),
             BinaryPart::MemberExpression(member_expression) => {
                 member_expression.recast(options, indentation_level, ctxt)
             }
-            BinaryPart::ArrayExpression(e) => e.recast(options, indentation_level, ctxt),
-            BinaryPart::ArrayRangeExpression(e) => e.recast(options, indentation_level, ctxt),
-            BinaryPart::ObjectExpression(e) => e.recast(options, indentation_level, ctxt),
-            BinaryPart::IfExpression(e) => e.recast(options, indentation_level, ExprContext::Other),
+            BinaryPart::ArrayExpression(e) => e.recast(options, indentation_level, ctxt).into(),
+            BinaryPart::ArrayRangeExpression(e) => e.recast(options, indentation_level, ctxt).into(),
+            BinaryPart::ObjectExpression(e) => e.recast(options, indentation_level, ctxt).into(),
+            BinaryPart::IfExpression(e) => e.recast(options, indentation_level, ExprContext::Other).into(),
             BinaryPart::AscribedExpression(e) => e.recast(options, indentation_level, ExprContext::Other),
         }
     }
@@ -386,6 +394,7 @@ impl CallExpressionKw {
         );
         arg_list
     }
+
     fn recast(&self, options: &FormatOptions, indentation_level: usize, ctxt: ExprContext) -> String {
         let indent = if ctxt == ExprContext::Pipe {
             "".to_string()
@@ -491,23 +500,23 @@ impl TypeDeclaration {
 }
 
 impl Literal {
-    fn recast(&self) -> String {
+    fn recast(&self) -> Cow<'_, str> {
         match self.value {
             LiteralValue::Number { value, suffix } => {
                 if self.raw.contains('.') && value.fract() == 0.0 {
-                    format!("{value:?}{suffix}")
+                    Cow::Owned(format!("{value:?}{suffix}"))
                 } else {
-                    self.raw.clone()
+                    Cow::Borrowed(&self.raw)
                 }
             }
             LiteralValue::String(ref s) => {
                 if let Some(suggestion) = deprecation(s, DeprecationKind::String) {
-                    return suggestion.to_owned();
+                    return Cow::Borrowed(suggestion);
                 }
                 let quote = if self.raw.trim().starts_with('"') { '"' } else { '\'' };
-                format!("{quote}{s}{quote}")
+                Cow::Owned(format!("{quote}{s}{quote}"))
             }
-            LiteralValue::Bool(_) => self.raw.clone(),
+            LiteralValue::Bool(_) => Cow::Borrowed(&self.raw),
         }
     }
 }
@@ -688,22 +697,25 @@ impl ObjectExpression {
 }
 
 impl MemberExpression {
-    fn recast(&self, options: &FormatOptions, indentation_level: usize, ctxt: ExprContext) -> String {
-        let key_str = if self.computed {
+    fn recast(&self, options: &FormatOptions, indentation_level: usize, ctxt: ExprContext) -> Cow<'_, str> {
+        let mut result = self.object.recast(options, indentation_level, ctxt);
+        let r = result.to_mut();
+        if self.computed {
             let node_fmt = self.property.recast(options, indentation_level, ctxt);
-            format!("[{node_fmt}]")
+            r.push('[');
+            r.push_str(&node_fmt);
+            r.push(']');
         } else {
             let node_fmt = self.property.recast(options, indentation_level, ctxt);
-            format!(".{node_fmt}")
+            r.push('.');
+            r.push_str(&node_fmt);
         };
-        self.object.recast(options, indentation_level, ctxt) + key_str.as_str()
+        result
     }
 }
 
 impl BinaryExpression {
-    fn recast(&self, options: &FormatOptions, _indentation_level: usize, ctxt: ExprContext) -> String {
-        let maybe_wrap_it = |a: String, doit: bool| -> String { if doit { format!("({a})") } else { a } };
-
+    fn recast(&self, options: &FormatOptions, _indentation_level: usize, ctxt: ExprContext) -> Cow<'_, str> {
         // It would be better to always preserve the user's parentheses but since we've dropped that
         // info from the AST, we bracket expressions as necessary.
         let should_wrap_left = match &self.left {
@@ -729,12 +741,21 @@ impl BinaryExpression {
             _ => false,
         };
 
-        format!(
-            "{} {} {}",
-            maybe_wrap_it(self.left.recast(options, 0, ctxt), should_wrap_left),
-            self.operator,
-            maybe_wrap_it(self.right.recast(options, 0, ctxt), should_wrap_right)
-        )
+        let l = self.left.recast(options, 0, ctxt);
+        let r = &self.right.recast(options, 0, ctxt);
+        let mut result: Cow<'_, str> = if should_wrap_left { format!("({l})").into() } else { l };
+        let res = result.to_mut();
+        res.push(' ');
+        write!(res, "{}", self.operator).expect("writing to a string should always succeed");
+        res.push(' ');
+        if should_wrap_right {
+            res.push('(');
+            res.push_str(r);
+            res.push(')');
+        } else {
+            res.push_str(r);
+        };
+        result
     }
 }
 
@@ -797,27 +818,25 @@ impl Node<PipeExpression> {
                 let non_code_meta = &self.non_code_meta;
                 if let Some(non_code_meta_value) = non_code_meta.non_code_nodes.get(&index) {
                     for val in non_code_meta_value {
-                        let formatted = if val.end == self.end {
-                            val.recast(options, indentation_level)
-                                .trim_end_matches('\n')
-                                .to_string()
+                        let ind = if val.end == self.end {
+                            indentation_level
                         } else {
-                            val.recast(options, indentation_level + 1)
-                                .trim_end_matches('\n')
-                                .to_string()
+                            indentation_level + 1
                         };
+                        let formatted = val.recast(options, ind);
+                        let formatted = formatted.trim_end_matches('\n');
                         if let NonCodeValue::BlockComment { .. } = val.value {
                             s += "\n";
-                            s += &formatted;
+                            s.to_mut().push_str(formatted);
                         } else {
-                            s += &formatted;
+                            s.to_mut().push_str(formatted);
                         }
                     }
                 }
 
                 if index != self.body.len() - 1 {
                     s += "\n";
-                    s += &indentation;
+                    s.to_mut().push_str(&indentation);
                     s += PIPE_OPERATOR;
                     s += " ";
                 }
@@ -830,9 +849,6 @@ impl Node<PipeExpression> {
 
 impl FunctionExpression {
     pub fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
-        // We don't want to end with a new line inside nested functions.
-        let mut new_options = options.clone();
-        new_options.insert_final_newline = false;
         let param_list = self
             .params
             .iter()
@@ -845,6 +861,9 @@ impl FunctionExpression {
             Some(rt) => format!(": {rt}"),
             None => String::new(),
         };
+        // We don't want to end with a new line inside nested functions.
+        let mut new_options = options.clone();
+        new_options.insert_final_newline = false;
         let body = self.body.recast(&new_options, indentation_level + 1);
 
         format!("({param_list}){return_type} {{\n{tab1}{body}\n{tab0}}}")
