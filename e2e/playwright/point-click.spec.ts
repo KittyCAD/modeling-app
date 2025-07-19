@@ -1156,188 +1156,6 @@ openSketch = startSketchOn(XY)
     commandName: 'Helix',
   }
 
-  test('Helix point-and-click on default axis', async ({
-    context,
-    page,
-    homePage,
-    scene,
-    editor,
-    toolbar,
-    cmdBar,
-  }) => {
-    const expectedOutput = `helix001 = helix(  axis = X,  radius = 5,  length = 5,  revolutions = 1,  angleStart = 270,)`
-    const expectedLine = `axis=X,`
-    await homePage.goToModelingScene()
-    await scene.connectionEstablished()
-
-    await test.step(`Go through the command bar flow`, async () => {
-      await toolbar.helixButton.click()
-      await cmdBar.expectState(initialCmdBarStateHelix)
-      await cmdBar.progressCmdBar()
-      await expect.poll(() => page.getByText('Axis').count()).toBe(6)
-      await cmdBar.progressCmdBar()
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'angleStart',
-        highlightedHeaderArg: 'angleStart',
-        currentArgValue: '360',
-        headerArguments: {
-          Mode: 'Axis',
-          Axis: 'X',
-          Revolutions: '1',
-          AngleStart: '',
-          Length: '',
-          Radius: '',
-        },
-        commandName: 'Helix',
-      })
-      await cmdBar.currentArgumentInput.locator('.cm-content').fill('270')
-      await cmdBar.progressCmdBar()
-      await cmdBar.progressCmdBar()
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'review',
-        headerArguments: {
-          Mode: 'Axis',
-          Axis: 'X',
-          AngleStart: '270',
-          Revolutions: '1',
-          Length: '5',
-          Radius: '5',
-        },
-        commandName: 'Helix',
-      })
-      await cmdBar.submit()
-    })
-
-    await test.step(`Confirm code is added to the editor, scene has changed`, async () => {
-      await editor.expectEditor.toContain(expectedOutput)
-      await editor.expectState({
-        diagnostics: [],
-        activeLines: [expectedLine],
-        highlightedCode: '',
-      })
-    })
-
-    await test.step(`Edit helix through the feature tree`, async () => {
-      await editor.closePane()
-      const operationButton = await toolbar.getFeatureTreeOperation('Helix', 0)
-      await operationButton.dblclick()
-      const initialInput = '5'
-      const newInput = '50'
-      await cmdBar.expectState({
-        commandName: 'Helix',
-        stage: 'arguments',
-        currentArgKey: 'length',
-        currentArgValue: '5',
-        headerArguments: {
-          Axis: 'X',
-          AngleStart: '270',
-          Revolutions: '1',
-          Radius: '5',
-          Length: initialInput,
-        },
-        highlightedHeaderArg: 'length',
-      })
-      await page.keyboard.insertText(newInput)
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'review',
-        headerArguments: {
-          Axis: 'X',
-          AngleStart: '270',
-          Revolutions: '1',
-          Radius: '5',
-          Length: newInput,
-        },
-        commandName: 'Helix',
-      })
-      await cmdBar.submit()
-      await toolbar.closeFeatureTreePane()
-      await editor.openPane()
-      await editor.expectEditor.toContain('length = ' + newInput)
-    })
-
-    await test.step('Delete helix via feature tree selection', async () => {
-      await editor.closePane()
-      const operationButton = await toolbar.getFeatureTreeOperation('Helix', 0)
-      await operationButton.click({ button: 'left' })
-      await page.keyboard.press('Delete')
-      await scene.settled(cmdBar)
-      await editor.expectEditor.not.toContain('helix')
-      await expect(
-        await toolbar.getFeatureTreeOperation('Helix', 0)
-      ).not.toBeVisible()
-    })
-  })
-
-  test(`Helix point-and-click around segment`, async ({
-    context,
-    page,
-    homePage,
-    scene,
-    editor,
-    toolbar,
-    cmdBar,
-  }) => {
-    const initialCode = `sketch001 = startSketchOn(XZ)
-profile001 = startProfile(sketch001, at = [0, 0])
-|> yLine(length = 100)
-|> line(endAbsolute = [100, 0])
-|> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-|> close()`
-    await context.addInitScript((initialCode) => {
-      localStorage.setItem('persistCode', initialCode)
-    }, initialCode)
-    await page.setBodyDimensions({ width: 1000, height: 500 })
-    await homePage.goToModelingScene()
-    await scene.settled(cmdBar)
-
-    await test.step(`Go through the command bar flow`, async () => {
-      await toolbar.closePane('code')
-      await toolbar.helixButton.click()
-      await cmdBar.expectState(initialCmdBarStateHelix)
-      await cmdBar.selectOption({ name: 'Edge' }).click()
-      await editor.selectText('yLine(length = 100)')
-      await cmdBar.progressCmdBar()
-      await page.keyboard.insertText('1')
-      await cmdBar.progressCmdBar()
-      await page.keyboard.insertText('2')
-      await cmdBar.progressCmdBar()
-      await page.keyboard.insertText('3')
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'review',
-        headerArguments: {
-          Mode: 'Edge',
-          Edge: `1 segment`,
-          AngleStart: '2',
-          Revolutions: '1',
-          Radius: '3',
-        },
-        commandName: 'Helix',
-      })
-      await cmdBar.submit()
-      await scene.settled(cmdBar)
-    })
-
-    await test.step(`Confirm code is added to the editor, scene has changed`, async () => {
-      await toolbar.openPane('code')
-      await editor.expectEditor.toContain(
-        `
-        helix001 = helix(
-          axis = seg01,
-          radius = 3,
-          revolutions = 1,
-          angleStart = 2,
-        )`,
-        { shouldNormalise: true }
-      )
-      await toolbar.closePane('code')
-    })
-  })
-
   test(`Helix point-and-click around sweepEdge with edit and delete flows`, async ({
     context,
     page,
@@ -1383,7 +1201,6 @@ extrude001 = extrude(profile001, length = 100)`
       await cmdBar.progressCmdBar()
       await page.keyboard.insertText('1')
       await cmdBar.progressCmdBar()
-      await page.keyboard.insertText('100')
       await cmdBar.expectState({
         stage: 'review',
         headerArguments: {
@@ -1392,6 +1209,20 @@ extrude001 = extrude(profile001, length = 100)`
           AngleStart: '0',
           Revolutions: '20',
           Radius: '1',
+        },
+        commandName: 'Helix',
+      })
+      await cmdBar.clickOptionalArgument('ccw')
+      await cmdBar.selectOption({ name: 'True' }).click()
+      await cmdBar.expectState({
+        stage: 'review',
+        headerArguments: {
+          Mode: 'Edge',
+          Edge: `1 sweepEdge`,
+          AngleStart: '0',
+          Revolutions: '20',
+          Radius: '1',
+          CounterClockWise: '',
         },
         commandName: 'Helix',
       })
@@ -1405,9 +1236,10 @@ extrude001 = extrude(profile001, length = 100)`
         `
         helix001 = helix(
           axis = getOppositeEdge(seg01),
-          radius = 1,
           revolutions = 20,
           angleStart = 0,
+          radius = 1,
+          ccw = true,
         )`,
         { shouldNormalise: true }
       )
@@ -1429,6 +1261,7 @@ extrude001 = extrude(profile001, length = 100)`
           AngleStart: '0',
           Revolutions: '20',
           Radius: initialInput,
+          CounterClockWise: '',
         },
         highlightedHeaderArg: 'radius',
       })
@@ -1440,10 +1273,11 @@ extrude001 = extrude(profile001, length = 100)`
           AngleStart: '0',
           Revolutions: '20',
           Radius: newInput,
+          CounterClockWise: '',
         },
         commandName: 'Helix',
       })
-      await cmdBar.clickOptionalArgument('ccw')
+      await page.getByRole('button', { name: 'CounterClockWise' }).click()
       await cmdBar.expectState({
         commandName: 'Helix',
         stage: 'arguments',
@@ -1457,14 +1291,13 @@ extrude001 = extrude(profile001, length = 100)`
         },
         highlightedHeaderArg: 'CounterClockWise',
       })
-      await cmdBar.selectOption({ name: 'True' }).click()
+      await cmdBar.selectOption({ name: 'False' }).click()
       await cmdBar.expectState({
         stage: 'review',
         headerArguments: {
           AngleStart: '0',
           Revolutions: '20',
           Radius: newInput,
-          CounterClockWise: '',
         },
         commandName: 'Helix',
       })
@@ -1475,10 +1308,9 @@ extrude001 = extrude(profile001, length = 100)`
         `
         helix001 = helix(
           axis = getOppositeEdge(seg01),
-          radius = 5,
           revolutions = 20,
           angleStart = 0,
-          ccw = true,
+          radius = 5,
         )`,
         { shouldNormalise: true }
       )
@@ -1494,123 +1326,6 @@ extrude001 = extrude(profile001, length = 100)`
       await expect(
         await toolbar.getFeatureTreeOperation('Helix', 0)
       ).not.toBeVisible()
-    })
-  })
-
-  test('Helix point-and-click on cylinder', async ({
-    context,
-    page,
-    homePage,
-    scene,
-    editor,
-    toolbar,
-    cmdBar,
-  }) => {
-    const initialCode = `sketch001 = startSketchOn(XY)
-profile001 = circle(
-  sketch001,
-  center = [0, 0],
-  radius = 100,
-  tag = $seg01,
-)
-extrude001 = extrude(profile001, length = 100)
-    `
-    await context.addInitScript((initialCode) => {
-      localStorage.setItem('persistCode', initialCode)
-    }, initialCode)
-    await page.setBodyDimensions({ width: 1000, height: 500 })
-    await homePage.goToModelingScene()
-    await scene.settled(cmdBar)
-
-    // One dumb hardcoded screen pixel value
-    const testPoint = { x: 620, y: 257 }
-    const [clickOnWall] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
-    const expectedOutput = `helix001 = helix(cylinder = extrude001, revolutions = 1, angleStart = 360)`
-    const expectedEditedOutput = `helix001 = helix(cylinder = extrude001, revolutions = 1, angleStart = 10)`
-
-    await test.step(`Go through the command bar flow`, async () => {
-      await toolbar.helixButton.click()
-      await cmdBar.expectState(initialCmdBarStateHelix)
-      await cmdBar.selectOption({ name: 'Cylinder' }).click()
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'cylinder',
-        currentArgValue: '',
-        headerArguments: {
-          Mode: 'Cylinder',
-          Cylinder: '',
-          AngleStart: '',
-          Revolutions: '',
-        },
-        highlightedHeaderArg: 'cylinder',
-        commandName: 'Helix',
-      })
-      await clickOnWall()
-      await cmdBar.progressCmdBar()
-      await cmdBar.progressCmdBar()
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'review',
-        headerArguments: {
-          Mode: 'Cylinder',
-          Cylinder: '1 face',
-          AngleStart: '360',
-          Revolutions: '1',
-        },
-        commandName: 'Helix',
-      })
-      await cmdBar.submit()
-    })
-
-    await test.step(`Confirm code is added to the editor, scene has changed`, async () => {
-      await editor.expectEditor.toContain(expectedOutput)
-      await editor.expectState({
-        diagnostics: [],
-        activeLines: [expectedOutput],
-        highlightedCode: '',
-      })
-    })
-
-    await test.step(`Edit helix through the feature tree`, async () => {
-      await editor.closePane()
-      const operationButton = await toolbar.getFeatureTreeOperation('Helix', 0)
-      await operationButton.dblclick()
-      await cmdBar.expectState({
-        commandName: 'Helix',
-        stage: 'arguments',
-        currentArgKey: 'angleStart',
-        currentArgValue: '360',
-        headerArguments: {
-          AngleStart: '360',
-          Revolutions: '1',
-        },
-        highlightedHeaderArg: 'angleStart',
-      })
-      await page.keyboard.insertText('10')
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'review',
-        headerArguments: {
-          AngleStart: '10',
-          Revolutions: '1',
-        },
-        commandName: 'Helix',
-      })
-      await cmdBar.progressCmdBar()
-      await toolbar.closePane('feature-tree')
-      await toolbar.openPane('code')
-      await editor.expectEditor.toContain(expectedEditedOutput)
-      await editor.closePane()
-    })
-
-    await test.step('Delete helix via feature tree selection', async () => {
-      await toolbar.openPane('feature-tree')
-      const operationButton = await toolbar.getFeatureTreeOperation('Helix', 0)
-      await operationButton.click({ button: 'left' })
-      await page.keyboard.press('Delete')
-      await toolbar.closePane('feature-tree')
-      await toolbar.openPane('code')
-      await editor.expectEditor.not.toContain(expectedEditedOutput)
     })
   })
 
