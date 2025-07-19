@@ -20,6 +20,12 @@ import {
   webSafePathSplit,
 } from '@src/lib/paths'
 import { getAllSubDirectoriesAtProjectRoot } from '@src/machines/systemIO/snapshotContext'
+import {
+  writeEnvironmentConfigurationPool,
+  writeEnvironmentFile,
+} from '@src/lib/desktop'
+import env from '@src/env'
+import { returnSelfOrGetHostNameFromURL } from '@src/lib/utils'
 
 function onSubmitKCLSampleCreation({
   sample,
@@ -447,7 +453,69 @@ export function createApplicationCommands({
     },
   }
 
+  const switchEnvironmentsCommand: Command = {
+    name: 'switch-environments',
+    displayName: 'Switch environments',
+    description:
+      'Switch between different environments to connect your application runtime',
+    needsReview: false,
+    icon: 'importFile',
+    groupId: 'application',
+    onSubmit: (data) => {
+      if (data) {
+        const requestedEnvironmentFormatted = returnSelfOrGetHostNameFromURL(
+          data.environment
+        )
+        writeEnvironmentFile(requestedEnvironmentFormatted)
+          .then(() => {
+            // Reload the application and it will trigger the correct sign in workflow for the new environment
+            window.location.reload()
+          })
+          .catch(reportRejection)
+      }
+    },
+    args: {
+      environment: {
+        inputType: 'string',
+        required: true,
+      },
+    },
+  }
+
+  const choosePoolCommand: Command = {
+    name: 'choose-pool',
+    displayName: 'Choose pool',
+    description: 'Switch between different engine pools',
+    needsReview: true,
+    icon: 'importFile',
+    groupId: 'application',
+    onSubmit: (data) => {
+      if (data) {
+        const environmentName = env().VITE_KITTYCAD_BASE_DOMAIN
+        if (environmentName)
+          writeEnvironmentConfigurationPool(environmentName, data.pool)
+            .then(() => {
+              // Reload the application and it will trigger the correct sign in workflow for the new environment
+              window.location.reload()
+            })
+            .catch(reportRejection)
+      }
+    },
+    args: {
+      pool: {
+        inputType: 'string',
+        required: false,
+      },
+    },
+  }
+
   return isDesktop()
-    ? [textToCADCommand, addKCLFileToProject, createASampleDesktopOnly]
+    ? [
+        textToCADCommand,
+        addKCLFileToProject,
+        createASampleDesktopOnly,
+        switchEnvironmentsCommand,
+        choosePoolCommand,
+      ]
     : [textToCADCommand, addKCLFileToProject]
 }

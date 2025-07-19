@@ -1,5 +1,5 @@
 import type { CSSProperties } from 'react'
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { Link } from 'react-router-dom'
 
@@ -11,14 +11,25 @@ import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { Themes, getSystemTheme } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
-import { toSync } from '@src/lib/utils'
+import { returnSelfOrGetHostNameFromURL, toSync } from '@src/lib/utils'
 import { authActor, useSettings } from '@src/lib/singletons'
 import { APP_VERSION, generateSignInUrl } from '@src/routes/utils'
 import { withAPIBaseURL, withSiteBaseURL } from '@src/lib/withBaseURL'
+import { updateEnvironment, updateEnvironmentPool } from '@src/env'
+import env from '@src/env'
+import {
+  readEnvironmentConfigurationPool,
+  readEnvironmentFile,
+  writeEnvironmentConfigurationPool,
+  writeEnvironmentFile,
+} from '@src/lib/desktop'
+import { AdvancedSignInOptions } from '@src/routes/AdvancedSignInOptions'
 
 const subtleBorder =
   'border border-solid border-chalkboard-30 dark:border-chalkboard-80'
 const cardArea = `${subtleBorder} rounded-lg px-6 py-3 text-chalkboard-70 dark:text-chalkboard-30`
+
+let didReadFromDiskCacheForEnvironment = false
 
 const SignIn = () => {
   // Only create the native file menus on desktop
@@ -30,8 +41,47 @@ const SignIn = () => {
       .catch(reportRejection)
     window.electron.disableMenu('Help.Show all commands').catch(reportRejection)
   }
-
   const [userCode, setUserCode] = useState('')
+
+  // Last saved environment
+  // TODO: Reduce this logic
+  const lastSelectedEnvironmentName = env().VITE_KITTYCAD_BASE_DOMAIN || ''
+  const [selectedEnvironment, setSelectedEnvironment] = useState(
+    lastSelectedEnvironmentName
+  )
+  const [pool, setPool] = useState(env().POOL || '')
+
+  // See if the user added a real URL if they did, auto take the hostname!
+  const setSelectedEnvironmentFormatter = (requestedEnvironment: string) => {
+    const requestedEnvironmentFormatted =
+      returnSelfOrGetHostNameFromURL(requestedEnvironment)
+    setSelectedEnvironment(requestedEnvironmentFormatted)
+  }
+
+  useEffect(() => {
+    if (isDesktop() && !didReadFromDiskCacheForEnvironment) {
+      didReadFromDiskCacheForEnvironment = true
+      readEnvironmentFile()
+        .then((environment) => {
+          if (environment) {
+            setSelectedEnvironmentFormatter(environment)
+            return environment
+          }
+        })
+        .then((environment) => {
+          const defaultOrDiskEnvironment = environment || selectedEnvironment
+          if (defaultOrDiskEnvironment) {
+            readEnvironmentConfigurationPool(defaultOrDiskEnvironment)
+              .then((pool) => {
+                setPool(pool)
+              })
+              .catch(reportRejection)
+          }
+        })
+        .catch(reportRejection)
+    }
+  }, [])
+
   const {
     app: { theme },
   } = useSettings()
@@ -52,6 +102,9 @@ const SignIn = () => {
   )
 
   const signInDesktop = async () => {
+    updateEnvironment(selectedEnvironment)
+    updateEnvironmentPool(selectedEnvironment, pool)
+
     // We want to invoke our command to login via device auth.
     const userCodeToDisplay = await window.electron
       .startDeviceFlow(withAPIBaseURL(location.search))
@@ -68,8 +121,14 @@ const SignIn = () => {
     if (!token) {
       console.error('No token received while trying to log in')
       toast.error('Error while trying to log in')
+      await writeEnvironmentFile('')
       return
     }
+
+    writeEnvironmentFile(selectedEnvironment).catch(reportRejection)
+    writeEnvironmentConfigurationPool(selectedEnvironment, pool).catch(
+      reportRejection
+    )
     authActor.send({ type: 'Log in', token })
   }
 
@@ -118,17 +177,27 @@ const SignIn = () => {
             {isDesktop() ? (
               <div className="flex flex-col gap-2">
                 {!userCode ? (
-                  <button
-                    onClick={toSync(signInDesktop, reportRejection)}
-                    className={
-                      'm-0 mt-8 w-fit flex gap-4 items-center px-3 py-1 ' +
-                      '!border-transparent !text-lg !text-chalkboard-10 !bg-primary hover:hue-rotate-15'
-                    }
-                    data-testid="sign-in-button"
-                  >
-                    Sign in to get started
-                    <CustomIcon name="arrowRight" className="w-6 h-6" />
-                  </button>
+                  <>
+                    <button
+                      onClick={toSync(signInDesktop, reportRejection)}
+                      className={
+                        'm-0 mt-8 w-fit flex gap-4 items-center px-3 py-1 ' +
+                        '!border-transparent !text-lg !text-chalkboard-10 !bg-primary hover:hue-rotate-15'
+                      }
+                      data-testid="sign-in-button"
+                    >
+                      Sign in to get started
+                      <CustomIcon name="arrowRight" className="w-6 h-6" />
+                    </button>
+                    {isDesktop() && (
+                      <AdvancedSignInOptions
+                        pool={pool}
+                        setPool={setPool}
+                        selectedEnvironment={selectedEnvironment}
+                        setSelectedEnvironment={setSelectedEnvironmentFormatter}
+                      />
+                    )}
+                  </>
                 ) : (
                   <>
                     <p className="text-xs">
