@@ -96,7 +96,10 @@ export async function applyConstraintAngleLength({
   pathToNodeMap: PathToNodeMap
   exprInsertIndex: number
 }> {
-  const angleLength = angleLengthInfo({ selectionRanges, angleOrLength })
+  const angleLength = angleLengthInfo({
+    selectionRanges,
+    angleOrLength,
+  })
   if (err(angleLength)) return Promise.reject(angleLength)
 
   const { transforms } = angleLength
