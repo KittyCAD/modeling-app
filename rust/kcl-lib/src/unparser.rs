@@ -527,23 +527,19 @@ impl ArrayExpression {
         let num_items = self.elements.len() + self.non_code_meta.non_code_nodes_len();
         let mut elems = self.elements.iter();
         let mut found_line_comment = false;
-        let mut format_items: Vec<_> = (0..num_items)
-            .flat_map(|i| {
-                if let Some(noncode) = self.non_code_meta.non_code_nodes.get(&i) {
-                    noncode
-                        .iter()
-                        .map(|nc| {
-                            found_line_comment |= nc.value.should_cause_array_newline();
-                            nc.recast(options, 0)
-                        })
-                        .collect::<Vec<_>>()
-                } else {
-                    let el = elems.next().unwrap();
-                    let s = format!("{}, ", el.recast(options, 0, ExprContext::Other));
-                    vec![s]
-                }
-            })
-            .collect();
+        let mut format_items: Vec<_> = Vec::with_capacity(num_items);
+        for i in 0..num_items {
+            if let Some(noncode) = self.non_code_meta.non_code_nodes.get(&i) {
+                format_items.extend(noncode.iter().map(|nc| {
+                    found_line_comment |= nc.value.should_cause_array_newline();
+                    nc.recast(options, 0)
+                }));
+            } else {
+                let el = elems.next().unwrap();
+                let s = format!("{}, ", el.recast(options, 0, ExprContext::Other));
+                format_items.push(s);
+            }
+        }
 
         // Format these items into a one-line array.
         if let Some(item) = format_items.last_mut() {
@@ -551,8 +547,11 @@ impl ArrayExpression {
                 *item = norm.to_owned();
             }
         }
-        let format_items = format_items; // Remove mutability
-        let flat_recast = format!("[{}]", format_items.join(""));
+        let mut flat_recast = "[".to_owned();
+        for fi in &format_items {
+            flat_recast.push_str(fi)
+        }
+        flat_recast.push(']');
 
         // We might keep the one-line representation, if it's short enough.
         let max_array_length = 40;
