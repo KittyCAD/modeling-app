@@ -808,47 +808,46 @@ impl IfExpression {
 
 impl Node<PipeExpression> {
     fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
-        let pipe = self
-            .body
-            .iter()
-            .enumerate()
-            .map(|(index, statement)| {
-                let indentation = options.get_indentation(indentation_level + 1);
-                let mut s = statement.recast(options, indentation_level + 1, ExprContext::Pipe);
-                let non_code_meta = &self.non_code_meta;
-                if let Some(non_code_meta_value) = non_code_meta.non_code_nodes.get(&index) {
-                    for val in non_code_meta_value {
-                        let ind = if val.end == self.end {
-                            indentation_level
-                        } else {
-                            indentation_level + 1
-                        };
-                        let formatted = val.recast(options, ind);
-                        let formatted = formatted.trim_end_matches('\n');
-                        if let NonCodeValue::BlockComment { .. } = val.value {
-                            s += "\n";
-                            s.to_mut().push_str(formatted);
-                        } else {
-                            s.to_mut().push_str(formatted);
-                        }
+        let pipe = self.body.iter().enumerate().map(|(index, statement)| {
+            let indentation = options.get_indentation(indentation_level + 1);
+            let mut s = statement.recast(options, indentation_level + 1, ExprContext::Pipe);
+            let s_mut = s.to_mut();
+            let non_code_meta = self.non_code_meta.clone();
+            if let Some(non_code_meta_value) = non_code_meta.non_code_nodes.get(&index) {
+                for val in non_code_meta_value {
+                    let ind = if val.end == self.end {
+                        indentation_level
+                    } else {
+                        indentation_level + 1
+                    };
+                    let formatted = val.recast(options, ind);
+                    let formatted = formatted.trim_end_matches('\n');
+                    if let NonCodeValue::BlockComment { .. } = val.value {
+                        s_mut.push('\n');
                     }
+                    s_mut.push_str(formatted);
                 }
+            }
 
-                if index != self.body.len() - 1 {
-                    s += "\n";
-                    s.to_mut().push_str(&indentation);
-                    s += PIPE_OPERATOR;
-                    s += " ";
-                }
-                s
-            })
-            .collect::<String>();
-        format!("{}{}", options.get_indentation(indentation_level), pipe)
+            if index != self.body.len() - 1 {
+                s_mut.push('\n');
+                s_mut.push_str(&indentation);
+                s_mut.push_str(PIPE_OPERATOR);
+                s_mut.push(' ');
+            }
+            s
+        });
+        let mut out = options.get_indentation(indentation_level);
+        out.extend(pipe);
+        out
     }
 }
 
 impl FunctionExpression {
     pub fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
+        // We don't want to end with a new line inside nested functions.
+        let mut new_options = options.clone();
+        new_options.insert_final_newline = false;
         let param_list = self
             .params
             .iter()
@@ -861,9 +860,6 @@ impl FunctionExpression {
             Some(rt) => format!(": {rt}"),
             None => String::new(),
         };
-        // We don't want to end with a new line inside nested functions.
-        let mut new_options = options.clone();
-        new_options.insert_final_newline = false;
         let body = self.body.recast(&new_options, indentation_level + 1);
 
         format!("({param_list}){return_type} {{\n{tab1}{body}\n{tab0}}}")
