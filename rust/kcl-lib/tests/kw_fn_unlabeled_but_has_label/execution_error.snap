@@ -5,7 +5,7 @@ description: Error from executing kw_fn_unlabeled_but_has_label.kcl
 KCL Argument error
 
   × argument: The function does declare a parameter named 'x', but this
-  │ parameter doesn't use a label. Try removing the `x:`
+  │ parameter doesn't use a label. Try removing the `x =`
    ╭─[1:12]
  1 │ ╭─▶ fn add(@x) {
  2 │ │     return x + 1
@@ -19,7 +19,7 @@ KCL Argument error
   ╰─▶ KCL Argument error
       
         × argument: The function does declare a parameter named 'x', but this
-        │ parameter doesn't use a label. Try removing the `x:`
+        │ parameter doesn't use a label. Try removing the `x =`
          ╭─[1:12]
        1 │ ╭─▶ fn add(@x) {
        2 │ │     return x + 1
