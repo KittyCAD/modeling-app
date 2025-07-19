@@ -399,8 +399,8 @@ impl CallExpressionKw {
         }
 
         let arg_list = self.recast_args(options, indentation_level, ctxt);
-        let args = arg_list.clone().join(", ");
         let has_lots_of_args = arg_list.len() >= 4;
+        let args = arg_list.join(", ");
         let some_arg_is_already_multiline = arg_list.len() > 1 && arg_list.iter().any(|arg| arg.contains('\n'));
         let multiline = has_lots_of_args || some_arg_is_already_multiline;
         if multiline {
