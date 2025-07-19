@@ -974,6 +974,7 @@ pub(crate) async fn inner_start_profile(
         _ => {}
     }
 
+    let heuristic_num_paths = exec_state.pipe_size().unwrap_or(1);
     let enable_sketch_id = exec_state.next_uuid();
     let path_id = exec_state.next_uuid();
     let move_pen_id = exec_state.next_uuid();
@@ -1038,7 +1039,7 @@ pub(crate) async fn inner_start_profile(
         original_id: path_id,
         artifact_id: path_id.into(),
         on: sketch_surface.clone(),
-        paths: vec![],
+        paths: Vec::with_capacity(heuristic_num_paths),
         inner_paths: vec![],
         units,
         mirror: Default::default(),
