@@ -16,7 +16,7 @@ function CommandBarBasicInput({
   onSubmit,
 }: {
   arg: CommandArgument<unknown> & {
-    inputType: 'string'
+    inputType: 'string' | 'color'
     name: string
   }
   stepBack: () => void

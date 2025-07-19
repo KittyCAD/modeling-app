@@ -219,7 +219,7 @@ export type CommandArgumentConfig<
           ) => string)
     }
   | {
-      inputType: 'string'
+      inputType: 'string' | 'color'
       defaultValue?:
         | OutputType
         | ((
@@ -356,7 +356,7 @@ export type CommandArgument<
           ) => string)
     }
   | {
-      inputType: 'string'
+      inputType: 'string' | 'color'
       defaultValue?:
         | OutputType
         | ((
