@@ -16,6 +16,9 @@ use crate::{
     },
 };
 
+// String that could be borrowed or owned.
+type CowStr<'a> = Cow<'a, str>;
+
 #[allow(dead_code)]
 pub fn fmt(input: &str) -> Result<String, KclError> {
     let program = crate::parsing::parse_str(input, ModuleId::default()).parse_errs_as_err()?;
@@ -61,24 +64,28 @@ impl Program {
                     result.push_str(&attr.recast(options, indentation_level));
                 }
                 result.push_str(&match body_item {
-                    BodyItem::ImportStatement(stmt) => stmt.recast(options, indentation_level),
-                    BodyItem::ExpressionStatement(expression_statement) => expression_statement
-                        .expression
-                        .recast(options, indentation_level, ExprContext::Other)
-                        .to_string(),
-                    BodyItem::VariableDeclaration(variable_declaration) => {
-                        variable_declaration.recast(options, indentation_level)
+                    BodyItem::ImportStatement(stmt) => CowStr::Owned(stmt.recast(options, indentation_level)),
+                    BodyItem::ExpressionStatement(expression_statement) => {
+                        expression_statement
+                            .expression
+                            .recast(options, indentation_level, ExprContext::Other)
                     }
-                    BodyItem::TypeDeclaration(ty_declaration) => ty_declaration.recast(),
+                    BodyItem::VariableDeclaration(variable_declaration) => {
+                        variable_declaration.recast(options, indentation_level).into()
+                    }
+                    BodyItem::TypeDeclaration(ty_declaration) => ty_declaration.recast().into(),
                     BodyItem::ReturnStatement(return_statement) => {
-                        format!(
-                            "{}return {}",
-                            indentation,
+                        let mut return_recast: CowStr = "".into();
+                        let return_recast_mut = return_recast.to_mut();
+                        return_recast_mut.push_str(&indentation);
+                        return_recast_mut.push_str("return ");
+                        return_recast_mut.push_str(
                             return_statement
                                 .argument
                                 .recast(options, indentation_level, ExprContext::Other)
-                                .trim_start()
-                        )
+                                .trim_start(),
+                        );
+                        return_recast
                     }
                 });
                 result
@@ -279,12 +286,7 @@ pub(crate) enum ExprContext {
 }
 
 impl Expr {
-    pub(crate) fn recast(
-        &self,
-        options: &FormatOptions,
-        indentation_level: usize,
-        mut ctxt: ExprContext,
-    ) -> Cow<'_, str> {
+    pub(crate) fn recast(&self, options: &FormatOptions, indentation_level: usize, mut ctxt: ExprContext) -> CowStr {
         let is_decl = matches!(ctxt, ExprContext::Decl);
         if is_decl {
             // Just because this expression is being bound to a variable, doesn't mean that every child
@@ -304,7 +306,7 @@ impl Expr {
                 result += &func_exp.recast(options, indentation_level);
                 result.into()
             }
-            Expr::CallExpressionKw(call_exp) => call_exp.recast(options, indentation_level, ctxt).into(),
+            Expr::CallExpressionKw(call_exp) => call_exp.recast(options, indentation_level, ctxt),
             Expr::Name(name) => {
                 let result = name.to_string();
                 match deprecation(&result, DeprecationKind::Const) {
@@ -333,7 +335,7 @@ impl Expr {
 }
 
 impl AscribedExpression {
-    fn recast(&self, options: &FormatOptions, indentation_level: usize, ctxt: ExprContext) -> Cow<'_, str> {
+    fn recast(&self, options: &FormatOptions, indentation_level: usize, ctxt: ExprContext) -> CowStr {
         let mut result = self.expr.recast(options, indentation_level, ctxt);
         if matches!(
             self.expr,
@@ -349,7 +351,7 @@ impl AscribedExpression {
 }
 
 impl BinaryPart {
-    fn recast(&self, options: &FormatOptions, indentation_level: usize, ctxt: ExprContext) -> Cow<'_, str> {
+    fn recast(&self, options: &FormatOptions, indentation_level: usize, ctxt: ExprContext) -> CowStr {
         match &self {
             BinaryPart::Literal(literal) => literal.recast(),
             BinaryPart::Name(name) => {
@@ -362,9 +364,9 @@ impl BinaryPart {
             BinaryPart::BinaryExpression(binary_expression) => {
                 binary_expression.recast(options, indentation_level, ctxt)
             }
-            BinaryPart::CallExpressionKw(call_expression) => call_expression
-                .recast(options, indentation_level, ExprContext::Other)
-                .into(),
+            BinaryPart::CallExpressionKw(call_expression) => {
+                call_expression.recast(options, indentation_level, ExprContext::Other)
+            }
             BinaryPart::UnaryExpression(unary_expression) => {
                 unary_expression.recast(options, indentation_level, ctxt).into()
             }
@@ -381,11 +383,11 @@ impl BinaryPart {
 }
 
 impl CallExpressionKw {
-    fn recast_args(&self, options: &FormatOptions, indentation_level: usize, ctxt: ExprContext) -> Vec<String> {
-        let mut arg_list = if let Some(first_arg) = &self.unlabeled {
-            vec![first_arg.recast(options, indentation_level, ctxt).trim().to_owned()]
-        } else {
-            Vec::with_capacity(self.arguments.len())
+    fn recast_args(&self, options: &FormatOptions, indentation_level: usize, ctxt: ExprContext) -> Vec<CowStr> {
+        let mut arg_list: Vec<CowStr> = Vec::with_capacity(self.arguments.len() + 1);
+        if let Some(first_arg) = &self.unlabeled {
+            let first_arg_recast = first_arg.recast(options, indentation_level, ctxt).trim().to_owned();
+            arg_list.push(first_arg_recast.into());
         };
         arg_list.extend(
             self.arguments
@@ -395,16 +397,18 @@ impl CallExpressionKw {
         arg_list
     }
 
-    fn recast(&self, options: &FormatOptions, indentation_level: usize, ctxt: ExprContext) -> String {
-        let indent = if ctxt == ExprContext::Pipe {
-            "".to_string()
+    fn recast(&self, options: &FormatOptions, indentation_level: usize, ctxt: ExprContext) -> CowStr {
+        let indent: CowStr = if ctxt == ExprContext::Pipe {
+            "".into()
         } else {
-            options.get_indentation(indentation_level)
+            options.get_indentation(indentation_level).into()
         };
         let name = self.callee.to_string();
 
         if let Some(suggestion) = deprecation(&name, DeprecationKind::Function) {
-            return format!("{indent}{suggestion}");
+            let mut result = indent;
+            result.to_mut().push_str(suggestion);
+            return result;
         }
 
         let arg_list = self.recast_args(options, indentation_level, ctxt);
@@ -428,22 +432,40 @@ impl CallExpressionKw {
             } else {
                 options.get_indentation(indentation_level)
             };
-            format!("{indent}{name}(\n{inner_indentation}{args}\n{end_indent})")
+            let mut result = indent;
+            let result_mut = result.to_mut();
+            result_mut.push_str(&name);
+            result_mut.push('(');
+            result_mut.push('\n');
+            result_mut.push_str(&inner_indentation);
+            result_mut.push_str(&args);
+            result_mut.push('\n');
+            result_mut.push_str(&end_indent);
+            result_mut.push(')');
+            result
         } else {
-            format!("{indent}{name}({args})")
+            let mut result = indent;
+            let result_mut = result.to_mut();
+            result_mut.push_str(&name);
+            result_mut.push('(');
+            result_mut.push_str(&args);
+            result_mut.push(')');
+            result
         }
     }
 }
 
 impl LabeledArg {
-    fn recast(&self, options: &FormatOptions, indentation_level: usize, ctxt: ExprContext) -> String {
-        let mut result = String::new();
-        if let Some(l) = &self.label {
-            result.push_str(&l.name);
-            result.push_str(" = ");
+    fn recast(&self, options: &FormatOptions, indentation_level: usize, ctxt: ExprContext) -> CowStr {
+        match &self.label {
+            Some(l) => {
+                let mut result = l.name.to_owned();
+                result.push_str(" = ");
+                result.push_str(&self.arg.recast(options, indentation_level, ctxt));
+                result.into()
+            }
+            None => self.arg.recast(options, indentation_level, ctxt),
         }
-        result.push_str(&self.arg.recast(options, indentation_level, ctxt));
-        result
     }
 }
 
@@ -500,7 +522,7 @@ impl TypeDeclaration {
 }
 
 impl Literal {
-    fn recast(&self) -> Cow<'_, str> {
+    fn recast(&self) -> CowStr {
         match self.value {
             LiteralValue::Number { value, suffix } => {
                 if self.raw.contains('.') && value.fract() == 0.0 {
@@ -697,7 +719,7 @@ impl ObjectExpression {
 }
 
 impl MemberExpression {
-    fn recast(&self, options: &FormatOptions, indentation_level: usize, ctxt: ExprContext) -> Cow<'_, str> {
+    fn recast(&self, options: &FormatOptions, indentation_level: usize, ctxt: ExprContext) -> CowStr {
         let mut result = self.object.recast(options, indentation_level, ctxt);
         let r = result.to_mut();
         if self.computed {
@@ -715,7 +737,7 @@ impl MemberExpression {
 }
 
 impl BinaryExpression {
-    fn recast(&self, options: &FormatOptions, _indentation_level: usize, ctxt: ExprContext) -> Cow<'_, str> {
+    fn recast(&self, options: &FormatOptions, _indentation_level: usize, ctxt: ExprContext) -> CowStr {
         // It would be better to always preserve the user's parentheses but since we've dropped that
         // info from the AST, we bracket expressions as necessary.
         let should_wrap_left = match &self.left {
@@ -743,7 +765,7 @@ impl BinaryExpression {
 
         let l = self.left.recast(options, 0, ctxt);
         let r = &self.right.recast(options, 0, ctxt);
-        let mut result: Cow<'_, str> = if should_wrap_left { format!("({l})").into() } else { l };
+        let mut result: CowStr = if should_wrap_left { format!("({l})").into() } else { l };
         let res = result.to_mut();
         res.push(' ');
         write!(res, "{}", self.operator).expect("writing to a string should always succeed");
@@ -2839,6 +2861,14 @@ yo = 'bing'
     #[test]
     fn array_range_end_exclusive() {
         let code = "myArray = [0..<4]\n";
+        let ast = crate::parsing::top_level_parse(code).unwrap();
+        let recasted = ast.recast(&FormatOptions::new(), 0);
+        assert_eq!(recasted, code);
+    }
+
+    #[test]
+    fn qualified_name() {
+        let code = "x = units::toDegrees(n)\n";
         let ast = crate::parsing::top_level_parse(code).unwrap();
         let recasted = ast.recast(&FormatOptions::new(), 0);
         assert_eq!(recasted, code);
