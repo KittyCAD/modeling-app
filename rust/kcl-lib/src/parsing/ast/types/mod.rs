@@ -3587,7 +3587,7 @@ impl FormatOptions {
         if self.use_tabs {
             "\t".repeat(level + 1)
         } else {
-            " ".repeat(level * self.tab_size) + " ".repeat(PIPE_OPERATOR.len() + 1).as_str()
+            " ".repeat(level * self.tab_size + PIPE_OPERATOR.len() + 1)
         }
     }
 }
