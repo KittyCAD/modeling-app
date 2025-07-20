@@ -487,7 +487,7 @@ fn string_literal(i: &mut TokenSlice) -> ModalResult<Node<Literal>> {
     let result = Node::new(
         Literal {
             value,
-            raw: token.value.clone(),
+            raw: token.value,
             digest: None,
         },
         token.start,
@@ -550,7 +550,7 @@ pub(crate) fn unsigned_number_literal(i: &mut TokenSlice) -> ModalResult<Node<Li
     Ok(Node::new(
         Literal {
             value,
-            raw: token.value.clone(),
+            raw: token.value,
             digest: None,
         },
         token.start,
@@ -1213,12 +1213,12 @@ fn if_expr(i: &mut TokenSlice) -> ModalResult<BoxNode<IfExpression>> {
 
     // If there's a non-fatal parser error (e.g. a problem with the `else` branch),
     // return this after emitting the nonfatal error.
-    let if_with_no_else = || {
+    let if_with_no_else = |cond, then_val, else_ifs| {
         Ok(Node::boxed(
             IfExpression {
-                cond: cond.clone(),
-                then_val: then_val.clone(),
-                else_ifs: else_ifs.clone(),
+                cond,
+                then_val,
+                else_ifs,
                 final_else: Node::boxed(Default::default(), 0, 0, if_.module_id),
                 digest: Default::default(),
             },
@@ -1244,7 +1244,7 @@ fn if_expr(i: &mut TokenSlice) -> ModalResult<BoxNode<IfExpression>> {
         .parse_next(i);
     let Ok(else_) = else_ else {
         ParseContext::err(CompilationError::err(if_.as_source_range(), MISSING_ELSE));
-        return if_with_no_else();
+        return if_with_no_else(cond, then_val, else_ifs);
     };
     let else_range = SourceRange::new(else_, else_ + 4, if_.module_id);
     ignore_whitespace(i);
@@ -1252,25 +1252,25 @@ fn if_expr(i: &mut TokenSlice) -> ModalResult<BoxNode<IfExpression>> {
     // Parse the else clause
     if open_brace(i).is_err() {
         ParseContext::err(CompilationError::err(else_range, ELSE_STRUCTURE));
-        return if_with_no_else();
+        return if_with_no_else(cond, then_val, else_ifs);
     }
     ignore_whitespace(i);
     let Ok(final_else) = program.parse_next(i).map(Box::new) else {
         ParseContext::err(CompilationError::err(else_range, IF_ELSE_CANNOT_BE_EMPTY));
         let _ = opt(close_brace).parse_next(i);
-        return if_with_no_else();
+        return if_with_no_else(cond, then_val, else_ifs);
     };
     ignore_whitespace(i);
 
     if final_else.body.is_empty() {
         ParseContext::err(CompilationError::err(else_range, IF_ELSE_CANNOT_BE_EMPTY));
         let _ = opt(close_brace).parse_next(i);
-        return if_with_no_else();
+        return if_with_no_else(cond, then_val, else_ifs);
     }
     if !final_else.ends_with_expr() {
         ParseContext::err(CompilationError::err(else_range, ELSE_MUST_END_IN_EXPR));
         let _ = opt(close_brace).parse_next(i);
-        return if_with_no_else();
+        return if_with_no_else(cond, then_val, else_ifs);
     }
 
     let end = close_brace(i)?.end;
@@ -2146,7 +2146,7 @@ fn expr_allowed_in_pipe_expr(i: &mut TokenSlice) -> ModalResult<Expr> {
     .context(expected("a KCL expression (but not a pipe expression)"))
     .parse_next(i)?;
 
-    let maybe_member = build_member_expression(parsed_expr.clone(), i);
+    let maybe_member = build_member_expression(parsed_expr.clone(), i); // TODO: Eliminate this clone.
     if let Ok(mem) = maybe_member {
         return Ok(Expr::MemberExpression(Box::new(mem)));
     }
