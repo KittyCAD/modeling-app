@@ -1185,7 +1185,7 @@ export class SceneEntities {
           )
         }
       },
-      onMove: (args) => {
+      onMove: async (args) => {
         const expressionIndex = Number(sketchEntryNodePath[1][0])
         const activeSegmentsInCorrectExpression = Object.values(
           this.activeSegments
@@ -1196,7 +1196,7 @@ export class SceneEntities {
           activeSegmentsInCorrectExpression[
             activeSegmentsInCorrectExpression.length - 1
           ]
-        this.onDragSegment({
+        await this.onDragSegment({
           intersection2d: args.intersectionPoint.twoD,
           object,
           intersects: args.intersects,
@@ -2576,7 +2576,7 @@ export class SceneEntities {
           } else if (addingNewSegmentStatus === 'added') {
             const pathToNodeForNewSegment = pathToNode.slice(0, pathToNodeIndex)
             pathToNodeForNewSegment.push([pipeIndex - 2, 'index'])
-            this.onDragSegment({
+            await this.onDragSegment({
               sketchNodePaths,
               sketchEntryNodePath: pathToNodeForNewSegment,
               object: selected,
@@ -2588,7 +2588,7 @@ export class SceneEntities {
           return
         }
 
-        this.onDragSegment({
+        await this.onDragSegment({
           object: selected,
           intersection2d: intersectionPoint.twoD,
           intersects,
@@ -2817,7 +2817,7 @@ export class SceneEntities {
     return intersection2d
   }
 
-  onDragSegment({
+  async onDragSegment({
     object,
     intersection2d: _intersection2d,
     sketchEntryNodePath,
@@ -3074,17 +3074,19 @@ export class SceneEntities {
       : this.prepareTruncatedAst(sketchNodePaths || [], modifiedAst)
     if (trap(info, { suppress: true })) return
     const { truncatedAst } = info
-    ;(async () => {
+    try {
       const code = recast(modifiedAst)
       if (trap(code)) return
       if (!draftInfo)
         // don't want to mod the user's code yet as they have't committed to the change yet
         // plus this would be the truncated ast being recast, it would be wrong
         this.codeManager.updateCodeEditor(code)
+
       const { execState } = await executeAstMock({
         ast: truncatedAst,
         rustContext: this.rustContext,
       })
+
       const variables = execState.variables
       const sketchesInfo = getSketchesInfo({
         sketchNodePaths,
@@ -3138,7 +3140,9 @@ export class SceneEntities {
         )
       }
       this.sceneInfra.overlayCallbacks(callbacks)
-    })().catch(reportRejection)
+    } catch (e) {
+      reportRejection(e)
+    }
   }
 
   /**

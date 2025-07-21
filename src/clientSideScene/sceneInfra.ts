@@ -107,13 +107,13 @@ export class SceneInfra {
   _theme: Themes = Themes.System
   readonly extraSegmentTexture: Texture
   lastMouseState: MouseState = { type: 'idle' }
-  onDragStartCallback: (arg: OnDragCallbackArgs) => Voidish = () => {}
-  onDragEndCallback: (arg: OnDragCallbackArgs) => Voidish = () => {}
-  onDragCallback: (arg: OnDragCallbackArgs) => Voidish = () => {}
-  onMoveCallback: (arg: OnMoveCallbackArgs) => Voidish = () => {}
-  onClickCallback: (arg: OnClickCallbackArgs) => Voidish = () => {}
-  onMouseEnter: (arg: OnMouseEnterLeaveArgs) => Voidish = () => {}
-  onMouseLeave: (arg: OnMouseEnterLeaveArgs) => Voidish = () => {}
+  onDragStartCallback: (arg: OnDragCallbackArgs) => Voidish = () => { }
+  onDragEndCallback: (arg: OnDragCallbackArgs) => Voidish = () => { }
+  onDragCallback: (arg: OnDragCallbackArgs) => Voidish = () => { }
+  onMoveCallback: (arg: OnMoveCallbackArgs) => Voidish = () => { }
+  onClickCallback: (arg: OnClickCallbackArgs) => Voidish = () => { }
+  onMouseEnter: (arg: OnMouseEnterLeaveArgs) => Voidish = () => { }
+  onMouseLeave: (arg: OnMouseEnterLeaveArgs) => Voidish = () => { }
   setCallbacks = (callbacks: {
     onDragStart?: (arg: OnDragCallbackArgs) => Voidish
     onDragEnd?: (arg: OnDragCallbackArgs) => Voidish
@@ -148,18 +148,18 @@ export class SceneInfra {
 
   resetMouseListeners = () => {
     this.setCallbacks({
-      onDragStart: () => {},
-      onDragEnd: () => {},
-      onDrag: () => {},
-      onMove: () => {},
-      onClick: () => {},
-      onMouseEnter: () => {},
-      onMouseLeave: () => {},
+      onDragStart: () => { },
+      onDragEnd: () => { },
+      onDrag: () => { },
+      onMove: () => { },
+      onClick: () => { },
+      onMouseEnter: () => { },
+      onMouseLeave: () => { },
     })
   }
 
-  modelingSend: SendType = (() => {}) as any
-  throttledModelingSend: any = (() => {}) as any
+  modelingSend: SendType = (() => { }) as any
+  throttledModelingSend: any = (() => { }) as any
 
   setSend(send: SendType) {
     this.modelingSend = send
@@ -449,11 +449,29 @@ export class SceneInfra {
       intersection: planeIntersects[0],
     }
   }
+
+  public mouseMoveThrottling = true // Can be turned off for debugging
+  private _processingMouseMove = false
+  private _lastUnprocessedMouseEvent: MouseEvent | undefined
+
   onMouseMove = async (mouseEvent: MouseEvent) => {
     if (!(mouseEvent.currentTarget instanceof HTMLElement)) {
       console.error('unexpected targetless event')
       return
     }
+
+    if (this.mouseMoveThrottling) {
+      // Throttle mouse move events to help with performance.
+      // Without this a new call to executeAstMock() is made by SceneEntities/onDragSegment() while the
+      // previous one is still running, causing multiple wasm calls to be running at the same time.
+      // Here we simply ignore the mouse move event if we are already processing one, until the processing is done.
+      if (this._processingMouseMove) {
+        this._lastUnprocessedMouseEvent = mouseEvent
+        return
+      }
+      this._processingMouseMove = true
+    }
+
     this.currentMouseVector.x =
       (mouseEvent.offsetX / mouseEvent.currentTarget.clientWidth) * 2 - 1
     this.currentMouseVector.y =
@@ -478,6 +496,7 @@ export class SceneInfra {
         planeIntersectPoint.twoD &&
         planeIntersectPoint.threeD
       ) {
+        const selected = this.selected
         await this.onDragCallback({
           mouseEvent,
           intersectionPoint: {
@@ -485,11 +504,11 @@ export class SceneInfra {
             threeD: planeIntersectPoint.threeD,
           },
           intersects,
-          selected: this.selected.object,
+          selected: selected.object,
         })
         this.updateMouseState({
           type: 'isDragging',
-          on: this.selected.object,
+          on: selected.object,
         })
       }
     } else if (
@@ -548,6 +567,17 @@ export class SceneInfra {
           mouseEvent: mouseEvent,
         })
         if (!this.selected) this.updateMouseState({ type: 'idle' })
+      }
+    }
+
+    if (this.mouseMoveThrottling) {
+      this._processingMouseMove = false
+      const lastUnprocessedMouseEvent = this._lastUnprocessedMouseEvent
+      if (lastUnprocessedMouseEvent) {
+        // Another mousemove happened during the time this callback was processing
+        // -> process that event now
+        this._lastUnprocessedMouseEvent = undefined
+        void this.onMouseMove(lastUnprocessedMouseEvent)
       }
     }
   }
@@ -634,10 +664,10 @@ export class SceneInfra {
       const intersectParent = intersect?.object?.parent as Group
       this.selected = intersectParent.isGroup
         ? {
-            mouseDownVector,
-            object: intersect.object,
-            hasBeenDragged: false,
-          }
+          mouseDownVector,
+          object: intersect.object,
+          hasBeenDragged: false,
+        }
         : null
     }
   }
