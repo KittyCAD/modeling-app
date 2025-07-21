@@ -1960,7 +1960,7 @@ test(
 test(
   'import from nested directory',
   { tag: ['@desktop', '@windows', '@macos'] },
-  async ({ scene, cmdBar, context, page }) => {
+  async ({ homePage, scene, cmdBar, context, page, editor }) => {
     await context.folderSetupFn(async (dir) => {
       const bracketDir = path.join(dir, 'bracket')
       await fsp.mkdir(bracketDir, { recursive: true })
@@ -1979,32 +1979,16 @@ test(
       )
     })
 
-    await page.setBodyDimensions({ width: 1200, height: 500 })
-    const u = await getUtils(page)
-
-    const pointOnModel = { x: 630, y: 280 }
-
     await test.step('Opening the bracket project should load the stream', async () => {
       // expect to see the text bracket
-      await expect(page.getByText('bracket')).toBeVisible()
-
-      await page.getByText('bracket').click()
-
+      await homePage.openProject('bracket')
       await scene.settled(cmdBar)
 
-      await expect(
-        page.getByRole('button', { name: 'Start Sketch' })
-      ).toBeEnabled({
-        timeout: 20_000,
+      await editor.expectState({
+        activeLines: ["import'nested/main.kcl'asthing"],
+        diagnostics: [],
+        highlightedCode: '',
       })
-
-      // gray at this pixel means the stream has loaded in the most
-      // user way we can verify it (pixel color)
-      await expect
-        .poll(() => u.getGreatestPixDiff(pointOnModel, [125, 125, 125]), {
-          timeout: 10_000,
-        })
-        .toBeLessThan(15)
     })
   }
 )
