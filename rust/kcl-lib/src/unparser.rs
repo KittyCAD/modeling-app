@@ -477,17 +477,17 @@ impl TypeDeclaration {
 
         if let Some(args) = &self.args {
             buf.push('(');
-            for a in args {
-                if buf.len() > 1 {
+            for (i, a) in args.iter().enumerate() {
+                buf.push_str(&a.name);
+                if i < args.len() - 1 {
                     buf.push_str(", ");
                 }
-                buf.push_str(&a.name);
             }
             buf.push(')');
         }
         if let Some(alias) = &self.alias {
             buf.push_str(" = ");
-            buf.push_str(&alias.to_string());
+            write!(buf, "{}", alias).no_fail();
         }
     }
 }
@@ -647,10 +647,6 @@ impl ArrayRangeExpression {
         buf.push(']');
         // Assume a range expression fits on one line.
     }
-}
-
-fn trim_end(buf: &mut String) {
-    *buf = buf.trim_end().to_owned()
 }
 
 fn trim(buf: &mut String) {
