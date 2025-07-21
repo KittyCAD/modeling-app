@@ -56,13 +56,14 @@ impl Program {
         }
 
         let body_item_lines = self.body.iter().map(|body_item| {
-            dbg!("Parsing body item");
             let mut result = String::with_capacity(256);
             for comment in body_item.get_comments() {
-                dbg!(&comment);
                 if !comment.is_empty() {
                     result.push_str(&indentation);
                     result.push_str(comment);
+                }
+                if comment.is_empty() && !result.ends_with("\n") {
+                    result.push('\n');
                 }
                 if !result.ends_with("\n\n") && result != "\n" {
                     result.push('\n');
@@ -71,7 +72,6 @@ impl Program {
             for attr in body_item.get_attrs() {
                 attr.recast(&mut result, options, indentation_level);
             }
-            dbg!(&result);
             match body_item {
                 BodyItem::ImportStatement(stmt) => {
                     result.push_str(&stmt.recast(options, indentation_level));
@@ -82,9 +82,7 @@ impl Program {
                         .recast(&mut result, options, indentation_level, ExprContext::Other)
                 }
                 BodyItem::VariableDeclaration(variable_declaration) => {
-                    // dbg!(&result);
                     variable_declaration.recast(&mut result, options, indentation_level);
-                    // dbg!(&result);
                 }
                 BodyItem::TypeDeclaration(ty_declaration) => ty_declaration.recast(&mut result),
                 BodyItem::ReturnStatement(return_statement) => {
@@ -99,7 +97,6 @@ impl Program {
             result
         });
         for (index, recast_str) in body_item_lines.enumerate() {
-            dbg!(&recast_str);
             write!(buf, "{recast_str}").no_fail();
 
             // determine the value of the end string
@@ -129,7 +126,7 @@ impl Program {
                 buf.push('\n')
             }
         }
-        trim(buf);
+        trim_end(buf);
 
         // Insert a final new line if the user wants it.
         if options.insert_final_newline && !buf.is_empty() {
@@ -192,7 +189,6 @@ impl Node<Annotation> {
         let indentation = options.get_indentation(indentation_level);
         let mut result = String::new();
         for comment in &self.pre_comments {
-            dbg!(&comment);
             if !comment.is_empty() {
                 result.push_str(&indentation);
                 result.push_str(comment);
@@ -659,8 +655,8 @@ impl ArrayRangeExpression {
     }
 }
 
-fn trim(buf: &mut String) {
-    *buf = buf.trim().to_owned()
+fn trim_end(buf: &mut String) {
+    buf.truncate(buf.trim_end().len())
 }
 
 impl ObjectExpression {
@@ -2977,10 +2973,8 @@ fn myFn() {
 }
 ";
         let ast = crate::parsing::top_level_parse(code).unwrap();
-        dbg!(&ast);
         let recasted = ast.recast_top(&FormatOptions::new(), 0);
         let expected = code;
-        dbg!(&recasted);
         assert_eq!(recasted, expected);
     }
 }
