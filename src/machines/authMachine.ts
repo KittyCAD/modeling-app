@@ -317,9 +317,6 @@ async function logoutEnvironment(requestedEnvironmentName?: string) {
         return new Error('Unable to logout, cannot find environment')
       }
 
-      // Do not use withAPIBaseURL since we need to log out of each environment separately.
-      // Not the URL within our last selected environment
-      // TODO: Kevin?
       const url = environmentName
       if (token) {
         try {
