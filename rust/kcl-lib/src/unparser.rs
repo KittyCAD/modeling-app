@@ -56,8 +56,10 @@ impl Program {
         }
 
         let body_item_lines = self.body.iter().map(|body_item| {
+            dbg!("Parsing body item");
             let mut result = String::with_capacity(256);
             for comment in body_item.get_comments() {
+                dbg!(&comment);
                 if !comment.is_empty() {
                     result.push_str(&indentation);
                     result.push_str(comment);
@@ -69,6 +71,7 @@ impl Program {
             for attr in body_item.get_attrs() {
                 attr.recast(&mut result, options, indentation_level);
             }
+            dbg!(&result);
             match body_item {
                 BodyItem::ImportStatement(stmt) => {
                     result.push_str(&stmt.recast(options, indentation_level));
@@ -79,7 +82,9 @@ impl Program {
                         .recast(&mut result, options, indentation_level, ExprContext::Other)
                 }
                 BodyItem::VariableDeclaration(variable_declaration) => {
-                    variable_declaration.recast(&mut result, options, indentation_level)
+                    // dbg!(&result);
+                    variable_declaration.recast(&mut result, options, indentation_level);
+                    // dbg!(&result);
                 }
                 BodyItem::TypeDeclaration(ty_declaration) => ty_declaration.recast(&mut result),
                 BodyItem::ReturnStatement(return_statement) => {
@@ -94,6 +99,7 @@ impl Program {
             result
         });
         for (index, recast_str) in body_item_lines.enumerate() {
+            dbg!(&recast_str);
             write!(buf, "{recast_str}").no_fail();
 
             // determine the value of the end string
@@ -186,6 +192,7 @@ impl Node<Annotation> {
         let indentation = options.get_indentation(indentation_level);
         let mut result = String::new();
         for comment in &self.pre_comments {
+            dbg!(&comment);
             if !comment.is_empty() {
                 result.push_str(&indentation);
                 result.push_str(comment);
@@ -2965,9 +2972,8 @@ x = 2 * y % 2
         let code = "\
 x = 360
 
-// Comment
+// Watermelon
 fn myFn() {
-  return 1
 }
 ";
         let ast = crate::parsing::top_level_parse(code).unwrap();
