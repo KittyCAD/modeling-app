@@ -33,12 +33,9 @@ impl Program {
         let indentation = options.get_indentation(indentation_level);
 
         if let Some(sh) = self.shebang.as_ref() {
-            dbg!(&buf);
             write!(buf, "{}\n\n", sh.inner.content).no_fail();
-            dbg!(&buf);
         }
 
-        dbg!(&self.non_code_meta);
         if self
             .non_code_meta
             .start_nodes
@@ -46,23 +43,16 @@ impl Program {
             .any(|noncode| !matches!(noncode.value, NonCodeValue::NewLine))
         {
             for start in &self.non_code_meta.start_nodes {
-                dbg!(&buf);
                 let noncode_recast = start.recast(options, indentation_level);
-                dbg!(&noncode_recast);
                 buf.push_str(&noncode_recast);
-                dbg!(&buf);
             }
         }
         for attr in &self.inner_attrs {
-            dbg!(&buf);
             options.write_indentation(buf, indentation_level);
             attr.recast(buf, options, indentation_level);
-            dbg!(&buf);
         }
         if !self.inner_attrs.is_empty() {
-            dbg!(&buf);
             buf.push('\n');
-            dbg!(&buf);
         }
 
         let body_item_lines = self.body.iter().map(|body_item| {
@@ -506,7 +496,7 @@ impl TypeDeclaration {
         }
         if let Some(alias) = &self.alias {
             buf.push_str(" = ");
-            write!(buf, "{}", alias).no_fail();
+            write!(buf, "{alias}").no_fail();
         }
     }
 }
@@ -932,7 +922,7 @@ impl FunctionExpression {
             None => String::new(),
         };
 
-        write!(buf, "({param_list}){return_type} {{\n").no_fail();
+        writeln!(buf, "({param_list}){return_type} {{").no_fail();
         self.body.recast(buf, &new_options, indentation_level + 1);
         buf.push('\n');
         options.write_indentation(buf, indentation_level);
