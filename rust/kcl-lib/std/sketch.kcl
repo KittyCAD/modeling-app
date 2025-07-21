@@ -467,7 +467,7 @@ export fn extrude(
   /// Only used if `twistAngle` is given, defaults to [0, 0] i.e. sketch's center.
   @(snippetArray = ["0", "0"])
   twistCenter?: Point2d,
-  /// The method used during extrusion, i.e. create a NEW object or MERGE the extruded objects together.
+  /// The method used during extrusion, either `NEW` or `MERGE`. `NEW` creates a new object. `MERGE` merges the extruded objects together. The default is `MERGE`.
   method?: string,
 ): [Solid; 1+] {}
 
