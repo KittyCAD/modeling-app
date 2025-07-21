@@ -155,7 +155,8 @@ description: Artifact commands plane_of.kcl
         "target": "[uuid]",
         "distance": 1828.8,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -277,7 +278,7 @@ description: Artifact commands plane_of.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 1828.8,
+          "x": 3657.6,
           "y": 0.0,
           "z": 0.0
         }
@@ -299,8 +300,8 @@ description: Artifact commands plane_of.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.00000000000011198170331403397,
-            "y": 1828.8,
+            "x": 0.00000000000022396340662806795,
+            "y": 3657.6,
             "z": 0.0
           },
           "relative": false
@@ -316,8 +317,8 @@ description: Artifact commands plane_of.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -1828.8,
-            "y": 0.00000000000022396340662806795,
+            "x": -3657.6,
+            "y": 0.0000000000004479268132561359,
             "z": 0.0
           },
           "relative": false
@@ -333,8 +334,8 @@ description: Artifact commands plane_of.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -0.0000000000003359451099421019,
-            "y": -1828.8,
+            "x": -0.0000000000006718902198842038,
+            "y": -3657.6,
             "z": 0.0
           },
           "relative": false
@@ -350,7 +351,7 @@ description: Artifact commands plane_of.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 1828.8,
+            "x": 3657.6,
             "y": 0.0,
             "z": 0.0
           },
@@ -377,5 +378,6 @@ description: Artifact commands plane_of.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

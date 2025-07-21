@@ -588,7 +588,8 @@ description: Artifact commands food-service-spatula.kcl
         "target": "[uuid]",
         "distance": 3.5,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -889,7 +890,8 @@ description: Artifact commands food-service-spatula.kcl
         "target": "[uuid]",
         "distance": 15.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1242,7 +1244,8 @@ description: Artifact commands food-service-spatula.kcl
         "target": "[uuid]",
         "distance": -150.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1412,7 +1415,8 @@ description: Artifact commands food-service-spatula.kcl
         "target": "[uuid]",
         "distance": -30.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1459,5 +1463,6 @@ description: Artifact commands food-service-spatula.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

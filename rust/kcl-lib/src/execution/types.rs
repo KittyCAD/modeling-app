@@ -246,7 +246,7 @@ impl RuntimeType {
     }
 
     // Subtype with no coercion, including refining numeric types.
-    fn subtype(&self, sup: &RuntimeType) -> bool {
+    pub(crate) fn subtype(&self, sup: &RuntimeType) -> bool {
         use RuntimeType::*;
 
         match (self, sup) {
@@ -1090,12 +1090,18 @@ impl KclValue {
         exec_state: &mut ExecState,
     ) -> Result<KclValue, CoercionError> {
         match self {
-            KclValue::Tuple { value, .. } if value.len() == 1 && !matches!(ty, RuntimeType::Tuple(..)) => {
+            KclValue::Tuple { value, .. }
+                if value.len() == 1
+                    && !matches!(ty, RuntimeType::Primitive(PrimitiveType::Any) | RuntimeType::Tuple(..)) =>
+            {
                 if let Ok(coerced) = value[0].coerce(ty, convert_units, exec_state) {
                     return Ok(coerced);
                 }
             }
-            KclValue::HomArray { value, .. } if value.len() == 1 && !matches!(ty, RuntimeType::Array(..)) => {
+            KclValue::HomArray { value, .. }
+                if value.len() == 1
+                    && !matches!(ty, RuntimeType::Primitive(PrimitiveType::Any) | RuntimeType::Array(..)) =>
+            {
                 if let Ok(coerced) = value[0].coerce(ty, convert_units, exec_state) {
                     return Ok(coerced);
                 }
@@ -1182,6 +1188,7 @@ impl KclValue {
                         .get("yAxis")
                         .and_then(Point3d::from_kcl_val)
                         .ok_or(CoercionError::from(self))?;
+                    let z_axis = x_axis.axes_cross_product(&y_axis);
 
                     if value.get("zAxis").is_some() {
                         exec_state.warn(CompilationError::err(
@@ -1198,6 +1205,7 @@ impl KclValue {
                             origin,
                             x_axis: x_axis.normalize(),
                             y_axis: y_axis.normalize(),
+                            z_axis: z_axis.normalize(),
                         },
                         value: super::PlaneType::Uninit,
                         meta: meta.clone(),

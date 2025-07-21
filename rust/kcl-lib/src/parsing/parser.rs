@@ -28,10 +28,10 @@ use crate::{
             Annotation, ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem,
             BoxNode, CallExpressionKw, CommentStyle, DefaultParamVal, ElseIf, Expr, ExpressionStatement,
             FunctionExpression, FunctionType, Identifier, IfExpression, ImportItem, ImportSelector, ImportStatement,
-            ItemVisibility, LabeledArg, Literal, LiteralIdentifier, LiteralValue, MemberExpression, Name, Node,
-            NodeList, NonCodeMeta, NonCodeNode, NonCodeValue, ObjectExpression, ObjectProperty, Parameter,
-            PipeExpression, PipeSubstitution, PrimitiveType, Program, ReturnStatement, Shebang, TagDeclarator, Type,
-            TypeDeclaration, UnaryExpression, UnaryOperator, VariableDeclaration, VariableDeclarator, VariableKind,
+            ItemVisibility, LabeledArg, Literal, LiteralValue, MemberExpression, Name, Node, NodeList, NonCodeMeta,
+            NonCodeNode, NonCodeValue, ObjectExpression, ObjectProperty, Parameter, PipeExpression, PipeSubstitution,
+            PrimitiveType, Program, ReturnStatement, Shebang, TagDeclarator, Type, TypeDeclaration, UnaryExpression,
+            UnaryOperator, VariableDeclaration, VariableDeclarator, VariableKind,
         },
         math::BinaryExpressionToken,
         token::{Token, TokenSlice, TokenType},
@@ -42,6 +42,11 @@ thread_local! {
     /// The current `ParseContext`. `None` if parsing is not currently happening on this thread.
     static CTXT: RefCell<Option<ParseContext>> = const { RefCell::new(None) };
 }
+
+const MISSING_ELSE: &str = "This `if` block needs a matching `else` block";
+const IF_ELSE_CANNOT_BE_EMPTY: &str = "`if` and `else` blocks cannot be empty";
+const ELSE_STRUCTURE: &str = "This `else` should be followed by a {, then a block of code, then a }";
+const ELSE_MUST_END_IN_EXPR: &str = "This `else` block needs to end in an expression, which will be the value if no preceding `if` condition was matched";
 
 pub fn run_parser(i: TokenSlice) -> super::ParseResult {
     let _stats = crate::log::LogPerfStats::new("Parsing");
@@ -482,7 +487,7 @@ fn string_literal(i: &mut TokenSlice) -> ModalResult<Node<Literal>> {
     let result = Node::new(
         Literal {
             value,
-            raw: token.value.clone(),
+            raw: token.value,
             digest: None,
         },
         token.start,
@@ -545,7 +550,7 @@ pub(crate) fn unsigned_number_literal(i: &mut TokenSlice) -> ModalResult<Node<Li
     Ok(Node::new(
         Literal {
             value,
-            raw: token.value.clone(),
+            raw: token.value,
             digest: None,
         },
         token.start,
@@ -624,9 +629,6 @@ fn operand(i: &mut TokenSlice) -> ModalResult<BinaryPart> {
                 Expr::FunctionExpression(_)
                 | Expr::PipeExpression(_)
                 | Expr::PipeSubstitution(_)
-                | Expr::ArrayExpression(_)
-                | Expr::ArrayRangeExpression(_)
-                | Expr::ObjectExpression(_)
                 | Expr::LabelledExpression(..) => return Err(CompilationError::fatal(source_range, TODO_783)),
                 Expr::None(_) => {
                     return Err(CompilationError::fatal(
@@ -652,6 +654,9 @@ fn operand(i: &mut TokenSlice) -> ModalResult<BinaryPart> {
                 Expr::BinaryExpression(x) => BinaryPart::BinaryExpression(x),
                 Expr::CallExpressionKw(x) => BinaryPart::CallExpressionKw(x),
                 Expr::MemberExpression(x) => BinaryPart::MemberExpression(x),
+                Expr::ArrayExpression(x) => BinaryPart::ArrayExpression(x),
+                Expr::ArrayRangeExpression(x) => BinaryPart::ArrayRangeExpression(x),
+                Expr::ObjectExpression(x) => BinaryPart::ObjectExpression(x),
                 Expr::IfExpression(x) => BinaryPart::IfExpression(x),
                 Expr::AscribedExpression(x) => BinaryPart::AscribedExpression(x),
             };
@@ -1202,10 +1207,29 @@ fn if_expr(i: &mut TokenSlice) -> ModalResult<BoxNode<IfExpression>> {
     ignore_whitespace(i);
     let _ = close_brace(i)?;
     ignore_whitespace(i);
-    let else_ifs = repeat(0.., else_if).parse_next(i)?;
+    let else_ifs: NodeList<_> = repeat(0.., else_if).parse_next(i)?;
 
     ignore_whitespace(i);
-    let _ = any
+
+    // If there's a non-fatal parser error (e.g. a problem with the `else` branch),
+    // return this after emitting the nonfatal error.
+    let if_with_no_else = |cond, then_val, else_ifs| {
+        Ok(Node::boxed(
+            IfExpression {
+                cond,
+                then_val,
+                else_ifs,
+                final_else: Node::boxed(Default::default(), 0, 0, if_.module_id),
+                digest: Default::default(),
+            },
+            if_.start,
+            if_.end,
+            if_.module_id,
+        ))
+    };
+
+    // Parse the else keyword
+    let else_: ModalResult<_> = any
         .try_map(|token: Token| {
             if matches!(token.token_type, TokenType::Keyword) && token.value == "else" {
                 Ok(token.start)
@@ -1217,17 +1241,38 @@ fn if_expr(i: &mut TokenSlice) -> ModalResult<BoxNode<IfExpression>> {
             }
         })
         .context(expected("the 'else' keyword"))
-        .parse_next(i)?;
-    ignore_whitespace(i);
-    let _ = open_brace(i)?;
+        .parse_next(i);
+    let Ok(else_) = else_ else {
+        ParseContext::err(CompilationError::err(if_.as_source_range(), MISSING_ELSE));
+        return if_with_no_else(cond, then_val, else_ifs);
+    };
+    let else_range = SourceRange::new(else_, else_ + 4, if_.module_id);
     ignore_whitespace(i);
 
-    let final_else = program
-        .verify(|block| block.ends_with_expr())
-        .parse_next(i)
-        .map_err(|e| e.cut())
-        .map(Box::new)?;
+    // Parse the else clause
+    if open_brace(i).is_err() {
+        ParseContext::err(CompilationError::err(else_range, ELSE_STRUCTURE));
+        return if_with_no_else(cond, then_val, else_ifs);
+    }
     ignore_whitespace(i);
+    let Ok(final_else) = program.parse_next(i).map(Box::new) else {
+        ParseContext::err(CompilationError::err(else_range, IF_ELSE_CANNOT_BE_EMPTY));
+        let _ = opt(close_brace).parse_next(i);
+        return if_with_no_else(cond, then_val, else_ifs);
+    };
+    ignore_whitespace(i);
+
+    if final_else.body.is_empty() {
+        ParseContext::err(CompilationError::err(else_range, IF_ELSE_CANNOT_BE_EMPTY));
+        let _ = opt(close_brace).parse_next(i);
+        return if_with_no_else(cond, then_val, else_ifs);
+    }
+    if !final_else.ends_with_expr() {
+        ParseContext::err(CompilationError::err(else_range, ELSE_MUST_END_IN_EXPR));
+        let _ = opt(close_brace).parse_next(i);
+        return if_with_no_else(cond, then_val, else_ifs);
+    }
+
     let end = close_brace(i)?.end;
     Ok(Node::boxed(
         IfExpression {
@@ -1299,28 +1344,28 @@ fn function_decl(i: &mut TokenSlice) -> ModalResult<Node<FunctionExpression>> {
 }
 
 /// E.g. `person.name`
-fn member_expression_dot(i: &mut TokenSlice) -> ModalResult<(LiteralIdentifier, usize, bool)> {
+fn member_expression_dot(i: &mut TokenSlice) -> ModalResult<(Expr, usize, bool)> {
     period.parse_next(i)?;
     let property = nameable_identifier
         .map(Box::new)
-        .map(LiteralIdentifier::Identifier)
+        .map(|p| {
+            let ni: Node<Identifier> = *p;
+            let nn: Node<Name> = ni.into();
+            Expr::Name(Box::new(nn))
+        })
         .parse_next(i)?;
     let end = property.end();
-    Ok((property, end, false))
+    let computed = false;
+    Ok((property, end, computed))
 }
 
-/// E.g. `people[0]` or `people[i]` or `people['adam']`
-fn member_expression_subscript(i: &mut TokenSlice) -> ModalResult<(LiteralIdentifier, usize, bool)> {
+fn member_expression_subscript(i: &mut TokenSlice) -> ModalResult<(Expr, usize, bool)> {
     let _ = open_bracket.parse_next(i)?;
-    // TODO: This should be an expression, not just a literal or identifier.
-    let property = alt((
-        literal.map(LiteralIdentifier::Literal),
-        nameable_identifier.map(Box::new).map(LiteralIdentifier::Identifier),
-    ))
-    .parse_next(i)?;
-
+    ignore_whitespace(i);
+    let property = expression.parse_next(i)?;
+    ignore_whitespace(i);
     let end = close_bracket.parse_next(i)?.end;
-    let computed = matches!(property, LiteralIdentifier::Identifier(_));
+    let computed = true;
     Ok((property, end, computed))
 }
 
@@ -2101,7 +2146,7 @@ fn expr_allowed_in_pipe_expr(i: &mut TokenSlice) -> ModalResult<Expr> {
     .context(expected("a KCL expression (but not a pipe expression)"))
     .parse_next(i)?;
 
-    let maybe_member = build_member_expression(parsed_expr.clone(), i);
+    let maybe_member = build_member_expression(parsed_expr.clone(), i); // TODO: Eliminate this clone.
     if let Ok(mem) = maybe_member {
         return Ok(Expr::MemberExpression(Box::new(mem)));
     }
@@ -2110,11 +2155,14 @@ fn expr_allowed_in_pipe_expr(i: &mut TokenSlice) -> ModalResult<Expr> {
 
 fn possible_operands(i: &mut TokenSlice) -> ModalResult<Expr> {
     let mut expr = alt((
+        if_expr.map(Expr::IfExpression),
         unary_expression.map(Box::new).map(Expr::UnaryExpression),
         bool_value.map(Box::new).map(Expr::Literal),
         literal.map(Expr::Literal),
         fn_call_kw.map(Box::new).map(Expr::CallExpressionKw),
         name.map(Box::new).map(Expr::Name),
+        array,
+        object.map(Box::new).map(Expr::ObjectExpression),
         binary_expr_in_parens.map(Box::new).map(Expr::BinaryExpression),
         unnecessarily_bracketed,
     ))
@@ -2526,6 +2574,7 @@ fn unary_expression(i: &mut TokenSlice) -> ModalResult<Node<UnaryExpression>> {
         })
         .context(expected("a unary expression, e.g. -x or -3"))
         .parse_next(i)?;
+    ignore_whitespace(i);
     let argument = operand.parse_next(i)?;
     Ok(Node::new_node(
         op_token.start,
@@ -3396,6 +3445,40 @@ mod tests {
         let tokens = crate::parsing::token::lex("f(x = 1)", ModuleId::default()).unwrap();
         let tokens = tokens.as_slice();
         operand.parse(tokens).unwrap();
+    }
+
+    #[test]
+    fn parse_binary_operator_on_array() {
+        let tokens = crate::parsing::token::lex("[0] + 1", ModuleId::default()).unwrap();
+        let tokens = tokens.as_slice();
+        binary_expression.parse(tokens).unwrap();
+    }
+
+    #[test]
+    fn expression_in_array_index() {
+        let tokens = crate::parsing::token::lex("arr[x + 1]", ModuleId::default()).unwrap();
+        let tokens = tokens.as_slice();
+        let Expr::MemberExpression(expr) = expression.parse(tokens).unwrap() else {
+            panic!();
+        };
+        let Expr::BinaryExpression(be) = expr.inner.property else {
+            panic!();
+        };
+        assert_eq!(be.inner.operator, BinaryOperator::Add);
+    }
+
+    #[test]
+    fn parse_binary_operator_on_object() {
+        let tokens = crate::parsing::token::lex("{ a = 1 } + 2", ModuleId::default()).unwrap();
+        let tokens = tokens.as_slice();
+        binary_expression.parse(tokens).unwrap();
+    }
+
+    #[test]
+    fn parse_call_array_operator() {
+        let tokens = crate::parsing::token::lex("f([0] + 1)", ModuleId::default()).unwrap();
+        let tokens = tokens.as_slice();
+        fn_call_kw.parse(tokens).unwrap();
     }
 
     #[test]
@@ -4808,6 +4891,13 @@ thing(false)
     }
 
     #[test]
+    fn test_mul_if() {
+        let some_program_string = r#"10 * if true { 1 } else { 0}"#;
+        let tokens = crate::parsing::token::lex(some_program_string, ModuleId::default()).unwrap();
+        super::binary_expression_tokens.parse(tokens.as_slice()).unwrap();
+    }
+
+    #[test]
     fn test_error_define_var_as_function() {
         // TODO: https://github.com/KittyCAD/modeling-app/issues/784
         // Improve this error message.
@@ -5044,6 +5134,7 @@ sketch001 = startSketchOn(XZ) |> startProfile(at = [90.45 $struct])"#;
             [52, 53],
         );
     }
+
     #[test]
     fn test_parse_array_random_brace() {
         let some_program_string = r#"
@@ -5255,6 +5346,66 @@ bar = 1
             err.message,
             "You've used the parameter labelled 'arg' 2 times in a single function call. You can only set each parameter once! Remove all but one use.",
         );
+    }
+
+    #[test]
+    fn test_sensible_error_when_missing_else() {
+        let program_source = "x = if (true) { 2 }";
+        let expected_src_start = program_source.find("if").unwrap();
+        let cause = must_fail_compilation(program_source);
+        assert!(!cause.was_fatal);
+        assert_eq!(cause.err.message, MISSING_ELSE);
+        assert_eq!(cause.err.source_range.start(), expected_src_start);
+    }
+
+    struct MustFail {
+        err: CompilationError,
+        was_fatal: bool,
+    }
+
+    fn must_fail_compilation(program_source: &str) -> MustFail {
+        let tokens = crate::parsing::token::lex(program_source, ModuleId::default()).unwrap();
+        ParseContext::init();
+        match program.parse(tokens.as_slice()) {
+            // Fatal parse error
+            Err(e) => {
+                let err = e
+                    .into_inner()
+                    .cause
+                    .expect("found a parse error, but no cause. Add a cause.");
+                MustFail { err, was_fatal: true }
+            } // Nonfatal parse error
+            Ok(_) => {
+                let mut e = None;
+                CTXT.with_borrow(|v| e = v.clone().map(|ctxt| ctxt.errors));
+                let err = e
+                    .unwrap()
+                    .first()
+                    .expect("Program succeeded, but it should have failed")
+                    .to_owned();
+                MustFail { err, was_fatal: false }
+            }
+        }
+    }
+
+    #[test]
+    fn test_sensible_error_when_missing_else_brace() {
+        let program_source = "x = if (true) { 2 } else ";
+        let expected_src_start = program_source.find("else").unwrap();
+        let cause = must_fail_compilation(program_source);
+        assert!(!cause.was_fatal);
+        assert_eq!(cause.err.message, ELSE_STRUCTURE);
+        assert_eq!(cause.err.source_range.start(), expected_src_start);
+    }
+
+    #[test]
+    fn test_sensible_error_when_does_not_end_in_expr() {
+        let program_source = "x = if (true) { 2 } else {y = 3}";
+        let expected_src_start = program_source.find("else").unwrap();
+        let cause = must_fail_compilation(program_source);
+        assert!(!cause.was_fatal);
+        assert_eq!(cause.err.message, ELSE_MUST_END_IN_EXPR);
+        assert_eq!(cause.err.source_range.start(), expected_src_start);
     }
 }
 
@@ -5547,6 +5698,13 @@ my14 = 4 ^ 2 - 3 ^ 2 * 2
         array_ranges,
         r#"incl = [1..10]
         excl = [0..<10]"#
+    );
+    snapshot_test!(space_between_unary_and_operand, r#"x = - 1"#);
+    snapshot_test!(
+        space_between_expr_and_array,
+        r#"outer_points = [1, 2, 3]
+i = 0
+outer_points[ if i + 1 < 5 { i + 1 } else { 0 } ]"#
     );
 }
 

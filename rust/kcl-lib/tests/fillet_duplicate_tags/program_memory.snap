@@ -1,0 +1,26 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing fillet_duplicate_tags.kcl
+---
+{
+  "line000": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "line000"
+  },
+  "line001": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "line001"
+  },
+  "line002": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "line002"
+  },
+  "line003": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "line003"
+  }
+}

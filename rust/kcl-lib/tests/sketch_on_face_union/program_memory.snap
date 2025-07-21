@@ -202,6 +202,14 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             "units": {
               "type": "Unknown"
             }
+          },
+          "zAxis": {
+            "x": 1.0,
+            "y": 0.0,
+            "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
           }
         },
         "start": {
@@ -600,6 +608,14 @@ description: Variables in memory after executing sketch_on_face_union.kcl
                   "units": {
                     "type": "Unknown"
                   }
+                },
+                "zAxis": {
+                  "x": 1.0,
+                  "y": 0.0,
+                  "z": 0.0,
+                  "units": {
+                    "type": "Unknown"
+                  }
                 }
               },
               "start": {
@@ -897,6 +913,14 @@ description: Variables in memory after executing sketch_on_face_union.kcl
               "x": 0.0,
               "y": 0.0,
               "z": 1.0,
+              "units": {
+                "type": "Unknown"
+              }
+            },
+            "zAxis": {
+              "x": 1.0,
+              "y": 0.0,
+              "z": 0.0,
               "units": {
                 "type": "Unknown"
               }
@@ -1250,6 +1274,14 @@ description: Variables in memory after executing sketch_on_face_union.kcl
                 "units": {
                   "type": "Unknown"
                 }
+              },
+              "zAxis": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0,
+                "units": {
+                  "type": "Unknown"
+                }
               }
             },
             "start": {
@@ -1522,6 +1554,14 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             "units": {
               "type": "Unknown"
             }
+          },
+          "zAxis": {
+            "x": 1.0,
+            "y": 0.0,
+            "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
           }
         },
         "start": {
@@ -1711,6 +1751,14 @@ description: Variables in memory after executing sketch_on_face_union.kcl
           "units": {
             "type": "Unknown"
           }
+        },
+        "zAxis": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0,
+          "units": {
+            "type": "Unknown"
+          }
         }
       },
       "start": {
@@ -1859,6 +1907,14 @@ description: Variables in memory after executing sketch_on_face_union.kcl
           "units": {
             "type": "Unknown"
           }
+        },
+        "zAxis": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0,
+          "units": {
+            "type": "Unknown"
+          }
         }
       },
       "start": {
@@ -1994,6 +2050,14 @@ description: Variables in memory after executing sketch_on_face_union.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
+          "units": {
+            "type": "Unknown"
+          }
+        },
+        "zAxis": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0,
           "units": {
             "type": "Unknown"
           }
@@ -2140,6 +2204,84 @@ description: Variables in memory after executing sketch_on_face_union.kcl
           }
         }
       ],
+      "innerPaths": [
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            56.0,
+            4.0
+          ],
+          "tag": null,
+          "to": [
+            2.0,
+            4.0
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Inches"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            2.0,
+            4.0
+          ],
+          "tag": null,
+          "to": [
+            2.0,
+            35.978459489299915
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Inches"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            2.0,
+            35.978459489299915
+          ],
+          "tag": null,
+          "to": [
+            56.0,
+            10.797845948929993
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Inches"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            56.0,
+            10.797845948929993
+          ],
+          "tag": null,
+          "to": [
+            56.0,
+            4.0
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Inches"
+          }
+        }
+      ],
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
@@ -2165,6 +2307,14 @@ description: Variables in memory after executing sketch_on_face_union.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
+          "units": {
+            "type": "Unknown"
+          }
+        },
+        "zAxis": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0,
           "units": {
             "type": "Unknown"
           }
@@ -2350,6 +2500,14 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             "units": {
               "type": "Unknown"
             }
+          },
+          "zAxis": {
+            "x": 1.0,
+            "y": 0.0,
+            "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
           }
         },
         "start": {
@@ -2530,6 +2688,14 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             "units": {
               "type": "Unknown"
             }
+          },
+          "zAxis": {
+            "x": 1.0,
+            "y": 0.0,
+            "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
           }
         },
         "start": {
@@ -2594,6 +2760,14 @@ description: Variables in memory after executing sketch_on_face_union.kcl
         "units": {
           "type": "Unknown"
         }
+      },
+      "zAxis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": {
+          "type": "Unknown"
+        }
       }
     }
   },
@@ -2623,6 +2797,14 @@ description: Variables in memory after executing sketch_on_face_union.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
+        "units": {
+          "type": "Unknown"
+        }
+      },
+      "zAxis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0,
         "units": {
           "type": "Unknown"
         }

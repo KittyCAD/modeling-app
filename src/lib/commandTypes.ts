@@ -6,7 +6,6 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 
 import type { CustomIconName } from '@src/components/CustomIcon'
 import type { MachineManager } from '@src/components/MachineManagerProvider'
-import type { AllMachines } from '@src/hooks/useStateMachineCommands'
 import type { Artifact } from '@src/lang/std/artifactGraph'
 import type { Expr, Name, VariableDeclaration } from '@src/lang/wasm'
 import type {
@@ -52,7 +51,7 @@ export type StateMachineCommandSetSchema<T extends AnyStateMachine> = Partial<{
 }>
 
 export type StateMachineCommandSet<
-  T extends AllMachines,
+  T extends AnyStateMachine,
   Schema extends StateMachineCommandSetSchema<T>,
 > = Partial<{
   [EventType in EventFrom<T>['type']]: Command<
@@ -69,7 +68,7 @@ export type StateMachineCommandSet<
  * @param Schema The schema for the command set, defined by the developer.
  */
 export type StateMachineCommandSetConfig<
-  T extends AllMachines,
+  T extends AnyStateMachine,
   Schema extends StateMachineCommandSetSchema<T>,
 > = Partial<{
   [EventType in EventFrom<T>['type']]:

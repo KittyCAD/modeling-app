@@ -14,5 +14,6 @@ description: Artifact commands invalid_index_str.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

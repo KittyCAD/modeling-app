@@ -63,21 +63,17 @@ const args = parseCLIArgs(process.argv)
 // @ts-ignore: TS1343
 const viteEnv = import.meta.env
 const NODE_ENV = process.env.NODE_ENV || viteEnv.MODE
-const IS_PLAYWRIGHT = process.env.IS_PLAYWRIGHT
 
 // dotenv override when present
 dotenv.config({ path: [`.env.${NODE_ENV}.local`, `.env.${NODE_ENV}`] })
 
 // default vite values based on mode
 process.env.NODE_ENV ??= viteEnv.MODE
-process.env.BASE_URL ??= viteEnv.VITE_KC_API_BASE_URL
-process.env.VITE_KC_API_WS_MODELING_URL ??= viteEnv.VITE_KC_API_WS_MODELING_URL
-process.env.VITE_KC_API_BASE_URL ??= viteEnv.VITE_KC_API_BASE_URL
-process.env.VITE_KC_SITE_BASE_URL ??= viteEnv.VITE_KC_SITE_BASE_URL
-process.env.VITE_KC_SITE_APP_URL ??= viteEnv.VITE_KC_SITE_APP_URL
-process.env.VITE_KC_SKIP_AUTH ??= viteEnv.VITE_KC_SKIP_AUTH
-process.env.VITE_KC_CONNECTION_TIMEOUT_MS ??=
-  viteEnv.VITE_KC_CONNECTION_TIMEOUT_MS
+process.env.VITE_KITTYCAD_API_BASE_URL ??= viteEnv.VITE_KITTYCAD_API_BASE_URL
+process.env.VITE_KITTYCAD_API_WEBSOCKET_URL ??=
+  viteEnv.VITE_KITTYCAD_API_WEBSOCKET_URL
+process.env.VITE_KITTYCAD_SITE_BASE_URL ??= viteEnv.VITE_KITTYCAD_SITE_BASE_URL
+process.env.VITE_KITTYCAD_SITE_APP_URL ??= viteEnv.VITE_KITTYCAD_SITE_APP_URL
 
 // Likely convenient to keep for debugging
 console.log('Environment vars', process.env)
@@ -99,7 +95,7 @@ if (process.defaultApp) {
 // Must be done before ready event.
 // Checking against this lock is needed for Windows and Linux, see
 // https://www.electronjs.org/docs/latest/tutorial/launch-app-from-url-in-another-app#windows-and-linux-code
-if (!singleInstanceLock && !IS_PLAYWRIGHT) {
+if (!singleInstanceLock && process.env.NODE_ENV !== 'test') {
   app.quit()
 } else {
   registerStartupListeners()
@@ -595,7 +591,7 @@ const getProjectPathAtStartup = async (
   // startup.
   // Since the args passed are always '.'
   // aka Forge for npm run tron:start live dev or playwright tests, but not dev packaged apps
-  if (MAIN_WINDOW_VITE_DEV_SERVER_URL || IS_PLAYWRIGHT) {
+  if (MAIN_WINDOW_VITE_DEV_SERVER_URL || process.env.NODE_ENV === 'test') {
     return null
   }
 

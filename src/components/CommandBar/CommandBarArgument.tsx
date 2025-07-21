@@ -27,9 +27,20 @@ function CommandBarArgument({ stepBack }: { stepBack: () => void }) {
     })
   }
 
+  function clear() {
+    if (!currentArgument) return
+
+    commandBarActor.send({
+      type: 'Submit argument',
+      data: {
+        [currentArgument.name]: undefined,
+      },
+    })
+  }
+
   return (
     currentArgument && (
-      <CommandBarHeaderFooter stepBack={stepBack}>
+      <CommandBarHeaderFooter stepBack={stepBack} clear={clear}>
         <ArgumentInput
           arg={currentArgument}
           stepBack={stepBack}

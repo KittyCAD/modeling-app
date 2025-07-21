@@ -2,7 +2,10 @@ import { useEffect, useRef } from 'react'
 
 import { showSketchOnImportToast } from '@src/components/SketchOnImportToast'
 import { useModelingContext } from '@src/hooks/useModelingContext'
-import { getNodeFromPath } from '@src/lang/queryAst'
+import {
+  findAllChildrenAndOrderByPlaceInCode,
+  getNodeFromPath,
+} from '@src/lang/queryAst'
 import type { SegmentArtifact } from '@src/lang/std/artifactGraph'
 import {
   getArtifactOfTypes,
@@ -14,13 +17,15 @@ import {
 import { isTopLevelModule } from '@src/lang/util'
 import type { CallExpressionKw, PathToNode } from '@src/lang/wasm'
 import { defaultSourceRange } from '@src/lang/sourceRange'
-import type { DefaultPlaneStr } from '@src/lib/planes'
-import { getEventForSelectWithPoint } from '@src/lib/selections'
+import {
+  getEventForSelectWithPoint,
+  selectDefaultSketchPlane,
+  selectOffsetSketchPlane,
+} from '@src/lib/selections'
 import {
   editorManager,
   engineCommandManager,
   kclManager,
-  rustContext,
   sceneEntitiesManager,
   sceneInfra,
 } from '@src/lib/singletons'
@@ -34,7 +39,6 @@ import type {
 } from '@src/machines/modelingMachine'
 import toast from 'react-hot-toast'
 import { getStringAfterLastSeparator } from '@src/lib/paths'
-import { findAllChildrenAndOrderByPlaceInCode } from '@src/lang/modifyAst/boolean'
 
 export function useEngineConnectionSubscriptions() {
   const { send, context, state } = useModelingContext()
@@ -96,131 +100,20 @@ export function useEngineConnectionSubscriptions() {
             ;(async () => {
               let planeOrFaceId = data.entity_id
               if (!planeOrFaceId) return
+
+              const defaultSketchPlaneSelected =
+                selectDefaultSketchPlane(planeOrFaceId)
               if (
-                rustContext.defaultPlanes?.xy === planeOrFaceId ||
-                rustContext.defaultPlanes?.xz === planeOrFaceId ||
-                rustContext.defaultPlanes?.yz === planeOrFaceId ||
-                rustContext.defaultPlanes?.negXy === planeOrFaceId ||
-                rustContext.defaultPlanes?.negXz === planeOrFaceId ||
-                rustContext.defaultPlanes?.negYz === planeOrFaceId
+                !err(defaultSketchPlaneSelected) &&
+                defaultSketchPlaneSelected
               ) {
-                let planeId = planeOrFaceId
-                const defaultPlaneStrMap: Record<string, DefaultPlaneStr> = {
-                  [rustContext.defaultPlanes.xy]: 'XY',
-                  [rustContext.defaultPlanes.xz]: 'XZ',
-                  [rustContext.defaultPlanes.yz]: 'YZ',
-                  [rustContext.defaultPlanes.negXy]: '-XY',
-                  [rustContext.defaultPlanes.negXz]: '-XZ',
-                  [rustContext.defaultPlanes.negYz]: '-YZ',
-                }
-                // TODO can we get this information from rust land when it creates the default planes?
-                // maybe returned from make_default_planes (src/wasm-lib/src/wasm.rs)
-                let zAxis: [number, number, number] = [0, 0, 1]
-                let yAxis: [number, number, number] = [0, 1, 0]
-
-                // get unit vector from camera position to target
-                const camVector = sceneInfra.camControls.camera.position
-                  .clone()
-                  .sub(sceneInfra.camControls.target)
-
-                if (rustContext.defaultPlanes?.xy === planeId) {
-                  zAxis = [0, 0, 1]
-                  yAxis = [0, 1, 0]
-                  if (camVector.z < 0) {
-                    zAxis = [0, 0, -1]
-                    planeId = rustContext.defaultPlanes?.negXy || ''
-                  }
-                } else if (rustContext.defaultPlanes?.yz === planeId) {
-                  zAxis = [1, 0, 0]
-                  yAxis = [0, 0, 1]
-                  if (camVector.x < 0) {
-                    zAxis = [-1, 0, 0]
-                    planeId = rustContext.defaultPlanes?.negYz || ''
-                  }
-                } else if (rustContext.defaultPlanes?.xz === planeId) {
-                  zAxis = [0, 1, 0]
-                  yAxis = [0, 0, 1]
-                  planeId = rustContext.defaultPlanes?.negXz || ''
-                  if (camVector.y < 0) {
-                    zAxis = [0, -1, 0]
-                    planeId = rustContext.defaultPlanes?.xz || ''
-                  }
-                }
-
-                sceneInfra.modelingSend({
-                  type: 'Select sketch plane',
-                  data: {
-                    type: 'defaultPlane',
-                    planeId: planeId,
-                    plane: defaultPlaneStrMap[planeId],
-                    zAxis,
-                    yAxis,
-                  },
-                })
                 return
               }
+
               const artifact = kclManager.artifactGraph.get(planeOrFaceId)
-
-              if (artifact?.type === 'plane') {
-                const planeInfo =
-                  await sceneEntitiesManager.getFaceDetails(planeOrFaceId)
-
-                // Apply camera-based orientation logic similar to default planes
-                let zAxis: [number, number, number] = [
-                  planeInfo.z_axis.x,
-                  planeInfo.z_axis.y,
-                  planeInfo.z_axis.z,
-                ]
-                let yAxis: [number, number, number] = [
-                  planeInfo.y_axis.x,
-                  planeInfo.y_axis.y,
-                  planeInfo.y_axis.z,
-                ]
-
-                // Get camera vector to determine which side of the plane we're viewing from
-                const camVector = sceneInfra.camControls.camera.position
-                  .clone()
-                  .sub(sceneInfra.camControls.target)
-
-                // Determine the canonical (absolute) plane orientation
-                const absZAxis: [number, number, number] = [
-                  Math.abs(zAxis[0]),
-                  Math.abs(zAxis[1]),
-                  Math.abs(zAxis[2]),
-                ]
-
-                // Find the dominant axis (like default planes do)
-                const maxComponent = Math.max(...absZAxis)
-                const dominantAxisIndex = absZAxis.indexOf(maxComponent)
-
-                // Check camera position against canonical orientation (like default planes)
-                const cameraComponents = [camVector.x, camVector.y, camVector.z]
-                let negated = cameraComponents[dominantAxisIndex] < 0
-                if (dominantAxisIndex === 1) {
-                  // offset of the XZ is being weird, not sure if this is a camera bug
-                  negated = !negated
-                }
-
-                sceneInfra.modelingSend({
-                  type: 'Select sketch plane',
-                  data: {
-                    type: 'offsetPlane',
-                    zAxis,
-                    yAxis,
-                    position: [
-                      planeInfo.origin.x,
-                      planeInfo.origin.y,
-                      planeInfo.origin.z,
-                    ].map((num) => num / sceneInfra._baseUnitMultiplier) as [
-                      number,
-                      number,
-                      number,
-                    ],
-                    planeId: planeOrFaceId,
-                    pathToNode: artifact.codeRef.pathToNode,
-                    negated,
-                  },
-                })
+              const offsetPlaneSelected =
+                await selectOffsetSketchPlane(artifact)
+              if (!err(offsetPlaneSelected) && offsetPlaneSelected) {
                 return
               }
 

@@ -223,7 +223,8 @@ description: Artifact commands pattern_into_union.kcl
         "target": "[uuid]",
         "distance": -3.28740157480315,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -410,7 +411,8 @@ description: Artifact commands pattern_into_union.kcl
         "target": "[uuid]",
         "distance": -0.1,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1215,7 +1217,8 @@ description: Artifact commands pattern_into_union.kcl
         "target": "[uuid]",
         "distance": -0.1,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1912,5 +1915,6 @@ description: Artifact commands pattern_into_union.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

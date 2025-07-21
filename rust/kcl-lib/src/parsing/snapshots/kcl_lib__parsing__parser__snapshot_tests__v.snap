@@ -19,7 +19,7 @@ expression: actual
         },
         "init": {
           "commentStart": 6,
-          "computed": false,
+          "computed": true,
           "end": 11,
           "moduleId": 0,
           "object": {

@@ -53,7 +53,6 @@ import {
   WASM_INIT_FAILED_TOAST_ID,
 } from '@src/lib/constants'
 import { isPlaywright } from '@src/lib/isPlaywright'
-import { VITE_KC_SITE_BASE_URL } from '@src/env'
 import { useNetworkHealthStatus } from '@src/components/NetworkHealthIndicator'
 import { useNetworkMachineStatus } from '@src/components/NetworkMachineIndicator'
 import {
@@ -65,6 +64,9 @@ import { useModelingContext } from '@src/hooks/useModelingContext'
 import { xStateValueToString } from '@src/lib/xStateValueToString'
 import { getSelectionTypeDisplayText } from '@src/lib/selections'
 import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
+import { UndoRedoButtons } from '@src/components/UndoRedoButtons'
+import { Toolbar } from '@src/Toolbar'
+import { withSiteBaseURL } from '@src/lib/withBaseURL'
 
 // CYCLIC REF
 sceneInfra.camControls.engineStreamActor = engineStreamActor
@@ -189,7 +191,8 @@ export function App() {
         () =>
           DownloadAppToast({
             onAccept: () => {
-              openWindow(`${VITE_KC_SITE_BASE_URL}/${APP_DOWNLOAD_PATH}`)
+              const url = withSiteBaseURL(`/${APP_DOWNLOAD_PATH}`)
+              openWindow(url)
                 .then(() => {
                   toast.dismiss(DOWNLOAD_APP_TOAST_ID)
                 })
@@ -245,15 +248,24 @@ export function App() {
   return (
     <div className="h-screen flex flex-col overflow-hidden select-none">
       <div className="relative flex flex-1 flex-col">
-        <AppHeader
-          className="transition-opacity transition-duration-75"
-          project={{ project, file }}
-          enableMenu={true}
-          nativeFileMenuCreated={nativeFileMenuCreated}
-        >
-          <CommandBarOpenButton />
-          <ShareButton />
-        </AppHeader>
+        <div className="relative flex items-center flex-col">
+          <AppHeader
+            className="transition-opacity transition-duration-75"
+            project={{ project, file }}
+            enableMenu={true}
+            nativeFileMenuCreated={nativeFileMenuCreated}
+            projectMenuChildren={
+              <UndoRedoButtons
+                editorManager={editorManager}
+                className="flex items-center px-2 border-x border-chalkboard-30 dark:border-chalkboard-80"
+              />
+            }
+          >
+            <CommandBarOpenButton />
+            <ShareButton />
+          </AppHeader>
+          <Toolbar />
+        </div>
         <ModalContainer />
         <ModelingSidebar />
         <EngineStream pool={pool} authToken={authToken} />

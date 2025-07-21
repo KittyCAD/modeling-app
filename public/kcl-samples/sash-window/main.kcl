@@ -61,18 +61,8 @@ fn panelFn(plane, offset, width, height, depth, perimeter, divisionThickness, op
     |> yLine(length = -voidHeight)
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
     |> close()
-    |> patternLinear2d(
-         %,
-         instances = openingCountHorizontal,
-         distance = voidStepHorizontal,
-         axis = [1, 0],
-       )
-    |> patternLinear2d(
-         %,
-         instances = openingCountVertical,
-         distance = voidStepVertical,
-         axis = [0, 1],
-       )
+    |> patternLinear2d(instances = openingCountHorizontal, distance = voidStepHorizontal, axis = [1, 0])
+    |> patternLinear2d(instances = openingCountVertical, distance = voidStepVertical, axis = [0, 1])
   voidBody = extrude(voidShape, length = -depth)
     |> appearance(color = "#a55e2c")
   return panelBody
@@ -103,18 +93,8 @@ bottomSash = panelFn(
        openingCountHorizontal = sashOpeningCountHorizontal,
        openingCountVertical = sashOpeningCountVertical,
      )
-  |> translate(
-       %,
-       x = 0,
-       y = 0,
-       z = frameWidth / 2 - (sashHeight / 2),
-     )
-  |> translate(
-       %,
-       x = 0,
-       y = 0,
-       z = sashTravelDistance,
-     ) // open / close
+  |> translate(x = 0, y = 0, z = frameWidth / 2 - (sashHeight / 2))
+  |> translate(x = 0, y = 0, z = sashTravelDistance) // open / close
 
   // Latch mechanism on bottom sash
 // Create latch plate
@@ -136,18 +116,8 @@ latchPlateShape = startProfile(
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 latchPlateBody = extrude(latchPlateShape, length = latchPlateThickness)
-  |> translate(
-       %,
-       x = 0,
-       y = -frameDepth / 4,
-       z = 0,
-     )
-  |> translate(
-       %,
-       x = 0,
-       y = 0,
-       z = sashTravelDistance,
-     ) // open / close
+  |> translate(x = 0, y = -frameDepth / 4, z = 0)
+  |> translate(x = 0, y = 0, z = sashTravelDistance) // open / close
 
 // Create latch cylinder
 latchCylinderHeight = 5
@@ -159,24 +129,9 @@ latchCylinderShape = startProfile(latchCylinderPlane, at = [40, -1])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 latchCylinderBody = extrude(latchCylinderShape, length = latchCylinderHeight)
-  |> translate(
-       %,
-       x = 0,
-       y = -frameDepth / 4,
-       z = 0,
-     )
-  |> translate(
-       %,
-       x = 0,
-       y = 0,
-       z = sashTravelDistance,
-     ) // open / close
-  |> rotate(
-       %,
-       roll = 0,
-       pitch = 0,
-       yaw = -90 * windowState,
-     )
+  |> translate(x = 0, y = -frameDepth / 4, z = 0)
+  |> translate(x = 0, y = 0, z = sashTravelDistance) // open / close
+  |> rotate(roll = 0, pitch = 0, yaw = -90 * windowState)
 
 // Create top fixed sash
 topSash = panelFn(
@@ -190,12 +145,7 @@ topSash = panelFn(
        openingCountHorizontal = sashOpeningCountHorizontal,
        openingCountVertical = sashOpeningCountVertical,
      )
-  |> translate(
-       %,
-       x = 0,
-       y = 0,
-       z = sashHeight / 2 - (frameWidth / 2),
-     )
+  |> translate(x = 0, y = 0, z = sashHeight / 2 - (frameWidth / 2))
 
 // Create latch nut on the top sash
 latchNutPlane = startSketchOn(XZ)

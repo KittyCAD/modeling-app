@@ -49,38 +49,61 @@ lazy_static::lazy_static! {
     pub static ref GRID_SCALE_TEXT_OBJECT_ID: uuid::Uuid = uuid::Uuid::parse_str("10782f33-f588-4668-8bcd-040502d26590").unwrap();
 
     pub static ref DEFAULT_PLANE_INFO: IndexMap<PlaneName, PlaneInfo> = IndexMap::from([
-            (PlaneName::Xy,PlaneInfo{
-                origin: Point3d::new(0.0, 0.0, 0.0, UnitLen::Mm),
-                x_axis: Point3d::new(1.0, 0.0, 0.0, UnitLen::Unknown),
-                y_axis: Point3d::new(0.0, 1.0, 0.0, UnitLen::Unknown),
-            }),
-            (PlaneName::NegXy,
-           PlaneInfo{
-                origin: Point3d::new(0.0, 0.0, 0.0, UnitLen::Mm),
-                x_axis: Point3d::new(-1.0, 0.0, 0.0, UnitLen::Unknown),
-                y_axis: Point3d::new(0.0, 1.0, 0.0, UnitLen::Unknown),
-            }),
-            (PlaneName::Xz, PlaneInfo{
-                origin: Point3d::new(0.0, 0.0, 0.0, UnitLen::Mm),
-                x_axis: Point3d::new(1.0, 0.0, 0.0, UnitLen::Unknown),
-                y_axis: Point3d::new(0.0, 0.0, 1.0, UnitLen::Unknown),
-            }),
-            (PlaneName::NegXz, PlaneInfo{
-                origin: Point3d::new(0.0, 0.0, 0.0, UnitLen::Mm),
-                x_axis: Point3d::new(-1.0, 0.0, 0.0, UnitLen::Unknown),
-                y_axis: Point3d::new(0.0, 0.0, 1.0, UnitLen::Unknown),
-            }),
-            (PlaneName::Yz, PlaneInfo{
-                origin: Point3d::new(0.0, 0.0, 0.0, UnitLen::Mm),
-                x_axis: Point3d::new(0.0, 1.0, 0.0, UnitLen::Unknown),
-                y_axis: Point3d::new(0.0, 0.0, 1.0, UnitLen::Unknown),
-            }),
-            (PlaneName::NegYz, PlaneInfo{
-                origin: Point3d::new(0.0, 0.0, 0.0, UnitLen::Mm),
-                x_axis: Point3d::new(0.0, -1.0, 0.0, UnitLen::Unknown),
-                y_axis: Point3d::new(0.0, 0.0, 1.0, UnitLen::Unknown),
-            }),
-            ]);
+            (
+                PlaneName::Xy,
+                PlaneInfo {
+                    origin: Point3d::new(0.0, 0.0, 0.0, UnitLen::Mm),
+                    x_axis: Point3d::new(1.0, 0.0, 0.0, UnitLen::Unknown),
+                    y_axis: Point3d::new(0.0, 1.0, 0.0, UnitLen::Unknown),
+                    z_axis: Point3d::new(0.0, 0.0, 1.0, UnitLen::Unknown),
+                },
+            ),
+            (
+                PlaneName::NegXy,
+                PlaneInfo {
+                    origin: Point3d::new( 0.0, 0.0,  0.0, UnitLen::Mm),
+                    x_axis: Point3d::new(-1.0, 0.0,  0.0, UnitLen::Unknown),
+                    y_axis: Point3d::new( 0.0, 1.0,  0.0, UnitLen::Unknown),
+                    z_axis: Point3d::new( 0.0, 0.0, -1.0, UnitLen::Unknown),
+                },
+            ),
+            (
+                PlaneName::Xz,
+                PlaneInfo {
+                    origin: Point3d::new(0.0,  0.0, 0.0, UnitLen::Mm),
+                    x_axis: Point3d::new(1.0,  0.0, 0.0, UnitLen::Unknown),
+                    y_axis: Point3d::new(0.0,  0.0, 1.0, UnitLen::Unknown),
+                    z_axis: Point3d::new(0.0, -1.0, 0.0, UnitLen::Unknown),
+                },
+            ),
+            (
+                PlaneName::NegXz,
+                PlaneInfo {
+                    origin: Point3d::new( 0.0, 0.0, 0.0, UnitLen::Mm),
+                    x_axis: Point3d::new(-1.0, 0.0, 0.0, UnitLen::Unknown),
+                    y_axis: Point3d::new( 0.0, 0.0, 1.0, UnitLen::Unknown),
+                    z_axis: Point3d::new( 0.0, 1.0, 0.0, UnitLen::Unknown),
+                },
+            ),
+            (
+                PlaneName::Yz,
+                PlaneInfo {
+                    origin: Point3d::new(0.0, 0.0, 0.0, UnitLen::Mm),
+                    x_axis: Point3d::new(0.0, 1.0, 0.0, UnitLen::Unknown),
+                    y_axis: Point3d::new(0.0, 0.0, 1.0, UnitLen::Unknown),
+                    z_axis: Point3d::new(1.0, 0.0, 0.0, UnitLen::Unknown),
+                },
+            ),
+            (
+                PlaneName::NegYz,
+                PlaneInfo {
+                    origin: Point3d::new( 0.0,  0.0, 0.0, UnitLen::Mm),
+                    x_axis: Point3d::new( 0.0, -1.0, 0.0, UnitLen::Unknown),
+                    y_axis: Point3d::new( 0.0,  0.0, 1.0, UnitLen::Unknown),
+                    z_axis: Point3d::new(-1.0,  0.0, 0.0, UnitLen::Unknown),
+                },
+            ),
+        ]);
 }
 
 #[derive(Default, Debug)]
@@ -698,6 +721,12 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             WebSocketResponse::Success(success) => Ok(success.resp),
             WebSocketResponse::Failure(fail) => {
                 let _request_id = fail.request_id;
+                if fail.errors.is_empty() {
+                    return Err(KclError::new_engine(KclErrorDetails::new(
+                        "Failure response with no error details".to_owned(),
+                        vec![source_range],
+                    )));
+                }
                 Err(KclError::new_engine(KclErrorDetails::new(
                     fail.errors
                         .iter()
@@ -745,6 +774,12 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
                             vec![],
                         ))
                     })?;
+                    if errors.is_empty() {
+                        return Err(KclError::new_engine(KclErrorDetails::new(
+                            "Failure response for batch with no error details".to_owned(),
+                            vec![source_range],
+                        )));
+                    }
                     return Err(KclError::new_engine(KclErrorDetails::new(
                         errors.iter().map(|e| e.message.clone()).collect::<Vec<_>>().join("\n"),
                         vec![source_range],

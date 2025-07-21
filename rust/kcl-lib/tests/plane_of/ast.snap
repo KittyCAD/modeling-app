@@ -491,12 +491,12 @@ description: Result of parsing plane_of.kcl
                     "commentStart": 0,
                     "end": 0,
                     "moduleId": 0,
-                    "raw": "2",
+                    "raw": "4",
                     "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
-                      "value": 2.0,
+                      "value": 4.0,
                       "suffix": "None"
                     }
                   }

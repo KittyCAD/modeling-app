@@ -123,10 +123,12 @@ function handleExecuteError(e: any): ExecutionResult {
     if (e.msg.includes(EXECUTE_AST_INTERRUPT_ERROR_STRING)) {
       isInterrupted = true
     }
+    const execState = emptyExecState()
+    execState.variables = e.variables
     return {
       errors: [e],
       logs: [],
-      execState: emptyExecState(),
+      execState,
       isInterrupted,
     }
   } else {

@@ -364,6 +364,14 @@ description: Variables in memory after executing teapot.kcl
             "units": {
               "type": "Unknown"
             }
+          },
+          "zAxis": {
+            "x": 1.0,
+            "y": 0.0,
+            "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
           }
         },
         "start": {
@@ -590,6 +598,14 @@ description: Variables in memory after executing teapot.kcl
             "units": {
               "type": "Unknown"
             }
+          },
+          "zAxis": {
+            "x": 1.0,
+            "y": 0.0,
+            "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
           }
         },
         "start": {
@@ -801,6 +817,14 @@ description: Variables in memory after executing teapot.kcl
           "units": {
             "type": "Unknown"
           }
+        },
+        "zAxis": {
+          "x": 0.0,
+          "y": -1.0,
+          "z": 0.0,
+          "units": {
+            "type": "Unknown"
+          }
         }
       },
       "start": {
@@ -902,6 +926,33 @@ description: Variables in memory after executing teapot.kcl
             }
           }
         ],
+        "innerPaths": [
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.0,
+              26.0
+            ],
+            "from": [
+              4.800000000000001,
+              26.0
+            ],
+            "radius": 4.800000000000001,
+            "tag": null,
+            "to": [
+              4.800000000000001,
+              26.0
+            ],
+            "type": "Circle",
+            "units": {
+              "type": "Mm"
+            }
+          }
+        ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
@@ -927,6 +978,14 @@ description: Variables in memory after executing teapot.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
+            "units": {
+              "type": "Unknown"
+            }
+          },
+          "zAxis": {
+            "x": 1.0,
+            "y": 0.0,
+            "z": 0.0,
             "units": {
               "type": "Unknown"
             }
@@ -1048,6 +1107,14 @@ description: Variables in memory after executing teapot.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
+            "units": {
+              "type": "Unknown"
+            }
+          },
+          "zAxis": {
+            "x": 1.0,
+            "y": 0.0,
+            "z": 0.0,
             "units": {
               "type": "Unknown"
             }
@@ -1211,6 +1278,14 @@ description: Variables in memory after executing teapot.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
+          "units": {
+            "type": "Unknown"
+          }
+        },
+        "zAxis": {
+          "x": 0.0,
+          "y": -1.0,
+          "z": 0.0,
           "units": {
             "type": "Unknown"
           }
@@ -1481,6 +1556,14 @@ description: Variables in memory after executing teapot.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
+            "units": {
+              "type": "Unknown"
+            }
+          },
+          "zAxis": {
+            "x": 1.0,
+            "y": 0.0,
+            "z": 0.0,
             "units": {
               "type": "Unknown"
             }

@@ -94,12 +94,7 @@ frontSparHoles = startSketchOn(frontSparProfile, face = seg10)
   |> yLine(length = segLen(seg12))
   |> tangentialArc(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-  |> patternLinear2d(
-       %,
-       instances = nSections - 1,
-       distance = (sparSpan - (3 * foilThickness)) / (nSections - 1),
-       axis = [0, -1],
-     )
+  |> patternLinear2d(instances = nSections - 1, distance = (sparSpan - (3 * foilThickness)) / (nSections - 1), axis = [0, -1])
   |> extrude(length = -10)
 rearSparHoles = startSketchOn(rearSparProfile, face = seg09)
   |> startProfile(at = [-lowerCamber * 0.3, -foilThickness * 3])
@@ -112,10 +107,5 @@ rearSparHoles = startSketchOn(rearSparProfile, face = seg09)
   |> yLine(length = segLen(seg12))
   |> tangentialArc(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-  |> patternLinear2d(
-       %,
-       instances = nSections - 1,
-       distance = (sparSpan - (3 * foilThickness)) / (nSections - 1),
-       axis = [0, -1],
-     )
+  |> patternLinear2d(instances = nSections - 1, distance = (sparSpan - (3 * foilThickness)) / (nSections - 1), axis = [0, -1])
   |> extrude(length = -10)

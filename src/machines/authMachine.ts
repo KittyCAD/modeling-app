@@ -1,10 +1,5 @@
 import type { Models } from '@kittycad/lib'
-import {
-  DEV,
-  VITE_KC_API_BASE_URL,
-  VITE_KC_DEV_TOKEN,
-  VITE_KC_SKIP_AUTH,
-} from '@src/env'
+import env from '@src/env'
 import { assign, fromPromise, setup } from 'xstate'
 
 import { COOKIE_NAME, OAUTH2_DEVICE_CLIENT_ID } from '@src/lib/constants'
@@ -15,31 +10,8 @@ import {
 } from '@src/lib/desktop'
 import { isDesktop } from '@src/lib/isDesktop'
 import { markOnce } from '@src/lib/performance'
-import {
-  default as withBaseURL,
-  default as withBaseUrl,
-} from '@src/lib/withBaseURL'
+import { withAPIBaseURL } from '@src/lib/withBaseURL'
 import { ACTOR_IDS } from '@src/machines/machineConstants'
-
-const SKIP_AUTH = VITE_KC_SKIP_AUTH === 'true' && DEV
-
-const LOCAL_USER: Models['User_type'] = {
-  id: '8675309',
-  name: 'Test User',
-  email: 'kittycad.sidebar.test@example.com',
-  image: 'https://placekitten.com/200/200',
-  created_at: 'yesteryear',
-  updated_at: 'today',
-  company: 'Test Company',
-  discord: 'Test User#1234',
-  github: 'testuser',
-  phone: '555-555-5555',
-  first_name: 'Test',
-  last_name: 'User',
-  can_train_on_data: false,
-  is_service_account: false,
-  deletion_scheduled: false,
-}
 
 export interface UserContext {
   user?: Models['User_type']
@@ -56,11 +28,21 @@ export type Events =
     }
 
 export const TOKEN_PERSIST_KEY = 'TOKEN_PERSIST_KEY'
+
+/**
+ * Determine which token do we have persisted to initialize the auth machine
+ */
+const persistedCookie = getCookie(COOKIE_NAME)
+const persistedLocalStorage = localStorage?.getItem(TOKEN_PERSIST_KEY) || ''
+const persistedDevToken = env().VITE_KITTYCAD_API_TOKEN
 export const persistedToken =
-  VITE_KC_DEV_TOKEN ||
-  getCookie(COOKIE_NAME) ||
-  localStorage?.getItem(TOKEN_PERSIST_KEY) ||
-  ''
+  persistedDevToken || persistedCookie || persistedLocalStorage
+console.log('Initial persisted token')
+console.table([
+  ['cookie', !!persistedCookie],
+  ['local storage', !!persistedLocalStorage],
+  ['api token', !!persistedDevToken],
+])
 
 export const authMachine = setup({
   types: {} as {
@@ -157,29 +139,27 @@ export const authMachine = setup({
 
 async function getUser(input: { token?: string }) {
   const token = await getAndSyncStoredToken(input)
-  const url = withBaseURL('/user')
+  const url = withAPIBaseURL('/user')
   const headers: { [key: string]: string } = {
     'Content-Type': 'application/json',
+  }
+
+  /**
+   * We do not want to store a token or a user since the developer is running
+   * the application and dependencies locally. They know what they are doing.
+   */
+  if (env().VITE_KITTYCAD_API_TOKEN === 'localhost') {
+    return {
+      user: undefined,
+      token: 'localhost',
+    }
   }
 
   if (!token && isDesktop()) return Promise.reject(new Error('No token found'))
   if (token) headers['Authorization'] = `Bearer ${token}`
 
-  if (SKIP_AUTH) {
-    // For local tests
-    if (localStorage.getItem('FORCE_NO_IMAGE')) {
-      LOCAL_USER.image = ''
-    }
-
-    markOnce('code/didAuth')
-    return {
-      user: LOCAL_USER,
-      token,
-    }
-  }
-
   const userPromise = isDesktop()
-    ? getUserDesktop(token, VITE_KC_API_BASE_URL)
+    ? getUserDesktop(token)
     : fetch(url, {
         method: 'GET',
         credentials: 'include',
@@ -228,16 +208,29 @@ async function getAndSyncStoredToken(input: {
   token?: string
 }): Promise<string> {
   // dev mode
-  if (VITE_KC_DEV_TOKEN) return VITE_KC_DEV_TOKEN
+  const VITE_KITTYCAD_API_TOKEN = env().VITE_KITTYCAD_API_TOKEN
+  if (VITE_KITTYCAD_API_TOKEN) {
+    console.log('Token used for authentication')
+    console.table([['api token', !!VITE_KITTYCAD_API_TOKEN]])
+    return VITE_KITTYCAD_API_TOKEN
+  }
 
-  const token =
-    input.token && input.token !== ''
-      ? input.token
-      : getCookie(COOKIE_NAME) || localStorage?.getItem(TOKEN_PERSIST_KEY) || ''
+  const inputToken = input.token && input.token !== '' ? input.token : ''
+  const cookieToken = getCookie(COOKIE_NAME)
+  const localStorageToken = localStorage?.getItem(TOKEN_PERSIST_KEY) || ''
+  const token = inputToken || cookieToken || localStorageToken
+
+  console.log('Token used for authentication')
+  console.table([
+    ['persisted token', !!inputToken],
+    ['cookie', !!cookieToken],
+    ['local storage', !!localStorageToken],
+    ['api token', !!VITE_KITTYCAD_API_TOKEN],
+  ])
   if (token) {
-    // has just logged in, update storage
-    localStorage.setItem(TOKEN_PERSIST_KEY, token)
     if (isDesktop()) {
+      // has just logged in, update storage
+      localStorage.setItem(TOKEN_PERSIST_KEY, token)
       await writeTokenFile(token)
     }
     return token
@@ -259,7 +252,7 @@ async function logout() {
 
       if (token) {
         try {
-          await fetch(withBaseUrl('/oauth2/token/revoke'), {
+          await fetch(withAPIBaseURL('/oauth2/token/revoke'), {
             method: 'POST',
             credentials: 'include',
             headers: {
@@ -282,7 +275,7 @@ async function logout() {
     }
   }
 
-  return fetch(withBaseUrl('/logout'), {
+  return fetch(withAPIBaseURL('/logout'), {
     method: 'POST',
     credentials: 'include',
   })

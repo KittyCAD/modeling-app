@@ -357,7 +357,8 @@ description: Artifact commands hammer.kcl
         "target": "[uuid]",
         "distance": 76.19999999999999,
         "faces": null,
-        "opposite": "Symmetric"
+        "opposite": "Symmetric",
+        "extrude_method": "merge"
       }
     },
     {
@@ -648,7 +649,8 @@ description: Artifact commands hammer.kcl
         "target": "[uuid]",
         "distance": -355.59999999999997,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -853,7 +855,8 @@ description: Artifact commands hammer.kcl
         "target": "[uuid]",
         "distance": -355.59999999999997,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1105,7 +1108,8 @@ description: Artifact commands hammer.kcl
         "target": "[uuid]",
         "distance": -355.59999999999997,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1449,7 +1453,8 @@ description: Artifact commands hammer.kcl
         "target": "[uuid]",
         "distance": 355.59999999999997,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1633,7 +1638,8 @@ description: Artifact commands hammer.kcl
         "target": "[uuid]",
         "distance": 25.4,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1980,5 +1986,6 @@ description: Artifact commands hammer.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

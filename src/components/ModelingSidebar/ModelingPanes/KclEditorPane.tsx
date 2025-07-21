@@ -35,7 +35,6 @@ import {
   rectangularSelection,
 } from '@codemirror/view'
 import interact from '@replit/codemirror-interact'
-import { TEST } from '@src/env'
 import { useSelector } from '@xstate/react'
 import { useEffect, useMemo, useRef } from 'react'
 
@@ -148,43 +147,40 @@ export const KclEditorPane = () => {
     if (kclLSP) extensions.push(Prec.highest(kclLSP))
     if (copilotLSP) extensions.push(copilotLSP)
 
-    // These extensions have proven to mess with vitest
-    if (!TEST) {
-      extensions.push(
-        lintGutter(),
-        lineNumbers(),
-        highlightActiveLineGutter(),
-        highlightSpecialChars(),
-        foldGutter(),
-        EditorState.allowMultipleSelections.of(true),
-        indentOnInput(),
-        bracketMatching(),
-        closeBrackets(),
-        highlightActiveLine(),
-        highlightSelectionMatches(),
-        syntaxHighlighting(defaultHighlightStyle, {
-          fallback: true,
-        }),
-        rectangularSelection(),
-        dropCursor(),
-        interact({
-          rules: [
-            // a rule for a number dragger
-            {
-              // the regexp matching the value
-              regexp: onMouseDragRegex,
-              // set cursor to "ew-resize" on hover
-              cursor: 'ew-resize',
-              // change number value based on mouse X movement on drag
-              onDrag: (text, setText, e) => {
-                onMouseDragMakeANewNumber(text, setText, e)
-              },
+    extensions.push(
+      lintGutter(),
+      lineNumbers(),
+      highlightActiveLineGutter(),
+      highlightSpecialChars(),
+      foldGutter(),
+      EditorState.allowMultipleSelections.of(true),
+      indentOnInput(),
+      bracketMatching(),
+      closeBrackets(),
+      highlightActiveLine(),
+      highlightSelectionMatches(),
+      syntaxHighlighting(defaultHighlightStyle, {
+        fallback: true,
+      }),
+      rectangularSelection(),
+      dropCursor(),
+      interact({
+        rules: [
+          // a rule for a number dragger
+          {
+            // the regexp matching the value
+            regexp: onMouseDragRegex,
+            // set cursor to "ew-resize" on hover
+            cursor: 'ew-resize',
+            // change number value based on mouse X movement on drag
+            onDrag: (text, setText, e) => {
+              onMouseDragMakeANewNumber(text, setText, e)
             },
-          ],
-        })
-      )
-      if (textWrapping.current) extensions.push(EditorView.lineWrapping)
-    }
+          },
+        ],
+      })
+    )
+    if (textWrapping.current) extensions.push(EditorView.lineWrapping)
 
     return extensions
   }, [kclLSP, copilotLSP, textWrapping.current, cursorBlinking.current])

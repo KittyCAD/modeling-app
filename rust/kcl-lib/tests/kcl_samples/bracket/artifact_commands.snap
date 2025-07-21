@@ -206,7 +206,8 @@ description: Artifact commands bracket.kcl
         "target": "[uuid]",
         "distance": 127.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -454,7 +455,8 @@ description: Artifact commands bracket.kcl
         "target": "[uuid]",
         "distance": -10.029347184188834,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -510,7 +512,8 @@ description: Artifact commands bracket.kcl
         "target": "[uuid]",
         "distance": -10.029347184188834,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -566,7 +569,8 @@ description: Artifact commands bracket.kcl
         "target": "[uuid]",
         "distance": -10.029347184188834,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -622,7 +626,8 @@ description: Artifact commands bracket.kcl
         "target": "[uuid]",
         "distance": -10.029347184188834,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -790,7 +795,8 @@ description: Artifact commands bracket.kcl
         "target": "[uuid]",
         "distance": -12.315347184188834,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -846,7 +852,8 @@ description: Artifact commands bracket.kcl
         "target": "[uuid]",
         "distance": -12.315347184188834,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -991,5 +998,6 @@ description: Artifact commands bracket.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

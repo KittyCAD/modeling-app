@@ -22,7 +22,7 @@ Array types can also include length information: `[T; n]` denotes an array of le
 
 Ranges are a succinct way to create an array of sequential numbers. The syntax is `[start .. end]` where `start` and `end` evaluate to whole numbers (integers). Ranges are inclusive of the start and end. The end must be greater than the start. A range which is exclusive of its end is written with `<end`. Examples:
 
-```kcl,norun
+```kcl
 [0..3]      // [0, 1, 2, 3]
 [3..10]     // [3, 4, 5, 6, 7, 8, 9, 10]
 [3..<10]    // [3, 4, 5, 6, 7, 8, 9]

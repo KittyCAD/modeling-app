@@ -535,7 +535,8 @@ description: Artifact commands t-slot-rail.kcl
         "target": "[uuid]",
         "distance": -609.5999999999999,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -582,5 +583,6 @@ description: Artifact commands t-slot-rail.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

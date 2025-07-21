@@ -2,7 +2,6 @@ import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
 import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
 import { default_app_settings } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
-import { TEST } from '@src/env'
 
 import {
   defaultAppSettings,
@@ -75,6 +74,8 @@ export function configurationToSettingsPayload(
       mouseControls: mouseControlsToCameraSystem(
         configuration?.settings?.modeling?.mouse_controls
       ),
+      enableTouchControls:
+        configuration?.settings?.modeling?.enable_touch_controls,
       highlightEdges: configuration?.settings?.modeling?.highlight_edges,
       enableSSAO: configuration?.settings?.modeling?.enable_ssao,
       showScaleGrid: configuration?.settings?.modeling?.show_scale_grid,
@@ -119,6 +120,7 @@ export function settingsPayloadToConfiguration(
         mouse_controls: configuration?.modeling?.mouseControls
           ? cameraSystemToMouseControl(configuration?.modeling?.mouseControls)
           : undefined,
+        enable_touch_controls: configuration?.modeling?.enableTouchControls,
         highlight_edges: configuration?.modeling?.highlightEdges,
         enable_ssao: configuration?.modeling?.enableSSAO,
         show_scale_grid: configuration?.modeling?.showScaleGrid,
@@ -545,14 +547,12 @@ export function getSettingInputType(setting: Setting) {
 
 export const jsAppSettings = async (): Promise<DeepPartial<Configuration>> => {
   let jsAppSettings = default_app_settings()
-  if (!TEST) {
-    // TODO: https://github.com/KittyCAD/modeling-app/issues/6445
-    const settings = await import('@src/lib/singletons').then((module) =>
-      module.getSettings()
-    )
-    if (settings) {
-      jsAppSettings = getAllCurrentSettings(settings)
-    }
+  // TODO: https://github.com/KittyCAD/modeling-app/issues/6445
+  const settings = await import('@src/lib/singletons').then((module) =>
+    module.getSettings()
+  )
+  if (settings) {
+    jsAppSettings = getAllCurrentSettings(settings)
   }
   return settingsPayloadToConfiguration(jsAppSettings)
 }

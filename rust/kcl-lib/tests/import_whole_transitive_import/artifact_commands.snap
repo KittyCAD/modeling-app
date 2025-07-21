@@ -159,7 +159,8 @@ description: Artifact commands import_whole_transitive_import.kcl
         "target": "[uuid]",
         "distance": 254.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -206,5 +207,6 @@ description: Artifact commands import_whole_transitive_import.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

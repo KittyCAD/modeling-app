@@ -14,5 +14,6 @@ description: Artifact commands boolean_logical_or.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

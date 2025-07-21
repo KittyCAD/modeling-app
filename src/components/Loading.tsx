@@ -16,6 +16,7 @@ import {
 } from '@src/lang/std/engineConnection'
 import { SafeRenderer } from '@src/lib/markdown'
 import { engineCommandManager } from '@src/lib/singletons'
+import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 
 interface LoadingProps extends React.PropsWithChildren {
   isDummy?: boolean
@@ -32,6 +33,10 @@ const markedOptions: MarkedOptions = {
   unescape,
   escape,
 }
+
+const statusUrl = 'https://status.zoo.dev'
+const diagnosingNetworkIssuesUrl =
+  'https://community.zoo.dev/t/diagnosing-network-connection-issues/156'
 
 // This exists here and not in engineConnection because we want some styling
 // available to us.
@@ -61,7 +66,10 @@ export const CONNECTION_ERROR_CALL_TO_ACTION_TEXT: Record<
   [ConnectionError.Outage]: (
     <>
       We seem to be experiencing an outage. Please visit{' '}
-      <a href="https://status.zoo.dev">status.zoo.dev</a> for updates.
+      <a href={statusUrl} onClick={openExternalBrowserIfDesktop(statusUrl)}>
+        status.zoo.dev
+      </a>{' '}
+      for updates.
     </>
   ),
   [ConnectionError.PeerConnectionRemoteDisconnected]:
@@ -236,7 +244,12 @@ const Loading = ({
             <div className="text-sm">
               If the issue persists, please visit the community support thread
               on{' '}
-              <a href="https://community.zoo.dev/t/diagnosing-network-connection-issues/156">
+              <a
+                href={diagnosingNetworkIssuesUrl}
+                onClick={openExternalBrowserIfDesktop(
+                  diagnosingNetworkIssuesUrl
+                )}
+              >
                 diagnosing network connection issues
               </a>
               .

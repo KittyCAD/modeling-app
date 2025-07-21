@@ -17,7 +17,7 @@ concurrency:
 jobs:
   generate-website-docs:
     name: generate-website-docs
-    runs-on: ubuntu-latest
+    runs-on: namespace-profile-ubuntu-2-cores
     steps:
       - uses: actions/checkout@v4
       - uses: actions/create-github-app-token@v2

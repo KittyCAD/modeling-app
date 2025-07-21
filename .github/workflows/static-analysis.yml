@@ -31,7 +31,7 @@ jobs:
     uses: ./.github/workflows/build-wasm.yml
 
   npm-tsc:
-    runs-on: ubuntu-latest
+    runs-on: namespace-profile-ubuntu-2-cores
     needs: npm-build-wasm
 
     steps:
@@ -61,7 +61,7 @@ jobs:
       - run: npm run tsc
 
   npm-lint:
-    runs-on: ubuntu-latest
+    runs-on: namespace-profile-ubuntu-2-cores
     needs: npm-build-wasm
 
     steps:
@@ -91,7 +91,7 @@ jobs:
       - run: npm run lint
 
   npm-circular-dependencies:
-    runs-on: ubuntu-latest
+    runs-on: namespace-profile-ubuntu-2-cores
     needs: npm-build-wasm
 
     steps:
@@ -121,7 +121,7 @@ jobs:
       - run: npm run circular-deps:diff
 
   npm-url-checker:
-    runs-on: ubuntu-latest
+    runs-on: namespace-profile-ubuntu-2-cores
     needs: npm-build-wasm
 
     steps:
@@ -151,9 +151,9 @@ jobs:
       - run: npm run url-checker:diff
 
   python-codespell:
-    runs-on: ubuntu-22.04
+    runs-on: namespace-profile-ubuntu-2-cores
     steps:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Run codespell
-        uses: crate-ci/typos@v1.32.0
+        uses: crate-ci/typos@v1.34.0

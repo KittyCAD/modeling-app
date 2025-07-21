@@ -113,20 +113,10 @@ wideHoleShape = startProfile(
   |> xLine(length = wideHoleWidth - wideHoleLength)
   |> tangentialArc(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-  |> translate(
-       %,
-       x = offsetSlabRail,
-       y = wideHoleOffset - (slabPlateWidth / 2),
-       z = -1,
-     )
+  |> translate(x = offsetSlabRail, y = wideHoleOffset - (slabPlateWidth / 2), z = -1)
 wideHoleVoidLeft = extrude(wideHoleShape, length = slabPlateThickness + 2)
 wideHoleVoidRight = clone(wideHoleVoidLeft)
-  |> translate(
-       %,
-       x = 0,
-       y = slabPlateWidth - (wideHoleOffset * 2),
-       z = 0,
-     )
+  |> translate(x = 0, y = slabPlateWidth - (wideHoleOffset * 2), z = 0)
 
 // Cut the holes into the anchor plate body
 slabPlatePunchOne = subtract([slabPlate], tools = [wideHoleVoidLeft])
@@ -135,21 +125,6 @@ slabPlatePunchTwo = subtract([slabPlatePunchOne], tools = [wideHoleVoidRight])
 // Add two bolt assemblies into the oblong slots
 // Properly rotated and spaced to match anchor hole layout
 slabPlateBolts = boltWithPlateAndNutFn(diameter = 10, length = 20, gap = slabPlateThickness + 5)
-  |> rotate(
-       %,
-       roll = 180,
-       pitch = 0,
-       yaw = 0,
-     )
-  |> translate(
-       %,
-       x = offsetSlabRail,
-       y = wideHoleOffset - (slabPlateWidth / 2),
-       z = 5,
-     )
-  |> patternLinear3d(
-       %,
-       instances = 2,
-       distance = slabPlateWidth - (wideHoleOffset * 2),
-       axis = [0, -1, 0],
-     )
+  |> rotate(roll = 180, pitch = 0, yaw = 0)
+  |> translate(x = offsetSlabRail, y = wideHoleOffset - (slabPlateWidth / 2), z = 5)
+  |> patternLinear3d(instances = 2, distance = slabPlateWidth - (wideHoleOffset * 2), axis = [0, -1, 0])

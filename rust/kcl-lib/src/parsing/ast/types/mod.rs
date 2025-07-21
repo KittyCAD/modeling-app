@@ -1214,6 +1214,9 @@ impl From<&BinaryPart> for Expr {
             BinaryPart::CallExpressionKw(call_expression) => Expr::CallExpressionKw(call_expression.clone()),
             BinaryPart::UnaryExpression(unary_expression) => Expr::UnaryExpression(unary_expression.clone()),
             BinaryPart::MemberExpression(member_expression) => Expr::MemberExpression(member_expression.clone()),
+            BinaryPart::ArrayExpression(e) => Expr::ArrayExpression(e.clone()),
+            BinaryPart::ArrayRangeExpression(e) => Expr::ArrayRangeExpression(e.clone()),
+            BinaryPart::ObjectExpression(e) => Expr::ObjectExpression(e.clone()),
             BinaryPart::IfExpression(e) => Expr::IfExpression(e.clone()),
             BinaryPart::AscribedExpression(e) => Expr::AscribedExpression(e.clone()),
         }
@@ -1281,6 +1284,9 @@ pub enum BinaryPart {
     CallExpressionKw(BoxNode<CallExpressionKw>),
     UnaryExpression(BoxNode<UnaryExpression>),
     MemberExpression(BoxNode<MemberExpression>),
+    ArrayExpression(BoxNode<ArrayExpression>),
+    ArrayRangeExpression(BoxNode<ArrayRangeExpression>),
+    ObjectExpression(BoxNode<ObjectExpression>),
     IfExpression(BoxNode<IfExpression>),
     AscribedExpression(BoxNode<AscribedExpression>),
 }
@@ -1307,6 +1313,9 @@ impl BinaryPart {
             BinaryPart::CallExpressionKw(call_expression) => call_expression.get_constraint_level(),
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.get_constraint_level(),
             BinaryPart::MemberExpression(member_expression) => member_expression.get_constraint_level(),
+            BinaryPart::ArrayExpression(e) => e.get_constraint_level(),
+            BinaryPart::ArrayRangeExpression(e) => e.get_constraint_level(),
+            BinaryPart::ObjectExpression(e) => e.get_constraint_level(),
             BinaryPart::IfExpression(e) => e.get_constraint_level(),
             BinaryPart::AscribedExpression(e) => e.expr.get_constraint_level(),
         }
@@ -1320,6 +1329,9 @@ impl BinaryPart {
             BinaryPart::CallExpressionKw(call_expression) => call_expression.replace_value(source_range, new_value),
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.replace_value(source_range, new_value),
             BinaryPart::MemberExpression(_) => {}
+            BinaryPart::ArrayExpression(e) => e.replace_value(source_range, new_value),
+            BinaryPart::ArrayRangeExpression(e) => e.replace_value(source_range, new_value),
+            BinaryPart::ObjectExpression(e) => e.replace_value(source_range, new_value),
             BinaryPart::IfExpression(e) => e.replace_value(source_range, new_value),
             BinaryPart::AscribedExpression(e) => e.expr.replace_value(source_range, new_value),
         }
@@ -1333,6 +1345,9 @@ impl BinaryPart {
             BinaryPart::CallExpressionKw(call_expression) => call_expression.start,
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.start,
             BinaryPart::MemberExpression(member_expression) => member_expression.start,
+            BinaryPart::ArrayExpression(e) => e.start,
+            BinaryPart::ArrayRangeExpression(e) => e.start,
+            BinaryPart::ObjectExpression(e) => e.start,
             BinaryPart::IfExpression(e) => e.start,
             BinaryPart::AscribedExpression(e) => e.start,
         }
@@ -1346,6 +1361,9 @@ impl BinaryPart {
             BinaryPart::CallExpressionKw(call_expression) => call_expression.end,
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.end,
             BinaryPart::MemberExpression(member_expression) => member_expression.end,
+            BinaryPart::ArrayExpression(e) => e.end,
+            BinaryPart::ArrayRangeExpression(e) => e.end,
+            BinaryPart::ObjectExpression(e) => e.end,
             BinaryPart::IfExpression(e) => e.end,
             BinaryPart::AscribedExpression(e) => e.end,
         }
@@ -1360,6 +1378,9 @@ impl BinaryPart {
             BinaryPart::CallExpressionKw(call_expression) => call_expression.rename_identifiers(old_name, new_name),
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.rename_identifiers(old_name, new_name),
             BinaryPart::MemberExpression(member_expression) => member_expression.rename_identifiers(old_name, new_name),
+            BinaryPart::ArrayExpression(e) => e.rename_identifiers(old_name, new_name),
+            BinaryPart::ArrayRangeExpression(e) => e.rename_identifiers(old_name, new_name),
+            BinaryPart::ObjectExpression(e) => e.rename_identifiers(old_name, new_name),
             BinaryPart::IfExpression(if_expression) => if_expression.rename_identifiers(old_name, new_name),
             BinaryPart::AscribedExpression(e) => e.expr.rename_identifiers(old_name, new_name),
         }
@@ -1923,6 +1944,10 @@ impl CallExpressionKw {
             .chain(self.arguments.iter().map(|arg| (arg.label.as_ref(), &arg.arg)))
     }
 
+    pub fn num_arguments(&self) -> usize {
+        self.arguments.len() + if self.unlabeled.is_some() { 1 } else { 0 }
+    }
+
     pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
         if let Some(unlabeled) = &mut self.unlabeled {
             unlabeled.replace_value(source_range, new_value.clone());
@@ -2411,6 +2436,12 @@ pub struct TagDeclarator {
 
 pub type TagNode = Node<TagDeclarator>;
 
+impl std::fmt::Display for TagNode {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        self.inner.name.fmt(f)
+    }
+}
+
 impl From<&BoxNode<TagDeclarator>> for KclValue {
     fn from(tag: &BoxNode<TagDeclarator>) -> Self {
         KclValue::TagDeclarator(tag.clone())
@@ -2734,50 +2765,10 @@ impl ObjectProperty {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
-pub enum LiteralIdentifier {
-    Identifier(BoxNode<Identifier>),
-    Literal(BoxNode<Literal>),
-}
-
-impl LiteralIdentifier {
-    pub fn start(&self) -> usize {
-        match self {
-            LiteralIdentifier::Identifier(identifier) => identifier.start,
-            LiteralIdentifier::Literal(literal) => literal.start,
-        }
-    }
-
-    pub fn end(&self) -> usize {
-        match self {
-            LiteralIdentifier::Identifier(identifier) => identifier.end,
-            LiteralIdentifier::Literal(literal) => literal.end,
-        }
-    }
-
-    pub(crate) fn contains_range(&self, range: &SourceRange) -> bool {
-        let sr = SourceRange::from(self);
-        sr.contains_range(range)
-    }
-}
-
-impl From<LiteralIdentifier> for SourceRange {
-    fn from(id: LiteralIdentifier) -> Self {
-        Self::new(id.start(), id.end(), id.module_id())
-    }
-}
-
-impl From<&LiteralIdentifier> for SourceRange {
-    fn from(id: &LiteralIdentifier) -> Self {
-        Self::new(id.start(), id.end(), id.module_id())
-    }
-}
-
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-#[serde(tag = "type")]
 pub struct MemberExpression {
     pub object: Expr,
-    pub property: LiteralIdentifier,
+    pub property: Expr,
+    /// True if `obj[prop]`, false if obj.prop
     pub computed: bool,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -2799,20 +2790,8 @@ impl MemberExpression {
     /// Rename all identifiers that have the old name to the new given name.
     fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
         self.object.rename_identifiers(old_name, new_name);
-
-        match &mut self.property {
-            LiteralIdentifier::Identifier(identifier) => identifier.rename(old_name, new_name),
-            LiteralIdentifier::Literal(_) => {}
-        }
+        self.property.rename_identifiers(old_name, new_name);
     }
-}
-
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-pub struct ObjectKeyInfo {
-    pub key: LiteralIdentifier,
-    pub index: usize,
-    pub computed: bool,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
@@ -3608,7 +3587,7 @@ impl FormatOptions {
         if self.use_tabs {
             "\t".repeat(level + 1)
         } else {
-            " ".repeat(level * self.tab_size) + " ".repeat(PIPE_OPERATOR.len() + 1).as_str()
+            " ".repeat(level * self.tab_size + PIPE_OPERATOR.len() + 1)
         }
     }
 }

@@ -2748,26 +2748,44 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                                 "type": "Name"
                               },
                               "property": {
+                                "abs_path": false,
                                 "commentStart": 0,
                                 "end": 0,
                                 "moduleId": 0,
-                                "name": "tags",
+                                "name": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "name": "tags",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 0,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               },
                               "start": 0,
                               "type": "MemberExpression",
                               "type": "MemberExpression"
                             },
                             "property": {
+                              "abs_path": false,
                               "commentStart": 0,
                               "end": 0,
                               "moduleId": 0,
-                              "name": "edge7",
+                              "name": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "moduleId": 0,
+                                "name": "edge7",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 0,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "start": 0,
                             "type": "MemberExpression",
@@ -2828,26 +2846,44 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                                 "type": "Name"
                               },
                               "property": {
+                                "abs_path": false,
                                 "commentStart": 0,
                                 "end": 0,
                                 "moduleId": 0,
-                                "name": "tags",
+                                "name": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "name": "tags",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 0,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               },
                               "start": 0,
                               "type": "MemberExpression",
                               "type": "MemberExpression"
                             },
                             "property": {
+                              "abs_path": false,
                               "commentStart": 0,
                               "end": 0,
                               "moduleId": 0,
-                              "name": "edge2",
+                              "name": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "moduleId": 0,
+                                "name": "edge2",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 0,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "start": 0,
                             "type": "MemberExpression",
@@ -2908,26 +2944,44 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                                 "type": "Name"
                               },
                               "property": {
+                                "abs_path": false,
                                 "commentStart": 0,
                                 "end": 0,
                                 "moduleId": 0,
-                                "name": "tags",
+                                "name": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "name": "tags",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 0,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               },
                               "start": 0,
                               "type": "MemberExpression",
                               "type": "MemberExpression"
                             },
                             "property": {
+                              "abs_path": false,
                               "commentStart": 0,
                               "end": 0,
                               "moduleId": 0,
-                              "name": "edge3",
+                              "name": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "moduleId": 0,
+                                "name": "edge3",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 0,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "start": 0,
                             "type": "MemberExpression",
@@ -2988,26 +3042,44 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                                 "type": "Name"
                               },
                               "property": {
+                                "abs_path": false,
                                 "commentStart": 0,
                                 "end": 0,
                                 "moduleId": 0,
-                                "name": "tags",
+                                "name": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "name": "tags",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 0,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               },
                               "start": 0,
                               "type": "MemberExpression",
                               "type": "MemberExpression"
                             },
                             "property": {
+                              "abs_path": false,
                               "commentStart": 0,
                               "end": 0,
                               "moduleId": 0,
-                              "name": "edge6",
+                              "name": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "moduleId": 0,
+                                "name": "edge6",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 0,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "start": 0,
                             "type": "MemberExpression",

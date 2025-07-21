@@ -650,26 +650,44 @@ description: Result of parsing property_access_not_found_on_solid.kcl
                       "type": "Name"
                     },
                     "property": {
+                      "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "name": "tags",
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": "tags",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 0,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "start": 0,
                     "type": "MemberExpression",
                     "type": "MemberExpression"
                   },
                   "property": {
+                    "abs_path": false,
                     "commentStart": 0,
                     "end": 0,
                     "moduleId": 0,
-                    "name": "seg01",
+                    "name": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "seg01",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 0,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "start": 0,
                   "type": "MemberExpression",
