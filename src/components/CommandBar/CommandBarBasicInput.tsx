@@ -23,6 +23,9 @@ function CommandBarBasicInput({
   onSubmit: (event: unknown) => void
 }) {
   const commandBarState = useCommandBarState()
+  const previouslySetValue = commandBarState.context.argumentsToSubmit[
+    arg.name
+  ] as string | undefined
   useHotkeys('mod + k, mod + /', () => commandBarActor.send({ type: 'Close' }))
   const inputRef = useRef<HTMLInputElement>(null)
   const argMachineContext = useSelector(
@@ -31,12 +34,18 @@ function CommandBarBasicInput({
   )
   const defaultValue = useMemo(
     () =>
-      arg.defaultValue
+      previouslySetValue ||
+      (arg.defaultValue
         ? arg.defaultValue instanceof Function
           ? arg.defaultValue(commandBarState.context, argMachineContext)
           : arg.defaultValue
-        : '',
-    [arg.defaultValue, commandBarState.context, argMachineContext]
+        : ''),
+    [
+      arg.defaultValue,
+      commandBarState.context,
+      argMachineContext,
+      previouslySetValue,
+    ]
   )
 
   useEffect(() => {
