@@ -50,6 +50,7 @@ import { degToRad } from 'three/src/math/MathUtils'
 const ORTHOGRAPHIC_CAMERA_SIZE = 20
 const FRAMES_TO_ANIMATE_IN = 30
 const ORTHOGRAPHIC_MAGIC_FOV = 4
+const EXPECTED_WORLD_COORD_SYSTEM = 'right_handed_up_z'
 
 const tempQuaternion = new Quaternion() // just used for maths
 
@@ -960,8 +961,6 @@ export class CameraControls {
 
   async setCameraViewTop() {
     // Set the top-down quaternion.
-    // TODO: Check how this works with different `world_coord_system` values.
-    // TODO: WHY DO WE ALLOW MORE THAN ONE WORLD COORD SYSTEM?
     const TOP_QUAT = {
       x: 0,
       y: 0,
@@ -972,6 +971,13 @@ export class CameraControls {
     const distance = this.camera.position.distanceTo(this.target)
 
     const currentView = await this.getCurrentView()
+
+    // Warn if we arent in the correct world coordinate system.
+    if (currentView.world_coord_system !== EXPECTED_WORLD_COORD_SYSTEM) {
+      console.warn(
+        `Camera is not in the expected ${EXPECTED_WORLD_COORD_SYSTEM} world coordinate system. Resulting view may not match expectations.`
+      )
+    }
 
     // New view state for top-down camera.
     const topDownView: CameraViewState_type = {
@@ -1019,6 +1025,13 @@ export class CameraControls {
 
     const currentView = await this.getCurrentView()
 
+    // Warn if we arent in the correct world coordinate system.
+    if (currentView.world_coord_system !== EXPECTED_WORLD_COORD_SYSTEM) {
+      console.warn(
+        `Camera is not in the expected ${EXPECTED_WORLD_COORD_SYSTEM} world coordinate system. Resulting view may not match expectations.`
+      )
+    }
+
     const bottomUpView: CameraViewState_type = {
       ...currentView,
       pivot_rotation: BOTTOM_QUAT,
@@ -1065,8 +1078,6 @@ export class CameraControls {
     } else if (axis === 'z') {
       await this.setCameraViewTop()
       return
-      // vantage.z += distance
-      // up = { x: -1, y: 0, z: 0 }
     } else if (axis === '-x') {
       vantage.x -= distance
     } else if (axis === '-y') {
@@ -1074,8 +1085,6 @@ export class CameraControls {
     } else if (axis === '-z') {
       await this.setCameraViewBottom()
       return
-      // vantage.z -= distance
-      // up = { x: -1, y: 0, z: 0 }
     }
 
     await this.engineCommandManager.sendSceneCommand({
