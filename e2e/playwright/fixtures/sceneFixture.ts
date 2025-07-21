@@ -234,9 +234,15 @@ export class SceneFixture {
    * Expects the viewPort to be 1000x500 */
   clickNoWhere = () => this.page.mouse.click(998, 60)
   /** Likely no where, there's a chance it will click something in the scene, depending what you have in the scene.
-   *
-   * Expects the viewPort to be 1000x500 */
-  moveNoWhere = (steps?: number) => this.page.mouse.move(998, 60, { steps })
+   */
+  moveNoWhere = async (steps?: number) => {
+    const point = await this.convertPagePositionToStream(
+      998 / 1000,
+      60 / 500,
+      'ratio'
+    )
+    return this.page.mouse.move(point.x, point.y, { steps })
+  }
 
   moveCameraTo = async (
     pos: { x: number; y: number; z: number },
