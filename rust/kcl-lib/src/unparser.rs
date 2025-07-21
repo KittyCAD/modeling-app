@@ -78,7 +78,7 @@ impl Program {
                     }
                     BodyItem::TypeDeclaration(ty_declaration) => ty_declaration.recast(&mut result),
                     BodyItem::ReturnStatement(return_statement) => {
-                        write!(&mut result, "{}return ", indentation).no_fail();
+                        write!(&mut result, "{indentation}return ").no_fail();
                         return_statement
                             .argument
                             .recast(&mut result, options, indentation_level, ExprContext::Other);
@@ -306,7 +306,7 @@ impl Expr {
             Expr::CallExpressionKw(call_exp) => call_exp.recast(buf, options, indentation_level, ctxt),
             Expr::Name(name) => {
                 let result = &name.inner.name.inner.name;
-                match deprecation(&result, DeprecationKind::Const) {
+                match deprecation(result, DeprecationKind::Const) {
                     Some(suggestion) => buf.push_str(suggestion),
                     None => buf.push_str(result),
                 }
@@ -351,7 +351,7 @@ impl BinaryPart {
                 literal.recast(buf);
             }
             BinaryPart::Name(name) => match deprecation(&name.inner.name.inner.name, DeprecationKind::Const) {
-                Some(suggestion) => write!(buf, "{}", suggestion).no_fail(),
+                Some(suggestion) => write!(buf, "{suggestion}").no_fail(),
                 None => write!(buf, "{name}").no_fail(),
             },
             BinaryPart::BinaryExpression(binary_expression) => {
@@ -426,19 +426,19 @@ impl CallExpressionKw {
                 options.get_indentation(indentation_level)
             };
             options.write_indentation(buf, smart_indent_level);
-            write!(buf, "{}", name).no_fail();
+            write!(buf, "{name}").no_fail();
             buf.push('(');
             buf.push('\n');
-            write!(buf, "{}", inner_indentation).no_fail();
-            write!(buf, "{}", args).no_fail();
+            write!(buf, "{inner_indentation}").no_fail();
+            write!(buf, "{args}").no_fail();
             buf.push('\n');
-            write!(buf, "{}", end_indent).no_fail();
+            write!(buf, "{end_indent}").no_fail();
             buf.push(')');
         } else {
             options.write_indentation(buf, smart_indent_level);
-            write!(buf, "{}", name).no_fail();
+            write!(buf, "{name}").no_fail();
             buf.push('(');
-            write!(buf, "{}", args).no_fail();
+            write!(buf, "{args}").no_fail();
             buf.push(')');
         }
     }
