@@ -94,13 +94,11 @@ impl Program {
             result
         });
         for (index, recast_str) in body_item_lines.enumerate() {
+            write!(buf, "{recast_str}").no_fail();
+
             // determine the value of the end string
             // basically if we are inside a nested function we want to end with a new line
-            let maybe_line_break: String = if index == self.body.len() - 1 && indentation_level == 0 {
-                String::new()
-            } else {
-                "\n".to_string()
-            };
+            let needs_line_break = !(index == self.body.len() - 1 && indentation_level == 0);
 
             let custom_white_space_or_comment = match self.non_code_meta.non_code_nodes.get(&index) {
                 Some(noncodes) => noncodes
@@ -121,13 +119,14 @@ impl Program {
                     .collect::<String>(),
                 None => String::new(),
             };
-            let end_string = if custom_white_space_or_comment.is_empty() {
-                maybe_line_break
-            } else {
-                custom_white_space_or_comment
-            };
 
-            write!(buf, "{recast_str}{end_string}").no_fail();
+            if custom_white_space_or_comment.is_empty() {
+                if needs_line_break {
+                    buf.push('\n')
+                }
+            } else {
+                write!(buf, "{custom_white_space_or_comment}").no_fail();
+            };
         }
         trim(buf);
 
