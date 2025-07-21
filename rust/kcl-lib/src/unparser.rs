@@ -119,10 +119,8 @@ impl Program {
                 for to_write in custom {
                     write!(buf, "{to_write}").no_fail();
                 }
-            } else {
-                if needs_line_break {
-                    buf.push('\n')
-                }
+            } else if needs_line_break {
+                buf.push('\n')
             }
         }
         trim(buf);
