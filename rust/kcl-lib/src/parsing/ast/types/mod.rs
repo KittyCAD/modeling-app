@@ -3591,7 +3591,8 @@ impl FormatOptions {
     /// Get the indentation string for the given level.
     pub fn write_indentation(&self, buf: &mut String, times: usize) {
         let ind = if self.use_tabs { '\t' } else { ' ' };
-        for _ in 0..times {
+        let n = if self.use_tabs { 1 } else { self.tab_size };
+        for _ in 0..(times * n) {
             buf.push(ind);
         }
     }

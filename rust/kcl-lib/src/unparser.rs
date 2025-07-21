@@ -327,6 +327,8 @@ impl AscribedExpression {
             buf.push('(');
             self.expr.recast(buf, options, indentation_level, ctxt);
             buf.push(')');
+        } else {
+            self.expr.recast(buf, options, indentation_level, ctxt);
         }
         buf.push_str(": ");
         write!(buf, "{}", self.ty).no_fail();
@@ -915,8 +917,6 @@ impl FunctionExpression {
 
         write!(buf, "({param_list}){return_type} {{\n").no_fail();
         self.body.recast(buf, &new_options, indentation_level + 1);
-        // let mut body_buf = String::new();
-        // self.body.recast(&mut body_buf, &new_options, indentation_level + 1);
         buf.push('\n');
         options.write_indentation(buf, indentation_level);
         buf.push('}');
@@ -2632,14 +2632,15 @@ sketch002 = startSketchOn({
 
     #[test]
     fn unparse_fn_unnamed() {
-        let input = r#"squares_out = reduce(
+        let input = "\
+squares_out = reduce(
   arr,
   n = 0: number,
   f = fn(@i, accum) {
     return 1
   },
 )
-"#;
+";
         let ast = crate::parsing::top_level_parse(input).unwrap();
         let actual = ast.recast_top(&FormatOptions::new(), 0);
         assert_eq!(actual, input);
