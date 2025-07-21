@@ -1,7 +1,7 @@
 import { isDesktop } from '@src/lib/isDesktop'
 import type { EnvironmentConfigurationRuntime } from '@src/lib/constants'
 
-function generateDomainsFromBaseDomain(baseDomain: string) {
+export function generateDomainsFromBaseDomain(baseDomain: string) {
   return {
     API_URL: `https://api.${baseDomain}`,
     SITE_URL: `https://${baseDomain}`,
