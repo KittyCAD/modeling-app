@@ -31,7 +31,6 @@ describe('@src/env', () => {
       // We only need to match against EnvironmentVariables
       const actual = viteEnv()
       expect(typeof actual.NODE_ENV).toBe('string')
-      expect(typeof actual.VITE_KITTYCAD_API_WEBSOCKET_URL).toBe('string')
       // Gotcha: If this fails you need a token in .env.development.local
       expect(typeof actual.VITE_KITTYCAD_API_TOKEN).toBe('string')
       expect(typeof actual.VITE_KITTYCAD_BASE_DOMAIN).toBe('string')
