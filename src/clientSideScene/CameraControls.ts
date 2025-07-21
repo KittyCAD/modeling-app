@@ -1025,6 +1025,9 @@ export class CameraControls {
   async updateCameraToAxis(
     axis: 'x' | 'y' | 'z' | '-x' | '-y' | '-z'
   ): Promise<void> {
+    // TODO: We currently use both `default_camera_look_at` and `default_camera_set_view`
+    // (via `setCameraViewAlongZ`). We should unify these during future camera work.
+
     const distance = this.camera.position.distanceTo(this.target)
 
     const vantage = this.target.clone()
