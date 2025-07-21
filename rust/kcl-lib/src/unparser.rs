@@ -866,7 +866,7 @@ impl IfExpression {
 
 impl Node<PipeExpression> {
     fn recast(&self, buf: &mut String, options: &FormatOptions, indentation_level: usize) {
-        options.write_indentation(buf, indentation_level);
+        // options.write_indentation(buf, indentation_level);
         for (index, statement) in self.body.iter().enumerate() {
             statement.recast(buf, options, indentation_level + 1, ExprContext::Pipe);
             let non_code_meta = &self.non_code_meta;
