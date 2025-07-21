@@ -1944,6 +1944,10 @@ impl CallExpressionKw {
             .chain(self.arguments.iter().map(|arg| (arg.label.as_ref(), &arg.arg)))
     }
 
+    pub fn num_arguments(&self) -> usize {
+        self.arguments.len() + if self.unlabeled.is_some() { 1 } else { 0 }
+    }
+
     pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
         if let Some(unlabeled) = &mut self.unlabeled {
             unlabeled.replace_value(source_range, new_value.clone());
@@ -3583,7 +3587,7 @@ impl FormatOptions {
         if self.use_tabs {
             "\t".repeat(level + 1)
         } else {
-            " ".repeat(level * self.tab_size) + " ".repeat(PIPE_OPERATOR.len() + 1).as_str()
+            " ".repeat(level * self.tab_size + PIPE_OPERATOR.len() + 1)
         }
     }
 }
