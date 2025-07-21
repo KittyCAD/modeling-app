@@ -564,7 +564,7 @@ impl ArrayExpression {
                 let el = elems.next().unwrap();
                 let mut s = String::new();
                 el.recast(&mut s, options, 0, ExprContext::Other);
-                s.push(',');
+                s.push_str(", ");
                 format_items.push(s);
             }
         }
@@ -674,7 +674,7 @@ impl ObjectExpression {
             return self.recast_multi_line(buf, options, indentation_level, ctxt);
         }
         let mut flat_recast_buf = String::new();
-        flat_recast_buf.push('{');
+        flat_recast_buf.push_str("{ ");
         for (i, prop) in self.properties.iter().enumerate() {
             write!(flat_recast_buf, "{} = ", prop.key.name,).no_fail();
             prop.value
@@ -684,7 +684,7 @@ impl ObjectExpression {
                 flat_recast_buf.push_str(", ");
             }
         }
-        flat_recast_buf.push('}');
+        flat_recast_buf.push_str(" }");
         let max_array_length = 40;
         let needs_multiple_lines = flat_recast_buf.len() > max_array_length;
         if !needs_multiple_lines {
