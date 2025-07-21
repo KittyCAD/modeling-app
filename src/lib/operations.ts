@@ -712,7 +712,7 @@ const prepareToEditHelix: PrepareToEditCallback = async ({ operation }) => {
   }
 
   // counterClockWise boolean arg (optional)
-  let ccw = false
+  let ccw: boolean | undefined
   if ('ccw' in operation.labeledArgs && operation.labeledArgs.ccw) {
     ccw =
       codeManager.code.slice(

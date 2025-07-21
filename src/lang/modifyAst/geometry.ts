@@ -26,9 +26,6 @@ import { err } from '@src/lib/trap'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import { getAxisExpressionAndIndex } from '@src/lang/modifyAst/sweeps'
 
-/**
- * Append a helix to the AST
- */
 export function addHelix({
   ast,
   artifactGraph,

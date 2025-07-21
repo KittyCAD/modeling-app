@@ -186,7 +186,7 @@ helix001 = helix(
 )`)
   })
 
-  // For now to avoid engine connection, sweepEdge cases are doing in e2e
+  // For now to avoid setting up an engine connection, the sweepEdge case is done in e2e (point-click.spec.ts)
 
   const cylinderExtrude = `sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [0, 0], radius = 100)
