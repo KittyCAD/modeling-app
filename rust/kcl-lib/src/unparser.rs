@@ -2959,4 +2959,22 @@ x = 2 * y % 2
         let recasted = ast.recast_top(&FormatOptions::new(), 0);
         assert_eq!(recasted, expected);
     }
+
+    #[test]
+    fn gap_between_body_item_and_documented_fn() {
+        let code = "\
+x = 360
+
+// Comment
+fn myFn() {
+  return 1
+}
+";
+        let ast = crate::parsing::top_level_parse(code).unwrap();
+        dbg!(&ast);
+        let recasted = ast.recast_top(&FormatOptions::new(), 0);
+        let expected = code;
+        dbg!(&recasted);
+        assert_eq!(recasted, expected);
+    }
 }
