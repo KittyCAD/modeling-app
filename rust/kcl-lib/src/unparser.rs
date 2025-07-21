@@ -82,7 +82,9 @@ impl Program {
                         .recast(&mut result, options, indentation_level, ExprContext::Other)
                 }
                 BodyItem::VariableDeclaration(variable_declaration) => {
+                    dbg!(&result);
                     variable_declaration.recast(&mut result, options, indentation_level);
+                    dbg!(&result);
                 }
                 BodyItem::TypeDeclaration(ty_declaration) => ty_declaration.recast(&mut result),
                 BodyItem::ReturnStatement(return_statement) => {
@@ -2972,6 +2974,19 @@ x = 360
 fn myFn() {
 }
 ";
+        let ast = crate::parsing::top_level_parse(code).unwrap();
+        let recasted = ast.recast_top(&FormatOptions::new(), 0);
+        let expected = code;
+        assert_eq!(recasted, expected);
+    }
+
+    #[test]
+    fn simple_assignment_in_fn() {
+        let code = "\
+fn function001() {
+  extrude002 = extrude()
+}\n";
+
         let ast = crate::parsing::top_level_parse(code).unwrap();
         let recasted = ast.recast_top(&FormatOptions::new(), 0);
         let expected = code;
