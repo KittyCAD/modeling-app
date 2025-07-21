@@ -60,7 +60,7 @@ impl Program {
                 for attr in body_item.get_attrs() {
                     result.push_str(&attr.recast(options, indentation_level));
                 }
-                result.push_str(&match body_item.clone() {
+                result.push_str(&match body_item {
                     BodyItem::ImportStatement(stmt) => stmt.recast(options, indentation_level),
                     BodyItem::ExpressionStatement(expression_statement) => {
                         expression_statement
@@ -399,8 +399,8 @@ impl CallExpressionKw {
         }
 
         let arg_list = self.recast_args(options, indentation_level, ctxt);
-        let args = arg_list.clone().join(", ");
         let has_lots_of_args = arg_list.len() >= 4;
+        let args = arg_list.join(", ");
         let some_arg_is_already_multiline = arg_list.len() > 1 && arg_list.iter().any(|arg| arg.contains('\n'));
         let multiline = has_lots_of_args || some_arg_is_already_multiline;
         if multiline {
@@ -527,23 +527,19 @@ impl ArrayExpression {
         let num_items = self.elements.len() + self.non_code_meta.non_code_nodes_len();
         let mut elems = self.elements.iter();
         let mut found_line_comment = false;
-        let mut format_items: Vec<_> = (0..num_items)
-            .flat_map(|i| {
-                if let Some(noncode) = self.non_code_meta.non_code_nodes.get(&i) {
-                    noncode
-                        .iter()
-                        .map(|nc| {
-                            found_line_comment |= nc.value.should_cause_array_newline();
-                            nc.recast(options, 0)
-                        })
-                        .collect::<Vec<_>>()
-                } else {
-                    let el = elems.next().unwrap();
-                    let s = format!("{}, ", el.recast(options, 0, ExprContext::Other));
-                    vec![s]
-                }
-            })
-            .collect();
+        let mut format_items: Vec<_> = Vec::with_capacity(num_items);
+        for i in 0..num_items {
+            if let Some(noncode) = self.non_code_meta.non_code_nodes.get(&i) {
+                format_items.extend(noncode.iter().map(|nc| {
+                    found_line_comment |= nc.value.should_cause_array_newline();
+                    nc.recast(options, 0)
+                }));
+            } else {
+                let el = elems.next().unwrap();
+                let s = format!("{}, ", el.recast(options, 0, ExprContext::Other));
+                format_items.push(s);
+            }
+        }
 
         // Format these items into a one-line array.
         if let Some(item) = format_items.last_mut() {
@@ -551,8 +547,11 @@ impl ArrayExpression {
                 *item = norm.to_owned();
             }
         }
-        let format_items = format_items; // Remove mutability
-        let flat_recast = format!("[{}]", format_items.join(""));
+        let mut flat_recast = "[".to_owned();
+        for fi in &format_items {
+            flat_recast.push_str(fi)
+        }
+        flat_recast.push(']');
 
         // We might keep the one-line representation, if it's short enough.
         let max_array_length = 40;
@@ -562,29 +561,31 @@ impl ArrayExpression {
         }
 
         // Otherwise, we format a multi-line representation.
+        let mut output = "[\n".to_owned();
         let inner_indentation = if ctxt == ExprContext::Pipe {
             options.get_indentation_offset_pipe(indentation_level + 1)
         } else {
             options.get_indentation(indentation_level + 1)
         };
-        let formatted_array_lines = format_items
-            .iter()
-            .map(|s| {
-                format!(
-                    "{inner_indentation}{}{}",
-                    if let Some(x) = s.strip_suffix(" ") { x } else { s },
-                    if s.ends_with('\n') { "" } else { "\n" }
-                )
-            })
-            .collect::<Vec<String>>()
-            .join("")
-            .to_owned();
+        for format_item in format_items {
+            output.push_str(&inner_indentation);
+            output.push_str(if let Some(x) = format_item.strip_suffix(" ") {
+                x
+            } else {
+                &format_item
+            });
+            if !format_item.ends_with('\n') {
+                output.push('\n')
+            }
+        }
         let end_indent = if ctxt == ExprContext::Pipe {
             options.get_indentation_offset_pipe(indentation_level)
         } else {
             options.get_indentation(indentation_level)
         };
-        format!("[\n{formatted_array_lines}{end_indent}]")
+        output.push_str(&end_indent);
+        output.push(']');
+        output
     }
 }
 
@@ -794,7 +795,7 @@ impl Node<PipeExpression> {
             .map(|(index, statement)| {
                 let indentation = options.get_indentation(indentation_level + 1);
                 let mut s = statement.recast(options, indentation_level + 1, ExprContext::Pipe);
-                let non_code_meta = self.non_code_meta.clone();
+                let non_code_meta = &self.non_code_meta;
                 if let Some(non_code_meta_value) = non_code_meta.non_code_nodes.get(&index) {
                     for val in non_code_meta_value {
                         let formatted = if val.end == self.end {

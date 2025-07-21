@@ -17,7 +17,7 @@ rectangle(
 ): Sketch
 ```
 
-
+A rectangle can be defined by its width, height, and location. Either the center or corner must be provided, but not both, to specify its location.
 
 ### Arguments
 
@@ -26,8 +26,8 @@ rectangle(
 | `sketchOrSurface` | [`Sketch`](/docs/kcl-std/types/std-types-Sketch) or [`Plane`](/docs/kcl-std/types/std-types-Plane) or [`Face`](/docs/kcl-std/types/std-types-Face) | Sketch to extend, or plane or surface to sketch on. | Yes |
 | `width` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | Rectangle's width along X axis. | Yes |
 | `height` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | Rectangle's height along Y axis. | Yes |
-| `center` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | The center of the rectangle. Incompatible with `corner`. | No |
-| `corner` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | The corner of the rectangle. Incompatible with `center`. This will be the corner which is most negative on both X and Y axes. | No |
+| `center` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | The center of the rectangle. Either `corner` or `center` is required, but not both. | No |
+| `corner` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | The corner of the rectangle. Either `corner` or `center` is required, but not both. This will be the corner which is most negative on both X and Y axes. | No |
 
 ### Returns
 

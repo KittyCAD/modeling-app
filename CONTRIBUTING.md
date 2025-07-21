@@ -290,6 +290,6 @@ Before you submit a contribution PR to this repo, please ensure that:
 
 ## Shipping releases
 
-Create a new issue using the **Release** issue template: https://github.com/KittyCAD/modeling-app/issues/new
+Create a new issue using the **Release** issue template: https://github.com/KittyCAD/modeling-app/issues/new?template=release.md
 
 Follow the embedded instructions to facilitate changelog discussions and release testing.
