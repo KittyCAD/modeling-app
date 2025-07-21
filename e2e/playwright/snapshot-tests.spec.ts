@@ -374,11 +374,6 @@ profile001 = startProfile(sketch001, at = [182.59, -246.32])
       await u.waitForAuthSkipAppStart()
       await scene.settled(cmdBar)
 
-      await u.doAndWaitForImageDiff(
-        () => page.getByRole('button', { name: 'Start Sketch' }).click(),
-        200
-      )
-
       await toolbar.editSketch(0)
 
       // screen shot should show the sketch
@@ -436,11 +431,6 @@ profile001 = startProfile(sketch001, at = [182.59, -246.32])
       const u = await getUtils(page)
       await u.waitForAuthSkipAppStart()
       await scene.settled(cmdBar)
-
-      await u.doAndWaitForImageDiff(
-        () => page.getByRole('button', { name: 'Start Sketch' }).click(),
-        200
-      )
 
       await toolbar.editSketch(0)
 
