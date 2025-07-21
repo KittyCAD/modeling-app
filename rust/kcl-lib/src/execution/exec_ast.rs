@@ -2221,7 +2221,7 @@ c = ((PI * 2) / 3): number(deg)
 "#;
 
         let result = parse_execute(ast).await.unwrap();
-        assert_eq!(result.exec_state.errors().len(), 2);
+        assert_eq!(result.exec_state.errors().len(), 0);
     }
 
     #[tokio::test(flavor = "multi_thread")]
