@@ -33,6 +33,34 @@ description: Variables in memory after executing sweep_tag_end.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
           "tag": {
             "commentStart": 652,
             "end": 660,
@@ -366,7 +394,7 @@ description: Variables in memory after executing sweep_tag_end.kcl
         }
       },
       "height": 0.0,
-      "startCapId": "[uuid]",
+      "startCapId": null,
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
@@ -756,36 +784,7 @@ description: Variables in memory after executing sweep_tag_end.kcl
       "type": "Solid",
       "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": [
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": null,
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": null,
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": null,
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": null,
-          "type": "extrudePlane"
-        }
-      ],
+      "value": [],
       "sketch": {
         "type": "Sketch",
         "id": "[uuid]",
@@ -893,6 +892,34 @@ description: Variables in memory after executing sweep_tag_end.kcl
             "id": "[uuid]",
             "artifactId": "[uuid]",
             "value": [
+              {
+                "faceId": "[uuid]",
+                "id": "[uuid]",
+                "sourceRange": [],
+                "tag": null,
+                "type": "extrudePlane"
+              },
+              {
+                "faceId": "[uuid]",
+                "id": "[uuid]",
+                "sourceRange": [],
+                "tag": null,
+                "type": "extrudePlane"
+              },
+              {
+                "faceId": "[uuid]",
+                "id": "[uuid]",
+                "sourceRange": [],
+                "tag": null,
+                "type": "extrudePlane"
+              },
+              {
+                "faceId": "[uuid]",
+                "id": "[uuid]",
+                "sourceRange": [],
+                "tag": null,
+                "type": "extrudePlane"
+              },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
@@ -1230,7 +1257,7 @@ description: Variables in memory after executing sweep_tag_end.kcl
               }
             },
             "height": 0.0,
-            "startCapId": "[uuid]",
+            "startCapId": null,
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
@@ -1266,8 +1293,8 @@ description: Variables in memory after executing sweep_tag_end.kcl
         }
       },
       "height": 20.0,
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": null,
+      "endCapId": null,
       "units": {
         "type": "Mm"
       },

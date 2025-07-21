@@ -1,0 +1,14 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Error from executing sweep_tag_end.kcl
+---
+KCL Engine error
+
+  × engine: Internal engine error on request
+    ╭─[33:6]
+ 32 │   |> tubeProfile()
+ 33 │   |> extrude(length = length)
+    ·      ────────────┬───────────
+    ·                  ╰── tests/sweep_tag_end/input.kcl
+ 34 │ 
+    ╰────
