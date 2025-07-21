@@ -100,33 +100,30 @@ impl Program {
             // basically if we are inside a nested function we want to end with a new line
             let needs_line_break = !(index == self.body.len() - 1 && indentation_level == 0);
 
-            let custom_white_space_or_comment = match self.non_code_meta.non_code_nodes.get(&index) {
-                Some(noncodes) => noncodes
-                    .iter()
-                    .enumerate()
-                    .map(|(i, custom_white_space_or_comment)| {
-                        let formatted = custom_white_space_or_comment.recast(options, indentation_level);
-                        if i == 0 && !formatted.trim().is_empty() {
-                            if let NonCodeValue::BlockComment { .. } = custom_white_space_or_comment.value {
-                                format!("\n{formatted}")
-                            } else {
-                                formatted
-                            }
+            let custom_white_space_or_comment = self.non_code_meta.non_code_nodes.get(&index).map(|noncodes| {
+                noncodes.iter().enumerate().map(|(i, custom_white_space_or_comment)| {
+                    let formatted = custom_white_space_or_comment.recast(options, indentation_level);
+                    if i == 0 && !formatted.trim().is_empty() {
+                        if let NonCodeValue::BlockComment { .. } = custom_white_space_or_comment.value {
+                            format!("\n{formatted}")
                         } else {
                             formatted
                         }
-                    })
-                    .collect::<String>(),
-                None => String::new(),
-            };
+                    } else {
+                        formatted
+                    }
+                })
+            });
 
-            if custom_white_space_or_comment.is_empty() {
+            if let Some(custom) = custom_white_space_or_comment {
+                for to_write in custom {
+                    write!(buf, "{to_write}").no_fail();
+                }
+            } else {
                 if needs_line_break {
                     buf.push('\n')
                 }
-            } else {
-                write!(buf, "{custom_white_space_or_comment}").no_fail();
-            };
+            }
         }
         trim(buf);
 
