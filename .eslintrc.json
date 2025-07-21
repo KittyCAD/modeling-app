@@ -102,11 +102,11 @@
       {
         "patterns": [
           // Restrict all relative imports except for .css files.
-                                                  {
-                                                    "group": ["./*", "../*", "!./*.css", "!../*.css"],
-                                                    "message": "Use absolute imports instead."
-                                                  }
-                                                  ]
+          {
+            "group": ["./*", "../*", "!./*.css", "!../*.css"],
+            "message": "Use absolute imports instead."
+          }
+        ]
       }
     ],
     "no-warning-comments": ["error",{"terms":["Menu.setApplicationMenu(null)"]}],
