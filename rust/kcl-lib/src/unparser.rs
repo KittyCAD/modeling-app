@@ -30,6 +30,7 @@ impl Program {
     }
 
     pub fn recast(&self, buf: &mut String, options: &FormatOptions, indentation_level: usize) {
+        dbg!(&buf);
         let indentation = options.get_indentation(indentation_level);
 
         if let Some(sh) = self.shebang.as_ref() {
@@ -46,48 +47,46 @@ impl Program {
             buf.push('\n');
         }
 
-        for (index, recast_str) in self
-            .body
-            .iter()
-            .map(|body_item| {
-                let mut result = String::new();
-                for comment in body_item.get_comments() {
-                    if !comment.is_empty() {
-                        result.push_str(&indentation);
-                        result.push_str(comment);
-                    }
-                    if !result.ends_with("\n\n") && result != "\n" {
-                        result.push('\n');
-                    }
+        let body_item_lines = self.body.iter().map(|body_item| {
+            let mut result = String::new();
+            for comment in body_item.get_comments() {
+                if !comment.is_empty() {
+                    result.push_str(&indentation);
+                    result.push_str(comment);
                 }
-                for attr in body_item.get_attrs() {
-                    attr.recast(&mut result, options, indentation_level);
+                if !result.ends_with("\n\n") && result != "\n" {
+                    result.push('\n');
                 }
-                match body_item {
-                    BodyItem::ImportStatement(stmt) => {
-                        result.push_str(&stmt.recast(options, indentation_level));
-                    }
-                    BodyItem::ExpressionStatement(expression_statement) => expression_statement.expression.recast(
-                        &mut result,
-                        options,
-                        indentation_level,
-                        ExprContext::Other,
-                    ),
-                    BodyItem::VariableDeclaration(variable_declaration) => {
-                        variable_declaration.recast(&mut result, options, indentation_level)
-                    }
-                    BodyItem::TypeDeclaration(ty_declaration) => ty_declaration.recast(&mut result),
-                    BodyItem::ReturnStatement(return_statement) => {
-                        write!(&mut result, "{indentation}return ").no_fail();
-                        return_statement
-                            .argument
-                            .recast(&mut result, options, indentation_level, ExprContext::Other);
-                    }
-                };
-                result
-            })
-            .enumerate()
-        {
+            }
+            for attr in body_item.get_attrs() {
+                attr.recast(&mut result, options, indentation_level);
+            }
+            match body_item {
+                BodyItem::ImportStatement(stmt) => {
+                    result.push_str(&stmt.recast(options, indentation_level));
+                }
+                BodyItem::ExpressionStatement(expression_statement) => {
+                    expression_statement
+                        .expression
+                        .recast(&mut result, options, indentation_level, ExprContext::Other)
+                }
+                BodyItem::VariableDeclaration(variable_declaration) => {
+                    variable_declaration.recast(&mut result, options, indentation_level)
+                }
+                BodyItem::TypeDeclaration(ty_declaration) => ty_declaration.recast(&mut result),
+                BodyItem::ReturnStatement(return_statement) => {
+                    write!(&mut result, "{indentation}return ").no_fail();
+                    let mut tmp_buf = String::new();
+                    return_statement
+                        .argument
+                        .recast(&mut tmp_buf, options, indentation_level, ExprContext::Other);
+                    write!(&mut result, "{}", tmp_buf.trim_start()).no_fail();
+                    dbg!(&result);
+                }
+            };
+            result
+        });
+        for (index, recast_str) in body_item_lines.enumerate() {
             let start_string = if index == 0 && self.non_code_meta.start_nodes.is_empty() && self.inner_attrs.is_empty()
             {
                 // We need to indent.
@@ -130,8 +129,12 @@ impl Program {
                 custom_white_space_or_comment
             };
 
+            dbg!(&start_string);
+            dbg!(&recast_str);
+            dbg!(&end_string);
             write!(buf, "{start_string}{recast_str}{end_string}").no_fail();
         }
+        trim(buf);
 
         // Insert a final new line if the user wants it.
         if options.insert_final_newline && !buf.is_empty() {
@@ -663,6 +666,10 @@ fn trim_end(buf: &mut String) {
     buf.truncate(buf.trim_end().len())
 }
 
+fn trim(buf: &mut String) {
+    *buf = buf.trim().to_owned()
+}
+
 impl ObjectExpression {
     fn recast(&self, buf: &mut String, options: &FormatOptions, indentation_level: usize, ctxt: ExprContext) {
         if self
@@ -923,6 +930,7 @@ impl FunctionExpression {
             None => String::new(),
         };
 
+        dbg!(&tab1);
         write!(buf, "({param_list}){return_type} {{\n{tab1}").no_fail();
         self.body.recast(buf, &new_options, indentation_level + 1);
         write!(buf, "\n{tab0}}}").no_fail();
