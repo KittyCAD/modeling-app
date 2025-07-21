@@ -443,6 +443,27 @@ export fn ellipse(
 ///   |> polygon(radius = 10, numSides = 3, center = [0, 0])
 ///   |> extrude(length = 10, twistAngle = 120deg)
 /// ```
+///
+/// ```kcl
+/// sketch001 = startSketchOn(XY)
+/// profile001 = startProfile(sketch001, at = [0, 0])
+///   |> yLine(length = 1)
+///   |> xLine(length = 1)
+///   |> yLine(length = -1)
+///   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+///   |> close()
+/// cube = extrude(profile001, length = 1)
+///
+/// sketch002 = startSketchOn(cube, face = END)
+/// profile002 = circle(sketch002, center = [0.38, 0.64], radius = 0.13)
+/// // When sketching on a face, we can make a new solid instead of merging with
+/// // it by using the method parameter.
+/// cylinder = extrude(profile002, length = 2, method = NEW)
+///
+/// // The cylinder is a separate solid that can be translated separately from
+/// // the cube.
+/// translate(cylinder, x = 1)
+/// ```
 @(impl = std_rust)
 export fn extrude(
   /// Which sketch or sketches should be extruded.
