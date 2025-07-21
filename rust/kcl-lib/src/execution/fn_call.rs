@@ -744,7 +744,7 @@ fn assign_args_to_params_kw(
             return Err(if args.kw_args.labeled.contains_key(param_name) {
                 KclError::new_argument(KclErrorDetails::new(
                     format!(
-                        "The function does declare a parameter named '{param_name}', but this parameter doesn't use a label. Try removing the `{param_name}:`"
+                        "The function does declare a parameter named '{param_name}', but this parameter doesn't use a label. Try removing the `{param_name} =`"
                     ),
                     source_ranges,
                 ))

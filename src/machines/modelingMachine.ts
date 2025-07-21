@@ -68,9 +68,9 @@ import {
   getAxisExpressionAndIndex,
 } from '@src/lang/modifyAst/sweeps'
 import {
-  applyIntersectFromTargetOperatorSelections,
-  applySubtractFromTargetOperatorSelections,
-  applyUnionFromTargetOperatorSelections,
+  addSubtract,
+  addUnion,
+  addIntersect,
 } from '@src/lang/modifyAst/boolean'
 import {
   deleteSelectionPromise,
@@ -3293,27 +3293,29 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const { solids, tools } = input
-        if (
-          !solids.graphSelections.some((selection) => selection.artifact) ||
-          !tools.graphSelections.some((selection) => selection.artifact)
-        ) {
-          return Promise.reject(new Error('No artifact in selections found'))
-        }
-
-        const result = await applySubtractFromTargetOperatorSelections(
-          solids,
-          tools,
-          {
-            kclManager,
-            codeManager,
-            engineCommandManager,
-            editorManager,
-          }
-        )
+        const ast = kclManager.ast
+        const artifactGraph = kclManager.artifactGraph
+        const result = addSubtract({
+          ...input,
+          ast,
+          artifactGraph,
+        })
         if (err(result)) {
           return Promise.reject(result)
         }
+
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          {
+            kclManager,
+            editorManager,
+            codeManager,
+          },
+          {
+            focusPath: [result.pathToNode],
+          }
+        )
       }
     ),
     boolUnionAstMod: fromPromise(
@@ -3326,20 +3328,29 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const { solids } = input
-        if (!solids.graphSelections[0].artifact) {
-          return Promise.reject(new Error('No artifact in selections found'))
-        }
-
-        const result = await applyUnionFromTargetOperatorSelections(solids, {
-          kclManager,
-          codeManager,
-          engineCommandManager,
-          editorManager,
+        const ast = kclManager.ast
+        const artifactGraph = kclManager.artifactGraph
+        const result = addUnion({
+          ...input,
+          ast,
+          artifactGraph,
         })
         if (err(result)) {
           return Promise.reject(result)
         }
+
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          {
+            kclManager,
+            editorManager,
+            codeManager,
+          },
+          {
+            focusPath: [result.pathToNode],
+          }
+        )
       }
     ),
     boolIntersectAstMod: fromPromise(
@@ -3352,23 +3363,29 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const { solids } = input
-        if (!solids.graphSelections[0].artifact) {
-          return Promise.reject(new Error('No artifact in selections found'))
-        }
-
-        const result = await applyIntersectFromTargetOperatorSelections(
-          solids,
-          {
-            kclManager,
-            codeManager,
-            engineCommandManager,
-            editorManager,
-          }
-        )
+        const ast = kclManager.ast
+        const artifactGraph = kclManager.artifactGraph
+        const result = addIntersect({
+          ...input,
+          ast,
+          artifactGraph,
+        })
         if (err(result)) {
           return Promise.reject(result)
         }
+
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          {
+            kclManager,
+            editorManager,
+            codeManager,
+          },
+          {
+            focusPath: [result.pathToNode],
+          }
+        )
       }
     ),
 
