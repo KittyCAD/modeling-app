@@ -61,7 +61,7 @@ impl Program {
                     }
                 }
                 for attr in body_item.get_attrs() {
-                    &attr.recast(&mut result, options, indentation_level);
+                    attr.recast(&mut result, options, indentation_level);
                 }
                 match body_item {
                     BodyItem::ImportStatement(stmt) => {
@@ -78,7 +78,7 @@ impl Program {
                     }
                     BodyItem::TypeDeclaration(ty_declaration) => ty_declaration.recast(&mut result),
                     BodyItem::ReturnStatement(return_statement) => {
-                        write!(&mut result, "{}return ", indentation,);
+                        write!(&mut result, "{}return ", indentation).no_fail();
                         return_statement
                             .argument
                             .recast(&mut result, options, indentation_level, ExprContext::Other);
@@ -301,7 +301,7 @@ impl Expr {
                 if !is_decl {
                     buf.push_str("fn");
                 }
-                &func_exp.recast(buf, options, indentation_level);
+                func_exp.recast(buf, options, indentation_level);
             }
             Expr::CallExpressionKw(call_exp) => call_exp.recast(buf, options, indentation_level, ctxt),
             Expr::Name(name) => {
@@ -450,7 +450,7 @@ impl LabeledArg {
             buf.push_str(&l.name);
             buf.push_str(" = ");
         }
-        &self.arg.recast(buf, options, indentation_level, ctxt);
+        self.arg.recast(buf, options, indentation_level, ctxt);
     }
 }
 
@@ -564,7 +564,7 @@ impl ArrayExpression {
                 let el = elems.next().unwrap();
                 let mut s = String::new();
                 el.recast(&mut s, options, 0, ExprContext::Other);
-                s.write_char(',');
+                s.push(',');
                 format_items.push(s);
             }
         }
@@ -575,7 +575,8 @@ impl ArrayExpression {
                 *item = norm.to_owned();
             }
         }
-        let mut flat_recast = "[".to_owned();
+        let mut flat_recast = String::new();
+        flat_recast.push('[');
         for fi in &format_items {
             flat_recast.push_str(fi)
         }
@@ -657,6 +658,11 @@ impl ArrayRangeExpression {
     }
 }
 
+/// Trims in place.
+fn trim_end(buf: &mut String) {
+    buf.truncate(buf.trim_end().len())
+}
+
 impl ObjectExpression {
     fn recast(&self, buf: &mut String, options: &FormatOptions, indentation_level: usize, ctxt: ExprContext) {
         if self
@@ -673,7 +679,7 @@ impl ObjectExpression {
             write!(flat_recast_buf, "{} = ", prop.key.name,).no_fail();
             prop.value
                 .recast(&mut flat_recast_buf, options, indentation_level + 1, ctxt);
-            flat_recast_buf.trim();
+            trim_end(&mut flat_recast_buf);
             if i < self.properties.len() - 1 {
                 flat_recast_buf.push_str(", ");
             }
@@ -750,40 +756,45 @@ impl MemberExpression {
 
 impl BinaryExpression {
     fn recast(&self, buf: &mut String, options: &FormatOptions, _indentation_level: usize, ctxt: ExprContext) {
-        todo!()
-        // let maybe_wrap_it = |a: String, doit: bool| -> String { if doit { format!("({a})") } else { a } };
+        let maybe_wrap_it = |a: String, doit: bool| -> String { if doit { format!("({a})") } else { a } };
 
-        // // It would be better to always preserve the user's parentheses but since we've dropped that
-        // // info from the AST, we bracket expressions as necessary.
-        // let should_wrap_left = match &self.left {
-        //     BinaryPart::BinaryExpression(bin_exp) => {
-        //         self.precedence() > bin_exp.precedence()
-        //             || ((self.precedence() == bin_exp.precedence())
-        //                 && (!(self.operator.associative() && self.operator == bin_exp.operator)
-        //                     && self.operator.associativity() == Associativity::Right))
-        //     }
-        //     _ => false,
-        // };
+        // It would be better to always preserve the user's parentheses but since we've dropped that
+        // info from the AST, we bracket expressions as necessary.
+        let should_wrap_left = match &self.left {
+            BinaryPart::BinaryExpression(bin_exp) => {
+                self.precedence() > bin_exp.precedence()
+                    || ((self.precedence() == bin_exp.precedence())
+                        && (!(self.operator.associative() && self.operator == bin_exp.operator)
+                            && self.operator.associativity() == Associativity::Right))
+            }
+            _ => false,
+        };
 
-        // let should_wrap_right = match &self.right {
-        //     BinaryPart::BinaryExpression(bin_exp) => {
-        //         self.precedence() > bin_exp.precedence()
-        //             // These two lines preserve previous reformatting behaviour.
-        //             || self.operator == BinaryOperator::Sub
-        //             || self.operator == BinaryOperator::Div
-        //             || ((self.precedence() == bin_exp.precedence())
-        //                 && (!(self.operator.associative() && self.operator == bin_exp.operator)
-        //                     && self.operator.associativity() == Associativity::Left))
-        //     }
-        //     _ => false,
-        // };
+        let should_wrap_right = match &self.right {
+            BinaryPart::BinaryExpression(bin_exp) => {
+                self.precedence() > bin_exp.precedence()
+                    // These two lines preserve previous reformatting behaviour.
+                    || self.operator == BinaryOperator::Sub
+                    || self.operator == BinaryOperator::Div
+                    || ((self.precedence() == bin_exp.precedence())
+                        && (!(self.operator.associative() && self.operator == bin_exp.operator)
+                            && self.operator.associativity() == Associativity::Left))
+            }
+            _ => false,
+        };
 
-        // format!(
-        //     "{} {} {}",
-        //     maybe_wrap_it(self.left.recast(options, 0, ctxt), should_wrap_left),
-        //     self.operator,
-        //     maybe_wrap_it(self.right.recast(options, 0, ctxt), should_wrap_right)
-        // )
+        let mut left = String::new();
+        self.left.recast(&mut left, options, 0, ctxt);
+        let mut right = String::new();
+        self.right.recast(&mut right, options, 0, ctxt);
+        write!(
+            buf,
+            "{} {} {}",
+            maybe_wrap_it(left, should_wrap_left),
+            self.operator,
+            maybe_wrap_it(right, should_wrap_right)
+        )
+        .no_fail();
     }
 }
 
@@ -814,7 +825,48 @@ impl UnaryExpression {
 
 impl IfExpression {
     fn recast(&self, buf: &mut String, options: &FormatOptions, indentation_level: usize, ctxt: ExprContext) {
-        todo!()
+        // We can calculate how many lines this will take, so let's do it and avoid growing the vec.
+        // Total lines = starting lines, else-if lines, ending lines.
+        let n = 2 + (self.else_ifs.len() * 2) + 3;
+        let mut lines = Vec::with_capacity(n);
+
+        let cond = {
+            let mut tmp_buf = String::new();
+            self.cond.recast(&mut tmp_buf, options, indentation_level, ctxt);
+            tmp_buf
+        };
+        lines.push((0, format!("if {cond} {{")));
+        lines.push((1, {
+            let mut tmp_buf = String::new();
+            self.then_val.recast(&mut tmp_buf, options, indentation_level + 1);
+            tmp_buf
+        }));
+        for else_if in &self.else_ifs {
+            let cond = {
+                let mut tmp_buf = String::new();
+                else_if.cond.recast(&mut tmp_buf, options, indentation_level, ctxt);
+                tmp_buf
+            };
+            lines.push((0, format!("}} else if {cond} {{")));
+            lines.push((1, {
+                let mut tmp_buf = String::new();
+                else_if.then_val.recast(&mut tmp_buf, options, indentation_level + 1);
+                tmp_buf
+            }));
+        }
+        lines.push((0, "} else {".to_owned()));
+        lines.push((1, {
+            let mut tmp_buf = String::new();
+            self.final_else.recast(&mut tmp_buf, options, indentation_level + 1);
+            tmp_buf
+        }));
+        lines.push((0, "}".to_owned()));
+        let out = lines
+            .into_iter()
+            .map(|(ind, line)| format!("{}{}", options.get_indentation(indentation_level + ind), line.trim()))
+            .collect::<Vec<_>>()
+            .join("\n");
+        buf.push_str(&out);
     }
 }
 
