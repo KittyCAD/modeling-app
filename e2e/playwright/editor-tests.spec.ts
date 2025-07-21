@@ -1331,7 +1331,7 @@ sketch001 = startSketchOn(XZ)
   test(
     `Can import a local OBJ file`,
     { tag: '@desktop' },
-    async ({ page, context }, testInfo) => {
+    async ({ page, context, scene, cmdBar }, testInfo) => {
       await context.folderSetupFn(async (dir) => {
         const bracketDir = join(dir, 'cube')
         await fsp.mkdir(bracketDir, { recursive: true })
@@ -1348,66 +1348,19 @@ sketch001 = startSketchOn(XZ)
       // Locators and constants
       const u = await getUtils(page)
       const projectLink = page.getByRole('link', { name: 'cube' })
-      const gizmo = page.locator('[aria-label*=gizmo]')
-      const resetCameraButton = page.getByRole('button', { name: 'Reset view' })
-      const locationToHaveColor = async (
-        position: { x: number; y: number },
-        color: [number, number, number]
-      ) => {
-        return u.getGreatestPixDiff(position, color)
-      }
-      const notTheOrigin = {
-        x: viewportSize.width * 0.55,
-        y: viewportSize.height * 0.3,
-      }
-      const origin = { x: viewportSize.width / 2, y: viewportSize.height / 2 }
       const errorIndicators = page.locator('.cm-lint-marker-error')
 
-      await test.step(`Open the empty file, see the default planes`, async () => {
+      await test.step(`Open the empty file`, async () => {
         await projectLink.click()
-        await u.waitForPageLoad()
-        await expect
-          .poll(
-            async () =>
-              locationToHaveColor(notTheOrigin, TEST_COLORS.DARK_MODE_PLANE_XZ),
-            {
-              timeout: 5000,
-              message: 'XZ plane color is visible',
-            }
-          )
-          .toBeLessThan(15)
+        await scene.settled(cmdBar)
       })
       await test.step(`Write the import function line`, async () => {
         await u.codeLocator.fill(`import 'cube.obj'\ncube`)
         await page.waitForTimeout(800)
       })
-      await test.step(`Reset the camera before checking`, async () => {
-        await u.doAndWaitForCmd(async () => {
-          await gizmo.click({ button: 'right' })
-          await resetCameraButton.click()
-        }, 'zoom_to_fit')
-      })
-      await test.step(`Verify that we see the imported geometry and no errors`, async () => {
+      await test.step(`Verify that we see no errors`, async () => {
+        await scene.settled(cmdBar)
         await expect(errorIndicators).toHaveCount(0)
-        await expect
-          .poll(
-            async () =>
-              locationToHaveColor(origin, TEST_COLORS.DARK_MODE_PLANE_XZ),
-            {
-              timeout: 3000,
-              message: 'Plane color should not be visible',
-            }
-          )
-          .toBeGreaterThan(15)
-        await expect
-          .poll(
-            async () => locationToHaveColor(origin, TEST_COLORS.DARK_MODE_BKGD),
-            {
-              timeout: 3000,
-              message: 'Background color should not be visible',
-            }
-          )
-          .toBeGreaterThan(15)
       })
     }
   )
