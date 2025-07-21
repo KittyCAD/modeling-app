@@ -82,9 +82,7 @@ impl Program {
                         .recast(&mut result, options, indentation_level, ExprContext::Other)
                 }
                 BodyItem::VariableDeclaration(variable_declaration) => {
-                    dbg!(&result);
                     variable_declaration.recast(&mut result, options, indentation_level);
-                    dbg!(&result);
                 }
                 BodyItem::TypeDeclaration(ty_declaration) => ty_declaration.recast(&mut result),
                 BodyItem::ReturnStatement(return_statement) => {
@@ -468,9 +466,17 @@ impl VariableDeclaration {
         buf.push_str(keyword);
         buf.push_str(&self.declaration.id.name);
         buf.push_str(eq);
+
+        // Unfortunately, allocate a temporary buffer here so that we can trim the start.
+        // Otherwise, some expression kinds will write indentation at the start, because
+        // they don't know they're inside a declaration.
+        // TODO: Pass the ExprContext throughout every Expr kind, so that they can conditionally
+        // emit whitespace in an ExprStmt and not when they're in a DeclarationStmt.
+        let mut tmp_buf = String::new();
         self.declaration
             .init
-            .recast(buf, options, indentation_level, ExprContext::Decl);
+            .recast(&mut tmp_buf, options, indentation_level, ExprContext::Decl);
+        buf.push_str(tmp_buf.trim_start());
     }
 }
 
