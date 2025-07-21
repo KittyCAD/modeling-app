@@ -982,7 +982,6 @@ export class CameraControls {
     const cameraView = await this.getCameraView()
 
     if (err(cameraView)) {
-      console.error(cameraView.message)
       return
     }
 
