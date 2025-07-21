@@ -988,7 +988,13 @@ pub enum Expr {
 
 impl Expr {
     pub fn get_lsp_folding_range(&self) -> Option<FoldingRange> {
-        let recasted = self.recast(&FormatOptions::default(), 0, crate::unparser::ExprContext::Other);
+        let mut recasted = String::new();
+        self.recast(
+            &mut recasted,
+            &FormatOptions::default(),
+            0,
+            crate::unparser::ExprContext::Other,
+        );
         // If the code only has one line then we don't need to fold it.
         if recasted.lines().count() <= 1 {
             return None;
@@ -2039,7 +2045,8 @@ impl From<&VariableDeclaration> for Vec<CompletionItem> {
 
 impl Node<VariableDeclaration> {
     pub fn get_lsp_folding_range(&self) -> Option<FoldingRange> {
-        let recasted = self.recast(&FormatOptions::default(), 0);
+        let mut recasted = String::new();
+        self.recast(&mut recasted, &FormatOptions::default(), 0);
         // If the recasted value only has one line, don't fold it.
         if recasted.lines().count() <= 1 {
             return None;
@@ -3582,6 +3589,14 @@ impl FormatOptions {
     }
 
     /// Get the indentation string for the given level.
+    pub fn write_indentation(&self, buf: &mut String, times: usize) {
+        let ind = if self.use_tabs { '\t' } else { ' ' };
+        for _ in 0..times {
+            buf.push(ind);
+        }
+    }
+
+    /// Get the indentation string for the given level.
     /// But offset the pipe operator (and a space) by one level.
     pub fn get_indentation_offset_pipe(&self, level: usize) -> String {
         if self.use_tabs {
@@ -4223,7 +4238,7 @@ startSketchOn(XY)"#;
 
         assert_eq!(meta_settings.default_length_units, crate::execution::types::UnitLen::Mm);
 
-        let formatted = new_program.recast(&Default::default(), 0);
+        let formatted = new_program.recast_top(&Default::default(), 0);
 
         assert_eq!(
             formatted,
@@ -4252,7 +4267,7 @@ startSketchOn(XY)
 
         assert_eq!(meta_settings.default_length_units, crate::execution::types::UnitLen::Mm);
 
-        let formatted = new_program.recast(&Default::default(), 0);
+        let formatted = new_program.recast_top(&Default::default(), 0);
 
         assert_eq!(
             formatted,
@@ -4287,7 +4302,7 @@ startSketchOn(XY)
 
         assert_eq!(meta_settings.default_length_units, crate::execution::types::UnitLen::Cm);
 
-        let formatted = new_program.recast(&Default::default(), 0);
+        let formatted = new_program.recast_top(&Default::default(), 0);
 
         assert_eq!(
             formatted,
@@ -4341,7 +4356,7 @@ angle = atan(rise / run)"#;
         program.rename_symbol("yoyo", var_decl.as_source_range().start() + 1);
 
         // Recast the program to a string.
-        let formatted = program.recast(&Default::default(), 0);
+        let formatted = program.recast_top(&Default::default(), 0);
 
         assert_eq!(
             formatted,
