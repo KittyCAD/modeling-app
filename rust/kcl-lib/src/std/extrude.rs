@@ -84,12 +84,12 @@ async fn inner_extrude(
     let tolerance = LengthUnit(tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM));
 
     let extrude_method = match method.as_deref() {
-        Some("new") => ExtrudeMethod::New,
-        Some("merge") => ExtrudeMethod::Merge,
+        Some("new" | "NEW") => ExtrudeMethod::New,
+        Some("merge" | "MERGE") => ExtrudeMethod::Merge,
         None => ExtrudeMethod::default(),
         Some(other) => {
             return Err(KclError::new_semantic(KclErrorDetails::new(
-                format!("Unknown merge method {other}, try using MERGE or NEW"),
+                format!("Unknown merge method {other}, try using `MERGE` or `NEW`"),
                 vec![args.source_range],
             )));
         }
