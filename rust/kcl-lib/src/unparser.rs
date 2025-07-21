@@ -39,10 +39,19 @@ impl Program {
         }
 
         dbg!(&self.non_code_meta);
-        for start in &self.non_code_meta.start_nodes {
-            dbg!(&buf);
-            buf.push_str(&start.recast(options, indentation_level));
-            dbg!(&buf);
+        if self
+            .non_code_meta
+            .start_nodes
+            .iter()
+            .any(|noncode| !matches!(noncode.value, NonCodeValue::NewLine))
+        {
+            for start in &self.non_code_meta.start_nodes {
+                dbg!(&buf);
+                let noncode_recast = start.recast(options, indentation_level);
+                dbg!(&noncode_recast);
+                buf.push_str(&noncode_recast);
+                dbg!(&buf);
+            }
         }
         for attr in &self.inner_attrs {
             dbg!(&buf);
