@@ -414,6 +414,8 @@ export function getAxisExpressionAndIndex(
 
       const axisIndexIfAxis = value
       return { generatedAxis, axisIndexIfAxis }
+    } else {
+      return { generatedAxis }
     }
   }
 
