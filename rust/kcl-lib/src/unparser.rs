@@ -670,10 +670,10 @@ impl ObjectExpression {
         let mut flat_recast_buf = String::new();
         flat_recast_buf.push_str("{ ");
         for (i, prop) in self.properties.iter().enumerate() {
-            write!(flat_recast_buf, "{} = ", prop.key.name,).no_fail();
+            let obj_key = &prop.key.name;
+            write!(flat_recast_buf, "{obj_key} = ").no_fail();
             prop.value
-                .recast(&mut flat_recast_buf, options, indentation_level + 1, ctxt);
-            trim_end(&mut flat_recast_buf);
+                .recast(&mut flat_recast_buf, options, indentation_level, ctxt);
             if i < self.properties.len() - 1 {
                 flat_recast_buf.push_str(", ");
             }
