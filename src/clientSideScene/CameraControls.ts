@@ -38,6 +38,7 @@ import type { MouseGuard } from '@src/lib/cameraControls'
 import { cameraMouseDragGuards } from '@src/lib/cameraControls'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import { reportRejection } from '@src/lib/trap'
+import { err } from '@src/lib/trap'
 import {
   getNormalisedCoordinates,
   isReducedMotion,
@@ -48,9 +49,6 @@ import {
 } from '@src/lib/utils'
 import { deg2Rad } from '@src/lib/utils2d'
 import { degToRad } from 'three/src/math/MathUtils'
-
-// Result type to make the linter happy.
-type Result<T, E = Error> = { ok: true; value: T } | { ok: false; error: E }
 
 const ORTHOGRAPHIC_CAMERA_SIZE = 20
 const FRAMES_TO_ANIMATE_IN = 30
@@ -931,7 +929,7 @@ export class CameraControls {
     })
   }
 
-  async getCurrentView(): Promise<Result<CameraViewState_type, Error>> {
+  async getCameraView(): Promise<CameraViewState_type | Error> {
     const response = await this.engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_req',
       cmd_id: uuidv4(),
@@ -944,10 +942,7 @@ export class CameraControls {
       !singleResponse?.success || !('resp' in singleResponse)
 
     if (noValidResponse) {
-      return {
-        ok: false,
-        error: new Error('Failed to get camera view state: no valid response.'),
-      }
+      return new Error('Failed to get camera view state: no valid response.')
     }
 
     // Check we actually have the 'modeling_response' field.
@@ -955,12 +950,9 @@ export class CameraControls {
     const noModelingResponse = !('modeling_response' in data)
 
     if (noModelingResponse) {
-      return {
-        ok: false,
-        error: new Error(
-          'Failed to get camera view state: no `modeling_response`.'
-        ),
-      }
+      return new Error(
+        'Failed to get camera view state: no `modeling_response`.'
+      )
     }
 
     // Check that we have the expected response type and the nested data.
@@ -970,13 +962,10 @@ export class CameraControls {
       modelingResponse.type !== 'default_camera_get_view'
 
     if (noData || wrongResponseType) {
-      return {
-        ok: false,
-        error: new Error('Failed to get camera view state: invalid response.'),
-      }
+      return new Error('Failed to get camera view state: invalid response.')
     }
 
-    return { ok: true, value: modelingResponse.data.view }
+    return modelingResponse.data.view
   }
 
   async setCameraViewAlongZ(direction: StandardView) {
@@ -990,25 +979,23 @@ export class CameraControls {
       [StandardView.BOTTOM]: { x: 1, y: 0, z: 0, w: 0 },
     } as const
 
-    const currentViewResult = await this.getCurrentView()
+    const cameraView = await this.getCameraView()
 
-    if (!currentViewResult.ok) {
-      console.error(currentViewResult.error.message)
+    if (err(cameraView)) {
+      console.error(cameraView.message)
       return
     }
 
-    const currentView = currentViewResult.value
-
     // Handle unexpected world coordinate system; should delete this eventually.
-    if (currentView.world_coord_system !== EXPECTED_WORLD_COORD_SYSTEM) {
+    if (cameraView.world_coord_system !== EXPECTED_WORLD_COORD_SYSTEM) {
       console.warn(
         `Camera is not in the expected ${EXPECTED_WORLD_COORD_SYSTEM} world coordinate system.
         Resulting view may not match expectations.`
       )
     }
 
-    const newView: CameraViewState_type = {
-      ...currentView,
+    const cameraViewTarget: CameraViewState_type = {
+      ...cameraView,
       pivot_rotation: Z_AXIS_QUATERNIONS[direction],
       pivot_position: {
         x: this.target.x,
@@ -1022,7 +1009,7 @@ export class CameraControls {
       cmd_id: uuidv4(),
       cmd: {
         type: 'default_camera_set_view',
-        view: newView,
+        view: cameraViewTarget,
       },
     })
 
