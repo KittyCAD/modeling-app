@@ -294,7 +294,11 @@ impl Expr {
             Expr::ArrayRangeExpression(range_exp) => range_exp.recast(options, indentation_level, ctxt),
             Expr::ObjectExpression(obj_exp) => obj_exp.recast(options, indentation_level, ctxt),
             Expr::MemberExpression(mem_exp) => mem_exp.recast(options, indentation_level, ctxt),
-            Expr::Literal(literal) => literal.recast(),
+            Expr::Literal(literal) => {
+                let mut s = String::new();
+                literal.recast(&mut s);
+                s
+            }
             Expr::FunctionExpression(func_exp) => {
                 let mut result = if is_decl { String::new() } else { "fn".to_owned() };
                 result += &func_exp.recast(options, indentation_level);
@@ -345,7 +349,11 @@ impl AscribedExpression {
 impl BinaryPart {
     fn recast(&self, options: &FormatOptions, indentation_level: usize, ctxt: ExprContext) -> String {
         match &self {
-            BinaryPart::Literal(literal) => literal.recast(),
+            BinaryPart::Literal(literal) => {
+                let mut s = String::new();
+                literal.recast(&mut s);
+                s
+            }
             BinaryPart::Name(name) => {
                 let result = name.to_string();
                 match deprecation(&result, DeprecationKind::Const) {
@@ -490,24 +498,39 @@ impl TypeDeclaration {
     }
 }
 
+fn write<W: std::fmt::Write>(f: &mut W, s: impl std::fmt::Display) {
+    f.write_fmt(format_args!("{s}"))
+        .expect("writing to a string should always succeed")
+}
+
+fn write_dbg<W: std::fmt::Write>(f: &mut W, s: impl std::fmt::Debug) {
+    f.write_fmt(format_args!("{s:?}"))
+        .expect("writing to a string should always succeed")
+}
+
 impl Literal {
-    fn recast(&self) -> String {
+    fn recast(&self, buf: &mut String) {
         match self.value {
             LiteralValue::Number { value, suffix } => {
                 if self.raw.contains('.') && value.fract() == 0.0 {
-                    format!("{value:?}{suffix}")
+                    write_dbg(buf, value);
+                    write(buf, suffix);
                 } else {
-                    self.raw.clone()
+                    write(buf, &self.raw);
                 }
             }
             LiteralValue::String(ref s) => {
                 if let Some(suggestion) = deprecation(s, DeprecationKind::String) {
-                    return suggestion.to_owned();
+                    write!(buf, "{suggestion}").unwrap();
                 }
                 let quote = if self.raw.trim().starts_with('"') { '"' } else { '\'' };
-                format!("{quote}{s}{quote}")
+                write(buf, quote);
+                write(buf, s);
+                write(buf, quote);
             }
-            LiteralValue::Bool(_) => self.raw.clone(),
+            LiteralValue::Bool(_) => {
+                write(buf, &self.raw);
+            }
         }
     }
 }
@@ -863,8 +886,8 @@ impl Parameter {
             result += &ty.to_string();
         }
         if let Some(DefaultParamVal::Literal(ref literal)) = self.default_value {
-            let lit = literal.recast();
-            result.push_str(&format!(" = {lit}"));
+            result.push_str(" = ");
+            literal.recast(&mut result);
         };
 
         result
@@ -2527,11 +2550,9 @@ fn f() {
             let literal = crate::parsing::parser::unsigned_number_literal
                 .parse(tokens.as_slice())
                 .unwrap();
-            assert_eq!(
-                literal.recast(),
-                expected,
-                "failed test {i}, which is testing that {reason}"
-            );
+            let mut actual = String::new();
+            literal.recast(&mut actual);
+            assert_eq!(actual, expected, "failed test {i}, which is testing that {reason}");
         }
     }
 
