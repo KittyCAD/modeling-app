@@ -521,7 +521,7 @@ impl Literal {
             }
             LiteralValue::String(ref s) => {
                 if let Some(suggestion) = deprecation(s, DeprecationKind::String) {
-                    write!(buf, "{suggestion}").unwrap();
+                    return write!(buf, "{suggestion}").unwrap();
                 }
                 let quote = if self.raw.trim().starts_with('"') { '"' } else { '\'' };
                 write(buf, quote);
