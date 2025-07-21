@@ -33,18 +33,27 @@ impl Program {
         let indentation = options.get_indentation(indentation_level);
 
         if let Some(sh) = self.shebang.as_ref() {
+            dbg!(&buf);
             write!(buf, "{}\n\n", sh.inner.content).no_fail();
+            dbg!(&buf);
         }
 
+        dbg!(&self.non_code_meta);
         for start in &self.non_code_meta.start_nodes {
+            dbg!(&buf);
             buf.push_str(&start.recast(options, indentation_level));
+            dbg!(&buf);
         }
         for attr in &self.inner_attrs {
+            dbg!(&buf);
             options.write_indentation(buf, indentation_level);
             attr.recast(buf, options, indentation_level);
+            dbg!(&buf);
         }
         if !self.inner_attrs.is_empty() {
+            dbg!(&buf);
             buf.push('\n');
+            dbg!(&buf);
         }
 
         let body_item_lines = self.body.iter().map(|body_item| {
@@ -302,7 +311,7 @@ impl Expr {
                 }
             }
             Expr::TagDeclarator(tag) => tag.recast(buf),
-            Expr::PipeExpression(pipe_exp) => pipe_exp.recast(buf, options, indentation_level),
+            Expr::PipeExpression(pipe_exp) => pipe_exp.recast(buf, options, indentation_level, !is_decl),
             Expr::UnaryExpression(unary_exp) => unary_exp.recast(buf, options, indentation_level, ctxt),
             Expr::IfExpression(e) => e.recast(buf, options, indentation_level, ctxt),
             Expr::PipeSubstitution(_) => buf.push_str(crate::parsing::PIPE_SUBSTITUTION_OPERATOR),
@@ -862,8 +871,10 @@ impl IfExpression {
 }
 
 impl Node<PipeExpression> {
-    fn recast(&self, buf: &mut String, options: &FormatOptions, indentation_level: usize) {
-        // options.write_indentation(buf, indentation_level);
+    fn recast(&self, buf: &mut String, options: &FormatOptions, indentation_level: usize, preceding_indent: bool) {
+        if preceding_indent {
+            options.write_indentation(buf, indentation_level);
+        }
         for (index, statement) in self.body.iter().enumerate() {
             statement.recast(buf, options, indentation_level + 1, ExprContext::Pipe);
             let non_code_meta = &self.non_code_meta;
@@ -1304,6 +1315,28 @@ fn zoo(x0, y0) {
 
 zoo(x = zoo_x, y = zoo_y)
 "#;
+        let program = crate::parsing::top_level_parse(some_program_string).unwrap();
+
+        let recasted = program.recast_top(&Default::default(), 0);
+        assert_eq!(recasted, some_program_string);
+    }
+
+    #[test]
+    fn test_nested_fns_indent() {
+        let some_program_string = "\
+x = 1
+fn rect(x, y, w, h) {
+  y = 2
+  z = 3
+  startSketchOn(XY)
+    |> startProfile(at = [x, y])
+    |> xLine(length = w)
+    |> yLine(length = h)
+    |> xLine(length = -w)
+    |> close()
+    |> extrude(d)
+}
+";
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
 
         let recasted = program.recast_top(&Default::default(), 0);
