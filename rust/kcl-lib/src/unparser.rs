@@ -40,6 +40,7 @@ impl Program {
             buf.push_str(&start.recast(options, indentation_level));
         }
         for attr in &self.inner_attrs {
+            options.write_indentation(buf, indentation_level);
             attr.recast(buf, options, indentation_level);
         }
         if !self.inner_attrs.is_empty() {
@@ -1068,10 +1069,11 @@ mod tests {
 
     #[test]
     fn test_recast_annotations_in_function_body_without_items() {
-        let input = r#"fn myFunc() {
+        let input = "\
+fn myFunc() {
   @meta(yes = true)
 }
-"#;
+";
         let program = crate::parsing::top_level_parse(input).unwrap();
         let output = program.recast_top(&Default::default(), 0);
         assert_eq!(output, input);
