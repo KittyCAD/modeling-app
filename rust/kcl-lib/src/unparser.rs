@@ -30,7 +30,6 @@ impl Program {
     }
 
     pub fn recast(&self, buf: &mut String, options: &FormatOptions, indentation_level: usize) {
-        dbg!(&buf);
         let indentation = options.get_indentation(indentation_level);
 
         if let Some(sh) = self.shebang.as_ref() {
@@ -81,21 +80,11 @@ impl Program {
                         .argument
                         .recast(&mut tmp_buf, options, indentation_level, ExprContext::Other);
                     write!(&mut result, "{}", tmp_buf.trim_start()).no_fail();
-                    dbg!(&result);
                 }
             };
             result
         });
         for (index, recast_str) in body_item_lines.enumerate() {
-            let start_string = if index == 0 && self.non_code_meta.start_nodes.is_empty() && self.inner_attrs.is_empty()
-            {
-                // We need to indent.
-                indentation.to_string()
-            } else {
-                // Do nothing, we already applied the indentation elsewhere.
-                String::new()
-            };
-
             // determine the value of the end string
             // basically if we are inside a nested function we want to end with a new line
             let maybe_line_break: String = if index == self.body.len() - 1 && indentation_level == 0 {
@@ -129,10 +118,7 @@ impl Program {
                 custom_white_space_or_comment
             };
 
-            dbg!(&start_string);
-            dbg!(&recast_str);
-            dbg!(&end_string);
-            write!(buf, "{start_string}{recast_str}{end_string}").no_fail();
+            write!(buf, "{recast_str}{end_string}").no_fail();
         }
         trim(buf);
 
@@ -661,9 +647,8 @@ impl ArrayRangeExpression {
     }
 }
 
-/// Trims in place.
 fn trim_end(buf: &mut String) {
-    buf.truncate(buf.trim_end().len())
+    *buf = buf.trim_end().to_owned()
 }
 
 fn trim(buf: &mut String) {
@@ -923,17 +908,18 @@ impl FunctionExpression {
             .map(|param| param.recast(options, indentation_level))
             .collect::<Vec<String>>()
             .join(", ");
-        let tab0 = options.get_indentation(indentation_level);
-        let tab1 = options.get_indentation(indentation_level + 1);
         let return_type = match &self.return_type {
             Some(rt) => format!(": {rt}"),
             None => String::new(),
         };
 
-        dbg!(&tab1);
-        write!(buf, "({param_list}){return_type} {{\n{tab1}").no_fail();
+        write!(buf, "({param_list}){return_type} {{\n").no_fail();
         self.body.recast(buf, &new_options, indentation_level + 1);
-        write!(buf, "\n{tab0}}}").no_fail();
+        // let mut body_buf = String::new();
+        // self.body.recast(&mut body_buf, &new_options, indentation_level + 1);
+        buf.push('\n');
+        options.write_indentation(buf, indentation_level);
+        buf.push('}');
     }
 }
 
