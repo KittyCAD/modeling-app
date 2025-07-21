@@ -3500,13 +3500,13 @@ impl FunctionExpression {
             signature.push_str("()");
         } else if self.params.len() == 1 {
             signature.push('(');
-            signature.push_str(&self.params[0].recast(&FormatOptions::default(), 0));
+            self.params[0].recast(&mut signature, &FormatOptions::default(), 0);
             signature.push(')');
         } else {
             signature.push('(');
             for a in &self.params {
                 signature.push_str("\n  ");
-                signature.push_str(&a.recast(&FormatOptions::default(), 0));
+                a.recast(&mut signature, &FormatOptions::default(), 0);
                 signature.push(',');
             }
             signature.push('\n');

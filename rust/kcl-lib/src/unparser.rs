@@ -24,7 +24,7 @@ pub fn fmt(input: &str) -> Result<String, KclError> {
 
 impl Program {
     pub fn recast_top(&self, options: &FormatOptions, indentation_level: usize) -> String {
-        let mut buf = String::new();
+        let mut buf = String::with_capacity(1024);
         self.recast(&mut buf, options, indentation_level);
         buf
     }
@@ -56,7 +56,7 @@ impl Program {
         }
 
         let body_item_lines = self.body.iter().map(|body_item| {
-            let mut result = String::new();
+            let mut result = String::with_capacity(256);
             for comment in body_item.get_comments() {
                 if !comment.is_empty() {
                     result.push_str(&indentation);
@@ -84,7 +84,7 @@ impl Program {
                 BodyItem::TypeDeclaration(ty_declaration) => ty_declaration.recast(&mut result),
                 BodyItem::ReturnStatement(return_statement) => {
                     write!(&mut result, "{indentation}return ").no_fail();
-                    let mut tmp_buf = String::new();
+                    let mut tmp_buf = String::with_capacity(256);
                     return_statement
                         .argument
                         .recast(&mut tmp_buf, options, indentation_level, ExprContext::Other);
@@ -374,14 +374,14 @@ impl BinaryPart {
 impl CallExpressionKw {
     fn recast_args(&self, options: &FormatOptions, indentation_level: usize, ctxt: ExprContext) -> Vec<String> {
         let mut arg_list = if let Some(first_arg) = &self.unlabeled {
-            let mut first = String::new();
+            let mut first = String::with_capacity(256);
             first_arg.recast(&mut first, options, indentation_level, ctxt);
             vec![first.trim().to_owned()]
         } else {
             Vec::with_capacity(self.arguments.len())
         };
         arg_list.extend(self.arguments.iter().map(|arg| {
-            let mut buf = String::new();
+            let mut buf = String::with_capacity(256);
             arg.recast(&mut buf, options, indentation_level, ctxt);
             buf
         }));
@@ -558,7 +558,7 @@ impl ArrayExpression {
                 }));
             } else {
                 let el = elems.next().unwrap();
-                let mut s = String::new();
+                let mut s = String::with_capacity(256);
                 el.recast(&mut s, options, 0, ExprContext::Other);
                 s.push_str(", ");
                 format_items.push(s);
@@ -571,7 +571,7 @@ impl ArrayExpression {
                 *item = norm.to_owned();
             }
         }
-        let mut flat_recast = String::new();
+        let mut flat_recast = String::with_capacity(256);
         flat_recast.push('[');
         for fi in &format_items {
             flat_recast.push_str(fi)
@@ -907,18 +907,19 @@ impl FunctionExpression {
         // We don't want to end with a new line inside nested functions.
         let mut new_options = options.clone();
         new_options.insert_final_newline = false;
-        let param_list = self
-            .params
-            .iter()
-            .map(|param| param.recast(options, indentation_level))
-            .collect::<Vec<String>>()
-            .join(", ");
-        let return_type = match &self.return_type {
-            Some(rt) => format!(": {rt}"),
-            None => String::new(),
-        };
 
-        writeln!(buf, "({param_list}){return_type} {{").no_fail();
+        buf.push('(');
+        for (i, param) in self.params.iter().enumerate() {
+            param.recast(buf, options, indentation_level);
+            if i < self.params.len() - 1 {
+                buf.push_str(", ");
+            }
+        }
+        buf.push(')');
+        if let Some(return_type) = &self.return_type {
+            write!(buf, ": {return_type}").no_fail();
+        }
+        writeln!(buf, " {{").no_fail();
         self.body.recast(buf, &new_options, indentation_level + 1);
         buf.push('\n');
         options.write_indentation(buf, indentation_level);
@@ -927,21 +928,22 @@ impl FunctionExpression {
 }
 
 impl Parameter {
-    pub fn recast(&self, _options: &FormatOptions, _indentation_level: usize) -> String {
-        let at_sign = if self.labeled { "" } else { "@" };
-        let identifier = &self.identifier.name;
-        let question_mark = if self.default_value.is_some() { "?" } else { "" };
-        let mut result = format!("{at_sign}{identifier}{question_mark}");
+    pub fn recast(&self, buf: &mut String, _options: &FormatOptions, _indentation_level: usize) {
+        if !self.labeled {
+            buf.push('@');
+        }
+        buf.push_str(&self.identifier.name);
+        if self.default_value.is_some() {
+            buf.push('?');
+        };
         if let Some(ty) = &self.type_ {
-            result += ": ";
-            result += &ty.to_string();
+            buf.push_str(": ");
+            write!(buf, "{ty}").no_fail();
         }
         if let Some(DefaultParamVal::Literal(ref literal)) = self.default_value {
-            result.push_str(" = ");
-            literal.recast(&mut result);
+            buf.push_str(" = ");
+            literal.recast(buf);
         };
-
-        result
     }
 }
 
