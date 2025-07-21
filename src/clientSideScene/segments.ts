@@ -115,8 +115,8 @@ interface CreateSegmentArgs {
   sceneInfra: SceneInfra
   selection?: Selections
   // Add optional AST and code for constraint checking
-  ast?: Program
-  code?: string
+  ast: Program
+  code: string
 }
 
 interface UpdateSegmentArgs {
@@ -126,8 +126,8 @@ interface UpdateSegmentArgs {
   sceneInfra: SceneInfra
   scale?: number
   // Add optional AST and code for constraint checking
-  ast?: Program
-  code?: string
+  ast: Program
+  code: string
   truncatedExpressionIndexOffset?: number
 }
 
@@ -317,6 +317,8 @@ class StraightSegment implements SegmentUtils {
       group: segmentGroup,
       scale,
       sceneInfra,
+      ast,
+      code,
     })
     if (err(updateOverlaysCallback)) return updateOverlaysCallback
 
@@ -567,6 +569,8 @@ class TangentialArcToSegment implements SegmentUtils {
       group,
       scale,
       sceneInfra,
+      ast,
+      code,
     })
     if (err(updateOverlaysCallback)) return updateOverlaysCallback
 
@@ -834,6 +838,8 @@ class CircleSegment implements SegmentUtils {
       group,
       scale,
       sceneInfra,
+      ast,
+      code,
     })
     if (err(updateOverlaysCallback)) return updateOverlaysCallback
 
@@ -1117,6 +1123,8 @@ class CircleThreePointSegment implements SegmentUtils {
       group,
       scale,
       sceneInfra,
+      ast,
+      code,
     })
     if (err(updateOverlaysCallback)) return updateOverlaysCallback
 
@@ -1432,6 +1440,8 @@ class ArcSegment implements SegmentUtils {
       group,
       scale,
       sceneInfra,
+      ast,
+      code,
     })
     if (err(updateOverlaysCallback)) return updateOverlaysCallback
 
@@ -1778,6 +1788,8 @@ class ThreePointArcSegment implements SegmentUtils {
       group,
       scale,
       sceneInfra,
+      ast,
+      code,
     })
     if (err(updateOverlaysCallback)) return updateOverlaysCallback
 

@@ -324,8 +324,8 @@ export class SceneEntities {
         group: segment,
         scale: factor,
         sceneInfra: this.sceneInfra,
-        // Note: AST and code not available in onCamChange, so constraints won't be checked here
-        // This is primarily for scaling changes
+        ast: this.kclManager.ast,
+        code: this.codeManager.code,
       })
       callBack && !err(callBack) && callbacks.push(callBack)
       if (segment.name === PROFILE_START) {
@@ -3441,6 +3441,8 @@ export class SceneEntities {
               group: parent,
               scale: factor,
               sceneInfra: this.sceneInfra,
+              ast: this.kclManager.ast,
+              code: this.codeManager.code,
             })
           return
         }
@@ -3518,6 +3520,8 @@ export class SceneEntities {
               group: parent,
               scale: factor,
               sceneInfra: this.sceneInfra,
+              ast: this.kclManager.ast,
+              code: this.codeManager.code,
             })
         }
         const isSelected = parent?.userData?.isSelected
