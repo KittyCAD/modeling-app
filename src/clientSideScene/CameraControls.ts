@@ -919,28 +919,70 @@ export class CameraControls {
     })
   }
 
+  async getCurrentView(): Promise<CameraViewState_type> {
+    const response = await this.engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: { type: 'default_camera_get_view' },
+    })
+
+    // Check valid response from the engine.
+    const singleResponse = Array.isArray(response) ? response[0] : response
+    const noValidResponse =
+      !singleResponse?.success || !('resp' in singleResponse)
+
+    if (noValidResponse) {
+      throw new Error('Failed to get camera view state: no valid response.')
+    }
+
+    // Check we actually have the 'modeling_response' field.
+    const data = singleResponse.resp.data
+    const noModelingResponse = !('modeling_response' in data)
+
+    if (noModelingResponse) {
+      throw new Error(
+        'Failed to get camera view state: no `modeling_response`.'
+      )
+    }
+
+    // Check that we have the expected response type and the nested data.
+    const modelingResponse = data.modeling_response
+    const noData = !('data' in modelingResponse)
+    const wrongResponseType =
+      modelingResponse.type !== 'default_camera_get_view'
+
+    if (noData || wrongResponseType) {
+      throw new Error('Failed to get camera view state: invalid response.')
+    }
+
+    return modelingResponse.data.view
+  }
+
   async setCameraViewTop() {
+    // Set the top-down quaternion.
+    // TODO: Check how this works with different `world_coord_system` values.
+    // TODO: WHY DO WE ALLOW MORE THAN ONE WORLD COORD SYSTEM?
+    const TOP_QUAT = {
+      x: 0,
+      y: 0,
+      z: 0,
+      w: 1,
+    }
+
     const distance = this.camera.position.distanceTo(this.target)
 
+    const currentView = await this.getCurrentView()
+
+    // New view state for top-down camera.
     const topDownView: CameraViewState_type = {
-      // Identity quaternion.
-      pivot_rotation: {
-        x: 0,
-        y: 0,
-        z: 0,
-        w: 1,
-      },
+      ...currentView,
+      pivot_rotation: TOP_QUAT,
       pivot_position: {
         x: this.target.x,
         y: this.target.y,
         z: this.target.z,
       },
       eye_offset: distance,
-      fov_y: 45,
-      ortho_scale_factor: 1.0,
-      is_ortho: true,
-      ortho_scale_enabled: true,
-      world_coord_system: 'right_handed_up_z',
     }
 
     // Update camera.
@@ -964,27 +1006,28 @@ export class CameraControls {
   }
 
   async setCameraViewBottom() {
+    // Set the bottom-up quaternion.
+    // 180° rotation around the x-axis.
+    const BOTTOM_QUAT = {
+      x: 1,
+      y: 0,
+      z: 0,
+      w: 0,
+    }
+
     const distance = this.camera.position.distanceTo(this.target)
 
+    const currentView = await this.getCurrentView()
+
     const bottomUpView: CameraViewState_type = {
-      // 180° rotation around X axis to flip upside down.
-      pivot_rotation: {
-        x: 1,
-        y: 0,
-        z: 0,
-        w: 0,
-      },
+      ...currentView,
+      pivot_rotation: BOTTOM_QUAT,
       pivot_position: {
         x: this.target.x,
         y: this.target.y,
         z: this.target.z,
       },
       eye_offset: distance,
-      fov_y: 45,
-      ortho_scale_factor: 1.0,
-      is_ortho: true,
-      ortho_scale_enabled: true,
-      world_coord_system: 'right_handed_up_z',
     }
 
     // Update camera.
