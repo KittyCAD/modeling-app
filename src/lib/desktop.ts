@@ -229,11 +229,11 @@ export async function listProjects(
 
 const collectAllFilesRecursiveFrom = async (
   path: string,
-  canReadWritePath: boolean
+  canReadWritePath: boolean,
+  fileExtensionsForFilter: string[]
 ) => {
-  const RELEVANT_FILE_EXTENSIONS = relevantFileExtensions()
   const isRelevantFile = (filename: string): boolean =>
-    RELEVANT_FILE_EXTENSIONS.some((ext) => filename.endsWith('.' + ext))
+    fileExtensionsForFilter.some((ext) => filename.endsWith('.' + ext))
   // Make sure the filesystem object exists.
   try {
     await window.electron.stat(path)
@@ -290,7 +290,8 @@ const collectAllFilesRecursiveFrom = async (
     if (isEDir) {
       const subChildren = await collectAllFilesRecursiveFrom(
         ePath,
-        canReadWritePath
+        canReadWritePath,
+        fileExtensionsForFilter
       )
       children.push(subChildren)
     } else {
@@ -412,10 +413,12 @@ export async function getProjectInfo(projectPath: string): Promise<Project> {
   const { value: canReadWriteProjectPath } =
     await window.electron.canReadWriteDirectory(projectPath)
 
+  const fileExtensionsForFilter = relevantFileExtensions()
   // Return walked early if canReadWriteProjectPath is false
   let walked = await collectAllFilesRecursiveFrom(
     projectPath,
-    canReadWriteProjectPath
+    canReadWriteProjectPath,
+    fileExtensionsForFilter
   )
 
   // If the projectPath does not have read write permissions, the default_file is empty string
