@@ -276,7 +276,6 @@ export function addRevolve({
   ast,
   sketches,
   angle,
-  axisOrEdge,
   axis,
   edge,
   symmetric,
@@ -286,7 +285,6 @@ export function addRevolve({
   ast: Node<Program>
   sketches: Selections
   angle: KclCommandValue
-  axisOrEdge: 'Axis' | 'Edge'
   axis?: string
   edge?: Selections
   symmetric?: boolean
@@ -309,12 +307,7 @@ export function addRevolve({
   }
 
   // Retrieve axis expression depending on mode
-  const getAxisResult = getAxisExpressionAndIndex(
-    axisOrEdge,
-    axis,
-    edge,
-    modifiedAst
-  )
+  const getAxisResult = getAxisExpressionAndIndex(axis, edge, modifiedAst)
   if (err(getAxisResult) || !getAxisResult.generatedAxis) {
     return new Error('Generated axis selection is missing.')
   }
@@ -379,16 +372,11 @@ export function addRevolve({
 // Utilities
 
 export function getAxisExpressionAndIndex(
-  axisOrEdge: 'Axis' | 'Edge',
   axis: string | undefined,
   edge: Selections | undefined,
   ast: Node<Program>
 ) {
-  let generatedAxis
-  let axisDeclaration: PathToNode | null = null
-  let axisIndexIfAxis: number | undefined = undefined
-
-  if (axisOrEdge === 'Edge' && edge) {
+  if (edge) {
     const pathToAxisSelection = getNodePathFromSourceRange(
       ast,
       edge.graphSelections[0]?.codeRef.range
@@ -396,37 +384,47 @@ export function getAxisExpressionAndIndex(
     const tagResult = mutateAstWithTagForSketchSegment(ast, pathToAxisSelection)
 
     // Have the tag whether it is already created or a new one is generated
-    if (err(tagResult)) return tagResult
+    if (err(tagResult)) {
+      return tagResult
+    }
+
     const { tag } = tagResult
     const axisSelection = edge?.graphSelections[0]?.artifact
-    if (!axisSelection) return new Error('Generated axis selection is missing.')
-    generatedAxis = getEdgeTagCall(tag, axisSelection)
+    if (!axisSelection) {
+      return new Error('Generated axis selection is missing.')
+    }
+
+    const generatedAxis = getEdgeTagCall(tag, axisSelection)
     if (
       axisSelection.type === 'segment' ||
       axisSelection.type === 'path' ||
       axisSelection.type === 'edgeCut'
     ) {
-      axisDeclaration = axisSelection.codeRef.pathToNode
-      if (!axisDeclaration)
+      const axisDeclaration = axisSelection.codeRef.pathToNode
+      if (!axisDeclaration) {
         return new Error('Expected to find axis declaration')
+      }
+
       const axisIndexInPathToNode =
         axisDeclaration.findIndex((a) => a[0] === 'body') + 1
       const value = axisDeclaration[axisIndexInPathToNode][0]
-      if (typeof value !== 'number')
+      if (typeof value !== 'number') {
         return new Error('expected axis index value to be a number')
-      axisIndexIfAxis = value
+      }
+
+      const axisIndexIfAxis = value
+      return { generatedAxis, axisIndexIfAxis }
     }
-  } else if (axisOrEdge === 'Axis' && axis) {
-    generatedAxis = createLocalName(axis)
   }
 
-  return {
-    generatedAxis,
-    axisIndexIfAxis,
+  if (axis) {
+    return { generatedAxis: createLocalName(axis) }
   }
+
+  return new Error('Axis or edge selection is missing.')
 }
 
-// Sort of an invert from getAxisExpressionAndIndex
+// Sort of an inverse from getAxisExpressionAndIndex
 export function retrieveAxisOrEdgeSelectionsFromOpArg(
   opArg: OpArg,
   artifactGraph: ArtifactGraph
@@ -459,6 +457,8 @@ export function retrieveAxisOrEdgeSelectionsFromOpArg(
       axis = 'X'
     } else if (nonZero(direction.value[1])) {
       axis = 'Y'
+    } else if (nonZero(direction.value[2])) {
+      axis = 'Z'
     } else {
       return new Error('Bad direction vector for axis')
     }

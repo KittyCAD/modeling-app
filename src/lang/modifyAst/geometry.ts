@@ -82,12 +82,7 @@ export function addHelix({
     cylinderExpr.push(createLabeledArg('cylinder', vars.exprs[0]))
     pathIfNewPipe = vars.pathIfPipe
   } else if (axis || edge) {
-    const result = getAxisExpressionAndIndex(
-      edge ? 'Edge' : 'Axis',
-      axis,
-      edge,
-      modifiedAst
-    )
+    const result = getAxisExpressionAndIndex(axis, edge, modifiedAst)
     if (err(result)) {
       return result
     }
