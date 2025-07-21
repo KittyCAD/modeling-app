@@ -52,6 +52,12 @@ const FRAMES_TO_ANIMATE_IN = 30
 const ORTHOGRAPHIC_MAGIC_FOV = 4
 const EXPECTED_WORLD_COORD_SYSTEM = 'right_handed_up_z'
 
+// Partial declaration; the front/back/left/right are handled differently.
+enum StandardView {
+  TOP = 'top',
+  BOTTOM = 'bottom',
+}
+
 const tempQuaternion = new Quaternion() // just used for maths
 
 type interactionType = 'pan' | 'rotate' | 'zoom'
@@ -959,101 +965,46 @@ export class CameraControls {
     return modelingResponse.data.view
   }
 
-  async setCameraViewTop() {
-    // Set the top-down quaternion.
-    const TOP_QUAT = {
-      x: 0,
-      y: 0,
-      z: 0,
-      w: 1,
-    }
+  async setCameraViewAlongZ(direction: StandardView) {
+    // Sets the camera view along the Z axis, giving us a top-down or bottom-up view.
+    // The approach first retrieves current camera setup, then alters pivot params,
+    // ultimately preserving other camera settings, e.g., ortho vs. perspective projection.
 
-    const distance = this.camera.position.distanceTo(this.target)
+    // Note: this assumes right handed, Z-up, X positive to the right.
+    const Z_AXIS_QUATERNIONS = {
+      [StandardView.TOP]: { x: 0, y: 0, z: 0, w: 1 },
+      [StandardView.BOTTOM]: { x: 1, y: 0, z: 0, w: 0 },
+    } as const
 
     const currentView = await this.getCurrentView()
 
-    // Warn if we arent in the correct world coordinate system.
+    // Handle unexpected world coordinate system; should delete this eventually.
     if (currentView.world_coord_system !== EXPECTED_WORLD_COORD_SYSTEM) {
       console.warn(
-        `Camera is not in the expected ${EXPECTED_WORLD_COORD_SYSTEM} world coordinate system. Resulting view may not match expectations.`
+        `Camera is not in the expected ${EXPECTED_WORLD_COORD_SYSTEM} world coordinate system.
+        Resulting view may not match expectations.`
       )
     }
 
-    // New view state for top-down camera.
-    const topDownView: CameraViewState_type = {
+    const newView: CameraViewState_type = {
       ...currentView,
-      pivot_rotation: TOP_QUAT,
+      pivot_rotation: Z_AXIS_QUATERNIONS[direction],
       pivot_position: {
         x: this.target.x,
         y: this.target.y,
         z: this.target.z,
       },
-      eye_offset: distance,
     }
 
-    // Update camera.
     await this.engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_req',
       cmd_id: uuidv4(),
       cmd: {
         type: 'default_camera_set_view',
-        view: topDownView,
+        view: newView,
       },
     })
 
-    // Pull through the camera settings to update gizmo.
-    await this.engineCommandManager.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'default_camera_get_settings',
-      },
-    })
-  }
-
-  async setCameraViewBottom() {
-    // Set the bottom-up quaternion.
-    // 180° rotation around the x-axis.
-    const BOTTOM_QUAT = {
-      x: 1,
-      y: 0,
-      z: 0,
-      w: 0,
-    }
-
-    const distance = this.camera.position.distanceTo(this.target)
-
-    const currentView = await this.getCurrentView()
-
-    // Warn if we arent in the correct world coordinate system.
-    if (currentView.world_coord_system !== EXPECTED_WORLD_COORD_SYSTEM) {
-      console.warn(
-        `Camera is not in the expected ${EXPECTED_WORLD_COORD_SYSTEM} world coordinate system. Resulting view may not match expectations.`
-      )
-    }
-
-    const bottomUpView: CameraViewState_type = {
-      ...currentView,
-      pivot_rotation: BOTTOM_QUAT,
-      pivot_position: {
-        x: this.target.x,
-        y: this.target.y,
-        z: this.target.z,
-      },
-      eye_offset: distance,
-    }
-
-    // Update camera.
-    await this.engineCommandManager.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'default_camera_set_view',
-        view: bottomUpView,
-      },
-    })
-
-    // Pull through the camera settings to update gizmo.
     await this.engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_req',
       cmd_id: uuidv4(),
@@ -1076,14 +1027,14 @@ export class CameraControls {
     } else if (axis === 'y') {
       vantage.y += distance
     } else if (axis === 'z') {
-      await this.setCameraViewTop()
+      await this.setCameraViewAlongZ(StandardView.TOP)
       return
     } else if (axis === '-x') {
       vantage.x -= distance
     } else if (axis === '-y') {
       vantage.y -= distance
     } else if (axis === '-z') {
-      await this.setCameraViewBottom()
+      await this.setCameraViewAlongZ(StandardView.BOTTOM)
       return
     }
 
