@@ -4,6 +4,7 @@ import * as fsp from 'fs/promises'
 import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
 import type { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
 import {
+  doAndWaitForImageDiff,
   executorInputPath,
   getUtils,
   kclSamplesPath,
@@ -58,15 +59,6 @@ test.describe('Point-and-click assemblies tests', () => {
         fail()
       }
 
-      const midPoint = { x: 500, y: 250 }
-      const partPoint = { x: midPoint.x + 30, y: midPoint.y - 30 } // mid point, just off top right
-      const defaultPlanesColor: [number, number, number] = [180, 220, 180]
-      const partColor: [number, number, number] = [100, 100, 100]
-      const tolerance = 50
-      const u = await getUtils(page)
-      const gizmo = page.locator('[aria-label*=gizmo]')
-      const resetCameraButton = page.getByRole('button', { name: 'Reset view' })
-
       await test.step('Setup parts and expect empty assembly scene', async () => {
         const projectName = 'assembly'
         await context.folderSetupFn(async (dir) => {
@@ -97,8 +89,6 @@ test.describe('Point-and-click assemblies tests', () => {
         await page.setBodyDimensions({ width: 1000, height: 500 })
         await homePage.openProject(projectName)
         await scene.settled(cmdBar)
-        await toolbar.closePane('code')
-        await scene.expectPixelColor(defaultPlanesColor, midPoint, tolerance)
       })
 
       await test.step('Insert kcl as first part as module', async () => {
@@ -117,16 +107,6 @@ test.describe('Point-and-click assemblies tests', () => {
           { shouldNormalise: true }
         )
         await scene.settled(cmdBar)
-
-        // Check scene for changes
-        await toolbar.closePane('code')
-        await u.doAndWaitForCmd(async () => {
-          await gizmo.click({ button: 'right' })
-          await resetCameraButton.click()
-        }, 'zoom_to_fit')
-        await toolbar.closePane('debug')
-        await scene.expectPixelColor(partColor, partPoint, tolerance)
-        await toolbar.openPane('code')
       })
 
       await test.step('Insert a second part with the same name and expect error', async () => {
@@ -467,12 +447,6 @@ test.describe('Point-and-click assemblies tests', () => {
         fail()
       }
 
-      const midPoint = { x: 500, y: 250 }
-      const partPoint = { x: midPoint.x + 30, y: midPoint.y - 30 } // mid point, just off top right
-      const defaultPlanesColor: [number, number, number] = [180, 220, 180]
-      const partColor: [number, number, number] = [150, 150, 150]
-      const tolerance = 50
-
       const complexPlmFileName = 'cube_Complex-PLM_Name_-001.sldprt'
       const camelCasedSolidworksFileName = 'cubeComplexPLMName001'
 
@@ -493,11 +467,8 @@ test.describe('Point-and-click assemblies tests', () => {
             fsp.writeFile(path.join(bracketDir, 'main.kcl'), ''),
           ])
         })
-        await page.setBodyDimensions({ width: 1000, height: 500 })
         await homePage.openProject(projectName)
         await scene.settled(cmdBar)
-        await toolbar.closePane('code')
-        await scene.expectPixelColor(defaultPlanesColor, midPoint, tolerance)
       })
 
       await test.step('Insert step part as module', async () => {
@@ -509,11 +480,10 @@ test.describe('Point-and-click assemblies tests', () => {
         `,
           { shouldNormalise: true }
         )
+        await toolbar.closePane('code')
         await scene.settled(cmdBar)
 
         await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
-        await toolbar.closePane('code')
-        await scene.expectPixelColor(partColor, partPoint, tolerance)
       })
 
       await test.step('Insert second foreign part by clicking', async () => {
@@ -554,8 +524,6 @@ test.describe('Point-and-click assemblies tests', () => {
         await scene.settled(cmdBar)
 
         await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
-        await toolbar.closePane('code')
-        await scene.expectPixelColor(partColor, partPoint, tolerance)
       })
 
       // TODO: enable once deleting the first import is fixed
@@ -596,6 +564,8 @@ test.describe('Point-and-click assemblies tests', () => {
         )
         await toolbar.closePane('code')
         // TODO: enable once deleting the first import is fixed
+        // don't re-enable because we don't want pixel-based tests anymore, but the behavior
+        // still needs fixed.
         // await scene.expectPixelColorNotToBe(partColor, midPoint, tolerance)
       })
     }
@@ -609,12 +579,6 @@ test.describe('Point-and-click assemblies tests', () => {
         fail()
       }
 
-      const midPoint = { x: 500, y: 250 }
-      const washerPoint = { x: 645, y: 250 }
-      const partColor: [number, number, number] = [120, 120, 120]
-      const redPartColor: [number, number, number] = [200, 0, 0]
-      const bgColor: [number, number, number] = [30, 30, 30]
-      const tolerance = 50
       const projectName = 'assembly'
 
       await test.step('Setup parts and expect imported model', async () => {
@@ -651,42 +615,45 @@ foreign
         await homePage.openProject(projectName)
         await scene.settled(cmdBar)
         await toolbar.closePane('code')
-        await scene.expectPixelColor(partColor, midPoint, tolerance)
       })
 
       await test.step('Change imported kcl file and expect change', async () => {
-        await context.folderSetupFn(async (dir) => {
-          // Append appearance to the cube.kcl file
-          await fsp.appendFile(
-            path.join(dir, projectName, 'cube.kcl'),
-            `\n  |> appearance(color = "#ff0000")`
-          )
-        })
-        await scene.settled(cmdBar)
-        await toolbar.closePane('code')
-        await scene.expectPixelColor(redPartColor, midPoint, tolerance)
-        await scene.expectPixelColor(partColor, washerPoint, tolerance)
+        await doAndWaitForImageDiff(
+          page,
+          async () => {
+            await context.folderSetupFn(async (dir) => {
+              // Append appearance to the cube.kcl file
+              await fsp.appendFile(
+                path.join(dir, projectName, 'cube.kcl'),
+                `\n  |> appearance(color = "#ff0000")`
+              )
+            })
+            await scene.settled(cmdBar)
+            await toolbar.closePane('code')
+          },
+          300
+        )
       })
 
       await test.step('Change imported step file and expect change', async () => {
-        await context.folderSetupFn(async (dir) => {
-          // Replace the washer with a pipe
-          await fsp.copyFile(
-            kclSamplesPath(
-              path.join(
-                'pipe-flange-assembly',
-                'mcmaster-parts',
-                '1120t74-pipe.step'
-              )
-            ),
-            path.join(dir, projectName, 'foreign.step')
-          )
-        })
-        await scene.settled(cmdBar)
-        await toolbar.closePane('code')
         // Expect pipe to take over the red cube but leave some space where the washer was
-        await scene.expectPixelColor(partColor, midPoint, tolerance)
-        await scene.expectPixelColor(bgColor, washerPoint, tolerance)
+        await doAndWaitForImageDiff(page, async () => {
+          await context.folderSetupFn(async (dir) => {
+            // Replace the washer with a pipe
+            await fsp.copyFile(
+              kclSamplesPath(
+                path.join(
+                  'pipe-flange-assembly',
+                  'mcmaster-parts',
+                  '1120t74-pipe.step'
+                )
+              ),
+              path.join(dir, projectName, 'foreign.step')
+            )
+          })
+          await scene.settled(cmdBar)
+          await toolbar.closePane('code')
+        })
       })
     }
   )
