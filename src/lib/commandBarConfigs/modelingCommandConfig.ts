@@ -161,7 +161,7 @@ export type ModelingCommandSchema = {
     angleStart: KclCommandValue
     radius?: KclCommandValue // axis or edge modes only
     length?: KclCommandValue // axis or edge modes only
-    ccw: boolean // optional boolean argument, default value to false
+    ccw?: boolean // optional boolean argument, default value to false
   }
   'event.parameter.create': {
     value: KclCommandValue
@@ -740,8 +740,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           !['Edge'].includes(context.argumentsToSubmit.mode as string),
       },
       cylinder: {
+        ...objectsTypesAndFilters,
         inputType: 'selection',
-        selectionTypes: ['wall'],
         multiple: false,
         required: (context) =>
           ['Cylinder'].includes(context.argumentsToSubmit.mode as string),
