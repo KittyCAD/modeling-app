@@ -181,6 +181,23 @@
 ///  |> close()
 ///  |> extrude(length = 3.14)
 /// ```
+///
+/// ```kcl
+/// sketch001 = startSketchOn(XY)
+///   |> startProfile(at = [-5, -5])
+///   |> xLine(length = 10)
+///   |> yLine(length = 10, tag = $b)
+///   |> xLine(length = -10)
+///   |> close()
+/// 
+/// cube001 = extrude(sketch001, length = 10)
+/// 
+/// sketch002 = startSketchOn(cube001, normalToFace = END, alignAxis = Y)
+///   |> circle(radius = 2, center = [0, 0])
+/// cube002 = extrude(sketch002, length = 4)
+/// 
+/// cube001 - cube002
+/// ```
 @(impl = std_rust)
 export fn startSketchOn(
   /// Profile whose start is being used.
