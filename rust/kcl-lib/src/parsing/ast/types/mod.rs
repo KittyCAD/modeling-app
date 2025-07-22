@@ -988,7 +988,13 @@ pub enum Expr {
 
 impl Expr {
     pub fn get_lsp_folding_range(&self) -> Option<FoldingRange> {
-        let recasted = self.recast(&FormatOptions::default(), 0, crate::unparser::ExprContext::Other);
+        let mut recasted = String::new();
+        self.recast(
+            &mut recasted,
+            &FormatOptions::default(),
+            0,
+            crate::unparser::ExprContext::Other,
+        );
         // If the code only has one line then we don't need to fold it.
         if recasted.lines().count() <= 1 {
             return None;
@@ -1944,6 +1950,10 @@ impl CallExpressionKw {
             .chain(self.arguments.iter().map(|arg| (arg.label.as_ref(), &arg.arg)))
     }
 
+    pub fn num_arguments(&self) -> usize {
+        self.arguments.len() + if self.unlabeled.is_some() { 1 } else { 0 }
+    }
+
     pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
         if let Some(unlabeled) = &mut self.unlabeled {
             unlabeled.replace_value(source_range, new_value.clone());
@@ -2035,7 +2045,8 @@ impl From<&VariableDeclaration> for Vec<CompletionItem> {
 
 impl Node<VariableDeclaration> {
     pub fn get_lsp_folding_range(&self) -> Option<FoldingRange> {
-        let recasted = self.recast(&FormatOptions::default(), 0);
+        let mut recasted = String::new();
+        self.recast(&mut recasted, &FormatOptions::default(), 0);
         // If the recasted value only has one line, don't fold it.
         if recasted.lines().count() <= 1 {
             return None;
@@ -3489,13 +3500,13 @@ impl FunctionExpression {
             signature.push_str("()");
         } else if self.params.len() == 1 {
             signature.push('(');
-            signature.push_str(&self.params[0].recast(&FormatOptions::default(), 0));
+            self.params[0].recast(&mut signature, &FormatOptions::default(), 0);
             signature.push(')');
         } else {
             signature.push('(');
             for a in &self.params {
                 signature.push_str("\n  ");
-                signature.push_str(&a.recast(&FormatOptions::default(), 0));
+                a.recast(&mut signature, &FormatOptions::default(), 0);
                 signature.push(',');
             }
             signature.push('\n');
@@ -3578,12 +3589,21 @@ impl FormatOptions {
     }
 
     /// Get the indentation string for the given level.
+    pub fn write_indentation(&self, buf: &mut String, times: usize) {
+        let ind = if self.use_tabs { '\t' } else { ' ' };
+        let n = if self.use_tabs { 1 } else { self.tab_size };
+        for _ in 0..(times * n) {
+            buf.push(ind);
+        }
+    }
+
+    /// Get the indentation string for the given level.
     /// But offset the pipe operator (and a space) by one level.
     pub fn get_indentation_offset_pipe(&self, level: usize) -> String {
         if self.use_tabs {
             "\t".repeat(level + 1)
         } else {
-            " ".repeat(level * self.tab_size) + " ".repeat(PIPE_OPERATOR.len() + 1).as_str()
+            " ".repeat(level * self.tab_size + PIPE_OPERATOR.len() + 1)
         }
     }
 }
@@ -4219,7 +4239,7 @@ startSketchOn(XY)"#;
 
         assert_eq!(meta_settings.default_length_units, crate::execution::types::UnitLen::Mm);
 
-        let formatted = new_program.recast(&Default::default(), 0);
+        let formatted = new_program.recast_top(&Default::default(), 0);
 
         assert_eq!(
             formatted,
@@ -4248,7 +4268,7 @@ startSketchOn(XY)
 
         assert_eq!(meta_settings.default_length_units, crate::execution::types::UnitLen::Mm);
 
-        let formatted = new_program.recast(&Default::default(), 0);
+        let formatted = new_program.recast_top(&Default::default(), 0);
 
         assert_eq!(
             formatted,
@@ -4283,7 +4303,7 @@ startSketchOn(XY)
 
         assert_eq!(meta_settings.default_length_units, crate::execution::types::UnitLen::Cm);
 
-        let formatted = new_program.recast(&Default::default(), 0);
+        let formatted = new_program.recast_top(&Default::default(), 0);
 
         assert_eq!(
             formatted,
@@ -4337,7 +4357,7 @@ angle = atan(rise / run)"#;
         program.rename_symbol("yoyo", var_decl.as_source_range().start() + 1);
 
         // Recast the program to a string.
-        let formatted = program.recast(&Default::default(), 0);
+        let formatted = program.recast_top(&Default::default(), 0);
 
         assert_eq!(
             formatted,
