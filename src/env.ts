@@ -132,8 +132,8 @@ export default (): EnvironmentVariables => {
    * Allow .env.development.local to overwrite the websocket url for engine
    */
   if (
-    env.VITE_KITTYCAD_API_WEBSOCKET_URL !== undefined &&
-    !env.VITE_KITTYCAD_API_WEBSOCKET_URL
+    env.VITE_KITTYCAD_API_WEBSOCKET_URL &&
+    env.VITE_KITTYCAD_API_WEBSOCKET_URL !== 'undefined'
   ) {
     WEBSOCKET_URL = env.VITE_KITTYCAD_API_WEBSOCKET_URL
   }
