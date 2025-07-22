@@ -74,6 +74,13 @@ async fn inner_scale(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<SolidOrSketchOrImportedGeometry, KclError> {
+    let is_global = global.unwrap_or(false);
+    let origin = if is_global {
+        Some(OriginType::Global)
+    } else {
+        Some(OriginType::Local)
+    };
+    
     let mut objects = objects.clone();
     for object_id in objects.ids(&args.ctx).await? {
         exec_state
