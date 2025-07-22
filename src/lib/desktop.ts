@@ -744,7 +744,7 @@ export const writeEnvironmentConfigurationToken = async (
     await getEnvironmentConfigurationObject(environmentName)
   environmentConfiguration.token = token
   const requestedConfiguration = JSON.stringify(environmentConfiguration)
-  const result = window.electron.writeFile(path, requestedConfiguration)
+  const result = await window.electron.writeFile(path, requestedConfiguration)
   console.log(`wrote ${environmentName}.json to disk`)
   return result
 }
@@ -759,7 +759,7 @@ export const writeEnvironmentConfigurationPool = async (
     await getEnvironmentConfigurationObject(environmentName)
   environmentConfiguration.pool = pool
   const requestedConfiguration = JSON.stringify(environmentConfiguration)
-  const result = window.electron.writeFile(path, requestedConfiguration)
+  const result = await window.electron.writeFile(path, requestedConfiguration)
   console.log(`wrote ${environmentName}.json to disk`)
   return result
 }
