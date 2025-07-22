@@ -52,7 +52,13 @@ rectSolid = rectangle(
 
 ```kcl
 exampleSketch = startSketchOn(-XZ)
-  |> rectangle(corner = [0, 0], width = 10, height = 5)
+rectSolid = rectangle(
+       exampleSketch,
+       corner = [0, 0],
+       width = 10,
+       height = 5,
+     )
+  |> extrude(length = 2)
 
 ```
 
