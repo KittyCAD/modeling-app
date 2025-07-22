@@ -114,7 +114,7 @@ function EnvironmentStatusBarItem() {
     <Popover className="relative flex items-stretch">
       <Popover.Button
         className="m-0 p-0 border-0 flex items-stretch"
-        data-testid="billing-remaining-bar"
+        data-testid="environment-subdomain-bar"
       >
         <EnvironmentChip />
       </Popover.Button>
