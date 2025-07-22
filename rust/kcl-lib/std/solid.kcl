@@ -19,13 +19,13 @@ import Face from "std::types"
 /// filletRadius = 2
 ///
 /// mountingPlateSketch = startSketchOn(XY)
-///   |> startProfile(at = [-width/2, -length/2])
+/// mountingPlateProfile = startProfile(mountingPlateSketch, at = [-width/2, -length/2])
 ///   |> line(endAbsolute = [width/2, -length/2], tag = $edge1)
 ///   |> line(endAbsolute = [width/2, length/2], tag = $edge2)
 ///   |> line(endAbsolute = [-width/2, length/2], tag = $edge3)
 ///   |> close(tag = $edge4)
 ///
-/// mountingPlate = extrude(mountingPlateSketch, length = thickness)
+/// mountingPlate = extrude(mountingPlateProfile, length = thickness)
 ///   |> fillet(
 ///     radius = filletRadius,
 ///     tags = [
@@ -44,13 +44,13 @@ import Face from "std::types"
 /// filletRadius = 1
 ///
 /// mountingPlateSketch = startSketchOn(XY)
-///   |> startProfile(at = [-width/2, -length/2])
+/// mountingPlateProfile = startProfile(mountingPlateSketch, at = [-width/2, -length/2])
 ///   |> line(endAbsolute = [width/2, -length/2], tag = $edge1)
 ///   |> line(endAbsolute = [width/2, length/2], tag = $edge2)
 ///   |> line(endAbsolute = [-width/2, length/2], tag = $edge3)
 ///   |> close(tag = $edge4)
 ///
-/// mountingPlate = extrude(mountingPlateSketch, length = thickness)
+/// mountingPlate = extrude(mountingPlateProfile, length = thickness)
 ///   |> fillet(
 ///     radius = filletRadius,
 ///     tolerance = 0.000001,
@@ -90,13 +90,13 @@ export fn fillet(
 /// chamferLength = 2
 ///
 /// mountingPlateSketch = startSketchOn(XY)
-///   |> startProfile(at = [-width/2, -length/2])
+/// mountingPlateProfile = startProfile(mountingPlateSketch, at = [-width/2, -length/2])
 ///   |> line(endAbsolute = [width/2, -length/2], tag = $edge1)
 ///   |> line(endAbsolute = [width/2, length/2], tag = $edge2)
 ///   |> line(endAbsolute = [-width/2, length/2], tag = $edge3)
 ///   |> close(tag = $edge4)
 ///
-/// mountingPlate = extrude(mountingPlateSketch, length = thickness)
+/// mountingPlate = extrude(mountingPlateProfile, length = thickness)
 ///   |> chamfer(
 ///     length = chamferLength,
 ///     tags = [
@@ -111,13 +111,13 @@ export fn fillet(
 /// ```
 /// // Sketch on the face of a chamfer.
 /// fn cube(pos, scale) {
-/// sg = startSketchOn(XY)
-///     |> startProfile(at = pos)
+///   cubeSketch = startSketchOn(XY)
+///   cubeProfile = startProfile(cubeSketch, at = pos)
 ///     |> line(end = [0, scale])
 ///     |> line(end = [scale, 0])
 ///     |> line(end = [0, -scale])
 ///
-///     return sg
+///   return cubeProfile
 /// }
 ///
 /// part001 = cube(pos = [0,0], scale = 20)
@@ -131,7 +131,7 @@ export fn fillet(
 ///     )  
 ///
 /// sketch001 = startSketchOn(part001, face = chamfer1)
-///     |> startProfile(at = [10, 10])
+/// profile001 = startProfile(sketch001, at = [10, 10])
 ///     |> line(end = [2, 0])
 ///     |> line(end = [0, 2])
 ///     |> line(end = [-2, 0])
@@ -414,7 +414,7 @@ export fn hollow(
 ///
 /// // Sketch 4 cylinders.
 /// sketch001 = startSketchOn(XZ)
-///   |> circle(center = [0, 0], radius = 2)
+/// extrude001 = circle(sketch001, center = [0, 0], radius = 2)
 ///   |> extrude(length = 5)
 ///   |> patternTransform(instances = 4, transform = transform)
 /// ```
@@ -428,7 +428,7 @@ export fn hollow(
 /// }
 ///
 /// sketch001 = startSketchOn(XZ)
-///   |> circle(center = [0, 0], radius = 2)
+/// extrude001 = circle(sketch001, center = [0, 0], radius = 2)
 ///   |> extrude(length = 5)
 ///   |> patternTransform(instances = 4, transform = transform)
 /// ```
@@ -572,13 +572,13 @@ export fn patternTransform(
 /// /// Pattern using a named axis.
 ///
 /// exampleSketch = startSketchOn(XZ)
-///   |> startProfile(at = [0, 0])
+/// exampleProfile = startProfile(exampleSketch, at = [0, 0])
 ///   |> line(end = [0, 2])
 ///   |> line(end = [3, 1])
 ///   |> line(end = [0, -4])
 ///   |> close()
 ///
-/// example = extrude(exampleSketch, length = 1)
+/// example = extrude(exampleProfile, length = 1)
 ///   |> patternLinear3d(
 ///       axis = X,
 ///       instances = 7,
@@ -590,13 +590,13 @@ export fn patternTransform(
 /// /// Pattern using a raw axis.
 ///
 /// exampleSketch = startSketchOn(XZ)
-///   |> startProfile(at = [0, 0])
+/// exampleProfile = startProfile(exampleSketch, at = [0, 0])
 ///   |> line(end = [0, 2])
 ///   |> line(end = [3, 1])
 ///   |> line(end = [0, -4])
 ///   |> close()
 ///
-/// example = extrude(exampleSketch, length = 1)
+/// example = extrude(exampleProfile, length = 1)
 ///   |> patternLinear3d(
 ///       axis = [1, 0, 1],
 ///       instances = 7,
@@ -607,8 +607,8 @@ export fn patternTransform(
 /// ```kcl
 /// // Pattern a whole sketch on face.
 /// size = 100
-/// case = startSketchOn(XY)
-///     |> startProfile(at = [-size, -size])
+/// caseSketch = startSketchOn(XY)
+/// case = startProfile(caseSketch, at = [-size, -size])
 ///     |> line(end = [2 * size, 0])
 ///     |> line(end = [0, 2 * size])
 ///     |> tangentialArc(endAbsolute = [-size, size])
@@ -635,8 +635,8 @@ export fn patternTransform(
 /// ```kcl
 /// // Pattern an object on a face.
 /// size = 100
-/// case = startSketchOn(XY)
-///     |> startProfile(at = [-size, -size])
+/// caseSketch = startSketchOn(XY)
+/// case = startProfile(caseSketch, at = [-size, -size])
 ///     |> line(end = [2 * size, 0])
 ///     |> line(end = [0, 2 * size])
 ///     |> tangentialArc(endAbsolute = [-size, size])
@@ -732,8 +732,8 @@ export fn patternCircular3d(
 /// // Union two cubes using the stdlib functions.
 ///
 /// fn cube(center, size) {
-///     return startSketchOn(XY)
-///         |> startProfile(at = [center[0] - size, center[1] - size])
+///     cubeSketch = startSketchOn(XY)
+///     return startProfile(cubeSketch, at = [center[0] - size, center[1] - size])
 ///         |> line(endAbsolute = [center[0] + size, center[1] - size])
 ///         |> line(endAbsolute = [center[0] + size, center[1] + size])
 ///         |> line(endAbsolute = [center[0] - size, center[1] + size])
@@ -754,8 +754,8 @@ export fn patternCircular3d(
 /// // Codemods will generate the stdlib function call instead.
 ///
 /// fn cube(center, size) {
-///     return startSketchOn(XY)
-///         |> startProfile(at = [center[0] - size, center[1] - size])
+///     cubeSketch = startSketchOn(XY)
+///     return startProfile(cubeSketch, at = [center[0] - size, center[1] - size])
 ///         |> line(endAbsolute = [center[0] + size, center[1] - size])
 ///         |> line(endAbsolute = [center[0] + size, center[1] + size])
 ///         |> line(endAbsolute = [center[0] - size, center[1] + size])
@@ -777,8 +777,8 @@ export fn patternCircular3d(
 /// // Codemods will generate the stdlib function call instead.
 ///
 /// fn cube(center, size) {
-///     return startSketchOn(XY)
-///         |> startProfile(at = [center[0] - size, center[1] - size])
+///     cubeSketch = startSketchOn(XY)
+///     return startProfile(cubeSketch, at = [center[0] - size, center[1] - size])
 ///         |> line(endAbsolute = [center[0] + size, center[1] - size])
 ///         |> line(endAbsolute = [center[0] + size, center[1] + size])
 ///         |> line(endAbsolute = [center[0] - size, center[1] + size])
@@ -815,8 +815,8 @@ export fn union(
 /// // Intersect two cubes using the stdlib functions.
 ///
 /// fn cube(center, size) {
-///     return startSketchOn(XY)
-///         |> startProfile(at = [center[0] - size, center[1] - size])
+///     cubeSketch = startSketchOn(XY)
+///     return startProfile(cubeSketch, at = [center[0] - size, center[1] - size])
 ///         |> line(endAbsolute = [center[0] + size, center[1] - size])
 ///         |> line(endAbsolute = [center[0] + size, center[1] + size])
 ///         |> line(endAbsolute = [center[0] - size, center[1] + size])
@@ -837,8 +837,8 @@ export fn union(
 /// // Codemods will generate the stdlib function call instead.
 ///
 /// fn cube(center, size) {
-///     return startSketchOn(XY)
-///         |> startProfile(at = [center[0] - size, center[1] - size])
+///     cubeSketch = startSketchOn(XY)
+///     return startProfile(cubeSketch, at = [center[0] - size, center[1] - size])
 ///         |> line(endAbsolute = [center[0] + size, center[1] - size])
 ///         |> line(endAbsolute = [center[0] + size, center[1] + size])
 ///         |> line(endAbsolute = [center[0] - size, center[1] + size])
@@ -873,8 +873,8 @@ export fn intersect(
 /// // Subtract a cylinder from a cube using the stdlib functions.
 ///
 /// fn cube(center, size) {
-///     return startSketchOn(XY)
-///         |> startProfile(at = [center[0] - size, center[1] - size])
+///     cubeSketch = startSketchOn(XY)
+///     return startProfile(cubeSketch, at = [center[0] - size, center[1] - size])
 ///         |> line(endAbsolute = [center[0] + size, center[1] - size])
 ///         |> line(endAbsolute = [center[0] + size, center[1] + size])
 ///         |> line(endAbsolute = [center[0] - size, center[1] + size])
@@ -895,8 +895,8 @@ export fn intersect(
 /// // Codemods will generate the stdlib function call instead.
 ///
 /// fn cube(center, size) {
-///     return startSketchOn(XY)
-///         |> startProfile(at = [center[0] - size, center[1] - size])
+///     cubeSketch = startSketchOn(XY)
+///     return startProfile(cubeSketch, at = [center[0] - size, center[1] - size])
 ///         |> line(endAbsolute = [center[0] + size, center[1] - size])
 ///         |> line(endAbsolute = [center[0] + size, center[1] + size])
 ///         |> line(endAbsolute = [center[0] - size, center[1] + size])
@@ -928,13 +928,13 @@ export fn subtract(
 /// ```kcl
 /// // Add color to an extruded solid.
 /// exampleSketch = startSketchOn(XZ)
-///   |> startProfile(at = [0, 0])
+/// exampleProfile = startProfile(exampleSketch, at = [0, 0])
 ///   |> line(endAbsolute = [10, 0])
 ///   |> line(endAbsolute = [0, 10])
 ///   |> line(endAbsolute = [-10, 0])
 ///   |> close()
 ///
-/// example = extrude(exampleSketch, length = 5)
+/// example = extrude(exampleProfile, length = 5)
 ///  // There are other options besides 'color', but they're optional.
 ///  |> appearance(color='#ff0000')
 /// ```
@@ -942,7 +942,7 @@ export fn subtract(
 /// ```kcl
 /// // Add color to a revolved solid.
 /// sketch001 = startSketchOn(XY)
-///     |> circle( center = [15, 0], radius = 5 )
+/// profile001 = circle( sketch001, center = [15, 0], radius = 5 )
 ///     |> revolve( angle = 360deg, axis = Y)
 ///     |> appearance(
 ///         color = '#ff0000',
@@ -954,13 +954,13 @@ export fn subtract(
 /// ```kcl
 /// // Add color to different solids.
 /// fn cube(center) {
-///    return startSketchOn(XY)
-///    |> startProfile(at = [center[0] - 10, center[1] - 10])
-///    |> line(endAbsolute = [center[0] + 10, center[1] - 10])
+///   cubeSketch = startSketchOn(XY)
+///   return startProfile(cubeSketch, at = [center[0] - 10, center[1] - 10])
+///     |> line(endAbsolute = [center[0] + 10, center[1] - 10])
 ///     |> line(endAbsolute = [center[0] + 10, center[1] + 10])
 ///     |> line(endAbsolute = [center[0] - 10, center[1] + 10])
 ///     |> close()
-///    |> extrude(length = 10)
+///     |> extrude(length = 10)
 /// }
 ///
 /// example0 = cube(center = [0, 0])
@@ -975,7 +975,7 @@ export fn subtract(
 /// // You can set the appearance before or after you shell it will yield the same result.
 /// // This example shows setting the appearance _after_ the shell.
 /// firstSketch = startSketchOn(XY)
-///     |> startProfile(at = [-12, 12])
+/// firstSolid = startProfile(firstSketch, at = [-12, 12])
 ///     |> line(end = [24, 0])
 ///     |> line(end = [0, -24])
 ///     |> line(end = [-24, 0])
@@ -983,7 +983,7 @@ export fn subtract(
 ///     |> extrude(length = 6)
 ///
 /// shell(
-///     firstSketch,
+///     firstSolid,
 ///     faces = [END],
 ///     thickness = 0.25,
 /// )
@@ -1021,13 +1021,13 @@ export fn subtract(
 /// // Setting the appearance of a 3D pattern can be done _before_ or _after_ the pattern.
 /// // This example shows _before_ the pattern.
 /// exampleSketch = startSketchOn(XZ)
-///   |> startProfile(at = [0, 0])
+/// exampleProfile = startProfile(exampleSketch, at = [0, 0])
 ///   |> line(end = [0, 2])
 ///   |> line(end = [3, 1])
 ///   |> line(end = [0, -4])
 ///   |> close()
 ///
-/// example = extrude(exampleSketch, length = 1)
+/// example = extrude(exampleProfile, length = 1)
 ///     |> appearance(
 ///         color = '#ff0000',
 ///         metalness = 90,

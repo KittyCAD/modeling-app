@@ -12,7 +12,7 @@ import Axis3d from "std::types"
 /// ```
 /// // Mirror an un-closed sketch across the Y axis.
 /// sketch001 = startSketchOn(XZ)
-///     |> startProfile(at = [0, 10])
+/// profile001 = startProfile(sketch001, at = [0, 10])
 ///     |> line(end = [15, 0])
 ///     |> line(end = [-7, -3])
 ///     |> line(end = [9, -1])
@@ -23,18 +23,18 @@ import Axis3d from "std::types"
 ///     |> line(end = [-19, -0])
 ///     |> mirror2d(axis = Y)
 ///
-/// example = extrude(sketch001, length = 10)
+/// example = extrude(profile001, length = 10)
 /// ```
 ///
 /// ```
 /// // Mirror a un-closed sketch across the Y axis.
 /// sketch001 = startSketchOn(XZ)
-///     |> startProfile(at = [0, 8.5])
+/// profile001 = startProfile(sketch001, at = [0, 8.5])
 ///     |> line(end = [20, -8.5])
 ///     |> line(end = [-20, -8.5])
 ///     |> mirror2d(axis = Y)
 ///
-/// example = extrude(sketch001, length = 10)
+/// example = extrude(profile001, length = 10)
 /// ```
 ///
 /// ```
@@ -44,18 +44,18 @@ import Axis3d from "std::types"
 ///  |> line(end = [0, 10], tag = $edge001)
 ///
 /// sketch001 = startSketchOn(XZ)
-///     |> startProfile(at = [0, 8.5])
+/// profile001 = startProfile(sketch001, at = [0, 8.5])
 ///     |> line(end = [20, -8.5])
 ///     |> line(end = [-20, -8.5])
 ///     |> mirror2d(axis = edge001)
 ///
-/// // example = extrude(sketch001, length = 10)
+/// // example = extrude(profile001, length = 10)
 /// ```
 ///
 /// ```
 /// // Mirror an un-closed sketch across a custom axis.
 /// sketch001 = startSketchOn(XZ)
-///     |> startProfile(at = [0, 8.5])
+/// profile001 = startProfile(sketch001, at = [0, 8.5])
 ///     |> line(end = [20, -8.5])
 ///     |> line(end = [-20, -8.5])
 ///     |> mirror2d(
@@ -64,13 +64,13 @@ import Axis3d from "std::types"
 ///         origin = [0.0, 0.0]
 ///       })
 ///
-/// example = extrude(sketch001, length = 10)
+/// example = extrude(profile001, length = 10)
 /// ```
 ///
 /// ```
 /// // Sketch on the face of a mirrored sketch, that has been extruded.
-/// sketch0011 = startSketchOn(XY)
-///      |> startProfile(at = [6.77, 0])
+/// sketch001 = startSketchOn(XY)
+/// profile001 = startProfile(sketch001, at = [6.77, 0])
 ///      |> yLine(length = 1.27)
 ///      |> tangentialArc(endAbsolute = [5.96, 2.37])
 ///      |> tangentialArc(endAbsolute = [-6.2, 2.44])
@@ -79,11 +79,11 @@ import Axis3d from "std::types"
 ///      |> mirror2d( axis = X )
 ///      |> extrude(length = 10)
 ///
-/// sketch002 = startSketchOn(sketch0011, face = END)
-///     |> circle( center = [-0.01, 1.58], radius = 1.2 )
+/// sketch002 = startSketchOn(profile001, face = END)
+/// profile002 = circle( sketch002, center = [-0.01, 1.58], radius = 1.2 )
 ///     |> extrude(length = 1.2)
 ///
-/// shell([sketch002], faces = ['end'], thickness = .1 )
+/// shell([profile002], faces = ['end'], thickness = .1 )
 /// ```
 @(impl = std_rust)
 export fn mirror2d(
@@ -177,10 +177,10 @@ export fn mirror2d(
 /// ```
 ///
 /// ```kcl
-/// // Sweep two sketches along the same path.
+/// // Sweep two profiles along the same path.
 ///
 /// sketch001 = startSketchOn(XY)
-/// rectangleSketch = startProfile(sketch001, at = [-200, 23.86])
+/// rectangleProfile = startProfile(sketch001, at = [-200, 23.86])
 ///     |> angledLine(angle = 0, length = 73.47, tag = $rectangleSegmentA001)
 ///     |> angledLine(
 ///         angle = segAng(rectangleSegmentA001) - 90deg,
@@ -193,7 +193,7 @@ export fn mirror2d(
 ///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
 ///     |> close()
 ///
-/// circleSketch = circle(sketch001, center = [200, -30.29], radius = 32.63)
+/// circleProfile = circle(sketch001, center = [200, -30.29], radius = 32.63)
 ///
 /// sketch002 = startSketchOn(YZ)
 /// sweepPath = startProfile(sketch002, at = [0, 0])
@@ -201,7 +201,7 @@ export fn mirror2d(
 ///     |> tangentialArc(radius = 80, angle = -90deg)
 ///     |> xLine(length = 384.93)
 ///
-/// parts = sweep([rectangleSketch, circleSketch], path = sweepPath)
+/// parts = sweep([rectangleProfile, circleProfile], path = sweepPath)
 ///
 /// // Move the sweeps.
 /// translate(parts, x = 1.0, y = 1.0, z = 2.5)
@@ -217,8 +217,8 @@ export fn mirror2d(
 ///     p2 = [l, l]
 ///     p3 = [l, -l]
 ///
-///     return startSketchOn(XY)
-///         |> startProfile(at = p0)
+///     squareSketch = startSketchOn(XY)
+///     return startProfile(squareSketch, at = p0)
 ///         |> line(endAbsolute = p1)
 ///         |> line(endAbsolute = p2)
 ///         |> line(endAbsolute = p3)
@@ -240,7 +240,7 @@ export fn mirror2d(
 /// sketch001 = startSketchOn(XY)
 ///
 /// fn square() {
-///     return  startProfile(sketch001, at = [-10, 10])
+///     return startProfile(sketch001, at = [-10, 10])
 ///         |> xLine(length = 20)
 ///         |> yLine(length = -20)
 ///         |> xLine(length = -20)
@@ -317,17 +317,10 @@ export fn translate(
 ///     |> line(end = [0, 7])
 ///
 /// // Create a hole for the pipe.
-/// pipeHole = startSketchOn(XY)
-///     |> circle(
-///         center = [0, 0],
-///         radius = 1.5,
-///     )
+/// pipeSketch = startSketchOn(XY)
+/// pipeHole = circle(pipeSketch, center = [0, 0], radius = 1.5)
 ///
-/// sweepSketch = startSketchOn(XY)
-///     |> circle(
-///         center = [0, 0],
-///         radius = 2,
-///         )              
+/// pipe = circle(pipeSketch, center = [0, 0], radius = 2)
 ///     |> subtract2d(tool = pipeHole)
 ///     |> sweep(path = sweepPath)   
 ///     |> rotate(
@@ -350,17 +343,10 @@ export fn translate(
 ///     |> line(end = [0, 7])
 ///
 /// // Create a hole for the pipe.
-/// pipeHole = startSketchOn(XY)
-///     |> circle(
-///         center = [0, 0],
-///         radius = 1.5,
-///     )
+/// pipeSketch = startSketchOn(XY)
+/// pipeHole = circle(pipeSketch, center = [0, 0], radius = 1.5)
 ///
-/// sweepSketch = startSketchOn(XY)
-///     |> circle(
-///         center = [0, 0],
-///         radius = 2,
-///         )              
+/// pipe = circle(pipeSketch, center = [0, 0], radius = 2)
 ///     |> subtract2d(tool = pipeHole)
 ///     |> sweep(path = sweepPath)   
 ///     |> rotate(
@@ -381,23 +367,16 @@ export fn translate(
 ///     |> line(end = [0, 7])
 ///
 /// // Create a hole for the pipe.
-/// pipeHole = startSketchOn(XY)
-///     |> circle(
-///         center = [0, 0],
-///         radius = 1.5,
-///    )
+/// pipeSketch = startSketchOn(XY)
+/// pipeHole = circle(pipeSketch, center = [0, 0], radius = 1.5)
 ///
-/// sweepSketch = startSketchOn(XY)
-///     |> circle(
-///         center = [0, 0],
-///         radius = 2,
-///         )              
+/// pipe = circle(pipeSketch, center = [0, 0], radius = 2)
 ///     |> subtract2d(tool = pipeHole)
 ///     |> sweep(path = sweepPath)   
 ///     |> rotate(
-///     axis =  Z,
-///     angle = 90deg,
-///     )
+///          axis =  Z,
+///          angle = 90deg,
+///        )
 /// ```
 ///
 /// ```kcl
@@ -406,10 +385,10 @@ export fn translate(
 /// import "tests/inputs/cube.sldprt" as cube
 ///
 /// cube
-///     |> rotate(
-///     axis =  [0, 0, 1.0],
-///     angle = 9deg,
-///     )
+///   |> rotate(
+///        axis =  [0, 0, 1.0],
+///        angle = 9deg,
+///      )
 /// ```
 ///
 /// ```kcl
@@ -425,23 +404,16 @@ export fn translate(
 ///     |> line(end = [0, 7])
 ///
 /// // Create a hole for the pipe.
-/// pipeHole = startSketchOn(XY)
-///     |> circle(
-///         center = [0, 0],
-///         radius = 1.5,
-///    )
+/// pipeSketch = startSketchOn(XY)
+/// pipeHole = circle(pipeSketch, center = [0, 0], radius = 1.5)
 ///
-/// sweepSketch = startSketchOn(XY)
-///     |> circle(
-///         center = [0, 0],
-///         radius = 2,
-///         )              
+/// pipe = circle(pipeSketch, center = [0, 0], radius = 2)
 ///     |> subtract2d(tool = pipeHole)
 ///     |> sweep(path = sweepPath)   
 ///     |> rotate(
-///     axis =  [0, 0, 1.0],
-///     angle = 90deg,
-///     )
+///          axis =  [0, 0, 1.0],
+///          angle = 90deg,
+///        )
 /// ```
 ///
 /// ```kcl
@@ -480,7 +452,7 @@ export fn translate(
 /// sketch001 = startSketchOn(XY)
 ///
 /// fn square() {
-///     return  startProfile(sketch001, at = [-10, 10])
+///     return startProfile(sketch001, at = [-10, 10])
 ///         |> xLine(length = 20)
 ///         |> yLine(length = -20)
 ///         |> xLine(length = -20)
@@ -545,22 +517,15 @@ export fn rotate(
 ///     |> line(end = [0, 7])
 ///
 /// // Create a hole for the pipe.
-/// pipeHole = startSketchOn(XY)
-///     |> circle(
-///         center = [0, 0],
-///         radius = 1.5,
-///     )
+/// pipeSketch = startSketchOn(XY)
+/// pipeHole = circle(pipeSketch, center = [0, 0], radius = 1.5)
 ///
-/// sweepSketch = startSketchOn(XY)
-///     |> circle(
-///         center = [0, 0],
-///         radius = 2,
-///         )              
+/// pipe = circle(pipeSketch, center = [0, 0], radius = 2)
 ///     |> subtract2d(tool = pipeHole)
 ///     |> sweep(path = sweepPath)   
 ///     |> scale(
-///     z = 2.5,
-///     )
+///          z = 2.5,
+///        )
 /// ```
 ///
 /// ```kcl
@@ -569,9 +534,9 @@ export fn rotate(
 /// import "tests/inputs/cube.sldprt" as cube
 ///
 /// cube
-///     |> scale(
-///     y = 2.5,
-///     )
+///   |> scale(
+///        y = 2.5,
+///      )
 /// ```
 ///
 /// ```kcl
