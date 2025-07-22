@@ -12,6 +12,7 @@ import {
   setCallInAst,
 } from '@src/lang/modifyAst'
 import {
+  getSelectedPlaneAsNode,
   getVariableExprsFromSelection,
   retrieveSelectionsFromOpArg,
   valueOrVariable,
@@ -19,8 +20,10 @@ import {
 import type {
   Artifact,
   ArtifactGraph,
+  Expr,
   PathToNode,
   Program,
+  VariableMap,
 } from '@src/lang/wasm'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import type { Selection, Selections } from '@src/lib/selections'
@@ -120,6 +123,109 @@ export function addShell({
     pathToNode,
   }
 }
+
+export function addOffsetPlane({
+  ast,
+  artifactGraph,
+  variables,
+  plane,
+  offset,
+  nodeToEdit,
+}: {
+  ast: Node<Program>
+  artifactGraph: ArtifactGraph
+  variables: VariableMap
+  plane: Selections
+  offset: KclCommandValue
+  nodeToEdit?: PathToNode
+}):
+  | {
+      modifiedAst: Node<Program>
+      pathToNode: PathToNode
+    }
+  | Error {
+  // 1. Clone the ast so we can edit it
+  const modifiedAst = structuredClone(ast)
+
+  // 2. Prepare unlabeled and labeled arguments
+  let planeExpr: Expr | undefined
+  const faceToOffset = plane.graphSelections.find(
+    (sel) => sel.artifact?.type === 'cap' || sel.artifact?.type === 'wall'
+  )
+  if (faceToOffset) {
+    const sweep = getSweepArtifactFromSelection(faceToOffset, artifactGraph)
+    if (err(sweep) || !sweep) {
+      return new Error('No sweep artifact found corresponding to the selection')
+    }
+    const solid: Selections = {
+      graphSelections: [
+        {
+          artifact: sweep as Artifact,
+          codeRef: sweep.codeRef,
+        },
+      ],
+      otherSelections: [],
+    }
+    const lastChildLookup = true
+    const vars = getVariableExprsFromSelection(
+      solid,
+      modifiedAst,
+      nodeToEdit,
+      lastChildLookup,
+      artifactGraph
+    )
+    if (err(vars)) {
+      return vars
+    }
+    const solidExpr = createVariableExpressionsArray(vars.exprs)
+    const facesExprs = getFacesExprsFromSelection(
+      modifiedAst,
+      plane,
+      artifactGraph
+    )
+    const facesExpr = createVariableExpressionsArray(facesExprs)
+    if (!facesExpr) {
+      return new Error('No face found in the selection')
+    }
+    planeExpr = createCallExpressionStdLibKw('planeOf', solidExpr, [
+      createLabeledArg('face', facesExpr),
+    ])
+  } else {
+    planeExpr = getSelectedPlaneAsNode(plane, variables)
+    if (!planeExpr) {
+      return new Error('No plane found in the selection')
+    }
+  }
+
+  const call = createCallExpressionStdLibKw('offsetPlane', planeExpr, [
+    createLabeledArg('offset', valueOrVariable(offset)),
+  ])
+
+  // Insert variables for labeled arguments if provided
+  if ('variableName' in offset && offset.variableName) {
+    insertVariableAndOffsetPathToNode(offset, modifiedAst, nodeToEdit)
+  }
+
+  // 3. If edit, we assign the new function call declaration to the existing node,
+  // otherwise just push to the end
+  const pathToNode = setCallInAst({
+    ast: modifiedAst,
+    call,
+    pathToEdit: nodeToEdit,
+    pathIfNewPipe: undefined,
+    variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.PLANE,
+  })
+  if (err(pathToNode)) {
+    return pathToNode
+  }
+
+  return {
+    modifiedAst,
+    pathToNode,
+  }
+}
+
+// Utilities
 
 function getFacesExprsFromSelection(
   ast: Node<Program>,

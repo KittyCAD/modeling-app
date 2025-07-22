@@ -400,8 +400,8 @@ const prepareToEditShell: PrepareToEditCallback = async ({ operation }) => {
   // 2. Convert the thickness argument from a string to a KCL expression
   const thickness = await stringToKclExpression(
     codeManager.code.slice(
-      operation.labeledArgs?.['thickness']?.sourceRange[0],
-      operation.labeledArgs?.['thickness']?.sourceRange[1]
+      operation.labeledArgs?.thickness?.sourceRange[0],
+      operation.labeledArgs?.thickness?.sourceRange[1]
     )
   )
   if (err(thickness) || 'errors' in thickness) {
@@ -429,22 +429,28 @@ const prepareToEditOffsetPlane: PrepareToEditCallback = async ({
     name: 'Offset plane',
     groupId: 'modeling',
   }
-  if (
-    operation.type !== 'StdLibCall' ||
-    !operation.labeledArgs ||
-    !operation.unlabeledArg ||
-    !('offset' in operation.labeledArgs) ||
-    !operation.labeledArgs.offset
-  ) {
-    return baseCommand
+  if (operation.type !== 'StdLibCall') {
+    return { reason: 'Wrong operation type' }
   }
+
+  // 1. Map the plane and faces arguments to plane or face selections
   // TODO: Implement conversion to arbitrary plane selection
   // once the Offset Plane command supports it.
-  const stdPlane = operation.unlabeledArg
+  if (!operation.unlabeledArg) {
+    return { reason: `Couldn't retrieve operation arguments` }
+  }
+
+  console.log('Offset plane operation:', operation)
+
+  // TODO: replace with util function when available
   const planeName = codeManager.code
-    .slice(stdPlane.sourceRange[0], stdPlane.sourceRange[1])
+    .slice(
+      operation.unlabeledArg.sourceRange[0],
+      operation.unlabeledArg.sourceRange[1]
+    )
     .replaceAll(`'`, ``)
 
+  // TODO: figure this out for non-default planes and planeOf results
   if (!isDefaultPlaneStr(planeName)) {
     // TODO: error handling
     return baseCommand
@@ -465,24 +471,23 @@ const prepareToEditOffsetPlane: PrepareToEditCallback = async ({
     ],
   }
 
-  // Convert the distance argument from a string to a KCL expression
-  const distanceResult = await stringToKclExpression(
+  // 2. Convert the offset argument from a string to a KCL expression
+  const offset = await stringToKclExpression(
     codeManager.code.slice(
-      operation.labeledArgs.offset.sourceRange[0],
-      operation.labeledArgs.offset.sourceRange[1]
+      operation.labeledArgs?.offset?.sourceRange[0],
+      operation.labeledArgs?.offset?.sourceRange[1]
     )
   )
-
-  if (err(distanceResult) || 'errors' in distanceResult) {
-    return baseCommand
+  if (err(offset) || 'errors' in offset) {
+    return { reason: "Couldn't retrieve thickness argument" }
   }
 
   // Assemble the default argument values for the Offset Plane command,
   // with `nodeToEdit` set, which will let the Offset Plane actor know
   // to edit the node that corresponds to the StdLibCall.
   const argDefaultValues: ModelingCommandSchema['Offset plane'] = {
-    distance: distanceResult,
     plane,
+    offset,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
 

@@ -1104,17 +1104,17 @@ openSketch = startSketchOn(XY)
         stage: 'arguments',
         currentArgKey: 'plane',
         currentArgValue: '',
-        headerArguments: { Plane: '', Distance: '' },
+        headerArguments: { Plane: '', Offset: '' },
         highlightedHeaderArg: 'plane',
         commandName: 'Offset plane',
       })
       await clickOnXzPlane()
       await cmdBar.expectState({
         stage: 'arguments',
-        currentArgKey: 'distance',
+        currentArgKey: 'offset',
         currentArgValue: '5',
-        headerArguments: { Plane: '1 plane', Distance: '' },
-        highlightedHeaderArg: 'distance',
+        headerArguments: { Plane: '1 plane', Offset: '' },
+        highlightedHeaderArg: 'offset',
         commandName: 'Offset plane',
       })
       await cmdBar.progressCmdBar()
