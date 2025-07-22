@@ -38,9 +38,9 @@ circle(
 
 ```kcl
 exampleSketch = startSketchOn(-XZ)
-  |> circle(center = [0, 0], radius = 10)
+exampleProfile = circle(exampleSketch, center = [0, 0], radius = 10)
 
-example = extrude(exampleSketch, length = 5)
+example = extrude(exampleProfile, length = 5)
 
 ```
 
@@ -48,14 +48,14 @@ example = extrude(exampleSketch, length = 5)
 
 ```kcl
 exampleSketch = startSketchOn(XZ)
-  |> startProfile(at = [-15, 0])
+exampleProfile = startProfile(exampleSketch, at = [-15, 0])
   |> line(end = [30, 0])
   |> line(end = [0, 30])
   |> line(end = [-30, 0])
   |> close()
   |> subtract2d(tool = circle(center = [0, 15], diameter = 10))
 
-example = extrude(exampleSketch, length = 5)
+example = extrude(exampleProfile, length = 5)
 
 ```
 

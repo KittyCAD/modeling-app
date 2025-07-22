@@ -34,13 +34,13 @@ startProfile(
 
 ```kcl
 exampleSketch = startSketchOn(XZ)
-  |> startProfile(at = [0, 0])
+exampleProfile = startProfile(exampleSketch, at = [0, 0])
   |> line(end = [10, 0])
   |> line(end = [0, 10])
   |> line(end = [-10, 0])
   |> close()
 
-example = extrude(exampleSketch, length = 5)
+example = extrude(exampleProfile, length = 5)
 
 ```
 
@@ -48,13 +48,13 @@ example = extrude(exampleSketch, length = 5)
 
 ```kcl
 exampleSketch = startSketchOn(-XZ)
-  |> startProfile(at = [10, 10])
+exampleProfile = startProfile(exampleSketch, at = [10, 10])
   |> line(end = [10, 0])
   |> line(end = [0, 10])
   |> line(end = [-10, 0])
   |> close()
 
-example = extrude(exampleSketch, length = 5)
+example = extrude(exampleProfile, length = 5)
 
 ```
 
@@ -62,13 +62,13 @@ example = extrude(exampleSketch, length = 5)
 
 ```kcl
 exampleSketch = startSketchOn(-XZ)
-  |> startProfile(at = [-10, 23])
+exampleProfile = startProfile(exampleSketch, at = [-10, 23])
   |> line(end = [10, 0])
   |> line(end = [0, 10])
   |> line(end = [-10, 0])
   |> close()
 
-example = extrude(exampleSketch, length = 5)
+example = extrude(exampleProfile, length = 5)
 
 ```
 

@@ -38,7 +38,12 @@ ellipse(
 
 ```kcl
 exampleSketch = startSketchOn(XY)
-  |> ellipse(center = [0, 0], majorRadius = 50, minorRadius = 20)
+exampleProfile = ellipse(
+  exampleSketch,
+  center = [0, 0],
+  majorRadius = 50,
+  minorRadius = 20,
+)
 
 ```
 

@@ -31,8 +31,13 @@ planeOf(
 ### Examples
 
 ```kcl
-triangle = startSketchOn(XY)
-  |> polygon(radius = 3, numSides = 3, center = [0, 0])
+triangleSketch = startSketchOn(XY)
+triangle = polygon(
+       triangleSketch,
+       radius = 3,
+       numSides = 3,
+       center = [0, 0],
+     )
   |> extrude(length = 2)
 
 // Find the plane of the triangle's top face.

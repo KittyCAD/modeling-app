@@ -38,7 +38,13 @@ A rectangle can be defined by its width, height, and location. Either the center
 
 ```kcl
 exampleSketch = startSketchOn(-XZ)
-  |> rectangle(center = [0, 0], width = 10, height = 5)
+rectSolid = rectangle(
+       exampleSketch,
+       center = [0, 0],
+       width = 10,
+       height = 5,
+     )
+  |> extrude(length = 2)
 
 ```
 

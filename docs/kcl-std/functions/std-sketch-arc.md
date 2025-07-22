@@ -51,11 +51,11 @@ for to construct your shape, you're likely looking for tangentialArc.
 
 ```kcl
 exampleSketch = startSketchOn(XZ)
-  |> startProfile(at = [0, 0])
+exampleProfile = startProfile(exampleSketch, at = [0, 0])
   |> line(end = [10, 0])
   |> arc(angleStart = 0, angleEnd = 280deg, radius = 16)
   |> close()
-example = extrude(exampleSketch, length = 10)
+example = extrude(exampleProfile, length = 10)
 
 ```
 
@@ -63,10 +63,10 @@ example = extrude(exampleSketch, length = 10)
 
 ```kcl
 exampleSketch = startSketchOn(XZ)
-  |> startProfile(at = [0, 0])
+exampleProfile = startProfile(exampleSketch, at = [0, 0])
   |> arc(endAbsolute = [10, 0], interiorAbsolute = [5, 5])
   |> close()
-example = extrude(exampleSketch, length = 10)
+example = extrude(exampleProfile, length = 10)
 
 ```
 

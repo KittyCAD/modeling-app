@@ -47,12 +47,12 @@ startSketchOn(XZ)
 
 ```kcl
 exampleSketch = startSketchOn(-XZ)
-  |> startProfile(at = [0, 0])
+exampleProfile = startProfile(exampleSketch, at = [0, 0])
   |> line(end = [10, 0])
   |> line(end = [0, 10])
   |> close()
 
-example = extrude(exampleSketch, length = 10)
+example = extrude(exampleProfile, length = 10)
 
 ```
 

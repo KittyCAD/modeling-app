@@ -36,7 +36,7 @@ xLine(
 
 ```kcl
 exampleSketch = startSketchOn(XZ)
-  |> startProfile(at = [0, 0])
+exampleProfile = startProfile(exampleSketch, at = [0, 0])
   |> xLine(length = 15)
   |> angledLine(angle = 80deg, length = 15)
   |> line(end = [8, -10])
@@ -45,7 +45,7 @@ exampleSketch = startSketchOn(XZ)
   |> xLine(length = -15)
   |> close()
 
-example = extrude(exampleSketch, length = 10)
+example = extrude(exampleProfile, length = 10)
 
 ```
 
