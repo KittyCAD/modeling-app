@@ -381,7 +381,7 @@ test.describe('Feature Tree pane', () => {
       await cmdBar.expectState({
         commandName: 'Offset plane',
         stage: 'arguments',
-        currentArgKey: 'distance',
+        currentArgKey: 'offset',
         currentArgValue: initialInput,
         headerArguments: {
           Plane: '1 plane',
