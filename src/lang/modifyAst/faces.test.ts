@@ -395,4 +395,56 @@ describe('Testing addOffsetPlane', () => {
       await enginelessExecutor(result2.modifiedAst)
     }
   )
+
+  it('should add an offset plane call on offset plane and then edit it', async () => {
+    const code = `plane001 = offsetPlane(XY, offset = 1)`
+    const { artifactGraph, ast, variables } = await getAstAndArtifactGraph(code)
+    const offset = (await stringToKclExpression('2')) as KclCommandValue
+    const artifact = [...artifactGraph.values()].find((a) => a.type === 'plane')
+    const plane: Selections = {
+      graphSelections: [
+        {
+          artifact,
+          codeRef: artifact!.codeRef,
+        },
+      ],
+      otherSelections: [],
+    }
+    const result = addOffsetPlane({
+      ast,
+      artifactGraph,
+      variables,
+      plane,
+      offset,
+    })
+    if (err(result)) {
+      throw result
+    }
+
+    const newCode = recast(result.modifiedAst)
+    expect(newCode).toContain(`${code}
+plane002 = offsetPlane(plane001, offset = 2)`)
+    await enginelessExecutor(ast)
+
+    const newOffset = (await stringToKclExpression('3')) as KclCommandValue
+    const nodeToEdit = createPathToNodeForLastVariable(result.modifiedAst)
+    const result2 = addOffsetPlane({
+      ast: result.modifiedAst,
+      artifactGraph,
+      variables,
+      plane,
+      offset: newOffset,
+      nodeToEdit,
+    })
+    if (err(result2)) {
+      throw result2
+    }
+    const newCode2 = recast(result2.modifiedAst)
+    expect(newCode2).not.toContain(`offset = 2`)
+    expect(newCode2).toContain(`${code}
+plane002 = offsetPlane(plane001, offset = 3)`)
+    await enginelessExecutor(result2.modifiedAst)
+  })
+
+  // TODO: add test of offset plane on face selection
 })
