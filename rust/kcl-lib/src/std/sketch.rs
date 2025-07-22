@@ -20,7 +20,7 @@ use super::{
 #[cfg(feature = "artifact-graph")]
 use crate::execution::{Artifact, ArtifactId, CodeRef, StartSketchOnFace, StartSketchOnPlane};
 use crate::std::axis_or_reference::Axis2dOrEdgeReference;
-use crate::std::axis_or_reference::Axis2dOrPoint2d;
+use crate::std::planes::inner_plane_of;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
@@ -831,14 +831,29 @@ async fn inner_start_sketch_on(
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<SketchSurface, KclError> {
-
-    let face = match (face, normal_to_face) {
-        (Some(face), Some(normal_to_face)) => return Err(KclError::new_semantic(KclErrorDetails::new(
-                    format!("You cannot give both `face` and `normal_to_face` params, you have to choose one or the other").to_owned(), vec![args.source_range],
-        ))),
-        (Some(face), _) => Some(face),
-        (_, Some(face)) => Some(face),
-        (None, None) => None,
+    let face = match (face, normal_to_face, &align_axis) {
+        (Some(_), Some(_), _) => {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                format!("You cannot give both `face` and `normalToFace` params, you have to choose one or the other")
+                    .to_owned(),
+                vec![args.source_range],
+            )));
+        }
+        (Some(face), _, _) => Some(face),
+        (_, Some(_), None) => {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                format!("`alignAxis` is required if `normalToFace` is specified.").to_owned(),
+                vec![args.source_range],
+            )));
+        }
+        (_, None, Some(_)) => {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                format!("`normalToFace` is required if `alignAxis` is specified.").to_owned(),
+                vec![args.source_range],
+            )));
+        }
+        (_, Some(face), Some(_)) => Some(face),
+        (None, None, None) => None,
     };
 
     match plane_or_solid {
@@ -878,20 +893,77 @@ async fn inner_start_sketch_on(
                     vec![args.source_range],
                 )));
             };
-            let face = start_sketch_on_face(solid, tag, align_axis, exec_state, args).await?;
+            if let Some(align_axis) = align_axis {
+                let plane_of = inner_plane_of(*solid, tag, exec_state, args).await?;
 
-            #[cfg(feature = "artifact-graph")]
-            {
+                let (x_axis, y_axis) = match align_axis {
+                    Axis2dOrEdgeReference::Axis { direction, origin: _ } => {
+                        if (direction[0].n - 1.0).abs() < f64::EPSILON {
+                            //X axis chosen
+                            (plane_of.info.x_axis, plane_of.info.z_axis)
+                        } else if (direction[0].n + 1.0).abs() < f64::EPSILON {
+                            // -X axis chosen
+                            (plane_of.info.x_axis.negated(), plane_of.info.z_axis)
+                        } else if (direction[1].n - 1.0).abs() < f64::EPSILON {
+                            // Y axis chosen
+                            (plane_of.info.y_axis, plane_of.info.z_axis)
+                        } else if (direction[1].n + 1.0).abs() < f64::EPSILON {
+                            // -Y axis chosen
+                            (plane_of.info.y_axis.negated(), plane_of.info.z_axis)
+                        } else {
+                            return Err(KclError::new_semantic(KclErrorDetails::new(
+                                format!(
+                                    "Unsupported axis detected. This function only supports using X, -X, Y and -Y."
+                                )
+                                .to_owned(),
+                                vec![args.source_range],
+                            )));
+                        }
+                    }
+                    Axis2dOrEdgeReference::Edge(_) => {
+                        return Err(KclError::new_semantic(KclErrorDetails::new(
+                            format!("Use of an edge here is unsupported, please specify an `Axis2d` instead.")
+                                .to_owned(),
+                            vec![args.source_range],
+                        )));
+                    }
+                };
+                let plane_data = PlaneData::Plane(PlaneInfo {
+                    origin: plane_of.info.origin,
+                    x_axis,
+                    y_axis,
+                    z_axis: x_axis.axes_cross_product(&y_axis),
+                });
+                let plane = make_sketch_plane_from_orientation(plane_data, exec_state, args).await?;
+
                 // Create artifact used only by the UI, not the engine.
-                let id = exec_state.next_uuid();
-                exec_state.add_artifact(Artifact::StartSketchOnFace(StartSketchOnFace {
-                    id: ArtifactId::from(id),
-                    face_id: face.artifact_id,
-                    code_ref: CodeRef::placeholder(args.source_range),
-                }));
-            }
+                #[cfg(feature = "artifact-graph")]
+                {
+                    let id = exec_state.next_uuid();
+                    exec_state.add_artifact(Artifact::StartSketchOnPlane(StartSketchOnPlane {
+                        id: ArtifactId::from(id),
+                        plane_id: plane.artifact_id,
+                        code_ref: CodeRef::placeholder(args.source_range),
+                    }));
+                }
 
-            Ok(SketchSurface::Face(face))
+                Ok(SketchSurface::Plane(plane))
+            } else {
+                let face = start_sketch_on_face(solid, tag, exec_state, args).await?;
+
+                #[cfg(feature = "artifact-graph")]
+                {
+                    // Create artifact used only by the UI, not the engine.
+                    let id = exec_state.next_uuid();
+                    exec_state.add_artifact(Artifact::StartSketchOnFace(StartSketchOnFace {
+                        id: ArtifactId::from(id),
+                        face_id: face.artifact_id,
+                        code_ref: CodeRef::placeholder(args.source_range),
+                    }));
+                }
+
+                Ok(SketchSurface::Face(face))
+            }
         }
     }
 }
@@ -899,48 +971,18 @@ async fn inner_start_sketch_on(
 async fn start_sketch_on_face(
     solid: Box<Solid>,
     tag: FaceTag,
-    align_axis: Option<Axis2dOrEdgeReference>,
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<Box<Face>, KclError> {
     let extrude_plane_id = tag.get_face_id(&solid, exec_state, args, true).await?;
-
-    let (x_axis, y_axis) = if let Some(align_axis) = align_axis {
-        let normal = solid.sketch.on.x_axis().axes_cross_product(&solid.sketch.on.y_axis());
-        let (x_axis, y_axis) = match align_axis {
-            Axis2dOrEdgeReference::Axis{direction, origin: _} => {
-                if (direction[0].n - 1.0).abs() < f64::EPSILON {
-                //X axis chosen
-                    (solid.sketch.on.x_axis(), normal)
-                } else if (direction[0].n + 1.0).abs() < f64::EPSILON {
-                    // -X axis chosen
-                    (solid.sketch.on.x_axis().negated(), normal)
-                } else if (direction[1].n - 1.0).abs() < f64::EPSILON {
-                    // Y axis chosen
-                    (solid.sketch.on.y_axis(), normal)
-                } else if (direction[1].n + 1.0).abs() < f64::EPSILON {
-                    // -Y axis chosen
-                    (solid.sketch.on.y_axis().negated(), normal)
-                } else {
-                return Err(KclError::new_semantic(KclErrorDetails::new(format!("Unsupported axis detected. This function only supports using X, -X, Y and -Y.").to_owned(), vec![args.source_range])));
-                }
-            },
-            Axis2dOrEdgeReference::Edge(_) => {
-                return Err(KclError::new_semantic(KclErrorDetails::new(format!("Use of an edge here is unsupported, please specify an `Axis2d` instead.").to_owned(), vec![args.source_range])));
-            }
-        };
-        (x_axis, y_axis)
-    } else {
-        (solid.sketch.on.x_axis(), solid.sketch.on.y_axis())
-    };
 
     Ok(Box::new(Face {
         id: extrude_plane_id,
         artifact_id: extrude_plane_id.into(),
         value: tag.to_string(),
         // TODO: get this from the extrude plane data.
-        x_axis,
-        y_axis,
+        x_axis: solid.sketch.on.x_axis(),
+        y_axis: solid.sketch.on.y_axis(),
         units: solid.units,
         solid,
         meta: vec![args.source_range.into()],
