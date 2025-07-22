@@ -211,6 +211,7 @@ pub(crate) async fn do_post_extrude<'a>(
     let mut sketch = sketch.clone();
 
     // If we were sketching on a face, we need the original face id.
+    let faces_sketch_id = sketch.id;
     if let SketchSurface::Face(ref face) = sketch.on {
         // If we are creating a new body we need to preserve its new id.
         if extrude_method != ExtrudeMethod::New {
@@ -223,7 +224,7 @@ pub(crate) async fn do_post_extrude<'a>(
             args.into(),
             ModelingCmd::from(mcmd::Solid3dGetExtrusionFaceInfo {
                 edge_id: any_edge_id,
-                object_id: sketch.id,
+                object_id: faces_sketch_id,
             }),
         )
         .await?;

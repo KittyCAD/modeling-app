@@ -1,0 +1,37 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing sweep_tag_end.kcl
+---
+@settings(defaultLengthUnit = mm)
+
+fudge = 1.5
+thickness = 2
+length = 20
+angle = 75deg
+
+fn tubeProfile(@sketch) {
+  return rectangle(
+    sketch,
+    width = 10,
+    height = 10,
+    center = [0, 0],
+  )
+}
+
+lowerSection = startSketchOn(XY)
+  |> tubeProfile()
+  |> extrude(length = length)
+
+trajectory = startSketchOn(XZ)
+  |> startProfile(at = [0, length])
+  |> yLine(length = thickness)
+  |> tangentialArc(angle = angle, radius = (7 + 2 * thickness) / 2 * fudge, tag = $arc)
+  |> angledLine(angle = tangentToEnd(arc), length = thickness)
+
+bentSection = startSketchOn(lowerSection, face = END)
+  |> tubeProfile()
+  |> sweep(path = trajectory, tagEnd = $bentEnd)
+
+upperSection = startSketchOn(bentSection, face = bentEnd)
+  |> tubeProfile()
+  |> extrude(length = length)
