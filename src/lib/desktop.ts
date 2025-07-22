@@ -830,12 +830,13 @@ export const writeEnvironmentFile = async (environment: string) => {
 export const listAllEnvironments = async () => {
   const environmentFolder = await getEnvironmentConfigurationFolderPath()
   const files = await window.electron.readdir(environmentFolder)
+  const suffix = '.json'
   return files
     .filter((fileName: string) => {
-      return fileName.endsWith('.json')
+      return fileName.endsWith(suffix)
     })
     .map((fileName: string) => {
-      return fileName.replace('.json', '')
+      return fileName.substring(0, fileName.length - suffix.length)
     })
 }
 
