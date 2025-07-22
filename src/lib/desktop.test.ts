@@ -285,14 +285,14 @@ describe('desktop utilities', () => {
   })
 
   describe('readEnvironmentConfigurationToken', () => {
-    it('should return the empty string for development', async () => {
+    it('should return the empty string for dev.zoo.dev', async () => {
       const expected = ''
-      const actual = await readEnvironmentConfigurationToken('development')
+      const actual = await readEnvironmentConfigurationToken('dev.zoo.dev')
       expect(actual).toBe(expected)
     })
     it('should return the empty string for production', async () => {
       const expected = ''
-      const actual = await readEnvironmentConfigurationToken('production')
+      const actual = await readEnvironmentConfigurationToken('zoo.dev')
       expect(actual).toBe(expected)
     })
     it('should return the string dog-dog-dog for development', async () => {
