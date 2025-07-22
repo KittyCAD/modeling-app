@@ -552,73 +552,61 @@ impl TagDeclarator {
 
 impl ArrayExpression {
     fn recast(&self, buf: &mut String, options: &FormatOptions, indentation_level: usize, ctxt: ExprContext) {
-        // Reconstruct the order of items in the array.
-        // An item can be an element (i.e. an expression for a KCL value),
-        // or a non-code item (e.g. a comment)
         let num_items = self.elements.len() + self.non_code_meta.non_code_nodes_len();
         let mut elems = self.elements.iter();
+        let mut items_buf = String::with_capacity(512);
+        let mut item_spans = Vec::with_capacity(num_items);
         let mut found_line_comment = false;
-        let mut format_items: Vec<_> = Vec::with_capacity(num_items);
+
         for i in 0..num_items {
+            let start = items_buf.len();
             if let Some(noncode) = self.non_code_meta.non_code_nodes.get(&i) {
-                format_items.extend(noncode.iter().map(|nc| {
+                for nc in noncode {
                     found_line_comment |= nc.value.should_cause_array_newline();
-                    nc.recast(options, 0)
-                }));
+                    items_buf.push_str(&nc.recast(options, 0));
+                }
             } else {
                 let el = elems.next().unwrap();
-                let mut s = String::with_capacity(256);
-                el.recast(&mut s, options, 0, ExprContext::Other);
-                s.push_str(", ");
-                format_items.push(s);
+                el.recast(&mut items_buf, options, 0, ExprContext::Other);
+                items_buf.push_str(", ");
             }
+            let end = items_buf.len();
+            item_spans.push((start, end));
         }
 
-        // Format these items into a one-line array.
-        if let Some(item) = format_items.last_mut() {
-            if let Some(norm) = item.strip_suffix(", ") {
-                *item = norm.to_owned();
-            }
-        }
-        let mut flat_recast = String::with_capacity(256);
-        flat_recast.push('[');
-        for fi in &format_items {
-            flat_recast.push_str(fi)
-        }
-        flat_recast.push(']');
-
-        // We might keep the one-line representation, if it's short enough.
         let max_array_length = 40;
-        let multi_line = flat_recast.len() > max_array_length || found_line_comment;
-        if !multi_line {
-            buf.push_str(&flat_recast);
+        let flat_length = items_buf.trim_end_matches(", ").len();
+        let use_flat = flat_length <= max_array_length && !found_line_comment;
+
+        if use_flat {
+            buf.push('[');
+            buf.push_str(&items_buf[..flat_length]);
+            buf.push(']');
             return;
         }
 
-        // Otherwise, we format a multi-line representation.
+        // Multi-line representation
         buf.push_str("[\n");
-        let inner_indentation = if ctxt == ExprContext::Pipe {
-            options.get_indentation_offset_pipe(indentation_level + 1)
-        } else {
-            options.get_indentation(indentation_level + 1)
+        let indent_inner = match ctxt {
+            ExprContext::Pipe => options.get_indentation_offset_pipe(indentation_level + 1),
+            _ => options.get_indentation(indentation_level + 1),
         };
-        for format_item in format_items {
-            buf.push_str(&inner_indentation);
-            buf.push_str(if let Some(x) = format_item.strip_suffix(" ") {
-                x
+        let n = item_spans.len();
+        for (i, (start, end)) in item_spans.iter().enumerate() {
+            buf.push_str(&indent_inner);
+            let s = items_buf[*start..*end].trim_end();
+            if i < n - 1 {
+                buf.push_str(s);
             } else {
-                &format_item
-            });
-            if !format_item.ends_with('\n') {
-                buf.push('\n')
+                buf.push_str(s.trim_matches(','))
             }
+            buf.push('\n');
         }
-        let end_indent = if ctxt == ExprContext::Pipe {
-            options.get_indentation_offset_pipe(indentation_level)
-        } else {
-            options.get_indentation(indentation_level)
+        let indent_end = match ctxt {
+            ExprContext::Pipe => options.get_indentation_offset_pipe(indentation_level),
+            _ => options.get_indentation(indentation_level),
         };
-        buf.push_str(&end_indent);
+        buf.push_str(&indent_end);
         buf.push(']');
     }
 }
@@ -2992,6 +2980,20 @@ fn myFn() {
 fn function001() {
   extrude002 = extrude()
 }\n";
+
+        let ast = crate::parsing::top_level_parse(code).unwrap();
+        let recasted = ast.recast_top(&FormatOptions::new(), 0);
+        let expected = code;
+        assert_eq!(recasted, expected);
+    }
+
+    #[test]
+    fn check_arr() {
+        let code = "[
+  -0.8111463382182231,
+  -0.41814807547140576,
+]
+";
 
         let ast = crate::parsing::top_level_parse(code).unwrap();
         let recasted = ast.recast_top(&FormatOptions::new(), 0);
