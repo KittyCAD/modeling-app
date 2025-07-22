@@ -349,7 +349,7 @@ impl BinaryPart {
             }
             BinaryPart::Name(name) => match deprecation(&name.inner.name.inner.name, DeprecationKind::Const) {
                 Some(suggestion) => write!(buf, "{suggestion}").no_fail(),
-                None => write!(buf, "{name}").no_fail(),
+                None => name.write_to(buf),
             },
             BinaryPart::BinaryExpression(binary_expression) => {
                 binary_expression.recast(buf, options, indentation_level, ctxt)
@@ -423,7 +423,7 @@ impl CallExpressionKw {
                 options.get_indentation(indentation_level)
             };
             options.write_indentation(buf, smart_indent_level);
-            write!(buf, "{name}").no_fail();
+            name.write_to(buf);
             buf.push('(');
             buf.push('\n');
             write!(buf, "{inner_indentation}").no_fail();
@@ -433,7 +433,7 @@ impl CallExpressionKw {
             buf.push(')');
         } else {
             options.write_indentation(buf, smart_indent_level);
-            write!(buf, "{name}").no_fail();
+            name.write_to(buf);
             buf.push('(');
             write!(buf, "{args}").no_fail();
             buf.push(')');
@@ -546,7 +546,8 @@ impl Literal {
 impl TagDeclarator {
     pub fn recast(&self, buf: &mut String) {
         // TagDeclarators are always prefixed with a dollar sign.
-        write!(buf, "${}", self.name).no_fail()
+        buf.push('$');
+        buf.push_str(&self.name);
     }
 }
 

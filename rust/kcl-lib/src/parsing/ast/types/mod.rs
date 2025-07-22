@@ -2396,6 +2396,28 @@ impl Name {
     }
 }
 
+impl Name {
+    /// Write the full name to the given string.
+    pub fn write_to(&self, buf: &mut String) {
+        if self.abs_path {
+            buf.push_str("::");
+        };
+        for p in &self.path {
+            buf.push_str(&p.name);
+            buf.push_str("::");
+        }
+        buf.push_str(&self.name.name);
+    }
+}
+
+impl fmt::Display for Name {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let mut buf = String::new();
+        self.write_to(&mut buf);
+        buf.fmt(f)
+    }
+}
+
 impl From<Node<Identifier>> for Node<Name> {
     fn from(value: Node<Identifier>) -> Self {
         let start = value.start;
@@ -2413,19 +2435,6 @@ impl From<Node<Identifier>> for Node<Name> {
             end,
             mod_id,
         )
-    }
-}
-
-impl fmt::Display for Name {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        if self.abs_path {
-            f.write_str("::")?;
-        }
-        for p in &self.path {
-            f.write_str(&p.name)?;
-            f.write_str("::")?;
-        }
-        f.write_str(&self.name.name)
     }
 }
 
