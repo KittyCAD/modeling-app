@@ -945,6 +945,46 @@ description: Variables in memory after executing cold-plate.kcl
       }
     ]
   },
+  "brazedCapSketch": {
+    "type": "Plane",
+    "value": {
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
+      "origin": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": {
+          "type": "Mm"
+        }
+      },
+      "value": "YZ",
+      "xAxis": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0,
+        "units": {
+          "type": "Unknown"
+        }
+      },
+      "yAxis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0,
+        "units": {
+          "type": "Unknown"
+        }
+      },
+      "zAxis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": {
+          "type": "Unknown"
+        }
+      }
+    }
+  },
   "coldPlate": {
     "type": "Solid",
     "value": {
@@ -1047,10 +1087,10 @@ description: Variables in memory after executing cold-plate.kcl
               1.25
             ],
             "tag": {
-              "commentStart": 856,
-              "end": 862,
+              "commentStart": 886,
+              "end": 892,
               "moduleId": 0,
-              "start": 856,
+              "start": 886,
               "type": "TagDeclarator",
               "value": "seg07"
             },
@@ -1073,10 +1113,10 @@ description: Variables in memory after executing cold-plate.kcl
               1.25
             ],
             "tag": {
-              "commentStart": 905,
-              "end": 911,
+              "commentStart": 935,
+              "end": 941,
               "moduleId": 0,
-              "start": 905,
+              "start": 935,
               "type": "TagDeclarator",
               "value": "seg09"
             },
@@ -1123,10 +1163,10 @@ description: Variables in memory after executing cold-plate.kcl
               0.625
             ],
             "tag": {
-              "commentStart": 1012,
-              "end": 1018,
+              "commentStart": 1042,
+              "end": 1048,
               "moduleId": 0,
-              "start": 1012,
+              "start": 1042,
               "type": "TagDeclarator",
               "value": "seg08"
             },
@@ -1192,10 +1232,10 @@ description: Variables in memory after executing cold-plate.kcl
               1.047006236503076
             ],
             "tag": {
-              "commentStart": 1189,
-              "end": 1195,
+              "commentStart": 1219,
+              "end": 1225,
               "moduleId": 0,
-              "start": 1189,
+              "start": 1219,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -1374,6 +1414,46 @@ description: Variables in memory after executing cold-plate.kcl
       "sectional": false
     }
   },
+  "coldPlateSketch": {
+    "type": "Plane",
+    "value": {
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
+      "origin": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": {
+          "type": "Mm"
+        }
+      },
+      "value": "YZ",
+      "xAxis": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0,
+        "units": {
+          "type": "Unknown"
+        }
+      },
+      "yAxis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0,
+        "units": {
+          "type": "Unknown"
+        }
+      },
+      "zAxis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": {
+          "type": "Unknown"
+        }
+      }
+    }
+  },
   "copperTubePath": {
     "type": "Sketch",
     "value": {
@@ -1390,10 +1470,10 @@ description: Variables in memory after executing cold-plate.kcl
             -3.0
           ],
           "tag": {
-            "commentStart": 1594,
-            "end": 1600,
+            "commentStart": 1656,
+            "end": 1662,
             "moduleId": 0,
-            "start": 1594,
+            "start": 1656,
             "type": "TagDeclarator",
             "value": "seg05"
           },
@@ -1421,10 +1501,10 @@ description: Variables in memory after executing cold-plate.kcl
             -3.0
           ],
           "tag": {
-            "commentStart": 1661,
-            "end": 1667,
+            "commentStart": 1723,
+            "end": 1729,
             "moduleId": 0,
-            "start": 1661,
+            "start": 1723,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -1447,10 +1527,10 @@ description: Variables in memory after executing cold-plate.kcl
             -1.0
           ],
           "tag": {
-            "commentStart": 1736,
-            "end": 1742,
+            "commentStart": 1798,
+            "end": 1804,
             "moduleId": 0,
-            "start": 1736,
+            "start": 1798,
             "type": "TagDeclarator",
             "value": "seg06"
           },
@@ -1478,10 +1558,10 @@ description: Variables in memory after executing cold-plate.kcl
             -0.9999999999999984
           ],
           "tag": {
-            "commentStart": 1804,
-            "end": 1810,
+            "commentStart": 1866,
+            "end": 1872,
             "moduleId": 0,
-            "start": 1804,
+            "start": 1866,
             "type": "TagDeclarator",
             "value": "seg03"
           },
@@ -1528,10 +1608,10 @@ description: Variables in memory after executing cold-plate.kcl
             0.9999999999999998
           ],
           "tag": {
-            "commentStart": 1940,
-            "end": 1946,
+            "commentStart": 2002,
+            "end": 2008,
             "moduleId": 0,
-            "start": 1940,
+            "start": 2002,
             "type": "TagDeclarator",
             "value": "seg04"
           },
@@ -1646,6 +1726,46 @@ description: Variables in memory after executing cold-plate.kcl
       "originalId": "[uuid]",
       "units": {
         "type": "Inches"
+      }
+    }
+  },
+  "copperTubeSketch": {
+    "type": "Plane",
+    "value": {
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
+      "origin": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 15.875,
+        "units": {
+          "type": "Mm"
+        }
+      },
+      "value": "Custom",
+      "xAxis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": {
+          "type": "Unknown"
+        }
+      },
+      "yAxis": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0,
+        "units": {
+          "type": "Unknown"
+        }
+      },
+      "zAxis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0,
+        "units": {
+          "type": "Unknown"
+        }
       }
     }
   },
@@ -1848,6 +1968,46 @@ description: Variables in memory after executing cold-plate.kcl
         "type": "Inches"
       },
       "sectional": false
+    }
+  },
+  "tubeWallSketch": {
+    "type": "Plane",
+    "value": {
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
+      "origin": {
+        "x": -186.68999999999997,
+        "y": 0.0,
+        "z": 0.0,
+        "units": {
+          "type": "Mm"
+        }
+      },
+      "value": "Custom",
+      "xAxis": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0,
+        "units": {
+          "type": "Unknown"
+        }
+      },
+      "yAxis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0,
+        "units": {
+          "type": "Unknown"
+        }
+      },
+      "zAxis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": {
+          "type": "Unknown"
+        }
+      }
     }
   },
   "wallThickness": {

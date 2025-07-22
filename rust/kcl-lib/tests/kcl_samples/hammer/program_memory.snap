@@ -15,10 +15,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3258,
-            "end": 3264,
+            "commentStart": 3300,
+            "end": 3306,
             "moduleId": 0,
-            "start": 3258,
+            "start": 3300,
             "type": "TagDeclarator",
             "value": "seg05"
           },
@@ -29,10 +29,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3302,
-            "end": 3314,
+            "commentStart": 3344,
+            "end": 3356,
             "moduleId": 0,
-            "start": 3302,
+            "start": 3344,
             "type": "TagDeclarator",
             "value": "capStart001"
           },
@@ -59,10 +59,10 @@ description: Variables in memory after executing hammer.kcl
             ],
             "radius": 0.45,
             "tag": {
-              "commentStart": 3258,
-              "end": 3264,
+              "commentStart": 3300,
+              "end": 3306,
               "moduleId": 0,
-              "start": 3258,
+              "start": 3300,
               "type": "TagDeclarator",
               "value": "seg05"
             },
@@ -208,10 +208,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 426,
-            "end": 432,
+            "commentStart": 468,
+            "end": 474,
             "moduleId": 0,
-            "start": 426,
+            "start": 468,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -236,10 +236,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 617,
-            "end": 623,
+            "commentStart": 659,
+            "end": 665,
             "moduleId": 0,
-            "start": 617,
+            "start": 659,
             "type": "TagDeclarator",
             "value": "seg03"
           },
@@ -271,10 +271,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 779,
-            "end": 785,
+            "commentStart": 821,
+            "end": 827,
             "moduleId": 0,
-            "start": 779,
+            "start": 821,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -292,10 +292,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 863,
-            "end": 869,
+            "commentStart": 905,
+            "end": 911,
             "moduleId": 0,
-            "start": 863,
+            "start": 905,
             "type": "TagDeclarator",
             "value": "seg04"
           },
@@ -385,10 +385,10 @@ description: Variables in memory after executing hammer.kcl
               11.92
             ],
             "tag": {
-              "commentStart": 426,
-              "end": 432,
+              "commentStart": 468,
+              "end": 474,
               "moduleId": 0,
-              "start": 426,
+              "start": 468,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -454,10 +454,10 @@ description: Variables in memory after executing hammer.kcl
               11.77770605137785
             ],
             "tag": {
-              "commentStart": 617,
-              "end": 623,
+              "commentStart": 659,
+              "end": 665,
               "moduleId": 0,
-              "start": 617,
+              "start": 659,
               "type": "TagDeclarator",
               "value": "seg03"
             },
@@ -547,10 +547,10 @@ description: Variables in memory after executing hammer.kcl
               12.799999999999999
             ],
             "tag": {
-              "commentStart": 779,
-              "end": 785,
+              "commentStart": 821,
+              "end": 827,
               "moduleId": 0,
-              "start": 779,
+              "start": 821,
               "type": "TagDeclarator",
               "value": "seg02"
             },
@@ -597,10 +597,10 @@ description: Variables in memory after executing hammer.kcl
               11.624999999999998
             ],
             "tag": {
-              "commentStart": 863,
-              "end": 869,
+              "commentStart": 905,
+              "end": 911,
               "moduleId": 0,
-              "start": 863,
+              "start": 905,
               "type": "TagDeclarator",
               "value": "seg04"
             },
@@ -810,10 +810,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 426,
-            "end": 432,
+            "commentStart": 468,
+            "end": 474,
             "moduleId": 0,
-            "start": 426,
+            "start": 468,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -838,10 +838,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 617,
-            "end": 623,
+            "commentStart": 659,
+            "end": 665,
             "moduleId": 0,
-            "start": 617,
+            "start": 659,
             "type": "TagDeclarator",
             "value": "seg03"
           },
@@ -873,10 +873,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 779,
-            "end": 785,
+            "commentStart": 821,
+            "end": 827,
             "moduleId": 0,
-            "start": 779,
+            "start": 821,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -894,10 +894,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 863,
-            "end": 869,
+            "commentStart": 905,
+            "end": 911,
             "moduleId": 0,
-            "start": 863,
+            "start": 905,
             "type": "TagDeclarator",
             "value": "seg04"
           },
@@ -987,10 +987,10 @@ description: Variables in memory after executing hammer.kcl
               11.92
             ],
             "tag": {
-              "commentStart": 426,
-              "end": 432,
+              "commentStart": 468,
+              "end": 474,
               "moduleId": 0,
-              "start": 426,
+              "start": 468,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -1056,10 +1056,10 @@ description: Variables in memory after executing hammer.kcl
               11.77770605137785
             ],
             "tag": {
-              "commentStart": 617,
-              "end": 623,
+              "commentStart": 659,
+              "end": 665,
               "moduleId": 0,
-              "start": 617,
+              "start": 659,
               "type": "TagDeclarator",
               "value": "seg03"
             },
@@ -1149,10 +1149,10 @@ description: Variables in memory after executing hammer.kcl
               12.799999999999999
             ],
             "tag": {
-              "commentStart": 779,
-              "end": 785,
+              "commentStart": 821,
+              "end": 827,
               "moduleId": 0,
-              "start": 779,
+              "start": 821,
               "type": "TagDeclarator",
               "value": "seg02"
             },
@@ -1199,10 +1199,10 @@ description: Variables in memory after executing hammer.kcl
               11.624999999999998
             ],
             "tag": {
-              "commentStart": 863,
-              "end": 869,
+              "commentStart": 905,
+              "end": 911,
               "moduleId": 0,
-              "start": 863,
+              "start": 905,
               "type": "TagDeclarator",
               "value": "seg04"
             },
@@ -2004,7 +2004,7 @@ description: Variables in memory after executing hammer.kcl
       "sectional": false
     }
   },
-  "handleSketch": {
+  "handleProfile": {
     "type": "Sketch",
     "value": {
       "type": "Sketch",
@@ -2222,6 +2222,46 @@ description: Variables in memory after executing hammer.kcl
       }
     }
   },
+  "handleSketch": {
+    "type": "Plane",
+    "value": {
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
+      "origin": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": {
+          "type": "Mm"
+        }
+      },
+      "value": "XZ",
+      "xAxis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": {
+          "type": "Unknown"
+        }
+      },
+      "yAxis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0,
+        "units": {
+          "type": "Unknown"
+        }
+      },
+      "zAxis": {
+        "x": 0.0,
+        "y": -1.0,
+        "z": 0.0,
+        "units": {
+          "type": "Unknown"
+        }
+      }
+    }
+  },
   "headSideProfile": {
     "type": "Solid",
     "value": {
@@ -2248,10 +2288,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 426,
-            "end": 432,
+            "commentStart": 468,
+            "end": 474,
             "moduleId": 0,
-            "start": 426,
+            "start": 468,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -2276,10 +2316,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 617,
-            "end": 623,
+            "commentStart": 659,
+            "end": 665,
             "moduleId": 0,
-            "start": 617,
+            "start": 659,
             "type": "TagDeclarator",
             "value": "seg03"
           },
@@ -2311,10 +2351,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 779,
-            "end": 785,
+            "commentStart": 821,
+            "end": 827,
             "moduleId": 0,
-            "start": 779,
+            "start": 821,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -2332,10 +2372,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 863,
-            "end": 869,
+            "commentStart": 905,
+            "end": 911,
             "moduleId": 0,
-            "start": 863,
+            "start": 905,
             "type": "TagDeclarator",
             "value": "seg04"
           },
@@ -2425,10 +2465,10 @@ description: Variables in memory after executing hammer.kcl
               11.92
             ],
             "tag": {
-              "commentStart": 426,
-              "end": 432,
+              "commentStart": 468,
+              "end": 474,
               "moduleId": 0,
-              "start": 426,
+              "start": 468,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -2494,10 +2534,10 @@ description: Variables in memory after executing hammer.kcl
               11.77770605137785
             ],
             "tag": {
-              "commentStart": 617,
-              "end": 623,
+              "commentStart": 659,
+              "end": 665,
               "moduleId": 0,
-              "start": 617,
+              "start": 659,
               "type": "TagDeclarator",
               "value": "seg03"
             },
@@ -2587,10 +2627,10 @@ description: Variables in memory after executing hammer.kcl
               12.799999999999999
             ],
             "tag": {
-              "commentStart": 779,
-              "end": 785,
+              "commentStart": 821,
+              "end": 827,
               "moduleId": 0,
-              "start": 779,
+              "start": 821,
               "type": "TagDeclarator",
               "value": "seg02"
             },
@@ -2637,10 +2677,10 @@ description: Variables in memory after executing hammer.kcl
               11.624999999999998
             ],
             "tag": {
-              "commentStart": 863,
-              "end": 869,
+              "commentStart": 905,
+              "end": 911,
               "moduleId": 0,
-              "start": 863,
+              "start": 905,
               "type": "TagDeclarator",
               "value": "seg04"
             },
@@ -2822,6 +2862,46 @@ description: Variables in memory after executing hammer.kcl
         "type": "Inches"
       },
       "sectional": false
+    }
+  },
+  "headSideProfileSketch": {
+    "type": "Plane",
+    "value": {
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
+      "origin": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": {
+          "type": "Mm"
+        }
+      },
+      "value": "XZ",
+      "xAxis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": {
+          "type": "Unknown"
+        }
+      },
+      "yAxis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0,
+        "units": {
+          "type": "Unknown"
+        }
+      },
+      "zAxis": {
+        "x": 0.0,
+        "y": -1.0,
+        "z": 0.0,
+        "units": {
+          "type": "Unknown"
+        }
+      }
     }
   },
   "headTopProfile": {

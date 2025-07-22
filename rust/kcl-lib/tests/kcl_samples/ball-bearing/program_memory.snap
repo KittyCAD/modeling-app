@@ -1428,7 +1428,7 @@ description: Variables in memory after executing ball-bearing.kcl
       }
     ]
   },
-  "ballsSketch": {
+  "ballsProfile": {
     "type": "Sketch",
     "value": {
       "type": "Sketch",
@@ -1539,6 +1539,46 @@ description: Variables in memory after executing ball-bearing.kcl
       "originalId": "[uuid]",
       "units": {
         "type": "Inches"
+      }
+    }
+  },
+  "ballsSketch": {
+    "type": "Plane",
+    "value": {
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
+      "origin": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": {
+          "type": "Mm"
+        }
+      },
+      "value": "XY",
+      "xAxis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": {
+          "type": "Unknown"
+        }
+      },
+      "yAxis": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0,
+        "units": {
+          "type": "Unknown"
+        }
+      },
+      "zAxis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0,
+        "units": {
+          "type": "Unknown"
+        }
       }
     }
   },
@@ -3487,7 +3527,7 @@ description: Variables in memory after executing ball-bearing.kcl
       }
     ]
   },
-  "chainSketch": {
+  "chainProfile": {
     "type": "Sketch",
     "value": {
       "type": "Sketch",
@@ -3636,6 +3676,46 @@ description: Variables in memory after executing ball-bearing.kcl
       "originalId": "[uuid]",
       "units": {
         "type": "Inches"
+      }
+    }
+  },
+  "chainSketch": {
+    "type": "Plane",
+    "value": {
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
+      "origin": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": {
+          "type": "Mm"
+        }
+      },
+      "value": "XY",
+      "xAxis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": {
+          "type": "Unknown"
+        }
+      },
+      "yAxis": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0,
+        "units": {
+          "type": "Unknown"
+        }
+      },
+      "zAxis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0,
+        "units": {
+          "type": "Unknown"
+        }
       }
     }
   },

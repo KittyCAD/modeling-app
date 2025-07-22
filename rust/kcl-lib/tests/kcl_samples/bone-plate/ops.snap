@@ -59,10 +59,6 @@ description: Operations executed bone-plate.kcl
           },
           {
             "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 0
           }
         ]
       },
@@ -179,7 +175,7 @@ description: Operations executed bone-plate.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 1
+            "index": 2
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -189,7 +185,7 @@ description: Operations executed bone-plate.kcl
           },
           {
             "type": "PipeBodyItem",
-            "index": 19
+            "index": 18
           }
         ]
       },
@@ -241,7 +237,7 @@ description: Operations executed bone-plate.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 4
+            "index": 5
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -268,7 +264,7 @@ description: Operations executed bone-plate.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 2
+            "index": 3
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -328,7 +324,7 @@ description: Operations executed bone-plate.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 2
+            "index": 3
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -403,7 +399,7 @@ description: Operations executed bone-plate.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 4
+            "index": 5
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -430,7 +426,7 @@ description: Operations executed bone-plate.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 2
+            "index": 3
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -490,7 +486,7 @@ description: Operations executed bone-plate.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 2
+            "index": 3
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -565,7 +561,7 @@ description: Operations executed bone-plate.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 4
+            "index": 5
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -592,7 +588,7 @@ description: Operations executed bone-plate.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 2
+            "index": 3
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -652,7 +648,7 @@ description: Operations executed bone-plate.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 2
+            "index": 3
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -727,7 +723,7 @@ description: Operations executed bone-plate.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 4
+            "index": 5
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -754,7 +750,7 @@ description: Operations executed bone-plate.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 2
+            "index": 3
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -814,7 +810,7 @@ description: Operations executed bone-plate.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 2
+            "index": 3
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -889,7 +885,7 @@ description: Operations executed bone-plate.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 4
+            "index": 5
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -916,7 +912,7 @@ description: Operations executed bone-plate.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 2
+            "index": 3
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -976,7 +972,7 @@ description: Operations executed bone-plate.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 2
+            "index": 3
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1051,7 +1047,7 @@ description: Operations executed bone-plate.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 4
+            "index": 5
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1078,7 +1074,7 @@ description: Operations executed bone-plate.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 2
+            "index": 3
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1138,7 +1134,7 @@ description: Operations executed bone-plate.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 2
+            "index": 3
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1213,7 +1209,7 @@ description: Operations executed bone-plate.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 4
+            "index": 5
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1240,7 +1236,7 @@ description: Operations executed bone-plate.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 2
+            "index": 3
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1300,7 +1296,7 @@ description: Operations executed bone-plate.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 2
+            "index": 3
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1375,7 +1371,7 @@ description: Operations executed bone-plate.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 4
+            "index": 5
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1402,7 +1398,7 @@ description: Operations executed bone-plate.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 2
+            "index": 3
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1462,7 +1458,7 @@ description: Operations executed bone-plate.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 2
+            "index": 3
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1570,7 +1566,7 @@ description: Operations executed bone-plate.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 5
+            "index": 6
           },
           {
             "type": "VariableDeclarationDeclaration"

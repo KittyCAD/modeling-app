@@ -509,10 +509,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 867,
-            "end": 888,
+            "commentStart": 890,
+            "end": 911,
             "moduleId": 0,
-            "start": 867,
+            "start": 890,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA001"
           },
@@ -523,10 +523,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 976,
-            "end": 997,
+            "commentStart": 999,
+            "end": 1020,
             "moduleId": 0,
-            "start": 976,
+            "start": 999,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB001"
           },
@@ -537,10 +537,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1099,
-            "end": 1120,
+            "commentStart": 1122,
+            "end": 1143,
             "moduleId": 0,
-            "start": 1099,
+            "start": 1122,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC001"
           },
@@ -551,10 +551,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1190,
-            "end": 1211,
+            "commentStart": 1213,
+            "end": 1234,
             "moduleId": 0,
-            "start": 1190,
+            "start": 1213,
             "type": "TagDeclarator",
             "value": "rectangleSegmentD001"
           },
@@ -582,10 +582,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               -2.25
             ],
             "tag": {
-              "commentStart": 867,
-              "end": 888,
+              "commentStart": 890,
+              "end": 911,
               "moduleId": 0,
-              "start": 867,
+              "start": 890,
               "type": "TagDeclarator",
               "value": "rectangleSegmentA001"
             },
@@ -608,10 +608,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               -2.25
             ],
             "tag": {
-              "commentStart": 976,
-              "end": 997,
+              "commentStart": 999,
+              "end": 1020,
               "moduleId": 0,
-              "start": 976,
+              "start": 999,
               "type": "TagDeclarator",
               "value": "rectangleSegmentB001"
             },
@@ -634,10 +634,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               2.25
             ],
             "tag": {
-              "commentStart": 1099,
-              "end": 1120,
+              "commentStart": 1122,
+              "end": 1143,
               "moduleId": 0,
-              "start": 1099,
+              "start": 1122,
               "type": "TagDeclarator",
               "value": "rectangleSegmentC001"
             },
@@ -660,10 +660,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               2.25
             ],
             "tag": {
-              "commentStart": 1190,
-              "end": 1211,
+              "commentStart": 1213,
+              "end": 1234,
               "moduleId": 0,
-              "start": 1190,
+              "start": 1213,
               "type": "TagDeclarator",
               "value": "rectangleSegmentD001"
             },
@@ -886,7 +886,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
       "sectional": false
     }
   },
-  "plateSketch": {
+  "plateProfile": {
     "type": "Sketch",
     "value": {
       "type": "Sketch",
@@ -902,10 +902,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             -2.25
           ],
           "tag": {
-            "commentStart": 867,
-            "end": 888,
+            "commentStart": 890,
+            "end": 911,
             "moduleId": 0,
-            "start": 867,
+            "start": 890,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA001"
           },
@@ -928,10 +928,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             -2.25
           ],
           "tag": {
-            "commentStart": 976,
-            "end": 997,
+            "commentStart": 999,
+            "end": 1020,
             "moduleId": 0,
-            "start": 976,
+            "start": 999,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB001"
           },
@@ -954,10 +954,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             2.25
           ],
           "tag": {
-            "commentStart": 1099,
-            "end": 1120,
+            "commentStart": 1122,
+            "end": 1143,
             "moduleId": 0,
-            "start": 1099,
+            "start": 1122,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC001"
           },
@@ -980,10 +980,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             2.25
           ],
           "tag": {
-            "commentStart": 1190,
-            "end": 1211,
+            "commentStart": 1213,
+            "end": 1234,
             "moduleId": 0,
-            "start": 1190,
+            "start": 1213,
             "type": "TagDeclarator",
             "value": "rectangleSegmentD001"
           },
@@ -1121,6 +1121,46 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
       "originalId": "[uuid]",
       "units": {
         "type": "Inches"
+      }
+    }
+  },
+  "plateSketch": {
+    "type": "Plane",
+    "value": {
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
+      "origin": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": {
+          "type": "Mm"
+        }
+      },
+      "value": "XY",
+      "xAxis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": {
+          "type": "Unknown"
+        }
+      },
+      "yAxis": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0,
+        "units": {
+          "type": "Unknown"
+        }
+      },
+      "zAxis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0,
+        "units": {
+          "type": "Unknown"
+        }
       }
     }
   },

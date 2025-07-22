@@ -26,10 +26,6 @@ description: Operations executed hammer.kcl
           },
           {
             "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 0
           }
         ]
       },
@@ -76,7 +72,7 @@ description: Operations executed hammer.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 0
+            "index": 1
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -86,7 +82,7 @@ description: Operations executed hammer.kcl
           },
           {
             "type": "PipeBodyItem",
-            "index": 18
+            "index": 17
           }
         ]
       },
@@ -124,7 +120,7 @@ description: Operations executed hammer.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 1
+            "index": 2
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -154,52 +150,6 @@ description: Operations executed hammer.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 1
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "extrude",
-      "unlabeledArg": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {
-        "length": {
-          "value": {
-            "type": "Number",
-            "value": -14.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
             "index": 2
           },
           {
@@ -207,10 +157,6 @@ description: Operations executed hammer.kcl
           },
           {
             "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 9
           }
         ]
       },
@@ -260,7 +206,7 @@ description: Operations executed hammer.kcl
           },
           {
             "type": "PipeBodyItem",
-            "index": 7
+            "index": 9
           }
         ]
       },
@@ -310,6 +256,56 @@ description: Operations executed hammer.kcl
           },
           {
             "type": "PipeBodyItem",
+            "index": 7
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "extrude",
+      "unlabeledArg": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "length": {
+          "value": {
+            "type": "Number",
+            "value": -14.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Inches"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 5
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
             "index": 9
           }
         ]
@@ -344,7 +340,7 @@ description: Operations executed hammer.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 5
+            "index": 6
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -399,7 +395,7 @@ description: Operations executed hammer.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 5
+            "index": 6
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -456,7 +452,7 @@ description: Operations executed hammer.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 5
+            "index": 6
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -483,7 +479,7 @@ description: Operations executed hammer.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 6
+            "index": 7
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -533,7 +529,7 @@ description: Operations executed hammer.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 6
+            "index": 7
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -581,7 +577,7 @@ description: Operations executed hammer.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 7
+            "index": 8
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -615,7 +611,7 @@ description: Operations executed hammer.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 7
+            "index": 8
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -672,7 +668,7 @@ description: Operations executed hammer.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 7
+            "index": 8
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -734,7 +730,7 @@ description: Operations executed hammer.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 7
+            "index": 8
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -778,7 +774,7 @@ description: Operations executed hammer.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 8
+            "index": 9
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -826,7 +822,7 @@ description: Operations executed hammer.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 8
+            "index": 9
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -857,17 +853,13 @@ description: Operations executed hammer.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 9
+            "index": 10
           },
           {
             "type": "VariableDeclarationDeclaration"
           },
           {
             "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 0
           }
         ]
       },
@@ -977,7 +969,7 @@ description: Operations executed hammer.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 10
+            "index": 12
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1018,7 +1010,7 @@ description: Operations executed hammer.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 10
+            "index": 12
           },
           {
             "type": "VariableDeclarationDeclaration"

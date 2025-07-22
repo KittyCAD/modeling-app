@@ -319,10 +319,6 @@ description: Operations executed countersunk-plate.kcl
           },
           {
             "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 0
           }
         ]
       },
@@ -370,7 +366,7 @@ description: Operations executed countersunk-plate.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 9
+            "index": 10
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -380,7 +376,7 @@ description: Operations executed countersunk-plate.kcl
           },
           {
             "type": "PipeBodyItem",
-            "index": 1
+            "index": 0
           },
           {
             "type": "CallKwArg",
@@ -464,7 +460,7 @@ description: Operations executed countersunk-plate.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 9
+            "index": 10
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -474,7 +470,7 @@ description: Operations executed countersunk-plate.kcl
           },
           {
             "type": "PipeBodyItem",
-            "index": 11
+            "index": 10
           }
         ]
       },
@@ -514,7 +510,7 @@ description: Operations executed countersunk-plate.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 9
+            "index": 10
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -524,7 +520,7 @@ description: Operations executed countersunk-plate.kcl
           },
           {
             "type": "PipeBodyItem",
-            "index": 12
+            "index": 11
           }
         ]
       },
@@ -558,7 +554,7 @@ description: Operations executed countersunk-plate.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 11
+            "index": 12
           },
           {
             "type": "ExpressionStatementExpr"
@@ -592,7 +588,7 @@ description: Operations executed countersunk-plate.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 10
+            "index": 11
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -652,7 +648,7 @@ description: Operations executed countersunk-plate.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 10
+            "index": 11
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -725,7 +721,7 @@ description: Operations executed countersunk-plate.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 10
+            "index": 11
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -782,7 +778,7 @@ description: Operations executed countersunk-plate.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 12
+            "index": 13
           },
           {
             "type": "ExpressionStatementExpr"
@@ -816,7 +812,7 @@ description: Operations executed countersunk-plate.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 10
+            "index": 11
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -876,7 +872,7 @@ description: Operations executed countersunk-plate.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 10
+            "index": 11
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -949,7 +945,7 @@ description: Operations executed countersunk-plate.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 10
+            "index": 11
           },
           {
             "type": "VariableDeclarationDeclaration"
