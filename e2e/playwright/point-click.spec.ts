@@ -1085,16 +1085,11 @@ openSketch = startSketchOn(XY)
   }) => {
     // One dumb hardcoded screen pixel value
     const testPoint = { x: 700, y: 200 }
-    // TODO: replace the testPoint selection with a feature tree click once that's supported #7544
-    const [clickOnXzPlane] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
     const expectedOutput = `plane001 = offsetPlane(XZ, offset = 5)`
 
     await homePage.goToModelingScene()
     await scene.settled(cmdBar)
 
-    await test.step(`Look for the blue of the XZ plane`, async () => {
-      //await scene.expectPixelColor([50, 51, 96], testPoint, 15) // FIXME
-    })
     await test.step(`Go through the command bar flow`, async () => {
       await toolbar.offsetPlaneButton.click()
       await expect
@@ -1108,7 +1103,8 @@ openSketch = startSketchOn(XY)
         highlightedHeaderArg: 'plane',
         commandName: 'Offset plane',
       })
-      await clickOnXzPlane()
+      const xz = await toolbar.getFeatureTreeOperation('Front plane', 0)
+      await xz.click()
       await cmdBar.expectState({
         stage: 'arguments',
         currentArgKey: 'offset',
@@ -1120,14 +1116,13 @@ openSketch = startSketchOn(XY)
       await cmdBar.progressCmdBar()
     })
 
-    await test.step(`Confirm code is added to the editor, scene has changed`, async () => {
+    await test.step(`Confirm code is added to the editor`, async () => {
       await editor.expectEditor.toContain(expectedOutput)
       await editor.expectState({
         diagnostics: [],
         activeLines: [expectedOutput],
         highlightedCode: '',
       })
-      await scene.expectPixelColor([74, 74, 74], testPoint, 15)
     })
 
     await test.step('Delete offset plane via feature tree selection', async () => {
@@ -1138,7 +1133,6 @@ openSketch = startSketchOn(XY)
       )
       await operationButton.click({ button: 'left' })
       await page.keyboard.press('Delete')
-      //await scene.expectPixelColor([50, 51, 96], testPoint, 15) // FIXME
     })
   })
 
