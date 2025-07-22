@@ -68,7 +68,6 @@ export const KCL_DEFAULT_DEGREE = `360`
 export const KCL_DEFAULT_COLOR = `#3c73ff`
 
 export const SETTINGS_FILE_NAME = 'settings.toml'
-export const TOKEN_FILE_NAME = 'token.txt'
 export const PROJECT_SETTINGS_FILE_NAME = 'project.toml'
 export const COOKIE_NAME = '__Secure-next-auth.session-token'
 export const TELEMETRY_FILE_NAME = 'boot.txt'

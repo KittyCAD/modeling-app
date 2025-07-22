@@ -22,7 +22,6 @@ import {
   SETTINGS_FILE_NAME,
   TELEMETRY_FILE_NAME,
   TELEMETRY_RAW_FILE_NAME,
-  TOKEN_FILE_NAME,
 } from '@src/lib/constants'
 import type { FileEntry, FileMetadata, Project } from '@src/lib/project'
 import { err } from '@src/lib/trap'
@@ -503,26 +502,6 @@ export const getAppSettingsFilePath = async () => {
     }
   }
   return window.electron.path.join(fullPath, SETTINGS_FILE_NAME)
-}
-const getTokenFilePath = async () => {
-  const isTestEnv = window.electron.process.env.NODE_ENV === 'test'
-  const testSettingsPath = await window.electron.getAppTestProperty(
-    'TEST_SETTINGS_FILE_KEY'
-  )
-
-  const appConfig = await window.electron.getPath('appData')
-  const fullPath = isTestEnv
-    ? window.electron.path.resolve(testSettingsPath, '..')
-    : window.electron.path.join(appConfig, getAppFolderName())
-  try {
-    await window.electron.stat(fullPath)
-  } catch (e) {
-    // File/path doesn't exist
-    if (e === 'ENOENT') {
-      await window.electron.mkdir(fullPath, { recursive: true })
-    }
-  }
-  return window.electron.path.join(fullPath, TOKEN_FILE_NAME)
 }
 
 export const getEnvironmentConfigurationFolderPath = async () => {

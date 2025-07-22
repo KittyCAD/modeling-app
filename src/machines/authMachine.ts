@@ -302,25 +302,23 @@ async function logout() {
 /**
  * Logout function that will do a specific environment logout if environment name is passed in
  */
-async function logoutEnvironment(requestedEnvironmentName?: string) {
+async function logoutEnvironment(requestedDomain?: string) {
   // TODO: 7/10/2025 Remove this months from now, we want to clear the localStorage of the key.
   localStorage.removeItem(TOKEN_PERSIST_KEY)
   if (isDesktop()) {
     try {
-      const environmentName =
-        requestedEnvironmentName || env().VITE_KITTYCAD_BASE_DOMAIN
+      const domain = requestedDomain || env().VITE_KITTYCAD_BASE_DOMAIN
       let token = ''
-      if (environmentName) {
-        token = await readEnvironmentConfigurationToken(environmentName)
+      if (domain) {
+        token = await readEnvironmentConfigurationToken(domain)
       }
-      if (!environmentName) {
-        return new Error('Unable to logout, cannot find environment')
+      if (!domain) {
+        return new Error('Unable to logout, cannot find domain')
       }
 
-      const url = environmentName
       if (token) {
         try {
-          await fetch(url + '/oauth2/token/revoke', {
+          await fetch(domain + '/oauth2/token/revoke', {
             method: 'POST',
             credentials: 'include',
             headers: {
@@ -335,8 +333,7 @@ async function logoutEnvironment(requestedEnvironmentName?: string) {
           console.error('Error revoking token:', e)
         }
 
-        if (environmentName)
-          await writeEnvironmentConfigurationToken(environmentName, '')
+        if (domain) await writeEnvironmentConfigurationToken(domain, '')
         await writeEnvironmentFile('')
         return Promise.resolve(null)
       }
