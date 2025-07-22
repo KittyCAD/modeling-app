@@ -554,7 +554,7 @@ impl ArrayExpression {
     fn recast(&self, buf: &mut String, options: &FormatOptions, indentation_level: usize, ctxt: ExprContext) {
         let num_items = self.elements.len() + self.non_code_meta.non_code_nodes_len();
         let mut elems = self.elements.iter();
-        let mut items_buf = String::with_capacity(512);
+        let mut items_buf = String::with_capacity(256);
         let mut item_spans = Vec::with_capacity(num_items);
         let mut found_line_comment = false;
 
@@ -568,19 +568,21 @@ impl ArrayExpression {
             } else {
                 let el = elems.next().unwrap();
                 el.recast(&mut items_buf, options, 0, ExprContext::Other);
-                items_buf.push_str(", ");
+                if i < num_items - 1 {
+                    items_buf.push_str(", ");
+                }
             }
             let end = items_buf.len();
             item_spans.push((start, end));
         }
 
+        let flat_length = items_buf.len() + 2; // +2 is for the [ and ] which will surround the items.
         let max_array_length = 40;
-        let flat_length = items_buf.trim_end_matches(", ").len();
-        let use_flat = flat_length <= max_array_length && !found_line_comment;
+        let multi_line = flat_length > max_array_length || found_line_comment;
 
-        if use_flat {
+        if !multi_line {
             buf.push('[');
-            buf.push_str(&items_buf[..flat_length]);
+            buf.push_str(&items_buf[..flat_length - 2]); // subtract the [ and ] again
             buf.push(']');
             return;
         }
@@ -2991,7 +2993,7 @@ fn function001() {
     fn check_arr() {
         let code = "[
   -0.8111463382182231,
-  -0.41814807547140576,
+  -0.41814807547140576
 ]
 ";
 
