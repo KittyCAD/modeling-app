@@ -554,7 +554,7 @@ export const getEnvironmentConfigurationPath = async (
       await window.electron.mkdir(fullPath, { recursive: true })
     }
   }
-  // /envs/development.json
+  // /envs/<subdomain>.json e.g. /envs/dev.zoo.dev.json
   return window.electron.path.join(fullPath, environmentName + '.json')
 }
 
