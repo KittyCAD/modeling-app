@@ -1,15 +1,15 @@
 use anyhow::Result;
 
 use crate::{
-    engine::{PlaneName, DEFAULT_PLANE_INFO},
+    SourceRange,
+    engine::{DEFAULT_PLANE_INFO, PlaneName},
     errors::Suggestion,
-    execution::{types::UnitLen, PlaneInfo, Point3d},
-    lint::rule::{def_finding, Discovered, Finding},
+    execution::{PlaneInfo, Point3d, types::UnitLen},
+    lint::rule::{Discovered, Finding, def_finding},
     parsing::ast::types::{
         BinaryPart, CallExpressionKw, Expr, LiteralValue, Node as AstNode, ObjectExpression, Program, UnaryOperator,
     },
     walk::Node,
-    SourceRange,
 };
 
 def_finding!(
@@ -39,14 +39,11 @@ pub fn lint_should_be_offset_plane(node: Node, _prog: &AstNode<Program>) -> Resu
     }
     let suggestion = Suggestion {
         title: "use offsetPlane instead".to_owned(),
-        insert: format!("offsetPlane({}, offset = {})", plane_name, offset),
+        insert: format!("offsetPlane({plane_name}, offset = {offset})"),
         source_range: call_source_range,
     };
     Ok(vec![Z0003.at(
-        format!(
-            "custom plane in startSketchOn; offsetPlane from {} would work here",
-            plane_name
-        ),
+        format!("custom plane in startSketchOn; offsetPlane from {plane_name} would work here"),
         call_source_range,
         Some(suggestion),
     )])
@@ -68,16 +65,16 @@ fn get_xyz(point: &ObjectExpression) -> Option<(f64, f64, f64)> {
 
     for property in &point.properties {
         let Some(value) = (match &property.value {
-            Expr::UnaryExpression(ref value) => {
+            Expr::UnaryExpression(value) => {
                 if value.operator != UnaryOperator::Neg {
                     continue;
                 }
-                let BinaryPart::Literal(ref value) = &value.inner.argument else {
+                let BinaryPart::Literal(value) = &value.inner.argument else {
                     continue;
                 };
                 unlitafy(&value.inner.value).map(|v| -v)
             }
-            Expr::Literal(ref value) => unlitafy(&value.value),
+            Expr::Literal(value) => unlitafy(&value.value),
             _ => {
                 continue;
             }
@@ -215,21 +212,29 @@ pub fn common(
         origin,
         x_axis: x_vec,
         y_axis: y_vec,
+        z_axis: x_vec.axes_cross_product(&y_vec),
+    };
+
+    let plane_equal_excluding_z = |plane: &&PlaneInfo, plane_info: &PlaneInfo| {
+        plane.origin == plane_info.origin && plane.x_axis == plane_info.x_axis && plane.y_axis == plane_info.y_axis
     };
 
     // Return early if we have a default plane.
-    if let Some((name, _)) = DEFAULT_PLANE_INFO.iter().find(|(_, plane)| **plane == plane_info) {
+    if let Some((name, _)) = DEFAULT_PLANE_INFO
+        .iter()
+        .find(|(_, plane)| plane_equal_excluding_z(plane, &plane_info))
+    {
         return Ok(Some((call_source_range, *name, 0.0)));
     }
 
     let normalized_plane_info = normalize_plane_info(&plane_info);
 
-    println!("normalized plane info: {:?}", normalized_plane_info);
+    println!("normalized plane info: {:#?}", normalized_plane_info);
 
     // Check our default planes.
     let Some((matched_plane_name, _)) = DEFAULT_PLANE_INFO
         .iter()
-        .find(|(_, plane)| **plane == normalized_plane_info)
+        .find(|(_, plane)| plane_equal_excluding_z(plane, &normalized_plane_info))
     else {
         return Ok(None);
     };
@@ -271,9 +276,10 @@ fn normalize_plane_info(plane_info: &PlaneInfo) -> PlaneInfo {
 
 #[cfg(test)]
 mod tests {
-    use super::{lint_should_be_offset_plane, Z0003};
+    use super::{Z0003, lint_should_be_offset_plane};
     use crate::lint::rule::{test_finding, test_no_finding};
 
+    // Both axes here are normalized.
     test_finding!(
         z0003_bad_sketch_on,
         lint_should_be_offset_plane,
@@ -288,6 +294,30 @@ startSketchOn({
 ",
         "custom plane in startSketchOn; offsetPlane from XZ would work here",
         Some("offsetPlane(XZ, offset = -14.3)".to_string())
+    );
+
+    // This test uses a Y axis that isn't normalized, to check the normalization code doesn't
+    // stop this lint from firing.
+    test_finding!(
+        z0003_bad_sketch_on_not_normalized_axes,
+        lint_should_be_offset_plane,
+        Z0003,
+        "\
+a1 = startSketchOn({
+       origin = { x = 0, y = 0, z = 0 },
+       xAxis = { x = 1, y = 0, z = 0 },
+       yAxis = { x = 0, y = 12, z = 0 },
+     })
+  |> startProfile(at = [0, 0])
+  |> line(end = [100.0, 0])
+  |> yLine(length = -100.0)
+  |> xLine(length = -100.0)
+  |> yLine(length = 100.0)
+  |> close()
+  |> extrude(length = 3.14)
+",
+        "custom plane in startSketchOn; offsetPlane from XY would work here",
+        Some("offsetPlane(XY, offset = 12)".to_string())
     );
 
     test_no_finding!(

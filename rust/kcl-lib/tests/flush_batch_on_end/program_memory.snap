@@ -93,6 +93,14 @@ description: Variables in memory after executing flush_batch_on_end.kcl
           "units": {
             "type": "Unknown"
           }
+        },
+        "zAxis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0,
+          "units": {
+            "type": "Unknown"
+          }
         }
       },
       "start": {
@@ -219,6 +227,14 @@ description: Variables in memory after executing flush_batch_on_end.kcl
           "units": {
             "type": "Unknown"
           }
+        },
+        "zAxis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0,
+          "units": {
+            "type": "Unknown"
+          }
         }
       },
       "start": {
@@ -243,6 +259,10 @@ description: Variables in memory after executing flush_batch_on_end.kcl
         "arc000": {
           "type": "TagIdentifier",
           "value": "arc000"
+        },
+        "arc001": {
+          "type": "TagIdentifier",
+          "value": "arc001"
         }
       },
       "artifactId": "[uuid]",
@@ -270,6 +290,20 @@ description: Variables in memory after executing flush_batch_on_end.kcl
             "start": 360,
             "type": "TagDeclarator",
             "value": "arc000"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 515,
+            "end": 522,
+            "moduleId": 0,
+            "start": 515,
+            "type": "TagDeclarator",
+            "value": "arc001"
           },
           "type": "extrudeArc"
         }
@@ -311,6 +345,40 @@ description: Variables in memory after executing flush_batch_on_end.kcl
             }
           }
         ],
+        "innerPaths": [
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.0,
+              0.0
+            ],
+            "from": [
+              0.182,
+              0.0
+            ],
+            "radius": 0.182,
+            "tag": {
+              "commentStart": 515,
+              "end": 522,
+              "moduleId": 0,
+              "start": 515,
+              "type": "TagDeclarator",
+              "value": "arc001"
+            },
+            "to": [
+              0.182,
+              0.0
+            ],
+            "type": "Circle",
+            "units": {
+              "type": "Inches"
+            }
+          }
+        ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
@@ -339,6 +407,14 @@ description: Variables in memory after executing flush_batch_on_end.kcl
             "units": {
               "type": "Unknown"
             }
+          },
+          "zAxis": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 1.0,
+            "units": {
+              "type": "Unknown"
+            }
           }
         },
         "start": {
@@ -363,6 +439,10 @@ description: Variables in memory after executing flush_batch_on_end.kcl
           "arc000": {
             "type": "TagIdentifier",
             "value": "arc000"
+          },
+          "arc001": {
+            "type": "TagIdentifier",
+            "value": "arc001"
           }
         },
         "artifactId": "[uuid]",
@@ -419,6 +499,40 @@ description: Variables in memory after executing flush_batch_on_end.kcl
           }
         }
       ],
+      "innerPaths": [
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            0.0,
+            0.0
+          ],
+          "from": [
+            0.182,
+            0.0
+          ],
+          "radius": 0.182,
+          "tag": {
+            "commentStart": 515,
+            "end": 522,
+            "moduleId": 0,
+            "start": 515,
+            "type": "TagDeclarator",
+            "value": "arc001"
+          },
+          "to": [
+            0.182,
+            0.0
+          ],
+          "type": "Circle",
+          "units": {
+            "type": "Inches"
+          }
+        }
+      ],
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
@@ -447,6 +561,14 @@ description: Variables in memory after executing flush_batch_on_end.kcl
           "units": {
             "type": "Unknown"
           }
+        },
+        "zAxis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0,
+          "units": {
+            "type": "Unknown"
+          }
         }
       },
       "start": {
@@ -471,6 +593,10 @@ description: Variables in memory after executing flush_batch_on_end.kcl
         "arc000": {
           "type": "TagIdentifier",
           "value": "arc000"
+        },
+        "arc001": {
+          "type": "TagIdentifier",
+          "value": "arc001"
         }
       },
       "artifactId": "[uuid]",
@@ -506,6 +632,14 @@ description: Variables in memory after executing flush_batch_on_end.kcl
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
+        "units": {
+          "type": "Unknown"
+        }
+      },
+      "zAxis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0,
         "units": {
           "type": "Unknown"
         }

@@ -1,16 +1,17 @@
-import { NODE_ENV, VITE_KC_SITE_BASE_URL } from '@src/env'
+import env from '@src/env'
 import { isDesktop } from '@src/lib/isDesktop'
 import {
   IS_PLAYWRIGHT_KEY,
   IMMEDIATE_SIGN_IN_IF_NECESSARY_QUERY_PARAM,
 } from '@src/lib/constants'
 import { PATHS } from '@src/lib/paths'
+import { withSiteBaseURL } from '@src/lib/withBaseURL'
 
 const isTestEnv = window?.localStorage.getItem(IS_PLAYWRIGHT_KEY) === 'true'
 
 export const APP_VERSION =
-  isTestEnv && NODE_ENV === 'development'
-    ? '11.22.33'
+  isTestEnv && env().NODE_ENV === 'development'
+    ? '0.0.0'
     : isDesktop()
       ? // @ts-ignore
         window.electron.packageJson.version
@@ -54,7 +55,7 @@ export function generateSignInUrl() {
       '?'
     )
 
-  return `${VITE_KC_SITE_BASE_URL}${
-    PATHS.SIGN_IN
-  }?callbackUrl=${encodeURIComponent(finalURL)}`
+  return withSiteBaseURL(
+    `${PATHS.SIGN_IN}?callbackUrl=${encodeURIComponent(finalURL)}`
+  )
 }

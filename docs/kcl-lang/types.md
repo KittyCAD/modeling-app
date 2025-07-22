@@ -13,7 +13,7 @@ arrays can hold objects and vice versa.
 
 Constants are defined with a name and a value, like so:
 
-```
+```kcl
 myBool = false
 ```
 
@@ -24,7 +24,7 @@ Currently you cannot redeclare a constant.
 
 An object is defined with `{}` braces. Here is an example object:
 
-```
+```kcl
 myObj = { a = 0, b = "thing" }
 ```
 
@@ -49,9 +49,9 @@ Tags are used to give a name (tag) to a specific path.
 The syntax for declaring a tag is `$myTag` you would use it in the following
 way:
 
-```norun
+```kcl
 startSketchOn(XZ)
-  |> startProfile(at = origin)
+  |> startProfile(at = [0, 0])
   |> angledLine(angle = 0, length = 191.26, tag = $rectangleSegmentA001)
   |> angledLine(
        angle = segAng(rectangleSegmentA001) - 90,
@@ -97,7 +97,7 @@ use the tag `rectangleSegmentA001` in any function or expression in the file.
 
 However if the code was written like this:
 
-```norun
+```kcl
 fn rect(origin) {
   return startSketchOn(XZ)
     |> startProfile(at = origin)
@@ -127,7 +127,7 @@ However you likely want to use those tags somewhere outside the `rect` function.
 Tags are accessible through the sketch group they are declared in.
 For example the following code works.
 
-```norun
+```kcl
 fn rect(origin) {
   return startSketchOn(XZ)
     |> startProfile(at = origin)

@@ -9,20 +9,19 @@ use uuid::Uuid;
 #[cfg(feature = "artifact-graph")]
 use crate::execution::{Artifact, ArtifactCommand, ArtifactGraph, ArtifactId};
 use crate::{
+    CompilationError, EngineManager, ExecutorContext, KclErrorWithOutputs,
     errors::{KclError, KclErrorDetails, Severity},
     exec::DefaultPlanes,
     execution::{
-        annotations,
+        EnvironmentRef, ExecOutcome, ExecutorSettings, KclValue, UnitAngle, UnitLen, annotations,
         cad_op::Operation,
         id_generator::IdGenerator,
         memory::{ProgramMemory, Stack},
         types::{self, NumericType},
-        EnvironmentRef, ExecOutcome, ExecutorSettings, KclValue, UnitAngle, UnitLen,
     },
     modules::{ModuleId, ModuleInfo, ModuleLoader, ModulePath, ModuleRepr, ModuleSource},
     parsing::ast::types::{Annotation, NodeRef},
     source_range::SourceRange,
-    CompilationError, EngineManager, ExecutorContext, KclErrorWithOutputs,
 };
 
 /// State for executing a program.
@@ -171,19 +170,6 @@ impl ExecState {
         }
     }
 
-    pub async fn into_mock_exec_outcome(self, main_ref: EnvironmentRef, ctx: &ExecutorContext) -> ExecOutcome {
-        ExecOutcome {
-            variables: self.mod_local.variables(main_ref),
-            #[cfg(feature = "artifact-graph")]
-            operations: Default::default(),
-            #[cfg(feature = "artifact-graph")]
-            artifact_graph: self.global.artifacts.graph,
-            errors: self.global.errors,
-            filenames: Default::default(),
-            default_planes: ctx.engine.get_default_planes().read().await.clone(),
-        }
-    }
-
     pub(crate) fn stack(&self) -> &Stack {
         &self.mod_local.stack
     }
@@ -316,6 +302,7 @@ impl ExecState {
     pub(crate) fn error_with_outputs(
         &self,
         error: KclError,
+        main_ref: Option<EnvironmentRef>,
         default_planes: Option<DefaultPlanes>,
     ) -> KclErrorWithOutputs {
         let module_id_to_module_path: IndexMap<ModuleId, ModulePath> = self
@@ -328,6 +315,9 @@ impl ExecState {
         KclErrorWithOutputs::new(
             error,
             self.errors().to_vec(),
+            main_ref
+                .map(|main_ref| self.mod_local.variables(main_ref))
+                .unwrap_or_default(),
             #[cfg(feature = "artifact-graph")]
             self.global.root_module_artifacts.operations.clone(),
             #[cfg(feature = "artifact-graph")]
@@ -555,7 +545,7 @@ impl MetaSettings {
                             annotations::SETTINGS_UNIT_ANGLE
                         ),
                         vec![annotation.as_source_range()],
-                    )))
+                    )));
                 }
             }
         }

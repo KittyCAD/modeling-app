@@ -1,0 +1,6 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Artifact graph flowchart complex_expr_as_array_index.kcl
+extension: md
+snapshot_kind: binary
+---

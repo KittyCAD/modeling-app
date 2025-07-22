@@ -112,7 +112,7 @@ expression: actual
           "end": 48,
           "left": {
             "commentStart": 36,
-            "computed": false,
+            "computed": true,
             "end": 44,
             "moduleId": 0,
             "object": {

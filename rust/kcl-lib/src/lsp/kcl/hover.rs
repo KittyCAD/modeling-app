@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
 use tower_lsp::lsp_types::Range as LspRange;
 
-use crate::{parsing::ast::types::*, SourceRange};
+use crate::{SourceRange, parsing::ast::types::*};
 
 /// Describes information about a hover.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
@@ -149,6 +149,9 @@ impl BinaryPart {
             BinaryPart::UnaryExpression(unary_expression) => {
                 unary_expression.get_hover_value_for_position(pos, code, opts)
             }
+            BinaryPart::ArrayExpression(e) => e.get_hover_value_for_position(pos, code, opts),
+            BinaryPart::ArrayRangeExpression(e) => e.get_hover_value_for_position(pos, code, opts),
+            BinaryPart::ObjectExpression(e) => e.get_hover_value_for_position(pos, code, opts),
             BinaryPart::IfExpression(e) => e.get_hover_value_for_position(pos, code, opts),
             BinaryPart::AscribedExpression(e) => e.expr.get_hover_value_for_position(pos, code, opts),
             BinaryPart::MemberExpression(member_expression) => {

@@ -1,17 +1,17 @@
 //! Standard library shells.
 
 use anyhow::Result;
-use kcmc::{each_cmd as mcmd, length_unit::LengthUnit, ModelingCmd};
+use kcmc::{ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit};
 use kittycad_modeling_cmds as kcmc;
 
 use super::args::TyF64;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        types::{ArrayLen, RuntimeType},
         ExecState, KclValue, Solid,
+        types::{ArrayLen, RuntimeType},
     },
-    std::{sketch::FaceTag, Args},
+    std::{Args, sketch::FaceTag},
 };
 
 /// Create a shell.

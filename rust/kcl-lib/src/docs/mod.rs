@@ -286,6 +286,7 @@ mod tests {
   twistAngle?: number(Angle),
   twistAngleStep?: number(Angle),
   twistCenter?: Point2d,
+  method?: string,
 ): [Solid; 1+]"#
         );
     }

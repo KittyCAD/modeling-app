@@ -7,12 +7,13 @@ use serde::Serialize;
 use super::fillet::EdgeReference;
 pub use crate::execution::fn_call::Args;
 use crate::{
+    ModuleId,
     errors::{KclError, KclErrorDetails},
     execution::{
-        kcl_value::FunctionSource,
-        types::{NumericType, PrimitiveType, RuntimeType, UnitAngle, UnitLen, UnitType},
         ExecState, ExtrudeSurface, Helix, KclObjectFields, KclValue, Metadata, PlaneInfo, Sketch, SketchSurface, Solid,
         TagIdentifier,
+        kcl_value::FunctionSource,
+        types::{NumericType, PrimitiveType, RuntimeType, UnitAngle, UnitLen, UnitType},
     },
     parsing::ast::types::TagNode,
     source_range::SourceRange,
@@ -21,7 +22,6 @@ use crate::{
         sketch::FaceTag,
         sweep::SweepPath,
     },
-    ModuleId,
 };
 
 const ERROR_STRING_SKETCH_TO_SOLID_HELPER: &str =
@@ -97,8 +97,8 @@ impl JsonSchema for TyF64 {
         "TyF64".to_string()
     }
 
-    fn json_schema(gen: &mut schemars::gen::SchemaGenerator) -> schemars::schema::Schema {
-        gen.subschema_for::<f64>()
+    fn json_schema(r#gen: &mut schemars::r#gen::SchemaGenerator) -> schemars::schema::Schema {
+        r#gen.subschema_for::<f64>()
     }
 }
 
@@ -340,12 +340,12 @@ impl Args {
         let x = KclValue::Number {
             value: p[0],
             meta: vec![meta],
-            ty: ty.clone(),
+            ty,
         };
         let y = KclValue::Number {
             value: p[1],
             meta: vec![meta],
-            ty: ty.clone(),
+            ty,
         };
         let ty = RuntimeType::Primitive(PrimitiveType::Number(ty));
 
@@ -674,6 +674,7 @@ impl<'a> FromKclValue<'a> for super::sketch::PlaneData {
                 origin: value.info.origin,
                 x_axis: value.info.x_axis,
                 y_axis: value.info.y_axis,
+                z_axis: value.info.z_axis,
             }));
         }
         // Case 1: predefined plane
@@ -692,9 +693,15 @@ impl<'a> FromKclValue<'a> for super::sketch::PlaneData {
         let obj = arg.as_object()?;
         let_field_of!(obj, plane, &KclObjectFields);
         let origin = plane.get("origin").and_then(FromKclValue::from_kcl_val)?;
-        let x_axis = plane.get("xAxis").and_then(FromKclValue::from_kcl_val)?;
+        let x_axis: crate::execution::Point3d = plane.get("xAxis").and_then(FromKclValue::from_kcl_val)?;
         let y_axis = plane.get("yAxis").and_then(FromKclValue::from_kcl_val)?;
-        Some(Self::Plane(PlaneInfo { origin, x_axis, y_axis }))
+        let z_axis = x_axis.axes_cross_product(&y_axis);
+        Some(Self::Plane(PlaneInfo {
+            origin,
+            x_axis,
+            y_axis,
+            z_axis,
+        }))
     }
 }
 
@@ -1038,7 +1045,7 @@ impl<'a> FromKclValue<'a> for u64 {
 impl<'a> FromKclValue<'a> for TyF64 {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         match arg {
-            KclValue::Number { value, ty, .. } => Some(TyF64::new(*value, ty.clone())),
+            KclValue::Number { value, ty, .. } => Some(TyF64::new(*value, *ty)),
             _ => None,
         }
     }
@@ -1072,6 +1079,34 @@ impl<'a> FromKclValue<'a> for [TyF64; 3] {
                 let v1 = value.get(1)?;
                 let v2 = value.get(2)?;
                 let array = [v0.as_ty_f64()?, v1.as_ty_f64()?, v2.as_ty_f64()?];
+                Some(array)
+            }
+            _ => None,
+        }
+    }
+}
+
+impl<'a> FromKclValue<'a> for [TyF64; 6] {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        match arg {
+            KclValue::Tuple { value, meta: _ } | KclValue::HomArray { value, .. } => {
+                if value.len() != 6 {
+                    return None;
+                }
+                let v0 = value.first()?;
+                let v1 = value.get(1)?;
+                let v2 = value.get(2)?;
+                let v3 = value.get(3)?;
+                let v4 = value.get(4)?;
+                let v5 = value.get(5)?;
+                let array = [
+                    v0.as_ty_f64()?,
+                    v1.as_ty_f64()?,
+                    v2.as_ty_f64()?,
+                    v3.as_ty_f64()?,
+                    v4.as_ty_f64()?,
+                    v5.as_ty_f64()?,
+                ];
                 Some(array)
             }
             _ => None,

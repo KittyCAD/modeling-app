@@ -39,7 +39,7 @@ ballProfile = startProfile(ballSketch, at = polar(angle = sketchStartAngle + 90,
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 ballRevolve = revolve(ballProfile, angle = 360, axis = X)
-  |> appearance(%, color = "#519afb")
+  |> appearance(color = "#519afb")
 
 // next the retaining loop that keep the ball in place
 retainingLoopSketch = startSketchOn(YZ)

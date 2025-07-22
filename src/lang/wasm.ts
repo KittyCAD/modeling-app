@@ -45,6 +45,7 @@ import {
   default_app_settings,
   default_project_settings,
   format_number_literal,
+  format_number_value,
   get_kcl_version,
   get_tangential_arc_to_info,
   human_display_number,
@@ -231,6 +232,7 @@ export const parse = (code: string | Error): ParseResult | Error => {
       bestSourceRange(parsed),
       [],
       [],
+      {},
       [],
       defaultArtifactGraph(),
       {},
@@ -380,6 +382,7 @@ export const errFromErrWithOutputs = (e: any): KCLError => {
     bestSourceRange(parsed.error),
     parsed.error.details.backtrace,
     parsed.nonFatal,
+    parsed.variables,
     parsed.operations,
     artifactGraphFromRust(parsed.artifactGraph),
     parsed.filenames,
@@ -443,6 +446,23 @@ export function formatNumberLiteral(
   } catch (e) {
     return new Error(
       `Error formatting number literal: value=${value}, suffix=${suffix}`,
+      { cause: e }
+    )
+  }
+}
+
+/**
+ * Format a number from a KclValue such that it could be parsed as KCL.
+ */
+export function formatNumberValue(
+  value: number,
+  numericType: NumericType
+): string | Error {
+  try {
+    return format_number_value(value, JSON.stringify(numericType))
+  } catch (e) {
+    return new Error(
+      `Error formatting number value: value=${value}, numericType=${numericType}`,
       { cause: e }
     )
   }

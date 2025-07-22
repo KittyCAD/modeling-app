@@ -4,11 +4,11 @@ use anyhow::Result;
 use wasm_bindgen::prelude::wasm_bindgen;
 
 use crate::{
+    SourceRange,
     errors::{KclError, KclErrorDetails},
     execution::typed_path::TypedPath,
     fs::FileSystem,
     wasm::JsFuture,
-    SourceRange,
 };
 
 #[wasm_bindgen(module = "/../../src/lang/std/fileSystemManager.ts")]

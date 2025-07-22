@@ -1,18 +1,19 @@
 use std::fmt::Write;
 
 use crate::{
+    KclError, ModuleId,
     parsing::{
+        DeprecationKind, PIPE_OPERATOR,
         ast::types::{
             Annotation, ArrayExpression, ArrayRangeExpression, AscribedExpression, Associativity, BinaryExpression,
             BinaryOperator, BinaryPart, BodyItem, CallExpressionKw, CommentStyle, DefaultParamVal, Expr, FormatOptions,
             FunctionExpression, IfExpression, ImportSelector, ImportStatement, ItemVisibility, LabeledArg, Literal,
-            LiteralIdentifier, LiteralValue, MemberExpression, Node, NonCodeNode, NonCodeValue, ObjectExpression,
-            Parameter, PipeExpression, Program, TagDeclarator, TypeDeclaration, UnaryExpression, VariableDeclaration,
+            LiteralValue, MemberExpression, Node, NonCodeNode, NonCodeValue, ObjectExpression, Parameter,
+            PipeExpression, Program, TagDeclarator, TypeDeclaration, UnaryExpression, VariableDeclaration,
             VariableKind,
         },
-        deprecation, DeprecationKind, PIPE_OPERATOR,
+        deprecation,
     },
-    KclError, ModuleId,
 };
 
 #[allow(dead_code)]
@@ -59,7 +60,7 @@ impl Program {
                 for attr in body_item.get_attrs() {
                     result.push_str(&attr.recast(options, indentation_level));
                 }
-                result.push_str(&match body_item.clone() {
+                result.push_str(&match body_item {
                     BodyItem::ImportStatement(stmt) => stmt.recast(options, indentation_level),
                     BodyItem::ExpressionStatement(expression_statement) => {
                         expression_statement
@@ -110,7 +111,7 @@ impl Program {
                             let formatted = custom_white_space_or_comment.recast(options, indentation_level);
                             if i == 0 && !formatted.trim().is_empty() {
                                 if let NonCodeValue::BlockComment { .. } = custom_white_space_or_comment.value {
-                                    format!("\n{}", formatted)
+                                    format!("\n{formatted}")
                                 } else {
                                     formatted
                                 }
@@ -127,7 +128,7 @@ impl Program {
                     custom_white_space_or_comment
                 };
 
-                let _ = write!(output, "{}{}{}", start_string, recast_str, end_string);
+                let _ = write!(output, "{start_string}{recast_str}{end_string}");
                 output
             })
             .trim()
@@ -135,7 +136,7 @@ impl Program {
 
         // Insert a final new line if the user wants it.
         if options.insert_final_newline && !result.is_empty() {
-            format!("{}\n", result)
+            format!("{result}\n")
         } else {
             result
         }
@@ -158,16 +159,16 @@ impl Node<NonCodeNode> {
             NonCodeValue::InlineComment {
                 value,
                 style: CommentStyle::Line,
-            } => format!(" // {}\n", value),
+            } => format!(" // {value}\n"),
             NonCodeValue::InlineComment {
                 value,
                 style: CommentStyle::Block,
-            } => format!(" /* {} */", value),
+            } => format!(" /* {value} */"),
             NonCodeValue::BlockComment { value, style } => match style {
-                CommentStyle::Block => format!("{}/* {} */", indentation, value),
+                CommentStyle::Block => format!("{indentation}/* {value} */"),
                 CommentStyle::Line => {
                     if value.trim().is_empty() {
-                        format!("{}//\n", indentation)
+                        format!("{indentation}//\n")
                     } else {
                         format!("{}// {}\n", indentation, value.trim())
                     }
@@ -176,10 +177,10 @@ impl Node<NonCodeNode> {
             NonCodeValue::NewLineBlockComment { value, style } => {
                 let add_start_new_line = if self.start == 0 { "" } else { "\n\n" };
                 match style {
-                    CommentStyle::Block => format!("{}{}/* {} */\n", add_start_new_line, indentation, value),
+                    CommentStyle::Block => format!("{add_start_new_line}{indentation}/* {value} */\n"),
                     CommentStyle::Line => {
                         if value.trim().is_empty() {
-                            format!("{}{}//\n", add_start_new_line, indentation)
+                            format!("{add_start_new_line}{indentation}//\n")
                         } else {
                             format!("{}{}// {}\n", add_start_new_line, indentation, value.trim())
                         }
@@ -241,7 +242,7 @@ impl ImportStatement {
         } else {
             ""
         };
-        let mut string = format!("{}{}import ", vis, indentation);
+        let mut string = format!("{vis}{indentation}import ");
         match &self.selector {
             ImportSelector::List { items } => {
                 for (i, item) in items.iter().enumerate() {
@@ -291,7 +292,7 @@ impl Expr {
             Expr::BinaryExpression(bin_exp) => bin_exp.recast(options, indentation_level, ctxt),
             Expr::ArrayExpression(array_exp) => array_exp.recast(options, indentation_level, ctxt),
             Expr::ArrayRangeExpression(range_exp) => range_exp.recast(options, indentation_level, ctxt),
-            Expr::ObjectExpression(ref obj_exp) => obj_exp.recast(options, indentation_level, ctxt),
+            Expr::ObjectExpression(obj_exp) => obj_exp.recast(options, indentation_level, ctxt),
             Expr::MemberExpression(mem_exp) => mem_exp.recast(options, indentation_level, ctxt),
             Expr::Literal(literal) => literal.recast(),
             Expr::FunctionExpression(func_exp) => {
@@ -362,6 +363,9 @@ impl BinaryPart {
             BinaryPart::MemberExpression(member_expression) => {
                 member_expression.recast(options, indentation_level, ctxt)
             }
+            BinaryPart::ArrayExpression(e) => e.recast(options, indentation_level, ctxt),
+            BinaryPart::ArrayRangeExpression(e) => e.recast(options, indentation_level, ctxt),
+            BinaryPart::ObjectExpression(e) => e.recast(options, indentation_level, ctxt),
             BinaryPart::IfExpression(e) => e.recast(options, indentation_level, ExprContext::Other),
             BinaryPart::AscribedExpression(e) => e.recast(options, indentation_level, ExprContext::Other),
         }
@@ -395,8 +399,8 @@ impl CallExpressionKw {
         }
 
         let arg_list = self.recast_args(options, indentation_level, ctxt);
-        let args = arg_list.clone().join(", ");
         let has_lots_of_args = arg_list.len() >= 4;
+        let args = arg_list.join(", ");
         let some_arg_is_already_multiline = arg_list.len() > 1 && arg_list.iter().any(|arg| arg.contains('\n'));
         let multiline = has_lots_of_args || some_arg_is_already_multiline;
         if multiline {
@@ -523,23 +527,19 @@ impl ArrayExpression {
         let num_items = self.elements.len() + self.non_code_meta.non_code_nodes_len();
         let mut elems = self.elements.iter();
         let mut found_line_comment = false;
-        let mut format_items: Vec<_> = (0..num_items)
-            .flat_map(|i| {
-                if let Some(noncode) = self.non_code_meta.non_code_nodes.get(&i) {
-                    noncode
-                        .iter()
-                        .map(|nc| {
-                            found_line_comment |= nc.value.should_cause_array_newline();
-                            nc.recast(options, 0)
-                        })
-                        .collect::<Vec<_>>()
-                } else {
-                    let el = elems.next().unwrap();
-                    let s = format!("{}, ", el.recast(options, 0, ExprContext::Other));
-                    vec![s]
-                }
-            })
-            .collect();
+        let mut format_items: Vec<_> = Vec::with_capacity(num_items);
+        for i in 0..num_items {
+            if let Some(noncode) = self.non_code_meta.non_code_nodes.get(&i) {
+                format_items.extend(noncode.iter().map(|nc| {
+                    found_line_comment |= nc.value.should_cause_array_newline();
+                    nc.recast(options, 0)
+                }));
+            } else {
+                let el = elems.next().unwrap();
+                let s = format!("{}, ", el.recast(options, 0, ExprContext::Other));
+                format_items.push(s);
+            }
+        }
 
         // Format these items into a one-line array.
         if let Some(item) = format_items.last_mut() {
@@ -547,8 +547,11 @@ impl ArrayExpression {
                 *item = norm.to_owned();
             }
         }
-        let format_items = format_items; // Remove mutability
-        let flat_recast = format!("[{}]", format_items.join(""));
+        let mut flat_recast = "[".to_owned();
+        for fi in &format_items {
+            flat_recast.push_str(fi)
+        }
+        flat_recast.push(']');
 
         // We might keep the one-line representation, if it's short enough.
         let max_array_length = 40;
@@ -558,29 +561,31 @@ impl ArrayExpression {
         }
 
         // Otherwise, we format a multi-line representation.
+        let mut output = "[\n".to_owned();
         let inner_indentation = if ctxt == ExprContext::Pipe {
             options.get_indentation_offset_pipe(indentation_level + 1)
         } else {
             options.get_indentation(indentation_level + 1)
         };
-        let formatted_array_lines = format_items
-            .iter()
-            .map(|s| {
-                format!(
-                    "{inner_indentation}{}{}",
-                    if let Some(x) = s.strip_suffix(" ") { x } else { s },
-                    if s.ends_with('\n') { "" } else { "\n" }
-                )
-            })
-            .collect::<Vec<String>>()
-            .join("")
-            .to_owned();
+        for format_item in format_items {
+            output.push_str(&inner_indentation);
+            output.push_str(if let Some(x) = format_item.strip_suffix(" ") {
+                x
+            } else {
+                &format_item
+            });
+            if !format_item.ends_with('\n') {
+                output.push('\n')
+            }
+        }
         let end_indent = if ctxt == ExprContext::Pipe {
             options.get_indentation_offset_pipe(indentation_level)
         } else {
             options.get_indentation(indentation_level)
         };
-        format!("[\n{formatted_array_lines}{end_indent}]")
+        output.push_str(&end_indent);
+        output.push(']');
+        output
     }
 }
 
@@ -685,30 +690,20 @@ impl ObjectExpression {
 
 impl MemberExpression {
     fn recast(&self, options: &FormatOptions, indentation_level: usize, ctxt: ExprContext) -> String {
-        let key_str = match &self.property {
-            LiteralIdentifier::Identifier(identifier) => {
-                if self.computed {
-                    format!("[{}]", &(*identifier.name))
-                } else {
-                    format!(".{}", &(*identifier.name))
-                }
-            }
-            LiteralIdentifier::Literal(lit) => format!("[{}]", &(*lit.raw)),
+        let key_str = if self.computed {
+            let node_fmt = self.property.recast(options, indentation_level, ctxt);
+            format!("[{node_fmt}]")
+        } else {
+            let node_fmt = self.property.recast(options, indentation_level, ctxt);
+            format!(".{node_fmt}")
         };
-
         self.object.recast(options, indentation_level, ctxt) + key_str.as_str()
     }
 }
 
 impl BinaryExpression {
     fn recast(&self, options: &FormatOptions, _indentation_level: usize, ctxt: ExprContext) -> String {
-        let maybe_wrap_it = |a: String, doit: bool| -> String {
-            if doit {
-                format!("({})", a)
-            } else {
-                a
-            }
-        };
+        let maybe_wrap_it = |a: String, doit: bool| -> String { if doit { format!("({a})") } else { a } };
 
         // It would be better to always preserve the user's parentheses but since we've dropped that
         // info from the AST, we bracket expressions as necessary.
@@ -750,6 +745,9 @@ impl UnaryExpression {
             BinaryPart::Literal(_)
             | BinaryPart::Name(_)
             | BinaryPart::MemberExpression(_)
+            | BinaryPart::ArrayExpression(_)
+            | BinaryPart::ArrayRangeExpression(_)
+            | BinaryPart::ObjectExpression(_)
             | BinaryPart::IfExpression(_)
             | BinaryPart::AscribedExpression(_)
             | BinaryPart::CallExpressionKw(_) => {
@@ -797,7 +795,7 @@ impl Node<PipeExpression> {
             .map(|(index, statement)| {
                 let indentation = options.get_indentation(indentation_level + 1);
                 let mut s = statement.recast(options, indentation_level + 1, ExprContext::Pipe);
-                let non_code_meta = self.non_code_meta.clone();
+                let non_code_meta = &self.non_code_meta;
                 if let Some(non_code_meta_value) = non_code_meta.non_code_nodes.get(&index) {
                     for val in non_code_meta_value {
                         let formatted = if val.end == self.end {
@@ -977,7 +975,7 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     use super::*;
-    use crate::{parsing::ast::types::FormatOptions, ModuleId};
+    use crate::{ModuleId, parsing::ast::types::FormatOptions};
 
     #[test]
     fn test_recast_annotations_without_body_items() {

@@ -28,7 +28,6 @@ import {
   createName,
   createPipeSubstitution,
   createUnaryExpression,
-  giveSketchFnCallTag,
 } from '@src/lang/create'
 import type { createObjectExpression } from '@src/lang/create'
 import type { ToolTip } from '@src/lang/langHelpers'
@@ -84,6 +83,7 @@ import {
   normaliseAngle,
   roundOff,
 } from '@src/lib/utils'
+import { giveSketchFnCallTag } from '@src/lang/modifyAst/giveSketchFnCallTag'
 
 export type LineInputsType =
   | 'xAbsolute'

@@ -160,6 +160,10 @@ export class CmdBarFixture {
     await expect(this.cmdBarElement).not.toBeVisible()
   }
 
+  get clearNonRequiredButton() {
+    return this.page.getByTestId('command-bar-clear-non-required-button')
+  }
+
   get cmdSearchInput() {
     return this.page.getByTestId('cmd-bar-search')
   }

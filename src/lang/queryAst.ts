@@ -2,13 +2,18 @@ import type { FunctionExpression } from '@rust/kcl-lib/bindings/FunctionExpressi
 import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { TypeDeclaration } from '@rust/kcl-lib/bindings/TypeDeclaration'
-import { createLocalName, createPipeSubstitution } from '@src/lang/create'
+import {
+  createLiteral,
+  createLocalName,
+  createPipeSubstitution,
+} from '@src/lang/create'
 import type { ToolTip } from '@src/lang/langHelpers'
 import { splitPathAtLastIndex } from '@src/lang/modifyAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import {
   codeRefFromRange,
-  getArtifactOfTypes,
+  getCodeRefsByArtifactId,
+  getFaceCodeRef,
 } from '@src/lang/std/artifactGraph'
 import { getArgForEnd } from '@src/lang/std/sketch'
 import { getSketchSegmentFromSourceRange } from '@src/lang/std/sketchConstraints'
@@ -51,10 +56,12 @@ import type { KclSettingsAnnotation } from '@src/lib/settings/settingsTypes'
 import { err } from '@src/lib/trap'
 import { getAngle, isArray } from '@src/lib/utils'
 
-import type { OpKclValue, Operation } from '@rust/kcl-lib/bindings/Operation'
+import type { OpArg, Operation } from '@rust/kcl-lib/bindings/Operation'
 import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import type { UnaryExpression } from 'typescript'
+import type { NumericType } from '@rust/kcl-lib/bindings/NumericType'
+import type { Artifact, Plane } from '@rust/kcl-lib/bindings/Artifact'
 
 /**
  * Retrieves a node from a given path within a Program node structure, optionally stopping at a specified node type.
@@ -306,6 +313,7 @@ export function traverse(
 export interface PrevVariable<T> {
   key: string
   value: T
+  ty: NumericType | undefined
 }
 
 export function findAllPreviousVariablesPath(
@@ -353,6 +361,7 @@ export function findAllPreviousVariablesPath(
     variables.push({
       key: varName,
       value: varValue.value,
+      ty: varValue.type === 'Number' ? varValue.ty : undefined,
     })
   })
 
@@ -1037,122 +1046,216 @@ export const valueOrVariable = (variable: KclCommandValue) => {
     : variable.valueAst
 }
 
-// Go from a selection of sketches to a list of KCL expressions that
-// can be used to create KCL sweep call declarations.
-export function getSketchExprsFromSelection(
+// Go from a selection to a list of KCL expressions that
+// can be used to create function calls in codemods.
+// lastChildLookup will look for the last child of the selection in the artifact graph
+export function getVariableExprsFromSelection(
   selection: Selections,
   ast: Node<Program>,
-  nodeToEdit?: PathToNode
-): Error | Expr[] {
-  const sketches: Expr[] = selection.graphSelections.flatMap((s) => {
-    const sketchVariable = getNodeFromPath<VariableDeclarator>(
-      ast,
-      s?.codeRef.pathToNode,
-      'VariableDeclarator'
-    )
-    if (err(sketchVariable)) {
-      return []
+  nodeToEdit?: PathToNode,
+  lastChildLookup = false,
+  artifactGraph?: ArtifactGraph
+): Error | { exprs: Expr[]; pathIfPipe?: PathToNode } {
+  let pathIfPipe: PathToNode | undefined
+  const exprs: Expr[] = []
+  const pushedNames = {} as Record<string, boolean>
+  for (const s of selection.graphSelections) {
+    let variable:
+      | {
+          node: VariableDeclaration
+          shallowPath: PathToNode
+          deepPath: PathToNode
+        }
+      | undefined
+    if (lastChildLookup && s.artifact && artifactGraph) {
+      const children = findAllChildrenAndOrderByPlaceInCode(
+        s.artifact,
+        artifactGraph
+      )
+      const lastChildVariable = getLastVariable(children, ast)
+      if (!lastChildVariable) {
+        continue
+      }
+
+      variable = lastChildVariable.variableDeclaration
+    } else {
+      const directLookup = getNodeFromPath<VariableDeclaration>(
+        ast,
+        s.codeRef.pathToNode,
+        'VariableDeclaration'
+      )
+      if (err(directLookup)) {
+        continue
+      }
+
+      variable = directLookup
     }
 
-    if (sketchVariable.node.id) {
-      const name = sketchVariable.node?.id.name
+    if (variable.node.type === 'VariableDeclaration') {
+      const name = variable.node.declaration.id.name
       if (nodeToEdit) {
-        const result = getNodeFromPath<VariableDeclarator>(
+        const result = getNodeFromPath<VariableDeclaration>(
           ast,
           nodeToEdit,
-          'VariableDeclarator'
+          'VariableDeclaration'
         )
         if (
           !err(result) &&
-          result.node.type === 'VariableDeclarator' &&
-          name === result.node.id.name
+          result.node.type === 'VariableDeclaration' &&
+          name === result.node.declaration.id.name
         ) {
           // Pointing to same variable case
-          return createPipeSubstitution()
+          exprs.push(createPipeSubstitution())
+          pathIfPipe = nodeToEdit
+          continue
         }
       }
-      // Pointing to different variable case
-      return createLocalName(name)
-    } else {
-      // No variable case
-      return createPipeSubstitution()
-    }
-  })
 
-  if (sketches.length === 0) {
+      // Pointing to different variable case
+      if (pushedNames[name]) {
+        continue
+      }
+      exprs.push(createLocalName(name))
+      pushedNames[name] = true
+      continue
+    } else if (variable.node.type === 'CallExpressionKw') {
+      // no variable assignment in that call and not a pipe yet, we'll need to create it
+      exprs.push(createPipeSubstitution())
+      pathIfPipe = variable.deepPath
+      continue
+    }
+
+    // import case
+    const importNodeAndAlias = findImportNodeAndAlias(ast, s.codeRef.pathToNode)
+    if (importNodeAndAlias) {
+      exprs.push(createLocalName(importNodeAndAlias.alias))
+      continue
+    }
+
+    // No variable case
+    exprs.push(createPipeSubstitution())
+    pathIfPipe = s.codeRef.pathToNode
+  }
+
+  if (exprs.length === 0) {
     return new Error("Couldn't map selections to program references")
   }
 
-  return sketches
+  return { exprs, pathIfPipe }
 }
 
-// Go from the sketches argument in a KCL sweep call declaration
+// Go from the sketches argument in a KCL call declaration
 // to a list of graph selections, useful for edit flows.
-// Somewhat of an inverse of getSketchExprsFromSelection.
-export function getSketchSelectionsFromOperation(
-  operation: Operation,
+// Somewhat of an inverse of getVariableExprsFromSelection.
+export function retrieveSelectionsFromOpArg(
+  opArg: OpArg,
   artifactGraph: ArtifactGraph
 ): Error | Selections {
   const error = new Error("Couldn't retrieve sketches from operation")
-  if (operation.type !== 'StdLibCall') {
-    return error
-  }
-
-  let sketches: OpKclValue[] = []
-  if (operation.unlabeledArg?.value.type === 'Sketch') {
-    sketches = [operation.unlabeledArg.value]
-  } else if (operation.unlabeledArg?.value.type === 'Array') {
-    sketches = operation.unlabeledArg.value.value
+  let artifactIds: string[] = []
+  if (opArg.value.type === 'Solid' || opArg.value.type === 'Sketch') {
+    artifactIds = [opArg.value.value.artifactId]
+  } else if (opArg.value.type === 'ImportedGeometry') {
+    artifactIds = [opArg.value.artifact_id]
+  } else if (opArg.value.type === 'Array') {
+    artifactIds = opArg.value.value
+      .filter((v) => v.type === 'Solid' || v.type === 'Sketch')
+      .map((v) => v.value.artifactId)
   } else {
     return error
   }
 
-  const graphSelections: Selection[] = sketches.flatMap((sketch) => {
-    // We have to go a little roundabout to get from the original artifact
-    // to the solid2DId that we need to pass to the Extrude command.
-    if (sketch.type !== 'Sketch') {
-      return []
+  const graphSelections: Selection[] = []
+  for (const artifactId of artifactIds) {
+    const artifact = artifactGraph.get(artifactId)
+    if (!artifact) {
+      continue
     }
 
-    const pathArtifact = getArtifactOfTypes(
-      {
-        key: sketch.value.artifactId,
-        types: ['path'],
-      },
-      artifactGraph
-    )
-    if (
-      err(pathArtifact) ||
-      pathArtifact.type !== 'path' ||
-      !pathArtifact.solid2dId
-    ) {
-      return []
+    const codeRefs = getCodeRefsByArtifactId(artifactId, artifactGraph)
+    if (!codeRefs || codeRefs.length === 0) {
+      continue
     }
 
-    const solid2DArtifact = getArtifactOfTypes(
-      {
-        key: pathArtifact.solid2dId,
-        types: ['solid2d'],
-      },
-      artifactGraph
-    )
-    if (err(solid2DArtifact) || solid2DArtifact.type !== 'solid2d') {
-      return []
-    }
+    graphSelections.push({
+      artifact,
+      codeRef: codeRefs[0],
+    })
+  }
 
-    return {
-      artifact: solid2DArtifact,
-      codeRef: pathArtifact.codeRef,
-    }
-  })
   if (graphSelections.length === 0) {
     return error
   }
 
-  return {
-    graphSelections,
-    otherSelections: [],
+  return { graphSelections, otherSelections: [] } as Selections
+}
+
+export function findOperationPlaneArtifact(
+  operation: StdLibCallOp,
+  artifactGraph: ArtifactGraph
+) {
+  const nodePath = JSON.stringify(operation.nodePath)
+  const artifact = [...artifactGraph.values()].find(
+    (a) => JSON.stringify((a as Plane).codeRef?.nodePath) === nodePath
+  )
+  return artifact
+}
+
+export function isOffsetPlane(item: Operation): item is StdLibCallOp {
+  return item.type === 'StdLibCall' && item.name === 'offsetPlane'
+}
+
+export type StdLibCallOp = Extract<Operation, { type: 'StdLibCall' }>
+
+// Returns the id of the currently selected plane, either a default plane or an offset plane, or null if no planes are selected.
+export function getSelectedPlaneId(selectionRanges: Selections): string | null {
+  const defaultPlane = selectionRanges.otherSelections.find(
+    (selection) => typeof selection === 'object' && 'name' in selection
+  )
+  if (defaultPlane) {
+    // Found a default plane in the selection
+    return defaultPlane.id
   }
+
+  const planeSelection = selectionRanges.graphSelections.find(
+    (selection) => selection.artifact?.type === 'plane'
+  )
+  if (planeSelection) {
+    // Found an offset plane in the selection
+    return planeSelection.artifact?.id || null
+  }
+
+  return null
+}
+
+export function getSelectedPlaneAsNode(
+  selection: Selections,
+  variables: VariableMap
+): Node<Name> | Node<Literal> | undefined {
+  const defaultPlane = selection.otherSelections.find(
+    (selection) => typeof selection === 'object' && 'name' in selection
+  )
+  if (
+    defaultPlane &&
+    defaultPlane instanceof Object &&
+    'name' in defaultPlane
+  ) {
+    return createLiteral(defaultPlane.name.toUpperCase())
+  }
+
+  const offsetPlane = selection.graphSelections.find(
+    (sel) => sel.artifact?.type === 'plane'
+  )
+  if (offsetPlane?.artifact?.type === 'plane') {
+    const artifactId = offsetPlane.artifact.id
+    const variableName = Object.entries(variables).find(([_, value]) => {
+      return value?.type === 'Plane' && value.value?.artifactId === artifactId
+    })
+    const offsetPlaneName = variableName?.[0]
+    return offsetPlaneName ? createLocalName(offsetPlaneName) : undefined
+  }
+
+  return undefined
 }
 
 export function locateVariableWithCallOrPipe(
@@ -1289,4 +1392,118 @@ export const getPathNormalisedForTruncatedAst = (
   nodePathWithCorrectedIndexForTruncatedAst[1][0] =
     Number(nodePathWithCorrectedIndexForTruncatedAst[1][0]) - minIndex
   return nodePathWithCorrectedIndexForTruncatedAst
+}
+
+/** returns all children of a given artifact, and sorts them DESC by start sourceRange
+ * The usecase is we want the last declare relevant  child to use in the boolean operations
+ * but might be useful else where.
+ */
+export function findAllChildrenAndOrderByPlaceInCode(
+  artifact: Artifact,
+  artifactGraph: ArtifactGraph
+): Artifact[] {
+  const result: string[] = []
+  const stack: string[] = [artifact.id]
+
+  const getArtifacts = (stringIds: string[]): Artifact[] => {
+    const artifactsWithCodeRefs: Artifact[] = []
+    for (const id of stringIds) {
+      const artifact = artifactGraph.get(id)
+      if (artifact) {
+        const codeRef = getFaceCodeRef(artifact)
+        if (codeRef && codeRef.range[1] > 0) {
+          artifactsWithCodeRefs.push(artifact)
+        }
+      }
+    }
+    return artifactsWithCodeRefs
+  }
+
+  const pushToSomething = (
+    resultId: string,
+    childrenIdOrIds: string | string[] | null | undefined
+  ) => {
+    if (isArray(childrenIdOrIds)) {
+      if (childrenIdOrIds.length) {
+        stack.push(...childrenIdOrIds)
+      }
+      result.push(resultId)
+    } else {
+      if (childrenIdOrIds) {
+        stack.push(childrenIdOrIds)
+      }
+      result.push(resultId)
+    }
+  }
+
+  while (stack.length > 0) {
+    const currentId = stack.pop()!
+    const current = artifactGraph.get(currentId)
+    if (current?.type === 'path') {
+      pushToSomething(currentId, current.sweepId)
+      pushToSomething(currentId, current.segIds)
+    } else if (current?.type === 'sweep') {
+      pushToSomething(currentId, current.surfaceIds)
+      const path = artifactGraph.get(current.pathId)
+      if (path && path.type === 'path') {
+        const compositeSolidId = path.compositeSolidId
+        if (compositeSolidId) {
+          result.push(compositeSolidId)
+        }
+      }
+    } else if (current?.type === 'wall' || current?.type === 'cap') {
+      pushToSomething(currentId, current?.pathIds)
+    } else if (current?.type === 'segment') {
+      pushToSomething(currentId, current.edgeCutId)
+      pushToSomething(currentId, current.surfaceId)
+    } else if (current?.type === 'edgeCut') {
+      pushToSomething(currentId, current.surfaceId)
+    } else if (current?.type === 'startSketchOnPlane') {
+      pushToSomething(currentId, current.planeId)
+    } else if (current?.type === 'plane') {
+      pushToSomething(currentId, current.pathIds)
+    } else if (current?.type === 'compositeSolid') {
+      pushToSomething(currentId, current.solidIds)
+      pushToSomething(currentId, current.toolIds)
+    }
+  }
+
+  const resultSet = new Set(result)
+  const codeRefArtifacts = getArtifacts(Array.from(resultSet))
+  const orderedByCodeRefDest = codeRefArtifacts.sort((a, b) => {
+    const aCodeRef = getFaceCodeRef(a)
+    const bCodeRef = getFaceCodeRef(b)
+    if (!aCodeRef || !bCodeRef) {
+      return 0
+    }
+    return bCodeRef.range[0] - aCodeRef.range[0]
+  })
+
+  return orderedByCodeRefDest
+}
+
+/** Returns the last declared in code, relevant child */
+export function getLastVariable(
+  orderedDescArtifacts: Artifact[],
+  ast: Node<Program>
+) {
+  for (const artifact of orderedDescArtifacts) {
+    const codeRef = getFaceCodeRef(artifact)
+    if (codeRef) {
+      const pathToNode = getNodePathFromSourceRange(ast, codeRef.range)
+      const varDec = getNodeFromPath<VariableDeclaration>(
+        ast,
+        pathToNode,
+        'VariableDeclaration'
+      )
+      if (!err(varDec)) {
+        return {
+          variableDeclaration: varDec,
+          pathToNode: pathToNode,
+          artifact,
+        }
+      }
+    }
+  }
+  return null
 }

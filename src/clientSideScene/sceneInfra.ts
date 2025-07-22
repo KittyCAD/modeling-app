@@ -278,16 +278,17 @@ export class SceneInfra {
 
     // RENDERER
     this.renderer = new WebGLRenderer({ antialias: true, alpha: true }) // Enable transparency
-    this.renderer.setSize(window.innerWidth, window.innerHeight)
     this.renderer.setClearColor(0x000000, 0) // Set clear color to black with 0 alpha (fully transparent)
 
     // LABEL RENDERER
     this.labelRenderer = new CSS2DRenderer()
-    this.labelRenderer.setSize(window.innerWidth, window.innerHeight)
     this.labelRenderer.domElement.style.position = 'absolute'
     this.labelRenderer.domElement.style.top = '0px'
     this.labelRenderer.domElement.style.pointerEvents = 'none'
+    this.renderer.domElement.style.width = '100%'
+    this.renderer.domElement.style.height = '100%'
     this.labelRenderer.domElement.className = 'z-sketchSegmentIndicators'
+
     window.addEventListener('resize', this.onWindowResize)
 
     this.camControls = new CameraControls(
@@ -343,9 +344,22 @@ export class SceneInfra {
     axisGroup?.name === 'gridHelper' && axisGroup.scale.set(scale, scale, scale)
   }
 
+  // Called after canvas is attached to the DOM and on each resize.
+  // Note: would be better to use ResizeObserver instead of window.onresize
+  // See:
+  // https://webglfundamentals.org/webgl/lessons/webgl-resizing-the-canvas.html
   onWindowResize = () => {
-    this.renderer.setSize(window.innerWidth, window.innerHeight)
-    this.labelRenderer.setSize(window.innerWidth, window.innerHeight)
+    const cssSize = [
+      this.renderer.domElement.clientWidth,
+      this.renderer.domElement.clientHeight,
+    ]
+    // Note: could cap the resolution on mobile devices if needed.
+    const canvasResolution = [
+      Math.round(cssSize[0] * window.devicePixelRatio),
+      Math.round(cssSize[1] * window.devicePixelRatio),
+    ]
+    this.renderer.setSize(canvasResolution[0], canvasResolution[1], false)
+    this.labelRenderer.setSize(cssSize[0], cssSize[1])
   }
 
   animate = () => {
@@ -435,7 +449,24 @@ export class SceneInfra {
       intersection: planeIntersects[0],
     }
   }
+
+  public mouseMoveThrottling = true // Can be turned off for debugging
+  private _processingMouseMove = false
+  private _lastUnprocessedMouseEvent: MouseEvent | undefined
+
   onMouseMove = async (mouseEvent: MouseEvent) => {
+    if (this.mouseMoveThrottling) {
+      // Throttle mouse move events to help with performance.
+      // Without this a new call to executeAstMock() is made by SceneEntities/onDragSegment() while the
+      // previous one is still running, causing multiple wasm calls to be running at the same time.
+      // Here we simply ignore the mouse move event if we are already processing one, until the processing is done.
+      if (this._processingMouseMove) {
+        this._lastUnprocessedMouseEvent = mouseEvent
+        return
+      }
+      this._processingMouseMove = true
+    }
+
     this.currentMouseVector.x = (mouseEvent.clientX / window.innerWidth) * 2 - 1
     this.currentMouseVector.y =
       -(mouseEvent.clientY / window.innerHeight) * 2 + 1
@@ -459,6 +490,7 @@ export class SceneInfra {
         planeIntersectPoint.twoD &&
         planeIntersectPoint.threeD
       ) {
+        const selected = this.selected
         await this.onDragCallback({
           mouseEvent,
           intersectionPoint: {
@@ -466,11 +498,11 @@ export class SceneInfra {
             threeD: planeIntersectPoint.threeD,
           },
           intersects,
-          selected: this.selected.object,
+          selected: selected.object,
         })
         this.updateMouseState({
           type: 'isDragging',
-          on: this.selected.object,
+          on: selected.object,
         })
       }
     } else if (
@@ -529,6 +561,17 @@ export class SceneInfra {
           mouseEvent: mouseEvent,
         })
         if (!this.selected) this.updateMouseState({ type: 'idle' })
+      }
+    }
+
+    if (this.mouseMoveThrottling) {
+      this._processingMouseMove = false
+      const lastUnprocessedMouseEvent = this._lastUnprocessedMouseEvent
+      if (lastUnprocessedMouseEvent) {
+        // Another mousemove happened during the time this callback was processing
+        // -> process that event now
+        this._lastUnprocessedMouseEvent = undefined
+        void this.onMouseMove(lastUnprocessedMouseEvent)
       }
     }
   }

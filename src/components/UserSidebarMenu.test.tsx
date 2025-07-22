@@ -119,8 +119,7 @@ describe('UserSidebarMenu tests', () => {
 function TestWrap({ children }: { children: React.ReactNode }) {
   // wrap in router and xState context
   // We have to use a memory router in the testing environment,
-  // and we have to use the createMemoryRouter function instead of <MemoryRouter /> as of react-router v6.4:
-  // https://reactrouter.com/en/6.16.0/routers/picking-a-router#using-v64-data-apis
+  // and we have to use the createMemoryRouter function instead of <MemoryRouter /> as of react-router v6.4
   const router = createMemoryRouter(
     createRoutesFromElements(
       <Route path="/file/:id" element={<>{children}</>} />

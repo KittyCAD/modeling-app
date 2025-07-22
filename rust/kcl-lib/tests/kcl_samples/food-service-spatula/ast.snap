@@ -414,7 +414,7 @@ description: Result of parsing food-service-spatula.kcl
                         "end": 0,
                         "left": {
                           "commentStart": 0,
-                          "computed": false,
+                          "computed": true,
                           "end": 0,
                           "moduleId": 0,
                           "object": {
@@ -456,7 +456,7 @@ description: Result of parsing food-service-spatula.kcl
                         "operator": "==",
                         "right": {
                           "commentStart": 0,
-                          "computed": false,
+                          "computed": true,
                           "end": 0,
                           "moduleId": 0,
                           "object": {
@@ -513,7 +513,7 @@ description: Result of parsing food-service-spatula.kcl
                                 "end": 0,
                                 "left": {
                                   "commentStart": 0,
-                                  "computed": false,
+                                  "computed": true,
                                   "end": 0,
                                   "moduleId": 0,
                                   "object": {
@@ -555,7 +555,7 @@ description: Result of parsing food-service-spatula.kcl
                                 "operator": "<",
                                 "right": {
                                   "commentStart": 0,
-                                  "computed": false,
+                                  "computed": true,
                                   "end": 0,
                                   "moduleId": 0,
                                   "object": {
@@ -672,7 +672,7 @@ description: Result of parsing food-service-spatula.kcl
                                             "end": 0,
                                             "left": {
                                               "commentStart": 0,
-                                              "computed": false,
+                                              "computed": true,
                                               "end": 0,
                                               "moduleId": 0,
                                               "object": {
@@ -714,7 +714,7 @@ description: Result of parsing food-service-spatula.kcl
                                             "operator": "-",
                                             "right": {
                                               "commentStart": 0,
-                                              "computed": false,
+                                              "computed": true,
                                               "end": 0,
                                               "moduleId": 0,
                                               "object": {
@@ -763,7 +763,7 @@ description: Result of parsing food-service-spatula.kcl
                                             "end": 0,
                                             "left": {
                                               "commentStart": 0,
-                                              "computed": false,
+                                              "computed": true,
                                               "end": 0,
                                               "moduleId": 0,
                                               "object": {
@@ -805,7 +805,7 @@ description: Result of parsing food-service-spatula.kcl
                                             "operator": "-",
                                             "right": {
                                               "commentStart": 0,
-                                              "computed": false,
+                                              "computed": true,
                                               "end": 0,
                                               "moduleId": 0,
                                               "object": {
@@ -941,7 +941,7 @@ description: Result of parsing food-service-spatula.kcl
                                               "end": 0,
                                               "left": {
                                                 "commentStart": 0,
-                                                "computed": false,
+                                                "computed": true,
                                                 "end": 0,
                                                 "moduleId": 0,
                                                 "object": {
@@ -983,7 +983,7 @@ description: Result of parsing food-service-spatula.kcl
                                               "operator": "-",
                                               "right": {
                                                 "commentStart": 0,
-                                                "computed": false,
+                                                "computed": true,
                                                 "end": 0,
                                                 "moduleId": 0,
                                                 "object": {
@@ -1032,7 +1032,7 @@ description: Result of parsing food-service-spatula.kcl
                                               "end": 0,
                                               "left": {
                                                 "commentStart": 0,
-                                                "computed": false,
+                                                "computed": true,
                                                 "end": 0,
                                                 "moduleId": 0,
                                                 "object": {
@@ -1074,7 +1074,7 @@ description: Result of parsing food-service-spatula.kcl
                                               "operator": "-",
                                               "right": {
                                                 "commentStart": 0,
-                                                "computed": false,
+                                                "computed": true,
                                                 "end": 0,
                                                 "moduleId": 0,
                                                 "object": {
@@ -1180,7 +1180,7 @@ description: Result of parsing food-service-spatula.kcl
                                 "end": 0,
                                 "left": {
                                   "commentStart": 0,
-                                  "computed": false,
+                                  "computed": true,
                                   "end": 0,
                                   "moduleId": 0,
                                   "object": {
@@ -1222,7 +1222,7 @@ description: Result of parsing food-service-spatula.kcl
                                 "operator": ">",
                                 "right": {
                                   "commentStart": 0,
-                                  "computed": false,
+                                  "computed": true,
                                   "end": 0,
                                   "moduleId": 0,
                                   "object": {
@@ -1451,7 +1451,7 @@ description: Result of parsing food-service-spatula.kcl
                             "end": 0,
                             "left": {
                               "commentStart": 0,
-                              "computed": false,
+                              "computed": true,
                               "end": 0,
                               "moduleId": 0,
                               "object": {
@@ -1493,7 +1493,7 @@ description: Result of parsing food-service-spatula.kcl
                             "operator": "-",
                             "right": {
                               "commentStart": 0,
-                              "computed": false,
+                              "computed": true,
                               "end": 0,
                               "moduleId": 0,
                               "object": {
@@ -1593,7 +1593,7 @@ description: Result of parsing food-service-spatula.kcl
                             "end": 0,
                             "left": {
                               "commentStart": 0,
-                              "computed": false,
+                              "computed": true,
                               "end": 0,
                               "moduleId": 0,
                               "object": {
@@ -1635,7 +1635,7 @@ description: Result of parsing food-service-spatula.kcl
                             "operator": "-",
                             "right": {
                               "commentStart": 0,
-                              "computed": false,
+                              "computed": true,
                               "end": 0,
                               "moduleId": 0,
                               "object": {
@@ -1829,7 +1829,7 @@ description: Result of parsing food-service-spatula.kcl
                       "operator": "+",
                       "right": {
                         "commentStart": 0,
-                        "computed": false,
+                        "computed": true,
                         "end": 0,
                         "moduleId": 0,
                         "object": {
@@ -2017,7 +2017,7 @@ description: Result of parsing food-service-spatula.kcl
                       "operator": "+",
                       "right": {
                         "commentStart": 0,
-                        "computed": false,
+                        "computed": true,
                         "end": 0,
                         "moduleId": 0,
                         "object": {

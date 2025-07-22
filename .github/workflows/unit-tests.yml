@@ -20,7 +20,7 @@ jobs:
     uses: ./.github/workflows/build-wasm.yml
 
   npm-test-unit:
-    runs-on: ubuntu-latest
+    runs-on: namespace-profile-ubuntu-2-cores
     needs: npm-build-wasm
     steps:
       - uses: actions/checkout@v4
@@ -31,7 +31,7 @@ jobs:
           cache: 'npm'
 
       - run: npm install
-      - uses: taiki-e/install-action@d4635f2de61c8b8104d59cd4aede2060638378cc
+      - uses: taiki-e/install-action@c07504cae06f832dc8de08911c9a9c5cddb0d2d3
         with:
           tool: wasm-pack
 
@@ -62,7 +62,17 @@ jobs:
         if: ${{ github.event_name != 'release' && github.event_name != 'schedule' }}
         run: xvfb-run -a npm run test:unit
         env:
-          VITE_KC_DEV_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
+          VITE_KITTYCAD_API_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
+
+      - name: Upload results
+        if: always()
+        run: .github/ci-cd-scripts/upload-results.sh
+        env:
+          TAB_API_URL: ${{ secrets.TAB_API_URL }}
+          TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
+          CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+          CI_PR_NUMBER: ${{ github.event.pull_request.number }}
+          CI_SUITE: unit
 
       - name: Check for changes
         if: ${{ github.event_name != 'release' && github.event_name != 'schedule' }}
@@ -89,7 +99,7 @@ jobs:
           git push origin ${{ github.head_ref }}
 
   npm-test-unit-components:
-    runs-on: ubuntu-latest
+    runs-on: namespace-profile-ubuntu-2-cores
     needs: npm-build-wasm
     steps:
       - uses: actions/checkout@v4
@@ -100,7 +110,7 @@ jobs:
           cache: 'npm'
 
       - run: npm install
-      - uses: taiki-e/install-action@d4635f2de61c8b8104d59cd4aede2060638378cc
+      - uses: taiki-e/install-action@c07504cae06f832dc8de08911c9a9c5cddb0d2d3
         with:
           tool: wasm-pack
 
@@ -122,3 +132,13 @@ jobs:
 
       - name: Run component tests
         run: npm run test:unit:components
+
+      - name: Upload results
+        if: always()
+        run: .github/ci-cd-scripts/upload-results.sh
+        env:
+          TAB_API_URL: ${{ secrets.TAB_API_URL }}
+          TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
+          CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+          CI_PR_NUMBER: ${{ github.event.pull_request.number }}
+          CI_SUITE: unit:components

@@ -1,20 +1,19 @@
 use fnv::FnvHashMap;
 use indexmap::IndexMap;
 use kittycad_modeling_cmds::{
-    self as kcmc,
+    self as kcmc, EnableSketchMode, ModelingCmd,
     ok_response::OkModelingCmdResponse,
     shared::ExtrusionFaceCapType,
     websocket::{BatchResponse, OkWebSocketResponseData, WebSocketResponse},
-    EnableSketchMode, ModelingCmd,
 };
-use serde::{ser::SerializeSeq, Serialize};
+use serde::{Serialize, ser::SerializeSeq};
 use uuid::Uuid;
 
 use crate::{
+    KclError, NodePath, SourceRange,
     errors::KclErrorDetails,
     execution::ArtifactId,
     parsing::ast::types::{Node, Program},
-    KclError, NodePath, SourceRange,
 };
 
 #[cfg(test)]
@@ -129,6 +128,13 @@ pub struct Path {
     /// this can be used as input for another composite solid.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub composite_solid_id: Option<ArtifactId>,
+    /// The hole, if any, from a subtract2d() call.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub inner_path_id: Option<ArtifactId>,
+    /// The `Path` that this is a hole of, if any. The inverse link of
+    /// `inner_path_id`.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub outer_path_id: Option<ArtifactId>,
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
@@ -444,6 +450,8 @@ impl Path {
         merge_ids(&mut self.seg_ids, new.seg_ids);
         merge_opt_id(&mut self.solid2d_id, new.solid2d_id);
         merge_opt_id(&mut self.composite_solid_id, new.composite_solid_id);
+        merge_opt_id(&mut self.inner_path_id, new.inner_path_id);
+        merge_opt_id(&mut self.outer_path_id, new.outer_path_id);
 
         None
     }
@@ -806,6 +814,8 @@ fn artifacts_to_update(
                 solid2d_id: None,
                 code_ref,
                 composite_solid_id: None,
+                inner_path_id: None,
+                outer_path_id: None,
             }));
             let plane = artifacts.get(&ArtifactId::new(*current_plane_id));
             if let Some(Artifact::Plane(plane)) = plane {
@@ -893,7 +903,10 @@ fn artifacts_to_update(
                 ),
             };
             if original_path_ids.len() != face_edge_infos.len() {
-                internal_error!(range, "EntityMirror or EntityMirrorAcrossEdge response has different number face edge info than original mirrored paths: id={id:?}, cmd={cmd:?}, response={response:?}");
+                internal_error!(
+                    range,
+                    "EntityMirror or EntityMirrorAcrossEdge response has different number face edge info than original mirrored paths: id={id:?}, cmd={cmd:?}, response={response:?}"
+                );
             }
             let mut return_arr = Vec::new();
             for (face_edge_info, original_path_id) in face_edge_infos.iter().zip(original_path_ids) {
@@ -909,7 +922,10 @@ fn artifacts_to_update(
                     // of its info.
                     let Some(Artifact::Path(original_path)) = artifacts.get(&original_path_id) else {
                         // We couldn't find the original path. This is a bug.
-                        internal_error!(range, "Couldn't find original path for mirror2d: original_path_id={original_path_id:?}, cmd={cmd:?}");
+                        internal_error!(
+                            range,
+                            "Couldn't find original path for mirror2d: original_path_id={original_path_id:?}, cmd={cmd:?}"
+                        );
                     };
                     Path {
                         id: path_id,
@@ -919,6 +935,8 @@ fn artifacts_to_update(
                         solid2d_id: None,
                         code_ref: code_ref.clone(),
                         composite_solid_id: None,
+                        inner_path_id: None,
+                        outer_path_id: None,
                     }
                 };
 
@@ -969,6 +987,13 @@ fn artifacts_to_update(
                 let mut new_path = path.clone();
                 new_path.sweep_id = Some(id);
                 return_arr.push(Artifact::Path(new_path));
+                if let Some(inner_path_id) = path.inner_path_id
+                    && let Some(inner_path_artifact) = artifacts.get(&inner_path_id)
+                    && let Artifact::Path(mut inner_path_artifact) = inner_path_artifact.clone()
+                {
+                    inner_path_artifact.sweep_id = Some(id);
+                    return_arr.push(Artifact::Path(inner_path_artifact))
+                }
             }
             return Ok(return_arr);
         }
@@ -1025,14 +1050,19 @@ fn artifacts_to_update(
                     continue;
                 };
                 last_path = Some(path);
-                let path_sweep_id = path.sweep_id.ok_or_else(|| {
-                    KclError::new_internal(KclErrorDetails::new(
+                let Some(path_sweep_id) = path.sweep_id else {
+                    // If the path doesn't have a sweep ID, check if it's a
+                    // hole.
+                    if path.outer_path_id.is_some() {
+                        continue; // hole not handled
+                    }
+                    return Err(KclError::new_internal(KclErrorDetails::new(
                         format!(
-                            "Expected a sweep ID on the path when processing Solid3dGetExtrusionFaceInfo command, but we have none: {id:?}, {path:?}"
+                            "Expected a sweep ID on the path when processing Solid3dGetExtrusionFaceInfo command, but we have none:\n{id:#?}\n{path:#?}"
                         ),
                         vec![range],
-                    ))
-                })?;
+                    )));
+                };
                 let extra_artifact = exec_artifacts.values().find(|a| {
                     if let Artifact::StartSketchOnFace(s) = a {
                         s.face_id == face_id
@@ -1079,14 +1109,19 @@ fn artifacts_to_update(
                     let Some(face_id) = face.face_id.map(ArtifactId::new) else {
                         continue;
                     };
-                    let path_sweep_id = path.sweep_id.ok_or_else(|| {
-                        KclError::new_internal(KclErrorDetails::new(
+                    let Some(path_sweep_id) = path.sweep_id else {
+                        // If the path doesn't have a sweep ID, check if it's a
+                        // hole.
+                        if path.outer_path_id.is_some() {
+                            continue; // hole not handled
+                        }
+                        return Err(KclError::new_internal(KclErrorDetails::new(
                             format!(
-                                "Expected a sweep ID on the path when processing last path's Solid3dGetExtrusionFaceInfo command, but we have none: {id:?}, {path:?}"
+                                "Expected a sweep ID on the path when processing last path's Solid3dGetExtrusionFaceInfo command, but we have none:\n{id:#?}\n{path:#?}"
                             ),
                             vec![range],
-                        ))
-                    })?;
+                        )));
+                    };
                     let extra_artifact = exec_artifacts.values().find(|a| {
                         if let Artifact::StartSketchOnFace(s) = a {
                             s.face_id == face_id
@@ -1260,6 +1295,24 @@ fn artifacts_to_update(
             })];
             // We could add the reverse graph edge connecting from the edge to
             // the helix here, but it's not useful right now.
+            return Ok(return_arr);
+        }
+        ModelingCmd::Solid2dAddHole(solid2d_add_hole) => {
+            let mut return_arr = Vec::new();
+            // Add the hole to the outer.
+            let outer_path = artifacts.get(&ArtifactId::new(solid2d_add_hole.object_id));
+            if let Some(Artifact::Path(path)) = outer_path {
+                let mut new_path = path.clone();
+                new_path.inner_path_id = Some(ArtifactId::new(solid2d_add_hole.hole_id));
+                return_arr.push(Artifact::Path(new_path));
+            }
+            // Add the outer to the hole.
+            let inner_solid2d = artifacts.get(&ArtifactId::new(solid2d_add_hole.hole_id));
+            if let Some(Artifact::Path(path)) = inner_solid2d {
+                let mut new_path = path.clone();
+                new_path.outer_path_id = Some(ArtifactId::new(solid2d_add_hole.object_id));
+                return_arr.push(Artifact::Path(new_path));
+            }
             return Ok(return_arr);
         }
         ModelingCmd::BooleanIntersection(_) | ModelingCmd::BooleanSubtract(_) | ModelingCmd::BooleanUnion(_) => {

@@ -364,6 +364,14 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "units": {
               "type": "Unknown"
             }
+          },
+          "zAxis": {
+            "x": 0.0,
+            "y": -1.0,
+            "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
           }
         },
         "start": {
@@ -935,6 +943,14 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "units": {
             "type": "Unknown"
           }
+        },
+        "zAxis": {
+          "x": 0.0,
+          "y": -1.0,
+          "z": 0.0,
+          "units": {
+            "type": "Unknown"
+          }
         }
       },
       "start": {
@@ -1273,6 +1289,14 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "units": {
               "type": "Unknown"
             }
+          },
+          "zAxis": {
+            "x": 1.0,
+            "y": 0.0,
+            "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
           }
         },
         "start": {
@@ -1424,6 +1448,14 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
+            "units": {
+              "type": "Unknown"
+            }
+          },
+          "zAxis": {
+            "x": 1.0,
+            "y": 0.0,
+            "z": 0.0,
             "units": {
               "type": "Unknown"
             }
@@ -1928,6 +1960,13 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 "value": "edge24"
               },
               "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
             }
           ],
           "sketch": {
@@ -2039,6 +2078,33 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 }
               }
             ],
+            "innerPaths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  -82.0,
+                  27.333333333333332
+                ],
+                "from": [
+                  -79.5,
+                  27.333333333333332
+                ],
+                "radius": 2.5,
+                "tag": null,
+                "to": [
+                  -79.5,
+                  27.333333333333332
+                ],
+                "type": "Circle",
+                "units": {
+                  "type": "Mm"
+                }
+              }
+            ],
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
@@ -2064,6 +2130,14 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
+                "units": {
+                  "type": "Unknown"
+                }
+              },
+              "zAxis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0,
                 "units": {
                   "type": "Unknown"
                 }
@@ -2220,6 +2294,13 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 "value": "edge24"
               },
               "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
             }
           ],
           "sketch": {
@@ -2331,6 +2412,33 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 }
               }
             ],
+            "innerPaths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  -82.0,
+                  27.333333333333332
+                ],
+                "from": [
+                  -79.5,
+                  27.333333333333332
+                ],
+                "radius": 2.5,
+                "tag": null,
+                "to": [
+                  -79.5,
+                  27.333333333333332
+                ],
+                "type": "Circle",
+                "units": {
+                  "type": "Mm"
+                }
+              }
+            ],
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
@@ -2356,6 +2464,14 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
+                "units": {
+                  "type": "Unknown"
+                }
+              },
+              "zAxis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0,
                 "units": {
                   "type": "Unknown"
                 }
@@ -2517,6 +2633,13 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 "value": "edge14"
               },
               "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
             }
           ],
           "sketch": {
@@ -2628,6 +2751,33 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 }
               }
             ],
+            "innerPaths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  82.0,
+                  27.333333333333332
+                ],
+                "from": [
+                  84.5,
+                  27.333333333333332
+                ],
+                "radius": 2.5,
+                "tag": null,
+                "to": [
+                  84.5,
+                  27.333333333333332
+                ],
+                "type": "Circle",
+                "units": {
+                  "type": "Mm"
+                }
+              }
+            ],
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
@@ -2653,6 +2803,14 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
+                "units": {
+                  "type": "Unknown"
+                }
+              },
+              "zAxis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0,
                 "units": {
                   "type": "Unknown"
                 }
@@ -2809,6 +2967,13 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 "value": "edge14"
               },
               "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
             }
           ],
           "sketch": {
@@ -2920,6 +3085,33 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 }
               }
             ],
+            "innerPaths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  82.0,
+                  27.333333333333332
+                ],
+                "from": [
+                  84.5,
+                  27.333333333333332
+                ],
+                "radius": 2.5,
+                "tag": null,
+                "to": [
+                  84.5,
+                  27.333333333333332
+                ],
+                "type": "Circle",
+                "units": {
+                  "type": "Mm"
+                }
+              }
+            ],
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
@@ -2945,6 +3137,14 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
+                "units": {
+                  "type": "Unknown"
+                }
+              },
+              "zAxis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0,
                 "units": {
                   "type": "Unknown"
                 }

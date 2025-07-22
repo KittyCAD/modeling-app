@@ -102,6 +102,14 @@ description: Variables in memory after executing pipe-with-bend.kcl
           "units": {
             "type": "Unknown"
           }
+        },
+        "zAxis": {
+          "x": 0.0,
+          "y": -1.0,
+          "z": 0.0,
+          "units": {
+            "type": "Unknown"
+          }
         }
       },
       "start": {
@@ -202,6 +210,14 @@ description: Variables in memory after executing pipe-with-bend.kcl
           "units": {
             "type": "Unknown"
           }
+        },
+        "zAxis": {
+          "x": 0.0,
+          "y": -1.0,
+          "z": 0.0,
+          "units": {
+            "type": "Unknown"
+          }
         }
       },
       "start": {
@@ -242,6 +258,13 @@ description: Variables in memory after executing pipe-with-bend.kcl
           "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudeArc"
         }
       ],
       "sketch": {
@@ -266,6 +289,33 @@ description: Variables in memory after executing pipe-with-bend.kcl
             "tag": null,
             "to": [
               40.0,
+              0.0
+            ],
+            "type": "Circle",
+            "units": {
+              "type": "Inches"
+            }
+          }
+        ],
+        "innerPaths": [
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              30.0,
+              0.0
+            ],
+            "from": [
+              35.0,
+              0.0
+            ],
+            "radius": 5.0,
+            "tag": null,
+            "to": [
+              35.0,
               0.0
             ],
             "type": "Circle",
@@ -299,6 +349,14 @@ description: Variables in memory after executing pipe-with-bend.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
+            "units": {
+              "type": "Unknown"
+            }
+          },
+          "zAxis": {
+            "x": 0.0,
+            "y": -1.0,
+            "z": 0.0,
             "units": {
               "type": "Unknown"
             }
@@ -369,6 +427,33 @@ description: Variables in memory after executing pipe-with-bend.kcl
           }
         }
       ],
+      "innerPaths": [
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            30.0,
+            0.0
+          ],
+          "from": [
+            35.0,
+            0.0
+          ],
+          "radius": 5.0,
+          "tag": null,
+          "to": [
+            35.0,
+            0.0
+          ],
+          "type": "Circle",
+          "units": {
+            "type": "Inches"
+          }
+        }
+      ],
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
@@ -394,6 +479,14 @@ description: Variables in memory after executing pipe-with-bend.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
+          "units": {
+            "type": "Unknown"
+          }
+        },
+        "zAxis": {
+          "x": 0.0,
+          "y": -1.0,
+          "z": 0.0,
           "units": {
             "type": "Unknown"
           }
@@ -450,6 +543,14 @@ description: Variables in memory after executing pipe-with-bend.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
+        "units": {
+          "type": "Unknown"
+        }
+      },
+      "zAxis": {
+        "x": 0.0,
+        "y": -1.0,
+        "z": 0.0,
         "units": {
           "type": "Unknown"
         }

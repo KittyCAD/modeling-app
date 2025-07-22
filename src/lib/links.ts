@@ -1,4 +1,4 @@
-import { VITE_KC_API_BASE_URL, VITE_KC_SITE_APP_URL } from '@src/env'
+import env from '@src/env'
 import toast from 'react-hot-toast'
 
 import { stringToBase64 } from '@src/lib/base64'
@@ -7,6 +7,7 @@ import {
   CREATE_FILE_URL_PARAM,
 } from '@src/lib/constants'
 import { err } from '@src/lib/trap'
+import { withAPIBaseURL } from '@src/lib/withBaseURL'
 
 export interface FileLinkParams {
   code: string
@@ -57,7 +58,7 @@ export async function copyFileShareLink(
  * open the URL in the desktop app.
  */
 export function createCreateFileUrl({ code, name }: FileLinkParams) {
-  let origin = VITE_KC_SITE_APP_URL
+  let origin = env().VITE_KITTYCAD_SITE_APP_URL
   const searchParams = new URLSearchParams({
     [CREATE_FILE_URL_PARAM]: String(true),
     name,
@@ -96,7 +97,7 @@ export async function createShortlink(
   if (password) {
     body.password = password
   }
-  const response = await fetch(`${VITE_KC_API_BASE_URL}/user/shortlinks`, {
+  const response = await fetch(withAPIBaseURL('/user/shortlinks'), {
     method: 'POST',
     headers: {
       'Content-type': 'application/json',

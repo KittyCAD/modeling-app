@@ -286,6 +286,9 @@ pub struct ModelingSettings {
     /// The controls for how to navigate the 3D view.
     #[serde(default, skip_serializing_if = "is_default")]
     pub mouse_controls: MouseControlType,
+    /// Toggle touch controls for 3D view navigation
+    #[serde(default, skip_serializing_if = "is_default")]
+    pub enable_touch_controls: DefaultTrue,
     /// Highlight edges of 3D objects?
     #[serde(default, skip_serializing_if = "is_default")]
     pub highlight_edges: DefaultTrue,
@@ -716,13 +719,15 @@ enable_ssao = false
 
         let result = color.validate();
         if let Ok(r) = result {
-            panic!("Expected an error, but got success: {:?}", r);
+            panic!("Expected an error, but got success: {r:?}");
         }
         assert!(result.is_err());
-        assert!(result
-            .unwrap_err()
-            .to_string()
-            .contains("color: Validation error: color"));
+        assert!(
+            result
+                .unwrap_err()
+                .to_string()
+                .contains("color: Validation error: color")
+        );
 
         let appearance = AppearanceSettings {
             theme: AppTheme::System,
@@ -730,13 +735,15 @@ enable_ssao = false
         };
         let result = appearance.validate();
         if let Ok(r) = result {
-            panic!("Expected an error, but got success: {:?}", r);
+            panic!("Expected an error, but got success: {r:?}");
         }
         assert!(result.is_err());
-        assert!(result
-            .unwrap_err()
-            .to_string()
-            .contains("color: Validation error: color"));
+        assert!(
+            result
+                .unwrap_err()
+                .to_string()
+                .contains("color: Validation error: color")
+        );
     }
 
     #[test]
@@ -746,13 +753,15 @@ color = 1567.4"#;
 
         let result = Configuration::parse_and_validate(settings_file);
         if let Ok(r) = result {
-            panic!("Expected an error, but got success: {:?}", r);
+            panic!("Expected an error, but got success: {r:?}");
         }
         assert!(result.is_err());
 
-        assert!(result
-            .unwrap_err()
-            .to_string()
-            .contains("color: Validation error: color"));
+        assert!(
+            result
+                .unwrap_err()
+                .to_string()
+                .contains("color: Validation error: color")
+        );
     }
 }

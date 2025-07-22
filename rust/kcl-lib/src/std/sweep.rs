@@ -1,20 +1,20 @@
 //! Standard library sweep.
 
 use anyhow::Result;
-use kcmc::{each_cmd as mcmd, length_unit::LengthUnit, ModelingCmd};
+use kcmc::{ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit};
 use kittycad_modeling_cmds::{self as kcmc, shared::RelativeTo};
 use schemars::JsonSchema;
 use serde::Serialize;
 
-use super::{args::TyF64, DEFAULT_TOLERANCE_MM};
+use super::{DEFAULT_TOLERANCE_MM, args::TyF64};
 use crate::{
     errors::KclError,
     execution::{
-        types::{NumericType, RuntimeType},
         ExecState, Helix, KclValue, ModelingCmdMeta, Sketch, Solid,
+        types::{NumericType, RuntimeType},
     },
     parsing::ast::types::TagNode,
-    std::{extrude::do_post_extrude, Args},
+    std::{Args, extrude::do_post_extrude},
 };
 
 /// A path to sweep along.
@@ -79,7 +79,7 @@ async fn inner_sweep(
             return Err(KclError::new_syntax(crate::errors::KclErrorDetails::new(
                 "If you provide relativeTo, it must either be 'sketchPlane' or 'trajectoryCurve'".to_owned(),
                 vec![args.source_range],
-            )))
+            )));
         }
     };
 
@@ -109,6 +109,7 @@ async fn inner_sweep(
                     start: tag_start.as_ref(),
                     end: tag_end.as_ref(),
                 },
+                kittycad_modeling_cmds::shared::ExtrudeMethod::Merge,
                 exec_state,
                 &args,
                 None,

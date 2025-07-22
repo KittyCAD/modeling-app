@@ -11,9 +11,8 @@ import pipeDiameter, mountingHoleDiameter, mountingHolePlacementDiameter, flange
 export fn flange() {
   // Sketch the mounting hole pattern
   mountingHoles = startSketchOn(XY)
-    |> circle(%, center = [0, mountingHolePlacementDiameter / 2], radius = mountingHoleDiameter / 2)
+    |> circle(center = [0, mountingHolePlacementDiameter / 2], radius = mountingHoleDiameter / 2)
     |> patternCircular2d(
-         %,
          instances = 4,
          center = [0, 0],
          arcDegrees = 360,
@@ -22,23 +21,23 @@ export fn flange() {
 
   // Create the flange base
   flangeBase = startSketchOn(XY)
-    |> circle(%, center = [0, 0], radius = flangeDiameter / 2)
+    |> circle(center = [0, 0], radius = flangeDiameter / 2)
     |> subtract2d(tool = mountingHoles)
-    |> extrude(%, length = flangeBaseThickness)
+    |> extrude(length = flangeBaseThickness)
 
   // Create both the raised portions on the front and back of the flange base
   flangeBack = startSketchOn(flangeBase, face = START)
-    |> circle(%, center = [0, 0], radius = flangeBackDiameter / 2)
-    |> extrude(%, length = flangeBackHeight)
+    |> circle(center = [0, 0], radius = flangeBackDiameter / 2)
+    |> extrude(length = flangeBackHeight)
   flangeFront = startSketchOn(flangeBase, face = END)
-    |> circle(%, center = [0, 0], radius = flangeFrontDiameter / 2)
-    |> extrude(%, length = flangeFrontHeight)
+    |> circle(center = [0, 0], radius = flangeFrontDiameter / 2)
+    |> extrude(length = flangeFrontHeight)
 
   // Create the circular cut in the center for the pipe
   pipeCut = startSketchOn(flangeFront, face = END)
-    |> circle(%, center = [0, 0], radius = pipeDiameter / 2)
-    |> extrude(%, length = -flangeTotalThickness)
-    |> appearance(%, color = "#bab0b0")
+    |> circle(center = [0, 0], radius = pipeDiameter / 2)
+    |> extrude(length = -flangeTotalThickness)
+    |> appearance(color = "#bab0b0")
 
   return pipeCut
 }

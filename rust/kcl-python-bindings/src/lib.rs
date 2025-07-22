@@ -19,7 +19,7 @@ fn tokio() -> &'static tokio::runtime::Runtime {
 fn into_miette(error: kcl_lib::KclErrorWithOutputs, code: &str) -> PyErr {
     let report = error.clone().into_miette_report_with_outputs(code).unwrap();
     let report = miette::Report::new(report);
-    pyo3::exceptions::PyException::new_err(format!("{:?}", report))
+    pyo3::exceptions::PyException::new_err(format!("{report:?}"))
 }
 
 fn into_miette_for_parse(filename: &str, input: &str, error: kcl_lib::KclError) -> PyErr {
@@ -29,7 +29,7 @@ fn into_miette_for_parse(filename: &str, input: &str, error: kcl_lib::KclError) 
         filename: filename.to_string(),
     };
     let report = miette::Report::new(report);
-    pyo3::exceptions::PyException::new_err(format!("{:?}", report))
+    pyo3::exceptions::PyException::new_err(format!("{report:?}"))
 }
 
 /// The variety of image formats snapshots may be exported to.
@@ -402,8 +402,7 @@ async fn execute_and_snapshot(path: String, image_format: ImageFormat) -> PyResu
             } = resp
             else {
                 return Err(pyo3::exceptions::PyException::new_err(format!(
-                    "Unexpected response from engine: {:?}",
-                    resp
+                    "Unexpected response from engine: {resp:?}"
                 )));
             };
 
@@ -459,8 +458,7 @@ async fn execute_code_and_snapshot(code: String, image_format: ImageFormat) -> P
             } = resp
             else {
                 return Err(pyo3::exceptions::PyException::new_err(format!(
-                    "Unexpected response from engine: {:?}",
-                    resp
+                    "Unexpected response from engine: {resp:?}"
                 )));
             };
 
@@ -510,8 +508,7 @@ async fn execute_and_export(path: String, export_format: FileExportFormat) -> Py
 
             let kittycad_modeling_cmds::websocket::OkWebSocketResponseData::Export { files } = resp else {
                 return Err(pyo3::exceptions::PyException::new_err(format!(
-                    "Unexpected response from engine: {:?}",
-                    resp
+                    "Unexpected response from engine: {resp:?}"
                 )));
             };
 
@@ -558,8 +555,7 @@ async fn execute_code_and_export(code: String, export_format: FileExportFormat) 
 
             let kittycad_modeling_cmds::websocket::OkWebSocketResponseData::Export { files } = resp else {
                 return Err(pyo3::exceptions::PyException::new_err(format!(
-                    "Unexpected response from engine: {:?}",
-                    resp
+                    "Unexpected response from engine: {resp:?}"
                 )));
             };
 

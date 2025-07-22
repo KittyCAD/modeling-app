@@ -10,7 +10,7 @@ concurrency:
 
 jobs:
   publish-apps-release:
-    runs-on: ubuntu-22.04
+    runs-on: namespace-profile-ubuntu-2-cores
     permissions:
       contents: write
     steps:
@@ -35,7 +35,7 @@ jobs:
           path: out
           run-id: ${{ steps.tag_workflow_id.outputs.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          
+
       - uses: actions/download-artifact@v4
         with:
           name: out-x64-windows
@@ -108,7 +108,7 @@ jobs:
         run: npm run files:set-notes
 
       - name: Authenticate to Google Cloud
-        uses: 'google-github-actions/auth@v2.1.8'
+        uses: 'google-github-actions/auth@v2.1.10'
         with:
           credentials_json: '${{ secrets.GOOGLE_CLOUD_DL_SA }}'
 
@@ -134,10 +134,9 @@ jobs:
         with:
           files: 'out/Zoo*'
 
-
   announce_release:
     needs: [publish-apps-release]
-    runs-on: ubuntu-22.04
+    runs-on: namespace-profile-ubuntu-2-cores
     steps:
       - name: Check out code
         uses: actions/checkout@v4

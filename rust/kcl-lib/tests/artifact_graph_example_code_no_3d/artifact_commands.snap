@@ -278,5 +278,6 @@ description: Artifact commands artifact_graph_example_code_no_3d.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

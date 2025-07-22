@@ -155,7 +155,8 @@ description: Artifact commands lego.kcl
         "target": "[uuid]",
         "distance": 81.28,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -309,7 +310,8 @@ description: Artifact commands lego.kcl
         "target": "[uuid]",
         "distance": -43.18,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -615,7 +617,8 @@ description: Artifact commands lego.kcl
         "target": "[uuid]",
         "distance": 45.72,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -671,7 +674,8 @@ description: Artifact commands lego.kcl
         "target": "[uuid]",
         "distance": 45.72,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -727,7 +731,8 @@ description: Artifact commands lego.kcl
         "target": "[uuid]",
         "distance": 45.72,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -783,7 +788,8 @@ description: Artifact commands lego.kcl
         "target": "[uuid]",
         "distance": 45.72,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -839,7 +845,8 @@ description: Artifact commands lego.kcl
         "target": "[uuid]",
         "distance": 45.72,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -895,7 +902,8 @@ description: Artifact commands lego.kcl
         "target": "[uuid]",
         "distance": 45.72,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1073,7 +1081,8 @@ description: Artifact commands lego.kcl
         "target": "[uuid]",
         "distance": 45.72,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1129,7 +1138,8 @@ description: Artifact commands lego.kcl
         "target": "[uuid]",
         "distance": 45.72,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1176,5 +1186,6 @@ description: Artifact commands lego.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

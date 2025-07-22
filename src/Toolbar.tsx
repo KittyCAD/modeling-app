@@ -203,7 +203,7 @@ export function Toolbar({
     <menu
       data-current-mode={currentMode}
       data-onboarding-id="toolbar"
-      className="max-w-full whitespace-nowrap rounded-b px-2 py-1 bg-chalkboard-10 dark:bg-chalkboard-90 relative border border-chalkboard-30 dark:border-chalkboard-80 border-t-0 shadow-sm"
+      className="z-[19] max-w-full whitespace-nowrap rounded-b px-2 py-1 bg-chalkboard-10 dark:bg-chalkboard-90 relative border border-chalkboard-30 dark:border-chalkboard-80 border-t-0 shadow-sm"
     >
       <ul
         {...props}
@@ -394,7 +394,7 @@ export function Toolbar({
       <div className="flex flex-col items-center absolute top-full left-1/2 -translate-x-1/2">
         {isInTemporaryWorkspace && (
           <div className="flex flex-row gap-2 justify-center">
-            <div className="mt-2 py-1 animate-pulse w-fit uppercase text-xs rounded-full ml-2 px-2 py-1 border border-chalkboard-40 dark:text-chalkboard-40 bg-chalkboard-10 dark:bg-chalkboard-90 shadow-lg">
+            <div className="mt-2 animate-pulse w-fit uppercase text-xs rounded-full ml-2 px-2 py-1 border border-chalkboard-40 dark:text-chalkboard-40 bg-chalkboard-10 dark:bg-chalkboard-90 shadow-lg flex items-center">
               Temporary workspace
             </div>
             <button

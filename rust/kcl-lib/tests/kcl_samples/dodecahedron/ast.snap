@@ -2249,7 +2249,7 @@ description: Result of parsing dodecahedron.kcl
                               "type": "CallExpressionKw",
                               "unlabeled": {
                                 "commentStart": 0,
-                                "computed": false,
+                                "computed": true,
                                 "end": 0,
                                 "moduleId": 0,
                                 "object": {
@@ -2302,7 +2302,7 @@ description: Result of parsing dodecahedron.kcl
                                   },
                                   "arg": {
                                     "commentStart": 0,
-                                    "computed": false,
+                                    "computed": true,
                                     "end": 0,
                                     "moduleId": 0,
                                     "object": {
@@ -2353,7 +2353,7 @@ description: Result of parsing dodecahedron.kcl
                                   },
                                   "arg": {
                                     "commentStart": 0,
-                                    "computed": false,
+                                    "computed": true,
                                     "end": 0,
                                     "moduleId": 0,
                                     "object": {
@@ -2404,7 +2404,7 @@ description: Result of parsing dodecahedron.kcl
                                   },
                                   "arg": {
                                     "commentStart": 0,
-                                    "computed": false,
+                                    "computed": true,
                                     "end": 0,
                                     "moduleId": 0,
                                     "object": {
@@ -3111,13 +3111,22 @@ description: Result of parsing dodecahedron.kcl
                         "type": "Name"
                       },
                       "property": {
+                        "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "name": "lastIndex",
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "lastIndex",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "start": 0,
                       "type": "MemberExpression",

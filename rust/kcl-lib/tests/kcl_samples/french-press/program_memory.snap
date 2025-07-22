@@ -137,6 +137,14 @@ description: Variables in memory after executing french-press.kcl
             "units": {
               "type": "Unknown"
             }
+          },
+          "zAxis": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 1.0,
+            "units": {
+              "type": "Unknown"
+            }
           }
         },
         "start": {
@@ -383,282 +391,11 @@ description: Variables in memory after executing french-press.kcl
                       "units": {
                         "type": "Unknown"
                       }
-                    }
-                  },
-                  "start": {
-                    "from": [
-                      2.055,
-                      0.0
-                    ],
-                    "to": [
-                      2.055,
-                      0.0
-                    ],
-                    "units": {
-                      "type": "Inches"
                     },
-                    "tag": null,
-                    "__geoMeta": {
-                      "id": "[uuid]",
-                      "sourceRange": []
-                    }
-                  },
-                  "artifactId": "[uuid]",
-                  "originalId": "[uuid]",
-                  "units": {
-                    "type": "Inches"
-                  }
-                },
-                "height": 0.05,
-                "startCapId": "[uuid]",
-                "endCapId": "[uuid]",
-                "units": {
-                  "type": "Inches"
-                },
-                "sectional": false
-              },
-              "units": {
-                "type": "Inches"
-              }
-            },
-            "start": {
-              "from": [
-                0.3,
-                0.17
-              ],
-              "to": [
-                0.3,
-                0.17
-              ],
-              "units": {
-                "type": "Inches"
-              },
-              "tag": null,
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              }
-            },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
-          },
-          "height": -0.05,
-          "startCapId": null,
-          "endCapId": null,
-          "units": {
-            "type": "Inches"
-          },
-          "sectional": false
-        }
-      },
-      {
-        "type": "Solid",
-        "value": {
-          "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudeArc"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
-          "sketch": {
-            "type": "Sketch",
-            "id": "[uuid]",
-            "paths": [
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.3,
-                  0.17
-                ],
-                "tag": null,
-                "to": [
-                  0.3,
-                  1.3699999999999999
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "ccw": false,
-                "center": [
-                  0.29999999999999993,
-                  0.16999999999999993
-                ],
-                "from": [
-                  0.3,
-                  1.3699999999999999
-                ],
-                "radius": 1.2,
-                "tag": null,
-                "to": [
-                  1.3392304845413263,
-                  -0.42999999999999994
-                ],
-                "type": "Arc",
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  1.3392304845413263,
-                  -0.42999999999999994
-                ],
-                "tag": null,
-                "to": [
-                  0.3,
-                  0.17
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.3,
-                  0.17
-                ],
-                "tag": null,
-                "to": [
-                  0.3,
-                  0.17
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
-              }
-            ],
-            "on": {
-              "type": "face",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
-              "value": "end",
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
-              },
-              "solid": {
-                "type": "Solid",
-                "id": "[uuid]",
-                "artifactId": "[uuid]",
-                "value": [
-                  {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [],
-                    "tag": null,
-                    "type": "extrudeArc"
-                  }
-                ],
-                "sketch": {
-                  "type": "Sketch",
-                  "id": "[uuid]",
-                  "paths": [
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "ccw": true,
-                      "center": [
-                        0.0,
-                        0.0
-                      ],
-                      "from": [
-                        2.055,
-                        0.0
-                      ],
-                      "radius": 2.055,
-                      "tag": null,
-                      "to": [
-                        2.055,
-                        0.0
-                      ],
-                      "type": "Circle",
-                      "units": {
-                        "type": "Inches"
-                      }
-                    }
-                  ],
-                  "on": {
-                    "artifactId": "[uuid]",
-                    "id": "[uuid]",
-                    "origin": {
+                    "zAxis": {
                       "x": 0.0,
                       "y": 0.0,
-                      "z": 25.4,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "type": "plane",
-                    "value": "Custom",
-                    "xAxis": {
-                      "x": 1.0,
-                      "y": 0.0,
-                      "z": 0.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
-                    },
-                    "yAxis": {
-                      "x": 0.0,
-                      "y": 1.0,
-                      "z": 0.0,
+                      "z": 1.0,
                       "units": {
                         "type": "Unknown"
                       }
@@ -938,6 +675,301 @@ description: Variables in memory after executing french-press.kcl
                       "x": 0.0,
                       "y": 1.0,
                       "z": 0.0,
+                      "units": {
+                        "type": "Unknown"
+                      }
+                    },
+                    "zAxis": {
+                      "x": 0.0,
+                      "y": 0.0,
+                      "z": 1.0,
+                      "units": {
+                        "type": "Unknown"
+                      }
+                    }
+                  },
+                  "start": {
+                    "from": [
+                      2.055,
+                      0.0
+                    ],
+                    "to": [
+                      2.055,
+                      0.0
+                    ],
+                    "units": {
+                      "type": "Inches"
+                    },
+                    "tag": null,
+                    "__geoMeta": {
+                      "id": "[uuid]",
+                      "sourceRange": []
+                    }
+                  },
+                  "artifactId": "[uuid]",
+                  "originalId": "[uuid]",
+                  "units": {
+                    "type": "Inches"
+                  }
+                },
+                "height": 0.05,
+                "startCapId": "[uuid]",
+                "endCapId": "[uuid]",
+                "units": {
+                  "type": "Inches"
+                },
+                "sectional": false
+              },
+              "units": {
+                "type": "Inches"
+              }
+            },
+            "start": {
+              "from": [
+                0.3,
+                0.17
+              ],
+              "to": [
+                0.3,
+                0.17
+              ],
+              "units": {
+                "type": "Inches"
+              },
+              "tag": null,
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": []
+              }
+            },
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
+            "units": {
+              "type": "Inches"
+            }
+          },
+          "height": -0.05,
+          "startCapId": null,
+          "endCapId": null,
+          "units": {
+            "type": "Inches"
+          },
+          "sectional": false
+        }
+      },
+      {
+        "type": "Solid",
+        "value": {
+          "type": "Solid",
+          "id": "[uuid]",
+          "artifactId": "[uuid]",
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            }
+          ],
+          "sketch": {
+            "type": "Sketch",
+            "id": "[uuid]",
+            "paths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  0.3,
+                  0.17
+                ],
+                "tag": null,
+                "to": [
+                  0.3,
+                  1.3699999999999999
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Inches"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": false,
+                "center": [
+                  0.29999999999999993,
+                  0.16999999999999993
+                ],
+                "from": [
+                  0.3,
+                  1.3699999999999999
+                ],
+                "radius": 1.2,
+                "tag": null,
+                "to": [
+                  1.3392304845413263,
+                  -0.42999999999999994
+                ],
+                "type": "Arc",
+                "units": {
+                  "type": "Inches"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  1.3392304845413263,
+                  -0.42999999999999994
+                ],
+                "tag": null,
+                "to": [
+                  0.3,
+                  0.17
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Inches"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  0.3,
+                  0.17
+                ],
+                "tag": null,
+                "to": [
+                  0.3,
+                  0.17
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Inches"
+                }
+              }
+            ],
+            "on": {
+              "type": "face",
+              "id": "[uuid]",
+              "artifactId": "[uuid]",
+              "value": "end",
+              "xAxis": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0,
+                "units": {
+                  "type": "Unknown"
+                }
+              },
+              "yAxis": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0,
+                "units": {
+                  "type": "Unknown"
+                }
+              },
+              "solid": {
+                "type": "Solid",
+                "id": "[uuid]",
+                "artifactId": "[uuid]",
+                "value": [
+                  {
+                    "faceId": "[uuid]",
+                    "id": "[uuid]",
+                    "sourceRange": [],
+                    "tag": null,
+                    "type": "extrudeArc"
+                  }
+                ],
+                "sketch": {
+                  "type": "Sketch",
+                  "id": "[uuid]",
+                  "paths": [
+                    {
+                      "__geoMeta": {
+                        "id": "[uuid]",
+                        "sourceRange": []
+                      },
+                      "ccw": true,
+                      "center": [
+                        0.0,
+                        0.0
+                      ],
+                      "from": [
+                        2.055,
+                        0.0
+                      ],
+                      "radius": 2.055,
+                      "tag": null,
+                      "to": [
+                        2.055,
+                        0.0
+                      ],
+                      "type": "Circle",
+                      "units": {
+                        "type": "Inches"
+                      }
+                    }
+                  ],
+                  "on": {
+                    "artifactId": "[uuid]",
+                    "id": "[uuid]",
+                    "origin": {
+                      "x": 0.0,
+                      "y": 0.0,
+                      "z": 25.4,
+                      "units": {
+                        "type": "Mm"
+                      }
+                    },
+                    "type": "plane",
+                    "value": "Custom",
+                    "xAxis": {
+                      "x": 1.0,
+                      "y": 0.0,
+                      "z": 0.0,
+                      "units": {
+                        "type": "Unknown"
+                      }
+                    },
+                    "yAxis": {
+                      "x": 0.0,
+                      "y": 1.0,
+                      "z": 0.0,
+                      "units": {
+                        "type": "Unknown"
+                      }
+                    },
+                    "zAxis": {
+                      "x": 0.0,
+                      "y": 0.0,
+                      "z": 1.0,
                       "units": {
                         "type": "Unknown"
                       }
@@ -1027,6 +1059,13 @@ description: Variables in memory after executing french-press.kcl
           "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudeArc"
         }
       ],
       "sketch": {
@@ -1051,6 +1090,33 @@ description: Variables in memory after executing french-press.kcl
             "tag": null,
             "to": [
               1.965,
+              0.0
+            ],
+            "type": "Circle",
+            "units": {
+              "type": "Inches"
+            }
+          }
+        ],
+        "innerPaths": [
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.0,
+              0.0
+            ],
+            "from": [
+              0.15,
+              0.0
+            ],
+            "radius": 0.15,
+            "tag": null,
+            "to": [
+              0.15,
               0.0
             ],
             "type": "Circle",
@@ -1084,6 +1150,14 @@ description: Variables in memory after executing french-press.kcl
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
+          },
+          "zAxis": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 1.0,
             "units": {
               "type": "Unknown"
             }
@@ -1202,6 +1276,13 @@ description: Variables in memory after executing french-press.kcl
                     "sourceRange": [],
                     "tag": null,
                     "type": "extrudeArc"
+                  },
+                  {
+                    "faceId": "[uuid]",
+                    "id": "[uuid]",
+                    "sourceRange": [],
+                    "tag": null,
+                    "type": "extrudeArc"
                   }
                 ],
                 "sketch": {
@@ -1226,6 +1307,33 @@ description: Variables in memory after executing french-press.kcl
                       "tag": null,
                       "to": [
                         1.965,
+                        0.0
+                      ],
+                      "type": "Circle",
+                      "units": {
+                        "type": "Inches"
+                      }
+                    }
+                  ],
+                  "innerPaths": [
+                    {
+                      "__geoMeta": {
+                        "id": "[uuid]",
+                        "sourceRange": []
+                      },
+                      "ccw": true,
+                      "center": [
+                        0.0,
+                        0.0
+                      ],
+                      "from": [
+                        0.15,
+                        0.0
+                      ],
+                      "radius": 0.15,
+                      "tag": null,
+                      "to": [
+                        0.15,
                         0.0
                       ],
                       "type": "Circle",
@@ -1259,6 +1367,14 @@ description: Variables in memory after executing french-press.kcl
                       "x": 0.0,
                       "y": 1.0,
                       "z": 0.0,
+                      "units": {
+                        "type": "Unknown"
+                      }
+                    },
+                    "zAxis": {
+                      "x": 0.0,
+                      "y": 0.0,
+                      "z": 1.0,
                       "units": {
                         "type": "Unknown"
                       }
@@ -1410,6 +1526,13 @@ description: Variables in memory after executing french-press.kcl
                     "sourceRange": [],
                     "tag": null,
                     "type": "extrudeArc"
+                  },
+                  {
+                    "faceId": "[uuid]",
+                    "id": "[uuid]",
+                    "sourceRange": [],
+                    "tag": null,
+                    "type": "extrudeArc"
                   }
                 ],
                 "sketch": {
@@ -1434,6 +1557,33 @@ description: Variables in memory after executing french-press.kcl
                       "tag": null,
                       "to": [
                         1.965,
+                        0.0
+                      ],
+                      "type": "Circle",
+                      "units": {
+                        "type": "Inches"
+                      }
+                    }
+                  ],
+                  "innerPaths": [
+                    {
+                      "__geoMeta": {
+                        "id": "[uuid]",
+                        "sourceRange": []
+                      },
+                      "ccw": true,
+                      "center": [
+                        0.0,
+                        0.0
+                      ],
+                      "from": [
+                        0.15,
+                        0.0
+                      ],
+                      "radius": 0.15,
+                      "tag": null,
+                      "to": [
+                        0.15,
                         0.0
                       ],
                       "type": "Circle",
@@ -1467,6 +1617,14 @@ description: Variables in memory after executing french-press.kcl
                       "x": 0.0,
                       "y": 1.0,
                       "z": 0.0,
+                      "units": {
+                        "type": "Unknown"
+                      }
+                    },
+                    "zAxis": {
+                      "x": 0.0,
+                      "y": 0.0,
+                      "z": 1.0,
                       "units": {
                         "type": "Unknown"
                       }
@@ -1618,6 +1776,13 @@ description: Variables in memory after executing french-press.kcl
                     "sourceRange": [],
                     "tag": null,
                     "type": "extrudeArc"
+                  },
+                  {
+                    "faceId": "[uuid]",
+                    "id": "[uuid]",
+                    "sourceRange": [],
+                    "tag": null,
+                    "type": "extrudeArc"
                   }
                 ],
                 "sketch": {
@@ -1642,6 +1807,33 @@ description: Variables in memory after executing french-press.kcl
                       "tag": null,
                       "to": [
                         1.965,
+                        0.0
+                      ],
+                      "type": "Circle",
+                      "units": {
+                        "type": "Inches"
+                      }
+                    }
+                  ],
+                  "innerPaths": [
+                    {
+                      "__geoMeta": {
+                        "id": "[uuid]",
+                        "sourceRange": []
+                      },
+                      "ccw": true,
+                      "center": [
+                        0.0,
+                        0.0
+                      ],
+                      "from": [
+                        0.15,
+                        0.0
+                      ],
+                      "radius": 0.15,
+                      "tag": null,
+                      "to": [
+                        0.15,
                         0.0
                       ],
                       "type": "Circle",
@@ -1675,6 +1867,14 @@ description: Variables in memory after executing french-press.kcl
                       "x": 0.0,
                       "y": 1.0,
                       "z": 0.0,
+                      "units": {
+                        "type": "Unknown"
+                      }
+                    },
+                    "zAxis": {
+                      "x": 0.0,
+                      "y": 0.0,
+                      "z": 1.0,
                       "units": {
                         "type": "Unknown"
                       }
@@ -1826,6 +2026,13 @@ description: Variables in memory after executing french-press.kcl
                     "sourceRange": [],
                     "tag": null,
                     "type": "extrudeArc"
+                  },
+                  {
+                    "faceId": "[uuid]",
+                    "id": "[uuid]",
+                    "sourceRange": [],
+                    "tag": null,
+                    "type": "extrudeArc"
                   }
                 ],
                 "sketch": {
@@ -1850,6 +2057,33 @@ description: Variables in memory after executing french-press.kcl
                       "tag": null,
                       "to": [
                         1.965,
+                        0.0
+                      ],
+                      "type": "Circle",
+                      "units": {
+                        "type": "Inches"
+                      }
+                    }
+                  ],
+                  "innerPaths": [
+                    {
+                      "__geoMeta": {
+                        "id": "[uuid]",
+                        "sourceRange": []
+                      },
+                      "ccw": true,
+                      "center": [
+                        0.0,
+                        0.0
+                      ],
+                      "from": [
+                        0.15,
+                        0.0
+                      ],
+                      "radius": 0.15,
+                      "tag": null,
+                      "to": [
+                        0.15,
                         0.0
                       ],
                       "type": "Circle",
@@ -1883,6 +2117,14 @@ description: Variables in memory after executing french-press.kcl
                       "x": 0.0,
                       "y": 1.0,
                       "z": 0.0,
+                      "units": {
+                        "type": "Unknown"
+                      }
+                    },
+                    "zAxis": {
+                      "x": 0.0,
+                      "y": 0.0,
+                      "z": 1.0,
                       "units": {
                         "type": "Unknown"
                       }
@@ -2034,6 +2276,13 @@ description: Variables in memory after executing french-press.kcl
                     "sourceRange": [],
                     "tag": null,
                     "type": "extrudeArc"
+                  },
+                  {
+                    "faceId": "[uuid]",
+                    "id": "[uuid]",
+                    "sourceRange": [],
+                    "tag": null,
+                    "type": "extrudeArc"
                   }
                 ],
                 "sketch": {
@@ -2058,6 +2307,33 @@ description: Variables in memory after executing french-press.kcl
                       "tag": null,
                       "to": [
                         1.965,
+                        0.0
+                      ],
+                      "type": "Circle",
+                      "units": {
+                        "type": "Inches"
+                      }
+                    }
+                  ],
+                  "innerPaths": [
+                    {
+                      "__geoMeta": {
+                        "id": "[uuid]",
+                        "sourceRange": []
+                      },
+                      "ccw": true,
+                      "center": [
+                        0.0,
+                        0.0
+                      ],
+                      "from": [
+                        0.15,
+                        0.0
+                      ],
+                      "radius": 0.15,
+                      "tag": null,
+                      "to": [
+                        0.15,
                         0.0
                       ],
                       "type": "Circle",
@@ -2091,6 +2367,14 @@ description: Variables in memory after executing french-press.kcl
                       "x": 0.0,
                       "y": 1.0,
                       "z": 0.0,
+                      "units": {
+                        "type": "Unknown"
+                      }
+                    },
+                    "zAxis": {
+                      "x": 0.0,
+                      "y": 0.0,
+                      "z": 1.0,
                       "units": {
                         "type": "Unknown"
                       }
@@ -2242,6 +2526,13 @@ description: Variables in memory after executing french-press.kcl
                     "sourceRange": [],
                     "tag": null,
                     "type": "extrudeArc"
+                  },
+                  {
+                    "faceId": "[uuid]",
+                    "id": "[uuid]",
+                    "sourceRange": [],
+                    "tag": null,
+                    "type": "extrudeArc"
                   }
                 ],
                 "sketch": {
@@ -2266,6 +2557,33 @@ description: Variables in memory after executing french-press.kcl
                       "tag": null,
                       "to": [
                         1.965,
+                        0.0
+                      ],
+                      "type": "Circle",
+                      "units": {
+                        "type": "Inches"
+                      }
+                    }
+                  ],
+                  "innerPaths": [
+                    {
+                      "__geoMeta": {
+                        "id": "[uuid]",
+                        "sourceRange": []
+                      },
+                      "ccw": true,
+                      "center": [
+                        0.0,
+                        0.0
+                      ],
+                      "from": [
+                        0.15,
+                        0.0
+                      ],
+                      "radius": 0.15,
+                      "tag": null,
+                      "to": [
+                        0.15,
                         0.0
                       ],
                       "type": "Circle",
@@ -2299,6 +2617,14 @@ description: Variables in memory after executing french-press.kcl
                       "x": 0.0,
                       "y": 1.0,
                       "z": 0.0,
+                      "units": {
+                        "type": "Unknown"
+                      }
+                    },
+                    "zAxis": {
+                      "x": 0.0,
+                      "y": 0.0,
+                      "z": 1.0,
                       "units": {
                         "type": "Unknown"
                       }
@@ -2450,6 +2776,13 @@ description: Variables in memory after executing french-press.kcl
                     "sourceRange": [],
                     "tag": null,
                     "type": "extrudeArc"
+                  },
+                  {
+                    "faceId": "[uuid]",
+                    "id": "[uuid]",
+                    "sourceRange": [],
+                    "tag": null,
+                    "type": "extrudeArc"
                   }
                 ],
                 "sketch": {
@@ -2474,6 +2807,33 @@ description: Variables in memory after executing french-press.kcl
                       "tag": null,
                       "to": [
                         1.965,
+                        0.0
+                      ],
+                      "type": "Circle",
+                      "units": {
+                        "type": "Inches"
+                      }
+                    }
+                  ],
+                  "innerPaths": [
+                    {
+                      "__geoMeta": {
+                        "id": "[uuid]",
+                        "sourceRange": []
+                      },
+                      "ccw": true,
+                      "center": [
+                        0.0,
+                        0.0
+                      ],
+                      "from": [
+                        0.15,
+                        0.0
+                      ],
+                      "radius": 0.15,
+                      "tag": null,
+                      "to": [
+                        0.15,
                         0.0
                       ],
                       "type": "Circle",
@@ -2507,6 +2867,14 @@ description: Variables in memory after executing french-press.kcl
                       "x": 0.0,
                       "y": 1.0,
                       "z": 0.0,
+                      "units": {
+                        "type": "Unknown"
+                      }
+                    },
+                    "zAxis": {
+                      "x": 0.0,
+                      "y": 0.0,
+                      "z": 1.0,
                       "units": {
                         "type": "Unknown"
                       }
@@ -2658,6 +3026,13 @@ description: Variables in memory after executing french-press.kcl
                     "sourceRange": [],
                     "tag": null,
                     "type": "extrudeArc"
+                  },
+                  {
+                    "faceId": "[uuid]",
+                    "id": "[uuid]",
+                    "sourceRange": [],
+                    "tag": null,
+                    "type": "extrudeArc"
                   }
                 ],
                 "sketch": {
@@ -2682,6 +3057,33 @@ description: Variables in memory after executing french-press.kcl
                       "tag": null,
                       "to": [
                         1.965,
+                        0.0
+                      ],
+                      "type": "Circle",
+                      "units": {
+                        "type": "Inches"
+                      }
+                    }
+                  ],
+                  "innerPaths": [
+                    {
+                      "__geoMeta": {
+                        "id": "[uuid]",
+                        "sourceRange": []
+                      },
+                      "ccw": true,
+                      "center": [
+                        0.0,
+                        0.0
+                      ],
+                      "from": [
+                        0.15,
+                        0.0
+                      ],
+                      "radius": 0.15,
+                      "tag": null,
+                      "to": [
+                        0.15,
                         0.0
                       ],
                       "type": "Circle",
@@ -2715,6 +3117,14 @@ description: Variables in memory after executing french-press.kcl
                       "x": 0.0,
                       "y": 1.0,
                       "z": 0.0,
+                      "units": {
+                        "type": "Unknown"
+                      }
+                    },
+                    "zAxis": {
+                      "x": 0.0,
+                      "y": 0.0,
+                      "z": 1.0,
                       "units": {
                         "type": "Unknown"
                       }
@@ -2871,6 +3281,13 @@ description: Variables in memory after executing french-press.kcl
                     "sourceRange": [],
                     "tag": null,
                     "type": "extrudeArc"
+                  },
+                  {
+                    "faceId": "[uuid]",
+                    "id": "[uuid]",
+                    "sourceRange": [],
+                    "tag": null,
+                    "type": "extrudeArc"
                   }
                 ],
                 "sketch": {
@@ -2895,6 +3312,33 @@ description: Variables in memory after executing french-press.kcl
                       "tag": null,
                       "to": [
                         1.965,
+                        0.0
+                      ],
+                      "type": "Circle",
+                      "units": {
+                        "type": "Inches"
+                      }
+                    }
+                  ],
+                  "innerPaths": [
+                    {
+                      "__geoMeta": {
+                        "id": "[uuid]",
+                        "sourceRange": []
+                      },
+                      "ccw": true,
+                      "center": [
+                        0.0,
+                        0.0
+                      ],
+                      "from": [
+                        0.15,
+                        0.0
+                      ],
+                      "radius": 0.15,
+                      "tag": null,
+                      "to": [
+                        0.15,
                         0.0
                       ],
                       "type": "Circle",
@@ -2928,6 +3372,14 @@ description: Variables in memory after executing french-press.kcl
                       "x": 0.0,
                       "y": 1.0,
                       "z": 0.0,
+                      "units": {
+                        "type": "Unknown"
+                      }
+                    },
+                    "zAxis": {
+                      "x": 0.0,
+                      "y": 0.0,
+                      "z": 1.0,
                       "units": {
                         "type": "Unknown"
                       }
@@ -3079,6 +3531,13 @@ description: Variables in memory after executing french-press.kcl
                     "sourceRange": [],
                     "tag": null,
                     "type": "extrudeArc"
+                  },
+                  {
+                    "faceId": "[uuid]",
+                    "id": "[uuid]",
+                    "sourceRange": [],
+                    "tag": null,
+                    "type": "extrudeArc"
                   }
                 ],
                 "sketch": {
@@ -3103,6 +3562,33 @@ description: Variables in memory after executing french-press.kcl
                       "tag": null,
                       "to": [
                         1.965,
+                        0.0
+                      ],
+                      "type": "Circle",
+                      "units": {
+                        "type": "Inches"
+                      }
+                    }
+                  ],
+                  "innerPaths": [
+                    {
+                      "__geoMeta": {
+                        "id": "[uuid]",
+                        "sourceRange": []
+                      },
+                      "ccw": true,
+                      "center": [
+                        0.0,
+                        0.0
+                      ],
+                      "from": [
+                        0.15,
+                        0.0
+                      ],
+                      "radius": 0.15,
+                      "tag": null,
+                      "to": [
+                        0.15,
                         0.0
                       ],
                       "type": "Circle",
@@ -3136,6 +3622,14 @@ description: Variables in memory after executing french-press.kcl
                       "x": 0.0,
                       "y": 1.0,
                       "z": 0.0,
+                      "units": {
+                        "type": "Unknown"
+                      }
+                    },
+                    "zAxis": {
+                      "x": 0.0,
+                      "y": 0.0,
+                      "z": 1.0,
                       "units": {
                         "type": "Unknown"
                       }
@@ -3287,6 +3781,13 @@ description: Variables in memory after executing french-press.kcl
                     "sourceRange": [],
                     "tag": null,
                     "type": "extrudeArc"
+                  },
+                  {
+                    "faceId": "[uuid]",
+                    "id": "[uuid]",
+                    "sourceRange": [],
+                    "tag": null,
+                    "type": "extrudeArc"
                   }
                 ],
                 "sketch": {
@@ -3311,6 +3812,33 @@ description: Variables in memory after executing french-press.kcl
                       "tag": null,
                       "to": [
                         1.965,
+                        0.0
+                      ],
+                      "type": "Circle",
+                      "units": {
+                        "type": "Inches"
+                      }
+                    }
+                  ],
+                  "innerPaths": [
+                    {
+                      "__geoMeta": {
+                        "id": "[uuid]",
+                        "sourceRange": []
+                      },
+                      "ccw": true,
+                      "center": [
+                        0.0,
+                        0.0
+                      ],
+                      "from": [
+                        0.15,
+                        0.0
+                      ],
+                      "radius": 0.15,
+                      "tag": null,
+                      "to": [
+                        0.15,
                         0.0
                       ],
                       "type": "Circle",
@@ -3344,6 +3872,14 @@ description: Variables in memory after executing french-press.kcl
                       "x": 0.0,
                       "y": 1.0,
                       "z": 0.0,
+                      "units": {
+                        "type": "Unknown"
+                      }
+                    },
+                    "zAxis": {
+                      "x": 0.0,
+                      "y": 0.0,
+                      "z": 1.0,
                       "units": {
                         "type": "Unknown"
                       }
@@ -3495,6 +4031,13 @@ description: Variables in memory after executing french-press.kcl
                     "sourceRange": [],
                     "tag": null,
                     "type": "extrudeArc"
+                  },
+                  {
+                    "faceId": "[uuid]",
+                    "id": "[uuid]",
+                    "sourceRange": [],
+                    "tag": null,
+                    "type": "extrudeArc"
                   }
                 ],
                 "sketch": {
@@ -3519,6 +4062,33 @@ description: Variables in memory after executing french-press.kcl
                       "tag": null,
                       "to": [
                         1.965,
+                        0.0
+                      ],
+                      "type": "Circle",
+                      "units": {
+                        "type": "Inches"
+                      }
+                    }
+                  ],
+                  "innerPaths": [
+                    {
+                      "__geoMeta": {
+                        "id": "[uuid]",
+                        "sourceRange": []
+                      },
+                      "ccw": true,
+                      "center": [
+                        0.0,
+                        0.0
+                      ],
+                      "from": [
+                        0.15,
+                        0.0
+                      ],
+                      "radius": 0.15,
+                      "tag": null,
+                      "to": [
+                        0.15,
                         0.0
                       ],
                       "type": "Circle",
@@ -3552,6 +4122,14 @@ description: Variables in memory after executing french-press.kcl
                       "x": 0.0,
                       "y": 1.0,
                       "z": 0.0,
+                      "units": {
+                        "type": "Unknown"
+                      }
+                    },
+                    "zAxis": {
+                      "x": 0.0,
+                      "y": 0.0,
+                      "z": 1.0,
                       "units": {
                         "type": "Unknown"
                       }
@@ -3698,6 +4276,14 @@ description: Variables in memory after executing french-press.kcl
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
+          },
+          "zAxis": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 1.0,
             "units": {
               "type": "Unknown"
             }
@@ -4135,6 +4721,14 @@ description: Variables in memory after executing french-press.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
+            "units": {
+              "type": "Unknown"
+            }
+          },
+          "zAxis": {
+            "x": 0.0,
+            "y": -1.0,
+            "z": 0.0,
             "units": {
               "type": "Unknown"
             }
@@ -4590,6 +5184,14 @@ description: Variables in memory after executing french-press.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
+            "units": {
+              "type": "Unknown"
+            }
+          },
+          "zAxis": {
+            "x": 0.0,
+            "y": -1.0,
+            "z": 0.0,
             "units": {
               "type": "Unknown"
             }
@@ -5255,6 +5857,14 @@ description: Variables in memory after executing french-press.kcl
                 "units": {
                   "type": "Unknown"
                 }
+              },
+              "zAxis": {
+                "x": 0.7071067811865475,
+                "y": -0.7071067811865475,
+                "z": 0.0,
+                "units": {
+                  "type": "Unknown"
+                }
               }
             },
             "start": {
@@ -5930,6 +6540,14 @@ description: Variables in memory after executing french-press.kcl
                 "units": {
                   "type": "Unknown"
                 }
+              },
+              "zAxis": {
+                "x": 0.7071067811865475,
+                "y": -0.7071067811865475,
+                "z": 0.0,
+                "units": {
+                  "type": "Unknown"
+                }
               }
             },
             "start": {
@@ -6605,6 +7223,14 @@ description: Variables in memory after executing french-press.kcl
                 "units": {
                   "type": "Unknown"
                 }
+              },
+              "zAxis": {
+                "x": 0.7071067811865475,
+                "y": -0.7071067811865475,
+                "z": 0.0,
+                "units": {
+                  "type": "Unknown"
+                }
               }
             },
             "start": {
@@ -7277,6 +7903,14 @@ description: Variables in memory after executing french-press.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
+                "units": {
+                  "type": "Unknown"
+                }
+              },
+              "zAxis": {
+                "x": 0.7071067811865475,
+                "y": -0.7071067811865475,
+                "z": 0.0,
                 "units": {
                   "type": "Unknown"
                 }
@@ -7404,6 +8038,14 @@ description: Variables in memory after executing french-press.kcl
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
+          "units": {
+            "type": "Unknown"
+          }
+        },
+        "zAxis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0,
           "units": {
             "type": "Unknown"
           }
@@ -7618,247 +8260,11 @@ description: Variables in memory after executing french-press.kcl
                     "units": {
                       "type": "Unknown"
                     }
-                  }
-                },
-                "start": {
-                  "from": [
-                    2.055,
-                    0.0
-                  ],
-                  "to": [
-                    2.055,
-                    0.0
-                  ],
-                  "units": {
-                    "type": "Inches"
                   },
-                  "tag": null,
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  }
-                },
-                "artifactId": "[uuid]",
-                "originalId": "[uuid]",
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              "height": 0.05,
-              "startCapId": "[uuid]",
-              "endCapId": "[uuid]",
-              "units": {
-                "type": "Inches"
-              },
-              "sectional": false
-            },
-            "units": {
-              "type": "Inches"
-            }
-          },
-          "start": {
-            "from": [
-              0.3,
-              0.17
-            ],
-            "to": [
-              0.3,
-              0.17
-            ],
-            "units": {
-              "type": "Inches"
-            },
-            "tag": null,
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            }
-          },
-          "artifactId": "[uuid]",
-          "originalId": "[uuid]",
-          "units": {
-            "type": "Inches"
-          }
-        }
-      },
-      {
-        "type": "Sketch",
-        "value": {
-          "type": "Sketch",
-          "id": "[uuid]",
-          "paths": [
-            {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              },
-              "from": [
-                0.3,
-                0.17
-              ],
-              "tag": null,
-              "to": [
-                0.3,
-                1.3699999999999999
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Inches"
-              }
-            },
-            {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              },
-              "ccw": false,
-              "center": [
-                0.29999999999999993,
-                0.16999999999999993
-              ],
-              "from": [
-                0.3,
-                1.3699999999999999
-              ],
-              "radius": 1.2,
-              "tag": null,
-              "to": [
-                1.3392304845413263,
-                -0.42999999999999994
-              ],
-              "type": "Arc",
-              "units": {
-                "type": "Inches"
-              }
-            },
-            {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              },
-              "from": [
-                1.3392304845413263,
-                -0.42999999999999994
-              ],
-              "tag": null,
-              "to": [
-                0.3,
-                0.17
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Inches"
-              }
-            },
-            {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              },
-              "from": [
-                0.3,
-                0.17
-              ],
-              "tag": null,
-              "to": [
-                0.3,
-                0.17
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Inches"
-              }
-            }
-          ],
-          "on": {
-            "type": "face",
-            "id": "[uuid]",
-            "artifactId": "[uuid]",
-            "value": "end",
-            "xAxis": {
-              "x": 1.0,
-              "y": 0.0,
-              "z": 0.0,
-              "units": {
-                "type": "Unknown"
-              }
-            },
-            "yAxis": {
-              "x": 0.0,
-              "y": 1.0,
-              "z": 0.0,
-              "units": {
-                "type": "Unknown"
-              }
-            },
-            "solid": {
-              "type": "Solid",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
-              "value": [
-                {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [],
-                  "tag": null,
-                  "type": "extrudeArc"
-                }
-              ],
-              "sketch": {
-                "type": "Sketch",
-                "id": "[uuid]",
-                "paths": [
-                  {
-                    "__geoMeta": {
-                      "id": "[uuid]",
-                      "sourceRange": []
-                    },
-                    "ccw": true,
-                    "center": [
-                      0.0,
-                      0.0
-                    ],
-                    "from": [
-                      2.055,
-                      0.0
-                    ],
-                    "radius": 2.055,
-                    "tag": null,
-                    "to": [
-                      2.055,
-                      0.0
-                    ],
-                    "type": "Circle",
-                    "units": {
-                      "type": "Inches"
-                    }
-                  }
-                ],
-                "on": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
-                  "origin": {
+                  "zAxis": {
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 25.4,
-                    "units": {
-                      "type": "Mm"
-                    }
-                  },
-                  "type": "plane",
-                  "value": "Custom",
-                  "xAxis": {
-                    "x": 1.0,
-                    "y": 0.0,
-                    "z": 0.0,
-                    "units": {
-                      "type": "Unknown"
-                    }
-                  },
-                  "yAxis": {
-                    "x": 0.0,
-                    "y": 1.0,
-                    "z": 0.0,
+                    "z": 1.0,
                     "units": {
                       "type": "Unknown"
                     }
@@ -8103,6 +8509,266 @@ description: Variables in memory after executing french-press.kcl
                     "x": 0.0,
                     "y": 1.0,
                     "z": 0.0,
+                    "units": {
+                      "type": "Unknown"
+                    }
+                  },
+                  "zAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": {
+                      "type": "Unknown"
+                    }
+                  }
+                },
+                "start": {
+                  "from": [
+                    2.055,
+                    0.0
+                  ],
+                  "to": [
+                    2.055,
+                    0.0
+                  ],
+                  "units": {
+                    "type": "Inches"
+                  },
+                  "tag": null,
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  }
+                },
+                "artifactId": "[uuid]",
+                "originalId": "[uuid]",
+                "units": {
+                  "type": "Inches"
+                }
+              },
+              "height": 0.05,
+              "startCapId": "[uuid]",
+              "endCapId": "[uuid]",
+              "units": {
+                "type": "Inches"
+              },
+              "sectional": false
+            },
+            "units": {
+              "type": "Inches"
+            }
+          },
+          "start": {
+            "from": [
+              0.3,
+              0.17
+            ],
+            "to": [
+              0.3,
+              0.17
+            ],
+            "units": {
+              "type": "Inches"
+            },
+            "tag": null,
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            }
+          },
+          "artifactId": "[uuid]",
+          "originalId": "[uuid]",
+          "units": {
+            "type": "Inches"
+          }
+        }
+      },
+      {
+        "type": "Sketch",
+        "value": {
+          "type": "Sketch",
+          "id": "[uuid]",
+          "paths": [
+            {
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": []
+              },
+              "from": [
+                0.3,
+                0.17
+              ],
+              "tag": null,
+              "to": [
+                0.3,
+                1.3699999999999999
+              ],
+              "type": "ToPoint",
+              "units": {
+                "type": "Inches"
+              }
+            },
+            {
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": []
+              },
+              "ccw": false,
+              "center": [
+                0.29999999999999993,
+                0.16999999999999993
+              ],
+              "from": [
+                0.3,
+                1.3699999999999999
+              ],
+              "radius": 1.2,
+              "tag": null,
+              "to": [
+                1.3392304845413263,
+                -0.42999999999999994
+              ],
+              "type": "Arc",
+              "units": {
+                "type": "Inches"
+              }
+            },
+            {
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": []
+              },
+              "from": [
+                1.3392304845413263,
+                -0.42999999999999994
+              ],
+              "tag": null,
+              "to": [
+                0.3,
+                0.17
+              ],
+              "type": "ToPoint",
+              "units": {
+                "type": "Inches"
+              }
+            },
+            {
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": []
+              },
+              "from": [
+                0.3,
+                0.17
+              ],
+              "tag": null,
+              "to": [
+                0.3,
+                0.17
+              ],
+              "type": "ToPoint",
+              "units": {
+                "type": "Inches"
+              }
+            }
+          ],
+          "on": {
+            "type": "face",
+            "id": "[uuid]",
+            "artifactId": "[uuid]",
+            "value": "end",
+            "xAxis": {
+              "x": 1.0,
+              "y": 0.0,
+              "z": 0.0,
+              "units": {
+                "type": "Unknown"
+              }
+            },
+            "yAxis": {
+              "x": 0.0,
+              "y": 1.0,
+              "z": 0.0,
+              "units": {
+                "type": "Unknown"
+              }
+            },
+            "solid": {
+              "type": "Solid",
+              "id": "[uuid]",
+              "artifactId": "[uuid]",
+              "value": [
+                {
+                  "faceId": "[uuid]",
+                  "id": "[uuid]",
+                  "sourceRange": [],
+                  "tag": null,
+                  "type": "extrudeArc"
+                }
+              ],
+              "sketch": {
+                "type": "Sketch",
+                "id": "[uuid]",
+                "paths": [
+                  {
+                    "__geoMeta": {
+                      "id": "[uuid]",
+                      "sourceRange": []
+                    },
+                    "ccw": true,
+                    "center": [
+                      0.0,
+                      0.0
+                    ],
+                    "from": [
+                      2.055,
+                      0.0
+                    ],
+                    "radius": 2.055,
+                    "tag": null,
+                    "to": [
+                      2.055,
+                      0.0
+                    ],
+                    "type": "Circle",
+                    "units": {
+                      "type": "Inches"
+                    }
+                  }
+                ],
+                "on": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 25.4,
+                    "units": {
+                      "type": "Mm"
+                    }
+                  },
+                  "type": "plane",
+                  "value": "Custom",
+                  "xAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": {
+                      "type": "Unknown"
+                    }
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "units": {
+                      "type": "Unknown"
+                    }
+                  },
+                  "zAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
                     "units": {
                       "type": "Unknown"
                     }
@@ -8401,6 +9067,14 @@ description: Variables in memory after executing french-press.kcl
             "units": {
               "type": "Unknown"
             }
+          },
+          "zAxis": {
+            "x": 0.0,
+            "y": -1.0,
+            "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
           }
         },
         "start": {
@@ -8689,6 +9363,14 @@ description: Variables in memory after executing french-press.kcl
             "units": {
               "type": "Unknown"
             }
+          },
+          "zAxis": {
+            "x": 0.0,
+            "y": -1.0,
+            "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
           }
         },
         "start": {
@@ -8756,6 +9438,33 @@ description: Variables in memory after executing french-press.kcl
           }
         }
       ],
+      "innerPaths": [
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            0.0,
+            0.0
+          ],
+          "from": [
+            0.15,
+            0.0
+          ],
+          "radius": 0.15,
+          "tag": null,
+          "to": [
+            0.15,
+            0.0
+          ],
+          "type": "Circle",
+          "units": {
+            "type": "Inches"
+          }
+        }
+      ],
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
@@ -8781,6 +9490,14 @@ description: Variables in memory after executing french-press.kcl
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
+          "units": {
+            "type": "Unknown"
+          }
+        },
+        "zAxis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0,
           "units": {
             "type": "Unknown"
           }
@@ -8878,6 +9595,13 @@ description: Variables in memory after executing french-press.kcl
                   "sourceRange": [],
                   "tag": null,
                   "type": "extrudeArc"
+                },
+                {
+                  "faceId": "[uuid]",
+                  "id": "[uuid]",
+                  "sourceRange": [],
+                  "tag": null,
+                  "type": "extrudeArc"
                 }
               ],
               "sketch": {
@@ -8902,6 +9626,33 @@ description: Variables in memory after executing french-press.kcl
                     "tag": null,
                     "to": [
                       1.965,
+                      0.0
+                    ],
+                    "type": "Circle",
+                    "units": {
+                      "type": "Inches"
+                    }
+                  }
+                ],
+                "innerPaths": [
+                  {
+                    "__geoMeta": {
+                      "id": "[uuid]",
+                      "sourceRange": []
+                    },
+                    "ccw": true,
+                    "center": [
+                      0.0,
+                      0.0
+                    ],
+                    "from": [
+                      0.15,
+                      0.0
+                    ],
+                    "radius": 0.15,
+                    "tag": null,
+                    "to": [
+                      0.15,
                       0.0
                     ],
                     "type": "Circle",
@@ -8935,6 +9686,14 @@ description: Variables in memory after executing french-press.kcl
                     "x": 0.0,
                     "y": 1.0,
                     "z": 0.0,
+                    "units": {
+                      "type": "Unknown"
+                    }
+                  },
+                  "zAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
                     "units": {
                       "type": "Unknown"
                     }
@@ -9065,6 +9824,13 @@ description: Variables in memory after executing french-press.kcl
                   "sourceRange": [],
                   "tag": null,
                   "type": "extrudeArc"
+                },
+                {
+                  "faceId": "[uuid]",
+                  "id": "[uuid]",
+                  "sourceRange": [],
+                  "tag": null,
+                  "type": "extrudeArc"
                 }
               ],
               "sketch": {
@@ -9089,6 +9855,33 @@ description: Variables in memory after executing french-press.kcl
                     "tag": null,
                     "to": [
                       1.965,
+                      0.0
+                    ],
+                    "type": "Circle",
+                    "units": {
+                      "type": "Inches"
+                    }
+                  }
+                ],
+                "innerPaths": [
+                  {
+                    "__geoMeta": {
+                      "id": "[uuid]",
+                      "sourceRange": []
+                    },
+                    "ccw": true,
+                    "center": [
+                      0.0,
+                      0.0
+                    ],
+                    "from": [
+                      0.15,
+                      0.0
+                    ],
+                    "radius": 0.15,
+                    "tag": null,
+                    "to": [
+                      0.15,
                       0.0
                     ],
                     "type": "Circle",
@@ -9122,6 +9915,14 @@ description: Variables in memory after executing french-press.kcl
                     "x": 0.0,
                     "y": 1.0,
                     "z": 0.0,
+                    "units": {
+                      "type": "Unknown"
+                    }
+                  },
+                  "zAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
                     "units": {
                       "type": "Unknown"
                     }
@@ -9252,6 +10053,13 @@ description: Variables in memory after executing french-press.kcl
                   "sourceRange": [],
                   "tag": null,
                   "type": "extrudeArc"
+                },
+                {
+                  "faceId": "[uuid]",
+                  "id": "[uuid]",
+                  "sourceRange": [],
+                  "tag": null,
+                  "type": "extrudeArc"
                 }
               ],
               "sketch": {
@@ -9276,6 +10084,33 @@ description: Variables in memory after executing french-press.kcl
                     "tag": null,
                     "to": [
                       1.965,
+                      0.0
+                    ],
+                    "type": "Circle",
+                    "units": {
+                      "type": "Inches"
+                    }
+                  }
+                ],
+                "innerPaths": [
+                  {
+                    "__geoMeta": {
+                      "id": "[uuid]",
+                      "sourceRange": []
+                    },
+                    "ccw": true,
+                    "center": [
+                      0.0,
+                      0.0
+                    ],
+                    "from": [
+                      0.15,
+                      0.0
+                    ],
+                    "radius": 0.15,
+                    "tag": null,
+                    "to": [
+                      0.15,
                       0.0
                     ],
                     "type": "Circle",
@@ -9309,6 +10144,14 @@ description: Variables in memory after executing french-press.kcl
                     "x": 0.0,
                     "y": 1.0,
                     "z": 0.0,
+                    "units": {
+                      "type": "Unknown"
+                    }
+                  },
+                  "zAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
                     "units": {
                       "type": "Unknown"
                     }
@@ -9439,6 +10282,13 @@ description: Variables in memory after executing french-press.kcl
                   "sourceRange": [],
                   "tag": null,
                   "type": "extrudeArc"
+                },
+                {
+                  "faceId": "[uuid]",
+                  "id": "[uuid]",
+                  "sourceRange": [],
+                  "tag": null,
+                  "type": "extrudeArc"
                 }
               ],
               "sketch": {
@@ -9463,6 +10313,33 @@ description: Variables in memory after executing french-press.kcl
                     "tag": null,
                     "to": [
                       1.965,
+                      0.0
+                    ],
+                    "type": "Circle",
+                    "units": {
+                      "type": "Inches"
+                    }
+                  }
+                ],
+                "innerPaths": [
+                  {
+                    "__geoMeta": {
+                      "id": "[uuid]",
+                      "sourceRange": []
+                    },
+                    "ccw": true,
+                    "center": [
+                      0.0,
+                      0.0
+                    ],
+                    "from": [
+                      0.15,
+                      0.0
+                    ],
+                    "radius": 0.15,
+                    "tag": null,
+                    "to": [
+                      0.15,
                       0.0
                     ],
                     "type": "Circle",
@@ -9496,6 +10373,14 @@ description: Variables in memory after executing french-press.kcl
                     "x": 0.0,
                     "y": 1.0,
                     "z": 0.0,
+                    "units": {
+                      "type": "Unknown"
+                    }
+                  },
+                  "zAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
                     "units": {
                       "type": "Unknown"
                     }
@@ -9626,6 +10511,13 @@ description: Variables in memory after executing french-press.kcl
                   "sourceRange": [],
                   "tag": null,
                   "type": "extrudeArc"
+                },
+                {
+                  "faceId": "[uuid]",
+                  "id": "[uuid]",
+                  "sourceRange": [],
+                  "tag": null,
+                  "type": "extrudeArc"
                 }
               ],
               "sketch": {
@@ -9650,6 +10542,33 @@ description: Variables in memory after executing french-press.kcl
                     "tag": null,
                     "to": [
                       1.965,
+                      0.0
+                    ],
+                    "type": "Circle",
+                    "units": {
+                      "type": "Inches"
+                    }
+                  }
+                ],
+                "innerPaths": [
+                  {
+                    "__geoMeta": {
+                      "id": "[uuid]",
+                      "sourceRange": []
+                    },
+                    "ccw": true,
+                    "center": [
+                      0.0,
+                      0.0
+                    ],
+                    "from": [
+                      0.15,
+                      0.0
+                    ],
+                    "radius": 0.15,
+                    "tag": null,
+                    "to": [
+                      0.15,
                       0.0
                     ],
                     "type": "Circle",
@@ -9683,6 +10602,14 @@ description: Variables in memory after executing french-press.kcl
                     "x": 0.0,
                     "y": 1.0,
                     "z": 0.0,
+                    "units": {
+                      "type": "Unknown"
+                    }
+                  },
+                  "zAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
                     "units": {
                       "type": "Unknown"
                     }
@@ -9813,6 +10740,13 @@ description: Variables in memory after executing french-press.kcl
                   "sourceRange": [],
                   "tag": null,
                   "type": "extrudeArc"
+                },
+                {
+                  "faceId": "[uuid]",
+                  "id": "[uuid]",
+                  "sourceRange": [],
+                  "tag": null,
+                  "type": "extrudeArc"
                 }
               ],
               "sketch": {
@@ -9837,6 +10771,33 @@ description: Variables in memory after executing french-press.kcl
                     "tag": null,
                     "to": [
                       1.965,
+                      0.0
+                    ],
+                    "type": "Circle",
+                    "units": {
+                      "type": "Inches"
+                    }
+                  }
+                ],
+                "innerPaths": [
+                  {
+                    "__geoMeta": {
+                      "id": "[uuid]",
+                      "sourceRange": []
+                    },
+                    "ccw": true,
+                    "center": [
+                      0.0,
+                      0.0
+                    ],
+                    "from": [
+                      0.15,
+                      0.0
+                    ],
+                    "radius": 0.15,
+                    "tag": null,
+                    "to": [
+                      0.15,
                       0.0
                     ],
                     "type": "Circle",
@@ -9870,6 +10831,14 @@ description: Variables in memory after executing french-press.kcl
                     "x": 0.0,
                     "y": 1.0,
                     "z": 0.0,
+                    "units": {
+                      "type": "Unknown"
+                    }
+                  },
+                  "zAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
                     "units": {
                       "type": "Unknown"
                     }
@@ -10000,6 +10969,13 @@ description: Variables in memory after executing french-press.kcl
                   "sourceRange": [],
                   "tag": null,
                   "type": "extrudeArc"
+                },
+                {
+                  "faceId": "[uuid]",
+                  "id": "[uuid]",
+                  "sourceRange": [],
+                  "tag": null,
+                  "type": "extrudeArc"
                 }
               ],
               "sketch": {
@@ -10024,6 +11000,33 @@ description: Variables in memory after executing french-press.kcl
                     "tag": null,
                     "to": [
                       1.965,
+                      0.0
+                    ],
+                    "type": "Circle",
+                    "units": {
+                      "type": "Inches"
+                    }
+                  }
+                ],
+                "innerPaths": [
+                  {
+                    "__geoMeta": {
+                      "id": "[uuid]",
+                      "sourceRange": []
+                    },
+                    "ccw": true,
+                    "center": [
+                      0.0,
+                      0.0
+                    ],
+                    "from": [
+                      0.15,
+                      0.0
+                    ],
+                    "radius": 0.15,
+                    "tag": null,
+                    "to": [
+                      0.15,
                       0.0
                     ],
                     "type": "Circle",
@@ -10057,6 +11060,14 @@ description: Variables in memory after executing french-press.kcl
                     "x": 0.0,
                     "y": 1.0,
                     "z": 0.0,
+                    "units": {
+                      "type": "Unknown"
+                    }
+                  },
+                  "zAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
                     "units": {
                       "type": "Unknown"
                     }
@@ -10187,6 +11198,13 @@ description: Variables in memory after executing french-press.kcl
                   "sourceRange": [],
                   "tag": null,
                   "type": "extrudeArc"
+                },
+                {
+                  "faceId": "[uuid]",
+                  "id": "[uuid]",
+                  "sourceRange": [],
+                  "tag": null,
+                  "type": "extrudeArc"
                 }
               ],
               "sketch": {
@@ -10211,6 +11229,33 @@ description: Variables in memory after executing french-press.kcl
                     "tag": null,
                     "to": [
                       1.965,
+                      0.0
+                    ],
+                    "type": "Circle",
+                    "units": {
+                      "type": "Inches"
+                    }
+                  }
+                ],
+                "innerPaths": [
+                  {
+                    "__geoMeta": {
+                      "id": "[uuid]",
+                      "sourceRange": []
+                    },
+                    "ccw": true,
+                    "center": [
+                      0.0,
+                      0.0
+                    ],
+                    "from": [
+                      0.15,
+                      0.0
+                    ],
+                    "radius": 0.15,
+                    "tag": null,
+                    "to": [
+                      0.15,
                       0.0
                     ],
                     "type": "Circle",
@@ -10244,6 +11289,14 @@ description: Variables in memory after executing french-press.kcl
                     "x": 0.0,
                     "y": 1.0,
                     "z": 0.0,
+                    "units": {
+                      "type": "Unknown"
+                    }
+                  },
+                  "zAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
                     "units": {
                       "type": "Unknown"
                     }
@@ -10379,6 +11432,13 @@ description: Variables in memory after executing french-press.kcl
                   "sourceRange": [],
                   "tag": null,
                   "type": "extrudeArc"
+                },
+                {
+                  "faceId": "[uuid]",
+                  "id": "[uuid]",
+                  "sourceRange": [],
+                  "tag": null,
+                  "type": "extrudeArc"
                 }
               ],
               "sketch": {
@@ -10403,6 +11463,33 @@ description: Variables in memory after executing french-press.kcl
                     "tag": null,
                     "to": [
                       1.965,
+                      0.0
+                    ],
+                    "type": "Circle",
+                    "units": {
+                      "type": "Inches"
+                    }
+                  }
+                ],
+                "innerPaths": [
+                  {
+                    "__geoMeta": {
+                      "id": "[uuid]",
+                      "sourceRange": []
+                    },
+                    "ccw": true,
+                    "center": [
+                      0.0,
+                      0.0
+                    ],
+                    "from": [
+                      0.15,
+                      0.0
+                    ],
+                    "radius": 0.15,
+                    "tag": null,
+                    "to": [
+                      0.15,
                       0.0
                     ],
                     "type": "Circle",
@@ -10436,6 +11523,14 @@ description: Variables in memory after executing french-press.kcl
                     "x": 0.0,
                     "y": 1.0,
                     "z": 0.0,
+                    "units": {
+                      "type": "Unknown"
+                    }
+                  },
+                  "zAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
                     "units": {
                       "type": "Unknown"
                     }
@@ -10566,6 +11661,13 @@ description: Variables in memory after executing french-press.kcl
                   "sourceRange": [],
                   "tag": null,
                   "type": "extrudeArc"
+                },
+                {
+                  "faceId": "[uuid]",
+                  "id": "[uuid]",
+                  "sourceRange": [],
+                  "tag": null,
+                  "type": "extrudeArc"
                 }
               ],
               "sketch": {
@@ -10590,6 +11692,33 @@ description: Variables in memory after executing french-press.kcl
                     "tag": null,
                     "to": [
                       1.965,
+                      0.0
+                    ],
+                    "type": "Circle",
+                    "units": {
+                      "type": "Inches"
+                    }
+                  }
+                ],
+                "innerPaths": [
+                  {
+                    "__geoMeta": {
+                      "id": "[uuid]",
+                      "sourceRange": []
+                    },
+                    "ccw": true,
+                    "center": [
+                      0.0,
+                      0.0
+                    ],
+                    "from": [
+                      0.15,
+                      0.0
+                    ],
+                    "radius": 0.15,
+                    "tag": null,
+                    "to": [
+                      0.15,
                       0.0
                     ],
                     "type": "Circle",
@@ -10623,6 +11752,14 @@ description: Variables in memory after executing french-press.kcl
                     "x": 0.0,
                     "y": 1.0,
                     "z": 0.0,
+                    "units": {
+                      "type": "Unknown"
+                    }
+                  },
+                  "zAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
                     "units": {
                       "type": "Unknown"
                     }
@@ -10753,6 +11890,13 @@ description: Variables in memory after executing french-press.kcl
                   "sourceRange": [],
                   "tag": null,
                   "type": "extrudeArc"
+                },
+                {
+                  "faceId": "[uuid]",
+                  "id": "[uuid]",
+                  "sourceRange": [],
+                  "tag": null,
+                  "type": "extrudeArc"
                 }
               ],
               "sketch": {
@@ -10777,6 +11921,33 @@ description: Variables in memory after executing french-press.kcl
                     "tag": null,
                     "to": [
                       1.965,
+                      0.0
+                    ],
+                    "type": "Circle",
+                    "units": {
+                      "type": "Inches"
+                    }
+                  }
+                ],
+                "innerPaths": [
+                  {
+                    "__geoMeta": {
+                      "id": "[uuid]",
+                      "sourceRange": []
+                    },
+                    "ccw": true,
+                    "center": [
+                      0.0,
+                      0.0
+                    ],
+                    "from": [
+                      0.15,
+                      0.0
+                    ],
+                    "radius": 0.15,
+                    "tag": null,
+                    "to": [
+                      0.15,
                       0.0
                     ],
                     "type": "Circle",
@@ -10810,6 +11981,14 @@ description: Variables in memory after executing french-press.kcl
                     "x": 0.0,
                     "y": 1.0,
                     "z": 0.0,
+                    "units": {
+                      "type": "Unknown"
+                    }
+                  },
+                  "zAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
                     "units": {
                       "type": "Unknown"
                     }
@@ -10940,6 +12119,13 @@ description: Variables in memory after executing french-press.kcl
                   "sourceRange": [],
                   "tag": null,
                   "type": "extrudeArc"
+                },
+                {
+                  "faceId": "[uuid]",
+                  "id": "[uuid]",
+                  "sourceRange": [],
+                  "tag": null,
+                  "type": "extrudeArc"
                 }
               ],
               "sketch": {
@@ -10964,6 +12150,33 @@ description: Variables in memory after executing french-press.kcl
                     "tag": null,
                     "to": [
                       1.965,
+                      0.0
+                    ],
+                    "type": "Circle",
+                    "units": {
+                      "type": "Inches"
+                    }
+                  }
+                ],
+                "innerPaths": [
+                  {
+                    "__geoMeta": {
+                      "id": "[uuid]",
+                      "sourceRange": []
+                    },
+                    "ccw": true,
+                    "center": [
+                      0.0,
+                      0.0
+                    ],
+                    "from": [
+                      0.15,
+                      0.0
+                    ],
+                    "radius": 0.15,
+                    "tag": null,
+                    "to": [
+                      0.15,
                       0.0
                     ],
                     "type": "Circle",
@@ -10997,6 +12210,14 @@ description: Variables in memory after executing french-press.kcl
                     "x": 0.0,
                     "y": 1.0,
                     "z": 0.0,
+                    "units": {
+                      "type": "Unknown"
+                    }
+                  },
+                  "zAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
                     "units": {
                       "type": "Unknown"
                     }
@@ -11122,6 +12343,14 @@ description: Variables in memory after executing french-press.kcl
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
+          "units": {
+            "type": "Unknown"
+          }
+        },
+        "zAxis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0,
           "units": {
             "type": "Unknown"
           }
@@ -11391,6 +12620,14 @@ description: Variables in memory after executing french-press.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
+            "units": {
+              "type": "Unknown"
+            }
+          },
+          "zAxis": {
+            "x": 0.0,
+            "y": -1.0,
+            "z": 0.0,
             "units": {
               "type": "Unknown"
             }
@@ -11738,6 +12975,14 @@ description: Variables in memory after executing french-press.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
+          "units": {
+            "type": "Unknown"
+          }
+        },
+        "zAxis": {
+          "x": 0.0,
+          "y": -1.0,
+          "z": 0.0,
           "units": {
             "type": "Unknown"
           }

@@ -21,8 +21,7 @@ jobs:
 
   prepare-wasm:
 
-    # separate job on Ubuntu to build or fetch the wasm blob once on the fastest runner
-    runs-on: runs-on=${{ github.run_id }}/family=i7ie.2xlarge/image=ubuntu22-full-x64
+    runs-on: namespace-profile-ubuntu-8-cores
     steps:
 
       - uses: actions/checkout@v4
@@ -46,7 +45,7 @@ jobs:
       - name: Download Wasm cache
         id: download-wasm
         if: ${{ github.event_name != 'schedule' && steps.filter.outputs.rust == 'false' }}
-        uses: dawidd6/action-download-artifact@v7
+        uses: dawidd6/action-download-artifact@v11
         continue-on-error: true
         with:
           github_token: ${{secrets.GITHUB_TOKEN}}
@@ -79,7 +78,7 @@ jobs:
         with:
           cache: false # Configured below.
 
-      - uses: taiki-e/install-action@d4635f2de61c8b8104d59cd4aede2060638378cc
+      - uses: taiki-e/install-action@c07504cae06f832dc8de08911c9a9c5cddb0d2d3
         if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
         with:
           tool: wasm-pack
@@ -105,12 +104,12 @@ jobs:
   snapshots:
     needs: [prepare-wasm]
 
-    runs-on: runs-on=${{ github.run_id }}/family=i7ie.2xlarge/image=ubuntu22-full-x64
+    runs-on: namespace-profile-ubuntu-8-cores
     name: e2e:snapshots
 
     steps:
 
-      - uses: actions/create-github-app-token@v1
+      - uses: actions/create-github-app-token@v2
         id: app-token
         with:
           app-id: ${{ secrets.MODELING_APP_GH_APP_ID }}
@@ -157,7 +156,7 @@ jobs:
           timeout_minutes: 5
           max_attempts: 5
         env:
-          token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
+          VITE_KITTYCAD_API_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
           TAB_API_URL: ${{ secrets.TAB_API_URL }}
           TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
           CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
@@ -169,7 +168,7 @@ jobs:
         if: always()
         run: npm run test:snapshots -- --last-failed --update-snapshots
         env:
-          token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
+          VITE_KITTYCAD_API_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
           TAB_API_URL: ${{ secrets.TAB_API_URL }}
           TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
           CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
@@ -220,7 +219,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: "runs-on=${{ github.run_id }}/family=i7ie.2xlarge/image=ubuntu22-full-x64"
+          - os: namespace-profile-ubuntu-8-cores
           - os: namespace-profile-macos-8-cores
           - os: namespace-profile-windows-8-cores
     runs-on: ${{ matrix.os }}
@@ -230,7 +229,7 @@ jobs:
 
     steps:
 
-      - uses: actions/create-github-app-token@v1
+      - uses: actions/create-github-app-token@v2
         id: app-token
         with:
           app-id: ${{ secrets.MODELING_APP_GH_APP_ID }}
@@ -284,7 +283,7 @@ jobs:
           timeout_minutes: 5
           max_attempts: 5
         env:
-          token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
+          VITE_KITTYCAD_API_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
           TAB_API_URL: ${{ secrets.TAB_API_URL }}
           TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
           CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
@@ -309,28 +308,28 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: "runs-on=${{ github.run_id }}/family=i7ie.2xlarge/image=ubuntu22-full-x64"
+          - os: namespace-profile-ubuntu-8-cores
             shardIndex: 1
             shardTotal: 8
-          - os: "runs-on=${{ github.run_id }}/family=i7ie.2xlarge/image=ubuntu22-full-x64"
+          - os: namespace-profile-ubuntu-8-cores
             shardIndex: 2
             shardTotal: 8
-          - os: "runs-on=${{ github.run_id }}/family=i7ie.2xlarge/image=ubuntu22-full-x64"
+          - os: namespace-profile-ubuntu-8-cores
             shardIndex: 3
             shardTotal: 8
-          - os: "runs-on=${{ github.run_id }}/family=i7ie.2xlarge/image=ubuntu22-full-x64"
+          - os: namespace-profile-ubuntu-8-cores
             shardIndex: 4
             shardTotal: 8
-          - os: "runs-on=${{ github.run_id }}/family=i7ie.2xlarge/image=ubuntu22-full-x64"
+          - os: namespace-profile-ubuntu-8-cores
             shardIndex: 5
             shardTotal: 8
-          - os: "runs-on=${{ github.run_id }}/family=i7ie.2xlarge/image=ubuntu22-full-x64"
+          - os: namespace-profile-ubuntu-8-cores
             shardIndex: 6
             shardTotal: 8
-          - os: "runs-on=${{ github.run_id }}/family=i7ie.2xlarge/image=ubuntu22-full-x64"
+          - os: namespace-profile-ubuntu-8-cores
             shardIndex: 7
             shardTotal: 8
-          - os: "runs-on=${{ github.run_id }}/family=i7ie.2xlarge/image=ubuntu22-full-x64"
+          - os: namespace-profile-ubuntu-8-cores
             shardIndex: 8
             shardTotal: 8
           - os: namespace-profile-macos-8-cores
@@ -410,7 +409,7 @@ jobs:
           max_attempts: 9
         env:
           FAIL_ON_CONSOLE_ERRORS: true
-          token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
+          VITE_KITTYCAD_API_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
           TAB_API_URL: ${{ secrets.TAB_API_URL }}
           TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
           CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}

@@ -672,7 +672,8 @@ description: Artifact commands thermal-block-insert.kcl
         "target": "[uuid]",
         "distance": 200.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -732,7 +733,8 @@ description: Artifact commands thermal-block-insert.kcl
         "target": "[uuid]",
         "distance": 200.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -779,5 +781,6 @@ description: Artifact commands thermal-block-insert.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

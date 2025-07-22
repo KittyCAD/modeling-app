@@ -242,5 +242,6 @@ description: Artifact commands revolve_about_edge.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

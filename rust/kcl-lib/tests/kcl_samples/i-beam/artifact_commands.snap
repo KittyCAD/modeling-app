@@ -220,7 +220,8 @@ description: Artifact commands i-beam.kcl
         "target": "[uuid]",
         "distance": 1828.8,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -267,5 +268,6 @@ description: Artifact commands i-beam.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

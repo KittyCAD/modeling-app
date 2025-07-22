@@ -155,7 +155,8 @@ description: Artifact commands sketch_in_object.kcl
         "target": "[uuid]",
         "distance": -10.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -342,7 +343,8 @@ description: Artifact commands sketch_in_object.kcl
         "target": "[uuid]",
         "distance": 10.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -389,5 +391,6 @@ description: Artifact commands sketch_in_object.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

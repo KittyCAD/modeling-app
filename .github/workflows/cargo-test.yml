@@ -20,13 +20,10 @@ concurrency:
 jobs:
   build-test-artifacts:
     name: Build test artifacts
-    runs-on:
-      - runs-on=${{ github.run_id }}
-      - runner=8cpu-linux-x64
-      - extras=s3-cache
+    runs-on: namespace-profile-ubuntu-8-cores
     steps:
-      - uses: runs-on/action@v1
-      - uses: actions/create-github-app-token@v1
+      - uses: runs-on/action@v2
+      - uses: actions/create-github-app-token@v2
         id: app-token
         with:
           app-id: ${{ secrets.MODELING_APP_GH_APP_ID }}
@@ -138,10 +135,7 @@ jobs:
           path: rust/nextest-archive.tar.zst
   run-test-artifacts:
     name: cargo test (shard ${{ matrix.partitionIndex}})
-    runs-on:
-      - runs-on=${{ github.run_id }}
-      - runner=32cpu-linux-x64
-      - extras=s3-cache
+    runs-on: namespace-profile-ubuntu-8-cores
     needs: build-test-artifacts
     strategy:
       fail-fast: false
@@ -149,8 +143,8 @@ jobs:
         partitionIndex: [1, 2, 3, 4, 5, 6]
         partitionTotal: [6]
     steps:
-      - uses: runs-on/action@v1
-      - uses: actions/create-github-app-token@v1
+      - uses: runs-on/action@v2
+      - uses: actions/create-github-app-token@v2
         id: app-token
         with:
           app-id: ${{ secrets.MODELING_APP_GH_APP_ID }}
@@ -202,13 +196,10 @@ jobs:
           CI_SUITE: e2e:kcl
   run-internal-kcl-samples:
     name: cargo test (internal-kcl-samples)
-    runs-on:
-      - runs-on=${{ github.run_id }}
-      - runner=32cpu-linux-x64
-      - extras=s3-cache
+    runs-on: namespace-profile-ubuntu-8-cores
     steps:
-      - uses: runs-on/action@v1
-      - uses: actions/create-github-app-token@v1
+      - uses: runs-on/action@v2
+      - uses: actions/create-github-app-token@v2
         id: app-token
         with:
           app-id: ${{ secrets.MODELING_APP_GH_APP_ID }}
@@ -253,7 +244,9 @@ jobs:
     name: Run wasm tests
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os:
+          - namespace-profile-ubuntu-2-cores
+          - namespace-profile-macos-6-cores
       fail-fast: false
     runs-on: ${{ matrix.os }}
     steps:
@@ -266,7 +259,7 @@ jobs:
         uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           cache: false # Configured below.
-      - uses: taiki-e/install-action@d4635f2de61c8b8104d59cd4aede2060638378cc
+      - uses: taiki-e/install-action@c07504cae06f832dc8de08911c9a9c5cddb0d2d3
         with:
           tool: wasm-pack
       - name: Rust Cache

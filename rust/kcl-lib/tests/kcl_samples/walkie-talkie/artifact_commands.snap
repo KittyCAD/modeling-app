@@ -492,7 +492,8 @@ description: Artifact commands walkie-talkie.kcl
         "target": "[uuid]",
         "distance": 25.4,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -822,7 +823,8 @@ description: Artifact commands walkie-talkie.kcl
         "target": "[uuid]",
         "distance": -1.5875,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -993,7 +995,8 @@ description: Artifact commands walkie-talkie.kcl
         "target": "[uuid]",
         "distance": -1.5875,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1147,7 +1150,8 @@ description: Artifact commands walkie-talkie.kcl
         "target": "[uuid]",
         "distance": -12.7,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -9550,7 +9554,8 @@ description: Artifact commands walkie-talkie.kcl
         "target": "[uuid]",
         "distance": -1.5875,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -9730,7 +9735,8 @@ description: Artifact commands walkie-talkie.kcl
         "target": "[uuid]",
         "distance": 6.35,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -9827,7 +9833,10 @@ description: Artifact commands walkie-talkie.kcl
                 "z": 50.8
               },
               "set": false,
-              "is_local": true
+              "is_local": true,
+              "origin": {
+                "type": "local"
+              }
             },
             "rotate_rpy": null,
             "rotate_angle_axis": null,
@@ -9851,7 +9860,10 @@ description: Artifact commands walkie-talkie.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true
+              "is_local": true,
+              "origin": {
+                "type": "local"
+              }
             },
             "rotate_rpy": null,
             "rotate_angle_axis": null,
@@ -9875,7 +9887,10 @@ description: Artifact commands walkie-talkie.kcl
                 "z": 12.7
               },
               "set": false,
-              "is_local": true
+              "is_local": true,
+              "origin": {
+                "type": "local"
+              }
             },
             "rotate_rpy": null,
             "rotate_angle_axis": null,
@@ -9899,7 +9914,10 @@ description: Artifact commands walkie-talkie.kcl
                 "z": 50.8
               },
               "set": false,
-              "is_local": true
+              "is_local": true,
+              "origin": {
+                "type": "local"
+              }
             },
             "rotate_rpy": null,
             "rotate_angle_axis": null,
@@ -10059,7 +10077,8 @@ description: Artifact commands walkie-talkie.kcl
         "target": "[uuid]",
         "distance": 1.016,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -10181,7 +10200,10 @@ description: Artifact commands walkie-talkie.kcl
                 "z": 31.75
               },
               "set": false,
-              "is_local": true
+              "is_local": true,
+              "origin": {
+                "type": "local"
+              }
             },
             "rotate_rpy": null,
             "rotate_angle_axis": null,
@@ -10341,7 +10363,8 @@ description: Artifact commands walkie-talkie.kcl
         "target": "[uuid]",
         "distance": 1.016,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -10463,7 +10486,10 @@ description: Artifact commands walkie-talkie.kcl
                 "z": 18.541999999999998
               },
               "set": false,
-              "is_local": true
+              "is_local": true,
+              "origin": {
+                "type": "local"
+              }
             },
             "rotate_rpy": null,
             "rotate_angle_axis": null,
@@ -10623,7 +10649,8 @@ description: Artifact commands walkie-talkie.kcl
         "target": "[uuid]",
         "distance": 1.016,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -10746,7 +10773,10 @@ description: Artifact commands walkie-talkie.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true
+              "is_local": true,
+              "origin": {
+                "type": "local"
+              }
             },
             "rotate_angle_axis": null,
             "scale": null
@@ -10769,7 +10799,10 @@ description: Artifact commands walkie-talkie.kcl
                 "z": 19.558
               },
               "set": false,
-              "is_local": false
+              "is_local": false,
+              "origin": {
+                "type": "global"
+              }
             },
             "rotate_rpy": null,
             "rotate_angle_axis": null,
@@ -10929,7 +10962,8 @@ description: Artifact commands walkie-talkie.kcl
         "target": "[uuid]",
         "distance": 1.016,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -11052,7 +11086,10 @@ description: Artifact commands walkie-talkie.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true
+              "is_local": true,
+              "origin": {
+                "type": "local"
+              }
             },
             "rotate_angle_axis": null,
             "scale": null
@@ -11075,7 +11112,10 @@ description: Artifact commands walkie-talkie.kcl
                 "z": 6.350000000000001
               },
               "set": false,
-              "is_local": false
+              "is_local": false,
+              "origin": {
+                "type": "global"
+              }
             },
             "rotate_rpy": null,
             "rotate_angle_axis": null,
@@ -11238,7 +11278,8 @@ description: Artifact commands walkie-talkie.kcl
         "target": "[uuid]",
         "distance": 1.27,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -11367,5 +11408,6 @@ description: Artifact commands walkie-talkie.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

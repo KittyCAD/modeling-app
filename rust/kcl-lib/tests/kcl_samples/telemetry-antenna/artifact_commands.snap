@@ -529,7 +529,8 @@ description: Artifact commands telemetry-antenna.kcl
         "target": "[uuid]",
         "distance": -2.032,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -674,7 +675,8 @@ description: Artifact commands telemetry-antenna.kcl
         "target": "[uuid]",
         "distance": -2.032,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -819,7 +821,8 @@ description: Artifact commands telemetry-antenna.kcl
         "target": "[uuid]",
         "distance": -2.032,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -964,7 +967,8 @@ description: Artifact commands telemetry-antenna.kcl
         "target": "[uuid]",
         "distance": -2.032,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1109,7 +1113,8 @@ description: Artifact commands telemetry-antenna.kcl
         "target": "[uuid]",
         "distance": -2.032,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1254,7 +1259,8 @@ description: Artifact commands telemetry-antenna.kcl
         "target": "[uuid]",
         "distance": -2.032,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1318,5 +1324,6 @@ description: Artifact commands telemetry-antenna.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

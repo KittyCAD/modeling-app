@@ -172,7 +172,8 @@ description: Artifact commands assembly_mixed_units_cubes.kcl
         "target": "[uuid]",
         "distance": 127.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -378,7 +379,8 @@ description: Artifact commands assembly_mixed_units_cubes.kcl
         "target": "[uuid]",
         "distance": 5.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -426,5 +428,6 @@ description: Artifact commands assembly_mixed_units_cubes.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

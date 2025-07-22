@@ -155,7 +155,8 @@ description: Artifact commands intersect_cubes.kcl
         "target": "[uuid]",
         "distance": 20.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -342,7 +343,8 @@ description: Artifact commands intersect_cubes.kcl
         "target": "[uuid]",
         "distance": 10.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -393,7 +395,10 @@ description: Artifact commands intersect_cubes.kcl
                 "z": 1.0
               },
               "set": false,
-              "is_local": true
+              "is_local": true,
+              "origin": {
+                "type": "local"
+              }
             },
             "rotate_rpy": null,
             "rotate_angle_axis": null,
@@ -425,5 +430,6 @@ description: Artifact commands intersect_cubes.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }

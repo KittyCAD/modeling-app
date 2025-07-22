@@ -10,6 +10,15 @@ pub(crate) fn untype_point(p: [TyF64; 2]) -> ([f64; 2], NumericType) {
     ([x, y], ty)
 }
 
+pub(crate) fn untype_array<const N: usize>(p: [TyF64; N]) -> ([f64; N], NumericType) {
+    let (vec, ty) = NumericType::combine_eq_array(&p);
+    (
+        vec.try_into()
+            .unwrap_or_else(|v: Vec<f64>| panic!("Expected a Vec of length {} but it was {}", N, v.len())),
+        ty,
+    )
+}
+
 pub(crate) fn point_to_mm(p: [TyF64; 2]) -> [f64; 2] {
     [p[0].to_mm(), p[1].to_mm()]
 }
@@ -88,11 +97,7 @@ pub(crate) fn delta(from_angle: Angle, to_angle: Angle) -> Angle {
 
 pub(crate) fn normalize_rad(angle: f64) -> f64 {
     let draft = angle % (2.0 * PI);
-    if draft < 0.0 {
-        draft + 2.0 * PI
-    } else {
-        draft
-    }
+    if draft < 0.0 { draft + 2.0 * PI } else { draft }
 }
 
 fn calculate_intersection_of_two_lines(line1: &[Coords2d; 2], line2_angle: f64, line2_point: Coords2d) -> Coords2d {
@@ -174,8 +179,8 @@ pub(crate) fn arc_center_and_end(
     let end_angle = end_angle.to_radians();
 
     let center = [
-        -1.0 * (radius * libm::cos(start_angle) - from[0]),
-        -1.0 * (radius * libm::sin(start_angle) - from[1]),
+        -(radius * libm::cos(start_angle) - from[0]),
+        -(radius * libm::sin(start_angle) - from[1]),
     ];
 
     let end = [
@@ -240,7 +245,7 @@ mod tests {
     use approx::assert_relative_eq;
     use pretty_assertions::assert_eq;
 
-    use super::{calculate_circle_center, get_x_component, get_y_component, Angle};
+    use super::{Angle, calculate_circle_center, get_x_component, get_y_component};
 
     static EACH_QUAD: [(i32, [i32; 2]); 12] = [
         (-315, [1, 1]),

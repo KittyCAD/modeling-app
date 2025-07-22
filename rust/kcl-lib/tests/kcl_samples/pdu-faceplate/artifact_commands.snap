@@ -263,7 +263,8 @@ description: Artifact commands pdu-faceplate.kcl
         "target": "[uuid]",
         "distance": 44.45,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -434,7 +435,8 @@ description: Artifact commands pdu-faceplate.kcl
         "target": "[uuid]",
         "distance": -98.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -638,7 +640,8 @@ description: Artifact commands pdu-faceplate.kcl
         "target": "[uuid]",
         "distance": -40.45,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -689,7 +692,10 @@ description: Artifact commands pdu-faceplate.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true
+              "is_local": true,
+              "origin": {
+                "type": "local"
+              }
             },
             "rotate_rpy": null,
             "rotate_angle_axis": null,
@@ -866,7 +872,8 @@ description: Artifact commands pdu-faceplate.kcl
         "target": "[uuid]",
         "distance": -40.45,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1037,7 +1044,8 @@ description: Artifact commands pdu-faceplate.kcl
         "target": "[uuid]",
         "distance": 3.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1088,7 +1096,10 @@ description: Artifact commands pdu-faceplate.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true
+              "is_local": true,
+              "origin": {
+                "type": "local"
+              }
             },
             "rotate_rpy": null,
             "rotate_angle_axis": null,
@@ -1293,7 +1304,8 @@ description: Artifact commands pdu-faceplate.kcl
         "target": "[uuid]",
         "distance": 15.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1344,7 +1356,10 @@ description: Artifact commands pdu-faceplate.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true
+              "is_local": true,
+              "origin": {
+                "type": "local"
+              }
             },
             "rotate_rpy": null,
             "rotate_angle_axis": null,
@@ -1538,7 +1553,8 @@ description: Artifact commands pdu-faceplate.kcl
         "target": "[uuid]",
         "distance": -40.45,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1589,7 +1605,10 @@ description: Artifact commands pdu-faceplate.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true
+              "is_local": true,
+              "origin": {
+                "type": "local"
+              }
             },
             "rotate_rpy": null,
             "rotate_angle_axis": null,
@@ -1766,7 +1785,8 @@ description: Artifact commands pdu-faceplate.kcl
         "target": "[uuid]",
         "distance": -40.45,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -1817,7 +1837,10 @@ description: Artifact commands pdu-faceplate.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true
+              "is_local": true,
+              "origin": {
+                "type": "local"
+              }
             },
             "rotate_rpy": null,
             "rotate_angle_axis": null,
@@ -1913,7 +1936,10 @@ description: Artifact commands pdu-faceplate.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true
+              "is_local": true,
+              "origin": {
+                "type": "local"
+              }
             },
             "rotate_rpy": null,
             "rotate_angle_axis": null,
@@ -1942,7 +1968,8 @@ description: Artifact commands pdu-faceplate.kcl
         "target": "[uuid]",
         "distance": -20.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2065,7 +2092,10 @@ description: Artifact commands pdu-faceplate.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true
+              "is_local": true,
+              "origin": {
+                "type": "local"
+              }
             },
             "rotate_rpy": null,
             "rotate_angle_axis": null,
@@ -2134,7 +2164,8 @@ description: Artifact commands pdu-faceplate.kcl
         "target": "[uuid]",
         "distance": -5.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2190,7 +2221,8 @@ description: Artifact commands pdu-faceplate.kcl
         "target": "[uuid]",
         "distance": -5.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2822,7 +2854,8 @@ description: Artifact commands pdu-faceplate.kcl
         "target": "[uuid]",
         "distance": -40.45,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -2873,7 +2906,10 @@ description: Artifact commands pdu-faceplate.kcl
                 "z": 0.0
               },
               "set": false,
-              "is_local": true
+              "is_local": true,
+              "origin": {
+                "type": "local"
+              }
             },
             "rotate_rpy": null,
             "rotate_angle_axis": null,
@@ -3012,7 +3048,10 @@ description: Artifact commands pdu-faceplate.kcl
                 "z": -13.335
               },
               "set": false,
-              "is_local": true
+              "is_local": true,
+              "origin": {
+                "type": "local"
+              }
             },
             "rotate_rpy": null,
             "rotate_angle_axis": null,
@@ -3230,7 +3269,8 @@ description: Artifact commands pdu-faceplate.kcl
         "target": "[uuid]",
         "distance": -3.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -3286,7 +3326,8 @@ description: Artifact commands pdu-faceplate.kcl
         "target": "[uuid]",
         "distance": -3.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -3342,7 +3383,8 @@ description: Artifact commands pdu-faceplate.kcl
         "target": "[uuid]",
         "distance": -3.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -3398,7 +3440,8 @@ description: Artifact commands pdu-faceplate.kcl
         "target": "[uuid]",
         "distance": -3.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -3454,7 +3497,8 @@ description: Artifact commands pdu-faceplate.kcl
         "target": "[uuid]",
         "distance": -3.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -3510,7 +3554,8 @@ description: Artifact commands pdu-faceplate.kcl
         "target": "[uuid]",
         "distance": -3.0,
         "faces": null,
-        "opposite": "None"
+        "opposite": "None",
+        "extrude_method": "merge"
       }
     },
     {
@@ -3557,5 +3602,6 @@ description: Artifact commands pdu-faceplate.kcl
   "std::transform": [],
   "std::turns": [],
   "std::types": [],
-  "std::units": []
+  "std::units": [],
+  "std::vector": []
 }
