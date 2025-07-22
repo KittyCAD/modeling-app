@@ -1,6 +1,7 @@
 import {
   type Artifact,
   type ArtifactGraph,
+  type PlaneArtifact,
   assertParse,
   recast,
 } from '@src/lang/wasm'
@@ -11,6 +12,7 @@ import {
   addOffsetPlane,
   addShell,
   retrieveFaceSelectionsFromOpArgs,
+  retrieveNonDefaultPlaneSelectionFromOpArg,
 } from '@src/lang/modifyAst/faces'
 import { initPromise } from '@src/lang/wasmUtils'
 import {
@@ -24,6 +26,7 @@ import { stringToKclExpression } from '@src/lib/kclHelpers'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import env from '@src/env'
 import type { DefaultPlaneStr } from '@src/lib/planes'
+import type { StdLibCallOp } from '@src/lang/queryAst'
 
 // Unfortunately, we need the real engine here it seems to get sweep faces populated
 beforeAll(async () => {
@@ -353,6 +356,50 @@ shell001 = shell(extrude001, faces = END, thickness = 0.1)
     expect(selections.faces.graphSelections).toHaveLength(2)
     expect(selections.faces.graphSelections[0].artifact!.type).toEqual('cap')
     expect(selections.faces.graphSelections[1].artifact!.type).toEqual('cap')
+  })
+})
+
+describe('Testing retrieveNonDefaultPlaneSelectionFromOpArg', () => {
+  it('should find an offset plane on an offset plane', async () => {
+    const code = `plane001 = offsetPlane(XY, offset = 1)
+plane002 = offsetPlane(plane001, offset = 2)`
+    const { artifactGraph, operations } = await getAstAndArtifactGraph(code)
+    const op = operations.findLast(
+      (o) => o.type === 'StdLibCall' && o.name === 'offsetPlane'
+    ) as StdLibCallOp
+    const selections = retrieveNonDefaultPlaneSelectionFromOpArg(
+      op.unlabeledArg!,
+      artifactGraph
+    )
+    if (err(selections)) throw selections
+    expect(selections.graphSelections).toHaveLength(1)
+    expect(selections.graphSelections[0].artifact!.type).toEqual('plane')
+    expect(
+      (selections.graphSelections[0].artifact as PlaneArtifact).codeRef
+        .pathToNode[1][0]
+    ).toEqual(0)
+  })
+
+  it('should find an offset plane on a sweep face', async () => {
+    const code = `${cylinder}
+plane001 = offsetPlane(planeOf(extrude001, face = END), offset = 1)`
+    const { artifactGraph, operations } = await getAstAndArtifactGraph(code)
+    const op = operations.find(
+      (o) => o.type === 'StdLibCall' && o.name === 'offsetPlane'
+    ) as StdLibCallOp
+    const selections = retrieveNonDefaultPlaneSelectionFromOpArg(
+      op.unlabeledArg!,
+      artifactGraph
+    )
+    // TODO: this is what we hit at the moment for sweep face offsets
+    // see https://github.com/KittyCAD/modeling-app/issues/7883
+    if (err(selections)) throw selections
+    expect(selections.graphSelections).toHaveLength(1)
+    expect(selections.graphSelections[0].artifact!.type).toEqual('plane')
+    // expect(
+    //   (selections.graphSelections[0].artifact as PlaneArtifact).codeRef
+    //     .pathToNode[1][0]
+    // ).toEqual(0)
   })
 })
 

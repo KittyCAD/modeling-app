@@ -304,6 +304,38 @@ export function retrieveFaceSelectionsFromOpArgs(
   return { solids, faces }
 }
 
+export function retrieveNonDefaultPlaneSelectionFromOpArg(
+  planeArg: OpArg,
+  artifactGraph: ArtifactGraph
+): Selections | Error {
+  if (planeArg.value.type !== 'Plane') {
+    return new Error(
+      'Unsupported case for edit flows at the moment, check the KCL code'
+    )
+  }
+
+  const artifact = getArtifactOfTypes(
+    {
+      key: planeArg.value.artifact_id,
+      types: ['plane'],
+    },
+    artifactGraph
+  )
+  if (err(artifact)) {
+    return new Error("Couldn't retrieve plane artifact")
+  }
+
+  return {
+    graphSelections: [
+      {
+        artifact,
+        codeRef: artifact.codeRef,
+      },
+    ],
+    otherSelections: [],
+  }
+}
+
 function buildSolidsAndFacesExprs(
   faces: Selections,
   artifactGraph: ArtifactGraph,

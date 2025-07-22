@@ -1,7 +1,10 @@
 import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 
 import type { CustomIconName } from '@src/components/CustomIcon'
-import { retrieveFaceSelectionsFromOpArgs } from '@src/lang/modifyAst/faces'
+import {
+  retrieveFaceSelectionsFromOpArgs,
+  retrieveNonDefaultPlaneSelectionFromOpArg,
+} from '@src/lang/modifyAst/faces'
 import { retrieveAxisOrEdgeSelectionsFromOpArg } from '@src/lang/modifyAst/sweeps'
 import {
   getNodeFromPath,
@@ -434,41 +437,37 @@ const prepareToEditOffsetPlane: PrepareToEditCallback = async ({
   }
 
   // 1. Map the plane and faces arguments to plane or face selections
-  // TODO: Implement conversion to arbitrary plane selection
-  // once the Offset Plane command supports it.
   if (!operation.unlabeledArg) {
     return { reason: `Couldn't retrieve operation arguments` }
   }
 
-  console.log('Offset plane operation:', operation)
-
-  // TODO: replace with util function when available
-  const planeName = codeManager.code
+  console.log('operation', operation)
+  let plane: Selections | undefined
+  const maybeDefaultPlaneName = codeManager.code
     .slice(
       operation.unlabeledArg.sourceRange[0],
       operation.unlabeledArg.sourceRange[1]
     )
     .replaceAll(`'`, ``)
+  if (isDefaultPlaneStr(maybeDefaultPlaneName)) {
+    const id = rustContext.getDefaultPlaneId(maybeDefaultPlaneName)
+    if (err(id)) {
+      return { reason: "Couldn't retrieve default plane ID" }
+    }
 
-  // TODO: figure this out for non-default planes and planeOf results
-  if (!isDefaultPlaneStr(planeName)) {
-    // TODO: error handling
-    return baseCommand
-  }
-  const planeId = rustContext.getDefaultPlaneId(planeName)
-  if (err(planeId)) {
-    // TODO: error handling
-    return baseCommand
-  }
-
-  const plane: Selections = {
-    graphSelections: [],
-    otherSelections: [
-      {
-        name: planeName,
-        id: planeId,
-      },
-    ],
+    plane = {
+      graphSelections: [],
+      otherSelections: [{ id, name: maybeDefaultPlaneName }],
+    }
+  } else {
+    const result = retrieveNonDefaultPlaneSelectionFromOpArg(
+      operation.unlabeledArg,
+      kclManager.artifactGraph
+    )
+    if (err(result)) {
+      return { reason: result.message }
+    }
+    plane = result
   }
 
   // 2. Convert the offset argument from a string to a KCL expression
