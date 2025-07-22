@@ -5,7 +5,6 @@ import type {
   MeshBasicMaterial,
   Object3D,
   Object3DEventMap,
-  Texture,
 } from 'three'
 import {
   AmbientLight,
@@ -16,7 +15,6 @@ import {
   OrthographicCamera,
   Raycaster,
   Scene,
-  TextureLoader,
   Vector2,
   Vector3,
   WebGLRenderer,
@@ -105,7 +103,6 @@ export class SceneInfra {
   isFovAnimationInProgress = false
   _baseUnitMultiplier = 1
   _theme: Themes = Themes.System
-  readonly extraSegmentTexture: Texture
   lastMouseState: MouseState = { type: 'idle' }
   onDragStartCallback: (arg: OnDragCallbackArgs) => Voidish = () => {}
   onDragEndCallback: (arg: OnDragCallbackArgs) => Voidish = () => {}
@@ -322,13 +319,6 @@ export class SceneInfra {
 
     const light = new AmbientLight(0x505050) // soft white light
     this.scene.add(light)
-
-    const textureLoader = new TextureLoader()
-    this.extraSegmentTexture = textureLoader.load(
-      './clientSideSceneAssets/extra-segment-texture.png'
-    )
-    this.extraSegmentTexture.anisotropy =
-      this.renderer?.capabilities?.getMaxAnisotropy?.()
 
     SceneInfra.instance = this
   }
