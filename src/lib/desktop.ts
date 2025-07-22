@@ -741,20 +741,6 @@ export const writeAppSettingsFile = async (tomlStr: string) => {
   return window.electron.writeFile(appSettingsFilePath, tomlStr)
 }
 
-export const readTokenFile = async () => {
-  let settingsPath = await getTokenFilePath()
-
-  if (window.electron.exists(settingsPath)) {
-    const token: string = await window.electron.readFile(settingsPath, {
-      encoding: 'utf-8',
-    })
-    if (!token) return ''
-
-    return token
-  }
-  return ''
-}
-
 export const readEnvironmentConfigurationFile = async (
   environmentName: string
 ): Promise<EnvironmentConfiguration | null> => {
@@ -850,8 +836,8 @@ export const readEnvironmentFile = async () => {
 }
 
 /**
- * We store the environment file on disk because we store the token.txt across app installs
- * otherwise we would not know what environment they logged into when the app does the updater
+ * Store the last selected environment on disk to allow us to sign back into the correct
+ * environment when they refresh the application or update the application.
  */
 export const writeEnvironmentFile = async (environment: string) => {
   environment = environment.trim()
