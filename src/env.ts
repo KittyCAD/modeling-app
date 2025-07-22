@@ -134,7 +134,7 @@ export default (): EnvironmentVariables => {
       (env.VITE_KITTYCAD_API_TOKEN as string) || undefined,
     VITE_KITTYCAD_SITE_BASE_URL: SITE_URL || undefined,
     VITE_KITTYCAD_SITE_APP_URL: APP_URL || undefined,
-    POOL: pool,
+    POOL: pool, // TODO: Rename to ENGINE_POOL to be more descriptive
   }
 
   return environmentVariables
