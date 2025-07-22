@@ -2,7 +2,6 @@ import path from 'path'
 import { bracket } from '@e2e/playwright/fixtures/bracket'
 import type { Page } from '@playwright/test'
 import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
-import { reportRejection } from '@src/lib/trap'
 import * as fsp from 'fs/promises'
 
 import { TEST_CODE_TRIGGER_ENGINE_EXPORT_ERROR } from '@e2e/playwright/storageStates'

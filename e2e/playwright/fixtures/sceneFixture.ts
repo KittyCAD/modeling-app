@@ -12,7 +12,6 @@ import {
   sendCustomCmd,
 } from '@e2e/playwright/test-utils'
 import { expect } from '@e2e/playwright/zoo-test'
-import { height } from 'happy-dom/lib/PropertySymbol'
 
 type MouseParams = {
   pixelDiff?: number
@@ -86,7 +85,7 @@ export class SceneFixture {
   convertPagePositionToStream = async (
     x: number,
     y: number,
-    format: 'pixels' | 'ratio' = 'pixels'
+    format: 'pixels' | 'ratio' | undefined = 'pixels'
   ) => {
     const viewportSize = this.page.viewportSize()
     const streamBoundingBox = await this.streamWrapper.boundingBox()
@@ -117,7 +116,7 @@ export class SceneFixture {
   makeMouseHelpers = (
     x: number,
     y: number,
-    { steps, format }: { steps: number; format: 'pixels' | 'ratio' } = {
+    { steps, format }: { steps: number; format?: 'pixels' | 'ratio' } = {
       steps: 20,
       format: 'pixels',
     }
@@ -186,7 +185,7 @@ export class SceneFixture {
   makeDragHelpers = (
     x: number,
     y: number,
-    { steps, format }: { steps: number; format: 'pixels' | 'ratio' } = {
+    { steps, format }: { steps: number; format?: 'pixels' | 'ratio' } = {
       steps: 20,
       format: 'pixels',
     }

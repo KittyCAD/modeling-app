@@ -3,12 +3,9 @@ import path from 'path'
 import { DEFAULT_PROJECT_KCL_FILE } from '@src/lib/constants'
 import fsp from 'fs/promises'
 
-import type { Paths } from '@e2e/playwright/test-utils'
 import {
   createProject,
-  doExport,
   executorInputPath,
-  getPlaywrightDownloadDir,
   getUtils,
   isOutOfViewInScrollContainer,
   runningOnWindows,

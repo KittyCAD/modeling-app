@@ -6,7 +6,6 @@ import type { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
 import {
   doAndWaitForImageDiff,
   executorInputPath,
-  getUtils,
   kclSamplesPath,
   testsInputPath,
 } from '@e2e/playwright/test-utils'
