@@ -35,8 +35,8 @@ union(
 
 
 fn cube(center, size) {
-  return startSketchOn(XY)
-    |> startProfile(at = [center[0] - size, center[1] - size])
+  cubeSketch = startSketchOn(XY)
+  return startProfile(cubeSketch, at = [center[0] - size, center[1] - size])
     |> line(endAbsolute = [center[0] + size, center[1] - size])
     |> line(endAbsolute = [center[0] + size, center[1] + size])
     |> line(endAbsolute = [center[0] - size, center[1] + size])
@@ -61,8 +61,8 @@ unionedPart = union([part001, part002])
 
 
 fn cube(center, size) {
-  return startSketchOn(XY)
-    |> startProfile(at = [center[0] - size, center[1] - size])
+  cubeSketch = startSketchOn(XY)
+  return startProfile(cubeSketch, at = [center[0] - size, center[1] - size])
     |> line(endAbsolute = [center[0] + size, center[1] - size])
     |> line(endAbsolute = [center[0] + size, center[1] + size])
     |> line(endAbsolute = [center[0] - size, center[1] + size])
@@ -88,8 +88,8 @@ unionedPart = part001 + part002
 
 
 fn cube(center, size) {
-  return startSketchOn(XY)
-    |> startProfile(at = [center[0] - size, center[1] - size])
+  cubeSketch = startSketchOn(XY)
+  return startProfile(cubeSketch, at = [center[0] - size, center[1] - size])
     |> line(endAbsolute = [center[0] + size, center[1] - size])
     |> line(endAbsolute = [center[0] + size, center[1] + size])
     |> line(endAbsolute = [center[0] - size, center[1] + size])

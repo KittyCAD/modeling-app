@@ -41,8 +41,8 @@ and complex multi-body part modeling.
 
 
 fn cube(center, size) {
-  return startSketchOn(XY)
-    |> startProfile(at = [center[0] - size, center[1] - size])
+  cubeSketch = startSketchOn(XY)
+  return startProfile(cubeSketch, at = [center[0] - size, center[1] - size])
     |> line(endAbsolute = [center[0] + size, center[1] - size])
     |> line(endAbsolute = [center[0] + size, center[1] + size])
     |> line(endAbsolute = [center[0] - size, center[1] + size])
@@ -67,8 +67,8 @@ subtractedPart = subtract([part001], tools = [part002])
 
 
 fn cube(center, size) {
-  return startSketchOn(XY)
-    |> startProfile(at = [center[0] - size, center[1] - size])
+  cubeSketch = startSketchOn(XY)
+  return startProfile(cubeSketch, at = [center[0] - size, center[1] - size])
     |> line(endAbsolute = [center[0] + size, center[1] - size])
     |> line(endAbsolute = [center[0] + size, center[1] + size])
     |> line(endAbsolute = [center[0] - size, center[1] + size])

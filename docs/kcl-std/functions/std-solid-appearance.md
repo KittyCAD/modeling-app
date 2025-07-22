@@ -37,13 +37,13 @@ This will work on any solid, including extruded solids, revolved solids, and she
 ```kcl
 // Add color to an extruded solid.
 exampleSketch = startSketchOn(XZ)
-  |> startProfile(at = [0, 0])
+exampleProfile = startProfile(exampleSketch, at = [0, 0])
   |> line(endAbsolute = [10, 0])
   |> line(endAbsolute = [0, 10])
   |> line(endAbsolute = [-10, 0])
   |> close()
 
-example = extrude(exampleSketch, length = 5)
+example = extrude(exampleProfile, length = 5)
   // There are other options besides 'color', but they're optional.
   |> appearance(color = '#ff0000')
 
@@ -54,7 +54,7 @@ example = extrude(exampleSketch, length = 5)
 ```kcl
 // Add color to a revolved solid.
 sketch001 = startSketchOn(XY)
-  |> circle(center = [15, 0], radius = 5)
+profile001 = circle(sketch001, center = [15, 0], radius = 5)
   |> revolve(angle = 360deg, axis = Y)
   |> appearance(color = '#ff0000', metalness = 90, roughness = 90)
 
@@ -65,8 +65,8 @@ sketch001 = startSketchOn(XY)
 ```kcl
 // Add color to different solids.
 fn cube(center) {
-  return startSketchOn(XY)
-    |> startProfile(at = [center[0] - 10, center[1] - 10])
+  cubeSketch = startSketchOn(XY)
+  return startProfile(cubeSketch, at = [center[0] - 10, center[1] - 10])
     |> line(endAbsolute = [center[0] + 10, center[1] - 10])
     |> line(endAbsolute = [center[0] + 10, center[1] + 10])
     |> line(endAbsolute = [center[0] - 10, center[1] + 10])
@@ -99,14 +99,14 @@ appearance(
 // You can set the appearance before or after you shell it will yield the same result.
 // This example shows setting the appearance _after_ the shell.
 firstSketch = startSketchOn(XY)
-  |> startProfile(at = [-12, 12])
+firstSolid = startProfile(firstSketch, at = [-12, 12])
   |> line(end = [24, 0])
   |> line(end = [0, -24])
   |> line(end = [-24, 0])
   |> close()
   |> extrude(length = 6)
 
-shell(firstSketch, faces = [END], thickness = 0.25)
+shell(firstSolid, faces = [END], thickness = 0.25)
   |> appearance(color = '#ff0000', metalness = 90, roughness = 90)
 
 ```
@@ -135,13 +135,13 @@ shell(firstSketch, faces = [END], thickness = 0.25)
 // Setting the appearance of a 3D pattern can be done _before_ or _after_ the pattern.
 // This example shows _before_ the pattern.
 exampleSketch = startSketchOn(XZ)
-  |> startProfile(at = [0, 0])
+exampleProfile = startProfile(exampleSketch, at = [0, 0])
   |> line(end = [0, 2])
   |> line(end = [3, 1])
   |> line(end = [0, -4])
   |> close()
 
-example = extrude(exampleSketch, length = 1)
+example = extrude(exampleProfile, length = 1)
   |> appearance(color = '#ff0000', metalness = 90, roughness = 90)
   |> patternLinear3d(axis = [1, 0, 1], instances = 7, distance = 6)
 

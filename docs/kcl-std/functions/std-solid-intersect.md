@@ -38,8 +38,8 @@ verifying fit, and analyzing overlapping geometries in assemblies.
 
 
 fn cube(center, size) {
-  return startSketchOn(XY)
-    |> startProfile(at = [center[0] - size, center[1] - size])
+  cubeSketch = startSketchOn(XY)
+  return startProfile(cubeSketch, at = [center[0] - size, center[1] - size])
     |> line(endAbsolute = [center[0] + size, center[1] - size])
     |> line(endAbsolute = [center[0] + size, center[1] + size])
     |> line(endAbsolute = [center[0] - size, center[1] + size])
@@ -64,8 +64,8 @@ intersectedPart = intersect([part001, part002])
 
 
 fn cube(center, size) {
-  return startSketchOn(XY)
-    |> startProfile(at = [center[0] - size, center[1] - size])
+  cubeSketch = startSketchOn(XY)
+  return startProfile(cubeSketch, at = [center[0] - size, center[1] - size])
     |> line(endAbsolute = [center[0] + size, center[1] - size])
     |> line(endAbsolute = [center[0] + size, center[1] + size])
     |> line(endAbsolute = [center[0] - size, center[1] + size])

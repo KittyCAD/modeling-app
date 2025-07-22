@@ -45,13 +45,13 @@ thickness = 1
 filletRadius = 2
 
 mountingPlateSketch = startSketchOn(XY)
-  |> startProfile(at = [-width / 2, -length / 2])
+mountingPlateProfile = startProfile(mountingPlateSketch, at = [-width / 2, -length / 2])
   |> line(endAbsolute = [width / 2, -length / 2], tag = $edge1)
   |> line(endAbsolute = [width / 2, length / 2], tag = $edge2)
   |> line(endAbsolute = [-width / 2, length / 2], tag = $edge3)
   |> close(tag = $edge4)
 
-mountingPlate = extrude(mountingPlateSketch, length = thickness)
+mountingPlate = extrude(mountingPlateProfile, length = thickness)
   |> fillet(
        radius = filletRadius,
        tags = [
@@ -73,13 +73,13 @@ thickness = 1
 filletRadius = 1
 
 mountingPlateSketch = startSketchOn(XY)
-  |> startProfile(at = [-width / 2, -length / 2])
+mountingPlateProfile = startProfile(mountingPlateSketch, at = [-width / 2, -length / 2])
   |> line(endAbsolute = [width / 2, -length / 2], tag = $edge1)
   |> line(endAbsolute = [width / 2, length / 2], tag = $edge2)
   |> line(endAbsolute = [-width / 2, length / 2], tag = $edge3)
   |> close(tag = $edge4)
 
-mountingPlate = extrude(mountingPlateSketch, length = thickness)
+mountingPlate = extrude(mountingPlateProfile, length = thickness)
   |> fillet(
        radius = filletRadius,
        tolerance = 0.000001,
