@@ -2122,7 +2122,7 @@ profile003 = startProfile(sketch001, at = [206.63, -56.73])
       await page.waitForTimeout(300)
 
       // select end of profile again
-      await endLineStartTanArc()
+      await endArcStartLine()
       await page.waitForTimeout(300)
 
       // Define points for the three-point arc
