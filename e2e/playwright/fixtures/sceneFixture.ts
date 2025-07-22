@@ -12,6 +12,7 @@ import {
   sendCustomCmd,
 } from '@e2e/playwright/test-utils'
 import { expect } from '@e2e/playwright/zoo-test'
+import { height } from 'happy-dom/lib/PropertySymbol'
 
 type MouseParams = {
   pixelDiff?: number
@@ -77,6 +78,11 @@ export class SceneFixture {
       .toEqual(expected)
   }
 
+  /**
+   * We've written a lot of tests using hard-coded pixel coordinates.
+   * This function translates those to stream-relative ones,
+   * or can be used to get stream coordinates by ratio.
+   */
   convertPagePositionToStream = async (
     x: number,
     y: number,
@@ -90,6 +96,7 @@ export class SceneFixture {
     if (streamBoundingBox === null) {
       throw Error('No stream to click')
     }
+
     const resolvedX =
       (x / (format === 'pixels' ? viewportSize.width : 1)) *
         streamBoundingBox.width +
@@ -100,11 +107,10 @@ export class SceneFixture {
       streamBoundingBox.y
 
     const resolvedPoint = {
-      x: resolvedX,
-      y: resolvedY,
+      x: Math.round(resolvedX),
+      y: Math.round(resolvedY),
     }
 
-    console.log('Converted', { x, y }, resolvedPoint)
     return resolvedPoint
   }
 
