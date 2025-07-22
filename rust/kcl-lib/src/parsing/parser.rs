@@ -487,7 +487,7 @@ fn string_literal(i: &mut TokenSlice) -> ModalResult<Node<Literal>> {
     let result = Node::new(
         Literal {
             value,
-            raw: token.value.clone(),
+            raw: token.value,
             digest: None,
         },
         token.start,
@@ -550,7 +550,7 @@ pub(crate) fn unsigned_number_literal(i: &mut TokenSlice) -> ModalResult<Node<Li
     Ok(Node::new(
         Literal {
             value,
-            raw: token.value.clone(),
+            raw: token.value,
             digest: None,
         },
         token.start,
@@ -1213,12 +1213,12 @@ fn if_expr(i: &mut TokenSlice) -> ModalResult<BoxNode<IfExpression>> {
 
     // If there's a non-fatal parser error (e.g. a problem with the `else` branch),
     // return this after emitting the nonfatal error.
-    let if_with_no_else = || {
+    let if_with_no_else = |cond, then_val, else_ifs| {
         Ok(Node::boxed(
             IfExpression {
-                cond: cond.clone(),
-                then_val: then_val.clone(),
-                else_ifs: else_ifs.clone(),
+                cond,
+                then_val,
+                else_ifs,
                 final_else: Node::boxed(Default::default(), 0, 0, if_.module_id),
                 digest: Default::default(),
             },
@@ -1244,7 +1244,7 @@ fn if_expr(i: &mut TokenSlice) -> ModalResult<BoxNode<IfExpression>> {
         .parse_next(i);
     let Ok(else_) = else_ else {
         ParseContext::err(CompilationError::err(if_.as_source_range(), MISSING_ELSE));
-        return if_with_no_else();
+        return if_with_no_else(cond, then_val, else_ifs);
     };
     let else_range = SourceRange::new(else_, else_ + 4, if_.module_id);
     ignore_whitespace(i);
@@ -1252,25 +1252,25 @@ fn if_expr(i: &mut TokenSlice) -> ModalResult<BoxNode<IfExpression>> {
     // Parse the else clause
     if open_brace(i).is_err() {
         ParseContext::err(CompilationError::err(else_range, ELSE_STRUCTURE));
-        return if_with_no_else();
+        return if_with_no_else(cond, then_val, else_ifs);
     }
     ignore_whitespace(i);
     let Ok(final_else) = program.parse_next(i).map(Box::new) else {
         ParseContext::err(CompilationError::err(else_range, IF_ELSE_CANNOT_BE_EMPTY));
         let _ = opt(close_brace).parse_next(i);
-        return if_with_no_else();
+        return if_with_no_else(cond, then_val, else_ifs);
     };
     ignore_whitespace(i);
 
     if final_else.body.is_empty() {
         ParseContext::err(CompilationError::err(else_range, IF_ELSE_CANNOT_BE_EMPTY));
         let _ = opt(close_brace).parse_next(i);
-        return if_with_no_else();
+        return if_with_no_else(cond, then_val, else_ifs);
     }
     if !final_else.ends_with_expr() {
         ParseContext::err(CompilationError::err(else_range, ELSE_MUST_END_IN_EXPR));
         let _ = opt(close_brace).parse_next(i);
-        return if_with_no_else();
+        return if_with_no_else(cond, then_val, else_ifs);
     }
 
     let end = close_brace(i)?.end;
@@ -1369,15 +1369,17 @@ fn member_expression_subscript(i: &mut TokenSlice) -> ModalResult<(Expr, usize, 
     Ok((property, end, computed))
 }
 
-/// Get a property of an object, or an index of an array, or a member of a collection.
-/// Can be arbitrarily nested, e.g. `people[i]['adam'].age`.
-fn build_member_expression(object: Expr, i: &mut TokenSlice) -> ModalResult<Node<MemberExpression>> {
+fn find_members(i: &mut TokenSlice) -> ModalResult<Vec<(Expr, usize, bool)>> {
     // Now a sequence of members.
     let member = alt((member_expression_dot, member_expression_subscript)).context(expected("a member/property, e.g. size.x and size['height'] and size[0] are all different ways to access a member/property of 'size'"));
-    let mut members: Vec<_> = repeat(1.., member)
+    repeat(1.., member)
         .context(expected("a sequence of at least one members/properties"))
-        .parse_next(i)?;
+        .parse_next(i)
+}
 
+/// Get a property of an object, or an index of an array, or a member of a collection.
+/// Can be arbitrarily nested, e.g. `people[i]['adam'].age`.
+fn build_member_expression(object: Expr, mut members: Vec<(Expr, usize, bool)>) -> Node<MemberExpression> {
     // Process the first member.
     // It's safe to call remove(0), because the vec is created from repeat(1..),
     // which is guaranteed to have >=1 elements.
@@ -1397,7 +1399,7 @@ fn build_member_expression(object: Expr, i: &mut TokenSlice) -> ModalResult<Node
     );
 
     // Each remaining member wraps the current member expression inside another member expression.
-    Ok(members
+    members
         .into_iter()
         // Take the accumulated member expression from the previous iteration,
         // and use it as the `object` of a new, bigger member expression.
@@ -1413,7 +1415,7 @@ fn build_member_expression(object: Expr, i: &mut TokenSlice) -> ModalResult<Node
                 end,
                 module_id,
             )
-        }))
+        })
 }
 
 /// Find a noncode node which occurs just after a body item,
@@ -2146,8 +2148,8 @@ fn expr_allowed_in_pipe_expr(i: &mut TokenSlice) -> ModalResult<Expr> {
     .context(expected("a KCL expression (but not a pipe expression)"))
     .parse_next(i)?;
 
-    let maybe_member = build_member_expression(parsed_expr.clone(), i);
-    if let Ok(mem) = maybe_member {
+    if let Ok(Some(members)) = opt(find_members).parse_next(i) {
+        let mem = build_member_expression(parsed_expr, members);
         return Ok(Expr::MemberExpression(Box::new(mem)));
     }
     Ok(parsed_expr)
@@ -2170,8 +2172,8 @@ fn possible_operands(i: &mut TokenSlice) -> ModalResult<Expr> {
         "a KCL value which can be used as an argument/operand to an operator",
     ))
     .parse_next(i)?;
-    let maybe_member = build_member_expression(expr.clone(), i);
-    if let Ok(mem) = maybe_member {
+    if let Ok(Some(members)) = opt(find_members).parse_next(i) {
+        let mem = build_member_expression(expr, members);
         expr = Expr::MemberExpression(Box::new(mem));
     }
 

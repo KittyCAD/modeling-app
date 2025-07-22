@@ -98,7 +98,13 @@ test.describe('Testing Gizmo', () => {
       await page.waitForTimeout(100)
       await page.mouse.click(clickPosition.x, clickPosition.y)
       await page.mouse.move(0, 0)
-      await u.waitForCmdReceive('default_camera_look_at')
+
+      // We use different camera commands for top/bottom cf. all others.
+      if (['top view', 'bottom view'].includes(testDescription)) {
+        await u.waitForCmdReceive('default_camera_set_view')
+      } else {
+        await u.waitForCmdReceive('default_camera_look_at')
+      }
       await u.clearCommandLogs()
 
       await u.sendCustomCmd({

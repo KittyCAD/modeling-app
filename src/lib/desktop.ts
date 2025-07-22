@@ -10,8 +10,11 @@ import {
   parseProjectSettings,
 } from '@src/lang/wasm'
 import { initPromise, relevantFileExtensions } from '@src/lang/wasmUtils'
+import type { EnvironmentConfiguration } from '@src/lib/constants'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
+  ENVIRONMENT_CONFIGURATION_FOLDER,
+  ENVIRONMENT_FILE_NAME,
   PROJECT_ENTRYPOINT,
   PROJECT_FOLDER,
   PROJECT_IMAGE_NAME,
@@ -19,7 +22,6 @@ import {
   SETTINGS_FILE_NAME,
   TELEMETRY_FILE_NAME,
   TELEMETRY_RAW_FILE_NAME,
-  TOKEN_FILE_NAME,
 } from '@src/lib/constants'
 import type { FileEntry, FileMetadata, Project } from '@src/lib/project'
 import { err } from '@src/lib/trap'
@@ -226,11 +228,11 @@ export async function listProjects(
 
 const collectAllFilesRecursiveFrom = async (
   path: string,
-  canReadWritePath: boolean
+  canReadWritePath: boolean,
+  fileExtensionsForFilter: string[]
 ) => {
-  const RELEVANT_FILE_EXTENSIONS = relevantFileExtensions()
   const isRelevantFile = (filename: string): boolean =>
-    RELEVANT_FILE_EXTENSIONS.some((ext) => filename.endsWith('.' + ext))
+    fileExtensionsForFilter.some((ext) => filename.endsWith('.' + ext))
   // Make sure the filesystem object exists.
   try {
     await window.electron.stat(path)
@@ -287,7 +289,8 @@ const collectAllFilesRecursiveFrom = async (
     if (isEDir) {
       const subChildren = await collectAllFilesRecursiveFrom(
         ePath,
-        canReadWritePath
+        canReadWritePath,
+        fileExtensionsForFilter
       )
       children.push(subChildren)
     } else {
@@ -409,10 +412,12 @@ export async function getProjectInfo(projectPath: string): Promise<Project> {
   const { value: canReadWriteProjectPath } =
     await window.electron.canReadWriteDirectory(projectPath)
 
+  const fileExtensionsForFilter = relevantFileExtensions()
   // Return walked early if canReadWriteProjectPath is false
   let walked = await collectAllFilesRecursiveFrom(
     projectPath,
-    canReadWriteProjectPath
+    canReadWriteProjectPath,
+    fileExtensionsForFilter
   )
 
   // If the projectPath does not have read write permissions, the default_file is empty string
@@ -498,7 +503,41 @@ export const getAppSettingsFilePath = async () => {
   }
   return window.electron.path.join(fullPath, SETTINGS_FILE_NAME)
 }
-const getTokenFilePath = async () => {
+
+export const getEnvironmentConfigurationFolderPath = async () => {
+  const isTestEnv = window.electron.process.env.NODE_ENV === 'test'
+  const testSettingsPath = await window.electron.getAppTestProperty(
+    'TEST_SETTINGS_FILE_KEY'
+  )
+
+  const appConfig = await window.electron.getPath('appData')
+  const fullPath = isTestEnv
+    ? window.electron.path.resolve(testSettingsPath, '..')
+    : window.electron.path.join(
+        appConfig,
+        getAppFolderName(),
+        ENVIRONMENT_CONFIGURATION_FOLDER
+      )
+  return fullPath
+}
+
+export const getEnvironmentConfigurationPath = async (
+  environmentName: string
+) => {
+  const fullPath = await getEnvironmentConfigurationFolderPath()
+  try {
+    await window.electron.stat(fullPath)
+  } catch (e) {
+    // File/path doesn't exist
+    if (e === 'ENOENT') {
+      await window.electron.mkdir(fullPath, { recursive: true })
+    }
+  }
+  // /envs/<subdomain>.json e.g. /envs/dev.zoo.dev.json
+  return window.electron.path.join(fullPath, environmentName + '.json')
+}
+
+export const getEnvironmentFilePath = async () => {
   const isTestEnv = window.electron.process.env.NODE_ENV === 'test'
   const testSettingsPath = await window.electron.getAppTestProperty(
     'TEST_SETTINGS_FILE_KEY'
@@ -516,7 +555,7 @@ const getTokenFilePath = async () => {
       await window.electron.mkdir(fullPath, { recursive: true })
     }
   }
-  return window.electron.path.join(fullPath, TOKEN_FILE_NAME)
+  return window.electron.path.join(fullPath, ENVIRONMENT_FILE_NAME)
 }
 
 const getTelemetryFilePath = async () => {
@@ -681,26 +720,137 @@ export const writeAppSettingsFile = async (tomlStr: string) => {
   return window.electron.writeFile(appSettingsFilePath, tomlStr)
 }
 
-export const readTokenFile = async () => {
-  let settingsPath = await getTokenFilePath()
-
-  if (window.electron.exists(settingsPath)) {
-    const token: string = await window.electron.readFile(settingsPath, {
+export const readEnvironmentConfigurationFile = async (
+  environmentName: string
+): Promise<EnvironmentConfiguration | null> => {
+  const path = await getEnvironmentConfigurationPath(environmentName)
+  if (window.electron.exists(path)) {
+    const configurationJSON: string = await window.electron.readFile(path, {
       encoding: 'utf-8',
     })
-    if (!token) return ''
+    if (!configurationJSON) return null
+    return JSON.parse(configurationJSON)
+  }
+  return null
+}
 
-    return token
+export const writeEnvironmentConfigurationToken = async (
+  environmentName: string,
+  token: string
+) => {
+  environmentName = environmentName.trim()
+  const path = await getEnvironmentConfigurationPath(environmentName)
+  const environmentConfiguration =
+    await getEnvironmentConfigurationObject(environmentName)
+  environmentConfiguration.token = token
+  const requestedConfiguration = JSON.stringify(environmentConfiguration)
+  const result = await window.electron.writeFile(path, requestedConfiguration)
+  console.log(`wrote ${environmentName}.json to disk`)
+  return result
+}
+
+export const writeEnvironmentConfigurationPool = async (
+  environmentName: string,
+  pool: string
+) => {
+  pool = pool.trim()
+  const path = await getEnvironmentConfigurationPath(environmentName)
+  const environmentConfiguration =
+    await getEnvironmentConfigurationObject(environmentName)
+  environmentConfiguration.pool = pool
+  const requestedConfiguration = JSON.stringify(environmentConfiguration)
+  const result = await window.electron.writeFile(path, requestedConfiguration)
+  console.log(`wrote ${environmentName}.json to disk`)
+  return result
+}
+
+export const getEnvironmentConfigurationObject = async (
+  environmentName: string
+) => {
+  let environmentConfiguration =
+    await readEnvironmentConfigurationFile(environmentName)
+  if (environmentConfiguration === null) {
+    const initialConfiguration: EnvironmentConfiguration = {
+      token: '',
+      pool: '',
+      domain: environmentName,
+    }
+    environmentConfiguration = initialConfiguration
+  }
+  return environmentConfiguration
+}
+
+export const readEnvironmentConfigurationPool = async (
+  environmentName: string
+) => {
+  const environmentConfiguration =
+    await readEnvironmentConfigurationFile(environmentName)
+  if (!environmentConfiguration?.pool) return ''
+  return environmentConfiguration.pool.trim()
+}
+
+export const readEnvironmentConfigurationToken = async (
+  environmentName: string
+) => {
+  const environmentConfiguration =
+    await readEnvironmentConfigurationFile(environmentName)
+  if (!environmentConfiguration?.token) return ''
+  return environmentConfiguration.token.trim()
+}
+
+export const readEnvironmentFile = async () => {
+  let environmentFilePath = await getEnvironmentFilePath()
+
+  if (window.electron.exists(environmentFilePath)) {
+    const environment: string = await window.electron.readFile(
+      environmentFilePath,
+      {
+        encoding: 'utf-8',
+      }
+    )
+    if (!environment) return ''
+    return environment.trim()
   }
   return ''
 }
 
-export const writeTokenFile = async (token: string) => {
-  const tokenFilePath = await getTokenFilePath()
-  if (err(token)) return Promise.reject(token)
-  const result = window.electron.writeFile(tokenFilePath, token)
-  console.log('token written to disk')
+/**
+ * Store the last selected environment on disk to allow us to sign back into the correct
+ * environment when they refresh the application or update the application.
+ */
+export const writeEnvironmentFile = async (environment: string) => {
+  environment = environment.trim()
+  const environmentFilePath = await getEnvironmentFilePath()
+  if (err(environment)) return Promise.reject(environment)
+  const result = window.electron.writeFile(environmentFilePath, environment)
+  console.log('environment written to disk')
   return result
+}
+
+export const listAllEnvironments = async () => {
+  const environmentFolder = await getEnvironmentConfigurationFolderPath()
+  const files = await window.electron.readdir(environmentFolder)
+  const suffix = '.json'
+  return files
+    .filter((fileName: string) => {
+      return fileName.endsWith(suffix)
+    })
+    .map((fileName: string) => {
+      return fileName.substring(0, fileName.length - suffix.length)
+    })
+}
+
+export const listAllEnvironmentsWithTokens = async () => {
+  const environments = await listAllEnvironments()
+  const environmentsWithTokens = []
+  for (let i = 0; i < environments.length; i++) {
+    const environment = environments[i]
+    const token = await readEnvironmentConfigurationToken(environment)
+    if (token) {
+      environmentsWithTokens.push(environment)
+    }
+  }
+  return environmentsWithTokens
 }
 
 export const writeTelemetryFile = async (content: string) => {

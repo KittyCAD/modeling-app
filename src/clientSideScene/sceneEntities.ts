@@ -17,7 +17,6 @@ import {
   OrthographicCamera,
   PerspectiveCamera,
   PlaneGeometry,
-  Points,
   Shape,
   Vector2,
   Vector3,
@@ -67,6 +66,8 @@ import {
   THREE_POINT_ARC_HANDLE3,
   THREE_POINT_ARC_SEGMENT,
   getParentGroup,
+  SEGMENT_BLUE,
+  SEGMENT_YELLOW,
 } from '@src/clientSideScene/sceneConstants'
 import type {
   OnClickCallbackArgs,
@@ -158,6 +159,7 @@ import {
   updateRectangleSketch,
 } from '@src/lib/rectangleTool'
 import type RustContext from '@src/lib/rustContext'
+import { updateExtraSegments } from '@src/lib/selections'
 import type { Selections } from '@src/lib/selections'
 import { getEventForSegmentSelection } from '@src/lib/selections'
 import type { Themes } from '@src/lib/theme'
@@ -861,7 +863,6 @@ export class SceneEntities {
           pathToNode: segPathToNode,
           isDraftSegment,
           scale,
-          texture: this.sceneInfra.extraSegmentTexture,
           theme: this.sceneInfra._theme,
           isSelected,
           sceneInfra: this.sceneInfra,
@@ -1185,7 +1186,7 @@ export class SceneEntities {
           )
         }
       },
-      onMove: (args) => {
+      onMove: async (args) => {
         const expressionIndex = Number(sketchEntryNodePath[1][0])
         const activeSegmentsInCorrectExpression = Object.values(
           this.activeSegments
@@ -1196,7 +1197,7 @@ export class SceneEntities {
           activeSegmentsInCorrectExpression[
             activeSegmentsInCorrectExpression.length - 1
           ]
-        this.onDragSegment({
+        await this.onDragSegment({
           intersection2d: args.intersectionPoint.twoD,
           object,
           intersects: args.intersects,
@@ -2540,14 +2541,14 @@ export class SceneEntities {
 
           const pipeIndex = pathToNode[pathToNodeIndex + 1][0] as number
           if (addingNewSegmentStatus === 'nothing') {
-            const prevSegment = sketch.paths[pipeIndex - 2]
+            const prevSegment = sketch.paths[pipeIndex - 2] // Is undefined when dragging the first segment
             const mod = addNewSketchLn({
               node: this.kclManager.ast,
               variables: this.kclManager.variables,
               input: {
                 type: 'straight-segment',
                 to: [intersectionPoint.twoD.x, intersectionPoint.twoD.y],
-                from: prevSegment.from,
+                from: prevSegment?.from || [0, 0],
               },
               // TODO assuming it's always a straight segments being added
               // as this is easiest, and we'll need to add "tabbing" behavior
@@ -2576,7 +2577,7 @@ export class SceneEntities {
           } else if (addingNewSegmentStatus === 'added') {
             const pathToNodeForNewSegment = pathToNode.slice(0, pathToNodeIndex)
             pathToNodeForNewSegment.push([pipeIndex - 2, 'index'])
-            this.onDragSegment({
+            await this.onDragSegment({
               sketchNodePaths,
               sketchEntryNodePath: pathToNodeForNewSegment,
               object: selected,
@@ -2588,7 +2589,7 @@ export class SceneEntities {
           return
         }
 
-        this.onDragSegment({
+        await this.onDragSegment({
           object: selected,
           intersection2d: intersectionPoint.twoD,
           intersects,
@@ -2817,7 +2818,7 @@ export class SceneEntities {
     return intersection2d
   }
 
-  onDragSegment({
+  async onDragSegment({
     object,
     intersection2d: _intersection2d,
     sketchEntryNodePath,
@@ -3074,17 +3075,19 @@ export class SceneEntities {
       : this.prepareTruncatedAst(sketchNodePaths || [], modifiedAst)
     if (trap(info, { suppress: true })) return
     const { truncatedAst } = info
-    ;(async () => {
+    try {
       const code = recast(modifiedAst)
       if (trap(code)) return
       if (!draftInfo)
         // don't want to mod the user's code yet as they have't committed to the change yet
         // plus this would be the truncated ast being recast, it would be wrong
         this.codeManager.updateCodeEditor(code)
+
       const { execState } = await executeAstMock({
         ast: truncatedAst,
         rustContext: this.rustContext,
       })
+
       const variables = execState.variables
       const sketchesInfo = getSketchesInfo({
         sketchNodePaths,
@@ -3138,7 +3141,9 @@ export class SceneEntities {
         )
       }
       this.sceneInfra.overlayCallbacks(callbacks)
-    })().catch(reportRejection)
+    } catch (e) {
+      reportRejection(e)
+    }
   }
 
   /**
@@ -3342,16 +3347,10 @@ export class SceneEntities {
           this.editorManager.setHighlightRange([
             topLevelRange(node.start, node.end),
           ])
-          const yellow = 0xffff00
-          colorSegment(selected, yellow)
-          const extraSegmentGroup = parent.getObjectByName(EXTRA_SEGMENT_HANDLE)
-          if (extraSegmentGroup) {
-            extraSegmentGroup.traverse((child) => {
-              if (child instanceof Points || child instanceof Mesh) {
-                child.material.opacity = 1
-              }
-            })
-          }
+          colorSegment(selected, SEGMENT_YELLOW)
+          const isSelected = parent?.userData?.isSelected
+          updateExtraSegments(parent, 'hoveringLine', true)
+          updateExtraSegments(parent, 'selected', isSelected)
           const orthoFactor = orthoScale(this.sceneInfra.camControls.camera)
 
           let input: SegmentInputs = {
@@ -3500,18 +3499,12 @@ export class SceneEntities {
         colorSegment(
           selected,
           isSelected
-            ? 0x0000ff
+            ? SEGMENT_BLUE
             : parent?.userData?.baseColor ||
                 getThemeColorForThreeJs(this.sceneInfra._theme)
         )
-        const extraSegmentGroup = parent?.getObjectByName(EXTRA_SEGMENT_HANDLE)
-        if (extraSegmentGroup) {
-          extraSegmentGroup.traverse((child) => {
-            if (child instanceof Points || child instanceof Mesh) {
-              child.material.opacity = 0
-            }
-          })
-        }
+        updateExtraSegments(parent, 'hoveringLine', false)
+        updateExtraSegments(parent, 'selected', isSelected)
         if ([X_AXIS, Y_AXIS].includes(selected?.userData?.type)) {
           const obj = selected as Mesh
           const mat = obj.material as MeshBasicMaterial
@@ -3808,7 +3801,7 @@ function sketchFromPathToNode({
   return sg
 }
 
-function colorSegment(object: any, color: number) {
+function colorSegment(object: Object3D, color: number) {
   const segmentHead = getParentGroup(object, [ARROWHEAD, PROFILE_START])
   if (segmentHead) {
     segmentHead.traverse((child) => {
