@@ -3042,6 +3042,13 @@ impl UnaryOperator {
             UnaryOperator::Not => *b"not",
         }
     }
+
+    pub fn write_to(&self, buf: &mut String) {
+        match self {
+            UnaryOperator::Neg => buf.push('-'),
+            UnaryOperator::Not => buf.push('!'),
+        }
+    }
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]

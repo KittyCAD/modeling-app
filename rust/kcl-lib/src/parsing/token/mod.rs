@@ -98,6 +98,26 @@ impl FromStr for NumericSuffix {
     }
 }
 
+impl NumericSuffix {
+    pub fn write_to(&self, buf: &mut String) {
+        match self {
+            NumericSuffix::None => {}
+            NumericSuffix::Count => buf.push('_'),
+            NumericSuffix::Unknown => buf.push_str("_?"),
+            NumericSuffix::Length => buf.push_str("Length"),
+            NumericSuffix::Angle => buf.push_str("Angle"),
+            NumericSuffix::Mm => buf.push_str("mm"),
+            NumericSuffix::Cm => buf.push_str("cm"),
+            NumericSuffix::M => buf.push('m'),
+            NumericSuffix::Inch => buf.push_str("in"),
+            NumericSuffix::Ft => buf.push_str("ft"),
+            NumericSuffix::Yd => buf.push_str("yd"),
+            NumericSuffix::Deg => buf.push_str("deg"),
+            NumericSuffix::Rad => buf.push_str("rad"),
+        }
+    }
+}
+
 impl fmt::Display for NumericSuffix {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {

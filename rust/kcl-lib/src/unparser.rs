@@ -506,11 +506,6 @@ impl TypeDeclaration {
     }
 }
 
-fn write<W: std::fmt::Write>(f: &mut W, s: impl std::fmt::Display) {
-    f.write_fmt(format_args!("{s}"))
-        .expect("writing to a string should always succeed")
-}
-
 fn write_dbg<W: std::fmt::Write>(f: &mut W, s: impl std::fmt::Debug) {
     f.write_fmt(format_args!("{s:?}"))
         .expect("writing to a string should always succeed")
@@ -522,22 +517,25 @@ impl Literal {
             LiteralValue::Number { value, suffix } => {
                 if self.raw.contains('.') && value.fract() == 0.0 {
                     write_dbg(buf, value);
-                    write(buf, suffix);
+                    suffix.write_to(buf);
                 } else {
-                    write(buf, &self.raw);
+                    buf.push_str(&self.raw);
                 }
             }
             LiteralValue::String(ref s) => {
                 if let Some(suggestion) = deprecation(s, DeprecationKind::String) {
-                    return write!(buf, "{suggestion}").unwrap();
+                    return buf.push_str(suggestion);
                 }
                 let quote = if self.raw.trim().starts_with('"') { '"' } else { '\'' };
-                write(buf, quote);
-                write(buf, s);
-                write(buf, quote);
+                buf.push(quote);
+                buf.push_str(s);
+                buf.push(quote);
             }
-            LiteralValue::Bool(_) => {
-                write(buf, &self.raw);
+            LiteralValue::Bool(true) => {
+                buf.push_str("true");
+            }
+            LiteralValue::Bool(false) => {
+                buf.push_str("false");
             }
         }
     }
@@ -814,11 +812,11 @@ impl UnaryExpression {
             | BinaryPart::IfExpression(_)
             | BinaryPart::AscribedExpression(_)
             | BinaryPart::CallExpressionKw(_) => {
-                write!(buf, "{}", self.operator).no_fail();
+                self.operator.write_to(buf);
                 self.argument.recast(buf, options, 0, ctxt)
             }
             BinaryPart::BinaryExpression(_) | BinaryPart::UnaryExpression(_) => {
-                write!(buf, "{}", self.operator).no_fail();
+                self.operator.write_to(buf);
                 buf.push('(');
                 self.argument.recast(buf, options, 0, ctxt);
                 buf.push(')');
