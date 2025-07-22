@@ -384,7 +384,6 @@ test.describe('Feature Tree pane', () => {
         currentArgKey: 'offset',
         currentArgValue: initialInput,
         headerArguments: {
-          Plane: '1 plane',
           Offset: initialInput,
         },
         highlightedHeaderArg: 'offset',
@@ -398,8 +397,6 @@ test.describe('Feature Tree pane', () => {
       await cmdBar.expectState({
         stage: 'review',
         headerArguments: {
-          Plane: '1 plane',
-          // We show the calculated value in the argument summary
           Offset: '15',
         },
         commandName: 'Offset plane',
