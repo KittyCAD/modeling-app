@@ -311,8 +311,7 @@ async function logoutEnvironment(requestedDomain?: string) {
       let token = ''
       if (domain) {
         token = await readEnvironmentConfigurationToken(domain)
-      }
-      if (!domain) {
+      } else {
         return new Error('Unable to logout, cannot find domain')
       }
 
