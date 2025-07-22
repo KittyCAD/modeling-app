@@ -1,0 +1,11 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing rect.kcl
+---
+x = startSketchOn(XY)
+  |> startProfile(at = [-2, -1])
+  |> angledLine(angle = 0, length = 3, tag = $a)
+  |> angledLine(angle = segAng(a) + 90, length = 2)
+  |> angledLine(angle = segAng(a), length = -segLen(a))
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()

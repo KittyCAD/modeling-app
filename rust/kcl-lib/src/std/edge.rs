@@ -1,20 +1,23 @@
 //! Edge helper functions.
 
 use anyhow::Result;
-use kcl_derive_docs::stdlib;
-use kcmc::{each_cmd as mcmd, ok_response::OkModelingCmdResponse, websocket::OkWebSocketResponseData, ModelingCmd};
+use kcmc::{ModelingCmd, each_cmd as mcmd, ok_response::OkModelingCmdResponse, websocket::OkWebSocketResponseData};
 use kittycad_modeling_cmds as kcmc;
 use uuid::Uuid;
 
 use crate::{
+    SourceRange,
     errors::{KclError, KclErrorDetails},
-    execution::{types::RuntimeType, ExecState, ExtrudeSurface, KclValue, TagIdentifier},
-    std::Args,
+    execution::{
+        ExecState, ExtrudeSurface, KclValue, ModelingCmdMeta, TagIdentifier,
+        types::{ArrayLen, RuntimeType},
+    },
+    std::{Args, sketch::FaceTag},
 };
 
 /// Get the opposite edge to the edge given.
 pub async fn get_opposite_edge(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let input_edge = args.get_unlabeled_kw_arg_typed("edge", &RuntimeType::tag_identifier(), exec_state)?;
+    let input_edge = args.get_unlabeled_kw_arg("edge", &RuntimeType::tagged_edge(), exec_state)?;
 
     let edge = inner_get_opposite_edge(input_edge, exec_state, args.clone()).await?;
     Ok(KclValue::Uuid {
@@ -23,42 +26,6 @@ pub async fn get_opposite_edge(exec_state: &mut ExecState, args: Args) -> Result
     })
 }
 
-/// Get the opposite edge to the edge given.
-///
-/// ```no_run
-/// exampleSketch = startSketchOn(XZ)
-///   |> startProfile(at = [0, 0])
-///   |> line(end = [10, 0])
-///   |> angledLine(
-///        angle = 60,
-///        length = 10,
-///      )
-///   |> angledLine(
-///        angle = 120,
-///        length = 10,
-///      )
-///   |> line(end = [-10, 0])
-///   |> angledLine(
-///        angle = 240,
-///        length = 10,
-///        tag = $referenceEdge,
-///      )
-///   |> close()
-///
-/// example = extrude(exampleSketch, length = 5)
-///   |> fillet(
-///     radius = 3,
-///     tags = [getOppositeEdge(referenceEdge)],
-///   )
-/// ```
-#[stdlib {
-    name = "getOppositeEdge",
-    unlabeled_first = true,
-    args = {
-        edge = { docs = "The tag of the edge you want to find the opposite edge of." },
-    },
-    tags = ["sketch"]
-}]
 async fn inner_get_opposite_edge(
     edge: TagIdentifier,
     exec_state: &mut ExecState,
@@ -69,15 +36,16 @@ async fn inner_get_opposite_edge(
     }
     let face_id = args.get_adjacent_face_to_tag(exec_state, &edge, false).await?;
 
-    let id = exec_state.next_uuid();
     let tagged_path = args.get_tag_engine_info(exec_state, &edge)?;
+    let tagged_path_id = tagged_path.id;
+    let sketch_id = tagged_path.sketch;
 
-    let resp = args
+    let resp = exec_state
         .send_modeling_cmd(
-            id,
+            (&args).into(),
             ModelingCmd::from(mcmd::Solid3dGetOppositeEdge {
-                edge_id: tagged_path.id,
-                object_id: tagged_path.sketch,
+                edge_id: tagged_path_id,
+                object_id: sketch_id,
                 face_id,
             }),
         )
@@ -86,8 +54,8 @@ async fn inner_get_opposite_edge(
         modeling_response: OkModelingCmdResponse::Solid3dGetOppositeEdge(opposite_edge),
     } = &resp
     else {
-        return Err(KclError::Engine(KclErrorDetails::new(
-            format!("mcmd::Solid3dGetOppositeEdge response was not as expected: {:?}", resp),
+        return Err(KclError::new_engine(KclErrorDetails::new(
+            format!("mcmd::Solid3dGetOppositeEdge response was not as expected: {resp:?}"),
             vec![args.source_range],
         )));
     };
@@ -97,7 +65,7 @@ async fn inner_get_opposite_edge(
 
 /// Get the next adjacent edge to the edge given.
 pub async fn get_next_adjacent_edge(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let input_edge = args.get_unlabeled_kw_arg_typed("edge", &RuntimeType::tag_identifier(), exec_state)?;
+    let input_edge = args.get_unlabeled_kw_arg("edge", &RuntimeType::tagged_edge(), exec_state)?;
 
     let edge = inner_get_next_adjacent_edge(input_edge, exec_state, args.clone()).await?;
     Ok(KclValue::Uuid {
@@ -106,42 +74,6 @@ pub async fn get_next_adjacent_edge(exec_state: &mut ExecState, args: Args) -> R
     })
 }
 
-/// Get the next adjacent edge to the edge given.
-///
-/// ```no_run
-/// exampleSketch = startSketchOn(XZ)
-///   |> startProfile(at = [0, 0])
-///   |> line(end = [10, 0])
-///   |> angledLine(
-///        angle = 60,
-///        length = 10,
-///      )
-///   |> angledLine(
-///        angle = 120,
-///        length = 10,
-///      )
-///   |> line(end = [-10, 0])
-///   |> angledLine(
-///        angle = 240,
-///        length = 10,
-///        tag = $referenceEdge,
-///      )
-///   |> close()
-///
-/// example = extrude(exampleSketch, length = 5)
-///   |> fillet(
-///     radius = 3,
-///     tags = [getNextAdjacentEdge(referenceEdge)],
-///   )
-/// ```
-#[stdlib {
-    name = "getNextAdjacentEdge",
-    unlabeled_first = true,
-    args = {
-        edge = { docs = "The tag of the edge you want to find the next adjacent edge of." },
-    },
-    tags = ["sketch"]
-}]
 async fn inner_get_next_adjacent_edge(
     edge: TagIdentifier,
     exec_state: &mut ExecState,
@@ -152,15 +84,16 @@ async fn inner_get_next_adjacent_edge(
     }
     let face_id = args.get_adjacent_face_to_tag(exec_state, &edge, false).await?;
 
-    let id = exec_state.next_uuid();
     let tagged_path = args.get_tag_engine_info(exec_state, &edge)?;
+    let tagged_path_id = tagged_path.id;
+    let sketch_id = tagged_path.sketch;
 
-    let resp = args
+    let resp = exec_state
         .send_modeling_cmd(
-            id,
+            (&args).into(),
             ModelingCmd::from(mcmd::Solid3dGetNextAdjacentEdge {
-                edge_id: tagged_path.id,
-                object_id: tagged_path.sketch,
+                edge_id: tagged_path_id,
+                object_id: sketch_id,
                 face_id,
             }),
         )
@@ -170,17 +103,14 @@ async fn inner_get_next_adjacent_edge(
         modeling_response: OkModelingCmdResponse::Solid3dGetNextAdjacentEdge(adjacent_edge),
     } = &resp
     else {
-        return Err(KclError::Engine(KclErrorDetails::new(
-            format!(
-                "mcmd::Solid3dGetNextAdjacentEdge response was not as expected: {:?}",
-                resp
-            ),
+        return Err(KclError::new_engine(KclErrorDetails::new(
+            format!("mcmd::Solid3dGetNextAdjacentEdge response was not as expected: {resp:?}"),
             vec![args.source_range],
         )));
     };
 
     adjacent_edge.edge.ok_or_else(|| {
-        KclError::Type(KclErrorDetails::new(
+        KclError::new_type(KclErrorDetails::new(
             format!("No edge found next adjacent to tag: `{}`", edge.value),
             vec![args.source_range],
         ))
@@ -189,7 +119,7 @@ async fn inner_get_next_adjacent_edge(
 
 /// Get the previous adjacent edge to the edge given.
 pub async fn get_previous_adjacent_edge(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let input_edge = args.get_unlabeled_kw_arg_typed("edge", &RuntimeType::tag_identifier(), exec_state)?;
+    let input_edge = args.get_unlabeled_kw_arg("edge", &RuntimeType::tagged_edge(), exec_state)?;
 
     let edge = inner_get_previous_adjacent_edge(input_edge, exec_state, args.clone()).await?;
     Ok(KclValue::Uuid {
@@ -198,42 +128,6 @@ pub async fn get_previous_adjacent_edge(exec_state: &mut ExecState, args: Args) 
     })
 }
 
-/// Get the previous adjacent edge to the edge given.
-///
-/// ```no_run
-/// exampleSketch = startSketchOn(XZ)
-///   |> startProfile(at = [0, 0])
-///   |> line(end = [10, 0])
-///   |> angledLine(
-///        angle = 60,
-///        length = 10,
-///      )
-///   |> angledLine(
-///        angle = 120,
-///        length = 10,
-///      )
-///   |> line(end = [-10, 0])
-///   |> angledLine(
-///        angle = 240,
-///        length = 10,
-///        tag = $referenceEdge,
-///      )
-///   |> close()
-///
-/// example = extrude(exampleSketch, length = 5)
-///   |> fillet(
-///     radius = 3,
-///     tags = [getPreviousAdjacentEdge(referenceEdge)],
-///   )
-/// ```
-#[stdlib {
-    name = "getPreviousAdjacentEdge",
-    unlabeled_first = true,
-    args = {
-        edge = { docs = "The tag of the edge you want to find the previous adjacent edge of." },
-    },
-    tags = ["sketch"]
-}]
 async fn inner_get_previous_adjacent_edge(
     edge: TagIdentifier,
     exec_state: &mut ExecState,
@@ -244,15 +138,16 @@ async fn inner_get_previous_adjacent_edge(
     }
     let face_id = args.get_adjacent_face_to_tag(exec_state, &edge, false).await?;
 
-    let id = exec_state.next_uuid();
     let tagged_path = args.get_tag_engine_info(exec_state, &edge)?;
+    let tagged_path_id = tagged_path.id;
+    let sketch_id = tagged_path.sketch;
 
-    let resp = args
+    let resp = exec_state
         .send_modeling_cmd(
-            id,
+            (&args).into(),
             ModelingCmd::from(mcmd::Solid3dGetPrevAdjacentEdge {
-                edge_id: tagged_path.id,
-                object_id: tagged_path.sketch,
+                edge_id: tagged_path_id,
+                object_id: sketch_id,
                 face_id,
             }),
         )
@@ -261,17 +156,14 @@ async fn inner_get_previous_adjacent_edge(
         modeling_response: OkModelingCmdResponse::Solid3dGetPrevAdjacentEdge(adjacent_edge),
     } = &resp
     else {
-        return Err(KclError::Engine(KclErrorDetails::new(
-            format!(
-                "mcmd::Solid3dGetPrevAdjacentEdge response was not as expected: {:?}",
-                resp
-            ),
+        return Err(KclError::new_engine(KclErrorDetails::new(
+            format!("mcmd::Solid3dGetPrevAdjacentEdge response was not as expected: {resp:?}"),
             vec![args.source_range],
         )));
     };
 
     adjacent_edge.edge.ok_or_else(|| {
-        KclError::Type(KclErrorDetails::new(
+        KclError::new_type(KclErrorDetails::new(
             format!("No edge found previous adjacent to tag: `{}`", edge.value),
             vec![args.source_range],
         ))
@@ -280,49 +172,42 @@ async fn inner_get_previous_adjacent_edge(
 
 /// Get the shared edge between two faces.
 pub async fn get_common_edge(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let faces: Vec<TagIdentifier> = args.get_kw_arg("faces")?;
+    let mut faces: Vec<FaceTag> = args.get_kw_arg(
+        "faces",
+        &RuntimeType::Array(Box::new(RuntimeType::tagged_face()), ArrayLen::Known(2)),
+        exec_state,
+    )?;
 
-    let edge = inner_get_common_edge(faces, exec_state, args.clone()).await?;
+    if faces.len() != 2 {
+        return Err(KclError::new_type(KclErrorDetails::new(
+            "getCommonEdge requires exactly two tags for faces".to_owned(),
+            vec![args.source_range],
+        )));
+    }
+
+    fn into_tag(face: FaceTag, source_range: SourceRange) -> Result<TagIdentifier, KclError> {
+        match face {
+            FaceTag::StartOrEnd(_) => Err(KclError::new_type(KclErrorDetails::new(
+                "getCommonEdge requires a tagged face, it cannot use `START` or `END` faces".to_owned(),
+                vec![source_range],
+            ))),
+            FaceTag::Tag(tag_identifier) => Ok(*tag_identifier),
+        }
+    }
+
+    let face2 = into_tag(faces.pop().unwrap(), args.source_range)?;
+    let face1 = into_tag(faces.pop().unwrap(), args.source_range)?;
+
+    let edge = inner_get_common_edge(face1, face2, exec_state, args.clone()).await?;
     Ok(KclValue::Uuid {
         value: edge,
         meta: vec![args.source_range.into()],
     })
 }
 
-/// Get the shared edge between two faces.
-///
-/// ```no_run
-/// // Get an edge shared between two faces, created after a chamfer.
-///
-/// scale = 20
-/// part001 = startSketchOn(XY)
-///     |> startProfile(at = [0, 0])
-///     |> line(end = [0, scale])
-///     |> line(end = [scale, 0])
-///     |> line(end = [0, -scale])
-///     |> close(tag = $line0)
-///     |> extrude(length = 20, tagEnd = $end0)
-///     // We tag the chamfer to reference it later.
-///     |> chamfer(length = 10, tags = [getOppositeEdge(line0)], tag = $chamfer0)
-///
-/// // Get the shared edge between the chamfer and the extrusion.
-/// commonEdge = getCommonEdge(faces = [chamfer0, end0])
-///
-/// // Chamfer the shared edge.
-/// // TODO: uncomment this when ssi for fillets lands
-/// // chamfer(part001, length = 5, tags = [commonEdge])
-/// ```
-#[stdlib {
-    name = "getCommonEdge",
-    feature_tree_operation = false,
-    unlabeled_first = false,
-    args = {
-        faces = { docs = "The tags of the faces you want to find the common edge between" },
-    },
-    tags = ["sketch"]
-}]
 async fn inner_get_common_edge(
-    faces: Vec<TagIdentifier>,
+    face1: TagIdentifier,
+    face2: TagIdentifier,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Uuid, KclError> {
@@ -331,20 +216,14 @@ async fn inner_get_common_edge(
         return Ok(id);
     }
 
-    if faces.len() != 2 {
-        return Err(KclError::Type(KclErrorDetails::new(
-            "getCommonEdge requires exactly two tags for faces".to_string(),
-            vec![args.source_range],
-        )));
-    }
-    let first_face_id = args.get_adjacent_face_to_tag(exec_state, &faces[0], false).await?;
-    let second_face_id = args.get_adjacent_face_to_tag(exec_state, &faces[1], false).await?;
+    let first_face_id = args.get_adjacent_face_to_tag(exec_state, &face1, false).await?;
+    let second_face_id = args.get_adjacent_face_to_tag(exec_state, &face2, false).await?;
 
-    let first_tagged_path = args.get_tag_engine_info(exec_state, &faces[0])?.clone();
-    let second_tagged_path = args.get_tag_engine_info(exec_state, &faces[1])?;
+    let first_tagged_path = args.get_tag_engine_info(exec_state, &face1)?.clone();
+    let second_tagged_path = args.get_tag_engine_info(exec_state, &face2)?;
 
     if first_tagged_path.sketch != second_tagged_path.sketch {
-        return Err(KclError::Type(KclErrorDetails::new(
+        return Err(KclError::new_type(KclErrorDetails::new(
             "getCommonEdge requires the faces to be in the same original sketch".to_string(),
             vec![args.source_range],
         )));
@@ -355,14 +234,14 @@ async fn inner_get_common_edge(
     // TODO: we likely want to be a lot more persnickety _which_ fillets we are flushing
     // but for now, we'll just flush everything.
     if let Some(ExtrudeSurface::Chamfer { .. } | ExtrudeSurface::Fillet { .. }) = first_tagged_path.surface {
-        args.ctx.engine.flush_batch(true, args.source_range).await?;
+        exec_state.flush_batch((&args).into(), true).await?;
     } else if let Some(ExtrudeSurface::Chamfer { .. } | ExtrudeSurface::Fillet { .. }) = second_tagged_path.surface {
-        args.ctx.engine.flush_batch(true, args.source_range).await?;
+        exec_state.flush_batch((&args).into(), true).await?;
     }
 
-    let resp = args
+    let resp = exec_state
         .send_modeling_cmd(
-            id,
+            ModelingCmdMeta::from_args_id(&args, id),
             ModelingCmd::from(mcmd::Solid3dGetCommonEdge {
                 object_id: first_tagged_path.sketch,
                 face_ids: [first_face_id, second_face_id],
@@ -373,17 +252,17 @@ async fn inner_get_common_edge(
         modeling_response: OkModelingCmdResponse::Solid3dGetCommonEdge(common_edge),
     } = &resp
     else {
-        return Err(KclError::Engine(KclErrorDetails::new(
-            format!("mcmd::Solid3dGetCommonEdge response was not as expected: {:?}", resp),
+        return Err(KclError::new_engine(KclErrorDetails::new(
+            format!("mcmd::Solid3dGetCommonEdge response was not as expected: {resp:?}"),
             vec![args.source_range],
         )));
     };
 
     common_edge.edge.ok_or_else(|| {
-        KclError::Type(KclErrorDetails::new(
+        KclError::new_type(KclErrorDetails::new(
             format!(
                 "No common edge was found between `{}` and `{}`",
-                faces[0].value, faces[1].value
+                face1.value, face2.value
             ),
             vec![args.source_range],
         ))

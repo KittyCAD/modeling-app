@@ -63,7 +63,7 @@ description: Variables in memory after executing subtract_regression04.kcl
               "sourceRange": []
             },
             "from": [
-              0.4688,
+              0.46875,
               1.5
             ],
             "tag": null,
@@ -106,7 +106,7 @@ description: Variables in memory after executing subtract_regression04.kcl
             ],
             "tag": null,
             "to": [
-              0.4688,
+              0.46875,
               -1.5
             ],
             "type": "ToPoint",
@@ -120,13 +120,13 @@ description: Variables in memory after executing subtract_regression04.kcl
               "sourceRange": []
             },
             "from": [
-              0.4688,
+              0.46875,
               -1.5
             ],
             "tag": null,
             "to": [
               0.5,
-              -1.482
+              -1.481958
             ],
             "type": "ToPoint",
             "units": {
@@ -140,12 +140,12 @@ description: Variables in memory after executing subtract_regression04.kcl
             },
             "from": [
               0.5,
-              -1.482
+              -1.481958
             ],
             "tag": null,
             "to": [
               0.5,
-              1.482
+              1.481958
             ],
             "type": "ToPoint",
             "units": {
@@ -159,11 +159,11 @@ description: Variables in memory after executing subtract_regression04.kcl
             },
             "from": [
               0.5,
-              1.482
+              1.481958
             ],
             "tag": null,
             "to": [
-              0.4688,
+              0.46875,
               1.5
             ],
             "type": "ToPoint",
@@ -177,12 +177,12 @@ description: Variables in memory after executing subtract_regression04.kcl
               "sourceRange": []
             },
             "from": [
-              0.4688,
+              0.46875,
               1.5
             ],
             "tag": null,
             "to": [
-              0.4688,
+              0.46875,
               1.5
             ],
             "type": "ToPoint",
@@ -219,15 +219,23 @@ description: Variables in memory after executing subtract_regression04.kcl
             "units": {
               "type": "Unknown"
             }
+          },
+          "zAxis": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 1.0,
+            "units": {
+              "type": "Unknown"
+            }
           }
         },
         "start": {
           "from": [
-            0.4688,
+            0.46875,
             1.5
           ],
           "to": [
-            0.4688,
+            0.46875,
             1.5
           ],
           "units": {
@@ -327,6 +335,14 @@ description: Variables in memory after executing subtract_regression04.kcl
             "units": {
               "type": "Unknown"
             }
+          },
+          "zAxis": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 1.0,
+            "units": {
+              "type": "Unknown"
+            }
           }
         },
         "start": {
@@ -422,7 +438,7 @@ description: Variables in memory after executing subtract_regression04.kcl
               "sourceRange": []
             },
             "from": [
-              0.4688,
+              0.46875,
               1.5
             ],
             "tag": null,
@@ -465,7 +481,7 @@ description: Variables in memory after executing subtract_regression04.kcl
             ],
             "tag": null,
             "to": [
-              0.4688,
+              0.46875,
               -1.5
             ],
             "type": "ToPoint",
@@ -479,13 +495,13 @@ description: Variables in memory after executing subtract_regression04.kcl
               "sourceRange": []
             },
             "from": [
-              0.4688,
+              0.46875,
               -1.5
             ],
             "tag": null,
             "to": [
               0.5,
-              -1.482
+              -1.481958
             ],
             "type": "ToPoint",
             "units": {
@@ -499,12 +515,12 @@ description: Variables in memory after executing subtract_regression04.kcl
             },
             "from": [
               0.5,
-              -1.482
+              -1.481958
             ],
             "tag": null,
             "to": [
               0.5,
-              1.482
+              1.481958
             ],
             "type": "ToPoint",
             "units": {
@@ -518,11 +534,11 @@ description: Variables in memory after executing subtract_regression04.kcl
             },
             "from": [
               0.5,
-              1.482
+              1.481958
             ],
             "tag": null,
             "to": [
-              0.4688,
+              0.46875,
               1.5
             ],
             "type": "ToPoint",
@@ -536,12 +552,12 @@ description: Variables in memory after executing subtract_regression04.kcl
               "sourceRange": []
             },
             "from": [
-              0.4688,
+              0.46875,
               1.5
             ],
             "tag": null,
             "to": [
-              0.4688,
+              0.46875,
               1.5
             ],
             "type": "ToPoint",
@@ -578,15 +594,23 @@ description: Variables in memory after executing subtract_regression04.kcl
             "units": {
               "type": "Unknown"
             }
+          },
+          "zAxis": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 1.0,
+            "units": {
+              "type": "Unknown"
+            }
           }
         },
         "start": {
           "from": [
-            0.4688,
+            0.46875,
             1.5
           ],
           "to": [
-            0.4688,
+            0.46875,
             1.5
           ],
           "units": {
@@ -642,6 +666,14 @@ description: Variables in memory after executing subtract_regression04.kcl
         "units": {
           "type": "Unknown"
         }
+      },
+      "zAxis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0,
+        "units": {
+          "type": "Unknown"
+        }
       }
     }
   },
@@ -657,7 +689,7 @@ description: Variables in memory after executing subtract_regression04.kcl
             "sourceRange": []
           },
           "from": [
-            0.4688,
+            0.46875,
             1.5
           ],
           "tag": null,
@@ -700,7 +732,7 @@ description: Variables in memory after executing subtract_regression04.kcl
           ],
           "tag": null,
           "to": [
-            0.4688,
+            0.46875,
             -1.5
           ],
           "type": "ToPoint",
@@ -714,13 +746,13 @@ description: Variables in memory after executing subtract_regression04.kcl
             "sourceRange": []
           },
           "from": [
-            0.4688,
+            0.46875,
             -1.5
           ],
           "tag": null,
           "to": [
             0.5,
-            -1.482
+            -1.481958
           ],
           "type": "ToPoint",
           "units": {
@@ -734,12 +766,12 @@ description: Variables in memory after executing subtract_regression04.kcl
           },
           "from": [
             0.5,
-            -1.482
+            -1.481958
           ],
           "tag": null,
           "to": [
             0.5,
-            1.482
+            1.481958
           ],
           "type": "ToPoint",
           "units": {
@@ -753,11 +785,11 @@ description: Variables in memory after executing subtract_regression04.kcl
           },
           "from": [
             0.5,
-            1.482
+            1.481958
           ],
           "tag": null,
           "to": [
-            0.4688,
+            0.46875,
             1.5
           ],
           "type": "ToPoint",
@@ -771,12 +803,12 @@ description: Variables in memory after executing subtract_regression04.kcl
             "sourceRange": []
           },
           "from": [
-            0.4688,
+            0.46875,
             1.5
           ],
           "tag": null,
           "to": [
-            0.4688,
+            0.46875,
             1.5
           ],
           "type": "ToPoint",
@@ -813,15 +845,23 @@ description: Variables in memory after executing subtract_regression04.kcl
           "units": {
             "type": "Unknown"
           }
+        },
+        "zAxis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0,
+          "units": {
+            "type": "Unknown"
+          }
         }
       },
       "start": {
         "from": [
-          0.4688,
+          0.46875,
           1.5
         ],
         "to": [
-          0.4688,
+          0.46875,
           1.5
         ],
         "units": {
@@ -866,6 +906,14 @@ description: Variables in memory after executing subtract_regression04.kcl
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
+        "units": {
+          "type": "Unknown"
+        }
+      },
+      "zAxis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0,
         "units": {
           "type": "Unknown"
         }
@@ -929,6 +977,14 @@ description: Variables in memory after executing subtract_regression04.kcl
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
+          "units": {
+            "type": "Unknown"
+          }
+        },
+        "zAxis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0,
           "units": {
             "type": "Unknown"
           }

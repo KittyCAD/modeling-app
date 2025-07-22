@@ -134,7 +134,7 @@ export class ElectronZoo {
       args: ['.', '--no-sandbox'],
       env: {
         ...process.env,
-        IS_PLAYWRIGHT: 'true',
+        NODE_ENV: 'test',
       },
       ...(process.env.ELECTRON_OVERRIDE_DIST_PATH
         ? {
@@ -394,7 +394,7 @@ const fixturesBasedOnProcessEnvPlatform = {
   },
 }
 
-if (process.env.PLATFORM === 'web') {
+if (process.env.TARGET === 'web') {
   Object.assign(fixturesBasedOnProcessEnvPlatform, fixturesForWeb)
 } else {
   Object.assign(fixturesBasedOnProcessEnvPlatform, fixturesForElectron)

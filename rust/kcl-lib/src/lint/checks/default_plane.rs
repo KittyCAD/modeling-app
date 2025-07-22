@@ -4,7 +4,7 @@ use crate::{
     errors::Suggestion,
     lint::{
         checks::offset_plane::start_sketch_on_check_specific_plane,
-        rule::{def_finding, Discovered, Finding},
+        rule::{Discovered, Finding, def_finding},
     },
     parsing::ast::types::{Node as AstNode, Program},
     walk::Node,
@@ -33,14 +33,11 @@ pub fn lint_should_be_default_plane(node: Node, _prog: &AstNode<Program>) -> Res
     }
     let suggestion = Suggestion {
         title: "use defaultPlane instead".to_owned(),
-        insert: format!("{}", plane_name),
+        insert: format!("{plane_name}"),
         source_range: call_source_range,
     };
     Ok(vec![Z0002.at(
-        format!(
-            "custom plane in startSketchOn; defaultPlane {} would work here",
-            plane_name
-        ),
+        format!("custom plane in startSketchOn; defaultPlane {plane_name} would work here"),
         call_source_range,
         Some(suggestion),
     )])
@@ -48,7 +45,7 @@ pub fn lint_should_be_default_plane(node: Node, _prog: &AstNode<Program>) -> Res
 
 #[cfg(test)]
 mod tests {
-    use super::{lint_should_be_default_plane, Z0002};
+    use super::{Z0002, lint_should_be_default_plane};
     use crate::lint::rule::{test_finding, test_no_finding};
 
     test_finding!(

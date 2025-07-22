@@ -27,7 +27,7 @@ if len(modified_release_body) > max_length:
 # Message to send to Discord
 data = {
     "content": textwrap.dedent(f'''
-        **{release_version}** is now available! Check out the latest features and improvements here: <https://zoo.dev/design-studio>
+        **{release_version}** is now available! Check out the latest features and improvements here: <https://zoo.dev/design-studio/download#added>
 
         {modified_release_body}
     '''),

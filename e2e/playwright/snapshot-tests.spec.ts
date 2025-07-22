@@ -197,7 +197,7 @@ test(
     await page.waitForTimeout(500)
 
     await endOfTangentMv()
-
+    await page.waitForTimeout(500)
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
       mask: lowerRightMasks(page),
@@ -208,6 +208,7 @@ test(
     await page.waitForTimeout(500)
     await endOfTangentClk()
     await threePointArcMidPointMv()
+    await page.waitForTimeout(500)
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
       mask: lowerRightMasks(page),
@@ -274,12 +275,17 @@ test(
     const startXPx = 600
 
     // Equip the rectangle tool
-    await page
-      .getByRole('button', { name: 'rectangle Corner rectangle', exact: true })
-      .click()
+    const rectangleBtn = page.getByTestId('corner-rectangle')
+    await rectangleBtn.click()
+    await expect(rectangleBtn).toHaveAttribute('aria-pressed', 'true')
 
     // Draw the rectangle
-    await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 30)
+    const rectanglePointOne: [number, number] = [
+      startXPx + PUR * 40,
+      500 - PUR * 30,
+    ]
+    await page.mouse.move(...rectanglePointOne, { steps: 5 })
+    await page.mouse.click(...rectanglePointOne, { delay: 50 })
     await page.mouse.move(startXPx + PUR * 10, 500 - PUR * 10, { steps: 5 })
     await page.waitForTimeout(800)
 
@@ -375,22 +381,22 @@ test.describe(
       await expect(u.codeLocator).toHaveText(code)
 
       await toolbar.selectTangentialArc()
-      await page.waitForTimeout(100)
+      await page.waitForTimeout(200)
 
       // click to continue profile
       await page.mouse.click(813, 392)
-      await page.waitForTimeout(100)
+      await page.waitForTimeout(300)
 
       await page.mouse.click(startXPx + PUR * 30, 500 - PUR * 20)
 
       code += `
-  |> tangentialArc(endAbsolute = [551.2, -62.01])`
+  |> tangentialArc(end = [184.31, 184.31])`
       await expect(u.codeLocator).toHaveText(code)
 
       // click tangential arc tool again to unequip it
       // it will be available directly in the toolbar since it was last equipped
       await toolbar.tangentialArcBtn.click()
-      await page.waitForTimeout(100)
+      await page.waitForTimeout(1000)
 
       // screen shot should show the sketch
       await expect(page).toHaveScreenshot({
@@ -472,20 +478,20 @@ test.describe(
       await expect(u.codeLocator).toHaveText(code)
 
       await toolbar.selectTangentialArc()
-      await page.waitForTimeout(100)
+      await page.waitForTimeout(200)
 
       // click to continue profile
       await page.mouse.click(813, 392)
-      await page.waitForTimeout(100)
+      await page.waitForTimeout(300)
 
       await page.mouse.click(startXPx + PUR * 30, 500 - PUR * 20)
 
       code += `
-  |> tangentialArc(endAbsolute = [551.2, -62.01])`
+  |> tangentialArc(end = [184.31, 184.31])`
       await expect(u.codeLocator).toHaveText(code)
 
       await toolbar.tangentialArcBtn.click()
-      await page.waitForTimeout(100)
+      await page.waitForTimeout(1000)
 
       // screen shot should show the sketch
       await expect(page).toHaveScreenshot({
@@ -798,7 +804,7 @@ test('theme persists', async ({ page, context, homePage }) => {
 
   await page.getByTestId('settings-close-button').click()
 
-  const networkToggle = page.getByTestId('network-toggle')
+  const networkToggle = page.getByTestId(/network-toggle/)
 
   // simulate network down
   await u.emulateNetworkConditions({
@@ -823,7 +829,7 @@ test('theme persists', async ({ page, context, homePage }) => {
     uploadThroughput: -1,
   })
 
-  await expect(networkToggle).toContainText('Connected')
+  await expect(networkToggle).toContainText('Network health (Strong)')
 
   await expect(page.getByText('building scene')).not.toBeVisible()
 

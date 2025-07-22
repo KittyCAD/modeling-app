@@ -46,31 +46,26 @@ valveStemSketch = startSketchOn(offsetPlane(XY, offset = valveHeadLength))
 // Create the valve stem end
 stepLength = stemHeadLength / 10
 step1 = startSketchOn(valveStemSketch, face = END)
-  |> circle(%, center = [0, 0], radius = stemDiameter / 2 * 0.9)
-  |> extrude(%, length = stepLength * 2)
+  |> circle(center = [0, 0], radius = stemDiameter / 2 * 0.9)
+  |> extrude(length = stepLength * 2)
 step2 = startSketchOn(step1, face = END)
-  |> circle(%, center = [0, 0], radius = stemDiameter / 2 * 0.8)
-  |> extrude(%, length = stepLength)
+  |> circle(center = [0, 0], radius = stemDiameter / 2 * 0.8)
+  |> extrude(length = stepLength)
 step3 = startSketchOn(step2, face = END)
-  |> circle(%, center = [0, 0], radius = stemDiameter / 2 * 0.9)
-  |> extrude(%, length = stepLength)
+  |> circle(center = [0, 0], radius = stemDiameter / 2 * 0.9)
+  |> extrude(length = stepLength)
 step4 = startSketchOn(step3, face = END)
-  |> circle(%, center = [0, 0], radius = stemDiameter / 2 * 0.8)
-  |> extrude(%, length = stepLength)
+  |> circle(center = [0, 0], radius = stemDiameter / 2 * 0.8)
+  |> extrude(length = stepLength)
 step5 = startSketchOn(step4, face = END)
-  |> circle(%, center = [0, 0], radius = stemDiameter / 2 * 0.9)
-  |> extrude(%, length = stepLength)
+  |> circle(center = [0, 0], radius = stemDiameter / 2 * 0.9)
+  |> extrude(length = stepLength)
 step6 = startSketchOn(step5, face = END)
-  |> circle(%, center = [0, 0], radius = stemDiameter / 2 * 0.8)
-  |> extrude(%, length = stepLength)
+  |> circle(center = [0, 0], radius = stemDiameter / 2 * 0.8)
+  |> extrude(length = stepLength)
 step7 = startSketchOn(step6, face = END)
-  |> circle(
-       %,
-       center = [0, 0],
-       radius = stemDiameter / 2 * 0.9,
-       tag = $seg02,
-     )
-  |> extrude(%, length = stepLength * 3, tagEnd = $capEnd001)
+  |> circle(center = [0, 0], radius = stemDiameter / 2 * 0.9, tag = $seg02)
+  |> extrude(length = stepLength * 3, tagEnd = $capEnd001)
   |> chamfer(
        length = 0.5,
        tags = [

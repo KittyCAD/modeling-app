@@ -50,6 +50,7 @@ description: Variables in memory after executing flush_batch_on_end.kcl
           "tag": {
             "commentStart": 515,
             "end": 522,
+            "moduleId": 0,
             "start": 515,
             "type": "TagDeclarator",
             "value": "arc001"
@@ -89,6 +90,14 @@ description: Variables in memory after executing flush_batch_on_end.kcl
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
+          "units": {
+            "type": "Unknown"
+          }
+        },
+        "zAxis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0,
           "units": {
             "type": "Unknown"
           }
@@ -140,7 +149,7 @@ description: Variables in memory after executing flush_batch_on_end.kcl
   },
   "outerDiameter": {
     "type": "Number",
-    "value": 0.5469,
+    "value": 0.546875,
     "ty": {
       "type": "Default",
       "len": {
@@ -168,19 +177,20 @@ description: Variables in memory after executing flush_batch_on_end.kcl
             0.0
           ],
           "from": [
-            0.2734,
+            0.2734375,
             0.0
           ],
           "radius": 0.2734375,
           "tag": {
             "commentStart": 360,
             "end": 367,
+            "moduleId": 0,
             "start": 360,
             "type": "TagDeclarator",
             "value": "arc000"
           },
           "to": [
-            0.2734,
+            0.2734375,
             0.0
           ],
           "type": "Circle",
@@ -217,15 +227,23 @@ description: Variables in memory after executing flush_batch_on_end.kcl
           "units": {
             "type": "Unknown"
           }
+        },
+        "zAxis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0,
+          "units": {
+            "type": "Unknown"
+          }
         }
       },
       "start": {
         "from": [
-          0.2734,
+          0.2734375,
           0.0
         ],
         "to": [
-          0.2734,
+          0.2734375,
           0.0
         ],
         "units": {
@@ -241,6 +259,10 @@ description: Variables in memory after executing flush_batch_on_end.kcl
         "arc000": {
           "type": "TagIdentifier",
           "value": "arc000"
+        },
+        "arc001": {
+          "type": "TagIdentifier",
+          "value": "arc001"
         }
       },
       "artifactId": "[uuid]",
@@ -264,9 +286,24 @@ description: Variables in memory after executing flush_batch_on_end.kcl
           "tag": {
             "commentStart": 360,
             "end": 367,
+            "moduleId": 0,
             "start": 360,
             "type": "TagDeclarator",
             "value": "arc000"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 515,
+            "end": 522,
+            "moduleId": 0,
+            "start": 515,
+            "type": "TagDeclarator",
+            "value": "arc001"
           },
           "type": "extrudeArc"
         }
@@ -286,19 +323,54 @@ description: Variables in memory after executing flush_batch_on_end.kcl
               0.0
             ],
             "from": [
-              0.2734,
+              0.2734375,
               0.0
             ],
             "radius": 0.2734375,
             "tag": {
               "commentStart": 360,
               "end": 367,
+              "moduleId": 0,
               "start": 360,
               "type": "TagDeclarator",
               "value": "arc000"
             },
             "to": [
-              0.2734,
+              0.2734375,
+              0.0
+            ],
+            "type": "Circle",
+            "units": {
+              "type": "Inches"
+            }
+          }
+        ],
+        "innerPaths": [
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.0,
+              0.0
+            ],
+            "from": [
+              0.182,
+              0.0
+            ],
+            "radius": 0.182,
+            "tag": {
+              "commentStart": 515,
+              "end": 522,
+              "moduleId": 0,
+              "start": 515,
+              "type": "TagDeclarator",
+              "value": "arc001"
+            },
+            "to": [
+              0.182,
               0.0
             ],
             "type": "Circle",
@@ -335,15 +407,23 @@ description: Variables in memory after executing flush_batch_on_end.kcl
             "units": {
               "type": "Unknown"
             }
+          },
+          "zAxis": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 1.0,
+            "units": {
+              "type": "Unknown"
+            }
           }
         },
         "start": {
           "from": [
-            0.2734,
+            0.2734375,
             0.0
           ],
           "to": [
-            0.2734,
+            0.2734375,
             0.0
           ],
           "units": {
@@ -359,6 +439,10 @@ description: Variables in memory after executing flush_batch_on_end.kcl
           "arc000": {
             "type": "TagIdentifier",
             "value": "arc000"
+          },
+          "arc001": {
+            "type": "TagIdentifier",
+            "value": "arc001"
           }
         },
         "artifactId": "[uuid]",
@@ -393,19 +477,54 @@ description: Variables in memory after executing flush_batch_on_end.kcl
             0.0
           ],
           "from": [
-            0.2734,
+            0.2734375,
             0.0
           ],
           "radius": 0.2734375,
           "tag": {
             "commentStart": 360,
             "end": 367,
+            "moduleId": 0,
             "start": 360,
             "type": "TagDeclarator",
             "value": "arc000"
           },
           "to": [
-            0.2734,
+            0.2734375,
+            0.0
+          ],
+          "type": "Circle",
+          "units": {
+            "type": "Inches"
+          }
+        }
+      ],
+      "innerPaths": [
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            0.0,
+            0.0
+          ],
+          "from": [
+            0.182,
+            0.0
+          ],
+          "radius": 0.182,
+          "tag": {
+            "commentStart": 515,
+            "end": 522,
+            "moduleId": 0,
+            "start": 515,
+            "type": "TagDeclarator",
+            "value": "arc001"
+          },
+          "to": [
+            0.182,
             0.0
           ],
           "type": "Circle",
@@ -442,15 +561,23 @@ description: Variables in memory after executing flush_batch_on_end.kcl
           "units": {
             "type": "Unknown"
           }
+        },
+        "zAxis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0,
+          "units": {
+            "type": "Unknown"
+          }
         }
       },
       "start": {
         "from": [
-          0.2734,
+          0.2734375,
           0.0
         ],
         "to": [
-          0.2734,
+          0.2734375,
           0.0
         ],
         "units": {
@@ -466,6 +593,10 @@ description: Variables in memory after executing flush_batch_on_end.kcl
         "arc000": {
           "type": "TagIdentifier",
           "value": "arc000"
+        },
+        "arc001": {
+          "type": "TagIdentifier",
+          "value": "arc001"
         }
       },
       "artifactId": "[uuid]",
@@ -501,6 +632,14 @@ description: Variables in memory after executing flush_batch_on_end.kcl
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
+        "units": {
+          "type": "Unknown"
+        }
+      },
+      "zAxis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0,
         "units": {
           "type": "Unknown"
         }

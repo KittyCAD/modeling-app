@@ -44,7 +44,7 @@ copperTubePath = startSketchOn(offsetPlane(XY, offset = tubeDiameter))
 // Create the profile for the inner and outer diameter of the hollow copper tube
 tubeWall = startSketchOn(offsetPlane(YZ, offset = -7.35))
   |> circle(center = [-bendRadius * 3, tubeDiameter], radius = tubeDiameter / 2)
-  |> subtract2d(%, tool = circle(center = [-bendRadius * 3, tubeDiameter], radius = tubeDiameter / 2 - wallThickness))
+  |> subtract2d(tool = circle(center = [-bendRadius * 3, tubeDiameter], radius = tubeDiameter / 2 - wallThickness))
   |> sweep(path = copperTubePath)
   |> appearance(color = "#b81b0a")
 

@@ -128,7 +128,8 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
             return getPathFilenameInVariableCase(path)
           },
           validation: async ({ data }) => {
-            const variableExists = kclManager.variables[data.localName]
+            const variableExists =
+              kclManager.variables['__mod_' + data.localName]
             if (variableExists) {
               return 'This variable name is already in use.'
             }

@@ -12,6 +12,7 @@ expression: actual
         "id": {
           "commentStart": 3,
           "end": 6,
+          "moduleId": 0,
           "name": "foo",
           "start": 3,
           "type": "Identifier"
@@ -23,6 +24,7 @@ expression: actual
                 "argument": {
                   "commentStart": 23,
                   "end": 24,
+                  "moduleId": 0,
                   "raw": "1",
                   "start": 23,
                   "type": "Literal",
@@ -34,6 +36,7 @@ expression: actual
                 },
                 "commentStart": 16,
                 "end": 24,
+                "moduleId": 0,
                 "start": 16,
                 "type": "ReturnStatement",
                 "type": "ReturnStatement"
@@ -41,16 +44,19 @@ expression: actual
             ],
             "commentStart": 14,
             "end": 26,
+            "moduleId": 0,
             "start": 14
           },
           "commentStart": 6,
           "end": 26,
+          "moduleId": 0,
           "params": [
             {
               "type": "Parameter",
               "identifier": {
                 "commentStart": 8,
                 "end": 9,
+                "moduleId": 0,
                 "name": "x",
                 "start": 8,
                 "type": "Identifier"
@@ -62,6 +68,7 @@ expression: actual
               "identifier": {
                 "commentStart": 11,
                 "end": 12,
+                "moduleId": 0,
                 "name": "y",
                 "start": 11,
                 "type": "Identifier"
@@ -72,11 +79,13 @@ expression: actual
           "type": "FunctionExpression",
           "type": "FunctionExpression"
         },
+        "moduleId": 0,
         "start": 3,
         "type": "VariableDeclarator"
       },
       "end": 26,
       "kind": "fn",
+      "moduleId": 0,
       "start": 0,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
@@ -84,5 +93,6 @@ expression: actual
   ],
   "commentStart": 0,
   "end": 26,
+  "moduleId": 0,
   "start": 0
 }

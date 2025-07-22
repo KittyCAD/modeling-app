@@ -13,6 +13,7 @@ description: Result of parsing array_range_with_units.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "a",
             "start": 0,
             "type": "Identifier"
@@ -23,6 +24,7 @@ description: Result of parsing array_range_with_units.kcl
             "endElement": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "raw": "3cm",
               "start": 0,
               "type": "Literal",
@@ -33,10 +35,12 @@ description: Result of parsing array_range_with_units.kcl
               }
             },
             "endInclusive": true,
+            "moduleId": 0,
             "start": 0,
             "startElement": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "raw": "1cm",
               "start": 0,
               "type": "Literal",
@@ -49,11 +53,13 @@ description: Result of parsing array_range_with_units.kcl
             "type": "ArrayRangeExpression",
             "type": "ArrayRangeExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -68,6 +74,7 @@ description: Result of parsing array_range_with_units.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "isEqualTo",
                 "start": 0,
                 "type": "Identifier"
@@ -75,6 +82,7 @@ description: Result of parsing array_range_with_units.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "1cm",
                 "start": 0,
                 "type": "Literal",
@@ -90,9 +98,11 @@ description: Result of parsing array_range_with_units.kcl
             "abs_path": false,
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "assert",
               "start": 0,
               "type": "Identifier"
@@ -103,24 +113,37 @@ description: Result of parsing array_range_with_units.kcl
           },
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
           "unlabeled": {
             "commentStart": 0,
-            "computed": false,
+            "computed": true,
             "end": 0,
+            "moduleId": 0,
             "object": {
+              "abs_path": false,
               "commentStart": 0,
               "end": 0,
-              "name": "a",
+              "moduleId": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "a",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             "property": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "raw": "0",
               "start": 0,
               "type": "Literal",
@@ -135,6 +158,7 @@ description: Result of parsing array_range_with_units.kcl
             "type": "MemberExpression"
           }
         },
+        "moduleId": 0,
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -149,6 +173,7 @@ description: Result of parsing array_range_with_units.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "isEqualTo",
                 "start": 0,
                 "type": "Identifier"
@@ -156,6 +181,7 @@ description: Result of parsing array_range_with_units.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "2cm",
                 "start": 0,
                 "type": "Literal",
@@ -171,9 +197,11 @@ description: Result of parsing array_range_with_units.kcl
             "abs_path": false,
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "assert",
               "start": 0,
               "type": "Identifier"
@@ -184,24 +212,37 @@ description: Result of parsing array_range_with_units.kcl
           },
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
           "unlabeled": {
             "commentStart": 0,
-            "computed": false,
+            "computed": true,
             "end": 0,
+            "moduleId": 0,
             "object": {
+              "abs_path": false,
               "commentStart": 0,
               "end": 0,
-              "name": "a",
+              "moduleId": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "a",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             "property": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "raw": "1",
               "start": 0,
               "type": "Literal",
@@ -216,6 +257,7 @@ description: Result of parsing array_range_with_units.kcl
             "type": "MemberExpression"
           }
         },
+        "moduleId": 0,
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -230,6 +272,7 @@ description: Result of parsing array_range_with_units.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "isEqualTo",
                 "start": 0,
                 "type": "Identifier"
@@ -237,6 +280,7 @@ description: Result of parsing array_range_with_units.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "3cm",
                 "start": 0,
                 "type": "Literal",
@@ -252,9 +296,11 @@ description: Result of parsing array_range_with_units.kcl
             "abs_path": false,
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "assert",
               "start": 0,
               "type": "Identifier"
@@ -265,24 +311,37 @@ description: Result of parsing array_range_with_units.kcl
           },
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
           "unlabeled": {
             "commentStart": 0,
-            "computed": false,
+            "computed": true,
             "end": 0,
+            "moduleId": 0,
             "object": {
+              "abs_path": false,
               "commentStart": 0,
               "end": 0,
-              "name": "a",
+              "moduleId": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "a",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             "property": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "raw": "2",
               "start": 0,
               "type": "Literal",
@@ -297,6 +356,7 @@ description: Result of parsing array_range_with_units.kcl
             "type": "MemberExpression"
           }
         },
+        "moduleId": 0,
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -304,6 +364,7 @@ description: Result of parsing array_range_with_units.kcl
     ],
     "commentStart": 0,
     "end": 0,
+    "moduleId": 0,
     "start": 0
   }
 }

@@ -48,6 +48,33 @@ description: Variables in memory after executing subtract_regression05.kcl
             }
           }
         ],
+        "innerPaths": [
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.0,
+              0.0
+            ],
+            "from": [
+              0.9375,
+              0.0
+            ],
+            "radius": 0.9375,
+            "tag": null,
+            "to": [
+              0.9375,
+              0.0
+            ],
+            "type": "Circle",
+            "units": {
+              "type": "Inches"
+            }
+          }
+        ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
@@ -73,6 +100,14 @@ description: Variables in memory after executing subtract_regression05.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
+            "units": {
+              "type": "Unknown"
+            }
+          },
+          "zAxis": {
+            "x": 1.0,
+            "y": 0.0,
+            "z": 0.0,
             "units": {
               "type": "Unknown"
             }
@@ -163,7 +198,7 @@ description: Variables in memory after executing subtract_regression05.kcl
             "tag": null,
             "to": [
               0.937,
-              -1.2875
+              -1.2874999999999999
             ],
             "type": "ToPoint",
             "units": {
@@ -177,12 +212,12 @@ description: Variables in memory after executing subtract_regression05.kcl
             },
             "from": [
               0.937,
-              -1.2875
+              -1.2874999999999999
             ],
             "tag": null,
             "to": [
               0.625,
-              -1.2875
+              -1.2874999999999999
             ],
             "type": "ToPoint",
             "units": {
@@ -196,7 +231,7 @@ description: Variables in memory after executing subtract_regression05.kcl
             },
             "from": [
               0.625,
-              -1.2875
+              -1.2874999999999999
             ],
             "tag": null,
             "to": [
@@ -275,6 +310,14 @@ description: Variables in memory after executing subtract_regression05.kcl
             "units": {
               "type": "Unknown"
             }
+          },
+          "zAxis": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 1.0,
+            "units": {
+              "type": "Unknown"
+            }
           }
         },
         "start": {
@@ -339,6 +382,14 @@ description: Variables in memory after executing subtract_regression05.kcl
         "units": {
           "type": "Unknown"
         }
+      },
+      "zAxis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": {
+          "type": "Unknown"
+        }
       }
     }
   },
@@ -374,6 +425,33 @@ description: Variables in memory after executing subtract_regression05.kcl
           }
         }
       ],
+      "innerPaths": [
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            0.0,
+            0.0
+          ],
+          "from": [
+            0.9375,
+            0.0
+          ],
+          "radius": 0.9375,
+          "tag": null,
+          "to": [
+            0.9375,
+            0.0
+          ],
+          "type": "Circle",
+          "units": {
+            "type": "Inches"
+          }
+        }
+      ],
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
@@ -399,6 +477,14 @@ description: Variables in memory after executing subtract_regression05.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
+          "units": {
+            "type": "Unknown"
+          }
+        },
+        "zAxis": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0,
           "units": {
             "type": "Unknown"
           }
@@ -458,6 +544,14 @@ description: Variables in memory after executing subtract_regression05.kcl
         "units": {
           "type": "Unknown"
         }
+      },
+      "zAxis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0,
+        "units": {
+          "type": "Unknown"
+        }
       }
     }
   },
@@ -493,7 +587,7 @@ description: Variables in memory after executing subtract_regression05.kcl
           },
           "ccw": true,
           "center": [
-            0.937,
+            0.9370000000000005,
             2.313
           ],
           "from": [
@@ -503,8 +597,8 @@ description: Variables in memory after executing subtract_regression05.kcl
           "radius": 2.313,
           "tag": null,
           "to": [
-            3.25,
-            2.313
+            3.250000000000001,
+            2.3129999999999997
           ],
           "type": "Arc",
           "units": {
@@ -517,12 +611,12 @@ description: Variables in memory after executing subtract_regression05.kcl
             "sourceRange": []
           },
           "from": [
-            3.25,
-            2.313
+            3.250000000000001,
+            2.3129999999999997
           ],
           "tag": null,
           "to": [
-            3.25,
+            3.250000000000001,
             3.25
           ],
           "type": "ToPoint",
@@ -556,6 +650,14 @@ description: Variables in memory after executing subtract_regression05.kcl
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
+          "units": {
+            "type": "Unknown"
+          }
+        },
+        "zAxis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0,
           "units": {
             "type": "Unknown"
           }
@@ -615,6 +717,14 @@ description: Variables in memory after executing subtract_regression05.kcl
         "units": {
           "type": "Unknown"
         }
+      },
+      "zAxis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0,
+        "units": {
+          "type": "Unknown"
+        }
       }
     }
   },
@@ -636,7 +746,7 @@ description: Variables in memory after executing subtract_regression05.kcl
           "tag": null,
           "to": [
             0.937,
-            -1.2875
+            -1.2874999999999999
           ],
           "type": "ToPoint",
           "units": {
@@ -650,12 +760,12 @@ description: Variables in memory after executing subtract_regression05.kcl
           },
           "from": [
             0.937,
-            -1.2875
+            -1.2874999999999999
           ],
           "tag": null,
           "to": [
             0.625,
-            -1.2875
+            -1.2874999999999999
           ],
           "type": "ToPoint",
           "units": {
@@ -669,7 +779,7 @@ description: Variables in memory after executing subtract_regression05.kcl
           },
           "from": [
             0.625,
-            -1.2875
+            -1.2874999999999999
           ],
           "tag": null,
           "to": [
@@ -745,6 +855,14 @@ description: Variables in memory after executing subtract_regression05.kcl
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
+          "units": {
+            "type": "Unknown"
+          }
+        },
+        "zAxis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0,
           "units": {
             "type": "Unknown"
           }
@@ -820,6 +938,33 @@ description: Variables in memory after executing subtract_regression05.kcl
             }
           }
         ],
+        "innerPaths": [
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.0,
+              0.0
+            ],
+            "from": [
+              0.9375,
+              0.0
+            ],
+            "radius": 0.9375,
+            "tag": null,
+            "to": [
+              0.9375,
+              0.0
+            ],
+            "type": "Circle",
+            "units": {
+              "type": "Inches"
+            }
+          }
+        ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
@@ -845,6 +990,14 @@ description: Variables in memory after executing subtract_regression05.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
+            "units": {
+              "type": "Unknown"
+            }
+          },
+          "zAxis": {
+            "x": 1.0,
+            "y": 0.0,
+            "z": 0.0,
             "units": {
               "type": "Unknown"
             }

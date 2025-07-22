@@ -10,6 +10,15 @@ pub(crate) fn untype_point(p: [TyF64; 2]) -> ([f64; 2], NumericType) {
     ([x, y], ty)
 }
 
+pub(crate) fn untype_array<const N: usize>(p: [TyF64; N]) -> ([f64; N], NumericType) {
+    let (vec, ty) = NumericType::combine_eq_array(&p);
+    (
+        vec.try_into()
+            .unwrap_or_else(|v: Vec<f64>| panic!("Expected a Vec of length {} but it was {}", N, v.len())),
+        ty,
+    )
+}
+
 pub(crate) fn point_to_mm(p: [TyF64; 2]) -> [f64; 2] {
     [p[0].to_mm(), p[1].to_mm()]
 }
@@ -44,7 +53,7 @@ pub(crate) fn distance(a: Coords2d, b: Coords2d) -> f64 {
 pub(crate) fn between(a: Coords2d, b: Coords2d) -> Angle {
     let x = b[0] - a[0];
     let y = b[1] - a[1];
-    normalize(Angle::from_radians(y.atan2(x)))
+    normalize(Angle::from_radians(libm::atan2(y, x)))
 }
 
 /// Normalize the angle
@@ -88,17 +97,13 @@ pub(crate) fn delta(from_angle: Angle, to_angle: Angle) -> Angle {
 
 pub(crate) fn normalize_rad(angle: f64) -> f64 {
     let draft = angle % (2.0 * PI);
-    if draft < 0.0 {
-        draft + 2.0 * PI
-    } else {
-        draft
-    }
+    if draft < 0.0 { draft + 2.0 * PI } else { draft }
 }
 
 fn calculate_intersection_of_two_lines(line1: &[Coords2d; 2], line2_angle: f64, line2_point: Coords2d) -> Coords2d {
     let line2_point_b = [
-        line2_point[0] + f64::cos(line2_angle.to_radians()) * 10.0,
-        line2_point[1] + f64::sin(line2_angle.to_radians()) * 10.0,
+        line2_point[0] + libm::cos(line2_angle.to_radians()) * 10.0,
+        line2_point[1] + libm::sin(line2_angle.to_radians()) * 10.0,
     ];
     intersect(line1[0], line1[1], line2_point, line2_point_b)
 }
@@ -138,13 +143,13 @@ fn offset_line(offset: f64, p1: Coords2d, p2: Coords2d) -> [Coords2d; 2] {
         let direction = (p2[0] - p1[0]).signum();
         return [[p1[0], p1[1] + offset * direction], [p2[0], p2[1] + offset * direction]];
     }
-    let x_offset = offset / f64::sin(f64::atan2(p1[1] - p2[1], p1[0] - p2[0]));
+    let x_offset = offset / libm::sin(libm::atan2(p1[1] - p2[1], p1[0] - p2[0]));
     [[p1[0] + x_offset, p1[1]], [p2[0] + x_offset, p2[1]]]
 }
 
 pub(crate) fn get_y_component(angle: Angle, x: f64) -> Coords2d {
     let normalised_angle = ((angle.to_degrees() % 360.0) + 360.0) % 360.0; // between 0 and 360
-    let y = x * f64::tan(normalised_angle.to_radians());
+    let y = x * libm::tan(normalised_angle.to_radians());
     let sign = if normalised_angle > 90.0 && normalised_angle <= 270.0 {
         -1.0
     } else {
@@ -155,7 +160,7 @@ pub(crate) fn get_y_component(angle: Angle, x: f64) -> Coords2d {
 
 pub(crate) fn get_x_component(angle: Angle, y: f64) -> Coords2d {
     let normalised_angle = ((angle.to_degrees() % 360.0) + 360.0) % 360.0; // between 0 and 360
-    let x = y / f64::tan(normalised_angle.to_radians());
+    let x = y / libm::tan(normalised_angle.to_radians());
     let sign = if normalised_angle > 180.0 && normalised_angle <= 360.0 {
         -1.0
     } else {
@@ -174,13 +179,13 @@ pub(crate) fn arc_center_and_end(
     let end_angle = end_angle.to_radians();
 
     let center = [
-        -1.0 * (radius * start_angle.cos() - from[0]),
-        -1.0 * (radius * start_angle.sin() - from[1]),
+        -(radius * libm::cos(start_angle) - from[0]),
+        -(radius * libm::sin(start_angle) - from[1]),
     ];
 
     let end = [
-        center[0] + radius * end_angle.cos(),
-        center[1] + radius * end_angle.sin(),
+        center[0] + radius * libm::cos(end_angle),
+        center[1] + radius * libm::sin(end_angle),
     ];
 
     (center, end)
@@ -240,7 +245,7 @@ mod tests {
     use approx::assert_relative_eq;
     use pretty_assertions::assert_eq;
 
-    use super::{calculate_circle_center, get_x_component, get_y_component, Angle};
+    use super::{Angle, calculate_circle_center, get_x_component, get_y_component};
 
     static EACH_QUAD: [(i32, [i32; 2]); 12] = [
         (-315, [1, 1]),
@@ -357,7 +362,10 @@ mod tests {
 
         let get_point = |radius: f64, t: f64| {
             let angle = t * TAU;
-            [center[0] + radius * angle.cos(), center[1] + radius * angle.sin()]
+            [
+                center[0] + radius * libm::cos(angle),
+                center[1] + radius * libm::sin(angle),
+            ]
         };
 
         for radius in radius_array {
@@ -442,7 +450,7 @@ fn get_slope(start: Coords2d, end: Coords2d) -> (f64, f64) {
 fn get_angle(point1: Coords2d, point2: Coords2d) -> f64 {
     let delta_x = point2[0] - point1[0];
     let delta_y = point2[1] - point1[1];
-    let angle = delta_y.atan2(delta_x);
+    let angle = libm::atan2(delta_y, delta_x);
 
     let result = if angle < 0.0 { angle + 2.0 * PI } else { angle };
     result * (180.0 / PI)
@@ -484,13 +492,13 @@ fn get_mid_point(
     );
     let delta_ang = delta_ang / 2.0 + deg2rad(angle_from_center_to_arc_start);
     let shortest_arc_mid_point: Coords2d = [
-        delta_ang.cos() * radius + center[0],
-        delta_ang.sin() * radius + center[1],
+        libm::cos(delta_ang) * radius + center[0],
+        libm::sin(delta_ang) * radius + center[1],
     ];
     let opposite_delta = delta_ang + PI;
     let longest_arc_mid_point: Coords2d = [
-        opposite_delta.cos() * radius + center[0],
-        opposite_delta.sin() * radius + center[1],
+        libm::cos(opposite_delta) * radius + center[0],
+        libm::sin(opposite_delta) * radius + center[1],
     ];
 
     let rotation_direction_original_points = is_points_ccw(&[tan_previous_point, arc_start_point, arc_end_point]);
@@ -592,11 +600,14 @@ pub fn get_tangential_arc_to_info(input: TangentialArcInfoInput) -> TangentialAr
         input.obtuse,
     );
 
-    let start_angle = (input.arc_start_point[1] - center[1]).atan2(input.arc_start_point[0] - center[0]);
-    let end_angle = (input.arc_end_point[1] - center[1]).atan2(input.arc_end_point[0] - center[0]);
+    let start_angle = libm::atan2(
+        input.arc_start_point[1] - center[1],
+        input.arc_start_point[0] - center[0],
+    );
+    let end_angle = libm::atan2(input.arc_end_point[1] - center[1], input.arc_end_point[0] - center[0]);
     let ccw = is_points_ccw(&[input.arc_start_point, arc_mid_point, input.arc_end_point]);
 
-    let arc_mid_angle = (arc_mid_point[1] - center[1]).atan2(arc_mid_point[0] - center[0]);
+    let arc_mid_angle = libm::atan2(arc_mid_point[1] - center[1], arc_mid_point[0] - center[0]);
     let start_to_mid_arc_length = radius
         * delta(Angle::from_radians(start_angle), Angle::from_radians(arc_mid_angle))
             .to_radians()
@@ -724,7 +735,7 @@ mod get_tangential_arc_to_info_tests {
 
     #[test]
     fn test_get_tangential_arc_to_info_obtuse_with_wrap_around() {
-        let arc_end = (std::f64::consts::PI / 4.0).cos() * 2.0;
+        let arc_end = libm::cos(std::f64::consts::PI / 4.0) * 2.0;
         let result = get_tangential_arc_to_info(TangentialArcInfoInput {
             tan_previous_point: [2.0, -4.0],
             arc_start_point: [2.0, 0.0],
@@ -803,7 +814,7 @@ pub(crate) fn get_tangent_point_from_previous_arc(
     let tangential_angle = angle_from_old_center_to_arc_start + if last_arc_ccw { -90.0 } else { 90.0 };
     // What is the 10.0 constant doing???
     [
-        tangential_angle.to_radians().cos() * 10.0 + last_arc_end[0],
-        tangential_angle.to_radians().sin() * 10.0 + last_arc_end[1],
+        libm::cos(tangential_angle.to_radians()) * 10.0 + last_arc_end[0],
+        libm::sin(tangential_angle.to_radians()) * 10.0 + last_arc_end[1],
     ]
 }

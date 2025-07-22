@@ -19,16 +19,19 @@ import {
   shell,
   systemPreferences,
 } from 'electron'
-import electronUpdater, { type AppUpdater } from 'electron-updater'
 import { Issuer } from 'openid-client'
 
+import { getAutoUpdater } from '@src/updater'
 import {
   argvFromYargs,
   getPathOrUrlFromArgs,
   parseCLIArgs,
 } from '@src/commandLineArgs'
 import { initPromiseNode } from '@src/lang/wasmUtilsNode'
-import { ZOO_STUDIO_PROTOCOL } from '@src/lib/constants'
+import {
+  ZOO_STUDIO_PROTOCOL,
+  OAUTH2_DEVICE_CLIENT_ID,
+} from '@src/lib/constants'
 import getCurrentProjectFile from '@src/lib/getCurrentProjectFile'
 import { reportRejection } from '@src/lib/trap'
 import {
@@ -38,6 +41,7 @@ import {
   disableMenu,
   enableMenu,
 } from '@src/menu'
+import fs from 'fs'
 
 // If we're on Windows, pull the local system TLS CAs in
 require('win-ca')
@@ -59,21 +63,17 @@ const args = parseCLIArgs(process.argv)
 // @ts-ignore: TS1343
 const viteEnv = import.meta.env
 const NODE_ENV = process.env.NODE_ENV || viteEnv.MODE
-const IS_PLAYWRIGHT = process.env.IS_PLAYWRIGHT
 
 // dotenv override when present
 dotenv.config({ path: [`.env.${NODE_ENV}.local`, `.env.${NODE_ENV}`] })
 
 // default vite values based on mode
 process.env.NODE_ENV ??= viteEnv.MODE
-process.env.BASE_URL ??= viteEnv.VITE_KC_API_BASE_URL
-process.env.VITE_KC_API_WS_MODELING_URL ??= viteEnv.VITE_KC_API_WS_MODELING_URL
-process.env.VITE_KC_API_BASE_URL ??= viteEnv.VITE_KC_API_BASE_URL
-process.env.VITE_KC_SITE_BASE_URL ??= viteEnv.VITE_KC_SITE_BASE_URL
-process.env.VITE_KC_SITE_APP_URL ??= viteEnv.VITE_KC_SITE_APP_URL
-process.env.VITE_KC_SKIP_AUTH ??= viteEnv.VITE_KC_SKIP_AUTH
-process.env.VITE_KC_CONNECTION_TIMEOUT_MS ??=
-  viteEnv.VITE_KC_CONNECTION_TIMEOUT_MS
+process.env.VITE_KITTYCAD_API_BASE_URL ??= viteEnv.VITE_KITTYCAD_API_BASE_URL
+process.env.VITE_KITTYCAD_API_WEBSOCKET_URL ??=
+  viteEnv.VITE_KITTYCAD_API_WEBSOCKET_URL
+process.env.VITE_KITTYCAD_SITE_BASE_URL ??= viteEnv.VITE_KITTYCAD_SITE_BASE_URL
+process.env.VITE_KITTYCAD_SITE_APP_URL ??= viteEnv.VITE_KITTYCAD_SITE_APP_URL
 
 // Likely convenient to keep for debugging
 console.log('Environment vars', process.env)
@@ -95,29 +95,40 @@ if (process.defaultApp) {
 // Must be done before ready event.
 // Checking against this lock is needed for Windows and Linux, see
 // https://www.electronjs.org/docs/latest/tutorial/launch-app-from-url-in-another-app#windows-and-linux-code
-if (!singleInstanceLock && !IS_PLAYWRIGHT) {
+if (!singleInstanceLock && process.env.NODE_ENV !== 'test') {
   app.quit()
 } else {
   registerStartupListeners()
 }
 
-const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
-  let newWindow
+const createWindow = (pathToOpen?: string): BrowserWindow => {
+  let newWindow: BrowserWindow | null = null
 
-  if (reuse) {
-    newWindow = mainWindow
-    Menu.setApplicationMenu(null)
-  }
   if (!newWindow) {
     const primaryDisplay = screen.getPrimaryDisplay()
     const { width, height } = primaryDisplay.workAreaSize
 
-    const windowWidth = Math.max(500, width - 150)
-    const windowHeight = Math.max(400, height - 100)
+    // Use 90% vertical screen space, 16:9 aspect ratio for the width,
+    // but ensure it fits within the screen width with a bit of padding
+    let windowHeight = Math.round(height * 0.9)
+    let windowWidth = Math.min(Math.round(windowHeight * (16 / 9)), width - 50)
 
-    const x = primaryDisplay.workArea.x + Math.floor((width - windowWidth) / 2)
-    const y =
-      primaryDisplay.workArea.y + Math.floor((height - windowHeight) / 2)
+    let x = primaryDisplay.workArea.x + Math.floor((width - windowWidth) / 2)
+    let y = primaryDisplay.workArea.y + Math.floor((height - windowHeight) / 2)
+
+    // If size was saved already, use it
+    const localDeviceState = loadLocalDeviceState()
+    const windowBounds = localDeviceState?.windowBounds
+    if (windowBounds) {
+      // Only use bounds if the window is still visible on any of the displays
+      // (one screen could have been disconnected since config was saved).
+      if (isBoundsVisible(windowBounds)) {
+        windowWidth = windowBounds.width
+        windowHeight = windowBounds.height
+        x = windowBounds.x
+        y = windowBounds.y
+      }
+    }
 
     newWindow = new BrowserWindow({
       autoHideMenuBar: false,
@@ -138,7 +149,19 @@ const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
       titleBarStyle: 'hiddenInset',
       backgroundColor: nativeTheme.shouldUseDarkColors ? '#1C1C1C' : '#FCFCFC',
     })
+    // This is only needed on windows, but it doesn't do any harm on other platforms.
+    // On windows the initial width, height supplied above cannot be larger than screen resolution which causes
+    // some weird border to appear when the last window size was close to full screen.
+    newWindow.setBounds({ x, y, width: windowWidth, height: windowHeight })
   }
+
+  newWindow.on('close', () => {
+    const bounds = newWindow.getBounds()
+    saveLocalDeviceState({
+      version: '0.1', // Version of the config file, so we add migrations if we break it later
+      windowBounds: bounds,
+    })
+  })
 
   // Deep Link: Case of a cold start from Windows or Linux
   const pathOrUrl = getPathOrUrlFromArgs(args)
@@ -215,11 +238,48 @@ const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()
 
-  if (!reuse) {
-    if (!process.env.HEADLESS) newWindow.show()
-  }
+  if (!process.env.HEADLESS) newWindow.show()
 
   return newWindow
+}
+
+interface LocalDeviceState {
+  windowBounds: Electron.Rectangle
+  version: string // "0.1"
+}
+
+const userDataPath = app.getPath('userData')
+const localDeviceStatePath = path.join(userDataPath, 'device_state.json')
+
+const loadLocalDeviceState = (): LocalDeviceState | null => {
+  try {
+    const data = fs.readFileSync(localDeviceStatePath, 'utf8')
+    const localDeviceState = JSON.parse(data) as LocalDeviceState
+    if (localDeviceState.windowBounds) {
+      return localDeviceState
+    }
+  } catch (e) {
+    console.log("Can't load device_state.json", e)
+  }
+  return null
+}
+
+const saveLocalDeviceState = (state: LocalDeviceState) => {
+  fs.writeFileSync(localDeviceStatePath, JSON.stringify(state), {
+    encoding: 'utf8',
+  })
+}
+
+const isBoundsVisible = (bounds: Electron.Rectangle): boolean => {
+  return screen.getAllDisplays().some((display) => {
+    const displayBounds = display.bounds
+    return !(
+      bounds.x >= displayBounds.x + displayBounds.width ||
+      bounds.x + bounds.width <= displayBounds.x ||
+      bounds.y >= displayBounds.y + displayBounds.height ||
+      bounds.y + bounds.height <= displayBounds.y
+    )
+  })
 }
 
 // Quit when all windows are closed, even on macOS. There, it's common
@@ -341,7 +401,7 @@ ipcMain.handle('startDeviceFlow', async (_, host: string) => {
     // We can hardcode the client ID.
     // This value is safe to be embedded in version control.
     // This is the client ID of the KittyCAD app.
-    client_id: '2af127fb-e14e-400a-9c57-a9ed08d1a5b7',
+    client_id: OAUTH2_DEVICE_CLIENT_ID,
     token_endpoint_auth_method: 'none',
   })
 
@@ -442,16 +502,6 @@ ipcMain.handle('disable-menu', (event, data) => {
   disableMenu(menuId)
 })
 
-export function getAutoUpdater(): AppUpdater {
-  // Using destructuring to access autoUpdater due to the CommonJS module of 'electron-updater'.
-  // It is a workaround for ESM compatibility issues, see https://github.com/electron-userland/electron-builder/issues/7976.
-  const { autoUpdater } = electronUpdater
-  // Allows us to rollback to a previous version if needed.
-  // See https://github.com/electron-userland/electron-builder/blob/7dbc6c77c340c869d1e7effa22135fc740003a0f/packages/electron-updater/src/AppUpdater.ts#L450-L451
-  autoUpdater.allowDowngrade = true
-  return autoUpdater
-}
-
 app.on('ready', () => {
   // Disable auto updater on non-versioned builds
   if (packageJSON.version === '0.0.0' && viteEnv.MODE !== 'production') {
@@ -462,13 +512,36 @@ app.on('ready', () => {
   // TODO: we're getting `Error: Response ends without calling any handlers` with our setup,
   // so at the moment this isn't worth enabling
   autoUpdater.disableDifferentialDownload = true
-  setTimeout(() => {
-    autoUpdater.checkForUpdates().catch(reportRejection)
-  }, 1000)
+
+  // Check for updates in the background at startup and then every 15 minutes
+  let backgroundCheckingForUpdates = false
+  const checkForUpdatesBackground = () => {
+    backgroundCheckingForUpdates = true
+    autoUpdater
+      .checkForUpdates()
+      .catch(reportRejection)
+      .finally(() => {
+        backgroundCheckingForUpdates = false
+      })
+  }
+  const oneSecond = 1000
   const fifteenMinutes = 15 * 60 * 1000
-  setInterval(() => {
-    autoUpdater.checkForUpdates().catch(reportRejection)
-  }, fifteenMinutes)
+  setTimeout(checkForUpdatesBackground, oneSecond)
+  setInterval(checkForUpdatesBackground, fifteenMinutes)
+
+  autoUpdater.on('checking-for-update', () => {
+    console.log('checking-for-update')
+    if (!backgroundCheckingForUpdates) {
+      mainWindow?.webContents.send('update-checking')
+    }
+  })
+
+  autoUpdater.on('update-not-available', (info) => {
+    console.log('update-not-available', info)
+    if (!backgroundCheckingForUpdates) {
+      mainWindow?.webContents.send('update-not-available')
+    }
+  })
 
   autoUpdater.on('error', (error) => {
     console.error('update-error', error)
@@ -518,7 +591,7 @@ const getProjectPathAtStartup = async (
   // startup.
   // Since the args passed are always '.'
   // aka Forge for npm run tron:start live dev or playwright tests, but not dev packaged apps
-  if (MAIN_WINDOW_VITE_DEV_SERVER_URL || IS_PLAYWRIGHT) {
+  if (MAIN_WINDOW_VITE_DEV_SERVER_URL || process.env.NODE_ENV === 'test') {
     return null
   }
 

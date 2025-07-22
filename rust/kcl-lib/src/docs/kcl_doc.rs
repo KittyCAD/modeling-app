@@ -8,6 +8,7 @@ use tower_lsp::lsp_types::{
 };
 
 use crate::{
+    ModuleId,
     execution::annotations,
     parsing::{
         ast::types::{
@@ -15,7 +16,6 @@ use crate::{
         },
         token::NumericSuffix,
     },
-    ModuleId,
 };
 
 pub fn walk_prelude() -> ModData {
@@ -97,7 +97,7 @@ fn visit_module(name: &str, preferred_prefix: &str, names: WalkForNames) -> Resu
                         ImportSelector::None { .. } => {
                             let name = import.module_name().unwrap();
                             if names.contains(&name) {
-                                Some(visit_module(&path[1], &format!("{}::", name), WalkForNames::All)?)
+                                Some(visit_module(&path[1], &format!("{name}::"), WalkForNames::All)?)
                             } else {
                                 None
                             }
@@ -302,6 +302,7 @@ impl DocData {
         }
     }
 
+    #[allow(dead_code)]
     pub(super) fn summary(&self) -> Option<&String> {
         match self {
             DocData::Fn(f) => f.summary.as_ref(),
@@ -358,6 +359,7 @@ impl ConstData {
                     crate::parsing::ast::types::LiteralValue::Bool { .. } => "boolean".to_owned(),
                 }),
             ),
+            crate::parsing::ast::types::Expr::AscribedExpression(e) => (None, Some(e.ty.to_string())),
             _ => (None, None),
         };
 
@@ -449,7 +451,7 @@ impl ModData {
         let (name, qual_name, module_name) = if name == "prelude" {
             ("std", "std".to_owned(), String::new())
         } else {
-            (name, format!("std::{}", name), "std".to_owned())
+            (name, format!("std::{name}"), "std".to_owned())
         };
         Self {
             preferred_name: format!("{preferred_prefix}{name}"),
@@ -462,8 +464,13 @@ impl ModData {
         }
     }
 
+    #[allow(dead_code)]
     pub fn find_by_name(&self, name: &str) -> Option<&DocData> {
-        if let Some(result) = self.children.values().find(|dd| dd.name() == name) {
+        if let Some(result) = self
+            .children
+            .values()
+            .find(|dd| dd.name() == name && !matches!(dd, DocData::Mod(_)))
+        {
             return Some(result);
         }
 
@@ -618,6 +625,12 @@ impl FnData {
     pub(super) fn to_autocomplete_snippet(&self) -> String {
         if self.name == "loft" {
             return "loft([${0:sketch000}, ${1:sketch001}])".to_owned();
+        } else if self.name == "union" {
+            return "union([${0:extrude001}, ${1:extrude002}])".to_owned();
+        } else if self.name == "subtract" {
+            return "subtract([${0:extrude001}], tools = [${1:extrude002}])".to_owned();
+        } else if self.name == "intersect" {
+            return "intersect([${0:extrude001}, ${1:extrude002}])".to_owned();
         } else if self.name == "clone" {
             return "clone(${0:part001})".to_owned();
         } else if self.name == "hole" {
@@ -634,13 +647,13 @@ impl FnData {
         format!("{}({})", self.preferred_name, args.join(", "))
     }
 
-    fn to_signature_help(&self) -> SignatureHelp {
+    pub(crate) fn to_signature_help(&self) -> SignatureHelp {
         // TODO Fill this in based on the current position of the cursor.
         let active_parameter = None;
 
         SignatureHelp {
             signatures: vec![SignatureInformation {
-                label: self.preferred_name.clone(),
+                label: self.preferred_name.clone() + &self.fn_signature(),
                 documentation: self.short_docs().map(|s| {
                     Documentation::MarkupContent(MarkupContent {
                         kind: MarkupKind::Markdown,
@@ -734,12 +747,12 @@ impl ArgData {
             } = &attr.inner
             {
                 for p in props {
-                    if p.key.name == "include_in_snippet" {
+                    if p.key.name == "includeInSnippet" {
                         if let Some(b) = p.value.literal_bool() {
                             result.override_in_snippet = Some(b);
                         } else {
                             panic!(
-                                "Invalid value for `include_in_snippet`, expected bool literal, found {:?}",
+                                "Invalid value for `includeInSnippet`, expected bool literal, found {:?}",
                                 p.value
                             );
                         }
@@ -754,14 +767,12 @@ impl ArgData {
                         for s in &arr.elements {
                             let Expr::Literal(lit) = s else {
                                 panic!(
-                                    "Invalid value in `snippetArray`, all items must be string literals but found {:?}",
-                                    s
+                                    "Invalid value in `snippetArray`, all items must be string literals but found {s:?}"
                                 );
                             };
                             let LiteralValue::String(litstr) = &lit.inner.value else {
                                 panic!(
-                                    "Invalid value in `snippetArray`, all items must be string literals but found {:?}",
-                                    s
+                                    "Invalid value in `snippetArray`, all items must be string literals but found {s:?}"
                                 );
                             };
                             items.push(litstr.to_owned());
@@ -802,27 +813,36 @@ impl ArgData {
             return Some((index + n - 1, snippet));
         }
         match self.ty.as_deref() {
-            Some(s) if s.starts_with("number") => Some((index, format!(r#"{label}${{{}:3.14}}"#, index))),
-            Some("Point2d") => Some((
-                index + 1,
-                format!(r#"{label}[${{{}:3.14}}, ${{{}:3.14}}]"#, index, index + 1),
-            )),
+            Some("Sketch") if self.kind == ArgKind::Special => None,
+            Some(s) if s.starts_with("number") => Some((index, format!(r#"{label}${{{index}:10}}"#))),
+            Some("Point2d") => Some((index + 1, format!(r#"{label}[${{{}:0}}, ${{{}:0}}]"#, index, index + 1))),
             Some("Point3d") => Some((
                 index + 2,
                 format!(
-                    r#"{label}[${{{}:3.14}}, ${{{}:3.14}}, ${{{}:3.14}}]"#,
+                    r#"{label}[${{{}:0}}, ${{{}:0}}, ${{{}:0}}]"#,
                     index,
                     index + 1,
                     index + 2
                 ),
             )),
             Some("Axis2d | Edge") | Some("Axis3d | Edge") => Some((index, format!(r#"{label}${{{index}:X}}"#))),
+            Some("Sketch") | Some("Sketch | Helix") => Some((index, format!(r#"{label}${{{index}:sketch000}}"#))),
             Some("Edge") => Some((index, format!(r#"{label}${{{index}:tag_or_edge_fn}}"#))),
             Some("[Edge; 1+]") => Some((index, format!(r#"{label}[${{{index}:tag_or_edge_fn}}]"#))),
-            Some("Plane") => Some((index, format!(r#"{label}${{{}:XY}}"#, index))),
+            Some("Plane") | Some("Solid | Plane") => Some((index, format!(r#"{label}${{{index}:XY}}"#))),
+            Some("[TaggedFace; 2]") => Some((
+                index + 1,
+                format!(r#"{label}[${{{}:tag}}, ${{{}:tag}}]"#, index, index + 1),
+            )),
 
-            Some("string") => Some((index, format!(r#"{label}${{{}:"string"}}"#, index))),
-            Some("bool") => Some((index, format!(r#"{label}${{{}:false}}"#, index))),
+            Some("string") => {
+                if self.name == "color" {
+                    Some((index, format!(r"{label}${{{}:{}}}", index, "\"#ff0000\"")))
+                } else {
+                    Some((index, format!(r#"{label}${{{index}:"string"}}"#)))
+                }
+            }
+            Some("bool") => Some((index, format!(r#"{label}${{{index}:false}}"#))),
             _ => None,
         }
     }
@@ -971,7 +991,7 @@ trait ApplyMeta {
         }
 
         let mut summary = None;
-        let mut description = None;
+        let mut description: Option<String> = None;
         let mut example: Option<(String, ExampleProperties)> = None;
         let mut examples = Vec::new();
         for l in comments.iter().filter(|l| l.starts_with("///")).map(|l| {
@@ -981,22 +1001,6 @@ trait ApplyMeta {
                 &l[3..]
             }
         }) {
-            if description.is_none() && summary.is_none() {
-                summary = Some(l.to_owned());
-                continue;
-            }
-            if description.is_none() {
-                if l.is_empty() {
-                    description = Some(String::new());
-                } else {
-                    description = summary;
-                    summary = None;
-                    let d = description.as_mut().unwrap();
-                    d.push('\n');
-                    d.push_str(l);
-                }
-                continue;
-            }
             #[allow(clippy::manual_strip)]
             if l.starts_with("```") {
                 if let Some((e, p)) = example {
@@ -1032,12 +1036,36 @@ trait ApplyMeta {
                     continue;
                 }
             }
+
+            // An empty line outside of an example. This either starts the description (with or
+            // without a summary) or adds a blank line to the description.
+            if l.is_empty() {
+                match &mut description {
+                    Some(d) => {
+                        d.push('\n');
+                    }
+                    None => description = Some(String::new()),
+                }
+                continue;
+            }
+
+            // Our first line, start the summary.
+            if description.is_none() && summary.is_none() {
+                summary = Some(l.to_owned());
+                continue;
+            }
+
+            // Append the line to either the description or summary.
             match &mut description {
                 Some(d) => {
                     d.push_str(l);
                     d.push('\n');
                 }
-                None => unreachable!(),
+                None => {
+                    let s = summary.as_mut().unwrap();
+                    s.push(' ');
+                    s.push_str(l);
+                }
             }
         }
         assert!(example.is_none());
@@ -1069,7 +1097,7 @@ trait ApplyMeta {
                                 self.impl_kind(annotations::Impl::from_str(s).unwrap());
                             }
                         }
-                        "deprecated" => {
+                        annotations::DEPRECATED => {
                             if let Some(b) = p.value.literal_bool() {
                                 self.deprecated(b);
                             }
@@ -1263,9 +1291,15 @@ mod test {
                     continue;
                 };
 
-                for i in 0..f.examples.len() {
+                for (i, (_, props)) in f.examples.iter().enumerate() {
+                    if props.norun {
+                        continue;
+                    }
                     let name = format!("{}-{i}", f.qual_name.replace("::", "-"));
-                    assert!(TEST_NAMES.contains(&&*name), "Missing test for example \"{name}\", maybe need to update kcl-derive-docs/src/example_tests.rs?")
+                    assert!(
+                        TEST_NAMES.contains(&&*name),
+                        "Missing test for example \"{name}\", maybe need to update kcl-derive-docs/src/example_tests.rs?"
+                    )
                 }
             }
         }
@@ -1301,7 +1335,9 @@ mod test {
         };
 
         let Some(DocData::Fn(d)) = data.children.get(&format!("I:{qualname}")) else {
-            panic!("Could not find data for {NAME} (missing a child entry for {qualname}), maybe need to update kcl-derive-docs/src/example_tests.rs?");
+            panic!(
+                "Could not find data for {NAME} (missing a child entry for {qualname}), maybe need to update kcl-derive-docs/src/example_tests.rs?"
+            );
         };
 
         for (i, eg) in d.examples.iter().enumerate() {
@@ -1329,6 +1365,8 @@ mod test {
             return;
         }
 
-        panic!("Could not find data for {NAME} (no example {number}), maybe need to update kcl-derive-docs/src/example_tests.rs?");
+        panic!(
+            "Could not find data for {NAME} (no example {number}), maybe need to update kcl-derive-docs/src/example_tests.rs?"
+        );
     }
 }

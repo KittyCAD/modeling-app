@@ -55,7 +55,7 @@ export default defineConfig(({ command, mode }) => {
         : // Gotcha: 'hanging-process' is very noisey, turn off by default on localhost
           // : ['verbose', 'hanging-process'],
           ['verbose'],
-      testTimeout: 1000,
+      testTimeout: 2000,
       hookTimeout: 1000,
       teardownTimeout: 1000,
       retry: 5,

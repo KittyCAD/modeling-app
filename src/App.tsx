@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useHotkeys } from 'react-hotkeys-hook'
 import ModalContainer from 'react-modal-promise'
@@ -12,7 +12,6 @@ import {
 import { AppHeader } from '@src/components/AppHeader'
 import { EngineStream } from '@src/components/EngineStream'
 import Gizmo from '@src/components/Gizmo'
-import { LowerRightControls } from '@src/components/LowerRightControls'
 import { useLspContext } from '@src/components/LspProvider'
 import { ModelingSidebar } from '@src/components/ModelingSidebar/ModelingSidebar'
 import { UnitsMenu } from '@src/components/UnitsMenu'
@@ -29,6 +28,8 @@ import {
   codeManager,
   kclManager,
   settingsActor,
+  editorManager,
+  getSettings,
 } from '@src/lib/singletons'
 import { maybeWriteToDisk } from '@src/lib/telemetry'
 import type { IndexLoaderData } from '@src/lib/types'
@@ -52,7 +53,20 @@ import {
   WASM_INIT_FAILED_TOAST_ID,
 } from '@src/lib/constants'
 import { isPlaywright } from '@src/lib/isPlaywright'
-import { VITE_KC_SITE_BASE_URL } from '@src/env'
+import { useNetworkHealthStatus } from '@src/components/NetworkHealthIndicator'
+import { useNetworkMachineStatus } from '@src/components/NetworkMachineIndicator'
+import {
+  defaultLocalStatusBarItems,
+  defaultGlobalStatusBarItems,
+} from '@src/components/StatusBar/defaultStatusBarItems'
+import { StatusBar } from '@src/components/StatusBar/StatusBar'
+import { useModelingContext } from '@src/hooks/useModelingContext'
+import { xStateValueToString } from '@src/lib/xStateValueToString'
+import { getSelectionTypeDisplayText } from '@src/lib/selections'
+import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
+import { UndoRedoButtons } from '@src/components/UndoRedoButtons'
+import { Toolbar } from '@src/Toolbar'
+import { withSiteBaseURL } from '@src/lib/withBaseURL'
 
 // CYCLIC REF
 sceneInfra.camControls.engineStreamActor = engineStreamActor
@@ -62,6 +76,7 @@ maybeWriteToDisk()
   .catch(() => {})
 
 export function App() {
+  const { state: modelingState } = useModelingContext()
   useQueryParamEffects()
   const { project, file } = useLoaderData() as IndexLoaderData
   const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
@@ -70,9 +85,10 @@ export function App() {
   const navigate = useNavigate()
   const filePath = useAbsoluteFilePath()
   const { onProjectOpen } = useLspContext()
+  const networkHealthStatus = useNetworkHealthStatus()
+  const networkMachineStatus = useNetworkMachineStatus()
   // We need the ref for the outermost div so we can screenshot the app for
   // the coredump.
-  const ref = useRef<HTMLDivElement>(null)
 
   // Stream related refs and data
   const [searchParams] = useSearchParams()
@@ -94,6 +110,16 @@ export function App() {
   useHotkeys('backspace', (e) => {
     e.preventDefault()
   })
+  // Since these already exist in the editor, we don't need to define them
+  // with the wrapper.
+  useHotkeys('mod+z', (e) => {
+    e.preventDefault()
+    editorManager.undo()
+  })
+  useHotkeys('mod+shift+z', (e) => {
+    e.preventDefault()
+    editorManager.redo()
+  })
   useHotkeyWrapper(
     [isDesktop() ? 'mod + ,' : 'shift + mod + ,'],
     () => navigate(filePath + PATHS.SETTINGS),
@@ -113,6 +139,9 @@ export function App() {
     // fetch the token count. The regular flow is the count is initialized
     // by the Projects view.
     billingActor.send({ type: BillingTransition.Update, apiToken: authToken })
+
+    // Tell engineStream to wait for dependencies to start streaming.
+    engineStreamActor.send({ type: EngineStreamTransition.WaitForDependencies })
 
     // When leaving the modeling scene, cut the engine stream.
     return () => {
@@ -162,7 +191,8 @@ export function App() {
         () =>
           DownloadAppToast({
             onAccept: () => {
-              openWindow(`${VITE_KC_SITE_BASE_URL}/${APP_DOWNLOAD_PATH}`)
+              const url = withSiteBaseURL(`/${APP_DOWNLOAD_PATH}`)
+              openWindow(url)
                 .then(() => {
                   toast.dismiss(DOWNLOAD_APP_TOAST_ID)
                 })
@@ -217,24 +247,71 @@ export function App() {
   }, [])
 
   return (
-    <div className="relative h-full flex flex-col" ref={ref}>
-      <AppHeader
-        className="transition-opacity transition-duration-75"
-        project={{ project, file }}
-        enableMenu={true}
-        nativeFileMenuCreated={nativeFileMenuCreated}
-      >
-        <CommandBarOpenButton />
-        <ShareButton />
-      </AppHeader>
-      <ModalContainer />
-      <ModelingSidebar />
-      <EngineStream pool={pool} authToken={authToken} />
-      {/* <CamToggle /> */}
-      <LowerRightControls navigate={navigate}>
-        <UnitsMenu />
-        <Gizmo />
-      </LowerRightControls>
+    <div className="h-screen flex flex-col overflow-hidden select-none">
+      <div className="relative flex flex-1 flex-col">
+        <div className="relative flex items-center flex-col">
+          <AppHeader
+            className="transition-opacity transition-duration-75"
+            project={{ project, file }}
+            enableMenu={true}
+            nativeFileMenuCreated={nativeFileMenuCreated}
+            projectMenuChildren={
+              <UndoRedoButtons
+                editorManager={editorManager}
+                className="flex items-center px-2 border-x border-chalkboard-30 dark:border-chalkboard-80"
+              />
+            }
+          >
+            <CommandBarOpenButton />
+            <ShareButton />
+          </AppHeader>
+          <Toolbar />
+        </div>
+        <ModalContainer />
+        <ModelingSidebar />
+        <EngineStream pool={pool} authToken={authToken} />
+        {/* <CamToggle /> */}
+        <section className="absolute bottom-2 right-2 flex flex-col items-end gap-3 pointer-events-none">
+          <UnitsMenu />
+          <Gizmo />
+        </section>
+      </div>
+      <StatusBar
+        globalItems={[
+          networkHealthStatus,
+          ...(isDesktop() ? [networkMachineStatus] : []),
+          ...defaultGlobalStatusBarItems({ location, filePath }),
+        ]}
+        localItems={[
+          ...(getSettings().app.showDebugPanel.current
+            ? ([
+                {
+                  id: 'modeling-state',
+                  element: 'text',
+                  label:
+                    modelingState.value instanceof Object
+                      ? (xStateValueToString(modelingState.value) ?? '')
+                      : modelingState.value,
+                  toolTip: {
+                    children: 'The current state of the modeler',
+                  },
+                },
+              ] satisfies StatusBarItemType[])
+            : []),
+          {
+            id: 'selection',
+            element: 'text',
+            label:
+              getSelectionTypeDisplayText(
+                modelingState.context.selectionRanges
+              ) ?? 'No selection',
+            toolTip: {
+              children: 'Currently selected geometry',
+            },
+          },
+          ...defaultLocalStatusBarItems,
+        ]}
+      />
     </div>
   )
 }

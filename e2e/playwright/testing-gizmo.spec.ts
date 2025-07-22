@@ -8,37 +8,37 @@ test.describe('Testing Gizmo', () => {
   const cases = [
     {
       testDescription: 'top view',
-      clickPosition: { x: 951, y: 385 },
+      clickPosition: { x: 951, y: 402 },
       expectedCameraPosition: { x: 800, y: -152, z: 4886.02 },
       expectedCameraTarget: { x: 800, y: -152, z: 26 },
     },
     {
       testDescription: 'bottom view',
-      clickPosition: { x: 951, y: 429 },
+      clickPosition: { x: 951, y: 449 },
       expectedCameraPosition: { x: 800, y: -152, z: -4834.02 },
       expectedCameraTarget: { x: 800, y: -152, z: 26 },
     },
     {
       testDescription: 'right view',
-      clickPosition: { x: 929, y: 417 },
+      clickPosition: { x: 929, y: 435 },
       expectedCameraPosition: { x: 5660.02, y: -152, z: 26 },
       expectedCameraTarget: { x: 800, y: -152, z: 26 },
     },
     {
       testDescription: 'left view',
-      clickPosition: { x: 974, y: 397 },
+      clickPosition: { x: 974, y: 417 },
       expectedCameraPosition: { x: -4060.02, y: -152, z: 26 },
       expectedCameraTarget: { x: 800, y: -152, z: 26 },
     },
     {
       testDescription: 'back view',
-      clickPosition: { x: 967, y: 421 },
+      clickPosition: { x: 967, y: 441 },
       expectedCameraPosition: { x: 800, y: 4708.02, z: 26 },
       expectedCameraTarget: { x: 800, y: -152, z: 26 },
     },
     {
       testDescription: 'front view',
-      clickPosition: { x: 935, y: 393 },
+      clickPosition: { x: 935, y: 413 },
       expectedCameraPosition: { x: 800, y: -5012.02, z: 26 },
       expectedCameraTarget: { x: 800, y: -152, z: 26 },
     },
@@ -98,7 +98,13 @@ test.describe('Testing Gizmo', () => {
       await page.waitForTimeout(100)
       await page.mouse.click(clickPosition.x, clickPosition.y)
       await page.mouse.move(0, 0)
-      await u.waitForCmdReceive('default_camera_look_at')
+
+      // We use different camera commands for top/bottom cf. all others.
+      if (['top view', 'bottom view'].includes(testDescription)) {
+        await u.waitForCmdReceive('default_camera_set_view')
+      } else {
+        await u.waitForCmdReceive('default_camera_look_at')
+      }
       await u.clearCommandLogs()
 
       await u.sendCustomCmd({

@@ -72,26 +72,19 @@ export interface IElectronAPI {
   }
   process: {
     env: {
-      BASE_URL: string
-      IS_PLAYWRIGHT: string
-      VITE_KC_DEV_TOKEN: string
-      VITE_KC_API_WS_MODELING_URL: string
-      VITE_KC_API_BASE_URL: string
-      VITE_KC_SITE_BASE_URL: string
-      VITE_KC_SITE_APP_URL: string
-      VITE_KC_SKIP_AUTH: string
-      VITE_KC_CONNECTION_TIMEOUT_MS: string
-      VITE_KC_DEV_TOKEN: string
       NODE_ENV: string
-      PROD: string
-      DEV: string
-      TEST: string
-      CI: string
+      VITE_KITTYCAD_API_BASE_URL: string
+      VITE_KITTYCAD_API_WEBSOCKET_URL: string
+      VITE_KITTYCAD_API_TOKEN: string
+      VITE_KITTYCAD_SITE_BASE_URL: string
+      VITE_KITTYCAD_SITE_APP_URL: string
     }
   }
   kittycad: (access: string, args: any) => any
   listMachines: (machineApiIp: string) => Promise<MachinesListing>
   getMachineApiIp: () => Promise<string | null>
+  onUpdateChecking: (callback: () => void) => Electron.IpcRenderer
+  onUpdateNotAvailable: (callback: () => void) => Electron.IpcRenderer
   onUpdateDownloadStart: (
     callback: (value: { version: string }) => void
   ) => Electron.IpcRenderer

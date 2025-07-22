@@ -13,6 +13,7 @@ description: Result of parsing thermal-block-insert.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "insertLength",
             "start": 0,
             "type": "Identifier"
@@ -20,6 +21,7 @@ description: Result of parsing thermal-block-insert.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "400",
             "start": 0,
             "type": "Literal",
@@ -29,11 +31,13 @@ description: Result of parsing thermal-block-insert.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "preComments": [
           "// Define overall dimensions of the insert block"
         ],
@@ -49,6 +53,7 @@ description: Result of parsing thermal-block-insert.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "insertHeight",
             "start": 0,
             "type": "Identifier"
@@ -56,6 +61,7 @@ description: Result of parsing thermal-block-insert.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "200",
             "start": 0,
             "type": "Literal",
@@ -65,11 +71,13 @@ description: Result of parsing thermal-block-insert.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -82,6 +90,7 @@ description: Result of parsing thermal-block-insert.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "insertThickness",
             "start": 0,
             "type": "Identifier"
@@ -89,6 +98,7 @@ description: Result of parsing thermal-block-insert.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "50",
             "start": 0,
             "type": "Literal",
@@ -98,11 +108,13 @@ description: Result of parsing thermal-block-insert.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -115,6 +127,7 @@ description: Result of parsing thermal-block-insert.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "setbackFactor",
             "start": 0,
             "type": "Identifier"
@@ -122,6 +135,7 @@ description: Result of parsing thermal-block-insert.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "0.25",
             "start": 0,
             "type": "Literal",
@@ -131,11 +145,13 @@ description: Result of parsing thermal-block-insert.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "preComments": [
           "",
           "",
@@ -153,6 +169,7 @@ description: Result of parsing thermal-block-insert.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "tongueTargetCount",
             "start": 0,
             "type": "Identifier"
@@ -164,9 +181,11 @@ description: Result of parsing thermal-block-insert.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "insertLength",
                 "start": 0,
                 "type": "Identifier"
@@ -176,10 +195,12 @@ description: Result of parsing thermal-block-insert.kcl
               "type": "Name",
               "type": "Name"
             },
+            "moduleId": 0,
             "operator": "/",
             "right": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "raw": "80",
               "start": 0,
               "type": "Literal",
@@ -193,11 +214,13 @@ description: Result of parsing thermal-block-insert.kcl
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -210,18 +233,22 @@ description: Result of parsing thermal-block-insert.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "tongueCount",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "arguments": [],
             "callee": {
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "round",
                 "start": 0,
                 "type": "Identifier"
@@ -232,6 +259,7 @@ description: Result of parsing thermal-block-insert.kcl
             },
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
@@ -239,9 +267,11 @@ description: Result of parsing thermal-block-insert.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "tongueTargetCount",
                 "start": 0,
                 "type": "Identifier"
@@ -252,11 +282,13 @@ description: Result of parsing thermal-block-insert.kcl
               "type": "Name"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -269,6 +301,7 @@ description: Result of parsing thermal-block-insert.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "tongueLength",
             "start": 0,
             "type": "Identifier"
@@ -280,9 +313,11 @@ description: Result of parsing thermal-block-insert.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "insertLength",
                 "start": 0,
                 "type": "Identifier"
@@ -292,6 +327,7 @@ description: Result of parsing thermal-block-insert.kcl
               "type": "Name",
               "type": "Name"
             },
+            "moduleId": 0,
             "operator": "/",
             "right": {
               "commentStart": 0,
@@ -303,9 +339,11 @@ description: Result of parsing thermal-block-insert.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "tongueCount",
                     "start": 0,
                     "type": "Identifier"
@@ -315,6 +353,7 @@ description: Result of parsing thermal-block-insert.kcl
                   "type": "Name",
                   "type": "Name"
                 },
+                "moduleId": 0,
                 "operator": "*",
                 "right": {
                   "commentStart": 0,
@@ -322,6 +361,7 @@ description: Result of parsing thermal-block-insert.kcl
                   "left": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "1",
                     "start": 0,
                     "type": "Literal",
@@ -331,6 +371,7 @@ description: Result of parsing thermal-block-insert.kcl
                       "suffix": "None"
                     }
                   },
+                  "moduleId": 0,
                   "operator": "+",
                   "right": {
                     "commentStart": 0,
@@ -339,9 +380,11 @@ description: Result of parsing thermal-block-insert.kcl
                       "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "setbackFactor",
                         "start": 0,
                         "type": "Identifier"
@@ -351,10 +394,12 @@ description: Result of parsing thermal-block-insert.kcl
                       "type": "Name",
                       "type": "Name"
                     },
+                    "moduleId": 0,
                     "operator": "*",
                     "right": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "2",
                       "start": 0,
                       "type": "Literal",
@@ -376,10 +421,12 @@ description: Result of parsing thermal-block-insert.kcl
                 "type": "BinaryExpression",
                 "type": "BinaryExpression"
               },
+              "moduleId": 0,
               "operator": "+",
               "right": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "1",
                 "start": 0,
                 "type": "Literal",
@@ -397,11 +444,13 @@ description: Result of parsing thermal-block-insert.kcl
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -414,6 +463,7 @@ description: Result of parsing thermal-block-insert.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "tongueGap",
             "start": 0,
             "type": "Identifier"
@@ -428,9 +478,11 @@ description: Result of parsing thermal-block-insert.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "tongueLength",
                   "start": 0,
                   "type": "Identifier"
@@ -440,14 +492,17 @@ description: Result of parsing thermal-block-insert.kcl
                 "type": "Name",
                 "type": "Name"
               },
+              "moduleId": 0,
               "operator": "*",
               "right": {
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "setbackFactor",
                   "start": 0,
                   "type": "Identifier"
@@ -461,10 +516,12 @@ description: Result of parsing thermal-block-insert.kcl
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             },
+            "moduleId": 0,
             "operator": "*",
             "right": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "raw": "2",
               "start": 0,
               "type": "Literal",
@@ -478,11 +535,13 @@ description: Result of parsing thermal-block-insert.kcl
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -495,6 +554,7 @@ description: Result of parsing thermal-block-insert.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "tongueStep",
             "start": 0,
             "type": "Identifier"
@@ -506,9 +566,11 @@ description: Result of parsing thermal-block-insert.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "tongueLength",
                 "start": 0,
                 "type": "Identifier"
@@ -518,14 +580,17 @@ description: Result of parsing thermal-block-insert.kcl
               "type": "Name",
               "type": "Name"
             },
+            "moduleId": 0,
             "operator": "+",
             "right": {
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "tongueGap",
                 "start": 0,
                 "type": "Identifier"
@@ -539,11 +604,13 @@ description: Result of parsing thermal-block-insert.kcl
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -556,6 +623,7 @@ description: Result of parsing thermal-block-insert.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "tongueDepth",
             "start": 0,
             "type": "Identifier"
@@ -567,9 +635,11 @@ description: Result of parsing thermal-block-insert.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "tongueLength",
                 "start": 0,
                 "type": "Identifier"
@@ -579,10 +649,12 @@ description: Result of parsing thermal-block-insert.kcl
               "type": "Name",
               "type": "Name"
             },
+            "moduleId": 0,
             "operator": "*",
             "right": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "raw": "0.5",
               "start": 0,
               "type": "Literal",
@@ -596,11 +668,13 @@ description: Result of parsing thermal-block-insert.kcl
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -613,6 +687,7 @@ description: Result of parsing thermal-block-insert.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "tongueSetback",
             "start": 0,
             "type": "Identifier"
@@ -624,9 +699,11 @@ description: Result of parsing thermal-block-insert.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "tongueLength",
                 "start": 0,
                 "type": "Identifier"
@@ -636,14 +713,17 @@ description: Result of parsing thermal-block-insert.kcl
               "type": "Name",
               "type": "Name"
             },
+            "moduleId": 0,
             "operator": "*",
             "right": {
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "setbackFactor",
                 "start": 0,
                 "type": "Identifier"
@@ -657,11 +737,13 @@ description: Result of parsing thermal-block-insert.kcl
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -674,6 +756,7 @@ description: Result of parsing thermal-block-insert.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "tongueBlockFn",
             "start": 0,
             "type": "Identifier"
@@ -689,6 +772,7 @@ description: Result of parsing thermal-block-insert.kcl
                     "id": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "tongueSingleBlock",
                       "start": 0,
                       "type": "Identifier"
@@ -702,6 +786,7 @@ description: Result of parsing thermal-block-insert.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "length",
                                 "start": 0,
                                 "type": "Identifier"
@@ -710,9 +795,11 @@ description: Result of parsing thermal-block-insert.kcl
                                 "abs_path": false,
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": {
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "name": "tongueLength",
                                   "start": 0,
                                   "type": "Identifier"
@@ -728,9 +815,11 @@ description: Result of parsing thermal-block-insert.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "xLine",
                               "start": 0,
                               "type": "Identifier"
@@ -741,6 +830,7 @@ description: Result of parsing thermal-block-insert.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
@@ -753,6 +843,7 @@ description: Result of parsing thermal-block-insert.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "end",
                                 "start": 0,
                                 "type": "Identifier"
@@ -765,9 +856,11 @@ description: Result of parsing thermal-block-insert.kcl
                                       "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": "tongueSetback",
                                         "start": 0,
                                         "type": "Identifier"
@@ -779,6 +872,7 @@ description: Result of parsing thermal-block-insert.kcl
                                     },
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "operator": "-",
                                     "start": 0,
                                     "type": "UnaryExpression",
@@ -788,9 +882,11 @@ description: Result of parsing thermal-block-insert.kcl
                                     "abs_path": false,
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "name": {
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": "tongueDepth",
                                       "start": 0,
                                       "type": "Identifier"
@@ -802,6 +898,7 @@ description: Result of parsing thermal-block-insert.kcl
                                   }
                                 ],
                                 "end": 0,
+                                "moduleId": 0,
                                 "start": 0,
                                 "type": "ArrayExpression",
                                 "type": "ArrayExpression"
@@ -812,9 +909,11 @@ description: Result of parsing thermal-block-insert.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "line",
                               "start": 0,
                               "type": "Identifier"
@@ -825,6 +924,7 @@ description: Result of parsing thermal-block-insert.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
@@ -837,6 +937,7 @@ description: Result of parsing thermal-block-insert.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "length",
                                 "start": 0,
                                 "type": "Identifier"
@@ -845,9 +946,11 @@ description: Result of parsing thermal-block-insert.kcl
                                 "abs_path": false,
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": {
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "name": "tongueLength",
                                   "start": 0,
                                   "type": "Identifier"
@@ -863,9 +966,11 @@ description: Result of parsing thermal-block-insert.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "xLine",
                               "start": 0,
                               "type": "Identifier"
@@ -876,6 +981,7 @@ description: Result of parsing thermal-block-insert.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
@@ -888,6 +994,7 @@ description: Result of parsing thermal-block-insert.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "end",
                                 "start": 0,
                                 "type": "Identifier"
@@ -900,9 +1007,11 @@ description: Result of parsing thermal-block-insert.kcl
                                       "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": "tongueSetback",
                                         "start": 0,
                                         "type": "Identifier"
@@ -914,6 +1023,7 @@ description: Result of parsing thermal-block-insert.kcl
                                     },
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "operator": "-",
                                     "start": 0,
                                     "type": "UnaryExpression",
@@ -924,9 +1034,11 @@ description: Result of parsing thermal-block-insert.kcl
                                       "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": "tongueDepth",
                                         "start": 0,
                                         "type": "Identifier"
@@ -938,6 +1050,7 @@ description: Result of parsing thermal-block-insert.kcl
                                     },
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "operator": "-",
                                     "start": 0,
                                     "type": "UnaryExpression",
@@ -945,6 +1058,7 @@ description: Result of parsing thermal-block-insert.kcl
                                   }
                                 ],
                                 "end": 0,
+                                "moduleId": 0,
                                 "start": 0,
                                 "type": "ArrayExpression",
                                 "type": "ArrayExpression"
@@ -955,9 +1069,11 @@ description: Result of parsing thermal-block-insert.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "line",
                               "start": 0,
                               "type": "Identifier"
@@ -968,6 +1084,7 @@ description: Result of parsing thermal-block-insert.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
@@ -980,6 +1097,7 @@ description: Result of parsing thermal-block-insert.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "instances",
                                 "start": 0,
                                 "type": "Identifier"
@@ -988,9 +1106,11 @@ description: Result of parsing thermal-block-insert.kcl
                                 "abs_path": false,
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": {
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "name": "tongueCount",
                                   "start": 0,
                                   "type": "Identifier"
@@ -1006,6 +1126,7 @@ description: Result of parsing thermal-block-insert.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "distance",
                                 "start": 0,
                                 "type": "Identifier"
@@ -1014,9 +1135,11 @@ description: Result of parsing thermal-block-insert.kcl
                                 "abs_path": false,
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": {
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "name": "tongueStep",
                                   "start": 0,
                                   "type": "Identifier"
@@ -1032,6 +1155,7 @@ description: Result of parsing thermal-block-insert.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "axis",
                                 "start": 0,
                                 "type": "Identifier"
@@ -1042,6 +1166,7 @@ description: Result of parsing thermal-block-insert.kcl
                                   {
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "raw": "1",
                                     "start": 0,
                                     "type": "Literal",
@@ -1054,6 +1179,7 @@ description: Result of parsing thermal-block-insert.kcl
                                   {
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "raw": "0",
                                     "start": 0,
                                     "type": "Literal",
@@ -1065,6 +1191,7 @@ description: Result of parsing thermal-block-insert.kcl
                                   }
                                 ],
                                 "end": 0,
+                                "moduleId": 0,
                                 "start": 0,
                                 "type": "ArrayExpression",
                                 "type": "ArrayExpression"
@@ -1075,9 +1202,11 @@ description: Result of parsing thermal-block-insert.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "patternLinear2d",
                               "start": 0,
                               "type": "Identifier"
@@ -1088,16 +1217,11 @@ description: Result of parsing thermal-block-insert.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
-                          "unlabeled": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "start": 0,
-                            "type": "PipeSubstitution",
-                            "type": "PipeSubstitution"
-                          }
+                          "unlabeled": null
                         },
                         {
                           "arguments": [
@@ -1106,6 +1230,7 @@ description: Result of parsing thermal-block-insert.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "length",
                                 "start": 0,
                                 "type": "Identifier"
@@ -1114,9 +1239,11 @@ description: Result of parsing thermal-block-insert.kcl
                                 "abs_path": false,
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": {
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "name": "tongueLength",
                                   "start": 0,
                                   "type": "Identifier"
@@ -1132,9 +1259,11 @@ description: Result of parsing thermal-block-insert.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "xLine",
                               "start": 0,
                               "type": "Identifier"
@@ -1145,6 +1274,7 @@ description: Result of parsing thermal-block-insert.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
@@ -1153,15 +1283,18 @@ description: Result of parsing thermal-block-insert.kcl
                       ],
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "PipeExpression",
                       "type": "PipeExpression"
                     },
+                    "moduleId": 0,
                     "start": 0,
                     "type": "VariableDeclarator"
                   },
                   "end": 0,
                   "kind": "const",
+                  "moduleId": 0,
                   "start": 0,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
@@ -1171,9 +1304,11 @@ description: Result of parsing thermal-block-insert.kcl
                     "abs_path": false,
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "tongueSingleBlock",
                       "start": 0,
                       "type": "Identifier"
@@ -1185,6 +1320,7 @@ description: Result of parsing thermal-block-insert.kcl
                   },
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
@@ -1192,20 +1328,24 @@ description: Result of parsing thermal-block-insert.kcl
               ],
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0
             },
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "params": [],
             "start": 0,
             "type": "FunctionExpression",
             "type": "FunctionExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "fn",
+        "moduleId": 0,
         "preComments": [
           "",
           "",
@@ -1223,6 +1363,7 @@ description: Result of parsing thermal-block-insert.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "tongueShape",
             "start": 0,
             "type": "Identifier"
@@ -1230,13 +1371,16 @@ description: Result of parsing thermal-block-insert.kcl
           "init": {
             "body": [
               {
+                "arguments": [],
                 "callee": {
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "startSketchOn",
                     "start": 0,
                     "type": "Identifier"
@@ -1247,6 +1391,7 @@ description: Result of parsing thermal-block-insert.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -1254,9 +1399,11 @@ description: Result of parsing thermal-block-insert.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "XY",
                     "start": 0,
                     "type": "Identifier"
@@ -1274,6 +1421,7 @@ description: Result of parsing thermal-block-insert.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "at",
                       "start": 0,
                       "type": "Identifier"
@@ -1289,9 +1437,11 @@ description: Result of parsing thermal-block-insert.kcl
                               "abs_path": false,
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "insertLength",
                                 "start": 0,
                                 "type": "Identifier"
@@ -1303,15 +1453,18 @@ description: Result of parsing thermal-block-insert.kcl
                             },
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "operator": "-",
                             "start": 0,
                             "type": "UnaryExpression",
                             "type": "UnaryExpression"
                           },
+                          "moduleId": 0,
                           "operator": "/",
                           "right": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "raw": "2",
                             "start": 0,
                             "type": "Literal",
@@ -1332,9 +1485,11 @@ description: Result of parsing thermal-block-insert.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "insertThickness",
                               "start": 0,
                               "type": "Identifier"
@@ -1344,10 +1499,12 @@ description: Result of parsing thermal-block-insert.kcl
                             "type": "Name",
                             "type": "Name"
                           },
+                          "moduleId": 0,
                           "operator": "/",
                           "right": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "raw": "2",
                             "start": 0,
                             "type": "Literal",
@@ -1363,6 +1520,7 @@ description: Result of parsing thermal-block-insert.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -1373,9 +1531,11 @@ description: Result of parsing thermal-block-insert.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "startProfile",
                     "start": 0,
                     "type": "Identifier"
@@ -1386,25 +1546,23 @@ description: Result of parsing thermal-block-insert.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
-                "unlabeled": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "start": 0,
-                  "type": "PipeSubstitution",
-                  "type": "PipeSubstitution"
-                }
+                "unlabeled": null
               },
               {
+                "arguments": [],
                 "callee": {
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "tongueBlockFn",
                     "start": 0,
                     "type": "Identifier"
@@ -1415,6 +1573,7 @@ description: Result of parsing thermal-block-insert.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -1427,6 +1586,7 @@ description: Result of parsing thermal-block-insert.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
@@ -1439,9 +1599,11 @@ description: Result of parsing thermal-block-insert.kcl
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "insertThickness",
                             "start": 0,
                             "type": "Identifier"
@@ -1453,15 +1615,18 @@ description: Result of parsing thermal-block-insert.kcl
                         },
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "operator": "-",
                         "start": 0,
                         "type": "UnaryExpression",
                         "type": "UnaryExpression"
                       },
+                      "moduleId": 0,
                       "operator": "/",
                       "right": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "2",
                         "start": 0,
                         "type": "Literal",
@@ -1481,9 +1646,11 @@ description: Result of parsing thermal-block-insert.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "yLine",
                     "start": 0,
                     "type": "Identifier"
@@ -1494,6 +1661,7 @@ description: Result of parsing thermal-block-insert.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -1506,6 +1674,7 @@ description: Result of parsing thermal-block-insert.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
@@ -1515,9 +1684,11 @@ description: Result of parsing thermal-block-insert.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "insertLength",
                           "start": 0,
                           "type": "Identifier"
@@ -1529,6 +1700,7 @@ description: Result of parsing thermal-block-insert.kcl
                       },
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "operator": "-",
                       "start": 0,
                       "type": "UnaryExpression",
@@ -1540,9 +1712,11 @@ description: Result of parsing thermal-block-insert.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "xLine",
                     "start": 0,
                     "type": "Identifier"
@@ -1553,19 +1727,23 @@ description: Result of parsing thermal-block-insert.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               },
               {
+                "arguments": [],
                 "callee": {
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "close",
                     "start": 0,
                     "type": "Identifier"
@@ -1576,26 +1754,23 @@ description: Result of parsing thermal-block-insert.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
-                "unlabeled": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "start": 0,
-                  "type": "PipeSubstitution",
-                  "type": "PipeSubstitution"
-                }
+                "unlabeled": null
               }
             ],
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "5": [
                   {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "start": 0,
                     "type": "NonCodeNode",
                     "value": {
@@ -1612,11 +1787,13 @@ description: Result of parsing thermal-block-insert.kcl
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "preComments": [
           "",
           "",
@@ -1634,6 +1811,7 @@ description: Result of parsing thermal-block-insert.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "grooveShape",
             "start": 0,
             "type": "Identifier"
@@ -1641,13 +1819,16 @@ description: Result of parsing thermal-block-insert.kcl
           "init": {
             "body": [
               {
+                "arguments": [],
                 "callee": {
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "startSketchOn",
                     "start": 0,
                     "type": "Identifier"
@@ -1658,6 +1839,7 @@ description: Result of parsing thermal-block-insert.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -1665,9 +1847,11 @@ description: Result of parsing thermal-block-insert.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "XY",
                     "start": 0,
                     "type": "Identifier"
@@ -1685,6 +1869,7 @@ description: Result of parsing thermal-block-insert.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "at",
                       "start": 0,
                       "type": "Identifier"
@@ -1700,9 +1885,11 @@ description: Result of parsing thermal-block-insert.kcl
                               "abs_path": false,
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "insertLength",
                                 "start": 0,
                                 "type": "Identifier"
@@ -1714,15 +1901,18 @@ description: Result of parsing thermal-block-insert.kcl
                             },
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "operator": "-",
                             "start": 0,
                             "type": "UnaryExpression",
                             "type": "UnaryExpression"
                           },
+                          "moduleId": 0,
                           "operator": "/",
                           "right": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "raw": "2",
                             "start": 0,
                             "type": "Literal",
@@ -1747,9 +1937,11 @@ description: Result of parsing thermal-block-insert.kcl
                                 "abs_path": false,
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": {
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "name": "insertThickness",
                                   "start": 0,
                                   "type": "Identifier"
@@ -1761,15 +1953,18 @@ description: Result of parsing thermal-block-insert.kcl
                               },
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "operator": "-",
                               "start": 0,
                               "type": "UnaryExpression",
                               "type": "UnaryExpression"
                             },
+                            "moduleId": 0,
                             "operator": "/",
                             "right": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "raw": "2",
                               "start": 0,
                               "type": "Literal",
@@ -1783,14 +1978,17 @@ description: Result of parsing thermal-block-insert.kcl
                             "type": "BinaryExpression",
                             "type": "BinaryExpression"
                           },
+                          "moduleId": 0,
                           "operator": "-",
                           "right": {
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "tongueDepth",
                               "start": 0,
                               "type": "Identifier"
@@ -1806,6 +2004,7 @@ description: Result of parsing thermal-block-insert.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -1816,9 +2015,11 @@ description: Result of parsing thermal-block-insert.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "startProfile",
                     "start": 0,
                     "type": "Identifier"
@@ -1829,25 +2030,23 @@ description: Result of parsing thermal-block-insert.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
-                "unlabeled": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "start": 0,
-                  "type": "PipeSubstitution",
-                  "type": "PipeSubstitution"
-                }
+                "unlabeled": null
               },
               {
+                "arguments": [],
                 "callee": {
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "tongueBlockFn",
                     "start": 0,
                     "type": "Identifier"
@@ -1858,6 +2057,7 @@ description: Result of parsing thermal-block-insert.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -1870,6 +2070,7 @@ description: Result of parsing thermal-block-insert.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
@@ -1884,9 +2085,11 @@ description: Result of parsing thermal-block-insert.kcl
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "insertThickness",
                             "start": 0,
                             "type": "Identifier"
@@ -1896,10 +2099,12 @@ description: Result of parsing thermal-block-insert.kcl
                           "type": "Name",
                           "type": "Name"
                         },
+                        "moduleId": 0,
                         "operator": "/",
                         "right": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "2",
                           "start": 0,
                           "type": "Literal",
@@ -1913,14 +2118,17 @@ description: Result of parsing thermal-block-insert.kcl
                         "type": "BinaryExpression",
                         "type": "BinaryExpression"
                       },
+                      "moduleId": 0,
                       "operator": "+",
                       "right": {
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "tongueDepth",
                           "start": 0,
                           "type": "Identifier"
@@ -1940,9 +2148,11 @@ description: Result of parsing thermal-block-insert.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "yLine",
                     "start": 0,
                     "type": "Identifier"
@@ -1953,6 +2163,7 @@ description: Result of parsing thermal-block-insert.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -1965,6 +2176,7 @@ description: Result of parsing thermal-block-insert.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
@@ -1974,9 +2186,11 @@ description: Result of parsing thermal-block-insert.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "insertLength",
                           "start": 0,
                           "type": "Identifier"
@@ -1988,6 +2202,7 @@ description: Result of parsing thermal-block-insert.kcl
                       },
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "operator": "-",
                       "start": 0,
                       "type": "UnaryExpression",
@@ -1999,9 +2214,11 @@ description: Result of parsing thermal-block-insert.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "xLine",
                     "start": 0,
                     "type": "Identifier"
@@ -2012,19 +2229,23 @@ description: Result of parsing thermal-block-insert.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               },
               {
+                "arguments": [],
                 "callee": {
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "close",
                     "start": 0,
                     "type": "Identifier"
@@ -2035,26 +2256,23 @@ description: Result of parsing thermal-block-insert.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
-                "unlabeled": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "start": 0,
-                  "type": "PipeSubstitution",
-                  "type": "PipeSubstitution"
-                }
+                "unlabeled": null
               }
             ],
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "5": [
                   {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "start": 0,
                     "type": "NonCodeNode",
                     "value": {
@@ -2071,11 +2289,13 @@ description: Result of parsing thermal-block-insert.kcl
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -2088,6 +2308,7 @@ description: Result of parsing thermal-block-insert.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "insertShape",
             "start": 0,
             "type": "Identifier"
@@ -2099,6 +2320,7 @@ description: Result of parsing thermal-block-insert.kcl
                 "label": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "length",
                   "start": 0,
                   "type": "Identifier"
@@ -2107,9 +2329,11 @@ description: Result of parsing thermal-block-insert.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "insertHeight",
                     "start": 0,
                     "type": "Identifier"
@@ -2125,9 +2349,11 @@ description: Result of parsing thermal-block-insert.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "extrude",
                 "start": 0,
                 "type": "Identifier"
@@ -2138,6 +2364,7 @@ description: Result of parsing thermal-block-insert.kcl
             },
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
@@ -2148,9 +2375,11 @@ description: Result of parsing thermal-block-insert.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "tongueShape",
                     "start": 0,
                     "type": "Identifier"
@@ -2164,9 +2393,11 @@ description: Result of parsing thermal-block-insert.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "grooveShape",
                     "start": 0,
                     "type": "Identifier"
@@ -2178,16 +2409,19 @@ description: Result of parsing thermal-block-insert.kcl
                 }
               ],
               "end": 0,
+              "moduleId": 0,
               "start": 0,
               "type": "ArrayExpression",
               "type": "ArrayExpression"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -2199,9 +2433,11 @@ description: Result of parsing thermal-block-insert.kcl
       {
         "commentStart": 0,
         "end": 0,
+        "moduleId": 0,
         "name": {
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "name": "settings",
           "start": 0,
           "type": "Identifier"
@@ -2220,19 +2456,23 @@ description: Result of parsing thermal-block-insert.kcl
             "key": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "defaultLengthUnit",
               "start": 0,
               "type": "Identifier"
             },
+            "moduleId": 0,
             "start": 0,
             "type": "ObjectProperty",
             "value": {
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "mm",
                 "start": 0,
                 "type": "Identifier"
@@ -2249,15 +2489,18 @@ description: Result of parsing thermal-block-insert.kcl
             "key": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "kclVersion",
               "start": 0,
               "type": "Identifier"
             },
+            "moduleId": 0,
             "start": 0,
             "type": "ObjectProperty",
             "value": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "raw": "1.0",
               "start": 0,
               "type": "Literal",
@@ -2273,12 +2516,14 @@ description: Result of parsing thermal-block-insert.kcl
         "type": "Annotation"
       }
     ],
+    "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "3": [
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {
@@ -2293,6 +2538,7 @@ description: Result of parsing thermal-block-insert.kcl
         {
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "NonCodeNode",
           "value": {

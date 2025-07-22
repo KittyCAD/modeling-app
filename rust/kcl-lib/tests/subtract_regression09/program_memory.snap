@@ -77,13 +77,13 @@ description: Variables in memory after executing subtract_regression09.kcl
               "sourceRange": []
             },
             "from": [
-              1.1882,
-              27.4971
+              1.188246,
+              27.497102
             ],
             "tag": null,
             "to": [
-              1.0112,
-              28.2379
+              1.0111569999999999,
+              28.237893000000003
             ],
             "type": "ToPoint",
             "units": {
@@ -97,18 +97,18 @@ description: Variables in memory after executing subtract_regression09.kcl
             },
             "ccw": true,
             "center": [
-              -4.1275,
-              27.0095
+              -4.127500495208472,
+              27.0094790706367
             ],
             "from": [
-              1.0112,
-              28.2379
+              1.0111569999999999,
+              28.237893000000003
             ],
             "radius": 5.283446,
             "tag": null,
             "to": [
-              -0.0,
-              30.3077
+              -0.00000011647557762728411,
+              30.30774259232138
             ],
             "type": "Arc",
             "units": {
@@ -122,18 +122,18 @@ description: Variables in memory after executing subtract_regression09.kcl
             },
             "ccw": false,
             "center": [
-              4.7625,
-              27.0095
+              4.762500077293639,
+              27.009479172978835
             ],
             "from": [
-              -0.0,
-              30.3077
+              -0.00000011647557762728411,
+              30.30774259232138
             ],
             "radius": 5.793095,
             "tag": null,
             "to": [
-              10.3659,
-              28.48
+              10.365858893279377,
+              28.47996197068165
             ],
             "type": "Arc",
             "units": {
@@ -147,18 +147,18 @@ description: Variables in memory after executing subtract_regression09.kcl
             },
             "ccw": true,
             "center": [
-              13.1164,
-              23.9689
+              13.116367979053303,
+              23.96891980683624
             ],
             "from": [
-              10.3659,
-              28.48
+              10.365858893279377,
+              28.47996197068165
             ],
             "radius": 5.283446,
             "tag": null,
             "to": [
-              8.7078,
-              26.8808
+              8.707751758243786,
+              26.88077568454228
             ],
             "type": "Arc",
             "units": {
@@ -171,13 +171,13 @@ description: Variables in memory after executing subtract_regression09.kcl
               "sourceRange": []
             },
             "from": [
-              8.7078,
-              26.8808
+              8.707751758243786,
+              26.88077568454228
             ],
             "tag": null,
             "to": [
-              8.288,
-              26.2452
+              8.287977758243786,
+              26.24522768454228
             ],
             "type": "ToPoint",
             "units": {
@@ -191,18 +191,18 @@ description: Variables in memory after executing subtract_regression09.kcl
             },
             "ccw": false,
             "center": [
-              1.4162,
-              30.8507
+              1.4161516316499672,
+              30.85068030361107
             ],
             "from": [
-              8.288,
-              26.2452
+              8.287977758243786,
+              26.24522768454228
             ],
             "radius": 8.272375,
             "tag": null,
             "to": [
-              6.8753,
-              24.6354
+              6.875280032729507,
+              24.635368144020713
             ],
             "type": "Arc",
             "units": {
@@ -216,18 +216,18 @@ description: Variables in memory after executing subtract_regression09.kcl
             },
             "ccw": false,
             "center": [
-              4.7625,
-              27.0095
+              4.7625009207560876,
+              27.009478799314145
             ],
             "from": [
-              6.8753,
-              24.6354
+              6.875280032729507,
+              24.635368144020713
             ],
             "radius": 3.178087,
             "tag": null,
             "to": [
-              1.9651,
-              25.5012
+              1.9651443132896045,
+              25.501157550298338
             ],
             "type": "Arc",
             "units": {
@@ -241,17 +241,17 @@ description: Variables in memory after executing subtract_regression09.kcl
             },
             "ccw": false,
             "center": [
-              9.6285,
-              29.6332
+              9.628497562246807,
+              29.633200820457258
             ],
             "from": [
-              1.9651,
-              25.5012
+              1.9651443132896045,
+              25.501157550298338
             ],
             "tag": null,
             "to": [
-              1.1882,
-              27.4971
+              1.188246,
+              27.497102
             ],
             "type": "TangentialArcTo",
             "units": {
@@ -264,13 +264,13 @@ description: Variables in memory after executing subtract_regression09.kcl
               "sourceRange": []
             },
             "from": [
-              1.1882,
-              27.4971
+              1.188246,
+              27.497102
             ],
             "tag": null,
             "to": [
-              1.1882,
-              27.4971
+              1.188246,
+              27.497102
             ],
             "type": "ToPoint",
             "units": {
@@ -306,16 +306,24 @@ description: Variables in memory after executing subtract_regression09.kcl
             "units": {
               "type": "Unknown"
             }
+          },
+          "zAxis": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 1.0,
+            "units": {
+              "type": "Unknown"
+            }
           }
         },
         "start": {
           "from": [
-            1.1882,
-            27.4971
+            1.188246,
+            27.497102
           ],
           "to": [
-            1.1882,
-            27.4971
+            1.188246,
+            27.497102
           ],
           "units": {
             "type": "Mm"
@@ -505,6 +513,14 @@ description: Variables in memory after executing subtract_regression09.kcl
             "units": {
               "type": "Unknown"
             }
+          },
+          "zAxis": {
+            "x": 1.0,
+            "y": 0.0,
+            "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
           }
         },
         "start": {
@@ -566,6 +582,14 @@ description: Variables in memory after executing subtract_regression09.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
+        "units": {
+          "type": "Unknown"
+        }
+      },
+      "zAxis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0,
         "units": {
           "type": "Unknown"
         }
@@ -702,6 +726,14 @@ description: Variables in memory after executing subtract_regression09.kcl
           "units": {
             "type": "Unknown"
           }
+        },
+        "zAxis": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0,
+          "units": {
+            "type": "Unknown"
+          }
         }
       },
       "start": {
@@ -758,6 +790,14 @@ description: Variables in memory after executing subtract_regression09.kcl
         "units": {
           "type": "Unknown"
         }
+      },
+      "zAxis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0,
+        "units": {
+          "type": "Unknown"
+        }
       }
     }
   },
@@ -773,13 +813,13 @@ description: Variables in memory after executing subtract_regression09.kcl
             "sourceRange": []
           },
           "from": [
-            1.1882,
-            27.4971
+            1.188246,
+            27.497102
           ],
           "tag": null,
           "to": [
-            1.0112,
-            28.2379
+            1.0111569999999999,
+            28.237893000000003
           ],
           "type": "ToPoint",
           "units": {
@@ -793,18 +833,18 @@ description: Variables in memory after executing subtract_regression09.kcl
           },
           "ccw": true,
           "center": [
-            -4.1275,
-            27.0095
+            -4.127500495208472,
+            27.0094790706367
           ],
           "from": [
-            1.0112,
-            28.2379
+            1.0111569999999999,
+            28.237893000000003
           ],
           "radius": 5.283446,
           "tag": null,
           "to": [
-            -0.0,
-            30.3077
+            -0.00000011647557762728411,
+            30.30774259232138
           ],
           "type": "Arc",
           "units": {
@@ -818,18 +858,18 @@ description: Variables in memory after executing subtract_regression09.kcl
           },
           "ccw": false,
           "center": [
-            4.7625,
-            27.0095
+            4.762500077293639,
+            27.009479172978835
           ],
           "from": [
-            -0.0,
-            30.3077
+            -0.00000011647557762728411,
+            30.30774259232138
           ],
           "radius": 5.793095,
           "tag": null,
           "to": [
-            10.3659,
-            28.48
+            10.365858893279377,
+            28.47996197068165
           ],
           "type": "Arc",
           "units": {
@@ -843,18 +883,18 @@ description: Variables in memory after executing subtract_regression09.kcl
           },
           "ccw": true,
           "center": [
-            13.1164,
-            23.9689
+            13.116367979053303,
+            23.96891980683624
           ],
           "from": [
-            10.3659,
-            28.48
+            10.365858893279377,
+            28.47996197068165
           ],
           "radius": 5.283446,
           "tag": null,
           "to": [
-            8.7078,
-            26.8808
+            8.707751758243786,
+            26.88077568454228
           ],
           "type": "Arc",
           "units": {
@@ -867,13 +907,13 @@ description: Variables in memory after executing subtract_regression09.kcl
             "sourceRange": []
           },
           "from": [
-            8.7078,
-            26.8808
+            8.707751758243786,
+            26.88077568454228
           ],
           "tag": null,
           "to": [
-            8.288,
-            26.2452
+            8.287977758243786,
+            26.24522768454228
           ],
           "type": "ToPoint",
           "units": {
@@ -887,18 +927,18 @@ description: Variables in memory after executing subtract_regression09.kcl
           },
           "ccw": false,
           "center": [
-            1.4162,
-            30.8507
+            1.4161516316499672,
+            30.85068030361107
           ],
           "from": [
-            8.288,
-            26.2452
+            8.287977758243786,
+            26.24522768454228
           ],
           "radius": 8.272375,
           "tag": null,
           "to": [
-            6.8753,
-            24.6354
+            6.875280032729507,
+            24.635368144020713
           ],
           "type": "Arc",
           "units": {
@@ -912,18 +952,18 @@ description: Variables in memory after executing subtract_regression09.kcl
           },
           "ccw": false,
           "center": [
-            4.7625,
-            27.0095
+            4.7625009207560876,
+            27.009478799314145
           ],
           "from": [
-            6.8753,
-            24.6354
+            6.875280032729507,
+            24.635368144020713
           ],
           "radius": 3.178087,
           "tag": null,
           "to": [
-            1.9651,
-            25.5012
+            1.9651443132896045,
+            25.501157550298338
           ],
           "type": "Arc",
           "units": {
@@ -937,17 +977,17 @@ description: Variables in memory after executing subtract_regression09.kcl
           },
           "ccw": false,
           "center": [
-            9.6285,
-            29.6332
+            9.628497562246807,
+            29.633200820457258
           ],
           "from": [
-            1.9651,
-            25.5012
+            1.9651443132896045,
+            25.501157550298338
           ],
           "tag": null,
           "to": [
-            1.1882,
-            27.4971
+            1.188246,
+            27.497102
           ],
           "type": "TangentialArcTo",
           "units": {
@@ -960,13 +1000,13 @@ description: Variables in memory after executing subtract_regression09.kcl
             "sourceRange": []
           },
           "from": [
-            1.1882,
-            27.4971
+            1.188246,
+            27.497102
           ],
           "tag": null,
           "to": [
-            1.1882,
-            27.4971
+            1.188246,
+            27.497102
           ],
           "type": "ToPoint",
           "units": {
@@ -1002,16 +1042,24 @@ description: Variables in memory after executing subtract_regression09.kcl
           "units": {
             "type": "Unknown"
           }
+        },
+        "zAxis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0,
+          "units": {
+            "type": "Unknown"
+          }
         }
       },
       "start": {
         "from": [
-          1.1882,
-          27.4971
+          1.188246,
+          27.497102
         ],
         "to": [
-          1.1882,
-          27.4971
+          1.188246,
+          27.497102
         ],
         "units": {
           "type": "Mm"

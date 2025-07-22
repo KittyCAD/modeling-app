@@ -1,0 +1,14 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Error from executing var_ref_in_own_def.kcl
+---
+KCL UndefinedValue error
+
+  × undefined value: You can't use `sketch001` because you're currently trying
+  │ to define it. Use a different variable here instead.
+   ╭─[3:32]
+ 2 │ sketch001 = startSketchOn(XY)
+ 3 │   |> startProfileAt([20, -20], sketch001)
+   ·                                ────┬────
+   ·                                    ╰── tests/var_ref_in_own_def/input.kcl
+   ╰────

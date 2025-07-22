@@ -104,6 +104,16 @@ impl TypedPath {
         }
     }
 
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn strip_prefix(&self, base: impl AsRef<std::path::Path>) -> Result<Self, std::path::StripPrefixError> {
+        self.0.strip_prefix(base).map(|p| TypedPath(p.to_path_buf()))
+    }
+
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn canonicalize(&self) -> Result<Self, std::io::Error> {
+        self.0.canonicalize().map(|p| TypedPath(p.to_path_buf()))
+    }
+
     pub fn to_string_lossy(&self) -> String {
         #[cfg(target_arch = "wasm32")]
         {
@@ -178,6 +188,7 @@ impl<'de> serde::de::Deserialize<'de> for TypedPath {
 
 impl ts_rs::TS for TypedPath {
     type WithoutGenerics = Self;
+    type OptionInnerType = Self;
 
     fn name() -> String {
         "string".to_string()
@@ -199,7 +210,7 @@ impl ts_rs::TS for TypedPath {
         std::path::PathBuf::inline_flattened()
     }
 
-    fn output_path() -> Option<&'static std::path::Path> {
+    fn output_path() -> Option<std::path::PathBuf> {
         std::path::PathBuf::output_path()
     }
 }
@@ -209,9 +220,9 @@ impl schemars::JsonSchema for TypedPath {
         "TypedPath".to_owned()
     }
 
-    fn json_schema(gen: &mut schemars::gen::SchemaGenerator) -> schemars::schema::Schema {
+    fn json_schema(r#gen: &mut schemars::r#gen::SchemaGenerator) -> schemars::schema::Schema {
         // TODO: Actually generate a reasonable schema.
-        gen.subschema_for::<std::path::PathBuf>()
+        r#gen.subschema_for::<std::path::PathBuf>()
     }
 }
 
@@ -220,6 +231,7 @@ impl schemars::JsonSchema for TypedPath {
 ///
 /// * Does **not** touch `..` or symlinks – call `canonicalize()` if you need that.
 /// * Returns an owned `PathBuf` only when normalisation was required.
+#[cfg(not(target_arch = "wasm32"))]
 fn normalise_import<S: AsRef<str>>(raw: S) -> std::path::PathBuf {
     let s = raw.as_ref();
     // On Unix we need to swap `\` → `/`.  On Windows we leave it alone.

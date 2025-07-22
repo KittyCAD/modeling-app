@@ -220,26 +220,11 @@ impl<'tree> From<&'tree types::BinaryPart> for Node<'tree> {
             types::BinaryPart::CallExpressionKw(ce) => ce.as_ref().into(),
             types::BinaryPart::UnaryExpression(ue) => ue.as_ref().into(),
             types::BinaryPart::MemberExpression(me) => me.as_ref().into(),
+            types::BinaryPart::ArrayExpression(e) => e.as_ref().into(),
+            types::BinaryPart::ArrayRangeExpression(e) => e.as_ref().into(),
+            types::BinaryPart::ObjectExpression(e) => e.as_ref().into(),
             types::BinaryPart::IfExpression(e) => e.as_ref().into(),
             types::BinaryPart::AscribedExpression(e) => e.as_ref().into(),
-        }
-    }
-}
-
-impl<'tree> From<&'tree types::MemberObject> for Node<'tree> {
-    fn from(node: &'tree types::MemberObject) -> Self {
-        match node {
-            types::MemberObject::MemberExpression(me) => me.as_ref().into(),
-            types::MemberObject::Identifier(id) => id.as_ref().into(),
-        }
-    }
-}
-
-impl<'tree> From<&'tree types::LiteralIdentifier> for Node<'tree> {
-    fn from(node: &'tree types::LiteralIdentifier) -> Self {
-        match node {
-            types::LiteralIdentifier::Identifier(id) => id.as_ref().into(),
-            types::LiteralIdentifier::Literal(lit) => lit.as_ref().into(),
         }
     }
 }
@@ -298,9 +283,7 @@ mod tests {
     use super::*;
 
     macro_rules! kcl {
-        ( $kcl:expr ) => {{
-            $crate::parsing::top_level_parse($kcl).unwrap()
-        }};
+        ( $kcl:expr_2021 ) => {{ $crate::parsing::top_level_parse($kcl).unwrap() }};
     }
 
     #[test]

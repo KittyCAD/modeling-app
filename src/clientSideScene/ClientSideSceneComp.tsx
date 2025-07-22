@@ -27,7 +27,8 @@ import { getConstraintInfoKw } from '@src/lang/std/sketch'
 import type { ConstrainInfo } from '@src/lang/std/stdTypes'
 import { topLevelRange } from '@src/lang/util'
 import type { CallExpressionKw, Expr, PathToNode } from '@src/lang/wasm'
-import { defaultSourceRange, parse, recast, resultIsOk } from '@src/lang/wasm'
+import { parse, recast, resultIsOk } from '@src/lang/wasm'
+import { defaultSourceRange } from '@src/lang/sourceRange'
 import { cameraMouseDragGuards } from '@src/lib/cameraControls'
 import {
   codeManager,
@@ -68,10 +69,14 @@ function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
 
 export const ClientSideScene = ({
   cameraControls,
+  enableTouchControls,
 }: {
   cameraControls: ReturnType<
     typeof useSettings
   >['modeling']['mouseControls']['current']
+  enableTouchControls: ReturnType<
+    typeof useSettings
+  >['modeling']['enableTouchControls']['current']
 }) => {
   const canvasRef = useRef<HTMLDivElement>(null)
   const { state, send, context } = useModelingContext()
@@ -84,6 +89,9 @@ export const ClientSideScene = ({
       cameraMouseDragGuards[cameraControls]
   }, [cameraControls])
   useEffect(() => {
+    sceneInfra.camControls.initTouchControls(enableTouchControls)
+  }, [enableTouchControls])
+  useEffect(() => {
     sceneInfra.updateOtherSelectionColors(
       state?.context?.selectionRanges?.otherSelections || []
     )
@@ -94,6 +102,7 @@ export const ClientSideScene = ({
     const canvas = canvasRef.current
     canvas.appendChild(sceneInfra.renderer.domElement)
     canvas.appendChild(sceneInfra.labelRenderer.domElement)
+    sceneInfra.onWindowResize()
     sceneInfra.animate()
     canvas.addEventListener(
       'mousemove',

@@ -13,11 +13,7 @@ import type { Models } from '@kittycad/lib/dist/types/src'
 import type { EngineCommandManager } from '@src/lang/std/engineConnection'
 import { fileSystemManager } from '@src/lang/std/fileSystemManager'
 import type { ExecState } from '@src/lang/wasm'
-import {
-  errFromErrWithOutputs,
-  execStateFromRust,
-  mockExecStateFromRust,
-} from '@src/lang/wasm'
+import { errFromErrWithOutputs, execStateFromRust } from '@src/lang/wasm'
 import { initPromise } from '@src/lang/wasmUtils'
 import type ModelingAppFile from '@src/lib/modelingAppFile'
 import type { DefaultPlaneStr } from '@src/lib/planes'
@@ -34,7 +30,7 @@ export default class RustContext {
   private _defaultPlanes: DefaultPlanes | null = null
   private engineCommandManager: EngineCommandManager
 
-  // Initialize the WASM module
+  /** Initialize the WASM module */
   async ensureWasmInit() {
     try {
       await initPromise
@@ -57,7 +53,7 @@ export default class RustContext {
       .catch(reportRejection)
   }
 
-  // Create a new context instance
+  /** Create a new context instance */
   async create(): Promise<Context> {
     this.rustInstance = getModule()
 
@@ -72,7 +68,7 @@ export default class RustContext {
     return ctxInstance
   }
 
-  // Execute a program.
+  /** Execute a program. */
   async execute(
     node: Node<Program>,
     settings: DeepPartial<Configuration>,
@@ -86,7 +82,7 @@ export default class RustContext {
         path,
         JSON.stringify(settings)
       )
-      /* Set the default planes, safe to call after execute. */
+      // Set the default planes, safe to call after execute.
       const outcome = execStateFromRust(result)
 
       this._defaultPlanes = outcome.defaultPlanes
@@ -100,7 +96,7 @@ export default class RustContext {
     }
   }
 
-  // Execute a program with in mock mode.
+  /** Execute a program with in mock mode. */
   async executeMock(
     node: Node<Program>,
     settings: DeepPartial<Configuration>,
@@ -120,13 +116,13 @@ export default class RustContext {
         JSON.stringify(settings),
         usePrevMemory
       )
-      return mockExecStateFromRust(result)
+      return execStateFromRust(result)
     } catch (e: any) {
       return Promise.reject(errFromErrWithOutputs(e))
     }
   }
 
-  // Export a scene to a file.
+  /** Export a scene to a file. */
   async export(
     format: DeepPartial<OutputFormat3d>,
     settings: DeepPartial<Configuration>,
@@ -141,7 +137,7 @@ export default class RustContext {
       )
     } catch (e: any) {
       const parsed: RustKclError = JSON.parse(e.toString())
-      toast.error(parsed.msg, { id: toastId })
+      toast.error(parsed.details.msg, { id: toastId })
       return
     }
   }
@@ -154,20 +150,22 @@ export default class RustContext {
     return this._defaultPlanes
   }
 
-  // Clear/reset the scene and bust the cache.
-  // Do not use this function unless you absolutely need to. In most cases,
-  // we should just fix the  cache for whatever bug you are seeing.
-  // The only time it makes sense to run this is if the engine disconnects and
-  // reconnects. The rust side has no idea that happened and will think the
-  // cache is still valid.
-  // Caching on the rust side accounts for changes to files outside of the
-  // scope of the current file the user is on. It collects all the dependencies
-  // and checks if any of them have changed. If they have, it will bust the
-  // cache and recompile the scene.
-  // The typescript side should never raw dog clear the scene since that would
-  // fuck with the cache as well. So if you _really_ want to just clear the scene
-  // AND NOT re-execute, you can use this for that. But in 99.999999% of cases just
-  // re-execute.
+  /**
+   * Clear/reset the scene and bust the cache.
+   * Do not use this function unless you absolutely need to. In most cases,
+   * we should just fix the  cache for whatever bug you are seeing.
+   * The only time it makes sense to run this is if the engine disconnects and
+   * reconnects. The rust side has no idea that happened and will think the
+   * cache is still valid.
+   * Caching on the rust side accounts for changes to files outside of the
+   * scope of the current file the user is on. It collects all the dependencies
+   * and checks if any of them have changed. If they have, it will bust the
+   * cache and recompile the scene.
+   * The typescript side should never raw dog clear the scene since that would
+   * fuck with the cache as well. So if you _really_ want to just clear the scene
+   * AND NOT re-execute, you can use this for that. But in 99.999999% of cases just
+   * re-execute.
+   */
   async clearSceneAndBustCache(
     settings: DeepPartial<Configuration>,
     path?: string
@@ -203,7 +201,7 @@ export default class RustContext {
     return this.defaultPlanes[key]
   }
 
-  // Send a response back to the rust side, that we got back from the engine.
+  /** Send a response back to the rust side, that we got back from the engine. */
   async sendResponse(
     response: Models['WebSocketResponse_type']
   ): Promise<void> {
@@ -218,7 +216,7 @@ export default class RustContext {
     }
   }
 
-  // Helper to check if context instance exists
+  /** Helper to check if context instance exists */
   private async _checkInstance(): Promise<Context> {
     if (!this.ctxInstance) {
       // Create the context instance.
@@ -228,7 +226,7 @@ export default class RustContext {
     return this.ctxInstance
   }
 
-  // Clean up resources
+  /** Clean up resources */
   destroy() {
     if (this.ctxInstance) {
       // In a real implementation, you might need to manually free resources

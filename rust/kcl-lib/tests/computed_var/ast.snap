@@ -13,6 +13,7 @@ description: Result of parsing computed_var.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "arr",
             "start": 0,
             "type": "Identifier"
@@ -23,6 +24,7 @@ description: Result of parsing computed_var.kcl
               {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "0",
                 "start": 0,
                 "type": "Literal",
@@ -35,6 +37,7 @@ description: Result of parsing computed_var.kcl
               {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "0",
                 "start": 0,
                 "type": "Literal",
@@ -47,6 +50,7 @@ description: Result of parsing computed_var.kcl
               {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "0",
                 "start": 0,
                 "type": "Literal",
@@ -59,6 +63,7 @@ description: Result of parsing computed_var.kcl
               {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "10",
                 "start": 0,
                 "type": "Literal",
@@ -70,15 +75,18 @@ description: Result of parsing computed_var.kcl
               }
             ],
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "ArrayExpression",
             "type": "ArrayExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -91,6 +99,7 @@ description: Result of parsing computed_var.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "i",
             "start": 0,
             "type": "Identifier"
@@ -98,6 +107,7 @@ description: Result of parsing computed_var.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "3",
             "start": 0,
             "type": "Literal",
@@ -107,11 +117,13 @@ description: Result of parsing computed_var.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -124,6 +136,7 @@ description: Result of parsing computed_var.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "ten",
             "start": 0,
             "type": "Identifier"
@@ -132,31 +145,54 @@ description: Result of parsing computed_var.kcl
             "commentStart": 0,
             "computed": true,
             "end": 0,
+            "moduleId": 0,
             "object": {
+              "abs_path": false,
               "commentStart": 0,
               "end": 0,
-              "name": "arr",
+              "moduleId": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "arr",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             "property": {
+              "abs_path": false,
               "commentStart": 0,
               "end": 0,
-              "name": "i",
+              "moduleId": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "i",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             "start": 0,
             "type": "MemberExpression",
             "type": "MemberExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -171,6 +207,7 @@ description: Result of parsing computed_var.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "isEqualTo",
                 "start": 0,
                 "type": "Identifier"
@@ -178,6 +215,7 @@ description: Result of parsing computed_var.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "10",
                 "start": 0,
                 "type": "Literal",
@@ -193,6 +231,7 @@ description: Result of parsing computed_var.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "error",
                 "start": 0,
                 "type": "Identifier"
@@ -200,6 +239,7 @@ description: Result of parsing computed_var.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "\"oops\"",
                 "start": 0,
                 "type": "Literal",
@@ -212,9 +252,11 @@ description: Result of parsing computed_var.kcl
             "abs_path": false,
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "assert",
               "start": 0,
               "type": "Identifier"
@@ -225,6 +267,7 @@ description: Result of parsing computed_var.kcl
           },
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
@@ -232,9 +275,11 @@ description: Result of parsing computed_var.kcl
             "abs_path": false,
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "ten",
               "start": 0,
               "type": "Identifier"
@@ -245,6 +290,7 @@ description: Result of parsing computed_var.kcl
             "type": "Name"
           }
         },
+        "moduleId": 0,
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -257,6 +303,7 @@ description: Result of parsing computed_var.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "obj",
             "start": 0,
             "type": "Identifier"
@@ -264,6 +311,7 @@ description: Result of parsing computed_var.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "properties": [
               {
                 "commentStart": 0,
@@ -271,15 +319,18 @@ description: Result of parsing computed_var.kcl
                 "key": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "foo",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "moduleId": 0,
                 "start": 0,
                 "type": "ObjectProperty",
                 "value": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "raw": "1",
                   "start": 0,
                   "type": "Literal",
@@ -296,15 +347,18 @@ description: Result of parsing computed_var.kcl
                 "key": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "bar",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "moduleId": 0,
                 "start": 0,
                 "type": "ObjectProperty",
                 "value": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "raw": "0",
                   "start": 0,
                   "type": "Literal",
@@ -320,11 +374,13 @@ description: Result of parsing computed_var.kcl
             "type": "ObjectExpression",
             "type": "ObjectExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -337,6 +393,7 @@ description: Result of parsing computed_var.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "one",
             "start": 0,
             "type": "Identifier"
@@ -345,31 +402,54 @@ description: Result of parsing computed_var.kcl
             "commentStart": 0,
             "computed": false,
             "end": 0,
+            "moduleId": 0,
             "object": {
+              "abs_path": false,
               "commentStart": 0,
               "end": 0,
-              "name": "obj",
+              "moduleId": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "obj",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             "property": {
+              "abs_path": false,
               "commentStart": 0,
               "end": 0,
-              "name": "foo",
+              "moduleId": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "foo",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             "start": 0,
             "type": "MemberExpression",
             "type": "MemberExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -384,6 +464,7 @@ description: Result of parsing computed_var.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "isEqualTo",
                 "start": 0,
                 "type": "Identifier"
@@ -391,6 +472,7 @@ description: Result of parsing computed_var.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "1",
                 "start": 0,
                 "type": "Literal",
@@ -406,6 +488,7 @@ description: Result of parsing computed_var.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "error",
                 "start": 0,
                 "type": "Identifier"
@@ -413,6 +496,7 @@ description: Result of parsing computed_var.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "\"oops\"",
                 "start": 0,
                 "type": "Literal",
@@ -425,9 +509,11 @@ description: Result of parsing computed_var.kcl
             "abs_path": false,
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "assert",
               "start": 0,
               "type": "Identifier"
@@ -438,6 +524,7 @@ description: Result of parsing computed_var.kcl
           },
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
@@ -445,9 +532,11 @@ description: Result of parsing computed_var.kcl
             "abs_path": false,
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "one",
               "start": 0,
               "type": "Identifier"
@@ -458,6 +547,7 @@ description: Result of parsing computed_var.kcl
             "type": "Name"
           }
         },
+        "moduleId": 0,
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -472,6 +562,7 @@ description: Result of parsing computed_var.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "isEqualTo",
                 "start": 0,
                 "type": "Identifier"
@@ -479,6 +570,7 @@ description: Result of parsing computed_var.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "3",
                 "start": 0,
                 "type": "Literal",
@@ -494,6 +586,7 @@ description: Result of parsing computed_var.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "tolerance",
                 "start": 0,
                 "type": "Identifier"
@@ -501,6 +594,7 @@ description: Result of parsing computed_var.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "0.2",
                 "start": 0,
                 "type": "Literal",
@@ -516,6 +610,7 @@ description: Result of parsing computed_var.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "error",
                 "start": 0,
                 "type": "Identifier"
@@ -523,6 +618,7 @@ description: Result of parsing computed_var.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "\"oops pi\"",
                 "start": 0,
                 "type": "Literal",
@@ -535,9 +631,11 @@ description: Result of parsing computed_var.kcl
             "abs_path": false,
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "assert",
               "start": 0,
               "type": "Identifier"
@@ -548,6 +646,7 @@ description: Result of parsing computed_var.kcl
           },
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
@@ -555,9 +654,11 @@ description: Result of parsing computed_var.kcl
             "abs_path": false,
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "PI",
               "start": 0,
               "type": "Identifier"
@@ -568,6 +669,7 @@ description: Result of parsing computed_var.kcl
             "type": "Name"
           }
         },
+        "moduleId": 0,
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -580,18 +682,22 @@ description: Result of parsing computed_var.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "x",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "arguments": [],
             "callee": {
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "cos",
                 "start": 0,
                 "type": "Identifier"
@@ -602,6 +708,7 @@ description: Result of parsing computed_var.kcl
             },
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
@@ -614,6 +721,7 @@ description: Result of parsing computed_var.kcl
                 "left": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "raw": "2",
                   "start": 0,
                   "type": "Literal",
@@ -623,14 +731,17 @@ description: Result of parsing computed_var.kcl
                     "suffix": "None"
                   }
                 },
+                "moduleId": 0,
                 "operator": "*",
                 "right": {
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "PI",
                     "start": 0,
                     "type": "Identifier"
@@ -644,11 +755,13 @@ description: Result of parsing computed_var.kcl
                 "type": "BinaryExpression",
                 "type": "BinaryExpression"
               },
+              "moduleId": 0,
               "start": 0,
               "ty": {
                 "Rad": null,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "p_type": "Number",
                 "start": 0,
                 "type": "Primitive"
@@ -657,11 +770,13 @@ description: Result of parsing computed_var.kcl
               "type": "AscribedExpression"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -676,6 +791,7 @@ description: Result of parsing computed_var.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "isEqualTo",
                 "start": 0,
                 "type": "Identifier"
@@ -683,6 +799,7 @@ description: Result of parsing computed_var.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "1",
                 "start": 0,
                 "type": "Literal",
@@ -698,6 +815,7 @@ description: Result of parsing computed_var.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "tolerance",
                 "start": 0,
                 "type": "Identifier"
@@ -705,6 +823,7 @@ description: Result of parsing computed_var.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "0.000001",
                 "start": 0,
                 "type": "Literal",
@@ -720,6 +839,7 @@ description: Result of parsing computed_var.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "error",
                 "start": 0,
                 "type": "Identifier"
@@ -727,6 +847,7 @@ description: Result of parsing computed_var.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "\"oops cos\"",
                 "start": 0,
                 "type": "Literal",
@@ -739,9 +860,11 @@ description: Result of parsing computed_var.kcl
             "abs_path": false,
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "assert",
               "start": 0,
               "type": "Identifier"
@@ -752,6 +875,7 @@ description: Result of parsing computed_var.kcl
           },
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
@@ -759,9 +883,11 @@ description: Result of parsing computed_var.kcl
             "abs_path": false,
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "x",
               "start": 0,
               "type": "Identifier"
@@ -772,6 +898,7 @@ description: Result of parsing computed_var.kcl
             "type": "Name"
           }
         },
+        "moduleId": 0,
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -779,12 +906,14 @@ description: Result of parsing computed_var.kcl
     ],
     "commentStart": 0,
     "end": 0,
+    "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "2": [
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {
@@ -796,6 +925,7 @@ description: Result of parsing computed_var.kcl
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {
@@ -807,6 +937,7 @@ description: Result of parsing computed_var.kcl
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {
@@ -818,6 +949,7 @@ description: Result of parsing computed_var.kcl
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {
@@ -829,6 +961,7 @@ description: Result of parsing computed_var.kcl
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {
@@ -841,6 +974,7 @@ description: Result of parsing computed_var.kcl
         {
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "NonCodeNode",
           "value": {
@@ -852,6 +986,7 @@ description: Result of parsing computed_var.kcl
         {
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "NonCodeNode",
           "value": {

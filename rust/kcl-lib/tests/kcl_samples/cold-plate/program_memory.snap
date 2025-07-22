@@ -207,226 +207,11 @@ description: Variables in memory after executing cold-plate.kcl
                 "units": {
                   "type": "Unknown"
                 }
-              }
-            },
-            "start": {
-              "from": [
-                2.6875,
-                1.25
-              ],
-              "to": [
-                2.6875,
-                1.25
-              ],
-              "units": {
-                "type": "Inches"
               },
-              "tag": null,
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              }
-            },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
-          },
-          "height": 10.0,
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
-          "units": {
-            "type": "Inches"
-          },
-          "sectional": false
-        }
-      },
-      {
-        "type": "Solid",
-        "value": {
-          "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudeArc"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudeArc"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
-          "sketch": {
-            "type": "Sketch",
-            "id": "[uuid]",
-            "paths": [
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  2.6875,
-                  1.25
-                ],
-                "p1": [
-                  2.6875,
-                  1.25
-                ],
-                "p2": [
-                  3.0,
-                  1.15625
-                ],
-                "p3": [
-                  3.3125,
-                  1.25
-                ],
-                "tag": null,
-                "to": [
-                  3.3125,
-                  1.25
-                ],
-                "type": "ArcThreePoint",
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  3.3125,
-                  1.25
-                ],
-                "tag": null,
-                "to": [
-                  3.3125,
-                  0.625
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  3.3125,
-                  0.625
-                ],
-                "p1": [
-                  3.3125,
-                  0.625
-                ],
-                "p2": [
-                  3.0,
-                  0.9375
-                ],
-                "p3": [
-                  2.6875,
-                  0.625
-                ],
-                "tag": null,
-                "to": [
-                  2.6875,
-                  0.625
-                ],
-                "type": "ArcThreePoint",
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  2.6875,
-                  0.625
-                ],
-                "tag": null,
-                "to": [
-                  2.6875,
-                  1.25
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  2.6875,
-                  1.25
-                ],
-                "tag": null,
-                "to": [
-                  2.6875,
-                  1.25
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
-              }
-            ],
-            "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
-              "origin": {
-                "x": 0.0,
+              "zAxis": {
+                "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "type": "plane",
-              "value": "YZ",
-              "xAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
                 "units": {
                   "type": "Unknown"
                 }
@@ -653,6 +438,14 @@ description: Variables in memory after executing cold-plate.kcl
                 "units": {
                   "type": "Unknown"
                 }
+              },
+              "zAxis": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0,
+                "units": {
+                  "type": "Unknown"
+                }
               }
             },
             "start": {
@@ -873,6 +666,245 @@ description: Variables in memory after executing cold-plate.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
+                "units": {
+                  "type": "Unknown"
+                }
+              },
+              "zAxis": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0,
+                "units": {
+                  "type": "Unknown"
+                }
+              }
+            },
+            "start": {
+              "from": [
+                2.6875,
+                1.25
+              ],
+              "to": [
+                2.6875,
+                1.25
+              ],
+              "units": {
+                "type": "Inches"
+              },
+              "tag": null,
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": []
+              }
+            },
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
+            "units": {
+              "type": "Inches"
+            }
+          },
+          "height": 10.0,
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
+          "units": {
+            "type": "Inches"
+          },
+          "sectional": false
+        }
+      },
+      {
+        "type": "Solid",
+        "value": {
+          "type": "Solid",
+          "id": "[uuid]",
+          "artifactId": "[uuid]",
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            }
+          ],
+          "sketch": {
+            "type": "Sketch",
+            "id": "[uuid]",
+            "paths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  2.6875,
+                  1.25
+                ],
+                "p1": [
+                  2.6875,
+                  1.25
+                ],
+                "p2": [
+                  3.0,
+                  1.15625
+                ],
+                "p3": [
+                  3.3125,
+                  1.25
+                ],
+                "tag": null,
+                "to": [
+                  3.3125,
+                  1.25
+                ],
+                "type": "ArcThreePoint",
+                "units": {
+                  "type": "Inches"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  3.3125,
+                  1.25
+                ],
+                "tag": null,
+                "to": [
+                  3.3125,
+                  0.625
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Inches"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  3.3125,
+                  0.625
+                ],
+                "p1": [
+                  3.3125,
+                  0.625
+                ],
+                "p2": [
+                  3.0,
+                  0.9375
+                ],
+                "p3": [
+                  2.6875,
+                  0.625
+                ],
+                "tag": null,
+                "to": [
+                  2.6875,
+                  0.625
+                ],
+                "type": "ArcThreePoint",
+                "units": {
+                  "type": "Inches"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  2.6875,
+                  0.625
+                ],
+                "tag": null,
+                "to": [
+                  2.6875,
+                  1.25
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Inches"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  2.6875,
+                  1.25
+                ],
+                "tag": null,
+                "to": [
+                  2.6875,
+                  1.25
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Inches"
+                }
+              }
+            ],
+            "on": {
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
+              "origin": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              "type": "plane",
+              "value": "YZ",
+              "xAxis": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0,
+                "units": {
+                  "type": "Unknown"
+                }
+              },
+              "yAxis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0,
+                "units": {
+                  "type": "Unknown"
+                }
+              },
+              "zAxis": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0,
                 "units": {
                   "type": "Unknown"
                 }
@@ -1017,6 +1049,7 @@ description: Variables in memory after executing cold-plate.kcl
             "tag": {
               "commentStart": 856,
               "end": 862,
+              "moduleId": 0,
               "start": 856,
               "type": "TagDeclarator",
               "value": "seg07"
@@ -1042,6 +1075,7 @@ description: Variables in memory after executing cold-plate.kcl
             "tag": {
               "commentStart": 905,
               "end": 911,
+              "moduleId": 0,
               "start": 905,
               "type": "TagDeclarator",
               "value": "seg09"
@@ -1091,6 +1125,7 @@ description: Variables in memory after executing cold-plate.kcl
             "tag": {
               "commentStart": 1012,
               "end": 1018,
+              "moduleId": 0,
               "start": 1012,
               "type": "TagDeclarator",
               "value": "seg08"
@@ -1134,8 +1169,8 @@ description: Variables in memory after executing cold-plate.kcl
             ],
             "tag": null,
             "to": [
-              4.0469,
-              1.047
+              4.046864802988305,
+              1.047006236503076
             ],
             "type": "ToPoint",
             "units": {
@@ -1149,23 +1184,24 @@ description: Variables in memory after executing cold-plate.kcl
             },
             "ccw": true,
             "center": [
-              4.6558,
-              1.1876
+              4.655846093479077,
+              1.1876006454679922
             ],
             "from": [
-              4.0469,
-              1.047
+              4.046864802988305,
+              1.047006236503076
             ],
             "tag": {
               "commentStart": 1189,
               "end": 1195,
+              "moduleId": 0,
               "start": 1189,
               "type": "TagDeclarator",
               "value": "seg01"
             },
             "to": [
-              4.6558,
-              0.5626
+              4.655846093479078,
+              0.5626006454679922
             ],
             "type": "TangentialArc",
             "units": {
@@ -1178,13 +1214,13 @@ description: Variables in memory after executing cold-plate.kcl
               "sourceRange": []
             },
             "from": [
-              4.6558,
-              0.5626
+              4.655846093479078,
+              0.5626006454679922
             ],
             "tag": null,
             "to": [
-              5.6558,
-              0.5626
+              5.655846093479078,
+              0.5626006454679943
             ],
             "type": "ToPoint",
             "units": {
@@ -1197,12 +1233,12 @@ description: Variables in memory after executing cold-plate.kcl
               "sourceRange": []
             },
             "from": [
-              5.6558,
-              0.5626
+              5.655846093479078,
+              0.5626006454679943
             ],
             "tag": null,
             "to": [
-              5.6558,
+              5.655846093479078,
               0.0
             ],
             "type": "ToPoint",
@@ -1216,7 +1252,7 @@ description: Variables in memory after executing cold-plate.kcl
               "sourceRange": []
             },
             "from": [
-              5.6558,
+              5.655846093479078,
               0.0
             ],
             "tag": null,
@@ -1274,6 +1310,14 @@ description: Variables in memory after executing cold-plate.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
+            "units": {
+              "type": "Unknown"
+            }
+          },
+          "zAxis": {
+            "x": 1.0,
+            "y": 0.0,
+            "z": 0.0,
             "units": {
               "type": "Unknown"
             }
@@ -1348,12 +1392,13 @@ description: Variables in memory after executing cold-plate.kcl
           "tag": {
             "commentStart": 1594,
             "end": 1600,
+            "moduleId": 0,
             "start": 1594,
             "type": "TagDeclarator",
             "value": "seg05"
           },
           "to": [
-            6.78,
+            6.780000000000001,
             -3.0
           ],
           "type": "ToPoint",
@@ -1368,22 +1413,23 @@ description: Variables in memory after executing cold-plate.kcl
           },
           "ccw": true,
           "center": [
-            6.78,
+            6.780000000000001,
             -2.0
           ],
           "from": [
-            6.78,
+            6.780000000000001,
             -3.0
           ],
           "tag": {
             "commentStart": 1661,
             "end": 1667,
+            "moduleId": 0,
             "start": 1661,
             "type": "TagDeclarator",
             "value": "seg02"
           },
           "to": [
-            6.78,
+            6.780000000000001,
             -1.0
           ],
           "type": "TangentialArc",
@@ -1397,19 +1443,20 @@ description: Variables in memory after executing cold-plate.kcl
             "sourceRange": []
           },
           "from": [
-            6.78,
+            6.780000000000001,
             -1.0
           ],
           "tag": {
             "commentStart": 1736,
             "end": 1742,
+            "moduleId": 0,
             "start": 1736,
             "type": "TagDeclarator",
             "value": "seg06"
           },
           "to": [
-            -6.24,
-            -1.0
+            -6.239999999999998,
+            -0.9999999999999984
           ],
           "type": "ToPoint",
           "units": {
@@ -1423,23 +1470,24 @@ description: Variables in memory after executing cold-plate.kcl
           },
           "ccw": false,
           "center": [
-            -6.24,
-            0.0
+            -6.239999999999998,
+            0.0000000000000015543122344752192
           ],
           "from": [
-            -6.24,
-            -1.0
+            -6.239999999999998,
+            -0.9999999999999984
           ],
           "tag": {
             "commentStart": 1804,
             "end": 1810,
+            "moduleId": 0,
             "start": 1804,
             "type": "TagDeclarator",
             "value": "seg03"
           },
           "to": [
-            -6.24,
-            1.0
+            -6.239999999999998,
+            1.0000000000000016
           ],
           "type": "TangentialArc",
           "units": {
@@ -1452,13 +1500,13 @@ description: Variables in memory after executing cold-plate.kcl
             "sourceRange": []
           },
           "from": [
-            -6.24,
-            1.0
+            -6.239999999999998,
+            1.0000000000000016
           ],
           "tag": null,
           "to": [
-            6.78,
-            1.0
+            6.780000000000001,
+            0.9999999999999998
           ],
           "type": "ToPoint",
           "units": {
@@ -1472,22 +1520,23 @@ description: Variables in memory after executing cold-plate.kcl
           },
           "ccw": true,
           "center": [
-            6.78,
-            2.0
+            6.780000000000001,
+            1.9999999999999998
           ],
           "from": [
-            6.78,
-            1.0
+            6.780000000000001,
+            0.9999999999999998
           ],
           "tag": {
             "commentStart": 1940,
             "end": 1946,
+            "moduleId": 0,
             "start": 1940,
             "type": "TagDeclarator",
             "value": "seg04"
           },
           "to": [
-            6.78,
+            6.780000000000001,
             3.0
           ],
           "type": "TangentialArc",
@@ -1501,13 +1550,13 @@ description: Variables in memory after executing cold-plate.kcl
             "sourceRange": []
           },
           "from": [
-            6.78,
+            6.780000000000001,
             3.0
           ],
           "tag": null,
           "to": [
             -7.35,
-            3.0
+            3.0000000000000018
           ],
           "type": "ToPoint",
           "units": {
@@ -1540,6 +1589,14 @@ description: Variables in memory after executing cold-plate.kcl
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
+          "units": {
+            "type": "Unknown"
+          }
+        },
+        "zAxis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0,
           "units": {
             "type": "Unknown"
           }
@@ -1695,6 +1752,33 @@ description: Variables in memory after executing cold-plate.kcl
             }
           }
         ],
+        "innerPaths": [
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              -3.0,
+              0.625
+            ],
+            "from": [
+              -2.7675,
+              0.625
+            ],
+            "radius": 0.23249999999999998,
+            "tag": null,
+            "to": [
+              -2.7675,
+              0.625
+            ],
+            "type": "Circle",
+            "units": {
+              "type": "Inches"
+            }
+          }
+        ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
@@ -1720,6 +1804,14 @@ description: Variables in memory after executing cold-plate.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
+            "units": {
+              "type": "Unknown"
+            }
+          },
+          "zAxis": {
+            "x": 1.0,
+            "y": 0.0,
+            "z": 0.0,
             "units": {
               "type": "Unknown"
             }

@@ -1,22 +1,19 @@
 use std::num::NonZeroU32;
 
 use anyhow::Result;
-use kcmc::{
-    websocket::{ModelingCmdReq, OkWebSocketResponseData},
-    ModelingCmd,
-};
-use kittycad_modeling_cmds as kcmc;
 use schemars::JsonSchema;
 use serde::Serialize;
 
+use super::fillet::EdgeReference;
 pub use crate::execution::fn_call::Args;
 use crate::{
+    ModuleId,
     errors::{KclError, KclErrorDetails},
     execution::{
-        kcl_value::FunctionSource,
-        types::{NumericType, PrimitiveType, RuntimeType, UnitAngle, UnitLen, UnitType},
         ExecState, ExtrudeSurface, Helix, KclObjectFields, KclValue, Metadata, PlaneInfo, Sketch, SketchSurface, Solid,
         TagIdentifier,
+        kcl_value::FunctionSource,
+        types::{NumericType, PrimitiveType, RuntimeType, UnitAngle, UnitLen, UnitType},
     },
     parsing::ast::types::TagNode,
     source_range::SourceRange,
@@ -25,7 +22,6 @@ use crate::{
         sketch::FaceTag,
         sweep::SweepPath,
     },
-    ModuleId,
 };
 
 const ERROR_STRING_SKETCH_TO_SOLID_HELPER: &str =
@@ -101,38 +97,13 @@ impl JsonSchema for TyF64 {
         "TyF64".to_string()
     }
 
-    fn json_schema(gen: &mut schemars::gen::SchemaGenerator) -> schemars::schema::Schema {
-        gen.subschema_for::<f64>()
+    fn json_schema(r#gen: &mut schemars::r#gen::SchemaGenerator) -> schemars::schema::Schema {
+        r#gen.subschema_for::<f64>()
     }
 }
 
 impl Args {
-    /// Get a keyword argument. If not set, returns None.
-    pub(crate) fn get_kw_arg_opt<'a, T>(&'a self, label: &str) -> Result<Option<T>, KclError>
-    where
-        T: FromKclValue<'a>,
-    {
-        let Some(arg) = self.kw_args.labeled.get(label) else {
-            return Ok(None);
-        };
-        if let KclValue::KclNone { .. } = arg.value {
-            // It is set, but it's an optional parameter that wasn't provided.
-            return Ok(None);
-        }
-
-        T::from_kcl_val(&arg.value).map(Some).ok_or_else(|| {
-            KclError::Type(KclErrorDetails::new(
-                format!(
-                    "The arg {label} was given, but it was the wrong type. It should be type {} but it was {}",
-                    tynm::type_name::<T>(),
-                    arg.value.human_friendly_type(),
-                ),
-                vec![self.source_range],
-            ))
-        })
-    }
-
-    pub(crate) fn get_kw_arg_opt_typed<T>(
+    pub(crate) fn get_kw_arg_opt<T>(
         &self,
         label: &str,
         ty: &RuntimeType,
@@ -141,38 +112,25 @@ impl Args {
     where
         T: for<'a> FromKclValue<'a>,
     {
-        if self.kw_args.labeled.get(label).is_none() {
-            return Ok(None);
-        };
+        match self.kw_args.labeled.get(label) {
+            None => return Ok(None),
+            Some(a) => {
+                if let KclValue::KclNone { .. } = &a.value {
+                    return Ok(None);
+                }
+            }
+        }
 
-        self.get_kw_arg_typed(label, ty, exec_state).map(Some)
+        self.get_kw_arg(label, ty, exec_state).map(Some)
     }
 
-    /// Get a keyword argument. If not set, returns Err.
-    pub(crate) fn get_kw_arg<'a, T>(&'a self, label: &str) -> Result<T, KclError>
-    where
-        T: FromKclValue<'a>,
-    {
-        self.get_kw_arg_opt(label)?.ok_or_else(|| {
-            KclError::Semantic(KclErrorDetails::new(
-                format!("This function requires a keyword argument '{label}'"),
-                vec![self.source_range],
-            ))
-        })
-    }
-
-    pub(crate) fn get_kw_arg_typed<T>(
-        &self,
-        label: &str,
-        ty: &RuntimeType,
-        exec_state: &mut ExecState,
-    ) -> Result<T, KclError>
+    pub(crate) fn get_kw_arg<T>(&self, label: &str, ty: &RuntimeType, exec_state: &mut ExecState) -> Result<T, KclError>
     where
         T: for<'a> FromKclValue<'a>,
     {
         let Some(arg) = self.kw_args.labeled.get(label) else {
-            return Err(KclError::Semantic(KclErrorDetails::new(
-                format!("This function requires a keyword argument '{label}'"),
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                format!("This function requires a keyword argument `{label}`"),
                 vec![self.source_range],
             )));
         };
@@ -184,7 +142,7 @@ impl Args {
                 .map(|t| t.to_string())
                 .unwrap_or_else(|| arg.value.human_friendly_type().to_owned());
             let msg_base = format!(
-                "This function expected the input argument to be {} but it's actually of type {actual_type_name}",
+                "This function expected its `{label}` argument to be {} but it's actually of type {actual_type_name}",
                 ty.human_friendly_type(),
             );
             let suggestion = match (ty, actual_type) {
@@ -202,51 +160,42 @@ impl Args {
                 None => msg_base,
                 Some(sugg) => format!("{msg_base}. {sugg}"),
             };
-            if message.contains("one or more Solids or imported geometry but it's actually of type Sketch") {
+            if message.contains("one or more Solids or ImportedGeometry but it's actually of type Sketch") {
                 message = format!("{message}. {ERROR_STRING_SKETCH_TO_SOLID_HELPER}");
             }
-            KclError::Semantic(KclErrorDetails::new(message, arg.source_ranges()))
+            KclError::new_semantic(KclErrorDetails::new(message, arg.source_ranges()))
         })?;
 
-        // TODO unnecessary cloning
-        Ok(T::from_kcl_val(&arg).unwrap())
+        T::from_kcl_val(&arg).ok_or_else(|| {
+            KclError::new_internal(KclErrorDetails::new(
+                format!("Mismatch between type coercion and value extraction (this isn't your fault).\nTo assist in bug-reporting, expected type: {ty:?}; actual value: {arg:?}"),
+                vec![self.source_range],
+           ))
+        })
     }
 
     /// Get a labelled keyword arg, check it's an array, and return all items in the array
     /// plus their source range.
-    pub(crate) fn kw_arg_array_and_source<'a, T>(&'a self, label: &str) -> Result<Vec<(T, SourceRange)>, KclError>
-    where
-        T: FromKclValue<'a>,
-    {
+    pub(crate) fn kw_arg_edge_array_and_source(
+        &self,
+        label: &str,
+    ) -> Result<Vec<(EdgeReference, SourceRange)>, KclError> {
         let Some(arg) = self.kw_args.labeled.get(label) else {
-            let err = KclError::Semantic(KclErrorDetails::new(
+            let err = KclError::new_semantic(KclErrorDetails::new(
                 format!("This function requires a keyword argument '{label}'"),
                 vec![self.source_range],
             ));
             return Err(err);
         };
-        let Some(array) = arg.value.as_array() else {
-            let err = KclError::Semantic(KclErrorDetails::new(
-                format!(
-                    "Expected an array of {} but found {}",
-                    tynm::type_name::<T>(),
-                    arg.value.human_friendly_type()
-                ),
-                vec![arg.source_range],
-            ));
-            return Err(err);
-        };
-        array
+        arg.value
+            .clone()
+            .into_array()
             .iter()
             .map(|item| {
                 let source = SourceRange::from(item);
                 let val = FromKclValue::from_kcl_val(item).ok_or_else(|| {
-                    KclError::Semantic(KclErrorDetails::new(
-                        format!(
-                            "Expected a {} but found {}",
-                            tynm::type_name::<T>(),
-                            arg.value.human_friendly_type()
-                        ),
+                    KclError::new_semantic(KclErrorDetails::new(
+                        format!("Expected an Edge but found {}", arg.value.human_friendly_type()),
                         arg.source_ranges(),
                     ))
                 })?;
@@ -255,33 +204,22 @@ impl Args {
             .collect::<Result<Vec<_>, _>>()
     }
 
-    /// Get the unlabeled keyword argument. If not set, returns Err.  If it
-    /// can't be converted to the given type, returns Err.
-    pub(crate) fn get_unlabeled_kw_arg<'a, T>(&'a self, label: &str) -> Result<T, KclError>
-    where
-        T: FromKclValue<'a>,
-    {
-        let arg = self
-            .unlabeled_kw_arg_unconverted()
-            .ok_or(KclError::Semantic(KclErrorDetails::new(
-                format!("This function requires a value for the special unlabeled first parameter, '{label}'"),
-                vec![self.source_range],
-            )))?;
-
-        T::from_kcl_val(&arg.value).ok_or_else(|| {
-            let expected_type_name = tynm::type_name::<T>();
-            let actual_type_name = arg.value.human_friendly_type();
-            let message = format!("This function expected the input argument to be of type {expected_type_name} but it's actually of type {actual_type_name}");
-            KclError::Semantic(KclErrorDetails::new(
-                message,
-                arg.source_ranges(),
-            ))
+    pub(crate) fn get_unlabeled_kw_arg_array_and_type(
+        &self,
+        label: &str,
+        exec_state: &mut ExecState,
+    ) -> Result<(Vec<KclValue>, RuntimeType), KclError> {
+        let value = self.get_unlabeled_kw_arg(label, &RuntimeType::any_array(), exec_state)?;
+        Ok(match value {
+            KclValue::HomArray { value, ty } => (value, ty),
+            KclValue::Tuple { value, .. } => (value, RuntimeType::any()),
+            val => (vec![val], RuntimeType::any()),
         })
     }
 
     /// Get the unlabeled keyword argument. If not set, returns Err. If it
     /// can't be converted to the given type, returns Err.
-    pub(crate) fn get_unlabeled_kw_arg_typed<T>(
+    pub(crate) fn get_unlabeled_kw_arg<T>(
         &self,
         label: &str,
         ty: &RuntimeType,
@@ -292,7 +230,7 @@ impl Args {
     {
         let arg = self
             .unlabeled_kw_arg_unconverted()
-            .ok_or(KclError::Semantic(KclErrorDetails::new(
+            .ok_or(KclError::new_semantic(KclErrorDetails::new(
                 format!("This function requires a value for the special unlabeled first parameter, '{label}'"),
                 vec![self.source_range],
             )))?;
@@ -323,50 +261,21 @@ impl Args {
                 Some(sugg) => format!("{msg_base}. {sugg}"),
             };
 
-            if message.contains("one or more Solids or imported geometry but it's actually of type Sketch") {
+            if message.contains("one or more Solids or ImportedGeometry but it's actually of type Sketch") {
                 message = format!("{message}. {ERROR_STRING_SKETCH_TO_SOLID_HELPER}");
             }
-            KclError::Semantic(KclErrorDetails::new(message, arg.source_ranges()))
+            KclError::new_semantic(KclErrorDetails::new(message, arg.source_ranges()))
         })?;
 
         T::from_kcl_val(&arg).ok_or_else(|| {
-            KclError::Internal(KclErrorDetails::new(
-                "Mismatch between type coercion and value extraction (this isn't your fault).\nTo assist in bug-reporting, expected type: {ty:?}; actual value: {arg:?}".to_owned(),
+            KclError::new_internal(KclErrorDetails::new(
+                format!("Mismatch between type coercion and value extraction (this isn't your fault).\nTo assist in bug-reporting, expected type: {ty:?}; actual value: {arg:?}"),
                 vec![self.source_range],
            ))
         })
     }
 
-    // Add a modeling command to the batch but don't fire it right away.
-    pub(crate) async fn batch_modeling_cmd(
-        &self,
-        id: uuid::Uuid,
-        cmd: ModelingCmd,
-    ) -> Result<(), crate::errors::KclError> {
-        self.ctx.engine.batch_modeling_cmd(id, self.source_range, &cmd).await
-    }
-
-    // Add multiple modeling commands to the batch but don't fire them right away.
-    pub(crate) async fn batch_modeling_cmds(&self, cmds: &[ModelingCmdReq]) -> Result<(), crate::errors::KclError> {
-        self.ctx.engine.batch_modeling_cmds(self.source_range, cmds).await
-    }
-
-    // Add a modeling commandSolid> to the batch that gets executed at the end of the file.
-    // This is good for something like fillet or chamfer where the engine would
-    // eat the path id if we executed it right away.
-    pub(crate) async fn batch_end_cmd(&self, id: uuid::Uuid, cmd: ModelingCmd) -> Result<(), crate::errors::KclError> {
-        self.ctx.engine.batch_end_cmd(id, self.source_range, &cmd).await
-    }
-
-    /// Send the modeling cmd and wait for the response.
-    pub(crate) async fn send_modeling_cmd(
-        &self,
-        id: uuid::Uuid,
-        cmd: ModelingCmd,
-    ) -> Result<OkWebSocketResponseData, KclError> {
-        self.ctx.engine.send_modeling_cmd(id, self.source_range, &cmd).await
-    }
-
+    // TODO: Move this to the modeling module.
     fn get_tag_info_from_memory<'a, 'e>(
         &'a self,
         exec_state: &'e mut ExecState,
@@ -376,20 +285,21 @@ impl Args {
             exec_state.stack().get_from_call_stack(&tag.value, self.source_range)?
         {
             let info = t.get_info(epoch).ok_or_else(|| {
-                KclError::Type(KclErrorDetails::new(
+                KclError::new_type(KclErrorDetails::new(
                     format!("Tag `{}` does not have engine info", tag.value),
                     vec![self.source_range],
                 ))
             })?;
             Ok(info)
         } else {
-            Err(KclError::Type(KclErrorDetails::new(
+            Err(KclError::new_type(KclErrorDetails::new(
                 format!("Tag `{}` does not exist", tag.value),
                 vec![self.source_range],
             )))
         }
     }
 
+    // TODO: Move this to the modeling module.
     pub(crate) fn get_tag_engine_info<'a, 'e>(
         &'a self,
         exec_state: &'e mut ExecState,
@@ -405,6 +315,7 @@ impl Args {
         self.get_tag_info_from_memory(exec_state, tag)
     }
 
+    // TODO: Move this to the modeling module.
     fn get_tag_engine_info_check_surface<'a, 'e>(
         &'a self,
         exec_state: &'e mut ExecState,
@@ -422,63 +333,6 @@ impl Args {
         self.get_tag_info_from_memory(exec_state, tag)
     }
 
-    /// Flush just the fillets and chamfers for this specific SolidSet.
-    #[allow(clippy::vec_box)]
-    pub(crate) async fn flush_batch_for_solids(
-        &self,
-        exec_state: &mut ExecState,
-        solids: &[Solid],
-    ) -> Result<(), KclError> {
-        // Make sure we don't traverse sketches more than once.
-        let mut traversed_sketches = Vec::new();
-
-        // Collect all the fillet/chamfer ids for the solids.
-        let mut ids = Vec::new();
-        for solid in solids {
-            // We need to traverse the solids that share the same sketch.
-            let sketch_id = solid.sketch.id;
-            if !traversed_sketches.contains(&sketch_id) {
-                // Find all the solids on the same shared sketch.
-                ids.extend(
-                    exec_state
-                        .stack()
-                        .walk_call_stack()
-                        .filter(|v| matches!(v, KclValue::Solid { value } if value.sketch.id == sketch_id))
-                        .flat_map(|v| match v {
-                            KclValue::Solid { value } => value.get_all_edge_cut_ids(),
-                            _ => unreachable!(),
-                        }),
-                );
-                traversed_sketches.push(sketch_id);
-            }
-
-            ids.extend(solid.get_all_edge_cut_ids());
-        }
-
-        // We can return early if there are no fillets or chamfers.
-        if ids.is_empty() {
-            return Ok(());
-        }
-
-        // We want to move these fillets and chamfers from batch_end to batch so they get executed
-        // before what ever we call next.
-        for id in ids {
-            // Pop it off the batch_end and add it to the batch.
-            let Some(item) = self.ctx.engine.batch_end().write().await.shift_remove(&id) else {
-                // It might be in the batch already.
-                continue;
-            };
-            // Add it to the batch.
-            self.ctx.engine.batch().write().await.push(item);
-        }
-
-        // Run flush.
-        // Yes, we do need to actually flush the batch here, or references will fail later.
-        self.ctx.engine.flush_batch(false, self.source_range).await?;
-
-        Ok(())
-    }
-
     pub(crate) fn make_kcl_val_from_point(&self, p: [f64; 2], ty: NumericType) -> Result<KclValue, KclError> {
         let meta = Metadata {
             source_range: self.source_range,
@@ -486,12 +340,12 @@ impl Args {
         let x = KclValue::Number {
             value: p[0],
             meta: vec![meta],
-            ty: ty.clone(),
+            ty,
         };
         let y = KclValue::Number {
             value: p[1],
             meta: vec![meta],
-            ty: ty.clone(),
+            ty,
         };
         let ty = RuntimeType::Primitive(PrimitiveType::Number(ty));
 
@@ -508,6 +362,7 @@ impl Args {
         )
     }
 
+    // TODO: Move this to the modeling module.
     pub(crate) async fn get_adjacent_face_to_tag(
         &self,
         exec_state: &mut ExecState,
@@ -515,7 +370,7 @@ impl Args {
         must_be_planar: bool,
     ) -> Result<uuid::Uuid, KclError> {
         if tag.value.is_empty() {
-            return Err(KclError::Type(KclErrorDetails::new(
+            return Err(KclError::new_type(KclErrorDetails::new(
                 "Expected a non-empty tag for the face".to_string(),
                 vec![self.source_range],
             )));
@@ -524,7 +379,7 @@ impl Args {
         let engine_info = self.get_tag_engine_info_check_surface(exec_state, tag)?;
 
         let surface = engine_info.surface.as_ref().ok_or_else(|| {
-            KclError::Type(KclErrorDetails::new(
+            KclError::new_type(KclErrorDetails::new(
                 format!("Tag `{}` does not have a surface", tag.value),
                 vec![self.source_range],
             ))
@@ -543,7 +398,7 @@ impl Args {
                 }
             }
             // The must be planar check must be called before the arc check.
-            ExtrudeSurface::ExtrudeArc(_) if must_be_planar => Some(Err(KclError::Type(KclErrorDetails::new(
+            ExtrudeSurface::ExtrudeArc(_) if must_be_planar => Some(Err(KclError::new_type(KclErrorDetails::new(
                 format!("Tag `{}` is a non-planar surface", tag.value),
                 vec![self.source_range],
             )))),
@@ -570,7 +425,7 @@ impl Args {
                 }
             }
             // The must be planar check must be called before the fillet check.
-            ExtrudeSurface::Fillet(_) if must_be_planar => Some(Err(KclError::Type(KclErrorDetails::new(
+            ExtrudeSurface::Fillet(_) if must_be_planar => Some(Err(KclError::new_type(KclErrorDetails::new(
                 format!("Tag `{}` is a non-planar surface", tag.value),
                 vec![self.source_range],
             )))),
@@ -590,112 +445,17 @@ impl Args {
         }
 
         // If we still haven't found the face, return an error.
-        Err(KclError::Type(KclErrorDetails::new(
+        Err(KclError::new_type(KclErrorDetails::new(
             format!("Expected a face with the tag `{}`", tag.value),
             vec![self.source_range],
         )))
     }
 }
 
-/// Types which impl this trait can be read out of the `Args` passed into a KCL function.
-pub trait FromArgs<'a>: Sized {
-    /// Get this type from the args passed into a KCL function, at the given index in the argument list.
-    fn from_args(args: &'a Args, index: usize) -> Result<Self, KclError>;
-}
-
 /// Types which impl this trait can be extracted from a `KclValue`.
 pub trait FromKclValue<'a>: Sized {
     /// Try to convert a KclValue into this type.
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self>;
-}
-
-impl<'a, T> FromArgs<'a> for T
-where
-    T: FromKclValue<'a> + Sized,
-{
-    fn from_args(args: &'a Args, i: usize) -> Result<Self, KclError> {
-        let Some(arg) = args.args.get(i) else {
-            return Err(KclError::Semantic(KclErrorDetails::new(
-                format!("Expected an argument at index {i}"),
-                vec![args.source_range],
-            )));
-        };
-        let Some(val) = T::from_kcl_val(&arg.value) else {
-            return Err(KclError::Semantic(KclErrorDetails::new(
-                format!(
-                    "Argument at index {i} was supposed to be type {} but found {}",
-                    tynm::type_name::<T>(),
-                    arg.value.human_friendly_type(),
-                ),
-                arg.source_ranges(),
-            )));
-        };
-        Ok(val)
-    }
-}
-
-impl<'a, T> FromArgs<'a> for Option<T>
-where
-    T: FromKclValue<'a> + Sized,
-{
-    fn from_args(args: &'a Args, i: usize) -> Result<Self, KclError> {
-        let Some(arg) = args.args.get(i) else { return Ok(None) };
-        if crate::parsing::ast::types::KclNone::from_kcl_val(&arg.value).is_some() {
-            return Ok(None);
-        }
-        let Some(val) = T::from_kcl_val(&arg.value) else {
-            return Err(KclError::Semantic(KclErrorDetails::new(
-                format!(
-                    "Argument at index {i} was supposed to be type Option<{}> but found {}",
-                    tynm::type_name::<T>(),
-                    arg.value.human_friendly_type()
-                ),
-                arg.source_ranges(),
-            )));
-        };
-        Ok(Some(val))
-    }
-}
-
-impl<'a, A, B> FromArgs<'a> for (A, B)
-where
-    A: FromArgs<'a>,
-    B: FromArgs<'a>,
-{
-    fn from_args(args: &'a Args, i: usize) -> Result<Self, KclError> {
-        let a = A::from_args(args, i)?;
-        let b = B::from_args(args, i + 1)?;
-        Ok((a, b))
-    }
-}
-
-impl<'a, A, B, C> FromArgs<'a> for (A, B, C)
-where
-    A: FromArgs<'a>,
-    B: FromArgs<'a>,
-    C: FromArgs<'a>,
-{
-    fn from_args(args: &'a Args, i: usize) -> Result<Self, KclError> {
-        let a = A::from_args(args, i)?;
-        let b = B::from_args(args, i + 1)?;
-        let c = C::from_args(args, i + 2)?;
-        Ok((a, b, c))
-    }
-}
-impl<'a, A, B, C, D> FromArgs<'a> for (A, B, C, D)
-where
-    A: FromArgs<'a>,
-    B: FromArgs<'a>,
-    C: FromArgs<'a>,
-    D: FromArgs<'a>,
-{
-    fn from_args(args: &'a Args, i: usize) -> Result<Self, KclError> {
-        let a = A::from_args(args, i)?;
-        let b = B::from_args(args, i + 1)?;
-        let c = C::from_args(args, i + 2)?;
-        let d = D::from_args(args, i + 3)?;
-        Ok((a, b, c, d))
-    }
 }
 
 impl<'a> FromKclValue<'a> for TagNode {
@@ -728,7 +488,7 @@ impl<'a> FromKclValue<'a> for Vec<TagIdentifier> {
 
 impl<'a> FromKclValue<'a> for Vec<KclValue> {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        arg.as_array().map(|v| v.to_vec())
+        Some(arg.clone().into_array())
     }
 }
 
@@ -914,6 +674,7 @@ impl<'a> FromKclValue<'a> for super::sketch::PlaneData {
                 origin: value.info.origin,
                 x_axis: value.info.x_axis,
                 y_axis: value.info.y_axis,
+                z_axis: value.info.z_axis,
             }));
         }
         // Case 1: predefined plane
@@ -932,9 +693,15 @@ impl<'a> FromKclValue<'a> for super::sketch::PlaneData {
         let obj = arg.as_object()?;
         let_field_of!(obj, plane, &KclObjectFields);
         let origin = plane.get("origin").and_then(FromKclValue::from_kcl_val)?;
-        let x_axis = plane.get("xAxis").and_then(FromKclValue::from_kcl_val)?;
+        let x_axis: crate::execution::Point3d = plane.get("xAxis").and_then(FromKclValue::from_kcl_val)?;
         let y_axis = plane.get("yAxis").and_then(FromKclValue::from_kcl_val)?;
-        Some(Self::Plane(PlaneInfo { origin, x_axis, y_axis }))
+        let z_axis = x_axis.axes_cross_product(&y_axis);
+        Some(Self::Plane(PlaneInfo {
+            origin,
+            x_axis,
+            y_axis,
+            z_axis,
+        }))
     }
 }
 
@@ -1039,7 +806,8 @@ macro_rules! impl_from_kcl_for_vec {
     ($typ:path) => {
         impl<'a> FromKclValue<'a> for Vec<$typ> {
             fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-                arg.as_array()?
+                arg.clone()
+                    .into_array()
                     .iter()
                     .map(|value| FromKclValue::from_kcl_val(value))
                     .collect::<Option<_>>()
@@ -1054,6 +822,8 @@ impl_from_kcl_for_vec!(crate::execution::Metadata);
 impl_from_kcl_for_vec!(super::fillet::EdgeReference);
 impl_from_kcl_for_vec!(ExtrudeSurface);
 impl_from_kcl_for_vec!(TyF64);
+impl_from_kcl_for_vec!(Solid);
+impl_from_kcl_for_vec!(Sketch);
 
 impl<'a> FromKclValue<'a> for SourceRange {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
@@ -1275,7 +1045,7 @@ impl<'a> FromKclValue<'a> for u64 {
 impl<'a> FromKclValue<'a> for TyF64 {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         match arg {
-            KclValue::Number { value, ty, .. } => Some(TyF64::new(*value, ty.clone())),
+            KclValue::Number { value, ty, .. } => Some(TyF64::new(*value, *ty)),
             _ => None,
         }
     }
@@ -1309,6 +1079,34 @@ impl<'a> FromKclValue<'a> for [TyF64; 3] {
                 let v1 = value.get(1)?;
                 let v2 = value.get(2)?;
                 let array = [v0.as_ty_f64()?, v1.as_ty_f64()?, v2.as_ty_f64()?];
+                Some(array)
+            }
+            _ => None,
+        }
+    }
+}
+
+impl<'a> FromKclValue<'a> for [TyF64; 6] {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        match arg {
+            KclValue::Tuple { value, meta: _ } | KclValue::HomArray { value, .. } => {
+                if value.len() != 6 {
+                    return None;
+                }
+                let v0 = value.first()?;
+                let v1 = value.get(1)?;
+                let v2 = value.get(2)?;
+                let v3 = value.get(3)?;
+                let v4 = value.get(4)?;
+                let v5 = value.get(5)?;
+                let array = [
+                    v0.as_ty_f64()?,
+                    v1.as_ty_f64()?,
+                    v2.as_ty_f64()?,
+                    v3.as_ty_f64()?,
+                    v4.as_ty_f64()?,
+                    v5.as_ty_f64()?,
+                ];
                 Some(array)
             }
             _ => None,
@@ -1379,27 +1177,9 @@ impl<'a> FromKclValue<'a> for Box<Solid> {
     }
 }
 
-impl<'a> FromKclValue<'a> for Vec<Solid> {
+impl<'a> FromKclValue<'a> for FunctionSource {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let KclValue::HomArray { value, .. } = arg else {
-            return None;
-        };
-        value.iter().map(Solid::from_kcl_val).collect()
-    }
-}
-
-impl<'a> FromKclValue<'a> for Vec<Sketch> {
-    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let KclValue::HomArray { value, .. } = arg else {
-            return None;
-        };
-        value.iter().map(Sketch::from_kcl_val).collect()
-    }
-}
-
-impl<'a> FromKclValue<'a> for &'a FunctionSource {
-    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        arg.get_function()
+        arg.as_function().cloned()
     }
 }
 

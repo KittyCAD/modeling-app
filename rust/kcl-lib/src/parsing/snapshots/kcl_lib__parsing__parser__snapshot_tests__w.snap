@@ -12,25 +12,38 @@ expression: actual
         "id": {
           "commentStart": 0,
           "end": 3,
+          "moduleId": 0,
           "name": "pt1",
           "start": 0,
           "type": "Identifier"
         },
         "init": {
           "commentStart": 6,
-          "computed": false,
+          "computed": true,
           "end": 16,
+          "moduleId": 0,
           "object": {
+            "abs_path": false,
             "commentStart": 6,
             "end": 8,
-            "name": "b1",
+            "moduleId": 0,
+            "name": {
+              "commentStart": 6,
+              "end": 8,
+              "moduleId": 0,
+              "name": "b1",
+              "start": 6,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 6,
-            "type": "Identifier",
-            "type": "Identifier"
+            "type": "Name",
+            "type": "Name"
           },
           "property": {
             "commentStart": 9,
             "end": 15,
+            "moduleId": 0,
             "raw": "'zero'",
             "start": 9,
             "type": "Literal",
@@ -41,11 +54,13 @@ expression: actual
           "type": "MemberExpression",
           "type": "MemberExpression"
         },
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclarator"
       },
       "end": 16,
       "kind": "const",
+      "moduleId": 0,
       "start": 0,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
@@ -53,5 +68,6 @@ expression: actual
   ],
   "commentStart": 0,
   "end": 16,
+  "moduleId": 0,
   "start": 0
 }

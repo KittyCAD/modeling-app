@@ -81,6 +81,13 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudeArc"
         }
       ],
       "sketch": {
@@ -105,6 +112,33 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             "tag": null,
             "to": [
               0.74,
+              0.0
+            ],
+            "type": "Circle",
+            "units": {
+              "type": "Inches"
+            }
+          }
+        ],
+        "innerPaths": [
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.0,
+              0.0
+            ],
+            "from": [
+              0.625,
+              0.0
+            ],
+            "radius": 0.625,
+            "tag": null,
+            "to": [
+              0.625,
               0.0
             ],
             "type": "Circle",
@@ -138,6 +172,14 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
+          },
+          "zAxis": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 1.0,
             "units": {
               "type": "Unknown"
             }
@@ -412,6 +454,14 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             "units": {
               "type": "Unknown"
             }
+          },
+          "zAxis": {
+            "x": 1.0,
+            "y": 0.0,
+            "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
           }
         },
         "start": {
@@ -461,6 +511,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "tag": {
             "commentStart": 867,
             "end": 888,
+            "moduleId": 0,
             "start": 867,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA001"
@@ -474,6 +525,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "tag": {
             "commentStart": 976,
             "end": 997,
+            "moduleId": 0,
             "start": 976,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB001"
@@ -487,6 +539,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "tag": {
             "commentStart": 1099,
             "end": 1120,
+            "moduleId": 0,
             "start": 1099,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC001"
@@ -500,11 +553,19 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "tag": {
             "commentStart": 1190,
             "end": 1211,
+            "moduleId": 0,
             "start": 1190,
             "type": "TagDeclarator",
             "value": "rectangleSegmentD001"
           },
           "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudeArc"
         }
       ],
       "sketch": {
@@ -523,6 +584,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             "tag": {
               "commentStart": 867,
               "end": 888,
+              "moduleId": 0,
               "start": 867,
               "type": "TagDeclarator",
               "value": "rectangleSegmentA001"
@@ -548,12 +610,13 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             "tag": {
               "commentStart": 976,
               "end": 997,
+              "moduleId": 0,
               "start": 976,
               "type": "TagDeclarator",
               "value": "rectangleSegmentB001"
             },
             "to": [
-              3.25,
+              3.2500000000000004,
               2.25
             ],
             "type": "ToPoint",
@@ -567,18 +630,19 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "sourceRange": []
             },
             "from": [
-              3.25,
+              3.2500000000000004,
               2.25
             ],
             "tag": {
               "commentStart": 1099,
               "end": 1120,
+              "moduleId": 0,
               "start": 1099,
               "type": "TagDeclarator",
               "value": "rectangleSegmentC001"
             },
             "to": [
-              -3.25,
+              -3.2499999999999996,
               2.25
             ],
             "type": "ToPoint",
@@ -592,12 +656,13 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "sourceRange": []
             },
             "from": [
-              -3.25,
+              -3.2499999999999996,
               2.25
             ],
             "tag": {
               "commentStart": 1190,
               "end": 1211,
+              "moduleId": 0,
               "start": 1190,
               "type": "TagDeclarator",
               "value": "rectangleSegmentD001"
@@ -631,6 +696,33 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             }
           }
         ],
+        "innerPaths": [
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.0,
+              0.0
+            ],
+            "from": [
+              0.625,
+              0.0
+            ],
+            "radius": 0.625,
+            "tag": null,
+            "to": [
+              0.625,
+              0.0
+            ],
+            "type": "Circle",
+            "units": {
+              "type": "Inches"
+            }
+          }
+        ],
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
@@ -656,6 +748,14 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
+          },
+          "zAxis": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 1.0,
             "units": {
               "type": "Unknown"
             }
@@ -804,6 +904,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "tag": {
             "commentStart": 867,
             "end": 888,
+            "moduleId": 0,
             "start": 867,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA001"
@@ -829,12 +930,13 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "tag": {
             "commentStart": 976,
             "end": 997,
+            "moduleId": 0,
             "start": 976,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB001"
           },
           "to": [
-            3.25,
+            3.2500000000000004,
             2.25
           ],
           "type": "ToPoint",
@@ -848,18 +950,19 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             "sourceRange": []
           },
           "from": [
-            3.25,
+            3.2500000000000004,
             2.25
           ],
           "tag": {
             "commentStart": 1099,
             "end": 1120,
+            "moduleId": 0,
             "start": 1099,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC001"
           },
           "to": [
-            -3.25,
+            -3.2499999999999996,
             2.25
           ],
           "type": "ToPoint",
@@ -873,12 +976,13 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             "sourceRange": []
           },
           "from": [
-            -3.25,
+            -3.2499999999999996,
             2.25
           ],
           "tag": {
             "commentStart": 1190,
             "end": 1211,
+            "moduleId": 0,
             "start": 1190,
             "type": "TagDeclarator",
             "value": "rectangleSegmentD001"
@@ -912,6 +1016,33 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           }
         }
       ],
+      "innerPaths": [
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            0.0,
+            0.0
+          ],
+          "from": [
+            0.625,
+            0.0
+          ],
+          "radius": 0.625,
+          "tag": null,
+          "to": [
+            0.625,
+            0.0
+          ],
+          "type": "Circle",
+          "units": {
+            "type": "Inches"
+          }
+        }
+      ],
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
@@ -937,6 +1068,14 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
+          "units": {
+            "type": "Unknown"
+          }
+        },
+        "zAxis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0,
           "units": {
             "type": "Unknown"
           }

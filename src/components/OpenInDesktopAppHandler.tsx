@@ -1,6 +1,6 @@
 import { Transition } from '@headlessui/react'
-import { VITE_KC_SITE_BASE_URL } from '@src/env'
 import { useSearchParams } from 'react-router-dom'
+import { base64ToString } from '@src/lib/base64'
 
 import { ActionButton } from '@src/components/ActionButton'
 import {
@@ -12,8 +12,10 @@ import { isDesktop } from '@src/lib/isDesktop'
 import { Themes, darkModeMatcher, setThemeClass } from '@src/lib/theme'
 import toast from 'react-hot-toast'
 import { platform } from '@src/lib/utils'
+import { codeManager } from '@src/lib/singletons'
 import { Logo } from '@src/components/Logo'
 import { useEffect } from 'react'
+import { withSiteBaseURL } from '@src/lib/withBaseURL'
 
 /**
  * This component is a handler that checks if a certain query parameter
@@ -37,6 +39,17 @@ export const OpenInDesktopAppHandler = (props: React.PropsWithChildren) => {
     darkModeMatcher?.addEventListener('change', listener)
     return () => darkModeMatcher?.removeEventListener('change', listener)
   }, [])
+
+  useEffect(() => {
+    if (!hasAskToOpenParam) {
+      return
+    }
+
+    const codeB64 = base64ToString(
+      decodeURIComponent(searchParams.get('code') ?? '')
+    )
+    codeManager.goIntoTemporaryWorkspaceModeWithCode(codeB64)
+  }, [hasAskToOpenParam])
 
   /**
    * This function removes the query param to ask to open in desktop app
@@ -85,7 +98,7 @@ export const OpenInDesktopAppHandler = (props: React.PropsWithChildren) => {
     >
       <Transition.Child
         as="div"
-        className={`max-w-3xl py-6 px-10 flex flex-col items-center gap-12 
+        className={`max-w-3xl py-6 px-10 flex flex-col items-center gap-12
           mx-auto border rounded-lg shadow-lg bg-chalkboard-10 dark:bg-chalkboard-100`}
         enter="ease-out duration-300"
         enterFrom="opacity-0 scale-95"
@@ -120,7 +133,7 @@ export const OpenInDesktopAppHandler = (props: React.PropsWithChildren) => {
                   buttonClasses +
                   ' text-sm border-transparent justify-center dark:bg-transparent'
                 }
-                to={`${VITE_KC_SITE_BASE_URL}/${APP_DOWNLOAD_PATH}`}
+                to={withSiteBaseURL(`/${APP_DOWNLOAD_PATH}`)}
                 iconEnd={{ icon: 'link', bgClassName: '!bg-transparent' }}
               >
                 Download desktop app

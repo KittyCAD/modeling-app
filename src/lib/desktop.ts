@@ -25,7 +25,8 @@ import type { FileEntry, FileMetadata, Project } from '@src/lib/project'
 import { err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import { getInVariableCase } from '@src/lib/utils'
-import { IS_NIGHTLY } from '@src/routes/utils'
+import { IS_STAGING } from '@src/routes/utils'
+import { withAPIBaseURL } from '@src/lib/withBaseURL'
 
 export async function renameProjectDirectory(
   projectPath: string,
@@ -461,8 +462,8 @@ export async function writeProjectSettingsFile(
 
 // Important for saving settings.
 // TODO: should be pulled from electron-builder.yml
-const APP_ID = IS_NIGHTLY
-  ? 'dev.zoo.modeling-app-nightly'
+const APP_ID = IS_STAGING
+  ? 'dev.zoo.modeling-app-staging'
   : 'dev.zoo.modeling-app'
 
 const getAppFolderName = () => {
@@ -470,13 +471,13 @@ const getAppFolderName = () => {
     return APP_ID
   }
   // TODO: we need to make linux use the same convention this is weird
-  // This variable below gets the -nightly suffix on nightly too thru scripts/flip-files-to-nightly.sh
+  // This variable below gets the -staging suffix on staging too thru scripts/flip-files-to-staging.sh
   // But it should be consistent with the reserve domain app id we use on Windows and Linux
   return window.electron.packageJson.name
 }
 
 export const getAppSettingsFilePath = async () => {
-  const isTestEnv = window.electron.process.env.IS_PLAYWRIGHT === 'true'
+  const isTestEnv = window.electron.process.env.NODE_ENV === 'test'
   const testSettingsPath = await window.electron.getAppTestProperty(
     'TEST_SETTINGS_FILE_KEY'
   )
@@ -498,7 +499,7 @@ export const getAppSettingsFilePath = async () => {
   return window.electron.path.join(fullPath, SETTINGS_FILE_NAME)
 }
 const getTokenFilePath = async () => {
-  const isTestEnv = window.electron.process.env.IS_PLAYWRIGHT === 'true'
+  const isTestEnv = window.electron.process.env.NODE_ENV === 'test'
   const testSettingsPath = await window.electron.getAppTestProperty(
     'TEST_SETTINGS_FILE_KEY'
   )
@@ -519,7 +520,7 @@ const getTokenFilePath = async () => {
 }
 
 const getTelemetryFilePath = async () => {
-  const isTestEnv = window.electron.process.env.IS_PLAYWRIGHT === 'true'
+  const isTestEnv = window.electron.process.env.NODE_ENV === 'test'
   const testSettingsPath = await window.electron.getAppTestProperty(
     'TEST_SETTINGS_FILE_KEY'
   )
@@ -540,7 +541,7 @@ const getTelemetryFilePath = async () => {
 }
 
 const getRawTelemetryFilePath = async () => {
-  const isTestEnv = window.electron.process.env.IS_PLAYWRIGHT === 'true'
+  const isTestEnv = window.electron.process.env.NODE_ENV === 'test'
   const testSettingsPath = await window.electron.getAppTestProperty(
     'TEST_SETTINGS_FILE_KEY'
   )
@@ -572,7 +573,7 @@ const getProjectSettingsFilePath = async (projectPath: string) => {
 }
 
 export const getInitialDefaultDir = async () => {
-  const isTestEnv = window.electron.process.env.IS_PLAYWRIGHT === 'true'
+  const isTestEnv = window.electron.process.env.NODE_ENV === 'test'
   const testSettingsPath = await window.electron.getAppTestProperty(
     'TEST_SETTINGS_FILE_KEY'
   )
@@ -618,7 +619,7 @@ export const readProjectSettingsFile = async (
 export const readAppSettingsFile = async () => {
   let settingsPath = await getAppSettingsFilePath()
   const initialProjectDirConfig: DeepPartial<
-    Configuration['settings']['project']
+    NonNullable<Required<Configuration>['settings']['project']>
   > = { directory: await getInitialDefaultDir() }
 
   // The file exists, read it and parse it.
@@ -697,7 +698,9 @@ export const readTokenFile = async () => {
 export const writeTokenFile = async (token: string) => {
   const tokenFilePath = await getTokenFilePath()
   if (err(token)) return Promise.reject(token)
-  return window.electron.writeFile(tokenFilePath, token)
+  const result = window.electron.writeFile(tokenFilePath, token)
+  console.log('token written to disk')
+  return result
 }
 
 export const writeTelemetryFile = async (content: string) => {
@@ -722,12 +725,9 @@ export const setState = async (state: Project | undefined): Promise<void> => {
   appStateStore = state
 }
 
-export const getUser = async (
-  token: string,
-  hostname: string
-): Promise<Models['User_type']> => {
+export const getUser = async (token: string): Promise<Models['User_type']> => {
   try {
-    const user = await fetch(`${hostname}/users/me`, {
+    const user = await fetch(withAPIBaseURL('/users/me'), {
       headers: new Headers({
         Authorization: `Bearer ${token}`,
       }),

@@ -12,6 +12,7 @@ expression: actual
         "id": {
           "commentStart": 3,
           "end": 4,
+          "moduleId": 0,
           "name": "x",
           "start": 3,
           "type": "Identifier"
@@ -24,9 +25,11 @@ expression: actual
                   "abs_path": false,
                   "commentStart": 24,
                   "end": 26,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 24,
                     "end": 26,
+                    "moduleId": 0,
                     "name": "sg",
                     "start": 24,
                     "type": "Identifier"
@@ -38,6 +41,7 @@ expression: actual
                 },
                 "commentStart": 17,
                 "end": 26,
+                "moduleId": 0,
                 "start": 17,
                 "type": "ReturnStatement",
                 "type": "ReturnStatement"
@@ -47,9 +51,11 @@ expression: actual
                   "abs_path": false,
                   "commentStart": 42,
                   "end": 44,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 42,
                     "end": 44,
+                    "moduleId": 0,
                     "name": "sg",
                     "start": 42,
                     "type": "Identifier"
@@ -61,6 +67,7 @@ expression: actual
                 },
                 "commentStart": 35,
                 "end": 44,
+                "moduleId": 0,
                 "start": 35,
                 "type": "ReturnStatement",
                 "type": "ReturnStatement"
@@ -68,20 +75,24 @@ expression: actual
             ],
             "commentStart": 7,
             "end": 52,
+            "moduleId": 0,
             "start": 7
           },
           "commentStart": 4,
           "end": 52,
+          "moduleId": 0,
           "params": [],
           "start": 4,
           "type": "FunctionExpression",
           "type": "FunctionExpression"
         },
+        "moduleId": 0,
         "start": 3,
         "type": "VariableDeclarator"
       },
       "end": 52,
       "kind": "fn",
+      "moduleId": 0,
       "start": 0,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
@@ -89,5 +100,6 @@ expression: actual
   ],
   "commentStart": 0,
   "end": 52,
+  "moduleId": 0,
   "start": 0
 }

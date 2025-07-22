@@ -13,6 +13,7 @@ description: Result of parsing countersunk-plate.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "boltSpacing",
             "start": 0,
             "type": "Identifier"
@@ -20,6 +21,7 @@ description: Result of parsing countersunk-plate.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "5",
             "start": 0,
             "type": "Literal",
@@ -29,11 +31,13 @@ description: Result of parsing countersunk-plate.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "preComments": [
           "// Define parameters"
         ],
@@ -49,6 +53,7 @@ description: Result of parsing countersunk-plate.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "boltDiameter",
             "start": 0,
             "type": "Identifier"
@@ -59,6 +64,7 @@ description: Result of parsing countersunk-plate.kcl
             "left": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "raw": "1",
               "start": 0,
               "type": "Literal",
@@ -68,10 +74,12 @@ description: Result of parsing countersunk-plate.kcl
                 "suffix": "None"
               }
             },
+            "moduleId": 0,
             "operator": "/",
             "right": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "raw": "4",
               "start": 0,
               "type": "Literal",
@@ -85,11 +93,13 @@ description: Result of parsing countersunk-plate.kcl
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -102,6 +112,7 @@ description: Result of parsing countersunk-plate.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "centerHoleDiameter",
             "start": 0,
             "type": "Identifier"
@@ -112,6 +123,7 @@ description: Result of parsing countersunk-plate.kcl
             "left": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "raw": "1",
               "start": 0,
               "type": "Literal",
@@ -121,6 +133,7 @@ description: Result of parsing countersunk-plate.kcl
                 "suffix": "None"
               }
             },
+            "moduleId": 0,
             "operator": "+",
             "right": {
               "commentStart": 0,
@@ -128,6 +141,7 @@ description: Result of parsing countersunk-plate.kcl
               "left": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "3",
                 "start": 0,
                 "type": "Literal",
@@ -137,10 +151,12 @@ description: Result of parsing countersunk-plate.kcl
                   "suffix": "None"
                 }
               },
+              "moduleId": 0,
               "operator": "/",
               "right": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "4",
                 "start": 0,
                 "type": "Literal",
@@ -158,11 +174,13 @@ description: Result of parsing countersunk-plate.kcl
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -175,6 +193,7 @@ description: Result of parsing countersunk-plate.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "plateThickness",
             "start": 0,
             "type": "Identifier"
@@ -182,6 +201,7 @@ description: Result of parsing countersunk-plate.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "0.375",
             "start": 0,
             "type": "Literal",
@@ -191,11 +211,13 @@ description: Result of parsing countersunk-plate.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -208,6 +230,7 @@ description: Result of parsing countersunk-plate.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "r1",
             "start": 0,
             "type": "Identifier"
@@ -225,9 +248,11 @@ description: Result of parsing countersunk-plate.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "centerHoleDiameter",
                     "start": 0,
                     "type": "Identifier"
@@ -237,10 +262,12 @@ description: Result of parsing countersunk-plate.kcl
                   "type": "Name",
                   "type": "Name"
                 },
+                "moduleId": 0,
                 "operator": "/",
                 "right": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "raw": "2",
                   "start": 0,
                   "type": "Literal",
@@ -254,10 +281,12 @@ description: Result of parsing countersunk-plate.kcl
                 "type": "BinaryExpression",
                 "type": "BinaryExpression"
               },
+              "moduleId": 0,
               "operator": "*",
               "right": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "1.5",
                 "start": 0,
                 "type": "Literal",
@@ -271,10 +300,12 @@ description: Result of parsing countersunk-plate.kcl
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             },
+            "moduleId": 0,
             "operator": "+",
             "right": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "raw": ".35",
               "start": 0,
               "type": "Literal",
@@ -288,11 +319,13 @@ description: Result of parsing countersunk-plate.kcl
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "preComments": [
           "",
           "",
@@ -314,6 +347,7 @@ description: Result of parsing countersunk-plate.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "r2",
             "start": 0,
             "type": "Identifier"
@@ -328,9 +362,11 @@ description: Result of parsing countersunk-plate.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "boltDiameter",
                   "start": 0,
                   "type": "Identifier"
@@ -340,10 +376,12 @@ description: Result of parsing countersunk-plate.kcl
                 "type": "Name",
                 "type": "Name"
               },
+              "moduleId": 0,
               "operator": "*",
               "right": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "2",
                 "start": 0,
                 "type": "Literal",
@@ -357,10 +395,12 @@ description: Result of parsing countersunk-plate.kcl
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             },
+            "moduleId": 0,
             "operator": "+",
             "right": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "raw": ".25",
               "start": 0,
               "type": "Literal",
@@ -374,11 +414,13 @@ description: Result of parsing countersunk-plate.kcl
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -391,6 +433,7 @@ description: Result of parsing countersunk-plate.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "d",
             "start": 0,
             "type": "Identifier"
@@ -402,9 +445,11 @@ description: Result of parsing countersunk-plate.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "boltSpacing",
                 "start": 0,
                 "type": "Identifier"
@@ -414,10 +459,12 @@ description: Result of parsing countersunk-plate.kcl
               "type": "Name",
               "type": "Name"
             },
+            "moduleId": 0,
             "operator": "/",
             "right": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "raw": "2",
               "start": 0,
               "type": "Literal",
@@ -431,11 +478,13 @@ description: Result of parsing countersunk-plate.kcl
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -448,18 +497,22 @@ description: Result of parsing countersunk-plate.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "tangentAngle",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "arguments": [],
             "callee": {
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "asin",
                 "start": 0,
                 "type": "Identifier"
@@ -470,6 +523,7 @@ description: Result of parsing countersunk-plate.kcl
             },
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
@@ -483,9 +537,11 @@ description: Result of parsing countersunk-plate.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "r1",
                     "start": 0,
                     "type": "Identifier"
@@ -495,14 +551,17 @@ description: Result of parsing countersunk-plate.kcl
                   "type": "Name",
                   "type": "Name"
                 },
+                "moduleId": 0,
                 "operator": "-",
                 "right": {
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "r2",
                     "start": 0,
                     "type": "Identifier"
@@ -516,14 +575,17 @@ description: Result of parsing countersunk-plate.kcl
                 "type": "BinaryExpression",
                 "type": "BinaryExpression"
               },
+              "moduleId": 0,
               "operator": "/",
               "right": {
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "d",
                   "start": 0,
                   "type": "Identifier"
@@ -538,11 +600,13 @@ description: Result of parsing countersunk-plate.kcl
               "type": "BinaryExpression"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -555,6 +619,7 @@ description: Result of parsing countersunk-plate.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "tangentLength",
             "start": 0,
             "type": "Identifier"
@@ -569,9 +634,11 @@ description: Result of parsing countersunk-plate.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "r1",
                   "start": 0,
                   "type": "Identifier"
@@ -581,14 +648,17 @@ description: Result of parsing countersunk-plate.kcl
                 "type": "Name",
                 "type": "Name"
               },
+              "moduleId": 0,
               "operator": "-",
               "right": {
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "r2",
                   "start": 0,
                   "type": "Identifier"
@@ -602,15 +672,19 @@ description: Result of parsing countersunk-plate.kcl
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             },
+            "moduleId": 0,
             "operator": "/",
             "right": {
+              "arguments": [],
               "callee": {
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "tan",
                   "start": 0,
                   "type": "Identifier"
@@ -621,6 +695,7 @@ description: Result of parsing countersunk-plate.kcl
               },
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
@@ -628,9 +703,11 @@ description: Result of parsing countersunk-plate.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "tangentAngle",
                   "start": 0,
                   "type": "Identifier"
@@ -645,11 +722,13 @@ description: Result of parsing countersunk-plate.kcl
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -662,6 +741,7 @@ description: Result of parsing countersunk-plate.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "plateBody",
             "start": 0,
             "type": "Identifier"
@@ -669,13 +749,16 @@ description: Result of parsing countersunk-plate.kcl
           "init": {
             "body": [
               {
+                "arguments": [],
                 "callee": {
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "startSketchOn",
                     "start": 0,
                     "type": "Identifier"
@@ -686,6 +769,7 @@ description: Result of parsing countersunk-plate.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -693,9 +777,11 @@ description: Result of parsing countersunk-plate.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "XY",
                     "start": 0,
                     "type": "Identifier"
@@ -713,6 +799,7 @@ description: Result of parsing countersunk-plate.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "at",
                       "start": 0,
                       "type": "Identifier"
@@ -724,6 +811,7 @@ description: Result of parsing countersunk-plate.kcl
                           "label": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "angle",
                             "start": 0,
                             "type": "Identifier"
@@ -734,6 +822,7 @@ description: Result of parsing countersunk-plate.kcl
                             "left": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "raw": "90",
                               "start": 0,
                               "type": "Literal",
@@ -743,14 +832,17 @@ description: Result of parsing countersunk-plate.kcl
                                 "suffix": "None"
                               }
                             },
+                            "moduleId": 0,
                             "operator": "-",
                             "right": {
                               "abs_path": false,
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "tangentAngle",
                                 "start": 0,
                                 "type": "Identifier"
@@ -770,6 +862,7 @@ description: Result of parsing countersunk-plate.kcl
                           "label": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "length",
                             "start": 0,
                             "type": "Identifier"
@@ -778,9 +871,11 @@ description: Result of parsing countersunk-plate.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "r1",
                               "start": 0,
                               "type": "Identifier"
@@ -796,9 +891,11 @@ description: Result of parsing countersunk-plate.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "polar",
                           "start": 0,
                           "type": "Identifier"
@@ -809,6 +906,7 @@ description: Result of parsing countersunk-plate.kcl
                       },
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "CallExpressionKw",
                       "type": "CallExpressionKw",
@@ -820,9 +918,11 @@ description: Result of parsing countersunk-plate.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "startProfile",
                     "start": 0,
                     "type": "Identifier"
@@ -833,6 +933,7 @@ description: Result of parsing countersunk-plate.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -845,6 +946,7 @@ description: Result of parsing countersunk-plate.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "angle",
                       "start": 0,
                       "type": "Identifier"
@@ -854,9 +956,11 @@ description: Result of parsing countersunk-plate.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "tangentAngle",
                           "start": 0,
                           "type": "Identifier"
@@ -868,6 +972,7 @@ description: Result of parsing countersunk-plate.kcl
                       },
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "operator": "-",
                       "start": 0,
                       "type": "UnaryExpression",
@@ -879,6 +984,7 @@ description: Result of parsing countersunk-plate.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
@@ -887,9 +993,11 @@ description: Result of parsing countersunk-plate.kcl
                       "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "tangentLength",
                         "start": 0,
                         "type": "Identifier"
@@ -905,9 +1013,11 @@ description: Result of parsing countersunk-plate.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "angledLine",
                     "start": 0,
                     "type": "Identifier"
@@ -918,6 +1028,7 @@ description: Result of parsing countersunk-plate.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -930,6 +1041,7 @@ description: Result of parsing countersunk-plate.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "radius",
                       "start": 0,
                       "type": "Identifier"
@@ -938,9 +1050,11 @@ description: Result of parsing countersunk-plate.kcl
                       "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "r2",
                         "start": 0,
                         "type": "Identifier"
@@ -956,6 +1070,7 @@ description: Result of parsing countersunk-plate.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "angle",
                       "start": 0,
                       "type": "Identifier"
@@ -970,9 +1085,11 @@ description: Result of parsing countersunk-plate.kcl
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "tangentAngle",
                             "start": 0,
                             "type": "Identifier"
@@ -982,10 +1099,12 @@ description: Result of parsing countersunk-plate.kcl
                           "type": "Name",
                           "type": "Name"
                         },
+                        "moduleId": 0,
                         "operator": "-",
                         "right": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "90",
                           "start": 0,
                           "type": "Literal",
@@ -999,10 +1118,12 @@ description: Result of parsing countersunk-plate.kcl
                         "type": "BinaryExpression",
                         "type": "BinaryExpression"
                       },
+                      "moduleId": 0,
                       "operator": "*",
                       "right": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "2",
                         "start": 0,
                         "type": "Literal",
@@ -1022,9 +1143,11 @@ description: Result of parsing countersunk-plate.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "tangentialArc",
                     "start": 0,
                     "type": "Identifier"
@@ -1035,6 +1158,7 @@ description: Result of parsing countersunk-plate.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -1047,6 +1171,7 @@ description: Result of parsing countersunk-plate.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "angle",
                       "start": 0,
                       "type": "Identifier"
@@ -1055,9 +1180,11 @@ description: Result of parsing countersunk-plate.kcl
                       "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "tangentAngle",
                         "start": 0,
                         "type": "Identifier"
@@ -1073,6 +1200,7 @@ description: Result of parsing countersunk-plate.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
@@ -1082,9 +1210,11 @@ description: Result of parsing countersunk-plate.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "tangentLength",
                           "start": 0,
                           "type": "Identifier"
@@ -1096,6 +1226,7 @@ description: Result of parsing countersunk-plate.kcl
                       },
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "operator": "-",
                       "start": 0,
                       "type": "UnaryExpression",
@@ -1107,9 +1238,11 @@ description: Result of parsing countersunk-plate.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "angledLine",
                     "start": 0,
                     "type": "Identifier"
@@ -1120,6 +1253,7 @@ description: Result of parsing countersunk-plate.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -1132,6 +1266,7 @@ description: Result of parsing countersunk-plate.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "radius",
                       "start": 0,
                       "type": "Identifier"
@@ -1140,9 +1275,11 @@ description: Result of parsing countersunk-plate.kcl
                       "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "r1",
                         "start": 0,
                         "type": "Identifier"
@@ -1158,6 +1295,7 @@ description: Result of parsing countersunk-plate.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "angle",
                       "start": 0,
                       "type": "Identifier"
@@ -1170,9 +1308,11 @@ description: Result of parsing countersunk-plate.kcl
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "tangentAngle",
                             "start": 0,
                             "type": "Identifier"
@@ -1184,15 +1324,18 @@ description: Result of parsing countersunk-plate.kcl
                         },
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "operator": "-",
                         "start": 0,
                         "type": "UnaryExpression",
                         "type": "UnaryExpression"
                       },
+                      "moduleId": 0,
                       "operator": "*",
                       "right": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "2",
                         "start": 0,
                         "type": "Literal",
@@ -1212,9 +1355,11 @@ description: Result of parsing countersunk-plate.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "tangentialArc",
                     "start": 0,
                     "type": "Identifier"
@@ -1225,6 +1370,7 @@ description: Result of parsing countersunk-plate.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -1237,6 +1383,7 @@ description: Result of parsing countersunk-plate.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "angle",
                       "start": 0,
                       "type": "Identifier"
@@ -1246,9 +1393,11 @@ description: Result of parsing countersunk-plate.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "tangentAngle",
                           "start": 0,
                           "type": "Identifier"
@@ -1260,6 +1409,7 @@ description: Result of parsing countersunk-plate.kcl
                       },
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "operator": "-",
                       "start": 0,
                       "type": "UnaryExpression",
@@ -1271,6 +1421,7 @@ description: Result of parsing countersunk-plate.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
@@ -1280,9 +1431,11 @@ description: Result of parsing countersunk-plate.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "tangentLength",
                           "start": 0,
                           "type": "Identifier"
@@ -1294,6 +1447,7 @@ description: Result of parsing countersunk-plate.kcl
                       },
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "operator": "-",
                       "start": 0,
                       "type": "UnaryExpression",
@@ -1305,9 +1459,11 @@ description: Result of parsing countersunk-plate.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "angledLine",
                     "start": 0,
                     "type": "Identifier"
@@ -1318,6 +1474,7 @@ description: Result of parsing countersunk-plate.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -1330,6 +1487,7 @@ description: Result of parsing countersunk-plate.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "radius",
                       "start": 0,
                       "type": "Identifier"
@@ -1338,9 +1496,11 @@ description: Result of parsing countersunk-plate.kcl
                       "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "r2",
                         "start": 0,
                         "type": "Identifier"
@@ -1356,6 +1516,7 @@ description: Result of parsing countersunk-plate.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "angle",
                       "start": 0,
                       "type": "Identifier"
@@ -1370,9 +1531,11 @@ description: Result of parsing countersunk-plate.kcl
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "tangentAngle",
                             "start": 0,
                             "type": "Identifier"
@@ -1382,10 +1545,12 @@ description: Result of parsing countersunk-plate.kcl
                           "type": "Name",
                           "type": "Name"
                         },
+                        "moduleId": 0,
                         "operator": "-",
                         "right": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "90",
                           "start": 0,
                           "type": "Literal",
@@ -1399,10 +1564,12 @@ description: Result of parsing countersunk-plate.kcl
                         "type": "BinaryExpression",
                         "type": "BinaryExpression"
                       },
+                      "moduleId": 0,
                       "operator": "*",
                       "right": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "2",
                         "start": 0,
                         "type": "Literal",
@@ -1422,9 +1589,11 @@ description: Result of parsing countersunk-plate.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "tangentialArc",
                     "start": 0,
                     "type": "Identifier"
@@ -1435,6 +1604,7 @@ description: Result of parsing countersunk-plate.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -1447,6 +1617,7 @@ description: Result of parsing countersunk-plate.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "angle",
                       "start": 0,
                       "type": "Identifier"
@@ -1455,9 +1626,11 @@ description: Result of parsing countersunk-plate.kcl
                       "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "tangentAngle",
                         "start": 0,
                         "type": "Identifier"
@@ -1473,6 +1646,7 @@ description: Result of parsing countersunk-plate.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
@@ -1481,9 +1655,11 @@ description: Result of parsing countersunk-plate.kcl
                       "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "tangentLength",
                         "start": 0,
                         "type": "Identifier"
@@ -1499,9 +1675,11 @@ description: Result of parsing countersunk-plate.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "angledLine",
                     "start": 0,
                     "type": "Identifier"
@@ -1512,6 +1690,7 @@ description: Result of parsing countersunk-plate.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -1524,6 +1703,7 @@ description: Result of parsing countersunk-plate.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
@@ -1532,13 +1712,16 @@ description: Result of parsing countersunk-plate.kcl
                       "commentStart": 0,
                       "elements": [
                         {
+                          "arguments": [],
                           "callee": {
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "profileStartX",
                               "start": 0,
                               "type": "Identifier"
@@ -1549,25 +1732,30 @@ description: Result of parsing countersunk-plate.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "start": 0,
                             "type": "PipeSubstitution",
                             "type": "PipeSubstitution"
                           }
                         },
                         {
+                          "arguments": [],
                           "callee": {
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "profileStartY",
                               "start": 0,
                               "type": "Identifier"
@@ -1578,12 +1766,14 @@ description: Result of parsing countersunk-plate.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "start": 0,
                             "type": "PipeSubstitution",
                             "type": "PipeSubstitution"
@@ -1591,6 +1781,7 @@ description: Result of parsing countersunk-plate.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -1601,9 +1792,11 @@ description: Result of parsing countersunk-plate.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "tangentialArc",
                     "start": 0,
                     "type": "Identifier"
@@ -1614,19 +1807,23 @@ description: Result of parsing countersunk-plate.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               },
               {
+                "arguments": [],
                 "callee": {
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "close",
                     "start": 0,
                     "type": "Identifier"
@@ -1637,6 +1834,7 @@ description: Result of parsing countersunk-plate.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -1649,6 +1847,7 @@ description: Result of parsing countersunk-plate.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "tool",
                       "start": 0,
                       "type": "Identifier"
@@ -1660,6 +1859,7 @@ description: Result of parsing countersunk-plate.kcl
                           "label": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "center",
                             "start": 0,
                             "type": "Identifier"
@@ -1670,6 +1870,7 @@ description: Result of parsing countersunk-plate.kcl
                               {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "raw": "0",
                                 "start": 0,
                                 "type": "Literal",
@@ -1682,6 +1883,7 @@ description: Result of parsing countersunk-plate.kcl
                               {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "raw": "0",
                                 "start": 0,
                                 "type": "Literal",
@@ -1693,6 +1895,7 @@ description: Result of parsing countersunk-plate.kcl
                               }
                             ],
                             "end": 0,
+                            "moduleId": 0,
                             "start": 0,
                             "type": "ArrayExpression",
                             "type": "ArrayExpression"
@@ -1703,6 +1906,7 @@ description: Result of parsing countersunk-plate.kcl
                           "label": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "radius",
                             "start": 0,
                             "type": "Identifier"
@@ -1717,9 +1921,11 @@ description: Result of parsing countersunk-plate.kcl
                                 "abs_path": false,
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": {
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "name": "centerHoleDiameter",
                                   "start": 0,
                                   "type": "Identifier"
@@ -1729,10 +1935,12 @@ description: Result of parsing countersunk-plate.kcl
                                 "type": "Name",
                                 "type": "Name"
                               },
+                              "moduleId": 0,
                               "operator": "/",
                               "right": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "raw": "2",
                                 "start": 0,
                                 "type": "Literal",
@@ -1746,10 +1954,12 @@ description: Result of parsing countersunk-plate.kcl
                               "type": "BinaryExpression",
                               "type": "BinaryExpression"
                             },
+                            "moduleId": 0,
                             "operator": "*",
                             "right": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "raw": "1.5",
                               "start": 0,
                               "type": "Literal",
@@ -1769,9 +1979,11 @@ description: Result of parsing countersunk-plate.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "circle",
                           "start": 0,
                           "type": "Identifier"
@@ -1782,6 +1994,7 @@ description: Result of parsing countersunk-plate.kcl
                       },
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "CallExpressionKw",
                       "type": "CallExpressionKw",
@@ -1793,9 +2006,11 @@ description: Result of parsing countersunk-plate.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "subtract2d",
                     "start": 0,
                     "type": "Identifier"
@@ -1806,6 +2021,7 @@ description: Result of parsing countersunk-plate.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -1818,6 +2034,7 @@ description: Result of parsing countersunk-plate.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
@@ -1826,9 +2043,11 @@ description: Result of parsing countersunk-plate.kcl
                       "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "plateThickness",
                         "start": 0,
                         "type": "Identifier"
@@ -1844,9 +2063,11 @@ description: Result of parsing countersunk-plate.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "extrude",
                     "start": 0,
                     "type": "Identifier"
@@ -1857,26 +2078,23 @@ description: Result of parsing countersunk-plate.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
-                "unlabeled": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "start": 0,
-                  "type": "PipeSubstitution",
-                  "type": "PipeSubstitution"
-                }
+                "unlabeled": null
               }
             ],
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "0": [
                   {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "start": 0,
                     "type": "NonCodeNode",
                     "value": {
@@ -1890,6 +2108,7 @@ description: Result of parsing countersunk-plate.kcl
                   {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "start": 0,
                     "type": "NonCodeNode",
                     "value": {
@@ -1906,11 +2125,13 @@ description: Result of parsing countersunk-plate.kcl
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -1923,6 +2144,7 @@ description: Result of parsing countersunk-plate.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "countersink",
             "start": 0,
             "type": "Identifier"
@@ -1942,6 +2164,7 @@ description: Result of parsing countersunk-plate.kcl
                             "label": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "face",
                               "start": 0,
                               "type": "Identifier"
@@ -1950,9 +2173,11 @@ description: Result of parsing countersunk-plate.kcl
                               "abs_path": false,
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "END",
                                 "start": 0,
                                 "type": "Identifier"
@@ -1968,9 +2193,11 @@ description: Result of parsing countersunk-plate.kcl
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "startSketchOn",
                             "start": 0,
                             "type": "Identifier"
@@ -1981,6 +2208,7 @@ description: Result of parsing countersunk-plate.kcl
                         },
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "start": 0,
                         "type": "CallExpressionKw",
                         "type": "CallExpressionKw",
@@ -1988,9 +2216,11 @@ description: Result of parsing countersunk-plate.kcl
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "plateBody",
                             "start": 0,
                             "type": "Identifier"
@@ -2008,6 +2238,7 @@ description: Result of parsing countersunk-plate.kcl
                             "label": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "center",
                               "start": 0,
                               "type": "Identifier"
@@ -2019,9 +2250,11 @@ description: Result of parsing countersunk-plate.kcl
                                   "abs_path": false,
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "name": {
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "name": "holePosition",
                                     "start": 0,
                                     "type": "Identifier"
@@ -2034,6 +2267,7 @@ description: Result of parsing countersunk-plate.kcl
                                 {
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "raw": "0",
                                   "start": 0,
                                   "type": "Literal",
@@ -2045,6 +2279,7 @@ description: Result of parsing countersunk-plate.kcl
                                 }
                               ],
                               "end": 0,
+                              "moduleId": 0,
                               "start": 0,
                               "type": "ArrayExpression",
                               "type": "ArrayExpression"
@@ -2055,6 +2290,7 @@ description: Result of parsing countersunk-plate.kcl
                             "label": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "radius",
                               "start": 0,
                               "type": "Identifier"
@@ -2066,9 +2302,11 @@ description: Result of parsing countersunk-plate.kcl
                                 "abs_path": false,
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": {
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "name": "boltDiameter",
                                   "start": 0,
                                   "type": "Identifier"
@@ -2078,10 +2316,12 @@ description: Result of parsing countersunk-plate.kcl
                                 "type": "Name",
                                 "type": "Name"
                               },
+                              "moduleId": 0,
                               "operator": "/",
                               "right": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "raw": "2",
                                 "start": 0,
                                 "type": "Literal",
@@ -2101,6 +2341,7 @@ description: Result of parsing countersunk-plate.kcl
                             "label": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "tag",
                               "start": 0,
                               "type": "Identifier"
@@ -2108,6 +2349,7 @@ description: Result of parsing countersunk-plate.kcl
                             "arg": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "start": 0,
                               "type": "TagDeclarator",
                               "type": "TagDeclarator",
@@ -2119,9 +2361,11 @@ description: Result of parsing countersunk-plate.kcl
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "circle",
                             "start": 0,
                             "type": "Identifier"
@@ -2132,6 +2376,7 @@ description: Result of parsing countersunk-plate.kcl
                         },
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "start": 0,
                         "type": "CallExpressionKw",
                         "type": "CallExpressionKw",
@@ -2144,6 +2389,7 @@ description: Result of parsing countersunk-plate.kcl
                             "label": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "length",
                               "start": 0,
                               "type": "Identifier"
@@ -2153,9 +2399,11 @@ description: Result of parsing countersunk-plate.kcl
                                 "abs_path": false,
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": {
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "name": "plateThickness",
                                   "start": 0,
                                   "type": "Identifier"
@@ -2167,6 +2415,7 @@ description: Result of parsing countersunk-plate.kcl
                               },
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "operator": "-",
                               "start": 0,
                               "type": "UnaryExpression",
@@ -2178,9 +2427,11 @@ description: Result of parsing countersunk-plate.kcl
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "extrude",
                             "start": 0,
                             "type": "Identifier"
@@ -2191,6 +2442,7 @@ description: Result of parsing countersunk-plate.kcl
                         },
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "start": 0,
                         "type": "CallExpressionKw",
                         "type": "CallExpressionKw",
@@ -2203,6 +2455,7 @@ description: Result of parsing countersunk-plate.kcl
                             "label": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "length",
                               "start": 0,
                               "type": "Identifier"
@@ -2211,9 +2464,11 @@ description: Result of parsing countersunk-plate.kcl
                               "abs_path": false,
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "boltDiameter",
                                 "start": 0,
                                 "type": "Identifier"
@@ -2229,6 +2484,7 @@ description: Result of parsing countersunk-plate.kcl
                             "label": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "tags",
                               "start": 0,
                               "type": "Identifier"
@@ -2240,9 +2496,11 @@ description: Result of parsing countersunk-plate.kcl
                                   "abs_path": false,
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "name": {
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "name": "hole01",
                                     "start": 0,
                                     "type": "Identifier"
@@ -2254,6 +2512,7 @@ description: Result of parsing countersunk-plate.kcl
                                 }
                               ],
                               "end": 0,
+                              "moduleId": 0,
                               "start": 0,
                               "type": "ArrayExpression",
                               "type": "ArrayExpression"
@@ -2264,9 +2523,11 @@ description: Result of parsing countersunk-plate.kcl
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "chamfer",
                             "start": 0,
                             "type": "Identifier"
@@ -2277,6 +2538,7 @@ description: Result of parsing countersunk-plate.kcl
                         },
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "start": 0,
                         "type": "CallExpressionKw",
                         "type": "CallExpressionKw",
@@ -2285,12 +2547,14 @@ description: Result of parsing countersunk-plate.kcl
                     ],
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "nonCodeMeta": {
                       "nonCodeNodes": {
                         "2": [
                           {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "start": 0,
                             "type": "NonCodeNode",
                             "value": {
@@ -2307,6 +2571,7 @@ description: Result of parsing countersunk-plate.kcl
                     "type": "PipeExpression",
                     "type": "PipeExpression"
                   },
+                  "moduleId": 0,
                   "start": 0,
                   "type": "ExpressionStatement",
                   "type": "ExpressionStatement"
@@ -2315,6 +2580,7 @@ description: Result of parsing countersunk-plate.kcl
                   "argument": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "properties": [],
                     "start": 0,
                     "type": "ObjectExpression",
@@ -2322,6 +2588,7 @@ description: Result of parsing countersunk-plate.kcl
                   },
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
@@ -2329,16 +2596,19 @@ description: Result of parsing countersunk-plate.kcl
               ],
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0
             },
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "holePosition",
                   "start": 0,
                   "type": "Identifier"
@@ -2350,11 +2620,13 @@ description: Result of parsing countersunk-plate.kcl
             "type": "FunctionExpression",
             "type": "FunctionExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "fn",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -2363,13 +2635,16 @@ description: Result of parsing countersunk-plate.kcl
         "commentStart": 0,
         "end": 0,
         "expression": {
+          "arguments": [],
           "callee": {
             "abs_path": false,
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "countersink",
               "start": 0,
               "type": "Identifier"
@@ -2380,6 +2655,7 @@ description: Result of parsing countersunk-plate.kcl
           },
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
@@ -2391,9 +2667,11 @@ description: Result of parsing countersunk-plate.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "boltSpacing",
                   "start": 0,
                   "type": "Identifier"
@@ -2405,15 +2683,18 @@ description: Result of parsing countersunk-plate.kcl
               },
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "operator": "-",
               "start": 0,
               "type": "UnaryExpression",
               "type": "UnaryExpression"
             },
+            "moduleId": 0,
             "operator": "/",
             "right": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "raw": "2",
               "start": 0,
               "type": "Literal",
@@ -2428,6 +2709,7 @@ description: Result of parsing countersunk-plate.kcl
             "type": "BinaryExpression"
           }
         },
+        "moduleId": 0,
         "preComments": [
           "",
           "",
@@ -2441,13 +2723,16 @@ description: Result of parsing countersunk-plate.kcl
         "commentStart": 0,
         "end": 0,
         "expression": {
+          "arguments": [],
           "callee": {
             "abs_path": false,
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "countersink",
               "start": 0,
               "type": "Identifier"
@@ -2458,6 +2743,7 @@ description: Result of parsing countersunk-plate.kcl
           },
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
@@ -2468,9 +2754,11 @@ description: Result of parsing countersunk-plate.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "boltSpacing",
                 "start": 0,
                 "type": "Identifier"
@@ -2480,10 +2768,12 @@ description: Result of parsing countersunk-plate.kcl
               "type": "Name",
               "type": "Name"
             },
+            "moduleId": 0,
             "operator": "/",
             "right": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "raw": "2",
               "start": 0,
               "type": "Literal",
@@ -2498,6 +2788,7 @@ description: Result of parsing countersunk-plate.kcl
             "type": "BinaryExpression"
           }
         },
+        "moduleId": 0,
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -2509,9 +2800,11 @@ description: Result of parsing countersunk-plate.kcl
       {
         "commentStart": 0,
         "end": 0,
+        "moduleId": 0,
         "name": {
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "name": "settings",
           "start": 0,
           "type": "Identifier"
@@ -2530,19 +2823,23 @@ description: Result of parsing countersunk-plate.kcl
             "key": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "defaultLengthUnit",
               "start": 0,
               "type": "Identifier"
             },
+            "moduleId": 0,
             "start": 0,
             "type": "ObjectProperty",
             "value": {
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "in",
                 "start": 0,
                 "type": "Identifier"
@@ -2558,12 +2855,14 @@ description: Result of parsing countersunk-plate.kcl
         "type": "Annotation"
       }
     ],
+    "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "8": [
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {
@@ -2576,6 +2875,7 @@ description: Result of parsing countersunk-plate.kcl
         {
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "NonCodeNode",
           "value": {

@@ -3,28 +3,26 @@
 
 use std::{collections::HashMap, sync::Arc};
 
-use anyhow::{anyhow, Result};
+use anyhow::{Result, anyhow};
 use futures::{SinkExt, StreamExt};
 use indexmap::IndexMap;
 use kcmc::{
+    ModelingCmd,
     websocket::{
         BatchResponse, FailureWebSocketResponse, ModelingCmdReq, ModelingSessionData, OkWebSocketResponseData,
         SuccessWebSocketResponse, WebSocketRequest, WebSocketResponse,
     },
-    ModelingCmd,
 };
 use kittycad_modeling_cmds::{self as kcmc};
-use tokio::sync::{mpsc, oneshot, RwLock};
+use tokio::sync::{RwLock, mpsc, oneshot};
 use tokio_tungstenite::tungstenite::Message as WsMsg;
 use uuid::Uuid;
 
-#[cfg(feature = "artifact-graph")]
-use crate::execution::ArtifactCommand;
 use crate::{
+    SourceRange,
     engine::{AsyncTasks, EngineManager, EngineStats},
     errors::{KclError, KclErrorDetails},
     execution::{DefaultPlanes, IdGenerator},
-    SourceRange,
 };
 
 #[derive(Debug, PartialEq)]
@@ -45,8 +43,6 @@ pub struct EngineConnection {
     socket_health: Arc<RwLock<SocketHealth>>,
     batch: Arc<RwLock<Vec<(WebSocketRequest, SourceRange)>>>,
     batch_end: Arc<RwLock<IndexMap<uuid::Uuid, (WebSocketRequest, SourceRange)>>>,
-    #[cfg(feature = "artifact-graph")]
-    artifact_commands: Arc<RwLock<Vec<ArtifactCommand>>>,
     ids_of_async_commands: Arc<RwLock<IndexMap<Uuid, SourceRange>>>,
 
     /// The default planes for the scene.
@@ -67,6 +63,7 @@ pub struct TcpRead {
 
 /// Occurs when client couldn't read from the WebSocket to the engine.
 // #[derive(Debug)]
+#[allow(clippy::large_enum_variant)]
 pub enum WebSocketReadError {
     /// Could not read a message due to WebSocket errors.
     Read(tokio_tungstenite::tungstenite::Error),
@@ -88,7 +85,7 @@ impl TcpRead {
         let msg = match msg {
             Ok(msg) => msg,
             Err(e) if matches!(e, tokio_tungstenite::tungstenite::Error::Protocol(_)) => {
-                return Err(WebSocketReadError::Read(e))
+                return Err(WebSocketReadError::Read(e));
             }
             Err(e) => return Err(anyhow::anyhow!("Error reading from engine's WebSocket: {e}").into()),
         };
@@ -206,7 +203,7 @@ impl EngineConnection {
     async fn inner_send_to_engine(request: WebSocketRequest, tcp_write: &mut WebSocketTcpWrite) -> Result<()> {
         let msg = serde_json::to_string(&request).map_err(|e| anyhow!("could not serialize json: {e}"))?;
         tcp_write
-            .send(WsMsg::Text(msg))
+            .send(WsMsg::Text(msg.into()))
             .await
             .map_err(|e| anyhow!("could not send json over websocket: {e}"))?;
         Ok(())
@@ -216,19 +213,17 @@ impl EngineConnection {
     async fn inner_send_to_engine_binary(request: WebSocketRequest, tcp_write: &mut WebSocketTcpWrite) -> Result<()> {
         let msg = bson::to_vec(&request).map_err(|e| anyhow!("could not serialize bson: {e}"))?;
         tcp_write
-            .send(WsMsg::Binary(msg))
+            .send(WsMsg::Binary(msg.into()))
             .await
             .map_err(|e| anyhow!("could not send json over websocket: {e}"))?;
         Ok(())
     }
 
     pub async fn new(ws: reqwest::Upgraded) -> Result<EngineConnection> {
-        let wsconfig = tokio_tungstenite::tungstenite::protocol::WebSocketConfig {
+        let wsconfig = tokio_tungstenite::tungstenite::protocol::WebSocketConfig::default()
             // 4294967296 bytes, which is around 4.2 GB.
-            max_message_size: Some(usize::MAX),
-            max_frame_size: Some(usize::MAX),
-            ..Default::default()
-        };
+            .max_message_size(Some(usize::MAX))
+            .max_frame_size(Some(usize::MAX));
 
         let ws_stream = tokio_tungstenite::WebSocketStream::from_raw_socket(
             ws,
@@ -379,8 +374,6 @@ impl EngineConnection {
             socket_health,
             batch: Arc::new(RwLock::new(Vec::new())),
             batch_end: Arc::new(RwLock::new(IndexMap::new())),
-            #[cfg(feature = "artifact-graph")]
-            artifact_commands: Arc::new(RwLock::new(Vec::new())),
             ids_of_async_commands,
             default_planes: Default::default(),
             session_data,
@@ -403,11 +396,6 @@ impl EngineManager for EngineConnection {
 
     fn responses(&self) -> Arc<RwLock<IndexMap<Uuid, WebSocketResponse>>> {
         self.responses.responses.clone()
-    }
-
-    #[cfg(feature = "artifact-graph")]
-    fn artifact_commands(&self) -> Arc<RwLock<Vec<ArtifactCommand>>> {
-        self.artifact_commands.clone()
     }
 
     fn ids_of_async_commands(&self) -> Arc<RwLock<IndexMap<Uuid, SourceRange>>> {
@@ -439,7 +427,7 @@ impl EngineManager for EngineConnection {
                 request_sent: tx,
             })
             .await
-            .map_err(|e| KclError::Engine(KclErrorDetails::new(format!("Failed to send debug: {}", e), vec![])))?;
+            .map_err(|e| KclError::new_engine(KclErrorDetails::new(format!("Failed to send debug: {e}"), vec![])))?;
 
         let _ = rx.await;
         Ok(())
@@ -474,8 +462,8 @@ impl EngineManager for EngineConnection {
             })
             .await
             .map_err(|e| {
-                KclError::Engine(KclErrorDetails::new(
-                    format!("Failed to send modeling command: {}", e),
+                KclError::new_engine(KclErrorDetails::new(
+                    format!("Failed to send modeling command: {e}"),
                     vec![source_range],
                 ))
             })?;
@@ -483,13 +471,13 @@ impl EngineManager for EngineConnection {
         // Wait for the request to be sent.
         rx.await
             .map_err(|e| {
-                KclError::Engine(KclErrorDetails::new(
+                KclError::new_engine(KclErrorDetails::new(
                     format!("could not send request to the engine actor: {e}"),
                     vec![source_range],
                 ))
             })?
             .map_err(|e| {
-                KclError::Engine(KclErrorDetails::new(
+                KclError::new_engine(KclErrorDetails::new(
                     format!("could not send request to the engine: {e}"),
                     vec![source_range],
                 ))
@@ -509,19 +497,20 @@ impl EngineManager for EngineConnection {
             .await?;
 
         // Wait for the response.
+        let response_timeout = 300;
         let current_time = std::time::Instant::now();
-        while current_time.elapsed().as_secs() < 60 {
+        while current_time.elapsed().as_secs() < response_timeout {
             let guard = self.socket_health.read().await;
             if *guard == SocketHealth::Inactive {
                 // Check if we have any pending errors.
                 let pe = self.pending_errors.read().await;
                 if !pe.is_empty() {
-                    return Err(KclError::Engine(KclErrorDetails::new(
+                    return Err(KclError::new_engine(KclErrorDetails::new(
                         pe.join(", ").to_string(),
                         vec![source_range],
                     )));
                 } else {
-                    return Err(KclError::Engine(KclErrorDetails::new(
+                    return Err(KclError::new_engine(KclErrorDetails::new(
                         "Modeling command failed: websocket closed early".to_string(),
                         vec![source_range],
                     )));
@@ -543,8 +532,8 @@ impl EngineManager for EngineConnection {
             }
         }
 
-        Err(KclError::Engine(KclErrorDetails::new(
-            format!("Modeling command timed out `{}`", id),
+        Err(KclError::new_engine(KclErrorDetails::new(
+            format!("Modeling command timed out `{id}`"),
             vec![source_range],
         )))
     }

@@ -13,6 +13,7 @@ description: Result of parsing spur-reduction-gearset.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "spurGear",
             "start": 0,
             "type": "Identifier"
@@ -28,6 +29,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                     "id": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "pitchDiameter",
                       "start": 0,
                       "type": "Identifier"
@@ -39,9 +41,11 @@ description: Result of parsing spur-reduction-gearset.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "module",
                           "start": 0,
                           "type": "Identifier"
@@ -51,14 +55,17 @@ description: Result of parsing spur-reduction-gearset.kcl
                         "type": "Name",
                         "type": "Name"
                       },
+                      "moduleId": 0,
                       "operator": "*",
                       "right": {
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "nTeeth",
                           "start": 0,
                           "type": "Identifier"
@@ -72,11 +79,13 @@ description: Result of parsing spur-reduction-gearset.kcl
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     },
+                    "moduleId": 0,
                     "start": 0,
                     "type": "VariableDeclarator"
                   },
                   "end": 0,
                   "kind": "const",
+                  "moduleId": 0,
                   "preComments": [
                     "// Calculate gear parameters"
                   ],
@@ -92,6 +101,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                     "id": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "addendum",
                       "start": 0,
                       "type": "Identifier"
@@ -100,9 +110,11 @@ description: Result of parsing spur-reduction-gearset.kcl
                       "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "module",
                         "start": 0,
                         "type": "Identifier"
@@ -112,11 +124,13 @@ description: Result of parsing spur-reduction-gearset.kcl
                       "type": "Name",
                       "type": "Name"
                     },
+                    "moduleId": 0,
                     "start": 0,
                     "type": "VariableDeclarator"
                   },
                   "end": 0,
                   "kind": "const",
+                  "moduleId": 0,
                   "start": 0,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
@@ -129,6 +143,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                     "id": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "deddendum",
                       "start": 0,
                       "type": "Identifier"
@@ -139,6 +154,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                       "left": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "1.25",
                         "start": 0,
                         "type": "Literal",
@@ -148,14 +164,17 @@ description: Result of parsing spur-reduction-gearset.kcl
                           "suffix": "None"
                         }
                       },
+                      "moduleId": 0,
                       "operator": "*",
                       "right": {
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "module",
                           "start": 0,
                           "type": "Identifier"
@@ -169,11 +188,13 @@ description: Result of parsing spur-reduction-gearset.kcl
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     },
+                    "moduleId": 0,
                     "start": 0,
                     "type": "VariableDeclarator"
                   },
                   "end": 0,
                   "kind": "const",
+                  "moduleId": 0,
                   "start": 0,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
@@ -186,6 +207,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                     "id": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "baseDiameter",
                       "start": 0,
                       "type": "Identifier"
@@ -197,9 +219,11 @@ description: Result of parsing spur-reduction-gearset.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "pitchDiameter",
                           "start": 0,
                           "type": "Identifier"
@@ -209,15 +233,19 @@ description: Result of parsing spur-reduction-gearset.kcl
                         "type": "Name",
                         "type": "Name"
                       },
+                      "moduleId": 0,
                       "operator": "*",
                       "right": {
+                        "arguments": [],
                         "callee": {
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "cos",
                             "start": 0,
                             "type": "Identifier"
@@ -228,6 +256,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                         },
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "start": 0,
                         "type": "CallExpressionKw",
                         "type": "CallExpressionKw",
@@ -235,9 +264,11 @@ description: Result of parsing spur-reduction-gearset.kcl
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "pressureAngle",
                             "start": 0,
                             "type": "Identifier"
@@ -252,11 +283,13 @@ description: Result of parsing spur-reduction-gearset.kcl
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     },
+                    "moduleId": 0,
                     "start": 0,
                     "type": "VariableDeclarator"
                   },
                   "end": 0,
                   "kind": "const",
+                  "moduleId": 0,
                   "start": 0,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
@@ -269,6 +302,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                     "id": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "tipDiameter",
                       "start": 0,
                       "type": "Identifier"
@@ -280,9 +314,11 @@ description: Result of parsing spur-reduction-gearset.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "pitchDiameter",
                           "start": 0,
                           "type": "Identifier"
@@ -292,6 +328,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                         "type": "Name",
                         "type": "Name"
                       },
+                      "moduleId": 0,
                       "operator": "+",
                       "right": {
                         "commentStart": 0,
@@ -299,6 +336,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                         "left": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "2",
                           "start": 0,
                           "type": "Literal",
@@ -308,14 +346,17 @@ description: Result of parsing spur-reduction-gearset.kcl
                             "suffix": "None"
                           }
                         },
+                        "moduleId": 0,
                         "operator": "*",
                         "right": {
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "module",
                             "start": 0,
                             "type": "Identifier"
@@ -333,11 +374,13 @@ description: Result of parsing spur-reduction-gearset.kcl
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     },
+                    "moduleId": 0,
                     "start": 0,
                     "type": "VariableDeclarator"
                   },
                   "end": 0,
                   "kind": "const",
+                  "moduleId": 0,
                   "start": 0,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
@@ -350,6 +393,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                     "id": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "gearSketch",
                       "start": 0,
                       "type": "Identifier"
@@ -357,13 +401,16 @@ description: Result of parsing spur-reduction-gearset.kcl
                     "init": {
                       "body": [
                         {
+                          "arguments": [],
                           "callee": {
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "startSketchOn",
                               "start": 0,
                               "type": "Identifier"
@@ -374,6 +421,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
@@ -381,9 +429,11 @@ description: Result of parsing spur-reduction-gearset.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "XY",
                               "start": 0,
                               "type": "Identifier"
@@ -401,6 +451,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "at",
                                 "start": 0,
                                 "type": "Identifier"
@@ -412,6 +463,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                                     "label": {
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": "angle",
                                       "start": 0,
                                       "type": "Identifier"
@@ -419,6 +471,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                                     "arg": {
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "raw": "0",
                                       "start": 0,
                                       "type": "Literal",
@@ -434,6 +487,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                                     "label": {
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": "length",
                                       "start": 0,
                                       "type": "Identifier"
@@ -445,9 +499,11 @@ description: Result of parsing spur-reduction-gearset.kcl
                                         "abs_path": false,
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": "baseDiameter",
                                           "start": 0,
                                           "type": "Identifier"
@@ -457,10 +513,12 @@ description: Result of parsing spur-reduction-gearset.kcl
                                         "type": "Name",
                                         "type": "Name"
                                       },
+                                      "moduleId": 0,
                                       "operator": "/",
                                       "right": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "raw": "2",
                                         "start": 0,
                                         "type": "Literal",
@@ -480,9 +538,11 @@ description: Result of parsing spur-reduction-gearset.kcl
                                   "abs_path": false,
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "name": {
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "name": "polar",
                                     "start": 0,
                                     "type": "Identifier"
@@ -493,6 +553,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                                 },
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "start": 0,
                                 "type": "CallExpressionKw",
                                 "type": "CallExpressionKw",
@@ -504,9 +565,11 @@ description: Result of parsing spur-reduction-gearset.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "startProfile",
                               "start": 0,
                               "type": "Identifier"
@@ -517,6 +580,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
@@ -529,6 +593,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "startRadius",
                                 "start": 0,
                                 "type": "Identifier"
@@ -540,9 +605,11 @@ description: Result of parsing spur-reduction-gearset.kcl
                                   "abs_path": false,
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "name": {
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "name": "baseDiameter",
                                     "start": 0,
                                     "type": "Identifier"
@@ -552,10 +619,12 @@ description: Result of parsing spur-reduction-gearset.kcl
                                   "type": "Name",
                                   "type": "Name"
                                 },
+                                "moduleId": 0,
                                 "operator": "/",
                                 "right": {
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "raw": "2",
                                   "start": 0,
                                   "type": "Literal",
@@ -575,6 +644,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "endRadius",
                                 "start": 0,
                                 "type": "Identifier"
@@ -586,9 +656,11 @@ description: Result of parsing spur-reduction-gearset.kcl
                                   "abs_path": false,
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "name": {
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "name": "tipDiameter",
                                     "start": 0,
                                     "type": "Identifier"
@@ -598,10 +670,12 @@ description: Result of parsing spur-reduction-gearset.kcl
                                   "type": "Name",
                                   "type": "Name"
                                 },
+                                "moduleId": 0,
                                 "operator": "/",
                                 "right": {
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "raw": "2",
                                   "start": 0,
                                   "type": "Literal",
@@ -621,6 +695,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "angle",
                                 "start": 0,
                                 "type": "Identifier"
@@ -628,6 +703,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                               "arg": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "raw": "0",
                                 "start": 0,
                                 "type": "Literal",
@@ -643,6 +719,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "tag",
                                 "start": 0,
                                 "type": "Identifier"
@@ -650,6 +727,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                               "arg": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "start": 0,
                                 "type": "TagDeclarator",
                                 "type": "TagDeclarator",
@@ -661,9 +739,11 @@ description: Result of parsing spur-reduction-gearset.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "involuteCircular",
                               "start": 0,
                               "type": "Identifier"
@@ -674,6 +754,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
@@ -686,6 +767,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "endAbsolute",
                                 "start": 0,
                                 "type": "Identifier"
@@ -697,6 +779,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                                     "label": {
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": "angle",
                                       "start": 0,
                                       "type": "Identifier"
@@ -707,6 +790,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                                       "left": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "raw": "160",
                                         "start": 0,
                                         "type": "Literal",
@@ -716,14 +800,17 @@ description: Result of parsing spur-reduction-gearset.kcl
                                           "suffix": "None"
                                         }
                                       },
+                                      "moduleId": 0,
                                       "operator": "/",
                                       "right": {
                                         "abs_path": false,
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": "nTeeth",
                                           "start": 0,
                                           "type": "Identifier"
@@ -743,6 +830,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                                     "label": {
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": "length",
                                       "start": 0,
                                       "type": "Identifier"
@@ -754,9 +842,11 @@ description: Result of parsing spur-reduction-gearset.kcl
                                         "abs_path": false,
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": "tipDiameter",
                                           "start": 0,
                                           "type": "Identifier"
@@ -766,10 +856,12 @@ description: Result of parsing spur-reduction-gearset.kcl
                                         "type": "Name",
                                         "type": "Name"
                                       },
+                                      "moduleId": 0,
                                       "operator": "/",
                                       "right": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "raw": "2",
                                         "start": 0,
                                         "type": "Literal",
@@ -789,9 +881,11 @@ description: Result of parsing spur-reduction-gearset.kcl
                                   "abs_path": false,
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "name": {
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "name": "polar",
                                     "start": 0,
                                     "type": "Identifier"
@@ -802,6 +896,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                                 },
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "start": 0,
                                 "type": "CallExpressionKw",
                                 "type": "CallExpressionKw",
@@ -813,9 +908,11 @@ description: Result of parsing spur-reduction-gearset.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "line",
                               "start": 0,
                               "type": "Identifier"
@@ -826,6 +923,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
@@ -838,6 +936,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "startRadius",
                                 "start": 0,
                                 "type": "Identifier"
@@ -849,9 +948,11 @@ description: Result of parsing spur-reduction-gearset.kcl
                                   "abs_path": false,
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "name": {
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "name": "baseDiameter",
                                     "start": 0,
                                     "type": "Identifier"
@@ -861,10 +962,12 @@ description: Result of parsing spur-reduction-gearset.kcl
                                   "type": "Name",
                                   "type": "Name"
                                 },
+                                "moduleId": 0,
                                 "operator": "/",
                                 "right": {
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "raw": "2",
                                   "start": 0,
                                   "type": "Literal",
@@ -884,6 +987,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "endRadius",
                                 "start": 0,
                                 "type": "Identifier"
@@ -895,9 +999,11 @@ description: Result of parsing spur-reduction-gearset.kcl
                                   "abs_path": false,
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "name": {
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "name": "tipDiameter",
                                     "start": 0,
                                     "type": "Identifier"
@@ -907,10 +1013,12 @@ description: Result of parsing spur-reduction-gearset.kcl
                                   "type": "Name",
                                   "type": "Name"
                                 },
+                                "moduleId": 0,
                                 "operator": "/",
                                 "right": {
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "raw": "2",
                                   "start": 0,
                                   "type": "Literal",
@@ -930,6 +1038,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "angle",
                                 "start": 0,
                                 "type": "Identifier"
@@ -939,13 +1048,16 @@ description: Result of parsing spur-reduction-gearset.kcl
                                 "end": 0,
                                 "left": {
                                   "argument": {
+                                    "arguments": [],
                                     "callee": {
                                       "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": "atan",
                                         "start": 0,
                                         "type": "Identifier"
@@ -956,6 +1068,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                                     },
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "start": 0,
                                     "type": "CallExpressionKw",
                                     "type": "CallExpressionKw",
@@ -963,13 +1076,16 @@ description: Result of parsing spur-reduction-gearset.kcl
                                       "commentStart": 0,
                                       "end": 0,
                                       "left": {
+                                        "arguments": [],
                                         "callee": {
                                           "abs_path": false,
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": {
                                             "commentStart": 0,
                                             "end": 0,
+                                            "moduleId": 0,
                                             "name": "segEndY",
                                             "start": 0,
                                             "type": "Identifier"
@@ -980,6 +1096,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                                         },
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "start": 0,
                                         "type": "CallExpressionKw",
                                         "type": "CallExpressionKw",
@@ -987,9 +1104,11 @@ description: Result of parsing spur-reduction-gearset.kcl
                                           "abs_path": false,
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": {
                                             "commentStart": 0,
                                             "end": 0,
+                                            "moduleId": 0,
                                             "name": "seg01",
                                             "start": 0,
                                             "type": "Identifier"
@@ -1000,15 +1119,19 @@ description: Result of parsing spur-reduction-gearset.kcl
                                           "type": "Name"
                                         }
                                       },
+                                      "moduleId": 0,
                                       "operator": "/",
                                       "right": {
+                                        "arguments": [],
                                         "callee": {
                                           "abs_path": false,
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": {
                                             "commentStart": 0,
                                             "end": 0,
+                                            "moduleId": 0,
                                             "name": "segEndX",
                                             "start": 0,
                                             "type": "Identifier"
@@ -1019,6 +1142,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                                         },
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "start": 0,
                                         "type": "CallExpressionKw",
                                         "type": "CallExpressionKw",
@@ -1026,9 +1150,11 @@ description: Result of parsing spur-reduction-gearset.kcl
                                           "abs_path": false,
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": {
                                             "commentStart": 0,
                                             "end": 0,
+                                            "moduleId": 0,
                                             "name": "seg01",
                                             "start": 0,
                                             "type": "Identifier"
@@ -1046,11 +1172,13 @@ description: Result of parsing spur-reduction-gearset.kcl
                                   },
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "operator": "-",
                                   "start": 0,
                                   "type": "UnaryExpression",
                                   "type": "UnaryExpression"
                                 },
+                                "moduleId": 0,
                                 "operator": "-",
                                 "right": {
                                   "commentStart": 0,
@@ -1058,6 +1186,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                                   "left": {
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "raw": "180",
                                     "start": 0,
                                     "type": "Literal",
@@ -1067,14 +1196,17 @@ description: Result of parsing spur-reduction-gearset.kcl
                                       "suffix": "None"
                                     }
                                   },
+                                  "moduleId": 0,
                                   "operator": "/",
                                   "right": {
                                     "abs_path": false,
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "name": {
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": "nTeeth",
                                       "start": 0,
                                       "type": "Identifier"
@@ -1098,6 +1230,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "reverse",
                                 "start": 0,
                                 "type": "Identifier"
@@ -1105,6 +1238,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                               "arg": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "raw": "true",
                                 "start": 0,
                                 "type": "Literal",
@@ -1117,9 +1251,11 @@ description: Result of parsing spur-reduction-gearset.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "involuteCircular",
                               "start": 0,
                               "type": "Identifier"
@@ -1130,6 +1266,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
@@ -1142,6 +1279,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "endAbsolute",
                                 "start": 0,
                                 "type": "Identifier"
@@ -1153,6 +1291,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                                     "label": {
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": "angle",
                                       "start": 0,
                                       "type": "Identifier"
@@ -1163,6 +1302,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                                       "left": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "raw": "360",
                                         "start": 0,
                                         "type": "Literal",
@@ -1172,14 +1312,17 @@ description: Result of parsing spur-reduction-gearset.kcl
                                           "suffix": "None"
                                         }
                                       },
+                                      "moduleId": 0,
                                       "operator": "/",
                                       "right": {
                                         "abs_path": false,
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": "nTeeth",
                                           "start": 0,
                                           "type": "Identifier"
@@ -1199,6 +1342,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                                     "label": {
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": "length",
                                       "start": 0,
                                       "type": "Identifier"
@@ -1210,9 +1354,11 @@ description: Result of parsing spur-reduction-gearset.kcl
                                         "abs_path": false,
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "name": {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "name": "baseDiameter",
                                           "start": 0,
                                           "type": "Identifier"
@@ -1222,10 +1368,12 @@ description: Result of parsing spur-reduction-gearset.kcl
                                         "type": "Name",
                                         "type": "Name"
                                       },
+                                      "moduleId": 0,
                                       "operator": "/",
                                       "right": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "moduleId": 0,
                                         "raw": "2",
                                         "start": 0,
                                         "type": "Literal",
@@ -1245,9 +1393,11 @@ description: Result of parsing spur-reduction-gearset.kcl
                                   "abs_path": false,
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "name": {
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "name": "polar",
                                     "start": 0,
                                     "type": "Identifier"
@@ -1258,6 +1408,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                                 },
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "start": 0,
                                 "type": "CallExpressionKw",
                                 "type": "CallExpressionKw",
@@ -1269,9 +1420,11 @@ description: Result of parsing spur-reduction-gearset.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "line",
                               "start": 0,
                               "type": "Identifier"
@@ -1282,6 +1435,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
@@ -1294,6 +1448,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "instances",
                                 "start": 0,
                                 "type": "Identifier"
@@ -1302,9 +1457,11 @@ description: Result of parsing spur-reduction-gearset.kcl
                                 "abs_path": false,
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": {
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "name": "nTeeth",
                                   "start": 0,
                                   "type": "Identifier"
@@ -1320,6 +1477,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "center",
                                 "start": 0,
                                 "type": "Identifier"
@@ -1330,6 +1488,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                                   {
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "raw": "0",
                                     "start": 0,
                                     "type": "Literal",
@@ -1342,6 +1501,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                                   {
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "raw": "0",
                                     "start": 0,
                                     "type": "Literal",
@@ -1353,6 +1513,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                                   }
                                 ],
                                 "end": 0,
+                                "moduleId": 0,
                                 "start": 0,
                                 "type": "ArrayExpression",
                                 "type": "ArrayExpression"
@@ -1363,6 +1524,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "arcDegrees",
                                 "start": 0,
                                 "type": "Identifier"
@@ -1370,6 +1532,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                               "arg": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "raw": "360",
                                 "start": 0,
                                 "type": "Literal",
@@ -1385,6 +1548,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "rotateDuplicates",
                                 "start": 0,
                                 "type": "Identifier"
@@ -1392,6 +1556,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                               "arg": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "raw": "true",
                                 "start": 0,
                                 "type": "Literal",
@@ -1404,9 +1569,11 @@ description: Result of parsing spur-reduction-gearset.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "patternCircular2d",
                               "start": 0,
                               "type": "Identifier"
@@ -1417,25 +1584,23 @@ description: Result of parsing spur-reduction-gearset.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
-                          "unlabeled": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "start": 0,
-                            "type": "PipeSubstitution",
-                            "type": "PipeSubstitution"
-                          }
+                          "unlabeled": null
                         },
                         {
+                          "arguments": [],
                           "callee": {
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "close",
                               "start": 0,
                               "type": "Identifier"
@@ -1446,6 +1611,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
@@ -1458,6 +1624,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "tool",
                                 "start": 0,
                                 "type": "Identifier"
@@ -1469,6 +1636,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                                     "label": {
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": "center",
                                       "start": 0,
                                       "type": "Identifier"
@@ -1479,6 +1647,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                                         {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "raw": "0",
                                           "start": 0,
                                           "type": "Literal",
@@ -1491,6 +1660,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                                         {
                                           "commentStart": 0,
                                           "end": 0,
+                                          "moduleId": 0,
                                           "raw": "0",
                                           "start": 0,
                                           "type": "Literal",
@@ -1502,6 +1672,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                                         }
                                       ],
                                       "end": 0,
+                                      "moduleId": 0,
                                       "start": 0,
                                       "type": "ArrayExpression",
                                       "type": "ArrayExpression"
@@ -1512,6 +1683,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                                     "label": {
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "name": "radius",
                                       "start": 0,
                                       "type": "Identifier"
@@ -1519,6 +1691,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                                     "arg": {
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "raw": "5",
                                       "start": 0,
                                       "type": "Literal",
@@ -1534,9 +1707,11 @@ description: Result of parsing spur-reduction-gearset.kcl
                                   "abs_path": false,
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "name": {
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "name": "circle",
                                     "start": 0,
                                     "type": "Identifier"
@@ -1547,6 +1722,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                                 },
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "start": 0,
                                 "type": "CallExpressionKw",
                                 "type": "CallExpressionKw",
@@ -1558,9 +1734,11 @@ description: Result of parsing spur-reduction-gearset.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "subtract2d",
                               "start": 0,
                               "type": "Identifier"
@@ -1571,6 +1749,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
@@ -1583,6 +1762,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "length",
                                 "start": 0,
                                 "type": "Identifier"
@@ -1591,9 +1771,11 @@ description: Result of parsing spur-reduction-gearset.kcl
                                 "abs_path": false,
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": {
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "name": "gearHeight",
                                   "start": 0,
                                   "type": "Identifier"
@@ -1609,9 +1791,11 @@ description: Result of parsing spur-reduction-gearset.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "extrude",
                               "start": 0,
                               "type": "Identifier"
@@ -1622,6 +1806,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
@@ -1630,12 +1815,14 @@ description: Result of parsing spur-reduction-gearset.kcl
                       ],
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "nonCodeMeta": {
                         "nonCodeNodes": {
                           "4": [
                             {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "start": 0,
                               "type": "NonCodeNode",
                               "value": {
@@ -1649,6 +1836,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                             {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "start": 0,
                               "type": "NonCodeNode",
                               "value": {
@@ -1662,6 +1850,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                             {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "start": 0,
                               "type": "NonCodeNode",
                               "value": {
@@ -1675,6 +1864,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                             {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "start": 0,
                               "type": "NonCodeNode",
                               "value": {
@@ -1691,11 +1881,13 @@ description: Result of parsing spur-reduction-gearset.kcl
                       "type": "PipeExpression",
                       "type": "PipeExpression"
                     },
+                    "moduleId": 0,
                     "start": 0,
                     "type": "VariableDeclarator"
                   },
                   "end": 0,
                   "kind": "const",
+                  "moduleId": 0,
                   "preComments": [
                     "",
                     "",
@@ -1710,9 +1902,11 @@ description: Result of parsing spur-reduction-gearset.kcl
                     "abs_path": false,
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "gearSketch",
                       "start": 0,
                       "type": "Identifier"
@@ -1724,6 +1918,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                   },
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
@@ -1731,12 +1926,14 @@ description: Result of parsing spur-reduction-gearset.kcl
               ],
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "nonCodeMeta": {
                 "nonCodeNodes": {
                   "5": [
                     {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "NonCodeNode",
                       "value": {
@@ -1751,12 +1948,14 @@ description: Result of parsing spur-reduction-gearset.kcl
             },
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "nTeeth",
                   "start": 0,
                   "type": "Identifier"
@@ -1767,6 +1966,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                 "identifier": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "module",
                   "start": 0,
                   "type": "Identifier"
@@ -1777,6 +1977,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                 "identifier": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "pressureAngle",
                   "start": 0,
                   "type": "Identifier"
@@ -1787,6 +1988,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                 "identifier": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "gearHeight",
                   "start": 0,
                   "type": "Identifier"
@@ -1797,11 +1999,13 @@ description: Result of parsing spur-reduction-gearset.kcl
             "type": "FunctionExpression",
             "type": "FunctionExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "fn",
+        "moduleId": 0,
         "preComments": [
           "// Define a function to create a spur gear"
         ],
@@ -1819,6 +2023,7 @@ description: Result of parsing spur-reduction-gearset.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "nTeeth",
                 "start": 0,
                 "type": "Identifier"
@@ -1826,6 +2031,7 @@ description: Result of parsing spur-reduction-gearset.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "17",
                 "start": 0,
                 "type": "Literal",
@@ -1841,6 +2047,7 @@ description: Result of parsing spur-reduction-gearset.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "module",
                 "start": 0,
                 "type": "Identifier"
@@ -1848,6 +2055,7 @@ description: Result of parsing spur-reduction-gearset.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "1.5",
                 "start": 0,
                 "type": "Literal",
@@ -1863,6 +2071,7 @@ description: Result of parsing spur-reduction-gearset.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "pressureAngle",
                 "start": 0,
                 "type": "Identifier"
@@ -1870,6 +2079,7 @@ description: Result of parsing spur-reduction-gearset.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "14",
                 "start": 0,
                 "type": "Literal",
@@ -1885,6 +2095,7 @@ description: Result of parsing spur-reduction-gearset.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "gearHeight",
                 "start": 0,
                 "type": "Identifier"
@@ -1892,6 +2103,7 @@ description: Result of parsing spur-reduction-gearset.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "9",
                 "start": 0,
                 "type": "Literal",
@@ -1907,9 +2119,11 @@ description: Result of parsing spur-reduction-gearset.kcl
             "abs_path": false,
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "spurGear",
               "start": 0,
               "type": "Identifier"
@@ -1920,11 +2134,13 @@ description: Result of parsing spur-reduction-gearset.kcl
           },
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
           "unlabeled": null
         },
+        "moduleId": 0,
         "preComments": [
           "",
           "",
@@ -1946,6 +2162,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "nTeeth",
                     "start": 0,
                     "type": "Identifier"
@@ -1953,6 +2170,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "51",
                     "start": 0,
                     "type": "Literal",
@@ -1968,6 +2186,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "module",
                     "start": 0,
                     "type": "Identifier"
@@ -1975,6 +2194,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "1.5",
                     "start": 0,
                     "type": "Literal",
@@ -1990,6 +2210,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "pressureAngle",
                     "start": 0,
                     "type": "Identifier"
@@ -1997,6 +2218,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "14",
                     "start": 0,
                     "type": "Literal",
@@ -2012,6 +2234,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "gearHeight",
                     "start": 0,
                     "type": "Identifier"
@@ -2019,6 +2242,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "7",
                     "start": 0,
                     "type": "Literal",
@@ -2034,9 +2258,11 @@ description: Result of parsing spur-reduction-gearset.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "spurGear",
                   "start": 0,
                   "type": "Identifier"
@@ -2047,6 +2273,7 @@ description: Result of parsing spur-reduction-gearset.kcl
               },
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
@@ -2059,6 +2286,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "x",
                     "start": 0,
                     "type": "Identifier"
@@ -2078,6 +2306,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                           "left": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "raw": "51",
                             "start": 0,
                             "type": "Literal",
@@ -2087,10 +2316,12 @@ description: Result of parsing spur-reduction-gearset.kcl
                               "suffix": "None"
                             }
                           },
+                          "moduleId": 0,
                           "operator": "+",
                           "right": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "raw": "17",
                             "start": 0,
                             "type": "Literal",
@@ -2104,10 +2335,12 @@ description: Result of parsing spur-reduction-gearset.kcl
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         },
+                        "moduleId": 0,
                         "operator": "/",
                         "right": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "2",
                           "start": 0,
                           "type": "Literal",
@@ -2121,10 +2354,12 @@ description: Result of parsing spur-reduction-gearset.kcl
                         "type": "BinaryExpression",
                         "type": "BinaryExpression"
                       },
+                      "moduleId": 0,
                       "operator": "*",
                       "right": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "1.5",
                         "start": 0,
                         "type": "Literal",
@@ -2138,10 +2373,12 @@ description: Result of parsing spur-reduction-gearset.kcl
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     },
+                    "moduleId": 0,
                     "operator": "+",
                     "right": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "1.3",
                       "start": 0,
                       "type": "Literal",
@@ -2161,9 +2398,11 @@ description: Result of parsing spur-reduction-gearset.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "translate",
                   "start": 0,
                   "type": "Identifier"
@@ -2174,6 +2413,7 @@ description: Result of parsing spur-reduction-gearset.kcl
               },
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
@@ -2186,6 +2426,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "yaw",
                     "start": 0,
                     "type": "Identifier"
@@ -2193,6 +2434,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "3",
                     "start": 0,
                     "type": "Literal",
@@ -2208,9 +2450,11 @@ description: Result of parsing spur-reduction-gearset.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "rotate",
                   "start": 0,
                   "type": "Identifier"
@@ -2221,6 +2465,7 @@ description: Result of parsing spur-reduction-gearset.kcl
               },
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
@@ -2229,12 +2474,14 @@ description: Result of parsing spur-reduction-gearset.kcl
           ],
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "nonCodeMeta": {
             "nonCodeNodes": {
               "0": [
                 {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "start": 0,
                   "type": "NonCodeNode",
                   "value": {
@@ -2248,6 +2495,7 @@ description: Result of parsing spur-reduction-gearset.kcl
                 {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "start": 0,
                   "type": "NonCodeNode",
                   "value": {
@@ -2264,6 +2512,7 @@ description: Result of parsing spur-reduction-gearset.kcl
           "type": "PipeExpression",
           "type": "PipeExpression"
         },
+        "moduleId": 0,
         "preComments": [
           "",
           "",
@@ -2280,9 +2529,11 @@ description: Result of parsing spur-reduction-gearset.kcl
       {
         "commentStart": 0,
         "end": 0,
+        "moduleId": 0,
         "name": {
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "name": "settings",
           "start": 0,
           "type": "Identifier"
@@ -2301,19 +2552,23 @@ description: Result of parsing spur-reduction-gearset.kcl
             "key": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "defaultLengthUnit",
               "start": 0,
               "type": "Identifier"
             },
+            "moduleId": 0,
             "start": 0,
             "type": "ObjectProperty",
             "value": {
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "mm",
                 "start": 0,
                 "type": "Identifier"
@@ -2329,12 +2584,14 @@ description: Result of parsing spur-reduction-gearset.kcl
         "type": "Annotation"
       }
     ],
+    "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {},
       "startNodes": [
         {
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "NonCodeNode",
           "value": {

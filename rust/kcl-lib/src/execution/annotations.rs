@@ -2,13 +2,13 @@
 
 use std::str::FromStr;
 
-use kittycad_modeling_cmds::coord::{System, KITTYCAD, OPENGL, VULKAN};
+use kittycad_modeling_cmds::coord::{KITTYCAD, OPENGL, System, VULKAN};
 
 use crate::{
+    KclError, SourceRange,
     errors::KclErrorDetails,
     execution::types::{UnitAngle, UnitLen},
     parsing::ast::types::{Annotation, Expr, LiteralValue, Node, ObjectProperty},
-    KclError, SourceRange,
 };
 
 /// Annotations which should cause re-execution if they change.
@@ -31,6 +31,8 @@ pub(crate) const IMPL_RUST: &str = "std_rust";
 pub(crate) const IMPL_KCL: &str = "kcl";
 pub(crate) const IMPL_PRIMITIVE: &str = "primitive";
 pub(super) const IMPL_VALUES: [&str; 3] = [IMPL_RUST, IMPL_KCL, IMPL_PRIMITIVE];
+
+pub(crate) const DEPRECATED: &str = "deprecated";
 
 #[derive(Clone, Copy, Eq, PartialEq, Debug, Default)]
 pub enum Impl {
@@ -70,7 +72,7 @@ pub(super) fn expect_properties<'a>(
 ) -> Result<&'a [Node<ObjectProperty>], KclError> {
     assert_eq!(annotation.name().unwrap(), for_key);
     Ok(&**annotation.properties.as_ref().ok_or_else(|| {
-        KclError::Semantic(KclErrorDetails::new(
+        KclError::new_semantic(KclErrorDetails::new(
             format!("Empty `{for_key}` annotation"),
             vec![annotation.as_source_range()],
         ))
@@ -84,7 +86,7 @@ pub(super) fn expect_ident(expr: &Expr) -> Result<&str, KclError> {
         }
     }
 
-    Err(KclError::Semantic(KclErrorDetails::new(
+    Err(KclError::new_semantic(KclErrorDetails::new(
         "Unexpected settings value, expected a simple name, e.g., `mm`".to_owned(),
         vec![expr.into()],
     )))
@@ -98,7 +100,7 @@ pub(super) fn expect_number(expr: &Expr) -> Result<String, KclError> {
         }
     }
 
-    Err(KclError::Semantic(KclErrorDetails::new(
+    Err(KclError::new_semantic(KclErrorDetails::new(
         "Unexpected settings value, expected a number, e.g., `1.0`".to_owned(),
         vec![expr.into()],
     )))
@@ -113,7 +115,7 @@ pub(super) fn get_impl(annotations: &[Node<Annotation>], source_range: SourceRan
             if &*p.key.name == IMPL {
                 if let Some(s) = p.value.ident_name() {
                     return Impl::from_str(s).map(Some).map_err(|_| {
-                        KclError::Semantic(KclErrorDetails::new(
+                        KclError::new_semantic(KclErrorDetails::new(
                             format!(
                                 "Invalid value for {} attribute, expected one of: {}",
                                 IMPL,
@@ -139,7 +141,7 @@ impl UnitLen {
             "inch" | "in" => Ok(UnitLen::Inches),
             "ft" => Ok(UnitLen::Feet),
             "yd" => Ok(UnitLen::Yards),
-            value => Err(KclError::Semantic(KclErrorDetails::new(
+            value => Err(KclError::new_semantic(KclErrorDetails::new(
                 format!(
                     "Unexpected value for length units: `{value}`; expected one of `mm`, `cm`, `m`, `in`, `ft`, `yd`"
                 ),
@@ -154,7 +156,7 @@ impl UnitAngle {
         match s {
             "deg" => Ok(UnitAngle::Degrees),
             "rad" => Ok(UnitAngle::Radians),
-            value => Err(KclError::Semantic(KclErrorDetails::new(
+            value => Err(KclError::new_semantic(KclErrorDetails::new(
                 format!("Unexpected value for angle units: `{value}`; expected one of `deg`, `rad`"),
                 vec![source_range],
             ))),

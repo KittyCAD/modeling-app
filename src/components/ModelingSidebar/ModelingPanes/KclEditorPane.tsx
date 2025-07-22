@@ -6,6 +6,7 @@ import {
 import {
   defaultKeymap,
   history,
+  historyField,
   historyKeymap,
   indentWithTab,
 } from '@codemirror/commands'
@@ -34,16 +35,14 @@ import {
   rectangularSelection,
 } from '@codemirror/view'
 import interact from '@replit/codemirror-interact'
-import { TEST } from '@src/env'
 import { useSelector } from '@xstate/react'
 import { useEffect, useMemo, useRef } from 'react'
-import { useHotkeys } from 'react-hotkeys-hook'
 
 import { useLspContext } from '@src/components/LspProvider'
 import CodeEditor from '@src/components/ModelingSidebar/ModelingPanes/CodeEditor'
 import { lineHighlightField } from '@src/editor/highlightextension'
 import { modelingMachineEvent } from '@src/editor/manager'
-import { codeManagerHistoryCompartment } from '@src/lang/codeManager'
+import { historyCompartment } from '@src/editor/compartments'
 import { codeManager, editorManager, kclManager } from '@src/lib/singletons'
 import { Themes, getSystemTheme } from '@src/lib/theme'
 import { onMouseDragMakeANewNumber, onMouseDragRegex } from '@src/lib/utils'
@@ -75,17 +74,6 @@ export const KclEditorPane = () => {
       : context.app.theme.current
   const { copilotLSP, kclLSP } = useLspContext()
 
-  // Since these already exist in the editor, we don't need to define them
-  // with the wrapper.
-  useHotkeys('mod+z', (e) => {
-    e.preventDefault()
-    editorManager.undo()
-  })
-  useHotkeys('mod+shift+z', (e) => {
-    e.preventDefault()
-    editorManager.redo()
-  })
-
   // When this component unmounts, we need to tell the machine that the editor
   useEffect(() => {
     return () => {
@@ -96,12 +84,13 @@ export const KclEditorPane = () => {
   }, [])
 
   useEffect(() => {
-    if (!editorIsMounted || !lastSelectionEvent || !editorManager.editorView) {
+    const editorView = editorManager.getEditorView()
+    if (!editorIsMounted || !lastSelectionEvent || !editorView) {
       return
     }
 
     try {
-      editorManager.editorView.dispatch({
+      editorView.dispatch({
         selection: lastSelectionEvent.codeMirrorSelection,
         annotations: [modelingMachineEvent, Transaction.addToHistory.of(false)],
         scrollIntoView: lastSelectionEvent.scrollIntoView,
@@ -119,13 +108,21 @@ export const KclEditorPane = () => {
   // Instead, hot load hotkeys via code mirror native.
   const codeMirrorHotkeys = codeManager.getCodemirrorHotkeys()
 
+  // When opening the editor, use the existing history in editorManager.
+  // This is needed to ensure users can undo beyond when the editor has been openeed.
+  // (Another solution would be to reuse the same state instead of creating a new one in CodeEditor.)
+  const existingHistory = editorManager.editorState.field(historyField)
+  const initialHistory = existingHistory
+    ? historyField.init(() => existingHistory)
+    : history()
+
   const editorExtensions = useMemo(() => {
     const extensions = [
       drawSelection({
         cursorBlinkRate: cursorBlinking.current ? 1200 : 0,
       }),
       lineHighlightField,
-      codeManagerHistoryCompartment.of(history()),
+      historyCompartment.of(initialHistory),
       closeBrackets(),
       codeFolding(),
       keymap.of([
@@ -150,43 +147,40 @@ export const KclEditorPane = () => {
     if (kclLSP) extensions.push(Prec.highest(kclLSP))
     if (copilotLSP) extensions.push(copilotLSP)
 
-    // These extensions have proven to mess with vitest
-    if (!TEST) {
-      extensions.push(
-        lintGutter(),
-        lineNumbers(),
-        highlightActiveLineGutter(),
-        highlightSpecialChars(),
-        foldGutter(),
-        EditorState.allowMultipleSelections.of(true),
-        indentOnInput(),
-        bracketMatching(),
-        closeBrackets(),
-        highlightActiveLine(),
-        highlightSelectionMatches(),
-        syntaxHighlighting(defaultHighlightStyle, {
-          fallback: true,
-        }),
-        rectangularSelection(),
-        dropCursor(),
-        interact({
-          rules: [
-            // a rule for a number dragger
-            {
-              // the regexp matching the value
-              regexp: onMouseDragRegex,
-              // set cursor to "ew-resize" on hover
-              cursor: 'ew-resize',
-              // change number value based on mouse X movement on drag
-              onDrag: (text, setText, e) => {
-                onMouseDragMakeANewNumber(text, setText, e)
-              },
+    extensions.push(
+      lintGutter(),
+      lineNumbers(),
+      highlightActiveLineGutter(),
+      highlightSpecialChars(),
+      foldGutter(),
+      EditorState.allowMultipleSelections.of(true),
+      indentOnInput(),
+      bracketMatching(),
+      closeBrackets(),
+      highlightActiveLine(),
+      highlightSelectionMatches(),
+      syntaxHighlighting(defaultHighlightStyle, {
+        fallback: true,
+      }),
+      rectangularSelection(),
+      dropCursor(),
+      interact({
+        rules: [
+          // a rule for a number dragger
+          {
+            // the regexp matching the value
+            regexp: onMouseDragRegex,
+            // set cursor to "ew-resize" on hover
+            cursor: 'ew-resize',
+            // change number value based on mouse X movement on drag
+            onDrag: (text, setText, e) => {
+              onMouseDragMakeANewNumber(text, setText, e)
             },
-          ],
-        })
-      )
-      if (textWrapping.current) extensions.push(EditorView.lineWrapping)
-    }
+          },
+        ],
+      })
+    )
+    if (textWrapping.current) extensions.push(EditorView.lineWrapping)
 
     return extensions
   }, [kclLSP, copilotLSP, textWrapping.current, cursorBlinking.current])
@@ -206,10 +200,9 @@ export const KclEditorPane = () => {
           extensions={editorExtensions}
           theme={theme}
           onCreateEditor={(_editorView) => {
-            if (_editorView === null) return
-
             editorManager.setEditorView(_editorView)
-            kclEditorActor.send({ type: 'setKclEditorMounted', data: true })
+
+            if (!_editorView) return
 
             // Update diagnostics as they are cleared when the editor is unmounted.
             // Without this, errors would not be shown when closing and reopening the editor.

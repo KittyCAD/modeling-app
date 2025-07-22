@@ -2,7 +2,7 @@ import type { Diagnostic } from '@codemirror/lint'
 import { lspCodeActionEvent } from '@kittycad/codemirror-lsp-client'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
-import { KCLError } from '@src/lang/errors'
+import { KCLError, toUtf16 } from '@src/lang/errors'
 import type { ExecState, Program } from '@src/lang/wasm'
 import { emptyExecState, kclLint } from '@src/lang/wasm'
 import { EXECUTE_AST_INTERRUPT_ERROR_STRING } from '@src/lib/constants'
@@ -24,6 +24,7 @@ export type ToolTip =
   | 'yLineTo'
   | 'angledLineThatIntersects'
   | 'tangentialArc'
+  | 'tangentialArcTo'
   | 'circle'
   | 'circleThreePoint'
   | 'arcTo'
@@ -44,6 +45,7 @@ export const toolTips: Array<ToolTip> = [
   'yLineTo',
   'angledLineThatIntersects',
   'tangentialArc',
+  'tangentialArcTo',
   'circleThreePoint',
   'arc',
   'arcTo',
@@ -121,10 +123,12 @@ function handleExecuteError(e: any): ExecutionResult {
     if (e.msg.includes(EXECUTE_AST_INTERRUPT_ERROR_STRING)) {
       isInterrupted = true
     }
+    const execState = emptyExecState()
+    execState.variables = e.variables
     return {
       errors: [e],
       logs: [],
-      execState: emptyExecState(),
+      execState,
       isInterrupted,
     }
   } else {
@@ -140,8 +144,10 @@ function handleExecuteError(e: any): ExecutionResult {
 
 export async function lintAst({
   ast,
+  sourceCode,
 }: {
   ast: Program
+  sourceCode: string
 }): Promise<Array<Diagnostic>> {
   try {
     const discovered_findings = await kclLint(ast)
@@ -155,8 +161,8 @@ export async function lintAst({
             apply: (view: EditorView, from: number, to: number) => {
               view.dispatch({
                 changes: {
-                  from: suggestion.source_range[0],
-                  to: suggestion.source_range[1],
+                  from: toUtf16(suggestion.source_range[0], sourceCode),
+                  to: toUtf16(suggestion.source_range[1], sourceCode),
                   insert: suggestion.insert,
                 },
                 annotations: [lspCodeActionEvent],
@@ -166,8 +172,8 @@ export async function lintAst({
         ]
       }
       return {
-        from: lint.pos[0],
-        to: lint.pos[1],
+        from: toUtf16(lint.pos[0], sourceCode),
+        to: toUtf16(lint.pos[1], sourceCode),
         message: lint.finding.title,
         severity: 'info',
         actions,

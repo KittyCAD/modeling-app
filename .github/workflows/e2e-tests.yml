@@ -20,9 +20,10 @@ permissions:
 jobs:
 
   prepare-wasm:
-    # separate job on Ubuntu to build or fetch the wasm blob once on the fastest runner
-    runs-on: runs-on=${{ github.run_id }}/family=i7ie.2xlarge/image=ubuntu22-full-x64
+
+    runs-on: namespace-profile-ubuntu-8-cores
     steps:
+
       - uses: actions/checkout@v4
 
       - id: filter
@@ -44,7 +45,7 @@ jobs:
       - name: Download Wasm cache
         id: download-wasm
         if: ${{ github.event_name != 'schedule' && steps.filter.outputs.rust == 'false' }}
-        uses: dawidd6/action-download-artifact@v7
+        uses: dawidd6/action-download-artifact@v11
         continue-on-error: true
         with:
           github_token: ${{secrets.GITHUB_TOKEN}}
@@ -77,7 +78,7 @@ jobs:
         with:
           cache: false # Configured below.
 
-      - uses: taiki-e/install-action@d4635f2de61c8b8104d59cd4aede2060638378cc
+      - uses: taiki-e/install-action@c07504cae06f832dc8de08911c9a9c5cddb0d2d3
         if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
         with:
           tool: wasm-pack
@@ -93,18 +94,22 @@ jobs:
         shell: bash
         run: npm run build:wasm
 
-      - uses: actions/upload-artifact@v4
+      - name: Upload compiled wasm artifacts
+        uses: actions/upload-artifact@v4
         with:
           name: prepared-wasm
           path: |
             rust/kcl-wasm-lib/pkg/kcl_wasm_lib*
 
   snapshots:
-    name: playwright:snapshots:ubuntu
-    runs-on: runs-on=${{ github.run_id }}/family=i7ie.2xlarge/image=ubuntu22-full-x64
     needs: [prepare-wasm]
+
+    runs-on: namespace-profile-ubuntu-8-cores
+    name: e2e:snapshots
+
     steps:
-      - uses: actions/create-github-app-token@v1
+
+      - uses: actions/create-github-app-token@v2
         id: app-token
         with:
           app-id: ${{ secrets.MODELING_APP_GH_APP_ID }}
@@ -131,10 +136,9 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        id: deps-install
         run: npm install
 
-      - name: Cache browsers
+      - name: Download browser cache
         uses: actions/cache@v4
         with:
           path: |
@@ -144,7 +148,7 @@ jobs:
       - name: Install browsers
         run: npm run playwright install --with-deps
 
-      - name: Test snapshots
+      - name: npm run test:snapshots
         uses: nick-fields/retry@v3.0.2
         with:
           shell: bash
@@ -152,7 +156,7 @@ jobs:
           timeout_minutes: 5
           max_attempts: 5
         env:
-          token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
+          VITE_KITTYCAD_API_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
           TAB_API_URL: ${{ secrets.TAB_API_URL }}
           TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
           CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
@@ -164,7 +168,7 @@ jobs:
         if: always()
         run: npm run test:snapshots -- --last-failed --update-snapshots
         env:
-          token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
+          VITE_KITTYCAD_API_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
           TAB_API_URL: ${{ secrets.TAB_API_URL }}
           TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
           CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
@@ -172,17 +176,18 @@ jobs:
           CI_SUITE: e2e:snapshots
           TARGET: web
 
-      - uses: actions/upload-artifact@v4
-        if: ${{ !cancelled() && (success() || failure()) }}
+      - name: Upload playwright report
+        uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
         with:
-          name: playwright-report-ubuntu-snapshot-${{ github.sha }}
+          name: playwright-report-snapshot-${{ github.sha }}
           path: playwright-report/
           include-hidden-files: true
           retention-days: 30
           overwrite: true
 
       - name: Check diff
-        if: ${{ github.ref != 'refs/heads/main' }}
+        if: ${{ always() && github.ref != 'refs/heads/main' }}
         shell: bash
         id: git-check
         run: |
@@ -193,7 +198,7 @@ jobs:
             fi
 
       - name: Commit changes
-        if: ${{ steps.git-check.outputs.modified == 'true' }}
+        if: ${{ always() && steps.git-check.outputs.modified == 'true' }}
         shell: bash
         run: |
           git add e2e/playwright/snapshot-tests.spec.ts-snapshots e2e/playwright/snapshots
@@ -207,39 +212,124 @@ jobs:
           git push
           git push origin ${{ github.head_ref }}
 
-  electron:
+  web:
     needs: [prepare-wasm]
-    timeout-minutes: 60
-    env:
-      OS_NAME: ${{ contains(matrix.os, 'ubuntu') && 'ubuntu' || (contains(matrix.os, 'windows') && 'windows' || 'macos') }}
-    name: playwright:electron:${{ contains(matrix.os, 'ubuntu') && 'ubuntu' || (contains(matrix.os, 'windows') && 'windows' || 'macos') }} (shard ${{ matrix.shardIndex }})
+
     strategy:
       fail-fast: false
       matrix:
-        # TODO: enable namespace-profile-windows-latest once available
         include:
-          - os: "runs-on=${{ github.run_id }}/family=i7ie.2xlarge/image=ubuntu22-full-x64"
+          - os: namespace-profile-ubuntu-8-cores
+          - os: namespace-profile-macos-8-cores
+          - os: namespace-profile-windows-8-cores
+    runs-on: ${{ matrix.os }}
+    name: e2e:web (${{ contains(matrix.os, 'ubuntu') && 'ubuntu' || (contains(matrix.os, 'windows') && 'windows' || 'macos') }})
+    env:
+      OS_NAME: ${{ contains(matrix.os, 'ubuntu') && 'ubuntu' || (contains(matrix.os, 'windows') && 'windows' || 'macos') }}
+
+    steps:
+
+      - uses: actions/create-github-app-token@v2
+        id: app-token
+        with:
+          app-id: ${{ secrets.MODELING_APP_GH_APP_ID }}
+          private-key: ${{ secrets.MODELING_APP_GH_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+
+      - uses: actions/download-artifact@v4
+        name: prepared-wasm
+
+      - name: Copy prepared Wasm
+        run: |
+          ls -R prepared-wasm
+          cp prepared-wasm/kcl_wasm_lib_bg.wasm public
+          mkdir rust/kcl-wasm-lib/pkg
+          cp prepared-wasm/kcl_wasm_lib* rust/kcl-wasm-lib/pkg
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Download browser cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/ms-playwright/
+          key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
+
+      - name: Install browsers
+        run: npm run playwright install --with-deps
+
+      - name: Start Vector
+        if: ${{ !contains(matrix.os, 'windows') }}
+        run: .github/ci-cd-scripts/start-vector-${{ env.OS_NAME }}.sh
+        env:
+          GH_ACTIONS_AXIOM_TOKEN: ${{ secrets.GH_ACTIONS_AXIOM_TOKEN }}
+          OS_NAME: ${{ env.OS_NAME }}
+
+      - name: npm run test:e2e:web
+        uses: nick-fields/retry@v3.0.2
+        with:
+          shell: bash
+          command: npm run test:e2e:web
+          timeout_minutes: 5
+          max_attempts: 5
+        env:
+          VITE_KITTYCAD_API_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
+          TAB_API_URL: ${{ secrets.TAB_API_URL }}
+          TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
+          CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+          CI_PR_NUMBER: ${{ github.event.pull_request.number }}
+          CI_SUITE: e2e:web
+          TARGET: web
+
+      - name: Upload playwright report
+        uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() && (success() || failure()) }}
+        with:
+          name: playwright-report-web-${{ env.OS_NAME }}-${{ matrix.shardIndex }}-${{ github.sha }}
+          path: playwright-report/
+          include-hidden-files: true
+          retention-days: 30
+          overwrite: true
+
+  desktop:
+    needs: [prepare-wasm]
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: namespace-profile-ubuntu-8-cores
             shardIndex: 1
             shardTotal: 8
-          - os: "runs-on=${{ github.run_id }}/family=i7ie.2xlarge/image=ubuntu22-full-x64"
+          - os: namespace-profile-ubuntu-8-cores
             shardIndex: 2
             shardTotal: 8
-          - os: "runs-on=${{ github.run_id }}/family=i7ie.2xlarge/image=ubuntu22-full-x64"
+          - os: namespace-profile-ubuntu-8-cores
             shardIndex: 3
             shardTotal: 8
-          - os: "runs-on=${{ github.run_id }}/family=i7ie.2xlarge/image=ubuntu22-full-x64"
+          - os: namespace-profile-ubuntu-8-cores
             shardIndex: 4
             shardTotal: 8
-          - os: "runs-on=${{ github.run_id }}/family=i7ie.2xlarge/image=ubuntu22-full-x64"
+          - os: namespace-profile-ubuntu-8-cores
             shardIndex: 5
             shardTotal: 8
-          - os: "runs-on=${{ github.run_id }}/family=i7ie.2xlarge/image=ubuntu22-full-x64"
+          - os: namespace-profile-ubuntu-8-cores
             shardIndex: 6
             shardTotal: 8
-          - os: "runs-on=${{ github.run_id }}/family=i7ie.2xlarge/image=ubuntu22-full-x64"
+          - os: namespace-profile-ubuntu-8-cores
             shardIndex: 7
             shardTotal: 8
-          - os: "runs-on=${{ github.run_id }}/family=i7ie.2xlarge/image=ubuntu22-full-x64"
+          - os: namespace-profile-ubuntu-8-cores
             shardIndex: 8
             shardTotal: 8
           - os: namespace-profile-macos-8-cores
@@ -248,20 +338,24 @@ jobs:
           - os: namespace-profile-macos-8-cores
             shardIndex: 2
             shardTotal: 2
-          - os: windows-latest-8-cores
+          - os: namespace-profile-windows-8-cores
             shardIndex: 1
             shardTotal: 2
-          - os: windows-latest-8-cores
+          - os: namespace-profile-windows-8-cores
             shardIndex: 2
             shardTotal: 2
     runs-on: ${{ matrix.os }}
+    name: e2e:desktop (${{ contains(matrix.os, 'ubuntu') && 'ubuntu' || (contains(matrix.os, 'windows') && 'windows' || 'macos') }}, shard ${{ matrix.shardIndex }})
+    env:
+      OS_NAME: ${{ contains(matrix.os, 'ubuntu') && 'ubuntu' || (contains(matrix.os, 'windows') && 'windows' || 'macos') }}
+
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/download-artifact@v4
         name: prepared-wasm
 
-      - name: Copy prepared wasm
+      - name: Copy prepared Wasm
         run: |
           ls -R prepared-wasm
           cp prepared-wasm/kcl_wasm_lib_bg.wasm public
@@ -277,18 +371,15 @@ jobs:
         id: deps-install
         run: npm install
 
-      - name: Cache Playwright Browsers
+      - name: Download browser cache
         uses: actions/cache@v4
         with:
           path: |
             ~/.cache/ms-playwright/
           key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
 
-      - name: Install Playwright Browsers
+      - name: Install browsers
         run: npm run playwright install --with-deps
-
-      - name: Build web
-        run: npm run tronb:vite:dev
 
       - name: Start Vector
         if: ${{ !contains(matrix.os, 'windows') }}
@@ -297,6 +388,9 @@ jobs:
           GH_ACTIONS_AXIOM_TOKEN: ${{ secrets.GH_ACTIONS_AXIOM_TOKEN }}
           OS_NAME: ${{ env.OS_NAME }}
 
+      - name: Build app
+        run: npm run tronb:vite:dev
+
       - uses: actions/download-artifact@v4
         if: ${{ !cancelled() && (success() || failure()) }}
         continue-on-error: true
@@ -304,7 +398,7 @@ jobs:
           name: test-results-${{ env.OS_NAME }}-${{ matrix.shardIndex }}-${{ github.sha }}
           path: test-results/
 
-      - name: Run playwright/electron flow (with retries)
+      - name: npm run test:e2e:desktop
         id: retry
         if:  ${{ !cancelled() && steps.deps-install.outcome == 'success' }}
         uses: nick-fields/retry@v3.0.2
@@ -315,7 +409,7 @@ jobs:
           max_attempts: 9
         env:
           FAIL_ON_CONSOLE_ERRORS: true
-          token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
+          VITE_KITTYCAD_API_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
           TAB_API_URL: ${{ secrets.TAB_API_URL }}
           TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
           CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
@@ -323,19 +417,21 @@ jobs:
           CI_SUITE: e2e:desktop
           TARGET: desktop
 
-      - uses: actions/upload-artifact@v4
+      - name: Upload test report
+        uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: test-results-${{ env.OS_NAME }}-${{ matrix.shardIndex }}-${{ github.sha }}
+          name: test-results-desktop-${{ env.OS_NAME }}-${{ matrix.shardIndex }}-${{ github.sha }}
           path: test-results/
           include-hidden-files: true
           retention-days: 30
           overwrite: true
 
-      - uses: actions/upload-artifact@v4
+      - name: Upload playwright report
+        uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: playwright-report-${{ env.OS_NAME }}-${{ matrix.shardIndex }}-${{ github.sha }}
+          name: playwright-report-desktop-${{ env.OS_NAME }}-${{ matrix.shardIndex }}-${{ github.sha }}
           path: playwright-report/
           include-hidden-files: true
           retention-days: 30

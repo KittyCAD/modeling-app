@@ -288,7 +288,7 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
     // error text on hover
     await page.hover('.cm-lint-marker-info')
     await expect(
-      page.getByText('Identifiers must be lowerCamelCase').first()
+      page.getByText('Identifiers should be lowerCamelCase').first()
     ).toBeVisible()
 
     await page.locator('#code-pane button:first-child').click()
@@ -314,7 +314,7 @@ sketch_001 = startSketchOn(XY)
     // error text on hover
     await page.hover('.cm-lint-marker-info')
     await expect(
-      page.getByText('Identifiers must be lowerCamelCase').first()
+      page.getByText('Identifiers should be lowerCamelCase').first()
     ).toBeVisible()
   })
 
@@ -511,7 +511,7 @@ sketch_001 = startSketchOn(XY)
     // error text on hover
     await page.hover('.cm-lint-marker-info')
     await expect(
-      page.getByText('Identifiers must be lowerCamelCase').first()
+      page.getByText('Identifiers should be lowerCamelCase').first()
     ).toBeVisible()
 
     // focus the editor
@@ -539,7 +539,7 @@ sketch_001 = startSketchOn(XY)
     // error text on hover
     await page.hover('.cm-lint-marker-info')
     await expect(
-      page.getByText('Identifiers must be lowerCamelCase').first()
+      page.getByText('Identifiers should be lowerCamelCase').first()
     ).toBeVisible()
   })
 
@@ -573,7 +573,7 @@ sketch_001 = startSketchOn(XY)
 
     await expect(page.locator('.cm-lint-marker-info')).toBeVisible()
 
-    // error in guter
+    // error in gutter
     await expect(page.locator('.cm-lint-marker-info').first()).toBeVisible()
 
     // error text on hover
@@ -681,7 +681,7 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
     // error text on hover
     await page.hover('.cm-lint-marker-info')
     await expect(
-      page.getByText('Identifiers must be lowerCamelCase').first()
+      page.getByText('Identifiers should be lowerCamelCase').first()
     ).toBeVisible()
 
     // select the line that's causing the error and delete it
@@ -966,8 +966,6 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
 
       await page.keyboard.press('Tab')
       await page.waitForTimeout(100)
-      await page.keyboard.press('Tab')
-      await page.waitForTimeout(100)
       await page.keyboard.type('12')
       await page.waitForTimeout(100)
       await page.keyboard.press('Tab')
@@ -984,8 +982,6 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
       await page.keyboard.press('ArrowDown')
       await page.keyboard.press('Enter')
       // finish line with comment
-      await page.keyboard.press('Tab')
-      await page.waitForTimeout(100)
       await page.keyboard.type('5')
       await page.waitForTimeout(100)
       await page.keyboard.press('Tab')
@@ -1001,8 +997,8 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
       await expect(page.locator('.cm-content')).toHaveText(
         `@settings(defaultLengthUnit = in)
 sketch001 = startSketchOn(XZ)
-        |> startProfile(%, at = [0, 12])
-        |> xLine(%, length = 5) // lin`.replaceAll('\n', '')
+    |> startProfile(at = [0, 12])
+    |> xLine(length = 5) // lin`.replaceAll('\n', '')
       )
 
       // expect there to be no KCL errors
@@ -1041,8 +1037,6 @@ sketch001 = startSketchOn(XZ)
       await page.keyboard.press('Tab') // accepting the auto complete, not a new line
 
       await page.keyboard.press('Tab')
-      await page.waitForTimeout(100)
-      await page.keyboard.press('Tab')
       await page.keyboard.type('12')
       await page.waitForTimeout(100)
       await page.keyboard.press('Tab')
@@ -1057,7 +1051,6 @@ sketch001 = startSketchOn(XZ)
       await page.waitForTimeout(100)
       // press arrow down then tab to accept xLine
       await page.keyboard.press('ArrowDown')
-      await page.keyboard.press('Tab')
       // finish line with comment
       await page.keyboard.press('Tab')
       await page.waitForTimeout(100)
@@ -1076,8 +1069,8 @@ sketch001 = startSketchOn(XZ)
       await expect(page.locator('.cm-content')).toHaveText(
         `@settings(defaultLengthUnit = in)
 sketch001 = startSketchOn(XZ)
-        |> startProfile(%, at = [0, 12])
-        |> xLine(%, length = 5) // lin`.replaceAll('\n', '')
+    |> startProfile(at = [0, 12])
+    |> xLine(length = 5) // lin`.replaceAll('\n', '')
       )
     })
   })
@@ -1337,7 +1330,7 @@ sketch001 = startSketchOn(XZ)
 
   test(
     `Can import a local OBJ file`,
-    { tag: '@electron' },
+    { tag: '@desktop' },
     async ({ page, context }, testInfo) => {
       await context.folderSetupFn(async (dir) => {
         const bracketDir = join(dir, 'cube')
@@ -1623,5 +1616,34 @@ sketch001 = startSketchOn(XZ)
 
     // Verify error is still visible
     await expect(page.locator('.cm-lint-marker-error')).toHaveCount(1)
+  })
+
+  test('Core dump hotkey', async ({ page, scene, cmdBar, homePage }) => {
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `sketch001 = startSketchOn(XZ)
+    profile001 = circle(sketch001, center = [-100.0, -100.0], radius = 50.0)
+`
+      )
+    })
+
+    const viewportSize = { width: 1200, height: 800 }
+    await page.setBodyDimensions(viewportSize)
+
+    await homePage.goToModelingScene()
+
+    await scene.connectionEstablished()
+    await scene.settled(cmdBar)
+
+    const modifier = process.platform === 'darwin' ? 'Meta' : 'Control'
+
+    await page.keyboard.press(`${modifier}+Shift+.`)
+
+    const toast1 = page.getByText('Starting core dump...')
+    await expect(toast1).toBeVisible()
+
+    const toast2 = page.getByText('Core dump completed')
+    await expect(toast2).toBeVisible()
   })
 })

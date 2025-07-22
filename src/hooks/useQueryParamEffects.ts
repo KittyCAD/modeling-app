@@ -4,17 +4,19 @@ import { useSearchParams } from 'react-router-dom'
 import { base64ToString } from '@src/lib/base64'
 import type { ProjectsCommandSchema } from '@src/lib/commandBarConfigs/projectsCommandConfig'
 import {
+  ASK_TO_OPEN_QUERY_PARAM,
   CMD_GROUP_QUERY_PARAM,
   CMD_NAME_QUERY_PARAM,
   CREATE_FILE_URL_PARAM,
+  FILE_NAME_QUERY_PARAM,
+  CODE_QUERY_PARAM,
   DEFAULT_FILE_NAME,
   POOL_QUERY_PARAM,
   PROJECT_ENTRYPOINT,
 } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import type { FileLinkParams } from '@src/lib/links'
-import { commandBarActor, useAuthState } from '@src/lib/singletons'
-import { showCodeReplaceToast } from '@src/components/CodeReplaceToast'
+import { codeManager, commandBarActor, useAuthState } from '@src/lib/singletons'
 import { findKclSample } from '@src/lib/kclSamples'
 import { webSafePathSplit } from '@src/lib/paths'
 
@@ -36,8 +38,15 @@ export type CreateFileSchemaMethodOptional = Omit<
 export function useQueryParamEffects() {
   const authState = useAuthState()
   const [searchParams, setSearchParams] = useSearchParams()
-  const shouldInvokeCreateFile = searchParams.has(CREATE_FILE_URL_PARAM)
+  const hasAskToOpen = !isDesktop() && searchParams.has(ASK_TO_OPEN_QUERY_PARAM)
+  // Let hasAskToOpen be handled by the OpenInDesktopAppHandler component first to avoid racing with it,
+  // only deal with other params after user decided to open in desktop or web.
+  // Without this the "Zoom to fit to shared model on web" test fails, although manually testing works due
+  // to different timings.
+  const shouldInvokeCreateFile =
+    !hasAskToOpen && searchParams.has(CREATE_FILE_URL_PARAM)
   const shouldInvokeGenericCmd =
+    !hasAskToOpen &&
     searchParams.has(CMD_NAME_QUERY_PARAM) &&
     searchParams.has(CMD_GROUP_QUERY_PARAM)
 
@@ -45,7 +54,11 @@ export function useQueryParamEffects() {
    * Watches for legacy `?create-file` hook, which share links currently use.
    */
   useEffect(() => {
-    if (shouldInvokeCreateFile && authState.matches('loggedIn')) {
+    if (
+      shouldInvokeCreateFile &&
+      authState.matches('loggedIn') &&
+      isDesktop()
+    ) {
       const argDefaultValues = buildCreateFileCommandArgs(searchParams)
       commandBarActor.send({
         type: 'Find and select command',
@@ -56,8 +69,10 @@ export function useQueryParamEffects() {
         },
       })
 
-      // Delete the query param after the command has been invoked.
+      // Delete the query params after the command has been invoked.
       searchParams.delete(CREATE_FILE_URL_PARAM)
+      searchParams.delete(FILE_NAME_QUERY_PARAM)
+      searchParams.delete(CODE_QUERY_PARAM)
       setSearchParams(searchParams)
     }
   }, [shouldInvokeCreateFile, setSearchParams, authState])
@@ -136,7 +151,7 @@ export function useQueryParamEffects() {
         return response.text()
       })
       .then((code) => {
-        showCodeReplaceToast(code)
+        codeManager.goIntoTemporaryWorkspaceModeWithCode(code)
       })
       .catch((error) => {
         console.error('Error loading KCL sample:', error)

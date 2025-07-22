@@ -17,6 +17,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
           "tag": {
             "commentStart": 220,
             "end": 231,
+            "moduleId": 0,
             "start": 220,
             "type": "TagDeclarator",
             "value": "bottomFace"
@@ -37,6 +38,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
           "tag": {
             "commentStart": 309,
             "end": 316,
+            "moduleId": 0,
             "start": 309,
             "type": "TagDeclarator",
             "value": "tag001"
@@ -74,6 +76,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             "tag": {
               "commentStart": 220,
               "end": 231,
+              "moduleId": 0,
               "start": 220,
               "type": "TagDeclarator",
               "value": "bottomFace"
@@ -118,13 +121,14 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             "tag": {
               "commentStart": 309,
               "end": 316,
+              "moduleId": 0,
               "start": 309,
               "type": "TagDeclarator",
               "value": "tag001"
             },
             "to": [
               0.0,
-              39.9785
+              39.978459489299915
             ],
             "type": "ToPoint",
             "units": {
@@ -138,7 +142,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             },
             "from": [
               0.0,
-              39.9785
+              39.978459489299915
             ],
             "tag": null,
             "to": [
@@ -195,6 +199,14 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
+            "units": {
+              "type": "Unknown"
+            }
+          },
+          "zAxis": {
+            "x": 1.0,
+            "y": 0.0,
+            "z": 0.0,
             "units": {
               "type": "Unknown"
             }
@@ -411,6 +423,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
                 "tag": {
                   "commentStart": 220,
                   "end": 231,
+                  "moduleId": 0,
                   "start": 220,
                   "type": "TagDeclarator",
                   "value": "bottomFace"
@@ -431,6 +444,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
                 "tag": {
                   "commentStart": 309,
                   "end": 316,
+                  "moduleId": 0,
                   "start": 309,
                   "type": "TagDeclarator",
                   "value": "tag001"
@@ -468,6 +482,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
                   "tag": {
                     "commentStart": 220,
                     "end": 231,
+                    "moduleId": 0,
                     "start": 220,
                     "type": "TagDeclarator",
                     "value": "bottomFace"
@@ -512,13 +527,14 @@ description: Variables in memory after executing sketch_on_face_union.kcl
                   "tag": {
                     "commentStart": 309,
                     "end": 316,
+                    "moduleId": 0,
                     "start": 309,
                     "type": "TagDeclarator",
                     "value": "tag001"
                   },
                   "to": [
                     0.0,
-                    39.9785
+                    39.978459489299915
                   ],
                   "type": "ToPoint",
                   "units": {
@@ -532,7 +548,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
                   },
                   "from": [
                     0.0,
-                    39.9785
+                    39.978459489299915
                   ],
                   "tag": null,
                   "to": [
@@ -589,6 +605,14 @@ description: Variables in memory after executing sketch_on_face_union.kcl
                   "x": 0.0,
                   "y": 0.0,
                   "z": 1.0,
+                  "units": {
+                    "type": "Unknown"
+                  }
+                },
+                "zAxis": {
+                  "x": 1.0,
+                  "y": 0.0,
+                  "z": 0.0,
                   "units": {
                     "type": "Unknown"
                   }
@@ -707,6 +731,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             "tag": {
               "commentStart": 220,
               "end": 231,
+              "moduleId": 0,
               "start": 220,
               "type": "TagDeclarator",
               "value": "bottomFace"
@@ -727,6 +752,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             "tag": {
               "commentStart": 309,
               "end": 316,
+              "moduleId": 0,
               "start": 309,
               "type": "TagDeclarator",
               "value": "tag001"
@@ -764,6 +790,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
               "tag": {
                 "commentStart": 220,
                 "end": 231,
+                "moduleId": 0,
                 "start": 220,
                 "type": "TagDeclarator",
                 "value": "bottomFace"
@@ -808,13 +835,14 @@ description: Variables in memory after executing sketch_on_face_union.kcl
               "tag": {
                 "commentStart": 309,
                 "end": 316,
+                "moduleId": 0,
                 "start": 309,
                 "type": "TagDeclarator",
                 "value": "tag001"
               },
               "to": [
                 0.0,
-                39.9785
+                39.978459489299915
               ],
               "type": "ToPoint",
               "units": {
@@ -828,7 +856,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
               },
               "from": [
                 0.0,
-                39.9785
+                39.978459489299915
               ],
               "tag": null,
               "to": [
@@ -885,6 +913,14 @@ description: Variables in memory after executing sketch_on_face_union.kcl
               "x": 0.0,
               "y": 0.0,
               "z": 1.0,
+              "units": {
+                "type": "Unknown"
+              }
+            },
+            "zAxis": {
+              "x": 1.0,
+              "y": 0.0,
+              "z": 0.0,
               "units": {
                 "type": "Unknown"
               }
@@ -1053,6 +1089,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
               "tag": {
                 "commentStart": 220,
                 "end": 231,
+                "moduleId": 0,
                 "start": 220,
                 "type": "TagDeclarator",
                 "value": "bottomFace"
@@ -1073,6 +1110,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
               "tag": {
                 "commentStart": 309,
                 "end": 316,
+                "moduleId": 0,
                 "start": 309,
                 "type": "TagDeclarator",
                 "value": "tag001"
@@ -1110,6 +1148,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
                 "tag": {
                   "commentStart": 220,
                   "end": 231,
+                  "moduleId": 0,
                   "start": 220,
                   "type": "TagDeclarator",
                   "value": "bottomFace"
@@ -1154,13 +1193,14 @@ description: Variables in memory after executing sketch_on_face_union.kcl
                 "tag": {
                   "commentStart": 309,
                   "end": 316,
+                  "moduleId": 0,
                   "start": 309,
                   "type": "TagDeclarator",
                   "value": "tag001"
                 },
                 "to": [
                   0.0,
-                  39.9785
+                  39.978459489299915
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -1174,7 +1214,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
                 },
                 "from": [
                   0.0,
-                  39.9785
+                  39.978459489299915
                 ],
                 "tag": null,
                 "to": [
@@ -1231,6 +1271,14 @@ description: Variables in memory after executing sketch_on_face_union.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
+                "units": {
+                  "type": "Unknown"
+                }
+              },
+              "zAxis": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0,
                 "units": {
                   "type": "Unknown"
                 }
@@ -1321,6 +1369,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
           "tag": {
             "commentStart": 220,
             "end": 231,
+            "moduleId": 0,
             "start": 220,
             "type": "TagDeclarator",
             "value": "bottomFace"
@@ -1341,6 +1390,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
           "tag": {
             "commentStart": 309,
             "end": 316,
+            "moduleId": 0,
             "start": 309,
             "type": "TagDeclarator",
             "value": "tag001"
@@ -1378,6 +1428,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             "tag": {
               "commentStart": 220,
               "end": 231,
+              "moduleId": 0,
               "start": 220,
               "type": "TagDeclarator",
               "value": "bottomFace"
@@ -1422,13 +1473,14 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             "tag": {
               "commentStart": 309,
               "end": 316,
+              "moduleId": 0,
               "start": 309,
               "type": "TagDeclarator",
               "value": "tag001"
             },
             "to": [
               0.0,
-              39.9785
+              39.978459489299915
             ],
             "type": "ToPoint",
             "units": {
@@ -1442,7 +1494,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             },
             "from": [
               0.0,
-              39.9785
+              39.978459489299915
             ],
             "tag": null,
             "to": [
@@ -1499,6 +1551,14 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
+            "units": {
+              "type": "Unknown"
+            }
+          },
+          "zAxis": {
+            "x": 1.0,
+            "y": 0.0,
+            "z": 0.0,
             "units": {
               "type": "Unknown"
             }
@@ -1565,6 +1625,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
           "tag": {
             "commentStart": 220,
             "end": 231,
+            "moduleId": 0,
             "start": 220,
             "type": "TagDeclarator",
             "value": "bottomFace"
@@ -1609,13 +1670,14 @@ description: Variables in memory after executing sketch_on_face_union.kcl
           "tag": {
             "commentStart": 309,
             "end": 316,
+            "moduleId": 0,
             "start": 309,
             "type": "TagDeclarator",
             "value": "tag001"
           },
           "to": [
             0.0,
-            39.9785
+            39.978459489299915
           ],
           "type": "ToPoint",
           "units": {
@@ -1629,7 +1691,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
           },
           "from": [
             0.0,
-            39.9785
+            39.978459489299915
           ],
           "tag": null,
           "to": [
@@ -1686,6 +1748,14 @@ description: Variables in memory after executing sketch_on_face_union.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
+          "units": {
+            "type": "Unknown"
+          }
+        },
+        "zAxis": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0,
           "units": {
             "type": "Unknown"
           }
@@ -1763,7 +1833,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
           "tag": null,
           "to": [
             2.0,
-            35.9785
+            35.978459489299915
           ],
           "type": "ToPoint",
           "units": {
@@ -1777,12 +1847,12 @@ description: Variables in memory after executing sketch_on_face_union.kcl
           },
           "from": [
             2.0,
-            35.9785
+            35.978459489299915
           ],
           "tag": null,
           "to": [
             56.0,
-            10.7978
+            10.797845948929993
           ],
           "type": "ToPoint",
           "units": {
@@ -1796,7 +1866,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
           },
           "from": [
             56.0,
-            10.7978
+            10.797845948929993
           ],
           "tag": null,
           "to": [
@@ -1834,6 +1904,14 @@ description: Variables in memory after executing sketch_on_face_union.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
+          "units": {
+            "type": "Unknown"
+          }
+        },
+        "zAxis": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0,
           "units": {
             "type": "Unknown"
           }
@@ -1901,7 +1979,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
           "tag": null,
           "to": [
             -2.0,
-            35.9785
+            35.978459489299915
           ],
           "type": "ToPoint",
           "units": {
@@ -1915,12 +1993,12 @@ description: Variables in memory after executing sketch_on_face_union.kcl
           },
           "from": [
             -2.0,
-            35.9785
+            35.978459489299915
           ],
           "tag": null,
           "to": [
             -56.0,
-            10.7978
+            10.797845948930004
           ],
           "type": "ToPoint",
           "units": {
@@ -1934,7 +2012,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
           },
           "from": [
             -56.0,
-            10.7978
+            10.797845948930004
           ],
           "tag": null,
           "to": [
@@ -1972,6 +2050,14 @@ description: Variables in memory after executing sketch_on_face_union.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
+          "units": {
+            "type": "Unknown"
+          }
+        },
+        "zAxis": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0,
           "units": {
             "type": "Unknown"
           }
@@ -2020,6 +2106,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
           "tag": {
             "commentStart": 220,
             "end": 231,
+            "moduleId": 0,
             "start": 220,
             "type": "TagDeclarator",
             "value": "bottomFace"
@@ -2064,13 +2151,14 @@ description: Variables in memory after executing sketch_on_face_union.kcl
           "tag": {
             "commentStart": 309,
             "end": 316,
+            "moduleId": 0,
             "start": 309,
             "type": "TagDeclarator",
             "value": "tag001"
           },
           "to": [
             0.0,
-            39.9785
+            39.978459489299915
           ],
           "type": "ToPoint",
           "units": {
@@ -2084,7 +2172,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
           },
           "from": [
             0.0,
-            39.9785
+            39.978459489299915
           ],
           "tag": null,
           "to": [
@@ -2109,6 +2197,84 @@ description: Variables in memory after executing sketch_on_face_union.kcl
           "to": [
             60.0,
             0.0
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Inches"
+          }
+        }
+      ],
+      "innerPaths": [
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            56.0,
+            4.0
+          ],
+          "tag": null,
+          "to": [
+            2.0,
+            4.0
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Inches"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            2.0,
+            4.0
+          ],
+          "tag": null,
+          "to": [
+            2.0,
+            35.978459489299915
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Inches"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            2.0,
+            35.978459489299915
+          ],
+          "tag": null,
+          "to": [
+            56.0,
+            10.797845948929993
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Inches"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            56.0,
+            10.797845948929993
+          ],
+          "tag": null,
+          "to": [
+            56.0,
+            4.0
           ],
           "type": "ToPoint",
           "units": {
@@ -2141,6 +2307,14 @@ description: Variables in memory after executing sketch_on_face_union.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
+          "units": {
+            "type": "Unknown"
+          }
+        },
+        "zAxis": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0,
           "units": {
             "type": "Unknown"
           }
@@ -2232,7 +2406,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             ],
             "tag": null,
             "to": [
-              22.6506,
+              22.65063509461097,
               26.5
             ],
             "type": "ToPoint",
@@ -2246,13 +2420,13 @@ description: Variables in memory after executing sketch_on_face_union.kcl
               "sourceRange": []
             },
             "from": [
-              22.6506,
+              22.65063509461097,
               26.5
             ],
             "tag": null,
             "to": [
-              27.1822,
-              24.3869
+              27.18217402979422,
+              24.386908691296505
             ],
             "type": "ToPoint",
             "units": {
@@ -2265,13 +2439,13 @@ description: Variables in memory after executing sketch_on_face_union.kcl
               "sourceRange": []
             },
             "from": [
-              27.1822,
-              24.3869
+              27.18217402979422,
+              24.386908691296505
             ],
             "tag": null,
             "to": [
               1.0,
-              9.2706
+              9.270623467225178
             ],
             "type": "ToPoint",
             "units": {
@@ -2285,7 +2459,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             },
             "from": [
               1.0,
-              9.2706
+              9.270623467225178
             ],
             "tag": null,
             "to": [
@@ -2323,6 +2497,14 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
+            "units": {
+              "type": "Unknown"
+            }
+          },
+          "zAxis": {
+            "x": 1.0,
+            "y": 0.0,
+            "z": 0.0,
             "units": {
               "type": "Unknown"
             }
@@ -2412,7 +2594,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             ],
             "tag": null,
             "to": [
-              -22.6506,
+              -22.65063509461097,
               26.5
             ],
             "type": "ToPoint",
@@ -2426,13 +2608,13 @@ description: Variables in memory after executing sketch_on_face_union.kcl
               "sourceRange": []
             },
             "from": [
-              -22.6506,
+              -22.65063509461097,
               26.5
             ],
             "tag": null,
             "to": [
-              -27.1822,
-              24.3869
+              -27.18217402979422,
+              24.386908691296505
             ],
             "type": "ToPoint",
             "units": {
@@ -2445,13 +2627,13 @@ description: Variables in memory after executing sketch_on_face_union.kcl
               "sourceRange": []
             },
             "from": [
-              -27.1822,
-              24.3869
+              -27.18217402979422,
+              24.386908691296505
             ],
             "tag": null,
             "to": [
               -1.0,
-              9.2706
+              9.270623467225185
             ],
             "type": "ToPoint",
             "units": {
@@ -2465,7 +2647,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             },
             "from": [
               -1.0,
-              9.2706
+              9.270623467225185
             ],
             "tag": null,
             "to": [
@@ -2503,6 +2685,14 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
+            "units": {
+              "type": "Unknown"
+            }
+          },
+          "zAxis": {
+            "x": 1.0,
+            "y": 0.0,
+            "z": 0.0,
             "units": {
               "type": "Unknown"
             }
@@ -2570,6 +2760,14 @@ description: Variables in memory after executing sketch_on_face_union.kcl
         "units": {
           "type": "Unknown"
         }
+      },
+      "zAxis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": {
+          "type": "Unknown"
+        }
       }
     }
   },
@@ -2599,6 +2797,14 @@ description: Variables in memory after executing sketch_on_face_union.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
+        "units": {
+          "type": "Unknown"
+        }
+      },
+      "zAxis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0,
         "units": {
           "type": "Unknown"
         }

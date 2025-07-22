@@ -7,11 +7,11 @@ if [[ ! -f "test-results/.last-run.json" ]]; then
     # If no last run artifact, than run Playwright normally
     echo "run playwright normally"
     if [[ "$3" == *ubuntu* ]]; then
-        xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- npm run test:playwright:electron -- --shard=$1/$2 || true
+        xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- npm run test:e2e:desktop -- --shard=$1/$2 || true
     elif [[ "$3" == *windows* ]]; then
-        npm run test:playwright:electron -- --grep=@windows --shard=$1/$2 || true
+        npm run test:e2e:desktop -- --grep=@windows --shard=$1/$2 || true
     elif [[ "$3" == *macos* ]]; then
-        npm run test:playwright:electron -- --grep=@macos --shard=$1/$2 || true
+        npm run test:e2e:desktop -- --grep=@macos --shard=$1/$2 || true
     else
         echo "Do not run Playwright. Unable to detect os runtime."
         exit 1
@@ -31,11 +31,11 @@ while [[ $retry -le $max_retries ]]; do
             echo "retried=true" >>$GITHUB_OUTPUT
             echo "run playwright with last failed tests and retry $retry"
             if [[ "$3" == *ubuntu* ]]; then
-                xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- npm run test:playwright:electron -- --last-failed || true
+                xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- npm run test:e2e:desktop -- --last-failed || true
             elif [[ "$3" == *windows* ]]; then
-                npm run test:playwright:electron -- --grep=@windows --last-failed || true
+                npm run test:e2e:desktop -- --grep=@windows --last-failed || true
             elif [[ "$3" == *macos* ]]; then
-                npm run test:playwright:electron -- --grep=@macos --last-failed || true
+                npm run test:e2e:desktop -- --grep=@macos --last-failed || true
             else
                 echo "Do not run playwright. Unable to detect os runtime."
                 exit 1

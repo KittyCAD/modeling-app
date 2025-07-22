@@ -1,6 +1,7 @@
 import path from 'path'
 import { bracket } from '@e2e/playwright/fixtures/bracket'
 import type { Page } from '@playwright/test'
+import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
 import { reportRejection } from '@src/lib/trap'
 import * as fsp from 'fs/promises'
 
@@ -279,6 +280,7 @@ extrude001 = extrude(sketch001, length = 50)
     // This bug happens when there is a diagnostic in the editor and you try to
     // edit text below it.
     // Or delete a huge chunk of text and then try to edit below it.
+    await page.keyboard.press('ControlOrMeta+ArrowDown')
     await page.keyboard.press('End')
     await page.keyboard.down('Shift')
     await page.keyboard.press('ArrowUp')
@@ -421,10 +423,7 @@ extrude002 = extrude(profile002, length = 150)
       await page.keyboard.press('Enter')
 
       // Click the checkbox
-      const submitButton = page.getByText('Confirm Export')
-      await expect(submitButton).toBeVisible()
-
-      await page.keyboard.press('Enter')
+      await cmdBar.submit()
 
       // Find the toast.
       // Look out for the toast message
@@ -461,8 +460,7 @@ extrude002 = extrude(profile002, length = 150)
       await page.keyboard.press('Enter')
 
       // Click the checkbox
-      await expect(submitButton).toBeVisible()
-      await page.keyboard.press('Enter')
+      await cmdBar.submit()
 
       // Find the toast.
       // Look out for the toast message
@@ -482,6 +480,7 @@ extrude002 = extrude(profile002, length = 150)
   test('ensure you CAN export while an export is already going', async ({
     page,
     homePage,
+    cmdBar,
   }) => {
     const u = await getUtils(page)
     await test.step('Set up the code and durations', async () => {
@@ -516,11 +515,11 @@ extrude002 = extrude(profile002, length = 150)
     const successToastMessage = page.getByText(`Exported successfully`)
 
     await test.step('second export', async () => {
-      await clickExportButton(page)
+      await clickExportButton(page, cmdBar)
 
       await expect(exportingToastMessage).toBeVisible()
 
-      await clickExportButton(page)
+      await clickExportButton(page, cmdBar)
 
       await test.step('The first export still succeeds', async () => {
         await Promise.all([
@@ -537,7 +536,7 @@ extrude002 = extrude(profile002, length = 150)
 
     await test.step('Successful, unblocked export', async () => {
       // Try exporting again.
-      await clickExportButton(page)
+      await clickExportButton(page, cmdBar)
 
       // Find the toast.
       // Look out for the toast message
@@ -558,7 +557,7 @@ extrude002 = extrude(profile002, length = 150)
 
   test(
     `Network health indicator only appears in modeling view`,
-    { tag: '@electron' },
+    { tag: '@desktop' },
     async ({ context, page }) => {
       await context.folderSetupFn(async (dir) => {
         const bracketDir = path.join(dir, 'bracket')
@@ -575,7 +574,7 @@ extrude002 = extrude(profile002, length = 150)
         name: 'Projects',
       })
       const projectLink = page.getByRole('link', { name: 'bracket' })
-      const networkHealthIndicator = page.getByTestId('network-toggle')
+      const networkHealthIndicator = page.getByTestId(/network-toggle/)
 
       await test.step('Check the home page', async () => {
         await expect(projectsHeading).toBeVisible()
@@ -880,7 +879,7 @@ s2 = startSketchOn(XY)
   })
 })
 
-async function clickExportButton(page: Page) {
+async function clickExportButton(page: Page, cmdBar: CmdBarFixture) {
   await test.step('Running export flow', async () => {
     // export the model
     const exportButton = page.getByTestId('export-pane-button')
@@ -896,9 +895,6 @@ async function clickExportButton(page: Page) {
     await page.keyboard.press('Enter')
 
     // Click the checkbox
-    const submitButton = page.getByText('Confirm Export')
-    await expect(submitButton).toBeVisible()
-
-    await page.keyboard.press('Enter')
+    await cmdBar.submit()
   })
 }

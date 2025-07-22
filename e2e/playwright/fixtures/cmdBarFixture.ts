@@ -118,15 +118,11 @@ export class CmdBarFixture {
       return
     }
 
-    const arrowButton = this.page.getByRole('button', {
-      name: 'arrow right Continue',
-    })
+    const arrowButton = this.page.getByTestId('command-bar-continue')
     if (await arrowButton.isVisible()) {
-      await arrowButton.click()
+      await this.continue()
     } else {
-      await this.page
-        .getByRole('button', { name: 'checkmark Submit command' })
-        .click()
+      await this.submit()
     }
   }
 
@@ -164,12 +160,20 @@ export class CmdBarFixture {
     await expect(this.cmdBarElement).not.toBeVisible()
   }
 
+  get clearNonRequiredButton() {
+    return this.page.getByTestId('command-bar-clear-non-required-button')
+  }
+
   get cmdSearchInput() {
     return this.page.getByTestId('cmd-bar-search')
   }
 
   get argumentInput() {
     return this.page.getByTestId('cmd-bar-arg-value')
+  }
+
+  get variableCheckbox() {
+    return this.page.getByTestId('cmd-bar-variable-checkbox')
   }
 
   get cmdOptions() {
@@ -188,10 +192,17 @@ export class CmdBarFixture {
   }
 
   /**
+   * Select an optional argument from the command bar during review
+   */
+  clickOptionalArgument = async (argName: string) => {
+    await this.page.getByTestId(`cmd-bar-add-optional-arg-${argName}`).click()
+  }
+
+  /**
    * Clicks the Create new variable button for kcl input
    */
   createNewVariable = async () => {
-    await this.page.getByRole('button', { name: 'Create new variable' }).click()
+    await this.variableCheckbox.click()
   }
 
   /**

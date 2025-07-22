@@ -16,10 +16,10 @@ use winnow::{
 };
 
 use crate::{
+    CompilationError, ModuleId,
     errors::KclError,
     parsing::ast::types::{ItemVisibility, VariableKind},
     source_range::SourceRange,
-    CompilationError, ModuleId,
 };
 
 mod tokeniser;
@@ -251,6 +251,11 @@ impl<'a> Stream for TokenSlice<'a> {
         Some(token)
     }
 
+    /// Split off the next token from the input
+    fn peek_token(&self) -> Option<Self::Token> {
+        Some(self.first()?.clone())
+    }
+
     fn offset_for<P>(&self, predicate: P) -> Option<usize>
     where
         P: Fn(Self::Token) -> bool,
@@ -276,6 +281,17 @@ impl<'a> Stream for TokenSlice<'a> {
         };
         self.start += offset;
         next
+    }
+
+    /// Split off a slice of tokens from the input
+    fn peek_slice(&self, offset: usize) -> Self::Slice {
+        assert!(self.start + offset <= self.end);
+
+        TokenSlice {
+            stream: self.stream,
+            start: self.start,
+            end: self.start + offset,
+        }
     }
 
     fn checkpoint(&self) -> Self::Checkpoint {
@@ -581,7 +597,7 @@ impl From<ParseError<Input<'_>, winnow::error::ContextError>> for KclError {
             // This is an offset, not an index, and may point to
             // the end of input (input.len()) on eof errors.
 
-            return KclError::Lexical(crate::errors::KclErrorDetails::new(
+            return KclError::new_lexical(crate::errors::KclErrorDetails::new(
                 "unexpected EOF while parsing".to_owned(),
                 vec![SourceRange::new(offset, offset, module_id)],
             ));
@@ -592,8 +608,8 @@ impl From<ParseError<Input<'_>, winnow::error::ContextError>> for KclError {
         let bad_token = &input[offset];
         // TODO: Add the Winnow parser context to the error.
         // See https://github.com/KittyCAD/modeling-app/issues/784
-        KclError::Lexical(crate::errors::KclErrorDetails::new(
-            format!("found unknown token '{}'", bad_token),
+        KclError::new_lexical(crate::errors::KclErrorDetails::new(
+            format!("found unknown token '{bad_token}'"),
             vec![SourceRange::new(offset, offset + 1, module_id)],
         ))
     }

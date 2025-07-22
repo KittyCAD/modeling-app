@@ -12,6 +12,8 @@ import usePlatform from '@src/hooks/usePlatform'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
 import { authActor } from '@src/lib/singletons'
+import { reportRejection } from '@src/lib/trap'
+import { withSiteBaseURL } from '@src/lib/withBaseURL'
 
 type User = Models['User_type']
 
@@ -61,7 +63,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
         {
           id: 'account',
           Element: 'externalLink',
-          to: 'https://zoo.dev/account',
+          to: withSiteBaseURL('/account'),
           children: (
             <>
               <span className="flex-1">Manage account</span>
@@ -129,6 +131,15 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
             </>
           ),
         },
+        {
+          id: 'check-for-updates',
+          Element: 'button',
+          hide: !isDesktop(),
+          onClick: () => {
+            window.electron.appCheckForUpdates().catch(reportRejection)
+          },
+          children: <span className="flex-1">Check for updates</span>,
+        },
         'break',
         {
           id: 'sign-out',
@@ -168,9 +179,9 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
   }
 
   return (
-    <Popover className="relative">
+    <Popover className="relative grid">
       <Popover.Button
-        className="relative group border-0 w-fit min-w-max p-0 rounded-l-full focus-visible:outline-appForeground"
+        className="m-0 relative group border-0 w-fit min-w-max p-0 rounded-l-full rounded-r focus-visible:outline-appForeground"
         data-testid="user-sidebar-toggle"
       >
         <div className="flex items-center">

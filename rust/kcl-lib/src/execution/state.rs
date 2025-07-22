@@ -2,8 +2,6 @@ use std::sync::Arc;
 
 use anyhow::Result;
 use indexmap::IndexMap;
-#[cfg(feature = "artifact-graph")]
-use kittycad_modeling_cmds::websocket::WebSocketResponse;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
@@ -11,20 +9,19 @@ use uuid::Uuid;
 #[cfg(feature = "artifact-graph")]
 use crate::execution::{Artifact, ArtifactCommand, ArtifactGraph, ArtifactId};
 use crate::{
+    CompilationError, EngineManager, ExecutorContext, KclErrorWithOutputs,
     errors::{KclError, KclErrorDetails, Severity},
+    exec::DefaultPlanes,
     execution::{
-        annotations,
+        EnvironmentRef, ExecOutcome, ExecutorSettings, KclValue, UnitAngle, UnitLen, annotations,
         cad_op::Operation,
         id_generator::IdGenerator,
         memory::{ProgramMemory, Stack},
-        types,
-        types::NumericType,
-        EnvironmentRef, ExecOutcome, ExecutorSettings, KclValue, UnitAngle, UnitLen,
+        types::{self, NumericType},
     },
     modules::{ModuleId, ModuleInfo, ModuleLoader, ModulePath, ModuleRepr, ModuleSource},
-    parsing::ast::types::Annotation,
+    parsing::ast::types::{Annotation, NodeRef},
     source_range::SourceRange,
-    CompilationError,
 };
 
 /// State for executing a program.
@@ -32,7 +29,6 @@ use crate::{
 pub struct ExecState {
     pub(super) global: GlobalState,
     pub(super) mod_local: ModuleState,
-    pub(super) exec_context: Option<super::ExecutorContext>,
 }
 
 pub type ModuleInfoMap = IndexMap<ModuleId, ModuleInfo>;
@@ -45,32 +41,50 @@ pub(super) struct GlobalState {
     pub id_to_source: IndexMap<ModuleId, ModuleSource>,
     /// Map from module ID to module info.
     pub module_infos: ModuleInfoMap,
-    /// Output map of UUIDs to artifacts.
-    #[cfg(feature = "artifact-graph")]
-    pub artifacts: IndexMap<ArtifactId, Artifact>,
-    /// Output commands to allow building the artifact graph by the caller.
-    /// These are accumulated in the [`ExecutorContext`] but moved here for
-    /// convenience of the execution cache.
-    #[cfg(feature = "artifact-graph")]
-    pub artifact_commands: Vec<ArtifactCommand>,
-    /// Responses from the engine for `artifact_commands`.  We need to cache
-    /// this so that we can build the artifact graph.  These are accumulated in
-    /// the [`ExecutorContext`] but moved here for convenience of the execution
-    /// cache.
-    #[cfg(feature = "artifact-graph")]
-    pub artifact_responses: IndexMap<Uuid, WebSocketResponse>,
-    /// Output artifact graph.
-    #[cfg(feature = "artifact-graph")]
-    pub artifact_graph: ArtifactGraph,
-    /// Operations that have been performed in execution order, for display in
-    /// the Feature Tree.
-    #[cfg(feature = "artifact-graph")]
-    pub operations: Vec<Operation>,
     /// Module loader.
     pub mod_loader: ModuleLoader,
     /// Errors and warnings.
     pub errors: Vec<CompilationError>,
+    /// Global artifacts that represent the entire program.
+    pub artifacts: ArtifactState,
+    /// Artifacts for only the root module.
+    pub root_module_artifacts: ModuleArtifactState,
 }
+
+#[cfg(feature = "artifact-graph")]
+#[derive(Debug, Clone, Default)]
+pub(super) struct ArtifactState {
+    /// Internal map of UUIDs to exec artifacts.  This needs to persist across
+    /// executions to allow the graph building to refer to cached artifacts.
+    pub artifacts: IndexMap<ArtifactId, Artifact>,
+    /// Output artifact graph.
+    pub graph: ArtifactGraph,
+}
+
+#[cfg(not(feature = "artifact-graph"))]
+#[derive(Debug, Clone, Default)]
+pub(super) struct ArtifactState {}
+
+/// Artifact state for a single module.
+#[cfg(feature = "artifact-graph")]
+#[derive(Debug, Clone, Default, PartialEq, Serialize)]
+pub struct ModuleArtifactState {
+    /// Internal map of UUIDs to exec artifacts.
+    pub artifacts: IndexMap<ArtifactId, Artifact>,
+    /// Outgoing engine commands that have not yet been processed and integrated
+    /// into the artifact graph.
+    #[serde(skip)]
+    pub unprocessed_commands: Vec<ArtifactCommand>,
+    /// Outgoing engine commands.
+    pub commands: Vec<ArtifactCommand>,
+    /// Operations that have been performed in execution order, for display in
+    /// the Feature Tree.
+    pub operations: Vec<Operation>,
+}
+
+#[cfg(not(feature = "artifact-graph"))]
+#[derive(Debug, Clone, Default, PartialEq, Serialize)]
+pub struct ModuleArtifactState {}
 
 #[derive(Debug, Clone)]
 pub(super) struct ModuleState {
@@ -80,12 +94,19 @@ pub(super) struct ModuleState {
     /// The current value of the pipe operator returned from the previous
     /// expression.  If we're not currently in a pipeline, this will be None.
     pub pipe_value: Option<KclValue>,
+    /// The closest variable declaration being executed in any parent node in the AST.
+    /// This is used to provide better error messages, e.g. noticing when the user is trying
+    /// to use the variable `length` inside the RHS of its own definition, like `length = tan(length)`.
+    /// TODO: Make this a reference.
+    pub being_declared: Option<String>,
     /// Identifiers that have been exported from the current module.
     pub module_exports: Vec<String>,
     /// Settings specified from annotations.
     pub settings: MetaSettings,
     pub(super) explicit_length_units: bool,
     pub(super) path: ModulePath,
+    /// Artifacts for only this module.
+    pub artifacts: ModuleArtifactState,
 }
 
 impl ExecState {
@@ -93,7 +114,6 @@ impl ExecState {
         ExecState {
             global: GlobalState::new(&exec_context.settings),
             mod_local: ModuleState::new(ModulePath::Main, ProgramMemory::new(), Default::default()),
-            exec_context: Some(exec_context.clone()),
         }
     }
 
@@ -103,7 +123,6 @@ impl ExecState {
         *self = ExecState {
             global,
             mod_local: ModuleState::new(self.mod_local.path.clone(), ProgramMemory::new(), Default::default()),
-            exec_context: Some(exec_context.clone()),
         };
     }
 
@@ -118,6 +137,17 @@ impl ExecState {
         self.global.errors.push(e);
     }
 
+    pub fn clear_units_warnings(&mut self, source_range: &SourceRange) {
+        self.global.errors = std::mem::take(&mut self.global.errors)
+            .into_iter()
+            .filter(|e| {
+                e.severity != Severity::Warning
+                    || !source_range.contains_range(&e.source_range)
+                    || e.tag != crate::errors::Tag::UnknownNumericUnits
+            })
+            .collect();
+    }
+
     pub fn errors(&self) -> &[CompilationError] {
         &self.global.errors
     }
@@ -125,58 +155,18 @@ impl ExecState {
     /// Convert to execution outcome when running in WebAssembly.  We want to
     /// reduce the amount of data that crosses the WASM boundary as much as
     /// possible.
-    pub async fn to_exec_outcome(self, main_ref: EnvironmentRef) -> ExecOutcome {
+    pub async fn into_exec_outcome(self, main_ref: EnvironmentRef, ctx: &ExecutorContext) -> ExecOutcome {
         // Fields are opt-in so that we don't accidentally leak private internal
         // state when we add more to ExecState.
         ExecOutcome {
-            variables: self
-                .stack()
-                .find_all_in_env(main_ref)
-                .map(|(k, v)| (k.clone(), v.clone()))
-                .collect(),
+            variables: self.mod_local.variables(main_ref),
+            filenames: self.global.filenames(),
             #[cfg(feature = "artifact-graph")]
-            operations: self.global.operations,
+            operations: self.global.root_module_artifacts.operations,
             #[cfg(feature = "artifact-graph")]
-            artifact_commands: self.global.artifact_commands,
-            #[cfg(feature = "artifact-graph")]
-            artifact_graph: self.global.artifact_graph,
+            artifact_graph: self.global.artifacts.graph,
             errors: self.global.errors,
-            filenames: self
-                .global
-                .path_to_source_id
-                .iter()
-                .map(|(k, v)| ((*v), k.clone()))
-                .collect(),
-            default_planes: if let Some(ctx) = &self.exec_context {
-                ctx.engine.get_default_planes().read().await.clone()
-            } else {
-                None
-            },
-        }
-    }
-
-    pub async fn to_mock_exec_outcome(self, main_ref: EnvironmentRef) -> ExecOutcome {
-        // Fields are opt-in so that we don't accidentally leak private internal
-        // state when we add more to ExecState.
-        ExecOutcome {
-            variables: self
-                .stack()
-                .find_all_in_env(main_ref)
-                .map(|(k, v)| (k.clone(), v.clone()))
-                .collect(),
-            #[cfg(feature = "artifact-graph")]
-            operations: Default::default(),
-            #[cfg(feature = "artifact-graph")]
-            artifact_commands: Default::default(),
-            #[cfg(feature = "artifact-graph")]
-            artifact_graph: Default::default(),
-            errors: self.global.errors,
-            filenames: Default::default(),
-            default_planes: if let Some(ctx) = &self.exec_context {
-                ctx.engine.get_default_planes().read().await.clone()
-            } else {
-                None
-            },
+            default_planes: ctx.engine.get_default_planes().read().await.clone(),
         }
     }
 
@@ -199,14 +189,21 @@ impl ExecState {
     #[cfg(feature = "artifact-graph")]
     pub(crate) fn add_artifact(&mut self, artifact: Artifact) {
         let id = artifact.id();
-        self.global.artifacts.insert(id, artifact);
+        self.mod_local.artifacts.artifacts.insert(id, artifact);
     }
 
     pub(crate) fn push_op(&mut self, op: Operation) {
         #[cfg(feature = "artifact-graph")]
-        self.global.operations.push(op);
+        self.mod_local.artifacts.operations.push(op.clone());
         #[cfg(not(feature = "artifact-graph"))]
         drop(op);
+    }
+
+    #[cfg(feature = "artifact-graph")]
+    pub(crate) fn push_command(&mut self, command: ArtifactCommand) {
+        self.mod_local.artifacts.unprocessed_commands.push(command);
+        #[cfg(not(feature = "artifact-graph"))]
+        drop(command);
     }
 
     pub(super) fn next_module_id(&self) -> ModuleId {
@@ -246,10 +243,6 @@ impl ExecState {
         self.global.id_to_source.insert(id, source.clone());
     }
 
-    pub(super) fn get_source(&self, id: ModuleId) -> Option<&ModuleSource> {
-        self.global.id_to_source.get(&id)
-    }
-
     pub(super) fn add_module(&mut self, id: ModuleId, path: ModulePath, repr: ModuleRepr) {
         debug_assert!(self.global.path_to_source_id.contains_key(&path));
         let module_info = ModuleInfo { id, repr, path };
@@ -258,6 +251,16 @@ impl ExecState {
 
     pub fn get_module(&mut self, id: ModuleId) -> Option<&ModuleInfo> {
         self.global.module_infos.get(&id)
+    }
+
+    #[cfg(all(test, feature = "artifact-graph"))]
+    pub(crate) fn modules(&self) -> &ModuleInfoMap {
+        &self.global.module_infos
+    }
+
+    #[cfg(all(test, feature = "artifact-graph"))]
+    pub(crate) fn root_module_artifact_state(&self) -> &ModuleArtifactState {
+        &self.global.root_module_artifacts
     }
 
     pub fn current_default_units(&self) -> NumericType {
@@ -276,7 +279,7 @@ impl ExecState {
     }
 
     pub(super) fn circular_import_error(&self, path: &ModulePath, source_range: SourceRange) -> KclError {
-        KclError::ImportCycle(KclErrorDetails::new(
+        KclError::new_import_cycle(KclErrorDetails::new(
             format!(
                 "circular import of modules is not allowed: {} -> {}",
                 self.global
@@ -295,6 +298,93 @@ impl ExecState {
     pub(crate) fn pipe_value(&self) -> Option<&KclValue> {
         self.mod_local.pipe_value.as_ref()
     }
+
+    pub(crate) fn error_with_outputs(
+        &self,
+        error: KclError,
+        main_ref: Option<EnvironmentRef>,
+        default_planes: Option<DefaultPlanes>,
+    ) -> KclErrorWithOutputs {
+        let module_id_to_module_path: IndexMap<ModuleId, ModulePath> = self
+            .global
+            .path_to_source_id
+            .iter()
+            .map(|(k, v)| ((*v), k.clone()))
+            .collect();
+
+        KclErrorWithOutputs::new(
+            error,
+            self.errors().to_vec(),
+            main_ref
+                .map(|main_ref| self.mod_local.variables(main_ref))
+                .unwrap_or_default(),
+            #[cfg(feature = "artifact-graph")]
+            self.global.root_module_artifacts.operations.clone(),
+            #[cfg(feature = "artifact-graph")]
+            Default::default(),
+            #[cfg(feature = "artifact-graph")]
+            self.global.artifacts.graph.clone(),
+            module_id_to_module_path,
+            self.global.id_to_source.clone(),
+            default_planes,
+        )
+    }
+
+    #[cfg(feature = "artifact-graph")]
+    pub(crate) async fn build_artifact_graph(
+        &mut self,
+        engine: &Arc<Box<dyn EngineManager>>,
+        program: NodeRef<'_, crate::parsing::ast::types::Program>,
+    ) -> Result<(), KclError> {
+        let mut new_commands = Vec::new();
+        let mut new_exec_artifacts = IndexMap::new();
+        for module in self.global.module_infos.values_mut() {
+            match &mut module.repr {
+                ModuleRepr::Kcl(_, Some((_, _, _, module_artifacts)))
+                | ModuleRepr::Foreign(_, Some((_, module_artifacts))) => {
+                    new_commands.extend(module_artifacts.process_commands());
+                    new_exec_artifacts.extend(module_artifacts.artifacts.clone());
+                }
+                ModuleRepr::Root | ModuleRepr::Kcl(_, None) | ModuleRepr::Foreign(_, None) | ModuleRepr::Dummy => {}
+            }
+        }
+        // Take from the module artifacts so that we don't try to process them
+        // again next time due to execution caching.
+        new_commands.extend(self.global.root_module_artifacts.process_commands());
+        // Note: These will get re-processed, but since we're just adding them
+        // to a map, it's fine.
+        new_exec_artifacts.extend(self.global.root_module_artifacts.artifacts.clone());
+        let new_responses = engine.take_responses().await;
+
+        // Move the artifacts into ExecState global to simplify cache
+        // management.
+        self.global.artifacts.artifacts.extend(new_exec_artifacts);
+
+        let initial_graph = self.global.artifacts.graph.clone();
+
+        // Build the artifact graph.
+        let graph_result = crate::execution::artifact::build_artifact_graph(
+            &new_commands,
+            &new_responses,
+            program,
+            &mut self.global.artifacts.artifacts,
+            initial_graph,
+        );
+
+        let artifact_graph = graph_result?;
+        self.global.artifacts.graph = artifact_graph;
+
+        Ok(())
+    }
+
+    #[cfg(not(feature = "artifact-graph"))]
+    pub(crate) async fn build_artifact_graph(
+        &mut self,
+        _engine: &Arc<Box<dyn EngineManager>>,
+        _program: NodeRef<'_, crate::parsing::ast::types::Program>,
+    ) -> Result<(), KclError> {
+        Ok(())
+    }
 }
 
 impl GlobalState {
@@ -302,16 +392,8 @@ impl GlobalState {
         let mut global = GlobalState {
             path_to_source_id: Default::default(),
             module_infos: Default::default(),
-            #[cfg(feature = "artifact-graph")]
             artifacts: Default::default(),
-            #[cfg(feature = "artifact-graph")]
-            artifact_commands: Default::default(),
-            #[cfg(feature = "artifact-graph")]
-            artifact_responses: Default::default(),
-            #[cfg(feature = "artifact-graph")]
-            artifact_graph: Default::default(),
-            #[cfg(feature = "artifact-graph")]
-            operations: Default::default(),
+            root_module_artifacts: Default::default(),
             mod_loader: Default::default(),
             errors: Default::default(),
             id_to_source: Default::default(),
@@ -334,6 +416,64 @@ impl GlobalState {
             .insert(ModulePath::Local { value: root_path }, root_id);
         global
     }
+
+    pub(super) fn filenames(&self) -> IndexMap<ModuleId, ModulePath> {
+        self.path_to_source_id.iter().map(|(k, v)| ((*v), k.clone())).collect()
+    }
+
+    pub(super) fn get_source(&self, id: ModuleId) -> Option<&ModuleSource> {
+        self.id_to_source.get(&id)
+    }
+}
+
+impl ArtifactState {
+    #[cfg(feature = "artifact-graph")]
+    pub fn cached_body_items(&self) -> usize {
+        self.graph.item_count
+    }
+
+    pub(crate) fn clear(&mut self) {
+        #[cfg(feature = "artifact-graph")]
+        {
+            self.artifacts.clear();
+            self.graph.clear();
+        }
+    }
+}
+
+impl ModuleArtifactState {
+    pub(crate) fn clear(&mut self) {
+        #[cfg(feature = "artifact-graph")]
+        {
+            self.artifacts.clear();
+            self.unprocessed_commands.clear();
+            self.commands.clear();
+            self.operations.clear();
+        }
+    }
+
+    #[cfg(not(feature = "artifact-graph"))]
+    pub(crate) fn extend(&mut self, _other: ModuleArtifactState) {}
+
+    /// When self is a cached state, extend it with new state.
+    #[cfg(feature = "artifact-graph")]
+    pub(crate) fn extend(&mut self, other: ModuleArtifactState) {
+        self.artifacts.extend(other.artifacts);
+        self.unprocessed_commands.extend(other.unprocessed_commands);
+        self.commands.extend(other.commands);
+        self.operations.extend(other.operations);
+    }
+
+    // Move unprocessed artifact commands so that we don't try to process them
+    // again next time due to execution caching.  Returns a clone of the
+    // commands that were moved.
+    #[cfg(feature = "artifact-graph")]
+    pub(crate) fn process_commands(&mut self) -> Vec<ArtifactCommand> {
+        let unprocessed = std::mem::take(&mut self.unprocessed_commands);
+        let new_module_commands = unprocessed.clone();
+        self.commands.extend(unprocessed);
+        new_module_commands
+    }
 }
 
 impl ModuleState {
@@ -342,6 +482,7 @@ impl ModuleState {
             id_generator: IdGenerator::new(module_id),
             stack: memory.new_stack(),
             pipe_value: Default::default(),
+            being_declared: Default::default(),
             module_exports: Default::default(),
             explicit_length_units: false,
             path,
@@ -350,7 +491,15 @@ impl ModuleState {
                 default_angle_units: Default::default(),
                 kcl_version: "0.1".to_owned(),
             },
+            artifacts: Default::default(),
         }
+    }
+
+    pub(super) fn variables(&self, main_ref: EnvironmentRef) -> IndexMap<String, KclValue> {
+        self.stack
+            .find_all_in_env(main_ref)
+            .map(|(k, v)| (k.clone(), v.clone()))
+            .collect()
     }
 }
 
@@ -389,14 +538,14 @@ impl MetaSettings {
                     self.kcl_version = value;
                 }
                 name => {
-                    return Err(KclError::Semantic(KclErrorDetails::new(
+                    return Err(KclError::new_semantic(KclErrorDetails::new(
                         format!(
                             "Unexpected settings key: `{name}`; expected one of `{}`, `{}`",
                             annotations::SETTINGS_UNIT_LENGTH,
                             annotations::SETTINGS_UNIT_ANGLE
                         ),
                         vec![annotation.as_source_range()],
-                    )))
+                    )));
                 }
             }
         }

@@ -4,7 +4,7 @@
 @settings(defaultLengthUnit = mm, kclVersion = 1.0)
 
 /// No turn, zero degrees/radians.
-export ZERO = 0
+export ZERO = 0: number(Angle)
 
 /// A quarter turn, 90 degrees or π/2 radians.
 export QUARTER_TURN = 90deg

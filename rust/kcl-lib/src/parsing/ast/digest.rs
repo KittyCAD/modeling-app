@@ -4,9 +4,9 @@ use crate::parsing::ast::types::{
     Annotation, ArrayExpression, ArrayRangeExpression, AscribedExpression, BinaryExpression, BinaryPart, BodyItem,
     CallExpressionKw, DefaultParamVal, ElseIf, Expr, ExpressionStatement, FunctionExpression, FunctionType, Identifier,
     IfExpression, ImportItem, ImportSelector, ImportStatement, ItemVisibility, KclNone, LabelledExpression, Literal,
-    LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, Name, ObjectExpression, ObjectProperty, Parameter,
-    PipeExpression, PipeSubstitution, PrimitiveType, Program, ReturnStatement, TagDeclarator, Type, TypeDeclaration,
-    UnaryExpression, VariableDeclaration, VariableDeclarator, VariableKind,
+    LiteralValue, MemberExpression, Name, ObjectExpression, ObjectProperty, Parameter, PipeExpression,
+    PipeSubstitution, PrimitiveType, Program, ReturnStatement, TagDeclarator, Type, TypeDeclaration, UnaryExpression,
+    VariableDeclaration, VariableDeclarator, VariableKind,
 };
 
 /// Position-independent digest of the AST node.
@@ -161,29 +161,15 @@ impl BinaryPart {
             BinaryPart::CallExpressionKw(ce) => ce.compute_digest(),
             BinaryPart::UnaryExpression(ue) => ue.compute_digest(),
             BinaryPart::MemberExpression(me) => me.compute_digest(),
+            BinaryPart::ArrayExpression(e) => e.compute_digest(),
+            BinaryPart::ArrayRangeExpression(e) => e.compute_digest(),
+            BinaryPart::ObjectExpression(e) => e.compute_digest(),
             BinaryPart::IfExpression(e) => e.compute_digest(),
             BinaryPart::AscribedExpression(e) => e.compute_digest(),
         }
     }
 }
 
-impl MemberObject {
-    pub fn compute_digest(&mut self) -> Digest {
-        match self {
-            MemberObject::MemberExpression(me) => me.compute_digest(),
-            MemberObject::Identifier(id) => id.compute_digest(),
-        }
-    }
-}
-
-impl LiteralIdentifier {
-    pub fn compute_digest(&mut self) -> Digest {
-        match self {
-            LiteralIdentifier::Identifier(id) => id.compute_digest(),
-            LiteralIdentifier::Literal(lit) => lit.compute_digest(),
-        }
-    }
-}
 impl Type {
     pub fn compute_digest(&mut self) -> Digest {
         let mut hasher = Sha256::new();
@@ -198,7 +184,7 @@ impl Type {
                 hasher.update(ty.compute_digest());
                 match len {
                     crate::execution::types::ArrayLen::None => {}
-                    crate::execution::types::ArrayLen::NonEmpty => hasher.update(usize::MAX.to_ne_bytes()),
+                    crate::execution::types::ArrayLen::Minimum(n) => hasher.update((-(*n as isize)).to_ne_bytes()),
                     crate::execution::types::ArrayLen::Known(n) => hasher.update(n.to_ne_bytes()),
                 }
             }
@@ -228,11 +214,11 @@ impl PrimitiveType {
         let mut hasher = Sha256::new();
         match self {
             PrimitiveType::Any => hasher.update(b"any"),
-            PrimitiveType::Named(id) => hasher.update(id.compute_digest()),
+            PrimitiveType::Named { id } => hasher.update(id.compute_digest()),
             PrimitiveType::String => hasher.update(b"string"),
             PrimitiveType::Number(suffix) => hasher.update(suffix.digestable_id()),
             PrimitiveType::Boolean => hasher.update(b"bool"),
-            PrimitiveType::Tag => hasher.update(b"tag"),
+            PrimitiveType::TagDecl => hasher.update(b"TagDecl"),
             PrimitiveType::ImportedGeometry => hasher.update(b"ImportedGeometry"),
             PrimitiveType::Function(f) => hasher.update(f.compute_digest()),
         }
@@ -433,6 +419,7 @@ impl ArrayRangeExpression {
     compute_digest!(|slf, hasher| {
         hasher.update(slf.start_element.compute_digest());
         hasher.update(slf.end_element.compute_digest());
+        hasher.update(if slf.end_inclusive { [1] } else { [0] });
     });
 }
 

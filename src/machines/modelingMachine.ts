@@ -29,7 +29,6 @@ import {
   applyConstraintHorzVert,
   horzVertInfo,
 } from '@src/components/Toolbar/HorzVert'
-import { intersectInfo } from '@src/components/Toolbar/Intersect'
 import {
   applyRemoveConstrainingValues,
   removeConstrainingValuesInfo,
@@ -44,15 +43,10 @@ import {
   horzVertDistanceInfo,
 } from '@src/components/Toolbar/SetHorzVertDistance'
 import { angleLengthInfo } from '@src/components/Toolbar/angleLengthInfo'
-import { createLiteral, createLocalName } from '@src/lang/create'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
 import {
-  addClone,
-  addHelix,
   addOffsetPlane,
-  addShell,
   insertNamedConstant,
-  insertVariableAndOffsetPathToNode,
   replaceValueAtNodePath,
 } from '@src/lang/modifyAst'
 import type {
@@ -63,42 +57,37 @@ import {
   EdgeTreatmentType,
   modifyAstWithEdgeTreatmentAndTag,
   editEdgeTreatment,
-  getPathToExtrudeForSegmentSelection,
-  mutateAstWithTagForSketchSegment,
 } from '@src/lang/modifyAst/addEdgeTreatment'
 import {
   addExtrude,
   addLoft,
   addRevolve,
   addSweep,
-  getAxisExpressionAndIndex,
-} from '@src/lang/modifyAst/addSweep'
+} from '@src/lang/modifyAst/sweeps'
 import {
-  applyIntersectFromTargetOperatorSelections,
-  applySubtractFromTargetOperatorSelections,
-  applyUnionFromTargetOperatorSelections,
+  addSubtract,
+  addUnion,
+  addIntersect,
 } from '@src/lang/modifyAst/boolean'
 import {
   deleteSelectionPromise,
   deletionErrorMessage,
 } from '@src/lang/modifyAst/deleteSelection'
-import { setAppearance } from '@src/lang/modifyAst/setAppearance'
 import {
-  setTranslate,
-  setRotate,
-  insertExpressionNode,
-  retrievePathToNodeFromTransformSelection,
-} from '@src/lang/modifyAst/setTransform'
+  addTranslate,
+  addRotate,
+  addScale,
+  addClone,
+  addAppearance,
+} from '@src/lang/modifyAst/transforms'
 import {
   getNodeFromPath,
-  findPipesWithImportAlias,
-  findImportNodeAndAlias,
   isNodeSafeToReplacePath,
   stringifyPathToNode,
   updatePathToNodesAfterEdit,
-  valueOrVariable,
   artifactIsPlaneWithPaths,
   isCursorInFunctionDefinition,
+  getSelectedPlaneAsNode,
 } from '@src/lang/queryAst'
 import {
   getFaceCodeRef,
@@ -109,13 +98,8 @@ import {
 import type { Coords2d } from '@src/lang/std/sketch'
 import type {
   Artifact,
-  CallExpressionKw,
-  Expr,
   KclValue,
-  Literal,
-  Name,
   PathToNode,
-  PipeExpression,
   Program,
   VariableDeclaration,
   VariableDeclarator,
@@ -143,7 +127,6 @@ import {
 import type { ToolbarModeName } from '@src/lib/toolbar'
 import { err, reportRejection, trap } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
-import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 import { isDesktop } from '@src/lib/isDesktop'
 import {
   crossProduct,
@@ -155,6 +138,9 @@ import type { Plane } from '@rust/kcl-lib/bindings/Plane'
 import type { Point3d } from '@rust/kcl-lib/bindings/ModelingCmd'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import { letEngineAnimateAndSyncCamAfter } from '@src/clientSideScene/CameraControls'
+import { addShell } from '@src/lang/modifyAst/faces'
+import { intersectInfo } from '@src/components/Toolbar/Intersect'
+import { addHelix } from '@src/lang/modifyAst/geometry'
 
 export type SetSelections =
   | {
@@ -280,6 +266,7 @@ export type OffsetPlane = {
   pathToNode: PathToNode
   zAxis: [number, number, number]
   yAxis: [number, number, number]
+  negated: boolean
 }
 
 export type SegmentOverlayPayload =
@@ -402,6 +389,7 @@ export type ModelingMachineEvent =
   | { type: 'Appearance'; data: ModelingCommandSchema['Appearance'] }
   | { type: 'Translate'; data: ModelingCommandSchema['Translate'] }
   | { type: 'Rotate'; data: ModelingCommandSchema['Rotate'] }
+  | { type: 'Scale'; data: ModelingCommandSchema['Scale'] }
   | { type: 'Clone'; data: ModelingCommandSchema['Clone'] }
   | {
       type:
@@ -752,10 +740,13 @@ export const modelingMachine = setup({
       event,
     }) => {
       if (event.type !== 'Constrain remove constraints') return false
-      const info = removeConstrainingValuesInfo({
-        selectionRanges,
-        pathToNodes: event.data && [event.data],
-      })
+
+      const pathToNodes = event.data
+        ? [event.data]
+        : selectionRanges.graphSelections.map(({ codeRef }) => {
+            return codeRef.pathToNode
+          })
+      const info = removeConstrainingValuesInfo(pathToNodes)
       if (err(info)) return false
       return info.enabled
     },
@@ -796,12 +787,32 @@ export const modelingMachine = setup({
   actions: {
     toastError: ({ event }) => {
       if ('output' in event && event.output instanceof Error) {
+        console.error(event.output)
         toast.error(event.output.message)
       } else if ('data' in event && event.data instanceof Error) {
+        console.error(event.data)
         toast.error(event.data.message)
       } else if ('error' in event && event.error instanceof Error) {
+        console.error(event.error)
         toast.error(event.error.message)
       }
+    },
+    toastErrorAndExitSketch: ({ event }) => {
+      if ('output' in event && event.output instanceof Error) {
+        console.error(event.output)
+        toast.error(event.output.message)
+      } else if ('data' in event && event.data instanceof Error) {
+        console.error(event.data)
+        toast.error(event.data.message)
+      } else if ('error' in event && event.error instanceof Error) {
+        console.error(event.error)
+        toast.error(event.error.message)
+      }
+
+      // Clean up the THREE.js sketch scene
+      sceneEntitiesManager.tearDownSketch({ removeAxis: false })
+      sceneEntitiesManager.removeSketchGrid()
+      sceneEntitiesManager.resetOverlays()
     },
     'assign tool in context': assign({
       currentTool: ({ event }) =>
@@ -2412,13 +2423,10 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const { nodeToEdit, sketches, length } = input
         const { ast } = kclManager
         const astResult = addExtrude({
           ast,
-          sketches,
-          length,
-          nodeToEdit,
+          ...input,
         })
         if (err(astResult)) {
           return Promise.reject(new Error("Couldn't add extrude statement"))
@@ -2449,14 +2457,10 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const { nodeToEdit, sketches, path, sectional } = input
         const { ast } = kclManager
         const astResult = addSweep({
+          ...input,
           ast,
-          sketches,
-          path,
-          sectional,
-          nodeToEdit,
         })
         if (err(astResult)) {
           return Promise.reject(astResult)
@@ -2487,9 +2491,8 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const { sketches } = input
         const { ast } = kclManager
-        const astResult = addLoft({ ast, sketches })
+        const astResult = addLoft({ ast, ...input })
         if (err(astResult)) {
           return Promise.reject(astResult)
         }
@@ -2519,16 +2522,10 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const { nodeToEdit, sketches, angle, axis, edge, axisOrEdge } = input
         const { ast } = kclManager
         const astResult = addRevolve({
           ast,
-          sketches,
-          angle,
-          axisOrEdge,
-          axis,
-          edge,
-          nodeToEdit,
+          ...input,
         })
         if (err(astResult)) {
           return Promise.reject(astResult)
@@ -2586,15 +2583,18 @@ export const modelingMachine = setup({
           insertIndex = nodeToEdit[1][0]
         }
 
-        // Extract the default plane from selection
-        const plane = selection.otherSelections[0]
-        if (!(plane && plane instanceof Object && 'name' in plane))
+        const selectedPlane = getSelectedPlaneAsNode(
+          selection,
+          kclManager.variables
+        )
+        if (!selectedPlane) {
           return trap('No plane selected')
+        }
 
         // Get the default plane name from the selection
         const offsetPlaneResult = addOffsetPlane({
           node: ast,
-          defaultPlane: plane.name,
+          plane: selectedPlane,
           offset:
             'variableName' in distance
               ? distance.variableIdentifierAst
@@ -2643,128 +2643,18 @@ export const modelingMachine = setup({
         if (!input) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
-        // Extract inputs
-        const ast = kclManager.ast
-        const {
-          mode,
-          axis,
-          edge,
-          cylinder,
-          revolutions,
-          angleStart,
-          ccw,
-          radius,
-          length,
-          nodeToEdit,
-        } = input
 
-        let opInsertIndex: number | undefined = undefined
-        let opVariableName: string | undefined = undefined
-
-        // If this is an edit flow, first we're going to remove the old one
-        if (nodeToEdit && typeof nodeToEdit[1][0] === 'number') {
-          // Extract the old name from the node to edit
-          const oldNode = getNodeFromPath<VariableDeclaration>(
-            ast,
-            nodeToEdit,
-            'VariableDeclaration'
-          )
-          if (err(oldNode)) {
-            console.error('Error extracting plane name')
-          } else {
-            opVariableName = oldNode.node.declaration.id.name
-          }
-
-          const newBody = [...ast.body]
-          newBody.splice(nodeToEdit[1][0], 1)
-          ast.body = newBody
-          opInsertIndex = nodeToEdit[1][0]
-        }
-
-        let cylinderDeclarator: VariableDeclarator | undefined
-        let axisExpression:
-          | Node<CallExpressionKw | Name>
-          | Node<Literal>
-          | undefined
-
-        if (mode === 'Cylinder') {
-          if (
-            !(
-              cylinder &&
-              cylinder.graphSelections[0] &&
-              cylinder.graphSelections[0].artifact?.type === 'wall'
-            )
-          ) {
-            return Promise.reject(new Error('Cylinder argument not valid'))
-          }
-          const clonedAstForGetExtrude = structuredClone(ast)
-          const extrudeLookupResult = getPathToExtrudeForSegmentSelection(
-            clonedAstForGetExtrude,
-            cylinder.graphSelections[0],
-            kclManager.artifactGraph
-          )
-          if (err(extrudeLookupResult)) {
-            return Promise.reject(extrudeLookupResult)
-          }
-          const extrudeNode = getNodeFromPath<VariableDeclaration>(
-            ast,
-            extrudeLookupResult.pathToExtrudeNode,
-            'VariableDeclaration'
-          )
-          if (err(extrudeNode)) {
-            return Promise.reject(extrudeNode)
-          }
-          cylinderDeclarator = extrudeNode.node.declaration
-        } else if (mode === 'Axis' || mode === 'Edge') {
-          const getAxisResult = getAxisExpressionAndIndex(mode, axis, edge, ast)
-          if (err(getAxisResult)) {
-            return Promise.reject(getAxisResult)
-          }
-          axisExpression = getAxisResult.generatedAxis
-        } else {
-          return Promise.reject(
-            new Error(
-              'Generated axis or cylinder declarator selection is missing.'
-            )
-          )
-        }
-
-        // TODO: figure out if we want to smart insert after the sketch as below
-        // *or* after the sweep that consumes the sketch, in which case the below code doesn't work
-        // If an axis was selected in KCL, find the max index to insert the revolve command
-        // if (axisIndexIfAxis) {
-        // opInsertIndex = axisIndexIfAxis + 1
-        // }
-
-        for (const v of [revolutions, angleStart, radius, length]) {
-          if (v === undefined) {
-            continue
-          }
-          const variable = v as KclCommandValue
-          // Insert the variable if it exists
-          if ('variableName' in variable && variable.variableName) {
-            const newBody = [...ast.body]
-            newBody.splice(
-              variable.insertIndex,
-              0,
-              variable.variableDeclarationAst
-            )
-            ast.body = newBody
-          }
-        }
-
-        const { modifiedAst, pathToNode } = addHelix({
-          node: ast,
-          revolutions: valueOrVariable(revolutions),
-          angleStart: valueOrVariable(angleStart),
-          ccw,
-          radius: radius ? valueOrVariable(radius) : undefined,
-          axis: axisExpression,
-          cylinder: cylinderDeclarator,
-          length: length ? valueOrVariable(length) : undefined,
-          insertIndex: opInsertIndex,
-          variableName: opVariableName,
+        const { ast, artifactGraph } = kclManager
+        const astResult = addHelix({
+          ...input,
+          ast,
+          artifactGraph,
         })
+        if (err(astResult)) {
+          return Promise.reject(astResult)
+        }
+
+        const { modifiedAst, pathToNode } = astResult
         await updateModelingState(
           modifiedAst,
           EXECUTION_TYPE_REAL,
@@ -2789,170 +2679,19 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        // Extract inputs
-        const ast = kclManager.ast
-        const { selection, thickness, nodeToEdit } = input
-        let variableName: string | undefined = undefined
-        let insertIndex: number | undefined = undefined
-
-        // If this is an edit flow, first we're going to remove the old extrusion
-        if (nodeToEdit && typeof nodeToEdit[1][0] === 'number') {
-          // Extract the plane name from the node to edit
-          const variableNode = getNodeFromPath<VariableDeclaration>(
-            ast,
-            nodeToEdit,
-            'VariableDeclaration'
-          )
-          if (err(variableNode)) {
-            console.error('Error extracting name')
-          } else {
-            variableName = variableNode.node.declaration.id.name
-          }
-
-          // Removing the old statement
-          const newBody = [...ast.body]
-          newBody.splice(nodeToEdit[1][0], 1)
-          ast.body = newBody
-          insertIndex = nodeToEdit[1][0]
-        }
-
-        // Turn the selection into the faces list
-        const clonedAstForGetExtrude = structuredClone(ast)
-        const faces: Expr[] = []
-        let pathToExtrudeNode: PathToNode | undefined = undefined
-        for (const graphSelection of selection.graphSelections) {
-          const extrudeLookupResult = getPathToExtrudeForSegmentSelection(
-            clonedAstForGetExtrude,
-            graphSelection,
-            kclManager.artifactGraph
-          )
-          if (err(extrudeLookupResult)) {
-            return Promise.reject(
-              new Error(
-                "Couldn't find extrude paths from getPathToExtrudeForSegmentSelection",
-                { cause: extrudeLookupResult }
-              )
-            )
-          }
-
-          const extrudeNode = getNodeFromPath<VariableDeclaration>(
-            ast,
-            extrudeLookupResult.pathToExtrudeNode,
-            'VariableDeclaration'
-          )
-          if (err(extrudeNode)) {
-            return new Error("Couldn't find extrude node from selection", {
-              cause: extrudeNode,
-            })
-          }
-
-          const segmentNode = getNodeFromPath<VariableDeclaration>(
-            ast,
-            extrudeLookupResult.pathToSegmentNode,
-            'VariableDeclaration'
-          )
-          if (err(segmentNode)) {
-            return Promise.reject(
-              new Error("Couldn't find segment node from selection", {
-                cause: segmentNode,
-              })
-            )
-          }
-
-          if (extrudeNode.node.declaration.init.type === 'CallExpressionKw') {
-            pathToExtrudeNode = extrudeLookupResult.pathToExtrudeNode
-          } else if (
-            segmentNode.node.declaration.init.type === 'PipeExpression'
-          ) {
-            pathToExtrudeNode = extrudeLookupResult.pathToSegmentNode
-          } else {
-            return Promise.reject(
-              new Error(
-                "Couldn't find extrude node that was either a call expression or a pipe",
-                { cause: segmentNode }
-              )
-            )
-          }
-
-          const selectedArtifact = graphSelection.artifact
-          if (!selectedArtifact) {
-            return Promise.reject(new Error('Bad artifact from selection'))
-          }
-
-          // Check on the selection, and handle the wall vs cap cases
-          let expr: Expr
-          if (selectedArtifact.type === 'cap') {
-            expr = createLiteral(selectedArtifact.subType)
-          } else if (selectedArtifact.type === 'wall') {
-            const tagResult = mutateAstWithTagForSketchSegment(
-              ast,
-              extrudeLookupResult.pathToSegmentNode
-            )
-            if (err(tagResult)) {
-              return Promise.reject(tagResult)
-            }
-
-            const { tag } = tagResult
-            expr = createLocalName(tag)
-          } else {
-            return Promise.reject(
-              new Error('Artifact is neither a cap nor a wall')
-            )
-          }
-
-          faces.push(expr)
-        }
-
-        if (!pathToExtrudeNode) {
-          return Promise.reject(new Error('No path to extrude node found'))
-        }
-
-        const extrudeNode = getNodeFromPath<VariableDeclarator>(
+        const { ast, artifactGraph } = kclManager
+        const astResult = addShell({
+          ...input,
           ast,
-          pathToExtrudeNode,
-          'VariableDeclarator'
-        )
-        if (err(extrudeNode)) {
-          return Promise.reject(
-            new Error("Couldn't find extrude node", {
-              cause: extrudeNode,
-            })
-          )
-        }
-
-        // Perform the shell op
-        const sweepName = extrudeNode.node.id.name
-        const addResult = addShell({
-          node: ast,
-          sweepName,
-          faces: faces,
-          thickness:
-            'variableName' in thickness
-              ? thickness.variableIdentifierAst
-              : thickness.valueAst,
-          insertIndex,
-          variableName,
+          artifactGraph,
         })
-
-        // Insert the thickness variable if the user has provided a variable name
-        if (
-          'variableName' in thickness &&
-          thickness.variableName &&
-          typeof addResult.pathToNode[1][0] === 'number'
-        ) {
-          const insertIndex = Math.min(
-            addResult.pathToNode[1][0],
-            thickness.insertIndex
-          )
-          const newBody = [...addResult.modifiedAst.body]
-          newBody.splice(insertIndex, 0, thickness.variableDeclarationAst)
-          addResult.modifiedAst.body = newBody
-          // Since we inserted a new variable, we need to update the path to the extrude argument
-          addResult.pathToNode[1][0]++
+        if (err(astResult)) {
+          return Promise.reject(astResult)
         }
 
+        const { modifiedAst, pathToNode } = astResult
         await updateModelingState(
-          addResult.modifiedAst,
+          modifiedAst,
           EXECUTION_TYPE_REAL,
           {
             kclManager,
@@ -2960,7 +2699,7 @@ export const modelingMachine = setup({
             codeManager,
           },
           {
-            focusPath: [addResult.pathToNode],
+            focusPath: [pathToNode],
           }
         )
       }
@@ -3249,21 +2988,15 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        // Extract inputs
         const ast = kclManager.ast
-        const { color, nodeToEdit } = input
-        if (!(nodeToEdit && typeof nodeToEdit[1][0] === 'number')) {
-          return Promise.reject(new Error('Appearance is only an edit flow'))
-        }
-
-        const result = setAppearance({
+        const artifactGraph = kclManager.artifactGraph
+        const result = addAppearance({
+          ...input,
           ast,
-          nodeToEdit,
-          color,
+          artifactGraph,
         })
-
         if (err(result)) {
-          return Promise.reject(err(result))
+          return Promise.reject(result)
         }
 
         await updateModelingState(
@@ -3291,57 +3024,11 @@ export const modelingMachine = setup({
         }
 
         const ast = kclManager.ast
-        const modifiedAst = structuredClone(ast)
-        const { x, y, z, nodeToEdit, selection } = input
-        let pathToNode = nodeToEdit
-        if (!(pathToNode && typeof pathToNode[1][0] === 'number')) {
-          const result = retrievePathToNodeFromTransformSelection(
-            selection,
-            kclManager.artifactGraph,
-            ast
-          )
-          if (err(result)) {
-            return Promise.reject(result)
-          }
-
-          pathToNode = result
-        }
-
-        // Look for the last pipe with the import alias and a call to translate, with a fallback to rotate.
-        // Otherwise create one
-        const importNodeAndAlias = findImportNodeAndAlias(ast, pathToNode)
-        if (importNodeAndAlias) {
-          const pipes = findPipesWithImportAlias(ast, pathToNode, 'translate')
-          const lastPipe = pipes.at(-1)
-          if (lastPipe && lastPipe.pathToNode) {
-            pathToNode = lastPipe.pathToNode
-          } else {
-            const otherRelevantPipes = findPipesWithImportAlias(
-              ast,
-              pathToNode,
-              'rotate'
-            )
-            const lastRelevantPipe = otherRelevantPipes.at(-1)
-            if (lastRelevantPipe && lastRelevantPipe.pathToNode) {
-              pathToNode = lastRelevantPipe.pathToNode
-            } else {
-              pathToNode = insertExpressionNode(
-                modifiedAst,
-                importNodeAndAlias.alias
-              )
-            }
-          }
-        }
-
-        insertVariableAndOffsetPathToNode(x, modifiedAst, pathToNode)
-        insertVariableAndOffsetPathToNode(y, modifiedAst, pathToNode)
-        insertVariableAndOffsetPathToNode(z, modifiedAst, pathToNode)
-        const result = setTranslate({
-          pathToNode,
-          modifiedAst,
-          x: valueOrVariable(x),
-          y: valueOrVariable(y),
-          z: valueOrVariable(z),
+        const artifactGraph = kclManager.artifactGraph
+        const result = addTranslate({
+          ...input,
+          ast,
+          artifactGraph,
         })
         if (err(result)) {
           return Promise.reject(result)
@@ -3372,57 +3059,46 @@ export const modelingMachine = setup({
         }
 
         const ast = kclManager.ast
-        const modifiedAst = structuredClone(ast)
-        const { roll, pitch, yaw, nodeToEdit, selection } = input
-        let pathToNode = nodeToEdit
-        if (!(pathToNode && typeof pathToNode[1][0] === 'number')) {
-          const result = retrievePathToNodeFromTransformSelection(
-            selection,
-            kclManager.artifactGraph,
-            ast
-          )
-          if (err(result)) {
-            return Promise.reject(result)
-          }
-
-          pathToNode = result
+        const artifactGraph = kclManager.artifactGraph
+        const result = addRotate({
+          ...input,
+          ast,
+          artifactGraph,
+        })
+        if (err(result)) {
+          return Promise.reject(result)
         }
 
-        // Look for the last pipe with the import alias and a call to rotate, with a fallback to translate.
-        // Otherwise create one
-        const importNodeAndAlias = findImportNodeAndAlias(ast, pathToNode)
-        if (importNodeAndAlias) {
-          const pipes = findPipesWithImportAlias(ast, pathToNode, 'rotate')
-          const lastPipe = pipes.at(-1)
-          if (lastPipe && lastPipe.pathToNode) {
-            pathToNode = lastPipe.pathToNode
-          } else {
-            const otherRelevantPipes = findPipesWithImportAlias(
-              ast,
-              pathToNode,
-              'translate'
-            )
-            const lastRelevantPipe = otherRelevantPipes.at(-1)
-            if (lastRelevantPipe && lastRelevantPipe.pathToNode) {
-              pathToNode = lastRelevantPipe.pathToNode
-            } else {
-              pathToNode = insertExpressionNode(
-                modifiedAst,
-                importNodeAndAlias.alias
-              )
-            }
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          {
+            kclManager,
+            editorManager,
+            codeManager,
+          },
+          {
+            focusPath: [result.pathToNode],
           }
+        )
+      }
+    ),
+    scaleAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input: ModelingCommandSchema['Scale'] | undefined
+      }) => {
+        if (!input) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        insertVariableAndOffsetPathToNode(roll, modifiedAst, pathToNode)
-        insertVariableAndOffsetPathToNode(pitch, modifiedAst, pathToNode)
-        insertVariableAndOffsetPathToNode(yaw, modifiedAst, pathToNode)
-        const result = setRotate({
-          pathToNode,
-          modifiedAst,
-          roll: valueOrVariable(roll),
-          pitch: valueOrVariable(pitch),
-          yaw: valueOrVariable(yaw),
+        const ast = kclManager.ast
+        const artifactGraph = kclManager.artifactGraph
+        const result = addScale({
+          ...input,
+          ast,
+          artifactGraph,
         })
         if (err(result)) {
           return Promise.reject(result)
@@ -3453,58 +3129,14 @@ export const modelingMachine = setup({
         }
 
         const ast = kclManager.ast
-        const { nodeToEdit, selection, variableName } = input
-        let pathToNode = nodeToEdit
-        if (!(pathToNode && typeof pathToNode[1][0] === 'number')) {
-          const result = retrievePathToNodeFromTransformSelection(
-            selection,
-            kclManager.artifactGraph,
-            ast
-          )
-          if (err(result)) {
-            return Promise.reject(result)
-          }
-
-          pathToNode = result
-        }
-
-        const returnEarly = true
-        const geometryNode = getNodeFromPath<
-          VariableDeclaration | ImportStatement | PipeExpression
-        >(
-          ast,
-          pathToNode,
-          ['VariableDeclaration', 'ImportStatement', 'PipeExpression'],
-          returnEarly
-        )
-        if (err(geometryNode)) {
-          return Promise.reject(
-            new Error("Couldn't find corresponding path to node")
-          )
-        }
-
-        let geometryName: string | undefined
-        if (geometryNode.node.type === 'VariableDeclaration') {
-          geometryName = geometryNode.node.declaration.id.name
-        } else if (
-          geometryNode.node.type === 'ImportStatement' &&
-          geometryNode.node.selector.type === 'None' &&
-          geometryNode.node.selector.alias
-        ) {
-          geometryName = geometryNode.node.selector.alias?.name
-        } else {
-          return Promise.reject(
-            new Error("Couldn't find corresponding geometry")
-          )
-        }
-
+        const artifactGraph = kclManager.artifactGraph
         const result = addClone({
+          ...input,
           ast,
-          geometryName,
-          variableName,
+          artifactGraph,
         })
         if (err(result)) {
-          return Promise.reject(err(result))
+          return Promise.reject(result)
         }
 
         await updateModelingState(
@@ -3545,22 +3177,27 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const { target, tool } = input
-        if (
-          !target.graphSelections[0].artifact ||
-          !tool.graphSelections[0].artifact
-        ) {
-          return Promise.reject(new Error('No artifact in selections found'))
+        const ast = kclManager.ast
+        const artifactGraph = kclManager.artifactGraph
+        const result = addSubtract({
+          ...input,
+          ast,
+          artifactGraph,
+        })
+        if (err(result)) {
+          return Promise.reject(result)
         }
 
-        await applySubtractFromTargetOperatorSelections(
-          target.graphSelections[0],
-          tool.graphSelections[0],
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
           {
             kclManager,
-            codeManager,
-            engineCommandManager,
             editorManager,
+            codeManager,
+          },
+          {
+            focusPath: [result.pathToNode],
           }
         )
       }
@@ -3575,17 +3212,29 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const { solids } = input
-        if (!solids.graphSelections[0].artifact) {
-          return Promise.reject(new Error('No artifact in selections found'))
+        const ast = kclManager.ast
+        const artifactGraph = kclManager.artifactGraph
+        const result = addUnion({
+          ...input,
+          ast,
+          artifactGraph,
+        })
+        if (err(result)) {
+          return Promise.reject(result)
         }
 
-        await applyUnionFromTargetOperatorSelections(solids, {
-          kclManager,
-          codeManager,
-          engineCommandManager,
-          editorManager,
-        })
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          {
+            kclManager,
+            editorManager,
+            codeManager,
+          },
+          {
+            focusPath: [result.pathToNode],
+          }
+        )
       }
     ),
     boolIntersectAstMod: fromPromise(
@@ -3598,17 +3247,29 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const { solids } = input
-        if (!solids.graphSelections[0].artifact) {
-          return Promise.reject(new Error('No artifact in selections found'))
+        const ast = kclManager.ast
+        const artifactGraph = kclManager.artifactGraph
+        const result = addIntersect({
+          ...input,
+          ast,
+          artifactGraph,
+        })
+        if (err(result)) {
+          return Promise.reject(result)
         }
 
-        await applyIntersectFromTargetOperatorSelections(solids, {
-          kclManager,
-          codeManager,
-          engineCommandManager,
-          editorManager,
-        })
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          {
+            kclManager,
+            editorManager,
+            codeManager,
+          },
+          {
+            focusPath: [result.pathToNode],
+          }
+        )
       }
     ),
 
@@ -3774,12 +3435,12 @@ export const modelingMachine = setup({
         },
 
         'event.parameter.create': {
-          target: '#Modeling.parameter.creating',
+          target: '#Modeling.state:parameter:creating',
           guard: 'no kcl errors',
         },
 
         'event.parameter.edit': {
-          target: '#Modeling.parameter.editing',
+          target: '#Modeling.state:parameter:editing',
           guard: 'no kcl errors',
         },
 
@@ -3821,6 +3482,12 @@ export const modelingMachine = setup({
 
         Rotate: {
           target: 'Applying rotate',
+          reenter: true,
+          guard: 'no kcl errors',
+        },
+
+        Scale: {
+          target: 'Applying scale',
           reenter: true,
           guard: 'no kcl errors',
         },
@@ -4401,7 +4068,7 @@ export const modelingMachine = setup({
             },
             onError: {
               target: '#Modeling.idle',
-              actions: 'toastError',
+              actions: 'toastErrorAndExitSketch',
               reenter: true,
             },
           },
@@ -5186,39 +4853,33 @@ export const modelingMachine = setup({
       },
     },
 
-    parameter: {
-      type: 'parallel',
-
-      states: {
-        creating: {
-          invoke: {
-            src: 'actor.parameter.create',
-            id: 'actor.parameter.create',
-            input: ({ event }) => {
-              if (event.type !== 'event.parameter.create') return undefined
-              return event.data
-            },
-            onDone: ['#Modeling.idle'],
-            onError: {
-              target: '#Modeling.idle',
-              actions: 'toastError',
-            },
-          },
+    'state:parameter:creating': {
+      invoke: {
+        src: 'actor.parameter.create',
+        id: 'actor.parameter.create',
+        input: ({ event }) => {
+          if (event.type !== 'event.parameter.create') return undefined
+          return event.data
         },
-        editing: {
-          invoke: {
-            src: 'actor.parameter.edit',
-            id: 'actor.parameter.edit',
-            input: ({ event }) => {
-              if (event.type !== 'event.parameter.edit') return undefined
-              return event.data
-            },
-            onDone: ['#Modeling.idle'],
-            onError: {
-              target: '#Modeling.idle',
-              actions: 'toastError',
-            },
-          },
+        onDone: ['#Modeling.idle'],
+        onError: {
+          target: '#Modeling.idle',
+          actions: 'toastError',
+        },
+      },
+    },
+    'state:parameter:editing': {
+      invoke: {
+        src: 'actor.parameter.edit',
+        id: 'actor.parameter.edit',
+        input: ({ event }) => {
+          if (event.type !== 'event.parameter.edit') return undefined
+          return event.data
+        },
+        onDone: ['#Modeling.idle'],
+        onError: {
+          target: '#Modeling.idle',
+          actions: 'toastError',
         },
       },
     },
@@ -5303,6 +4964,22 @@ export const modelingMachine = setup({
         id: 'rotateAstMod',
         input: ({ event }) => {
           if (event.type !== 'Rotate') return undefined
+          return event.data
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Applying scale': {
+      invoke: {
+        src: 'scaleAstMod',
+        id: 'scaleAstMod',
+        input: ({ event }) => {
+          if (event.type !== 'Scale') return undefined
           return event.data
         },
         onDone: ['idle'],

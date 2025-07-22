@@ -6,7 +6,7 @@ import { expect, test } from '@e2e/playwright/zoo-test'
 
 test(
   'When machine-api server not found butt is disabled and shows the reason',
-  { tag: '@electron' },
+  { tag: '@desktop' },
   async ({ context, page, scene, cmdBar }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
       const bracketDir = join(dir, 'bracket')
@@ -43,7 +43,7 @@ test(
 
 test(
   'When machine-api server not found home screen & project status shows the reason',
-  { tag: '@electron' },
+  { tag: '@desktop' },
   async ({ context, page, scene, cmdBar }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
       const bracketDir = join(dir, 'bracket')

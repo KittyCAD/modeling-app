@@ -2,10 +2,10 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Error from executing argument_error.kcl
 ---
-KCL Semantic error
+KCL Argument error
 
-  × semantic: f requires a value with type `fn(any): any`, but found array of
-  │ number(default units), number(default units) with 2 values
+  × argument: f requires a value with type `fn(any): any`, but found an array
+  │ of `number`, `number` (with type `[any; 2]`).
    ╭─[5:1]
  4 │ 
  5 │ map(f, f = [0, 1])
@@ -13,10 +13,10 @@ KCL Semantic error
    ·          │        ╰── tests/argument_error/input.kcl
    ·          ╰── tests/argument_error/input.kcl
    ╰────
-  ╰─▶ KCL Semantic error
+  ╰─▶ KCL Argument error
       
-        × semantic: f requires a value with type `fn(any): any`, but found
-        │ array of number(default units), number(default units) with 2 values
+        × argument: f requires a value with type `fn(any): any`, but found an
+        │ array of `number`, `number` (with type `[any; 2]`).
          ╭─[5:12]
        4 │
        5 │ map(f, f = [0, 1])

@@ -33,13 +33,13 @@ profile002 = startProfile(topFrameSketch, at = [totalWidth / 2 - thickness, thic
   |> xLine(endAbsolute = thickness / 2)
   |> yLine(endAbsolute = segEndY(tag001) - thickness)
   |> angledLine(endAbsoluteX = profileStartX(%), angle = -topTrussAngle)
-  |> close(%)
+  |> close()
 
 profile003 = startProfile(topFrameSketch, at = [-totalWidth / 2 + thickness, thickness])
   |> xLine(endAbsolute = -thickness / 2)
   |> yLine(endAbsolute = segEndY(tag001) - thickness)
   |> angledLine(endAbsoluteX = profileStartX(%), angle = 180 + topTrussAngle)
-  |> close(%)
+  |> close()
 profile004 = subtract2d(profile001, tool = profile002)
 subtract2d(profile001, tool = profile003)
 
@@ -52,7 +52,7 @@ profile006 = startProfile(sketch002, at = [thickness / 2 - 1, 14])
   |> angledLine(angle = sparAngle, length = 25)
   |> angledLine(angle = -topTrussAngle, length = 5)
   |> angledLine(angle = 180 + sparAngle, endAbsoluteX = profileStartX(%))
-  |> close(%)
+  |> close()
 
 spar001 = extrude(profile006, length = 1.8)
 
@@ -61,7 +61,7 @@ profile007 = startProfile(sketch002, at = [-thickness / 2 + 1, 14])
   |> angledLine(angle = 180 - sparAngle, length = 25)
   |> angledLine(angle = 180 + topTrussAngle, length = 5)
   |> angledLine(angle = -sparAngle, endAbsoluteX = profileStartX(%))
-  |> close(%)
+  |> close()
 
 spar002 = extrude(profile007, length = 1.8)
 
@@ -71,47 +71,37 @@ newFrame = topFrame + spar001 + spar002
 // Create the two legs on the frame
 leg001Sketch = startSketchOn(offsetPlane(XY, offset = .1))
 legProfile001 = startProfile(leg001Sketch, at = [0, -totalWidth / 2])
-  |> xLine(%, length = beamLength - .1)
-  |> yLine(%, length = beamWidth - 1)
-  |> xLine(%, endAbsolute = profileStartX(%))
-  |> close(%)
+  |> xLine(length = beamLength - .1)
+  |> yLine(length = beamWidth - 1)
+  |> xLine(endAbsolute = profileStartX(%))
+  |> close()
 
 legProfile002 = startProfile(leg001Sketch, at = [0, totalWidth / 2])
-  |> xLine(%, length = beamLength - .1)
-  |> yLine(%, length = -(beamWidth - 1))
-  |> xLine(%, endAbsolute = profileStartX(%))
-  |> close(%)
+  |> xLine(length = beamLength - .1)
+  |> yLine(length = -(beamWidth - 1))
+  |> xLine(endAbsolute = profileStartX(%))
+  |> close()
 leg001 = extrude(legProfile001, length = -legHeight - .1)
 leg002 = extrude(legProfile002, length = -legHeight - .1)
 
 // Combine the top frame with the legs and pattern
 fullFrame = newFrame + leg001 + leg002
-  |> patternLinear3d(
-       %,
-       instances = nFrames,
-       distance = crossBeamLength + beamLength,
-       axis = [-1, 0, 0],
-     )
+  |> patternLinear3d(instances = nFrames, distance = crossBeamLength + beamLength, axis = [-1, 0, 0])
 
 // Create the center cross beam
 centerCrossBeamSketch = startSketchOn(YZ)
 profile005 = startProfile(centerCrossBeamSketch, at = [0, segEndY(tag001) - 1])
-  |> angledLine(%, angle = -topTrussAngle, length = beamWidth * 3 / 8)
+  |> angledLine(angle = -topTrussAngle, length = beamWidth * 3 / 8)
   |> yLine(length = -beamWidth * 3 / 8)
-  |> angledLine(%, angle = 180 - topTrussAngle, length = beamWidth * 3 / 8)
-  |> angledLine(%, angle = 180 + topTrussAngle, length = beamWidth * 3 / 8)
+  |> angledLine(angle = 180 - topTrussAngle, length = beamWidth * 3 / 8)
+  |> angledLine(angle = 180 + topTrussAngle, length = beamWidth * 3 / 8)
   |> yLine(length = beamWidth * 3 / 8)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 
 // Extrude the center cross beam and pattern to every frame
 centerCrossBeam = extrude(profile005, length = -crossBeamLength)
-  |> patternLinear3d(
-       %,
-       instances = nFrames - 1,
-       distance = crossBeamLength + beamLength,
-       axis = [-1, 0, 0],
-     )
+  |> patternLinear3d(instances = nFrames - 1, distance = crossBeamLength + beamLength, axis = [-1, 0, 0])
 
 // Create the two side cross beams
 sideCrossBeamSketch = startSketchOn(-YZ)
@@ -128,15 +118,10 @@ profile008 = startProfile(
   |> close()
 profile009 = startProfile(sideCrossBeamSketch, at = [totalWidth / 2, segEndY(tag002) - .5])
   |> yLine(length = -beamLength)
-  |> xLine(%, length = -3 / 4 * beamWidth)
-  |> yLine(%, length = beamLength)
-  |> close(%)
+  |> xLine(length = -3 / 4 * beamWidth)
+  |> yLine(length = beamLength)
+  |> close()
 
 // Extrude the side cross beams and pattern to every frame.
 extrude([profile008, profile009], length = crossBeamLength)
-  |> patternLinear3d(
-       %,
-       instances = nFrames - 1,
-       distance = crossBeamLength + beamLength,
-       axis = [-1, 0, 0],
-     )
+  |> patternLinear3d(instances = nFrames - 1, distance = crossBeamLength + beamLength, axis = [-1, 0, 0])

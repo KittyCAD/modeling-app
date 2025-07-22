@@ -3,6 +3,26 @@ source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing car-wheel-assembly.kcl
 ---
 {
+  "__mod_brakeCaliper": {
+    "type": "Module",
+    "value": 4
+  },
+  "__mod_carRotor": {
+    "type": "Module",
+    "value": 3
+  },
+  "__mod_carTire": {
+    "type": "Module",
+    "value": 6
+  },
+  "__mod_carWheel": {
+    "type": "Module",
+    "value": 1
+  },
+  "__mod_lugNut": {
+    "type": "Module",
+    "value": 5
+  },
   "backSpacing": {
     "type": "Number",
     "value": 6.38,
@@ -28,10 +48,6 @@ description: Variables in memory after executing car-wheel-assembly.kcl
         "type": "Degrees"
       }
     }
-  },
-  "brakeCaliper": {
-    "type": "Module",
-    "value": 4
   },
   "c1": {
     "type": "TagIdentifier",
@@ -103,18 +119,6 @@ description: Variables in memory after executing car-wheel-assembly.kcl
       }
     }
   },
-  "carRotor": {
-    "type": "Module",
-    "value": 3
-  },
-  "carTire": {
-    "type": "Module",
-    "value": 6
-  },
-  "carWheel": {
-    "type": "Module",
-    "value": 1
-  },
   "drillAndSlotCount": {
     "type": "Number",
     "value": 5.0,
@@ -180,10 +184,6 @@ description: Variables in memory after executing car-wheel-assembly.kcl
       "type": "Length",
       "type": "Mm"
     }
-  },
-  "lugNut": {
-    "type": "Module",
-    "value": 5
   },
   "lugSpacing": {
     "type": "Number",

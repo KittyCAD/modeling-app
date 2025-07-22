@@ -73,7 +73,16 @@ impl Artifact {
                 ids
             }
             Artifact::Plane(_) => Vec::new(),
-            Artifact::Path(a) => vec![a.plane_id],
+            Artifact::Path(a) => {
+                let mut ids = vec![a.plane_id];
+                if let Some(inner_path_id) = a.inner_path_id {
+                    ids.push(inner_path_id);
+                }
+                if let Some(outer_path_id) = a.outer_path_id {
+                    ids.push(outer_path_id);
+                }
+                ids
+            }
             Artifact::Segment(a) => vec![a.path_id],
             Artifact::Solid2d(a) => vec![a.path_id],
             Artifact::StartSketchOnFace(a) => vec![a.face_id],
@@ -103,7 +112,8 @@ impl Artifact {
             }
             Artifact::Plane(a) => a.path_ids.clone(),
             Artifact::Path(a) => {
-                // Note: Don't include these since they're parents: plane_id.
+                // Note: Don't include these since they're parents: plane_id,
+                // inner_path_id, outer_path_id.
                 let mut ids = a.seg_ids.clone();
                 if let Some(sweep_id) = a.sweep_id {
                     ids.push(sweep_id);
@@ -268,7 +278,7 @@ impl ArtifactGraph {
         for (group_id, artifact_ids) in groups {
             let group_id = *stable_id_map.get(&group_id).unwrap();
             writeln!(output, "{prefix}subgraph path{group_id} [Path]")?;
-            let indented = format!("{}  ", prefix);
+            let indented = format!("{prefix}  ");
             for artifact_id in artifact_ids {
                 let artifact = self.map.get(&artifact_id).unwrap();
                 let id = *stable_id_map.get(&artifact_id).unwrap();
@@ -353,7 +363,7 @@ impl ArtifactGraph {
                 node_path_display(output, prefix, None, &segment.code_ref)?;
             }
             Artifact::Solid2d(_solid2d) => {
-                writeln!(output, "{prefix}{}[Solid2d]", id)?;
+                writeln!(output, "{prefix}{id}[Solid2d]")?;
             }
             Artifact::StartSketchOnFace(StartSketchOnFace { code_ref, .. }) => {
                 writeln!(
@@ -494,24 +504,24 @@ impl ArtifactGraph {
             match edge.flow {
                 EdgeFlow::SourceToTarget => match edge.direction {
                     EdgeDirection::Forward => {
-                        writeln!(output, "{prefix}{source_id} x{}--> {}", extra, target_id)?;
+                        writeln!(output, "{prefix}{source_id} x{extra}--> {target_id}")?;
                     }
                     EdgeDirection::Backward => {
-                        writeln!(output, "{prefix}{source_id} <{}--x {}", extra, target_id)?;
+                        writeln!(output, "{prefix}{source_id} <{extra}--x {target_id}")?;
                     }
                     EdgeDirection::Bidirectional => {
-                        writeln!(output, "{prefix}{source_id} {}--- {}", extra, target_id)?;
+                        writeln!(output, "{prefix}{source_id} {extra}--- {target_id}")?;
                     }
                 },
                 EdgeFlow::TargetToSource => match edge.direction {
                     EdgeDirection::Forward => {
-                        writeln!(output, "{prefix}{target_id} x{}--> {}", extra, source_id)?;
+                        writeln!(output, "{prefix}{target_id} x{extra}--> {source_id}")?;
                     }
                     EdgeDirection::Backward => {
-                        writeln!(output, "{prefix}{target_id} <{}--x {}", extra, source_id)?;
+                        writeln!(output, "{prefix}{target_id} <{extra}--x {source_id}")?;
                     }
                     EdgeDirection::Bidirectional => {
-                        writeln!(output, "{prefix}{target_id} {}--- {}", extra, source_id)?;
+                        writeln!(output, "{prefix}{target_id} {extra}--- {source_id}")?;
                     }
                 },
             }

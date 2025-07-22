@@ -8,6 +8,7 @@ description: Result of parsing cpu-cooler.kcl
       {
         "commentStart": 0,
         "end": 0,
+        "moduleId": 0,
         "path": {
           "type": "Kcl",
           "filename": "parameters.kcl"
@@ -18,6 +19,7 @@ description: Result of parsing cpu-cooler.kcl
         "selector": {
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "Glob"
         },
@@ -28,6 +30,7 @@ description: Result of parsing cpu-cooler.kcl
       {
         "commentStart": 0,
         "end": 0,
+        "moduleId": 0,
         "path": {
           "type": "Kcl",
           "filename": "fan-housing.kcl"
@@ -37,6 +40,7 @@ description: Result of parsing cpu-cooler.kcl
           "alias": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "fanHousing",
             "start": 0,
             "type": "Identifier"
@@ -49,6 +53,7 @@ description: Result of parsing cpu-cooler.kcl
       {
         "commentStart": 0,
         "end": 0,
+        "moduleId": 0,
         "path": {
           "type": "Kcl",
           "filename": "motor.kcl"
@@ -58,6 +63,7 @@ description: Result of parsing cpu-cooler.kcl
           "alias": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "motor",
             "start": 0,
             "type": "Identifier"
@@ -70,6 +76,7 @@ description: Result of parsing cpu-cooler.kcl
       {
         "commentStart": 0,
         "end": 0,
+        "moduleId": 0,
         "path": {
           "type": "Kcl",
           "filename": "fan.kcl"
@@ -79,6 +86,7 @@ description: Result of parsing cpu-cooler.kcl
           "alias": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "fan",
             "start": 0,
             "type": "Identifier"
@@ -91,6 +99,7 @@ description: Result of parsing cpu-cooler.kcl
       {
         "commentStart": 0,
         "end": 0,
+        "moduleId": 0,
         "path": {
           "type": "Kcl",
           "filename": "heat-sink.kcl"
@@ -100,6 +109,7 @@ description: Result of parsing cpu-cooler.kcl
           "alias": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "heatSink",
             "start": 0,
             "type": "Identifier"
@@ -112,6 +122,7 @@ description: Result of parsing cpu-cooler.kcl
       {
         "commentStart": 0,
         "end": 0,
+        "moduleId": 0,
         "path": {
           "type": "Kcl",
           "filename": "mounting-wire.kcl"
@@ -121,6 +132,7 @@ description: Result of parsing cpu-cooler.kcl
           "alias": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "mountingWire",
             "start": 0,
             "type": "Identifier"
@@ -133,6 +145,7 @@ description: Result of parsing cpu-cooler.kcl
       {
         "commentStart": 0,
         "end": 0,
+        "moduleId": 0,
         "path": {
           "type": "Kcl",
           "filename": "removable-sticker.kcl"
@@ -142,6 +155,7 @@ description: Result of parsing cpu-cooler.kcl
           "alias": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "removableSticker",
             "start": 0,
             "type": "Identifier"
@@ -158,9 +172,11 @@ description: Result of parsing cpu-cooler.kcl
           "abs_path": false,
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "name": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "heatSink",
             "start": 0,
             "type": "Identifier"
@@ -170,6 +186,7 @@ description: Result of parsing cpu-cooler.kcl
           "type": "Name",
           "type": "Name"
         },
+        "moduleId": 0,
         "preComments": [
           "",
           "",
@@ -187,6 +204,7 @@ description: Result of parsing cpu-cooler.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "translatePart",
             "start": 0,
             "type": "Identifier"
@@ -203,9 +221,11 @@ description: Result of parsing cpu-cooler.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "part",
                           "start": 0,
                           "type": "Identifier"
@@ -222,6 +242,7 @@ description: Result of parsing cpu-cooler.kcl
                             "label": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "x",
                               "start": 0,
                               "type": "Identifier"
@@ -233,9 +254,11 @@ description: Result of parsing cpu-cooler.kcl
                                 "abs_path": false,
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": {
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "name": "heatSinkDepth",
                                   "start": 0,
                                   "type": "Identifier"
@@ -245,10 +268,12 @@ description: Result of parsing cpu-cooler.kcl
                                 "type": "Name",
                                 "type": "Name"
                               },
+                              "moduleId": 0,
                               "operator": "/",
                               "right": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "raw": "2",
                                 "start": 0,
                                 "type": "Literal",
@@ -268,6 +293,7 @@ description: Result of parsing cpu-cooler.kcl
                             "label": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "z",
                               "start": 0,
                               "type": "Identifier"
@@ -278,6 +304,7 @@ description: Result of parsing cpu-cooler.kcl
                               "left": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "raw": "40",
                                 "start": 0,
                                 "type": "Literal",
@@ -287,6 +314,7 @@ description: Result of parsing cpu-cooler.kcl
                                   "suffix": "None"
                                 }
                               },
+                              "moduleId": 0,
                               "operator": "+",
                               "right": {
                                 "commentStart": 0,
@@ -295,9 +323,11 @@ description: Result of parsing cpu-cooler.kcl
                                   "abs_path": false,
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "name": {
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "name": "fanSize",
                                     "start": 0,
                                     "type": "Identifier"
@@ -307,10 +337,12 @@ description: Result of parsing cpu-cooler.kcl
                                   "type": "Name",
                                   "type": "Name"
                                 },
+                                "moduleId": 0,
                                 "operator": "/",
                                 "right": {
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "raw": "2",
                                   "start": 0,
                                   "type": "Literal",
@@ -334,9 +366,11 @@ description: Result of parsing cpu-cooler.kcl
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "translate",
                             "start": 0,
                             "type": "Identifier"
@@ -347,6 +381,7 @@ description: Result of parsing cpu-cooler.kcl
                         },
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "start": 0,
                         "type": "CallExpressionKw",
                         "type": "CallExpressionKw",
@@ -359,6 +394,7 @@ description: Result of parsing cpu-cooler.kcl
                             "label": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "instances",
                               "start": 0,
                               "type": "Identifier"
@@ -366,6 +402,7 @@ description: Result of parsing cpu-cooler.kcl
                             "arg": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "raw": "2",
                               "start": 0,
                               "type": "Literal",
@@ -381,6 +418,7 @@ description: Result of parsing cpu-cooler.kcl
                             "label": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "distance",
                               "start": 0,
                               "type": "Identifier"
@@ -392,9 +430,11 @@ description: Result of parsing cpu-cooler.kcl
                                 "abs_path": false,
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": {
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "name": "heatSinkDepth",
                                   "start": 0,
                                   "type": "Identifier"
@@ -404,14 +444,17 @@ description: Result of parsing cpu-cooler.kcl
                                 "type": "Name",
                                 "type": "Name"
                               },
+                              "moduleId": 0,
                               "operator": "+",
                               "right": {
                                 "abs_path": false,
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": {
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "name": "fanHeight",
                                   "start": 0,
                                   "type": "Identifier"
@@ -431,6 +474,7 @@ description: Result of parsing cpu-cooler.kcl
                             "label": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "axis",
                               "start": 0,
                               "type": "Identifier"
@@ -442,6 +486,7 @@ description: Result of parsing cpu-cooler.kcl
                                   "argument": {
                                     "commentStart": 0,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "raw": "1",
                                     "start": 0,
                                     "type": "Literal",
@@ -453,6 +498,7 @@ description: Result of parsing cpu-cooler.kcl
                                   },
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "operator": "-",
                                   "start": 0,
                                   "type": "UnaryExpression",
@@ -461,6 +507,7 @@ description: Result of parsing cpu-cooler.kcl
                                 {
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "raw": "0",
                                   "start": 0,
                                   "type": "Literal",
@@ -473,6 +520,7 @@ description: Result of parsing cpu-cooler.kcl
                                 {
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "raw": "0",
                                   "start": 0,
                                   "type": "Literal",
@@ -484,6 +532,7 @@ description: Result of parsing cpu-cooler.kcl
                                 }
                               ],
                               "end": 0,
+                              "moduleId": 0,
                               "start": 0,
                               "type": "ArrayExpression",
                               "type": "ArrayExpression"
@@ -494,9 +543,11 @@ description: Result of parsing cpu-cooler.kcl
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "patternLinear3d",
                             "start": 0,
                             "type": "Identifier"
@@ -507,24 +558,21 @@ description: Result of parsing cpu-cooler.kcl
                         },
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "start": 0,
                         "type": "CallExpressionKw",
                         "type": "CallExpressionKw",
-                        "unlabeled": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "start": 0,
-                          "type": "PipeSubstitution",
-                          "type": "PipeSubstitution"
-                        }
+                        "unlabeled": null
                       }
                     ],
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "start": 0,
                     "type": "PipeExpression",
                     "type": "PipeExpression"
                   },
+                  "moduleId": 0,
                   "start": 0,
                   "type": "ExpressionStatement",
                   "type": "ExpressionStatement"
@@ -533,6 +581,7 @@ description: Result of parsing cpu-cooler.kcl
                   "argument": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "properties": [],
                     "start": 0,
                     "type": "ObjectExpression",
@@ -540,6 +589,7 @@ description: Result of parsing cpu-cooler.kcl
                   },
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
@@ -547,16 +597,19 @@ description: Result of parsing cpu-cooler.kcl
               ],
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0
             },
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "part",
                   "start": 0,
                   "type": "Identifier"
@@ -567,11 +620,13 @@ description: Result of parsing cpu-cooler.kcl
             "type": "FunctionExpression",
             "type": "FunctionExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "fn",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -586,6 +641,7 @@ description: Result of parsing cpu-cooler.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "part",
                 "start": 0,
                 "type": "Identifier"
@@ -594,9 +650,11 @@ description: Result of parsing cpu-cooler.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "fanHousing",
                   "start": 0,
                   "type": "Identifier"
@@ -612,9 +670,11 @@ description: Result of parsing cpu-cooler.kcl
             "abs_path": false,
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "translatePart",
               "start": 0,
               "type": "Identifier"
@@ -625,11 +685,13 @@ description: Result of parsing cpu-cooler.kcl
           },
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
           "unlabeled": null
         },
+        "moduleId": 0,
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -644,6 +706,7 @@ description: Result of parsing cpu-cooler.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "part",
                 "start": 0,
                 "type": "Identifier"
@@ -652,9 +715,11 @@ description: Result of parsing cpu-cooler.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "motor",
                   "start": 0,
                   "type": "Identifier"
@@ -670,9 +735,11 @@ description: Result of parsing cpu-cooler.kcl
             "abs_path": false,
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "translatePart",
               "start": 0,
               "type": "Identifier"
@@ -683,11 +750,13 @@ description: Result of parsing cpu-cooler.kcl
           },
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
           "unlabeled": null
         },
+        "moduleId": 0,
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -702,6 +771,7 @@ description: Result of parsing cpu-cooler.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "part",
                 "start": 0,
                 "type": "Identifier"
@@ -710,9 +780,11 @@ description: Result of parsing cpu-cooler.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "fan",
                   "start": 0,
                   "type": "Identifier"
@@ -728,9 +800,11 @@ description: Result of parsing cpu-cooler.kcl
             "abs_path": false,
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "translatePart",
               "start": 0,
               "type": "Identifier"
@@ -741,11 +815,13 @@ description: Result of parsing cpu-cooler.kcl
           },
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
           "unlabeled": null
         },
+        "moduleId": 0,
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -759,9 +835,11 @@ description: Result of parsing cpu-cooler.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "mountingWire",
                 "start": 0,
                 "type": "Identifier"
@@ -778,6 +856,7 @@ description: Result of parsing cpu-cooler.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "instances",
                     "start": 0,
                     "type": "Identifier"
@@ -785,6 +864,7 @@ description: Result of parsing cpu-cooler.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "2",
                     "start": 0,
                     "type": "Literal",
@@ -800,6 +880,7 @@ description: Result of parsing cpu-cooler.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "axis",
                     "start": 0,
                     "type": "Identifier"
@@ -810,6 +891,7 @@ description: Result of parsing cpu-cooler.kcl
                       {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "0",
                         "start": 0,
                         "type": "Literal",
@@ -822,6 +904,7 @@ description: Result of parsing cpu-cooler.kcl
                       {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "1",
                         "start": 0,
                         "type": "Literal",
@@ -834,6 +917,7 @@ description: Result of parsing cpu-cooler.kcl
                       {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "0",
                         "start": 0,
                         "type": "Literal",
@@ -845,6 +929,7 @@ description: Result of parsing cpu-cooler.kcl
                       }
                     ],
                     "end": 0,
+                    "moduleId": 0,
                     "start": 0,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
@@ -855,6 +940,7 @@ description: Result of parsing cpu-cooler.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "center",
                     "start": 0,
                     "type": "Identifier"
@@ -865,6 +951,7 @@ description: Result of parsing cpu-cooler.kcl
                       {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "0",
                         "start": 0,
                         "type": "Literal",
@@ -877,6 +964,7 @@ description: Result of parsing cpu-cooler.kcl
                       {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "0",
                         "start": 0,
                         "type": "Literal",
@@ -892,6 +980,7 @@ description: Result of parsing cpu-cooler.kcl
                         "left": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "40",
                           "start": 0,
                           "type": "Literal",
@@ -901,6 +990,7 @@ description: Result of parsing cpu-cooler.kcl
                             "suffix": "None"
                           }
                         },
+                        "moduleId": 0,
                         "operator": "+",
                         "right": {
                           "commentStart": 0,
@@ -909,9 +999,11 @@ description: Result of parsing cpu-cooler.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "fanSize",
                               "start": 0,
                               "type": "Identifier"
@@ -921,10 +1013,12 @@ description: Result of parsing cpu-cooler.kcl
                             "type": "Name",
                             "type": "Name"
                           },
+                          "moduleId": 0,
                           "operator": "/",
                           "right": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "raw": "2",
                             "start": 0,
                             "type": "Literal",
@@ -944,6 +1038,7 @@ description: Result of parsing cpu-cooler.kcl
                       }
                     ],
                     "end": 0,
+                    "moduleId": 0,
                     "start": 0,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
@@ -954,6 +1049,7 @@ description: Result of parsing cpu-cooler.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "arcDegrees",
                     "start": 0,
                     "type": "Identifier"
@@ -961,6 +1057,7 @@ description: Result of parsing cpu-cooler.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "360",
                     "start": 0,
                     "type": "Literal",
@@ -976,6 +1073,7 @@ description: Result of parsing cpu-cooler.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "rotateDuplicates",
                     "start": 0,
                     "type": "Identifier"
@@ -983,6 +1081,7 @@ description: Result of parsing cpu-cooler.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "true",
                     "start": 0,
                     "type": "Literal",
@@ -995,9 +1094,11 @@ description: Result of parsing cpu-cooler.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "patternCircular3d",
                   "start": 0,
                   "type": "Identifier"
@@ -1008,16 +1109,11 @@ description: Result of parsing cpu-cooler.kcl
               },
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
-              "unlabeled": {
-                "commentStart": 0,
-                "end": 0,
-                "start": 0,
-                "type": "PipeSubstitution",
-                "type": "PipeSubstitution"
-              }
+              "unlabeled": null
             },
             {
               "arguments": [
@@ -1026,6 +1122,7 @@ description: Result of parsing cpu-cooler.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "instances",
                     "start": 0,
                     "type": "Identifier"
@@ -1033,6 +1130,7 @@ description: Result of parsing cpu-cooler.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "2",
                     "start": 0,
                     "type": "Literal",
@@ -1048,6 +1146,7 @@ description: Result of parsing cpu-cooler.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "axis",
                     "start": 0,
                     "type": "Identifier"
@@ -1058,6 +1157,7 @@ description: Result of parsing cpu-cooler.kcl
                       {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "0",
                         "start": 0,
                         "type": "Literal",
@@ -1070,6 +1170,7 @@ description: Result of parsing cpu-cooler.kcl
                       {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "0",
                         "start": 0,
                         "type": "Literal",
@@ -1082,6 +1183,7 @@ description: Result of parsing cpu-cooler.kcl
                       {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "1",
                         "start": 0,
                         "type": "Literal",
@@ -1093,6 +1195,7 @@ description: Result of parsing cpu-cooler.kcl
                       }
                     ],
                     "end": 0,
+                    "moduleId": 0,
                     "start": 0,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
@@ -1103,6 +1206,7 @@ description: Result of parsing cpu-cooler.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "center",
                     "start": 0,
                     "type": "Identifier"
@@ -1113,6 +1217,7 @@ description: Result of parsing cpu-cooler.kcl
                       {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "0",
                         "start": 0,
                         "type": "Literal",
@@ -1125,6 +1230,7 @@ description: Result of parsing cpu-cooler.kcl
                       {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "0",
                         "start": 0,
                         "type": "Literal",
@@ -1137,6 +1243,7 @@ description: Result of parsing cpu-cooler.kcl
                       {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "0",
                         "start": 0,
                         "type": "Literal",
@@ -1148,6 +1255,7 @@ description: Result of parsing cpu-cooler.kcl
                       }
                     ],
                     "end": 0,
+                    "moduleId": 0,
                     "start": 0,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
@@ -1158,6 +1266,7 @@ description: Result of parsing cpu-cooler.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "arcDegrees",
                     "start": 0,
                     "type": "Identifier"
@@ -1165,6 +1274,7 @@ description: Result of parsing cpu-cooler.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "360",
                     "start": 0,
                     "type": "Literal",
@@ -1180,6 +1290,7 @@ description: Result of parsing cpu-cooler.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "rotateDuplicates",
                     "start": 0,
                     "type": "Identifier"
@@ -1187,6 +1298,7 @@ description: Result of parsing cpu-cooler.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "true",
                     "start": 0,
                     "type": "Literal",
@@ -1199,9 +1311,11 @@ description: Result of parsing cpu-cooler.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "patternCircular3d",
                   "start": 0,
                   "type": "Identifier"
@@ -1212,24 +1326,21 @@ description: Result of parsing cpu-cooler.kcl
               },
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
-              "unlabeled": {
-                "commentStart": 0,
-                "end": 0,
-                "start": 0,
-                "type": "PipeSubstitution",
-                "type": "PipeSubstitution"
-              }
+              "unlabeled": null
             }
           ],
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "PipeExpression",
           "type": "PipeExpression"
         },
+        "moduleId": 0,
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -1241,9 +1352,11 @@ description: Result of parsing cpu-cooler.kcl
           "abs_path": false,
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "name": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "removableSticker",
             "start": 0,
             "type": "Identifier"
@@ -1253,6 +1366,7 @@ description: Result of parsing cpu-cooler.kcl
           "type": "Name",
           "type": "Name"
         },
+        "moduleId": 0,
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -1264,9 +1378,11 @@ description: Result of parsing cpu-cooler.kcl
       {
         "commentStart": 0,
         "end": 0,
+        "moduleId": 0,
         "name": {
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "name": "settings",
           "start": 0,
           "type": "Identifier"
@@ -1285,19 +1401,23 @@ description: Result of parsing cpu-cooler.kcl
             "key": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "defaultLengthUnit",
               "start": 0,
               "type": "Identifier"
             },
+            "moduleId": 0,
             "start": 0,
             "type": "ObjectProperty",
             "value": {
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "mm",
                 "start": 0,
                 "type": "Identifier"
@@ -1313,12 +1433,14 @@ description: Result of parsing cpu-cooler.kcl
         "type": "Annotation"
       }
     ],
+    "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "7": [
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {
@@ -1330,6 +1452,7 @@ description: Result of parsing cpu-cooler.kcl
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {
@@ -1342,6 +1465,7 @@ description: Result of parsing cpu-cooler.kcl
         {
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "NonCodeNode",
           "value": {

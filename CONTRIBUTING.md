@@ -1,6 +1,6 @@
 # Contributor Guide
 
-## Running a development build
+## Installing dependencies
 
 Install a node version manager such as [fnm](https://github.com/Schniz/fnm?tab=readme-ov-#installation).
 
@@ -31,7 +31,9 @@ npm run install:rust:windows
 npm run install:wasm-pack:cargo
 ```
 
-Then to build the WASM layer, run:
+## Building the app
+
+To build the WASM layer, run:
 
 ```
 # macOS/Linux
@@ -63,7 +65,7 @@ If you're not a Zoo employee you won't be able to access the dev environment, yo
 
 ### Development environment variables
 
-The Copilot LSP plugin in the editor requires a Zoo API token to run. In production, we authenticate this with a token via cookie in the browser and device auth token in the desktop environment, but this token is inaccessible in the dev browser version because the cookie is considered "cross-site" (from `localhost` to `zoo.dev`). There is an optional environment variable called `VITE_KC_DEV_TOKEN` that you can populate with a dev token in a `.env.development.local` file to not check it into Git, which will use that token instead of other methods for the LSP service.
+The Copilot LSP plugin in the editor requires a Zoo API token to run. In production, we authenticate this with a token via cookie in the browser and device auth token in the desktop environment, but this token is inaccessible in the dev browser version because the cookie is considered "cross-site" (from `localhost` to `zoo.dev`). There is an optional environment variable called `VITE_KITTYCAD_API_TOKEN` that you can populate with a dev token in a `.env.development.local` file to not check it into Git, which will use that token instead of other methods for the LSP service.
 
 ### Developing in Chrome
 
@@ -74,7 +76,7 @@ enable third-party cookies. You can enable third-party cookies by clicking on
 the eye with a slash through it in the URL bar, and clicking on "Enable
 Third-Party Cookies".
 
-## Desktop
+### Developing with Electron
 
 To spin up the desktop app, `npm install` and `npm run build:wasm` need to have been done before hand then:
 
@@ -88,119 +90,17 @@ Devtools can be opened with the usual Command-Option-I (macOS) or Ctrl-Shift-I (
 
 To package the app for your platform with electron-builder, run `npm run tronb:package:dev` (or `npm run tronb:package:prod` to point to the .env.production variables).
 
-## Checking out commits / Bisecting
-
-Which commands from setup are one off vs. need to be run every time?
-
-The following will need to be run when checking out a new commit and guarantees the build is not stale:
-
-```bash
-npm install
-npm run build:wasm
-npm start
-```
-
-## Before submitting a PR
-
-Before you submit a contribution PR to this repo, please ensure that:
-
-- There is a corresponding issue for the changes you want to make, so that discussion of approach can be had before work begins.
-- You have separated out refactoring commits from feature commits as much as possible
-- You have run all of the following commands locally:
-  - `npm run fmt`
-  - `npm run tsc`
-  - `npm run test`
-  - Here they are all together: `npm run fmt && npm run tsc && npm run test`
-
-## Release a new version
-
-#### 1. Create a 'Cut release $VERSION' issue
-
-It will be used to document changelog discussions and release testing.
-
-https://github.com/KittyCAD/modeling-app/issues/new
-
-#### 2. Push a new tag
-
-Decide on a `v`-prefixed semver `VERSION` (eg. `v1.2.3`) with the team and tag the repo, eg. on latest main:
-
-```
-git tag $VERSION
-git push origin $VERSION
-```
-
-This will trigger the `build-apps` workflow, set the version, build & sign the apps, and generate release files.
-
-The workflow should be listed right away [in this list](https://github.com/KittyCAD/modeling-app/actions/workflows/build-apps.yml?query=event%3Apush)).
-
-#### 3. Manually test artifacts
-
-##### Release builds
-
-The release builds can be found under the `out-{arch}-{platform}` zip files, at the very bottom of the `build-apps` summary page for the workflow (triggered by the tag in 2.).
-
-Manually test against this [list](https://github.com/KittyCAD/modeling-app/issues/3588) across Windows, MacOS, Linux and posting results as comments in the issue.
-
-A prompt should show up asking for a downgrade to the last release version. Running through that at the end of testing
-and making sure the current release candidate has the ability to be updated to what electron-updater points to is critical,
-but what is actually being downloaded and installed isn't.
-If the prompt doesn't show up, start the app in command line to grab the electron-updater logs. This is likely an issue with the current build that needs addressing.
-
-```
-# Windows (PowerShell)
-& 'C:\Program Files\Zoo Design Studio\Zoo Design Studio.exe'
-
-# macOS
-/Applications/Zoo\ Modeling\ App.app/Contents/MacOS/Zoo\ Modeling\ App
-
-# Linux
-./Zoo Design Studio-{version}-{arch}-linux.AppImage
-```
-
-#### 4. Publish the release
-
-Head over to https://github.com/KittyCAD/modeling-app/releases/new, pick the newly created tag and type it in the _Release title_ field as well.
-
-Hit _Generate release notes_ as a starting point to discuss the changelog in the issue. Once done, make sure _Set as the latest release_ is checked, and hit _Publish release_.
-
-A new `publish-apps-release` will kick in and you should be able to find it [here](https://github.com/KittyCAD/modeling-app/actions?query=event%3Arelease). On success, the files will be uploaded to the public bucket as well as to the GitHub release, and the announcement on Discord will be sent.
-
-#### 5. Close the issue
-
-If everything is well and the release is out to the public, the issue tracking the release shall be closed.
-
-## Fuzzing the parser
-
-Make sure you install cargo fuzz:
-
-```bash
-$ cargo install cargo-fuzz
-```
-
-```bash
-$ cd rust/kcl-lib
-
-# list the fuzz targets
-$ cargo fuzz list
-
-# run the parser fuzzer
-$ cargo +nightly fuzz run parser
-```
-
-For more information on fuzzing you can check out
-[this guide](https://rust-fuzz.github.io/book/cargo-fuzz.html).
-
-## Tests
+## Running tests
 
 ### Playwright tests
 
 Prepare these system dependencies:
 
-- Set $token from https://zoo.dev/account/api-tokens
+- Set `$VITE_KITTYCAD_API_TOKEN` from https://zoo.dev/account/api-tokens
 
 #### Snapshot tests (Google Chrome on Ubuntu only)
 
-Only Ubunu and Google Chrome is supported for the set of tests evaluating screenshot snapshots.
+Only Ubuntu and Google Chrome is supported for the set of tests evaluating screenshot snapshots.
 If you don't run Ubuntu locally or in a VM, you may use a GitHub Codespace.
 ```
 npm run playwright -- install chrome
@@ -208,13 +108,20 @@ npm run test:snapshots
 ```
 You may use `-- --update-snapshots` as needed.
 
-#### Electron flow tests (Chromium on Ubuntu, macOS, Windows)
+#### Desktop tests (Electron on all platforms)
 
 ```
 npm run playwright -- install chromium
-npm run test:playwright:electron:local
+npm run test:e2e:desktop:local
 ```
+
 You may use `-- -g "my test"` to match specific test titles, or `-- path/to/file.spec.ts` for a test file.
+
+#### Web tests (Google Chrome on all platforms)
+
+```
+npm run test:e2e:web
+```
 
 #### Debugger
 
@@ -301,8 +208,88 @@ then run tests that target the KCL language:
 npm run test:rust
 ```
 
+### Fuzzing the parser
+
+Make sure you install cargo fuzz:
+
+```bash
+$ cargo install cargo-fuzz
+```
+
+```bash
+$ cd rust/kcl-lib
+
+# list the fuzz targets
+$ cargo fuzz list
+
+# run the parser fuzzer
+$ cargo +nightly fuzz run parser
+```
+
+For more information on fuzzing you can check out
+[this guide](https://rust-fuzz.github.io/book/cargo-fuzz.html).
+
 ### Logging
 
 To display logging (to the terminal or console) set `ZOO_LOG=1`. This will log some warnings and simple performance metrics. To view these in test runs, use `-- --nocapture`.
 
 To enable memory metrics, build with `--features dhat-heap`.
+
+## Running scripts
+
+There are multiple scripts under the folder path `./scripts` which can be used in various settings.
+
+### Pattern for a static file, npm run commands, and CI-CD checks
+
+If you want to implement a static checker follow this pattern. Two static checkers we have are circular dependency checks in our typescript code and url checker to see if any hard coded URL is the typescript application 404s. We have a set of known files in `./scripts/known/*.txt` which is the baseline.
+
+If you improve the baseline, run the overwrite command and commit the new smaller baseline. Try not to make the baseline bigger, the CI CD will complain.
+These baselines are to hold us to higher standards and help implement automated testing against the repository
+
+#### Output result to stdout
+- `npm run circular-deps`
+- `npm run url-checker`
+
+- create a `<name>.sh` file that will run the static checker then output the result to `stdout`
+
+#### Overwrite result to known .txt file on disk
+
+If the application needs to overwrite the known file on disk use this pattern. This known .txt file will be source controlled as the baseline
+
+- `npm run circular-deps:overwrite`
+- `npm run url-checker:overwrite`
+
+#### Diff baseline and current
+
+These commands will write a /tmp/ file on disk and compare it to the known file in the repository. This command will also be used in the CI CD pipeline for automated checks
+
+- create a `diff-<name>.sh` file that is the script to diff your tmp file to the baseline
+e.g. `diff-url-checker.sh`
+```bash
+#!/bin/bash
+set -euo pipefail
+
+npm run url-checker > /tmp/urls.txt
+diff --ignore-blank-lines -w /tmp/urls.txt ./scripts/known/urls.txt
+```
+
+- `npm run circular-deps:diff`
+- `npm run url-checker:diff`
+
+## Proposing changes
+
+Before you submit a contribution PR to this repo, please ensure that:
+
+- There is a corresponding issue for the changes you want to make, so that discussion of approach can be had before work begins.
+- You have separated out refactoring commits from feature commits as much as possible
+- You have run all of the following commands locally:
+  - `npm run fmt`
+  - `npm run tsc`
+  - `npm run test`
+  - Here they are all together: `npm run fmt && npm run tsc && npm run test`
+
+## Shipping releases
+
+Create a new issue using the **Release** issue template: https://github.com/KittyCAD/modeling-app/issues/new?template=release.md
+
+Follow the embedded instructions to facilitate changelog discussions and release testing.

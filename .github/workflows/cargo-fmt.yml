@@ -25,21 +25,21 @@ name: cargo fmt
 jobs:
   cargofmt:
     name: cargo fmt
-    runs-on: ubuntu-latest
+    runs-on: namespace-profile-ubuntu-2-cores
     steps:
       - uses: actions/checkout@v4
       - name: Use correct Rust toolchain
         shell: bash
         run: |
-          [ -e rust-toolchain.toml ] || cp rust/rust-toolchain.toml ./
+          cp .github/workflows/nightly-rust-toolchain.toml rust-toolchain.toml
       - name: Install rust
         uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           cache-workspaces: rust
           components: rustfmt
 
-      - name: Run cargo fmt
+      - name: Run nightly cargo fmt
         run: |
           cd rust
-          cargo fmt -- --check
+          cargo +nightly fmt -- --check
         shell: bash

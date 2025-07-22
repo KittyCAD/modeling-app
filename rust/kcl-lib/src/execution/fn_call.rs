@@ -1,21 +1,20 @@
 use async_recursion::async_recursion;
 use indexmap::IndexMap;
 
-use super::{types::ArrayLen, EnvironmentRef};
 use crate::{
-    docs::StdLibFn,
+    CompilationError, NodePath,
     errors::{KclError, KclErrorDetails},
     execution::{
+        BodyType, EnvironmentRef, ExecState, ExecutorContext, KclValue, Metadata, StatementKind, TagEngineInfo,
+        TagIdentifier,
         cad_op::{Group, OpArg, OpKclValue, Operation},
         kcl_value::FunctionSource,
         memory,
         types::RuntimeType,
-        BodyType, ExecState, ExecutorContext, KclValue, Metadata, StatementKind, TagEngineInfo, TagIdentifier,
     },
     parsing::ast::types::{CallExpressionKw, DefaultParamVal, FunctionExpression, Node, Program, Type},
     source_range::SourceRange,
     std::StdFn,
-    CompilationError,
 };
 
 #[derive(Debug, Clone)]
@@ -184,40 +183,6 @@ impl<'a> From<&'a FunctionSource> for FunctionDefinition<'a> {
     }
 }
 
-impl From<&dyn StdLibFn> for FunctionDefinition<'static> {
-    fn from(value: &dyn StdLibFn) -> Self {
-        let mut input_arg = None;
-        let mut named_args = IndexMap::new();
-        for a in value.args(false) {
-            if !a.label_required {
-                input_arg = Some((a.name.clone(), None));
-                continue;
-            }
-
-            named_args.insert(
-                a.name.clone(),
-                (
-                    if a.required {
-                        None
-                    } else {
-                        Some(DefaultParamVal::none())
-                    },
-                    None,
-                ),
-            );
-        }
-        FunctionDefinition {
-            input_arg,
-            named_args,
-            return_type: None,
-            deprecated: value.deprecated(),
-            include_in_feature_tree: value.feature_tree_operation(),
-            is_std: true,
-            body: FunctionBody::Rust(value.std_lib_fn()),
-        }
-    }
-}
-
 impl Node<CallExpressionKw> {
     #[async_recursion]
     pub async fn execute(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
@@ -274,59 +239,44 @@ impl Node<CallExpressionKw> {
             exec_state.pipe_value().map(|v| Arg::new(v.clone(), callsite)),
         );
 
-        match ctx.stdlib.get_rust_function(fn_name) {
-            Some(func) => {
-                let def: FunctionDefinition = (&*func).into();
-                // All std lib functions return a value, so the unwrap is safe.
-                def.call_kw(Some(func.name()), exec_state, ctx, args, callsite)
-                    .await
-                    .map(Option::unwrap)
-                    .map_err(|e| {
-                        // This is used for the backtrace display.  We don't add
-                        // another location the way we do for user-defined
-                        // functions because the error uses the Args, which
-                        // already points here.
-                        e.set_last_backtrace_fn_name(Some(func.name()))
-                    })
-            }
-            None => {
-                // Clone the function so that we can use a mutable reference to
-                // exec_state.
-                let func = fn_name.get_result(exec_state, ctx).await?.clone();
+        // Clone the function so that we can use a mutable reference to
+        // exec_state.
+        let func = fn_name.get_result(exec_state, ctx).await?.clone();
 
-                let Some(fn_src) = func.as_fn() else {
-                    return Err(KclError::Semantic(KclErrorDetails::new(
-                        "cannot call this because it isn't a function".to_string(),
-                        vec![callsite],
-                    )));
-                };
+        let Some(fn_src) = func.as_function() else {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "cannot call this because it isn't a function".to_string(),
+                vec![callsite],
+            )));
+        };
 
-                let return_value = fn_src
-                    .call_kw(Some(fn_name.to_string()), exec_state, ctx, args, callsite)
-                    .await
-                    .map_err(|e| {
-                        // Add the call expression to the source ranges.
-                        //
-                        // TODO: Use the name that the function was defined
-                        // with, not the identifier it was used with.
-                        e.add_unwind_location(Some(fn_name.name.name.clone()), callsite)
-                    })?;
+        let return_value = fn_src
+            .call_kw(Some(fn_name.to_string()), exec_state, ctx, args, callsite)
+            .await
+            .map_err(|e| {
+                // Add the call expression to the source ranges.
+                //
+                // TODO: Use the name that the function was defined
+                // with, not the identifier it was used with.
+                e.add_unwind_location(Some(fn_name.name.name.clone()), callsite)
+            })?;
 
-                let result = return_value.ok_or_else(move || {
-                    let mut source_ranges: Vec<SourceRange> = vec![callsite];
-                    // We want to send the source range of the original function.
-                    if let KclValue::Function { meta, .. } = func {
-                        source_ranges = meta.iter().map(|m| m.source_range).collect();
-                    };
-                    KclError::UndefinedValue(KclErrorDetails::new(
-                        format!("Result of user-defined function {} is undefined", fn_name),
-                        source_ranges,
-                    ))
-                })?;
+        let result = return_value.ok_or_else(move || {
+            let mut source_ranges: Vec<SourceRange> = vec![callsite];
+            // We want to send the source range of the original function.
+            if let KclValue::Function { meta, .. } = func {
+                source_ranges = meta.iter().map(|m| m.source_range).collect();
+            };
+            KclError::new_undefined_value(
+                KclErrorDetails::new(
+                    format!("Result of user-defined function {fn_name} is undefined"),
+                    source_ranges,
+                ),
+                None,
+            )
+        })?;
 
-                Ok(result)
-            }
-        }
+        Ok(result)
     }
 }
 
@@ -372,6 +322,7 @@ impl FunctionDefinition<'_> {
                         .unlabeled_kw_arg_unconverted()
                         .map(|arg| OpArg::new(OpKclValue::from(&arg.value), arg.source_range)),
                     labeled_args: op_labeled_args,
+                    node_path: NodePath::placeholder(),
                     source_range: callsite,
                     is_error: false,
                 })
@@ -387,6 +338,7 @@ impl FunctionDefinition<'_> {
                             .map(|arg| OpArg::new(OpKclValue::from(&arg.1.value), arg.1.source_range)),
                         labeled_args: op_labeled_args,
                     },
+                    node_path: NodePath::placeholder(),
                     source_range: callsite,
                 });
 
@@ -449,7 +401,7 @@ impl FunctionDefinition<'_> {
 impl FunctionBody<'_> {
     fn prep_mem(&self, exec_state: &mut ExecState) {
         match self {
-            FunctionBody::Rust(_) => exec_state.mut_stack().push_new_env_for_rust_call(),
+            FunctionBody::Rust(_) => exec_state.mut_stack().push_new_root_env(true),
             FunctionBody::Kcl(_, memory) => exec_state.mut_stack().push_new_env_for_call(*memory),
         }
     }
@@ -493,14 +445,14 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
                 }
             }
         }
-        KclValue::Solid { ref mut value } => {
+        KclValue::Solid { value } => {
             for v in &value.value {
                 if let Some(tag) = v.get_tag() {
                     // Get the past tag and update it.
                     let tag_id = if let Some(t) = value.sketch.tags.get(&tag.name) {
                         let mut t = t.clone();
                         let Some(info) = t.get_cur_info() else {
-                            return Err(KclError::Internal(KclErrorDetails::new(
+                            return Err(KclError::new_internal(KclErrorDetails::new(
                                 format!("Tag {} does not have path info", tag.name),
                                 vec![tag.into()],
                             )));
@@ -580,6 +532,44 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
     Ok(())
 }
 
+fn type_err_str(expected: &Type, found: &KclValue, source_range: &SourceRange, exec_state: &mut ExecState) -> String {
+    fn strip_backticks(s: &str) -> &str {
+        let mut result = s;
+        if s.starts_with('`') {
+            result = &result[1..]
+        }
+        if s.ends_with('`') {
+            result = &result[..result.len() - 1]
+        }
+        result
+    }
+
+    let expected_human = expected.human_friendly_type();
+    let expected_ty = expected.to_string();
+    let expected_str =
+        if expected_human == expected_ty || expected_human == format!("a value with type `{expected_ty}`") {
+            format!("a value with type `{expected_ty}`")
+        } else {
+            format!("{expected_human} (`{expected_ty}`)")
+        };
+    let found_human = found.human_friendly_type();
+    let found_ty = found.principal_type_string();
+    let found_str = if found_human == found_ty || found_human == format!("a {}", strip_backticks(&found_ty)) {
+        format!("a value with type {found_ty}")
+    } else {
+        format!("{found_human} (with type {found_ty})")
+    };
+
+    let mut result = format!("{expected_str}, but found {found_str}.");
+
+    if found.is_unknown_number() {
+        exec_state.clear_units_warnings(source_range);
+        result.push_str("\nThe found value is a number but has incomplete units information. You can probably fix this error by specifying the units using type ascription, e.g., `len: number(mm)` or `(a * b): number(deg)`.");
+    }
+
+    result
+}
+
 fn type_check_params_kw(
     fn_name: Option<&str>,
     fn_def: &FunctionDefinition<'_>,
@@ -600,30 +590,34 @@ fn type_check_params_kw(
 
     for (label, arg) in &mut args.labeled {
         match fn_def.named_args.get(label) {
-            Some((_, ty)) => {
-                if let Some(ty) = ty {
-                    arg.value = arg
-                        .value
-                        .coerce(
-                            &RuntimeType::from_parsed(ty.clone(), exec_state, arg.source_range).map_err(|e| KclError::Semantic(e.into()))?,
-                            true,
-                            exec_state,
-                        )
-                        .map_err(|e| {
-                            let mut message = format!(
-                                "{label} requires a value with type `{}`, but found {}",
-                                ty,
-                                arg.value.human_friendly_type(),
-                            );
-                            if let Some(ty) = e.explicit_coercion {
-                                // TODO if we have access to the AST for the argument we could choose which example to suggest.
-                                message = format!("{message}\n\nYou may need to add information about the type of the argument, for example:\n  using a numeric suffix: `42{ty}`\n  or using type ascription: `foo(): number({ty})`");
-                            }
-                            KclError::Semantic(KclErrorDetails::new(
-                                message,
-                                vec![arg.source_range],
-                            ))
-                        })?;
+            Some((def, ty)) => {
+                // For optional args, passing None should be the same as not passing an arg.
+                if !(def.is_some() && matches!(arg.value, KclValue::KclNone { .. })) {
+                    if let Some(ty) = ty {
+                        let rty = RuntimeType::from_parsed(ty.clone(), exec_state, arg.source_range)
+                            .map_err(|e| KclError::new_semantic(e.into()))?;
+                        arg.value = arg
+                            .value
+                            .coerce(
+                                &rty,
+                                true,
+                                exec_state,
+                            )
+                            .map_err(|e| {
+                                let mut message = format!(
+                                    "{label} requires {}",
+                                    type_err_str(ty, &arg.value, &arg.source_range, exec_state),
+                                );
+                                if let Some(ty) = e.explicit_coercion {
+                                    // TODO if we have access to the AST for the argument we could choose which example to suggest.
+                                    message = format!("{message}\n\nYou may need to add information about the type of the argument, for example:\n  using a numeric suffix: `42{ty}`\n  or using type ascription: `foo(): number({ty})`");
+                                }
+                                KclError::new_argument(KclErrorDetails::new(
+                                    message,
+                                    vec![arg.source_range],
+                                ))
+                            })?;
+                    }
                 }
             }
             None => {
@@ -632,7 +626,7 @@ fn type_check_params_kw(
                     format!(
                         "`{label}` is not an argument of {}",
                         fn_name
-                            .map(|n| format!("`{}`", n))
+                            .map(|n| format!("`{n}`"))
                             .unwrap_or_else(|| "this function".to_owned()),
                     ),
                 ));
@@ -670,42 +664,34 @@ fn type_check_params_kw(
         let first = errors.next().unwrap();
         errors.for_each(|e| exec_state.err(e));
 
-        return Err(KclError::Semantic(first.into()));
+        return Err(KclError::new_argument(first.into()));
     }
 
     if let Some(arg) = &mut args.unlabeled {
         if let Some((_, Some(ty))) = &fn_def.input_arg {
-            arg.1.value = arg
-                .1
-                .value
-                .coerce(
-                    &RuntimeType::from_parsed(ty.clone(), exec_state, arg.1.source_range)
-                        .map_err(|e| KclError::Semantic(e.into()))?,
-                    true,
-                    exec_state,
-                )
-                .map_err(|_| {
-                    KclError::Semantic(KclErrorDetails::new(
-                        format!(
-                            "The input argument of {} requires a value with type `{}`, but found {}",
-                            fn_name
-                                .map(|n| format!("`{}`", n))
-                                .unwrap_or_else(|| "this function".to_owned()),
-                            ty,
-                            arg.1.value.human_friendly_type()
-                        ),
-                        vec![arg.1.source_range],
-                    ))
-                })?;
+            let rty = RuntimeType::from_parsed(ty.clone(), exec_state, arg.1.source_range)
+                .map_err(|e| KclError::new_semantic(e.into()))?;
+            arg.1.value = arg.1.value.coerce(&rty, true, exec_state).map_err(|_| {
+                KclError::new_argument(KclErrorDetails::new(
+                    format!(
+                        "The input argument of {} requires {}",
+                        fn_name
+                            .map(|n| format!("`{n}`"))
+                            .unwrap_or_else(|| "this function".to_owned()),
+                        type_err_str(ty, &arg.1.value, &arg.1.source_range, exec_state),
+                    ),
+                    vec![arg.1.source_range],
+                ))
+            })?;
         }
     } else if let Some((name, _)) = &fn_def.input_arg {
         if let Some(arg) = args.labeled.get(name) {
             exec_state.err(CompilationError::err(
                 arg.source_range,
                 format!(
-                    "{} expects an unlabeled first parameter (`@{name}`), but it is labelled in the call",
+                    "{} expects an unlabeled first argument (`@{name}`), but it is labelled in the call",
                     fn_name
-                        .map(|n| format!("The function `{}`", n))
+                        .map(|n| format!("The function `{n}`"))
                         .unwrap_or_else(|| "This function".to_owned()),
                 ),
             ));
@@ -735,18 +721,15 @@ fn assign_args_to_params_kw(
                 )?;
             }
             None => match default {
-                Some(ref default_val) => {
+                Some(default_val) => {
                     let value = KclValue::from_default_param(default_val.clone(), exec_state);
                     exec_state
                         .mut_stack()
                         .add(name.clone(), value, default_val.source_range())?;
                 }
                 None => {
-                    return Err(KclError::Semantic(KclErrorDetails::new(
-                        format!(
-                            "This function requires a parameter {}, but you haven't passed it one.",
-                            name
-                        ),
+                    return Err(KclError::new_argument(KclErrorDetails::new(
+                        format!("This function requires a parameter {name}, but you haven't passed it one."),
                         source_ranges,
                     )));
                 }
@@ -759,12 +742,14 @@ fn assign_args_to_params_kw(
 
         let Some(unlabeled) = unlabelled else {
             return Err(if args.kw_args.labeled.contains_key(param_name) {
-                KclError::Semantic(KclErrorDetails::new(
-                    format!("The function does declare a parameter named '{param_name}', but this parameter doesn't use a label. Try removing the `{param_name}:`"),
+                KclError::new_argument(KclErrorDetails::new(
+                    format!(
+                        "The function does declare a parameter named '{param_name}', but this parameter doesn't use a label. Try removing the `{param_name} =`"
+                    ),
                     source_ranges,
                 ))
             } else {
-                KclError::Semantic(KclErrorDetails::new(
+                KclError::new_argument(KclErrorDetails::new(
                     "This function expects an unlabeled first parameter, but you haven't passed it one.".to_owned(),
                     source_ranges,
                 ))
@@ -787,24 +772,13 @@ fn coerce_result_type(
 ) -> Result<Option<KclValue>, KclError> {
     if let Ok(Some(val)) = result {
         if let Some(ret_ty) = &fn_def.return_type {
-            let mut ty = RuntimeType::from_parsed(ret_ty.inner.clone(), exec_state, ret_ty.as_source_range())
-                .map_err(|e| KclError::Semantic(e.into()))?;
-            // Treat `[T; 1+]` as `T | [T; 1+]` (which can't yet be expressed in our syntax of types).
-            // This is a very specific hack which exists because some std functions can produce arrays
-            // but usually only make a singleton and the frontend expects the singleton.
-            // If we can make the frontend work on arrays (or at least arrays of length 1), then this
-            // can be removed.
-            // I believe this is safe, since anywhere which requires an array should coerce the singleton
-            // to an array and we only do this hack for return values.
-            if let RuntimeType::Array(inner, ArrayLen::NonEmpty) = &ty {
-                ty = RuntimeType::Union(vec![(**inner).clone(), ty]);
-            }
+            let ty = RuntimeType::from_parsed(ret_ty.inner.clone(), exec_state, ret_ty.as_source_range())
+                .map_err(|e| KclError::new_semantic(e.into()))?;
             let val = val.coerce(&ty, true, exec_state).map_err(|_| {
-                KclError::Semantic(KclErrorDetails::new(
+                KclError::new_type(KclErrorDetails::new(
                     format!(
-                        "This function requires its result to be of type `{}`, but found {}",
-                        ty.human_friendly_type(),
-                        val.human_friendly_type(),
+                        "This function requires its result to be {}",
+                        type_err_str(ret_ty, &val, &(&val).into(), exec_state)
                     ),
                     ret_ty.as_source_ranges(),
                 ))
@@ -824,7 +798,7 @@ mod test {
 
     use super::*;
     use crate::{
-        execution::{memory::Stack, parse_execute, types::NumericType, ContextType},
+        execution::{ContextType, memory::Stack, parse_execute, types::NumericType},
         parsing::ast::types::{DefaultParamVal, Identifier, Parameter},
     };
 
@@ -884,7 +858,7 @@ mod test {
                 "all params required, none given, should error",
                 vec![req_param("x")],
                 vec![],
-                Err(KclError::Semantic(KclErrorDetails::new(
+                Err(KclError::new_argument(KclErrorDetails::new(
                     "This function requires a parameter x, but you haven't passed it one.".to_owned(),
                     vec![SourceRange::default()],
                 ))),
@@ -899,7 +873,7 @@ mod test {
                 "mixed params, too few given",
                 vec![req_param("x"), opt_param("y")],
                 vec![],
-                Err(KclError::Semantic(KclErrorDetails::new(
+                Err(KclError::new_argument(KclErrorDetails::new(
                     "This function requires a parameter x, but you haven't passed it one.".to_owned(),
                     vec![SourceRange::default()],
                 ))),
@@ -947,7 +921,6 @@ mod test {
                     crate::engine::conn_mock::EngineConnection::new().await.unwrap(),
                 )),
                 fs: Arc::new(crate::fs::FileManager::new()),
-                stdlib: Arc::new(crate::std::StdLib::new()),
                 settings: Default::default(),
                 context_type: ContextType::Mock,
             };
@@ -984,7 +957,7 @@ msg2 = makeMessage(prefix = 1, suffix = 3)"#;
         let err = parse_execute(program).await.unwrap_err();
         assert_eq!(
             err.message(),
-            "prefix requires a value with type `string`, but found number(default units)"
+            "prefix requires a value with type `string`, but found a value with type `number`.\nThe found value is a number but has incomplete units information. You can probably fix this error by specifying the units using type ascription, e.g., `len: number(mm)` or `(a * b): number(deg)`."
         )
     }
 }

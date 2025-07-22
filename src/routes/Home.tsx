@@ -12,7 +12,6 @@ import {
 import { ActionButton } from '@src/components/ActionButton'
 import { AppHeader } from '@src/components/AppHeader'
 import Loading from '@src/components/Loading'
-import { LowerRightControls } from '@src/components/LowerRightControls'
 import ProjectCard from '@src/components/ProjectCard/ProjectCard'
 import {
   ProjectSearchBar,
@@ -61,6 +60,14 @@ import {
 import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
 import { ML_EXPERIMENTAL_MESSAGE } from '@src/lib/constants'
+import { StatusBar } from '@src/components/StatusBar/StatusBar'
+import { useNetworkMachineStatus } from '@src/components/NetworkMachineIndicator'
+import {
+  defaultLocalStatusBarItems,
+  defaultGlobalStatusBarItems,
+} from '@src/components/StatusBar/defaultStatusBarItems'
+import { useSelector } from '@xstate/react'
+import { withSiteBaseURL } from '@src/lib/withBaseURL'
 
 type ReadWriteProjectState = {
   value: boolean
@@ -75,6 +82,9 @@ const Home = () => {
   const readWriteProjectDir = useCanReadWriteProjectDirectory()
   const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
   const apiToken = useToken()
+  const networkMachineStatus = useNetworkMachineStatus()
+  const billingContext = useSelector(billingActor, ({ context }) => context)
+  const hasUnlimitedCredits = billingContext.credits === Infinity
 
   // Only create the native file menus on desktop
   useEffect(() => {
@@ -212,11 +222,8 @@ const Home = () => {
 
   return (
     <div className="relative flex flex-col items-stretch h-screen w-screen overflow-hidden">
-      <AppHeader
-        nativeFileMenuCreated={nativeFileMenuCreated}
-        showToolbar={false}
-      />
-      <div className="overflow-hidden self-stretch w-full flex-1 home-layout max-w-4xl lg:max-w-5xl xl:max-w-7xl mb-12 px-4 mx-auto mt-8 lg:mt-24 lg:px-0">
+      <AppHeader nativeFileMenuCreated={nativeFileMenuCreated} />
+      <div className="overflow-hidden self-stretch w-full flex-1 home-layout max-w-4xl lg:max-w-5xl xl:max-w-7xl px-4 mx-auto mt-8 lg:mt-24 lg:px-0">
         <HomeHeader
           setQuery={setQuery}
           sort={sort}
@@ -225,7 +232,7 @@ const Home = () => {
           readWriteProjectDir={readWriteProjectDir}
           className="col-start-2 -col-end-1"
         />
-        <aside className="lg:row-start-1 -row-end-1 grid sm:grid-cols-2 lg:flex flex-col justify-between">
+        <aside className="lg:row-start-1 -row-end-1 grid sm:grid-cols-2 md:mb-12 lg:flex flex-col justify-between">
           <ul className="flex flex-col">
             {needsToOnboard(location, onboardingStatus) && (
               <li className="flex group">
@@ -348,17 +355,19 @@ const Home = () => {
             </li>
           </ul>
           <ul className="flex flex-col">
-            <li className="contents">
-              <div className="my-2">
-                <BillingDialog billingActor={billingActor} />
-              </div>
-            </li>
+            {!hasUnlimitedCredits && (
+              <li className="contents">
+                <div className="my-2">
+                  <BillingDialog billingActor={billingActor} />
+                </div>
+              </li>
+            )}
             <li className="contents">
               <ActionButton
                 Element="externalLink"
-                to="https://zoo.dev/docs"
+                to={withSiteBaseURL('/account')}
                 onClick={openExternalBrowserIfDesktop(
-                  'https://zoo.dev/account'
+                  withSiteBaseURL('/account')
                 )}
                 className={sidebarButtonClasses}
                 iconStart={{
@@ -373,8 +382,8 @@ const Home = () => {
             <li className="contents">
               <ActionButton
                 Element="externalLink"
-                to="https://zoo.dev/blog"
-                onClick={openExternalBrowserIfDesktop('https://zoo.dev/blog')}
+                to={withSiteBaseURL('/blog')}
+                onClick={openExternalBrowserIfDesktop(withSiteBaseURL('/blog'))}
                 className={sidebarButtonClasses}
                 iconStart={{
                   icon: 'glasses',
@@ -394,8 +403,14 @@ const Home = () => {
           sort={sort}
           className="flex-1 col-start-2 -col-end-1 overflow-y-auto pr-2 pb-24"
         />
-        <LowerRightControls navigate={navigate} />
       </div>
+      <StatusBar
+        globalItems={[
+          ...(isDesktop() ? [networkMachineStatus] : []),
+          ...defaultGlobalStatusBarItems({ location, filePath: undefined }),
+        ]}
+        localItems={defaultLocalStatusBarItems}
+      />
     </div>
   )
 }
@@ -521,7 +536,7 @@ function ProjectGrid({
   return (
     <section data-testid="home-section" {...rest}>
       {state.matches(SystemIOMachineStates.readingFolders) ? (
-        <Loading>Loading your Projects...</Loading>
+        <Loading isDummy={true}>Loading your Projects...</Loading>
       ) : (
         <>
           {searchResults.length > 0 ? (

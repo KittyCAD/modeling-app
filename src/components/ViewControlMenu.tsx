@@ -10,13 +10,22 @@ import {
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import type { AxisNames } from '@src/lib/constants'
 import { VIEW_NAMES_SEMANTIC } from '@src/lib/constants'
-import { sceneInfra } from '@src/lib/singletons'
-import { reportRejection } from '@src/lib/trap'
+import { kclManager, sceneInfra } from '@src/lib/singletons'
+import { err, reportRejection } from '@src/lib/trap'
 import { useSettings } from '@src/lib/singletons'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
+import {
+  selectDefaultSketchPlane,
+  selectOffsetSketchPlane,
+} from '@src/lib/selections'
+import { getSelectedPlaneId } from '@src/lang/queryAst'
 
 export function useViewControlMenuItems() {
   const { state: modelingState, send: modelingSend } = useModelingContext()
+  const selectedPlaneId = getSelectedPlaneId(
+    modelingState.context.selectionRanges
+  )
+
   const settings = useSettings()
   const shouldLockView =
     modelingState.matches('Sketch') &&
@@ -42,6 +51,7 @@ export function useViewControlMenuItems() {
           resetCameraPosition().catch(reportRejection)
         }}
         disabled={shouldLockView}
+        hotkey="mod+alt+x"
       >
         Reset view
       </ContextMenuItem>,
@@ -50,13 +60,40 @@ export function useViewControlMenuItems() {
           modelingSend({ type: 'Center camera on selection' })
         }}
         disabled={shouldLockView}
+        hotkey={`mod+alt+c`}
       >
         Center view on selection
       </ContextMenuItem>,
       <ContextMenuDivider />,
+      <ContextMenuItem
+        onClick={() => {
+          if (selectedPlaneId) {
+            sceneInfra.modelingSend({
+              type: 'Enter sketch',
+              data: { forceNewSketch: true },
+            })
+
+            const defaultSketchPlaneSelected =
+              selectDefaultSketchPlane(selectedPlaneId)
+            if (
+              !err(defaultSketchPlaneSelected) &&
+              defaultSketchPlaneSelected
+            ) {
+              return
+            }
+
+            const artifact = kclManager.artifactGraph.get(selectedPlaneId)
+            void selectOffsetSketchPlane(artifact)
+          }
+        }}
+        disabled={!selectedPlaneId}
+      >
+        Start sketch on selection
+      </ContextMenuItem>,
+      <ContextMenuDivider />,
       <ContextMenuItemRefresh />,
     ],
-    [VIEW_NAMES_SEMANTIC, shouldLockView]
+    [VIEW_NAMES_SEMANTIC, shouldLockView, selectedPlaneId]
   )
   return menuItems
 }
