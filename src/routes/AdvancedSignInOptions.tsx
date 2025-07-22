@@ -55,7 +55,7 @@ export const AdvancedSignInOptions = ({
           border border-solid border-chalkboard-20 dark:border-chalkboard-90 rounded
           shadow-lg`}
           >
-            {({ close }) => (
+            {() => (
               <>
                 <div className="flex flex-col items-start py-0.5">
                   <span className="text-xs text-chalkboard-70 dark:text-chalkboard-30">
