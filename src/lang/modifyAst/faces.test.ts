@@ -8,16 +8,22 @@ import type { Selection, Selections } from '@src/lib/selections'
 import { enginelessExecutor } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
 import {
+  addOffsetPlane,
   addShell,
   retrieveFaceSelectionsFromOpArgs,
 } from '@src/lang/modifyAst/faces'
 import { initPromise } from '@src/lang/wasmUtils'
-import { engineCommandManager, kclManager } from '@src/lib/singletons'
+import {
+  engineCommandManager,
+  kclManager,
+  rustContext,
+} from '@src/lib/singletons'
 import { getCodeRefsByArtifactId } from '@src/lang/std/artifactGraph'
 import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import env from '@src/env'
+import type { DefaultPlaneStr } from '@src/lib/planes'
 
 // Unfortunately, we need the real engine here it seems to get sweep faces populated
 beforeAll(async () => {
@@ -46,9 +52,10 @@ async function getAstAndArtifactGraph(code: string) {
   const {
     artifactGraph,
     execState: { operations },
+    variables,
   } = kclManager
   await new Promise((resolve) => setTimeout(resolve, 100))
-  return { ast, artifactGraph, operations }
+  return { ast, artifactGraph, operations, variables }
 }
 
 function createSelectionFromArtifacts(
@@ -338,4 +345,54 @@ shell001 = shell(extrude001, faces = END, thickness = 0.1)
     expect(selections.faces.graphSelections[0].artifact!.type).toEqual('cap')
     expect(selections.faces.graphSelections[1].artifact!.type).toEqual('cap')
   })
+})
+
+describe('Testing addOffsetPlane', () => {
+  it.each<DefaultPlaneStr>(['XY', 'XZ', 'YZ'])(
+    'should add a basic offset plane call on default plane %s and then edit it',
+    async (name) => {
+      const { artifactGraph, ast, variables } = await getAstAndArtifactGraph('')
+      const offset = (await stringToKclExpression('1')) as KclCommandValue
+      const id = rustContext.getDefaultPlaneId(name)
+      if (err(id)) {
+        throw id
+      }
+      const plane: Selections = {
+        graphSelections: [],
+        otherSelections: [{ name, id }],
+      }
+      const result = addOffsetPlane({
+        ast,
+        artifactGraph,
+        variables,
+        plane,
+        offset,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst)
+      expect(newCode).toContain(`plane001 = offsetPlane(${name}, offset = 1)`)
+      await enginelessExecutor(ast)
+
+      const newOffset = (await stringToKclExpression('2')) as KclCommandValue
+      const nodeToEdit = createPathToNodeForLastVariable(result.modifiedAst)
+      const result2 = addOffsetPlane({
+        ast: result.modifiedAst,
+        artifactGraph,
+        variables,
+        plane,
+        offset: newOffset,
+        nodeToEdit,
+      })
+      if (err(result2)) {
+        throw result2
+      }
+      const newCode2 = recast(result2.modifiedAst)
+      expect(newCode2).not.toContain(`offset = 1`)
+      expect(newCode2).toContain(`plane001 = offsetPlane(${name}, offset = 2)`)
+      await enginelessExecutor(result2.modifiedAst)
+    }
+  )
 })

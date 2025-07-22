@@ -59,43 +59,18 @@ export function addShell({
   const modifiedAst = structuredClone(ast)
 
   // 2. Prepare unlabeled and labeled arguments
-  // Inferring solids from the faces selection, maybe someday we can expose this but no need for now
-  const solids: Selections = {
-    graphSelections: faces.graphSelections.flatMap((f) => {
-      const sweep = getSweepArtifactFromSelection(f, artifactGraph)
-      if (err(sweep) || !sweep) return []
-      return {
-        artifact: sweep as Artifact,
-        codeRef: sweep.codeRef,
-      }
-    }),
-    otherSelections: [],
-  }
-  // Map the sketches selection into a list of kcl expressions to be passed as unlabeled argument
-  const lastChildLookup = true
-  const vars = getVariableExprsFromSelection(
-    solids,
-    modifiedAst,
-    nodeToEdit,
-    lastChildLookup,
-    artifactGraph
-  )
-  if (err(vars)) {
-    return vars
-  }
-
-  const sketchesExpr = createVariableExpressionsArray(vars.exprs)
-  const facesExprs = getFacesExprsFromSelection(
-    modifiedAst,
+  const result = buildSolidsAndFacesExprs(
     faces,
-    artifactGraph
+    artifactGraph,
+    modifiedAst,
+    nodeToEdit
   )
-  const facesExpr = createVariableExpressionsArray(facesExprs)
-  if (!facesExpr) {
-    return new Error('No faces found in the selection')
+  if (err(result)) {
+    return result
   }
 
-  const call = createCallExpressionStdLibKw('shell', sketchesExpr, [
+  const { solidsExpr, facesExpr, pathIfPipe } = result
+  const call = createCallExpressionStdLibKw('shell', solidsExpr, [
     createLabeledArg('faces', facesExpr),
     createLabeledArg('thickness', valueOrVariable(thickness)),
   ])
@@ -111,7 +86,7 @@ export function addShell({
     ast: modifiedAst,
     call,
     pathToEdit: nodeToEdit,
-    pathIfNewPipe: vars.pathIfPipe,
+    pathIfNewPipe: pathIfPipe,
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.SHELL,
   })
   if (err(pathToNode)) {
@@ -149,45 +124,22 @@ export function addOffsetPlane({
 
   // 2. Prepare unlabeled and labeled arguments
   let planeExpr: Expr | undefined
-  const faceToOffset = plane.graphSelections.find(
+  const hasFaceToOffset = plane.graphSelections.some(
     (sel) => sel.artifact?.type === 'cap' || sel.artifact?.type === 'wall'
   )
-  if (faceToOffset) {
-    const sweep = getSweepArtifactFromSelection(faceToOffset, artifactGraph)
-    if (err(sweep) || !sweep) {
-      return new Error('No sweep artifact found corresponding to the selection')
-    }
-    const solid: Selections = {
-      graphSelections: [
-        {
-          artifact: sweep as Artifact,
-          codeRef: sweep.codeRef,
-        },
-      ],
-      otherSelections: [],
-    }
-    const lastChildLookup = true
-    const vars = getVariableExprsFromSelection(
-      solid,
-      modifiedAst,
-      nodeToEdit,
-      lastChildLookup,
-      artifactGraph
-    )
-    if (err(vars)) {
-      return vars
-    }
-    const solidExpr = createVariableExpressionsArray(vars.exprs)
-    const facesExprs = getFacesExprsFromSelection(
-      modifiedAst,
+  if (hasFaceToOffset) {
+    const result = buildSolidsAndFacesExprs(
       plane,
-      artifactGraph
+      artifactGraph,
+      modifiedAst,
+      nodeToEdit
     )
-    const facesExpr = createVariableExpressionsArray(facesExprs)
-    if (!facesExpr) {
-      return new Error('No face found in the selection')
+    if (err(result)) {
+      return result
     }
-    planeExpr = createCallExpressionStdLibKw('planeOf', solidExpr, [
+
+    const { solidsExpr, facesExpr } = result
+    planeExpr = createCallExpressionStdLibKw('planeOf', solidsExpr, [
       createLabeledArg('face', facesExpr),
     ])
   } else {
@@ -350,4 +302,49 @@ export function retrieveFaceSelectionsFromOpArgs(
 
   const faces = { graphSelections, otherSelections: [] }
   return { solids, faces }
+}
+
+function buildSolidsAndFacesExprs(
+  faces: Selections,
+  artifactGraph: ArtifactGraph,
+  modifiedAst: Node<Program>,
+  nodeToEdit?: PathToNode
+) {
+  const solids: Selections = {
+    graphSelections: faces.graphSelections.flatMap((f) => {
+      const sweep = getSweepArtifactFromSelection(f, artifactGraph)
+      if (err(sweep) || !sweep) return []
+      return {
+        artifact: sweep as Artifact,
+        codeRef: sweep.codeRef,
+      }
+    }),
+    otherSelections: [],
+  }
+  // Map the sketches selection into a list of kcl expressions to be passed as unlabeled argument
+  const lastChildLookup = true
+  const vars = getVariableExprsFromSelection(
+    solids,
+    modifiedAst,
+    nodeToEdit,
+    lastChildLookup,
+    artifactGraph
+  )
+  if (err(vars)) {
+    return vars
+  }
+
+  const pathIfPipe = vars.pathIfPipe
+  const solidsExpr = createVariableExpressionsArray(vars.exprs)
+  const facesExprs = getFacesExprsFromSelection(
+    modifiedAst,
+    faces,
+    artifactGraph
+  )
+  const facesExpr = createVariableExpressionsArray(facesExprs)
+  if (!facesExpr) {
+    return new Error('No faces found in the selection')
+  }
+
+  return { solidsExpr, facesExpr, pathIfPipe }
 }

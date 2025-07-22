@@ -1083,10 +1083,7 @@ openSketch = startSketchOn(XY)
     toolbar,
     cmdBar,
   }) => {
-    // One dumb hardcoded screen pixel value
-    const testPoint = { x: 700, y: 200 }
     const expectedOutput = `plane001 = offsetPlane(XZ, offset = 5)`
-
     await homePage.goToModelingScene()
     await scene.settled(cmdBar)
 
