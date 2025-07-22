@@ -2168,6 +2168,18 @@ notPipeSub = 1 |> identity(!%))";
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_invalid_combination_of_kwargs() {
+        let ast = r#"foo(qwerty = 1, asdf = 2)"#;
+        assert_eq!(
+            parse_execute(ast).await.unwrap_err(),
+            KclError::new_argument(KclErrorDetails::new(
+                "Incompatible arguments asdf and qwerty".to_owned(),
+                vec![SourceRange::new(56, 57, ModuleId::default())],
+            ))
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_math_negative_variable_in_binary_expression() {
         let ast = r#"sigmaAllow = 35000 // psi
 width = 1 // inch
