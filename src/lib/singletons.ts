@@ -171,7 +171,7 @@ const appMachine = setup({
       systemId: BILLING,
       input: {
         ...BILLING_CONTEXT_DEFAULTS,
-        urlUserService: withAPIBaseURL(''),
+        urlUserService: () => withAPIBaseURL(''),
       },
     }),
   ],
