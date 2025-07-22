@@ -8,8 +8,8 @@
 boltSize = 4.5
 
 // Revolve the profile of a compression plate designed to fit a bone
-plateRevolve = startSketchOn(YZ)
-  |> startProfile(at = [22.9, 0])
+plateSketch = startSketchOn(YZ)
+plateRevolve = startProfile(plateSketch, at = [22.9, 0])
   |> arc(angleStart = 180, angleEnd = 176, radius = 120)
   |> arc(angleStart = -60, angleEnd = 54, radius = 5)
   |> arc(angleStart = 180, angleEnd = 176, radius = 120)

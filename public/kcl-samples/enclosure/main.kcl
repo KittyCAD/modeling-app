@@ -12,14 +12,14 @@ wallThickness = 3
 holeDia = 4
 
 // Model a box with base enclosure dimensions
-sketch001 = startSketchOn(XY)
-  |> startProfile(at = [0, 0])
+boxSketch = startSketchOn(XY)
+boxProfile = startProfile(boxSketch, at = [0, 0])
   |> angledLine(angle = 0, length = width, tag = $rectangleSegmentA001)
   |> angledLine(angle = segAng(rectangleSegmentA001) + 90, length, tag = $rectangleSegmentB001)
   |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $rectangleSegmentD001)
   |> close()
-extrude001 = extrude(sketch001, length = height)
+box = extrude(boxProfile, length = height)
   |> fillet(
        radius = wallThickness * 4,
        tags = [
@@ -39,17 +39,16 @@ fn function001(@originStart) {
   plane001 = {
     origin = [0.0, 0.0, wallThickness],
     xAxis = [1.0, 0.0, 0.0],
-    yAxis = [0.0, 1.0, 0.0],
-    zAxis = [0.0, 0.0, 1.0]
+    yAxis = [0.0, 1.0, 0.0]
   }
 
   // Create a pillar with a fasterner hole at the center
-  sketch002 = startSketchOn(plane001)
+  pillarProfile = startSketchOn(plane001)
     |> circle(center = [originStart[0], originStart[1]], radius = holeDia + wallThickness)
     |> subtract2d(tool = circle(center = [originStart[0], originStart[1]], radius = holeDia))
-  extrude002 = extrude(sketch002, length = height - wallThickness)
+  pillar = extrude(pillarProfile, length = height - wallThickness)
 
-  return extrude002
+  return pillar
 }
 
 // Place the internal pillar at each corner
@@ -71,8 +70,8 @@ function001([
 ])
 
 // Define lid position and outer surface
-sketch003 = startSketchOn(XY)
-  |> startProfile(at = [width * 1.2, 0])
+lidOuterSketch = startSketchOn(XY)
+lidOuterProfile = startProfile(lidOuterSketch, at = [width * 1.2, 0])
   |> angledLine(angle = 0, length = width, tag = $rectangleSegmentA002)
   |> angledLine(angle = segAng(rectangleSegmentA001) + 90, length, tag = $rectangleSegmentB002)
   |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC002)
@@ -106,7 +105,7 @@ sketch003 = startSketchOn(XY)
        ],
        radius = holeDia,
      ))
-extrude003 = extrude(sketch003, length = wallThickness)
+lidOuter = extrude(lidOuterProfile, length = wallThickness)
   |> fillet(
        radius = wallThickness * 4,
        tags = [
@@ -118,7 +117,7 @@ extrude003 = extrude(sketch003, length = wallThickness)
      )
 
 // Define lid inner and sealing surfaces
-sketch004 = startSketchOn(extrude003, face = END)
+lidInnerProfile = startSketchOn(lidOuter, face = END)
   |> startProfile(at = [
        width * 1.2 + wallThickness,
        wallThickness
@@ -156,7 +155,7 @@ sketch004 = startSketchOn(extrude003, face = END)
        ],
        radius = holeDia + wallThickness,
      ))
-extrude004 = extrude(sketch004, length = wallThickness)
+lid = extrude(lidInnerProfile, length = wallThickness)
   |> fillet(
        radius = wallThickness * 3,
        tags = [

@@ -20,9 +20,9 @@ d = boltSpacing / 2
 tangentAngle = asin((r1 - r2) / d)
 tangentLength = (r1 - r2) / tan(tangentAngle)
 
-plateBody = startSketchOn(XY)
-  // Use polar coordinates to start the sketch at the tangent point of the larger radius
-  |> startProfile(at = polar(angle = 90 - tangentAngle, length = r1))
+plateSketch = startSketchOn(XY)
+// Use polar coordinates to start the sketch at the tangent point of the larger radius
+plateBody = startProfile(plateSketch, at = polar(angle = 90 - tangentAngle, length = r1))
   |> angledLine(angle = -tangentAngle, length = tangentLength)
   |> tangentialArc(radius = r2, angle = (tangentAngle - 90) * 2)
   |> angledLine(angle = tangentAngle, length = -tangentLength)

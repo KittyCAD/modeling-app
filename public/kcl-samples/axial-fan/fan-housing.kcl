@@ -10,7 +10,7 @@ import * from "parameters.kcl"
 // Model the housing which holds the motor, the fan, and the mounting provisions
 // Bottom mounting face
 bottomFaceSketch = startSketchOn(XY)
-  |> startProfile(at = [-fanSize / 2, -fanSize / 2])
+bottomFaceSolid = startProfile(bottomFaceSketch, at = [-fanSize / 2, -fanSize / 2])
   |> angledLine(angle = 0, length = fanSize, tag = $rectangleSegmentA001)
   |> angledLine(angle = segAng(rectangleSegmentA001) + 90, length = fanSize, tag = $rectangleSegmentB001)
   |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)
@@ -48,7 +48,7 @@ bottomFaceSketch = startSketchOn(XY)
   |> extrude(length = 4)
 
 // Add large openings to the bottom face to allow airflow through the fan
-airflowPattern = startSketchOn(bottomFaceSketch, face = END)
+airflowPattern = startSketchOn(bottomFaceSolid, face = END)
   |> startProfile(at = [fanSize * 7 / 25, -fanSize * 9 / 25])
   |> angledLine(angle = 140, length = fanSize * 12 / 25, tag = $seg01)
   |> tangentialArc(radius = fanSize * 1 / 50, angle = 90)
@@ -70,7 +70,7 @@ airflowPattern = startSketchOn(bottomFaceSketch, face = END)
 // Create the middle segment of the fan housing body
 housingMiddleLength = fanSize / 3
 housingMiddleRadius = fanSize / 3 - 1
-bodyMiddle = startSketchOn(bottomFaceSketch, face = END)
+bodyMiddle = startSketchOn(bottomFaceSolid, face = END)
   |> startProfile(at = [
        housingMiddleLength / 2,
        -housingMiddleLength / 2 - housingMiddleRadius
@@ -130,7 +130,7 @@ topHoles = startProfile(topFaceSketch, at = [-fanSize / 2, -fanSize / 2])
   |> extrude(length = 4)
 
 // Create a housing for the electric motor to sit
-motorHousing = startSketchOn(bottomFaceSketch, face = END)
+motorHousing = startSketchOn(bottomFaceSolid, face = END)
   |> circle(center = [0, 0], radius = 11.2)
   |> extrude(length = 16)
 

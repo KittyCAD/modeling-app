@@ -82,11 +82,14 @@ corners = patternCircular3d(
   rotateDuplicates = true,
 )
 
-singleBinFill = startSketchOn(XY)
-  |> startProfile(at = [
-       binBaseLength + binTol,
-       binBaseLength + binTol
-     ])
+singleBinFillSketch = startSketchOn(XY)
+singleBinFill = startProfile(
+       singleBinFillSketch,
+       at = [
+         binBaseLength + binTol,
+         binBaseLength + binTol
+       ],
+     )
   |> line(end = [binLength - (binBaseLength * 2), 0], tag = $line000)
   |> line(end = [0, binLength - (binBaseLength * 2)], tag = $line001)
   |> xLine(endAbsolute = profileStartX(%), tag = $line002)
@@ -102,8 +105,9 @@ singleBinFill = startSketchOn(XY)
        ],
      )
 
-magCutout000 = startSketchOn(singleBinFill, face = START)
-  |> circle(
+magCutoutSketch = startSketchOn(singleBinFill, face = START)
+magCutout000 = circle(
+       magCutoutSketch,
        center = [
          -magOffset - binBaseLength - binTol,
          magOffset + binBaseLength + binTol
@@ -149,8 +153,8 @@ binFill = patternLinear3d(
   |> patternLinear3d(axis = [0.0, 1.0, 0.0], instances = countBinLength, distance = binLength + binTol * 2)
 
 // Create the top of the bin
-binTop = startSketchOn(offsetPlane(XY, offset = height))
-  |> startProfile(at = [0, 0])
+binTopSketch = startSketchOn(offsetPlane(XY, offset = height))
+binTop = startProfile(binTopSketch, at = [0, 0])
   |> xLine(length = (binLength + 2 * binTol) * countBinWidth, tag = $line010)
   |> yLine(length = (binLength + 2 * binTol) * countBinLength, tag = $line011)
   |> xLine(endAbsolute = profileStartX(%), tag = $line012)
