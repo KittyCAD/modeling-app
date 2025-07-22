@@ -761,7 +761,7 @@ export function returnSelfOrGetHostNameFromURL(requestedEnvironment: string) {
     environment = tryToMakeAURL.hostname
   } catch (e) {
     // it is fine if it isn't a URL
-    console.log(e)
+    console.log('string is not a url, is that your intention?', e)
   }
   return environment
 }
