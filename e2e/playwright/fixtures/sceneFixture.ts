@@ -356,7 +356,11 @@ export class SceneFixture {
     coords: { x: number; y: number },
     diff: number
   ) => {
-    await expectPixelColor(this.page, colour, coords, diff)
+    const transformedCoords = await this.convertPagePositionToStream(
+      coords.x,
+      coords.y
+    )
+    await expectPixelColor(this.page, colour, transformedCoords, diff)
   }
 
   expectPixelColorNotToBe = async (
@@ -364,7 +368,11 @@ export class SceneFixture {
     coords: { x: number; y: number },
     diff: number
   ) => {
-    await expectPixelColorNotToBe(this.page, colour, coords, diff)
+    const transformedCoords = await this.convertPagePositionToStream(
+      coords.x,
+      coords.y
+    )
+    await expectPixelColorNotToBe(this.page, colour, transformedCoords, diff)
   }
 
   get gizmo() {
@@ -397,7 +405,7 @@ function isColourArray(
 
 type PixelColorMatchMode = 'matches' | 'differs'
 
-export async function checkPixelColor(
+async function checkPixelColor(
   page: Page,
   colour: [number, number, number] | [number, number, number][],
   coords: { x: number; y: number },
@@ -444,7 +452,7 @@ export async function checkPixelColor(
     })
 }
 
-export async function expectPixelColor(
+async function expectPixelColor(
   page: Page,
   colour: [number, number, number] | [number, number, number][],
   coords: { x: number; y: number },
@@ -453,7 +461,7 @@ export async function expectPixelColor(
   await checkPixelColor(page, colour, coords, diff, 'matches')
 }
 
-export async function expectPixelColorNotToBe(
+async function expectPixelColorNotToBe(
   page: Page,
   colour: [number, number, number] | [number, number, number][],
   coords: { x: number; y: number },
