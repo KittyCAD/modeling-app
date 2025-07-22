@@ -163,7 +163,8 @@ export const authMachine = setup({
 
 async function getUser(input: { token?: string }) {
   if (isDesktop()) {
-    const environment = await readEnvironmentFile()
+    const environment =
+      (await readEnvironmentFile()) || env().VITE_KITTYCAD_BASE_DOMAIN || ''
     updateEnvironment(environment)
 
     // Update the pool

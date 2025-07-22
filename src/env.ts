@@ -61,8 +61,13 @@ export const updateEnvironmentPool = (
 }
 
 // Do not export the entire Environment! Use env()
-const getEnvironmentFromThisFile = () => {
-  return ENVIRONMENT
+const getEnvironmentFromThisFile = (baseDomain: string) => {
+  return (
+    ENVIRONMENT || {
+      domain: baseDomain,
+      pool: '',
+    }
+  )
 }
 
 export const viteEnv = () => {
@@ -112,7 +117,7 @@ export default (): EnvironmentVariables => {
    * populated during the sign in workflow.
    * A built binary will allow the user to sign into different environments on the desktop
    */
-  const environment = getEnvironmentFromThisFile()
+  const environment = getEnvironmentFromThisFile(BASE_DOMAIN)
   if (isDesktop() && environment && environment.domain) {
     const environmentDomains = generateDomainsFromBaseDomain(environment.domain)
     API_URL = environmentDomains.API_URL
@@ -123,7 +128,15 @@ export default (): EnvironmentVariables => {
     BASE_DOMAIN = environment.domain
   }
 
-  // TODO: Override any manual ones
+  /**
+   * Allow .env.development.local to overwrite the websocket url for engine
+   */
+  if (
+    env.VITE_KITTYCAD_API_WEBSOCKET_URL !== undefined &&
+    !env.VITE_KITTYCAD_API_WEBSOCKET_URL
+  ) {
+    WEBSOCKET_URL = env.VITE_KITTYCAD_API_WEBSOCKET_URL
+  }
 
   const environmentVariables: EnvironmentVariables = {
     NODE_ENV: (env.NODE_ENV as string) || viteOnly.MODE || undefined,
