@@ -99,10 +99,13 @@ export class SceneFixture {
         streamBoundingBox.height +
       streamBoundingBox.y
 
-    return {
+    const resolvedPoint = {
       x: resolvedX,
       y: resolvedY,
     }
+
+    console.log('Converted', { x, y }, resolvedPoint)
+    return resolvedPoint
   }
 
   makeMouseHelpers = (
@@ -242,6 +245,26 @@ export class SceneFixture {
       'ratio'
     )
     return this.page.mouse.move(point.x, point.y, { steps })
+  }
+
+  /** Select the X-axis, the blue horizontal line. Must be in sketch mode. */
+  clickXAxis = async () => {
+    const pointOnXAxis = await this.convertPagePositionToStream(
+      0.9,
+      0.5,
+      'ratio'
+    )
+    await this.page.mouse.click(pointOnXAxis.x, pointOnXAxis.y)
+  }
+
+  /** Select the Y-axis, the red vertical line. Must be in sketch mode. */
+  clickYAxis = async () => {
+    const pointOnYAxis = await this.convertPagePositionToStream(
+      0.5,
+      0.25,
+      'ratio'
+    )
+    await this.page.mouse.click(pointOnYAxis.x, pointOnYAxis.y)
   }
 
   moveCameraTo = async (
