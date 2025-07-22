@@ -3555,16 +3555,9 @@ profile003 = startProfile(sketch002, at = [-201.08, 254.17])
     await homePage.goToModelingScene()
     await scene.connectionEstablished()
     await scene.settled(cmdBar)
-    const expectSketchOriginToBeDrawn = async () => {
-      await scene.expectPixelColor(TEST_COLORS.WHITE, { x: 672, y: 193 }, 15)
-    }
 
     await test.step('Open feature tree and edit second sketch', async () => {
-      await toolbar.openFeatureTreePane()
-      const sketchButton = await toolbar.getFeatureTreeOperation('Sketch', 1)
-      await sketchButton.dblclick()
-      await page.waitForTimeout(700) // Wait for engine animation
-      await expectSketchOriginToBeDrawn()
+      await toolbar.editSketch(1)
     })
 
     await test.step('clear editor content while in sketch mode', async () => {
@@ -3573,11 +3566,8 @@ profile003 = startProfile(sketch002, at = [-201.08, 254.17])
       await expect(
         page.getByText('Unable to maintain sketch mode')
       ).toBeVisible()
-      await scene.expectPixelColorNotToBe(
-        TEST_COLORS.WHITE,
-        { x: 672, y: 193 },
-        15
-      )
+      await expect(toolbar.exitSketchBtn).not.toBeVisible()
+      await expect(toolbar.startSketchBtn).toBeVisible()
     })
   })
   test('empty draft sketch is cleaned up properly', async ({
