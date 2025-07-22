@@ -332,7 +332,9 @@ async function logoutEnvironment(requestedDomain?: string) {
           console.error('Error revoking token:', e)
         }
 
-        if (domain) await writeEnvironmentConfigurationToken(domain, '')
+        if (domain) {
+          await writeEnvironmentConfigurationToken(domain, '')
+        }
         await writeEnvironmentFile('')
         return Promise.resolve(null)
       }
