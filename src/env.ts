@@ -27,7 +27,7 @@ let ENVIRONMENT: EnvironmentConfigurationRuntime | null = null
 /** Update the runtime environment */
 export const updateEnvironment = (environment: string | null) => {
   if (environment === '') {
-    console.log('reject updating environment', environment)
+    console.log('reject updating environment: value is the empty string.')
     return
   }
 
@@ -51,7 +51,7 @@ export const updateEnvironmentPool = (
   pool: string
 ) => {
   if (environmentName === '') {
-    console.log('reject updating pool,  environment:', environmentName)
+    console.log('reject updating pool,  environment: value is the empy string.')
     return
   }
   if (!ENVIRONMENT) return
