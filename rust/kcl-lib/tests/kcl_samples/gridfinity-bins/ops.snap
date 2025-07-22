@@ -1286,10 +1286,6 @@ description: Operations executed gridfinity-bins.kcl
           },
           {
             "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 0
           }
         ]
       },
@@ -1329,7 +1325,7 @@ description: Operations executed gridfinity-bins.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 22
+            "index": 23
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1339,7 +1335,7 @@ description: Operations executed gridfinity-bins.kcl
           },
           {
             "type": "PipeBodyItem",
-            "index": 6
+            "index": 5
           }
         ]
       },
@@ -1403,7 +1399,7 @@ description: Operations executed gridfinity-bins.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 22
+            "index": 23
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1413,7 +1409,7 @@ description: Operations executed gridfinity-bins.kcl
           },
           {
             "type": "PipeBodyItem",
-            "index": 7
+            "index": 6
           }
         ]
       },
@@ -1444,17 +1440,13 @@ description: Operations executed gridfinity-bins.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
           },
           {
             "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 0
           }
         ]
       },
@@ -1517,7 +1509,7 @@ description: Operations executed gridfinity-bins.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1527,7 +1519,7 @@ description: Operations executed gridfinity-bins.kcl
           },
           {
             "type": "PipeBodyItem",
-            "index": 3
+            "index": 2
           }
         ]
       },
@@ -1648,7 +1640,7 @@ description: Operations executed gridfinity-bins.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1803,7 +1795,7 @@ description: Operations executed gridfinity-bins.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1934,7 +1926,7 @@ description: Operations executed gridfinity-bins.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2089,7 +2081,7 @@ description: Operations executed gridfinity-bins.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2197,7 +2189,7 @@ description: Operations executed gridfinity-bins.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2316,7 +2308,7 @@ description: Operations executed gridfinity-bins.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2364,17 +2356,13 @@ description: Operations executed gridfinity-bins.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"
           },
           {
             "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 0
           },
           {
             "type": "CallKwUnlabeledArg"
@@ -2398,17 +2386,13 @@ description: Operations executed gridfinity-bins.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"
           },
           {
             "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 0
           }
         ]
       },
@@ -2448,7 +2432,7 @@ description: Operations executed gridfinity-bins.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2458,7 +2442,7 @@ description: Operations executed gridfinity-bins.kcl
           },
           {
             "type": "PipeBodyItem",
-            "index": 6
+            "index": 5
           }
         ]
       },
@@ -2522,7 +2506,7 @@ description: Operations executed gridfinity-bins.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2532,7 +2516,7 @@ description: Operations executed gridfinity-bins.kcl
           },
           {
             "type": "PipeBodyItem",
-            "index": 7
+            "index": 6
           }
         ]
       },
@@ -2584,7 +2568,7 @@ description: Operations executed gridfinity-bins.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2594,7 +2578,7 @@ description: Operations executed gridfinity-bins.kcl
           },
           {
             "type": "PipeBodyItem",
-            "index": 8
+            "index": 7
           }
         ]
       },

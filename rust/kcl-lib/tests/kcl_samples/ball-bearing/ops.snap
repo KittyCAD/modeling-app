@@ -527,10 +527,6 @@ description: Operations executed ball-bearing.kcl
           },
           {
             "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 0
           }
         ]
       },
@@ -620,195 +616,6 @@ description: Operations executed ball-bearing.kcl
           "sourceRange": []
         }
       },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 13
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 0
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "patternCircular3d",
-      "unlabeledArg": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {
-        "arcDegrees": {
-          "value": {
-            "type": "Number",
-            "value": 360.0,
-            "ty": {
-              "type": "Known",
-              "type": "Angle",
-              "type": "Degrees"
-            }
-          },
-          "sourceRange": []
-        },
-        "axis": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              {
-                "type": "Number",
-                "value": 1.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              }
-            ]
-          },
-          "sourceRange": []
-        },
-        "center": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              }
-            ]
-          },
-          "sourceRange": []
-        },
-        "instances": {
-          "value": {
-            "type": "Number",
-            "value": 10.0,
-            "ty": {
-              "type": "Known",
-              "type": "Count"
-            }
-          },
-          "sourceRange": []
-        },
-        "rotateDuplicates": {
-          "value": {
-            "type": "Bool",
-            "value": true
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 13
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 1
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "startSketchOn",
-      "unlabeledArg": {
-        "value": {
-          "type": "Plane",
-          "artifact_id": "[uuid]"
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {},
       "nodePath": {
         "steps": [
           {
@@ -831,6 +638,191 @@ description: Operations executed ball-bearing.kcl
     },
     {
       "type": "StdLibCall",
+      "name": "patternCircular3d",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "arcDegrees": {
+          "value": {
+            "type": "Number",
+            "value": 360.0,
+            "ty": {
+              "type": "Known",
+              "type": "Angle",
+              "type": "Degrees"
+            }
+          },
+          "sourceRange": []
+        },
+        "axis": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "Number",
+                "value": 0.0,
+                "ty": {
+                  "type": "Default",
+                  "len": {
+                    "type": "Inches"
+                  },
+                  "angle": {
+                    "type": "Degrees"
+                  }
+                }
+              },
+              {
+                "type": "Number",
+                "value": 0.0,
+                "ty": {
+                  "type": "Default",
+                  "len": {
+                    "type": "Inches"
+                  },
+                  "angle": {
+                    "type": "Degrees"
+                  }
+                }
+              },
+              {
+                "type": "Number",
+                "value": 1.0,
+                "ty": {
+                  "type": "Default",
+                  "len": {
+                    "type": "Inches"
+                  },
+                  "angle": {
+                    "type": "Degrees"
+                  }
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        },
+        "center": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "Number",
+                "value": 0.0,
+                "ty": {
+                  "type": "Default",
+                  "len": {
+                    "type": "Inches"
+                  },
+                  "angle": {
+                    "type": "Degrees"
+                  }
+                }
+              },
+              {
+                "type": "Number",
+                "value": 0.0,
+                "ty": {
+                  "type": "Default",
+                  "len": {
+                    "type": "Inches"
+                  },
+                  "angle": {
+                    "type": "Degrees"
+                  }
+                }
+              },
+              {
+                "type": "Number",
+                "value": 0.0,
+                "ty": {
+                  "type": "Default",
+                  "len": {
+                    "type": "Inches"
+                  },
+                  "angle": {
+                    "type": "Degrees"
+                  }
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        },
+        "instances": {
+          "value": {
+            "type": "Number",
+            "value": 10.0,
+            "ty": {
+              "type": "Known",
+              "type": "Count"
+            }
+          },
+          "sourceRange": []
+        },
+        "rotateDuplicates": {
+          "value": {
+            "type": "Bool",
+            "value": true
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 14
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 1
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "startSketchOn",
+      "unlabeledArg": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 15
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
       "name": "revolve",
       "unlabeledArg": {
         "value": {
@@ -917,7 +909,7 @@ description: Operations executed ball-bearing.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 15
+            "index": 17
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1075,7 +1067,7 @@ description: Operations executed ball-bearing.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 15
+            "index": 17
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1106,7 +1098,7 @@ description: Operations executed ball-bearing.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 16
+            "index": 18
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1226,7 +1218,7 @@ description: Operations executed ball-bearing.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 17
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1384,7 +1376,7 @@ description: Operations executed ball-bearing.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 17
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1432,7 +1424,7 @@ description: Operations executed ball-bearing.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 20
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1466,7 +1458,7 @@ description: Operations executed ball-bearing.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 20
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1509,7 +1501,7 @@ description: Operations executed ball-bearing.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 20
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1559,7 +1551,7 @@ description: Operations executed ball-bearing.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 19
+            "index": 21
           },
           {
             "type": "VariableDeclarationDeclaration"

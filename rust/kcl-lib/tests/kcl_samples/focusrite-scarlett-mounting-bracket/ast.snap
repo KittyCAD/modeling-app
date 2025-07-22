@@ -739,124 +739,6 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   "type": "ObjectExpression",
                   "type": "ObjectExpression"
                 }
-              },
-              {
-                "commentStart": 0,
-                "end": 0,
-                "key": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": "zAxis",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "moduleId": 0,
-                "start": 0,
-                "type": "ObjectProperty",
-                "value": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "properties": [
-                    {
-                      "commentStart": 0,
-                      "end": 0,
-                      "key": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": "x",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
-                      "moduleId": 0,
-                      "start": 0,
-                      "type": "ObjectProperty",
-                      "value": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "raw": "0",
-                        "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 0.0,
-                          "suffix": "None"
-                        }
-                      }
-                    },
-                    {
-                      "commentStart": 0,
-                      "end": 0,
-                      "key": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": "y",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
-                      "moduleId": 0,
-                      "start": 0,
-                      "type": "ObjectProperty",
-                      "value": {
-                        "argument": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "raw": "1",
-                          "start": 0,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 1.0,
-                            "suffix": "None"
-                          }
-                        },
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "operator": "-",
-                        "start": 0,
-                        "type": "UnaryExpression",
-                        "type": "UnaryExpression"
-                      }
-                    },
-                    {
-                      "commentStart": 0,
-                      "end": 0,
-                      "key": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": "z",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
-                      "moduleId": 0,
-                      "start": 0,
-                      "type": "ObjectProperty",
-                      "value": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "raw": "0",
-                        "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 0.0,
-                          "suffix": "None"
-                        }
-                      }
-                    }
-                  ],
-                  "start": 0,
-                  "type": "ObjectExpression",
-                  "type": "ObjectExpression"
-                }
               }
             ],
             "start": 0,
@@ -3534,115 +3416,6 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   "type": "ObjectExpression",
                   "type": "ObjectExpression"
                 }
-              },
-              {
-                "commentStart": 0,
-                "end": 0,
-                "key": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": "zAxis",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "moduleId": 0,
-                "start": 0,
-                "type": "ObjectProperty",
-                "value": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "properties": [
-                    {
-                      "commentStart": 0,
-                      "end": 0,
-                      "key": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": "x",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
-                      "moduleId": 0,
-                      "start": 0,
-                      "type": "ObjectProperty",
-                      "value": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "raw": "0",
-                        "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 0.0,
-                          "suffix": "None"
-                        }
-                      }
-                    },
-                    {
-                      "commentStart": 0,
-                      "end": 0,
-                      "key": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": "y",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
-                      "moduleId": 0,
-                      "start": 0,
-                      "type": "ObjectProperty",
-                      "value": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "raw": "0",
-                        "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 0.0,
-                          "suffix": "None"
-                        }
-                      }
-                    },
-                    {
-                      "commentStart": 0,
-                      "end": 0,
-                      "key": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": "z",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
-                      "moduleId": 0,
-                      "start": 0,
-                      "type": "ObjectProperty",
-                      "value": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "raw": "1",
-                        "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 1.0,
-                          "suffix": "None"
-                        }
-                      }
-                    }
-                  ],
-                  "start": 0,
-                  "type": "ObjectExpression",
-                  "type": "ObjectExpression"
-                }
               }
             ],
             "start": 0,
@@ -3669,56 +3442,85 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
+            "name": "tabsSketch",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [],
+            "callee": {
+              "abs_path": false,
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "startSketchOn",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name"
+            },
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "CallExpressionKw",
+            "type": "CallExpressionKw",
+            "unlabeled": {
+              "abs_path": false,
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "tabPlane",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
+            }
+          },
+          "moduleId": 0,
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "moduleId": 0,
+        "preComments": [
+          "",
+          "",
+          "// Build the tabs of the mounting bracket (right side)"
+        ],
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 0,
+        "declaration": {
+          "commentStart": 0,
+          "end": 0,
+          "id": {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
             "name": "tabsR",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
             "body": [
-              {
-                "arguments": [],
-                "callee": {
-                  "abs_path": false,
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "name": "startSketchOn",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name"
-                },
-                "commentStart": 0,
-                "end": 0,
-                "moduleId": 0,
-                "start": 0,
-                "type": "CallExpressionKw",
-                "type": "CallExpressionKw",
-                "unlabeled": {
-                  "abs_path": false,
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "name": "tabPlane",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name",
-                  "type": "Name"
-                }
-              },
               {
                 "arguments": [
                   {
@@ -3900,7 +3702,24 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
-                "unlabeled": null
+                "unlabeled": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": "tabsSketch",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
+                }
               },
               {
                 "arguments": [
@@ -5307,7 +5126,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
             "moduleId": 0,
             "nonCodeMeta": {
               "nonCodeNodes": {
-                "9": [
+                "8": [
                   {
                     "commentStart": 0,
                     "end": 0,
@@ -5335,11 +5154,6 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
         "end": 0,
         "kind": "const",
         "moduleId": 0,
-        "preComments": [
-          "",
-          "",
-          "// Build the tabs of the mounting bracket (right side)"
-        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -5359,50 +5173,6 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
           },
           "init": {
             "body": [
-              {
-                "arguments": [],
-                "callee": {
-                  "abs_path": false,
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "name": "startSketchOn",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name"
-                },
-                "commentStart": 0,
-                "end": 0,
-                "moduleId": 0,
-                "start": 0,
-                "type": "CallExpressionKw",
-                "type": "CallExpressionKw",
-                "unlabeled": {
-                  "abs_path": false,
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "name": "tabPlane",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name",
-                  "type": "Name"
-                }
-              },
               {
                 "arguments": [
                   {
@@ -5593,7 +5363,24 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
-                "unlabeled": null
+                "unlabeled": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": "tabsSketch",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
+                }
               },
               {
                 "arguments": [
@@ -7009,7 +6796,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
             "moduleId": 0,
             "nonCodeMeta": {
               "nonCodeNodes": {
-                "9": [
+                "8": [
                   {
                     "commentStart": 0,
                     "end": 0,
@@ -7443,115 +7230,6 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   "type": "ObjectExpression",
                   "type": "ObjectExpression"
                 }
-              },
-              {
-                "commentStart": 0,
-                "end": 0,
-                "key": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": "zAxis",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "moduleId": 0,
-                "start": 0,
-                "type": "ObjectProperty",
-                "value": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "properties": [
-                    {
-                      "commentStart": 0,
-                      "end": 0,
-                      "key": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": "x",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
-                      "moduleId": 0,
-                      "start": 0,
-                      "type": "ObjectProperty",
-                      "value": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "raw": "1",
-                        "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 1.0,
-                          "suffix": "None"
-                        }
-                      }
-                    },
-                    {
-                      "commentStart": 0,
-                      "end": 0,
-                      "key": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": "y",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
-                      "moduleId": 0,
-                      "start": 0,
-                      "type": "ObjectProperty",
-                      "value": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "raw": "0",
-                        "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 0.0,
-                          "suffix": "None"
-                        }
-                      }
-                    },
-                    {
-                      "commentStart": 0,
-                      "end": 0,
-                      "key": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": "z",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
-                      "moduleId": 0,
-                      "start": 0,
-                      "type": "ObjectProperty",
-                      "value": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "raw": "0",
-                        "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 0.0,
-                          "suffix": "None"
-                        }
-                      }
-                    }
-                  ],
-                  "start": 0,
-                  "type": "ObjectExpression",
-                  "type": "ObjectExpression"
-                }
               }
             ],
             "start": 0,
@@ -7578,56 +7256,85 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
+            "name": "retSketch",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [],
+            "callee": {
+              "abs_path": false,
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "startSketchOn",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name"
+            },
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "CallExpressionKw",
+            "type": "CallExpressionKw",
+            "unlabeled": {
+              "abs_path": false,
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "retPlane",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
+            }
+          },
+          "moduleId": 0,
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "moduleId": 0,
+        "preComments": [
+          "",
+          "",
+          "// Build the retention bump in the front"
+        ],
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 0,
+        "declaration": {
+          "commentStart": 0,
+          "end": 0,
+          "id": {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
             "name": "retFront",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
             "body": [
-              {
-                "arguments": [],
-                "callee": {
-                  "abs_path": false,
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "name": "startSketchOn",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name"
-                },
-                "commentStart": 0,
-                "end": 0,
-                "moduleId": 0,
-                "start": 0,
-                "type": "CallExpressionKw",
-                "type": "CallExpressionKw",
-                "unlabeled": {
-                  "abs_path": false,
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "name": "retPlane",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name",
-                  "type": "Name"
-                }
-              },
               {
                 "arguments": [
                   {
@@ -7764,7 +7471,24 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
-                "unlabeled": null
+                "unlabeled": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": "retSketch",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
+                }
               },
               {
                 "arguments": [
@@ -8052,7 +7776,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
             "moduleId": 0,
             "nonCodeMeta": {
               "nonCodeNodes": {
-                "5": [
+                "4": [
                   {
                     "commentStart": 0,
                     "end": 0,
@@ -8080,11 +7804,6 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
         "end": 0,
         "kind": "const",
         "moduleId": 0,
-        "preComments": [
-          "",
-          "",
-          "// Build the retention bump in the front"
-        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -8104,50 +7823,6 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
           },
           "init": {
             "body": [
-              {
-                "arguments": [],
-                "callee": {
-                  "abs_path": false,
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "name": "startSketchOn",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name"
-                },
-                "commentStart": 0,
-                "end": 0,
-                "moduleId": 0,
-                "start": 0,
-                "type": "CallExpressionKw",
-                "type": "CallExpressionKw",
-                "unlabeled": {
-                  "abs_path": false,
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "name": "retPlane",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name",
-                  "type": "Name"
-                }
-              },
               {
                 "arguments": [
                   {
@@ -8275,7 +7950,24 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
-                "unlabeled": null
+                "unlabeled": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": "retSketch",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
+                }
               },
               {
                 "arguments": [

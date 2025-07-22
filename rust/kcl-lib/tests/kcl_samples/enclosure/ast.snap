@@ -202,56 +202,85 @@ description: Result of parsing enclosure.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "name": "sketch001",
+            "name": "boxSketch",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [],
+            "callee": {
+              "abs_path": false,
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "startSketchOn",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name"
+            },
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "CallExpressionKw",
+            "type": "CallExpressionKw",
+            "unlabeled": {
+              "abs_path": false,
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "XY",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
+            }
+          },
+          "moduleId": 0,
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "moduleId": 0,
+        "preComments": [
+          "",
+          "",
+          "// Model a box with base enclosure dimensions"
+        ],
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 0,
+        "declaration": {
+          "commentStart": 0,
+          "end": 0,
+          "id": {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "name": "boxProfile",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
             "body": [
-              {
-                "arguments": [],
-                "callee": {
-                  "abs_path": false,
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "name": "startSketchOn",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name"
-                },
-                "commentStart": 0,
-                "end": 0,
-                "moduleId": 0,
-                "start": 0,
-                "type": "CallExpressionKw",
-                "type": "CallExpressionKw",
-                "unlabeled": {
-                  "abs_path": false,
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "name": "XY",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name",
-                  "type": "Name"
-                }
-              },
               {
                 "arguments": [
                   {
@@ -325,7 +354,24 @@ description: Result of parsing enclosure.kcl
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
-                "unlabeled": null
+                "unlabeled": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": "boxSketch",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
+                }
               },
               {
                 "arguments": [
@@ -921,11 +967,6 @@ description: Result of parsing enclosure.kcl
         "end": 0,
         "kind": "const",
         "moduleId": 0,
-        "preComments": [
-          "",
-          "",
-          "// Model a box with base enclosure dimensions"
-        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -939,7 +980,7 @@ description: Result of parsing enclosure.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "name": "extrude001",
+            "name": "box",
             "start": 0,
             "type": "Identifier"
           },
@@ -1009,7 +1050,7 @@ description: Result of parsing enclosure.kcl
                     "commentStart": 0,
                     "end": 0,
                     "moduleId": 0,
-                    "name": "sketch001",
+                    "name": "boxProfile",
                     "start": 0,
                     "type": "Identifier"
                   },
@@ -1673,70 +1714,6 @@ description: Result of parsing enclosure.kcl
                             "type": "ArrayExpression",
                             "type": "ArrayExpression"
                           }
-                        },
-                        {
-                          "commentStart": 0,
-                          "end": 0,
-                          "key": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": "zAxis",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "moduleId": 0,
-                          "start": 0,
-                          "type": "ObjectProperty",
-                          "value": {
-                            "commentStart": 0,
-                            "elements": [
-                              {
-                                "commentStart": 0,
-                                "end": 0,
-                                "moduleId": 0,
-                                "raw": "0.0",
-                                "start": 0,
-                                "type": "Literal",
-                                "type": "Literal",
-                                "value": {
-                                  "value": 0.0,
-                                  "suffix": "None"
-                                }
-                              },
-                              {
-                                "commentStart": 0,
-                                "end": 0,
-                                "moduleId": 0,
-                                "raw": "0.0",
-                                "start": 0,
-                                "type": "Literal",
-                                "type": "Literal",
-                                "value": {
-                                  "value": 0.0,
-                                  "suffix": "None"
-                                }
-                              },
-                              {
-                                "commentStart": 0,
-                                "end": 0,
-                                "moduleId": 0,
-                                "raw": "1.0",
-                                "start": 0,
-                                "type": "Literal",
-                                "type": "Literal",
-                                "value": {
-                                  "value": 1.0,
-                                  "suffix": "None"
-                                }
-                              }
-                            ],
-                            "end": 0,
-                            "moduleId": 0,
-                            "start": 0,
-                            "type": "ArrayExpression",
-                            "type": "ArrayExpression"
-                          }
                         }
                       ],
                       "start": 0,
@@ -1766,7 +1743,7 @@ description: Result of parsing enclosure.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "name": "sketch002",
+                      "name": "pillarProfile",
                       "start": 0,
                       "type": "Identifier"
                     },
@@ -2231,7 +2208,7 @@ description: Result of parsing enclosure.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "name": "extrude002",
+                      "name": "pillar",
                       "start": 0,
                       "type": "Identifier"
                     },
@@ -2326,7 +2303,7 @@ description: Result of parsing enclosure.kcl
                           "commentStart": 0,
                           "end": 0,
                           "moduleId": 0,
-                          "name": "sketch002",
+                          "name": "pillarProfile",
                           "start": 0,
                           "type": "Identifier"
                         },
@@ -2357,7 +2334,7 @@ description: Result of parsing enclosure.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "name": "extrude002",
+                      "name": "pillar",
                       "start": 0,
                       "type": "Identifier"
                     },
@@ -3262,56 +3239,85 @@ description: Result of parsing enclosure.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "name": "sketch003",
+            "name": "lidOuterSketch",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [],
+            "callee": {
+              "abs_path": false,
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "startSketchOn",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name"
+            },
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "CallExpressionKw",
+            "type": "CallExpressionKw",
+            "unlabeled": {
+              "abs_path": false,
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "XY",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
+            }
+          },
+          "moduleId": 0,
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "moduleId": 0,
+        "preComments": [
+          "",
+          "",
+          "// Define lid position and outer surface"
+        ],
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 0,
+        "declaration": {
+          "commentStart": 0,
+          "end": 0,
+          "id": {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "name": "lidOuterProfile",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
             "body": [
-              {
-                "arguments": [],
-                "callee": {
-                  "abs_path": false,
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "name": "startSketchOn",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name"
-                },
-                "commentStart": 0,
-                "end": 0,
-                "moduleId": 0,
-                "start": 0,
-                "type": "CallExpressionKw",
-                "type": "CallExpressionKw",
-                "unlabeled": {
-                  "abs_path": false,
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "name": "XY",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name",
-                  "type": "Name"
-                }
-              },
               {
                 "arguments": [
                   {
@@ -3412,7 +3418,24 @@ description: Result of parsing enclosure.kcl
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
-                "unlabeled": null
+                "unlabeled": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": "lidOuterSketch",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
+                }
               },
               {
                 "arguments": [
@@ -5262,11 +5285,6 @@ description: Result of parsing enclosure.kcl
         "end": 0,
         "kind": "const",
         "moduleId": 0,
-        "preComments": [
-          "",
-          "",
-          "// Define lid position and outer surface"
-        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -5280,7 +5298,7 @@ description: Result of parsing enclosure.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "name": "extrude003",
+            "name": "lidOuter",
             "start": 0,
             "type": "Identifier"
           },
@@ -5350,7 +5368,7 @@ description: Result of parsing enclosure.kcl
                     "commentStart": 0,
                     "end": 0,
                     "moduleId": 0,
-                    "name": "sketch003",
+                    "name": "lidOuterProfile",
                     "start": 0,
                     "type": "Identifier"
                   },
@@ -5683,7 +5701,7 @@ description: Result of parsing enclosure.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "name": "sketch004",
+            "name": "lidInnerProfile",
             "start": 0,
             "type": "Identifier"
           },
@@ -5753,7 +5771,7 @@ description: Result of parsing enclosure.kcl
                     "commentStart": 0,
                     "end": 0,
                     "moduleId": 0,
-                    "name": "extrude003",
+                    "name": "lidOuter",
                     "start": 0,
                     "type": "Identifier"
                   },
@@ -7971,7 +7989,7 @@ description: Result of parsing enclosure.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "name": "extrude004",
+            "name": "lid",
             "start": 0,
             "type": "Identifier"
           },
@@ -8041,7 +8059,7 @@ description: Result of parsing enclosure.kcl
                     "commentStart": 0,
                     "end": 0,
                     "moduleId": 0,
-                    "name": "sketch004",
+                    "name": "lidInnerProfile",
                     "start": 0,
                     "type": "Identifier"
                   },

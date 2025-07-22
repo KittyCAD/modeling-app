@@ -191,10 +191,6 @@ description: Operations executed gear-rack.kcl
           },
           {
             "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 0
           }
         ]
       },
@@ -234,7 +230,7 @@ description: Operations executed gear-rack.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 5
+            "index": 6
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -244,7 +240,7 @@ description: Operations executed gear-rack.kcl
           },
           {
             "type": "PipeBodyItem",
-            "index": 6
+            "index": 5
           }
         ]
       },
@@ -263,7 +259,7 @@ description: Operations executed gear-rack.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 7
+            "index": 8
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -294,7 +290,7 @@ description: Operations executed gear-rack.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 6
+            "index": 7
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -314,10 +310,6 @@ description: Operations executed gear-rack.kcl
           },
           {
             "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 0
           }
         ]
       },
@@ -357,7 +349,7 @@ description: Operations executed gear-rack.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 6
+            "index": 7
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -370,7 +362,7 @@ description: Operations executed gear-rack.kcl
           },
           {
             "type": "FunctionExpressionBodyItem",
-            "index": 0
+            "index": 1
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -380,7 +372,7 @@ description: Operations executed gear-rack.kcl
           },
           {
             "type": "PipeBodyItem",
-            "index": 10
+            "index": 9
           }
         ]
       },
@@ -481,7 +473,7 @@ description: Operations executed gear-rack.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 7
+            "index": 8
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -512,17 +504,13 @@ description: Operations executed gear-rack.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 8
+            "index": 9
           },
           {
             "type": "VariableDeclarationDeclaration"
           },
           {
             "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 0
           }
         ]
       },
@@ -562,7 +550,7 @@ description: Operations executed gear-rack.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 8
+            "index": 10
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -572,38 +560,7 @@ description: Operations executed gear-rack.kcl
           },
           {
             "type": "PipeBodyItem",
-            "index": 6
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "startSketchOn",
-      "unlabeledArg": {
-        "value": {
-          "type": "Plane",
-          "artifact_id": "[uuid]"
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {},
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 9
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 0
+            "index": 5
           }
         ]
       },
@@ -643,7 +600,7 @@ description: Operations executed gear-rack.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 9
+            "index": 11
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -653,7 +610,7 @@ description: Operations executed gear-rack.kcl
           },
           {
             "type": "PipeBodyItem",
-            "index": 6
+            "index": 5
           }
         ]
       },

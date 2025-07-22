@@ -220,10 +220,6 @@ description: Operations executed i-beam.kcl
           },
           {
             "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 0
           }
         ]
       },
@@ -317,7 +313,111 @@ description: Operations executed i-beam.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
+            "index": 7
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
             "index": 6
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "mirror2d",
+      "unlabeledArg": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "axis": {
+          "value": {
+            "type": "Object",
+            "value": {
+              "direction": {
+                "type": "Array",
+                "value": [
+                  {
+                    "type": "Number",
+                    "value": 0.0,
+                    "ty": {
+                      "type": "Default",
+                      "len": {
+                        "type": "Mm"
+                      },
+                      "angle": {
+                        "type": "Degrees"
+                      }
+                    }
+                  },
+                  {
+                    "type": "Number",
+                    "value": 1.0,
+                    "ty": {
+                      "type": "Default",
+                      "len": {
+                        "type": "Mm"
+                      },
+                      "angle": {
+                        "type": "Degrees"
+                      }
+                    }
+                  }
+                ]
+              },
+              "origin": {
+                "type": "Array",
+                "value": [
+                  {
+                    "type": "Number",
+                    "value": 0.0,
+                    "ty": {
+                      "type": "Default",
+                      "len": {
+                        "type": "Mm"
+                      },
+                      "angle": {
+                        "type": "Degrees"
+                      }
+                    }
+                  },
+                  {
+                    "type": "Number",
+                    "value": 0.0,
+                    "ty": {
+                      "type": "Default",
+                      "len": {
+                        "type": "Mm"
+                      },
+                      "angle": {
+                        "type": "Degrees"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 7
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -328,110 +428,6 @@ description: Operations executed i-beam.kcl
           {
             "type": "PipeBodyItem",
             "index": 7
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "mirror2d",
-      "unlabeledArg": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {
-        "axis": {
-          "value": {
-            "type": "Object",
-            "value": {
-              "direction": {
-                "type": "Array",
-                "value": [
-                  {
-                    "type": "Number",
-                    "value": 0.0,
-                    "ty": {
-                      "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
-                    }
-                  },
-                  {
-                    "type": "Number",
-                    "value": 1.0,
-                    "ty": {
-                      "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
-                    }
-                  }
-                ]
-              },
-              "origin": {
-                "type": "Array",
-                "value": [
-                  {
-                    "type": "Number",
-                    "value": 0.0,
-                    "ty": {
-                      "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
-                    }
-                  },
-                  {
-                    "type": "Number",
-                    "value": 0.0,
-                    "ty": {
-                      "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
-                    }
-                  }
-                ]
-              }
-            }
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 6
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 8
           }
         ]
       },
@@ -467,7 +463,7 @@ description: Operations executed i-beam.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 6
+            "index": 7
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -477,7 +473,7 @@ description: Operations executed i-beam.kcl
           },
           {
             "type": "PipeBodyItem",
-            "index": 9
+            "index": 8
           }
         ]
       },

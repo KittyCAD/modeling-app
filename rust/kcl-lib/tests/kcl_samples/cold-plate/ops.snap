@@ -125,10 +125,6 @@ description: Operations executed cold-plate.kcl
           },
           {
             "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 0
           }
         ]
       },
@@ -222,7 +218,7 @@ description: Operations executed cold-plate.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 3
+            "index": 4
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -232,7 +228,7 @@ description: Operations executed cold-plate.kcl
           },
           {
             "type": "PipeBodyItem",
-            "index": 16
+            "index": 15
           }
         ]
       },
@@ -279,7 +275,7 @@ description: Operations executed cold-plate.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 3
+            "index": 4
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -289,7 +285,7 @@ description: Operations executed cold-plate.kcl
           },
           {
             "type": "PipeBodyItem",
-            "index": 18
+            "index": 17
           }
         ]
       },
@@ -327,17 +323,13 @@ description: Operations executed cold-plate.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 4
+            "index": 5
           },
           {
             "type": "VariableDeclarationDeclaration"
           },
           {
             "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 0
           },
           {
             "type": "CallKwUnlabeledArg"
@@ -361,17 +353,13 @@ description: Operations executed cold-plate.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 4
+            "index": 5
           },
           {
             "type": "VariableDeclarationDeclaration"
           },
           {
             "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 0
           }
         ]
       },
@@ -409,17 +397,13 @@ description: Operations executed cold-plate.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 5
+            "index": 7
           },
           {
             "type": "VariableDeclarationDeclaration"
           },
           {
             "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 0
           },
           {
             "type": "CallKwUnlabeledArg"
@@ -443,17 +427,13 @@ description: Operations executed cold-plate.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 5
+            "index": 7
           },
           {
             "type": "VariableDeclarationDeclaration"
           },
           {
             "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 0
           }
         ]
       },
@@ -486,7 +466,7 @@ description: Operations executed cold-plate.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 5
+            "index": 8
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -529,7 +509,7 @@ description: Operations executed cold-plate.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 5
+            "index": 8
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -570,7 +550,7 @@ description: Operations executed cold-plate.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 5
+            "index": 8
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -601,17 +581,13 @@ description: Operations executed cold-plate.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 6
+            "index": 9
           },
           {
             "type": "VariableDeclarationDeclaration"
           },
           {
             "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 0
           }
         ]
       },
@@ -658,7 +634,7 @@ description: Operations executed cold-plate.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 6
+            "index": 10
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -668,7 +644,7 @@ description: Operations executed cold-plate.kcl
           },
           {
             "type": "PipeBodyItem",
-            "index": 7
+            "index": 6
           }
         ]
       },
@@ -766,7 +742,7 @@ description: Operations executed cold-plate.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 6
+            "index": 10
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -776,7 +752,7 @@ description: Operations executed cold-plate.kcl
           },
           {
             "type": "PipeBodyItem",
-            "index": 8
+            "index": 7
           }
         ]
       },
@@ -830,7 +806,7 @@ description: Operations executed cold-plate.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 6
+            "index": 10
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -840,7 +816,7 @@ description: Operations executed cold-plate.kcl
           },
           {
             "type": "PipeBodyItem",
-            "index": 9
+            "index": 8
           }
         ]
       },

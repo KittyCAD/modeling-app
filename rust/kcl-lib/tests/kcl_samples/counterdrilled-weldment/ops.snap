@@ -389,10 +389,6 @@ description: Operations executed counterdrilled-weldment.kcl
           },
           {
             "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 0
           }
         ]
       },
@@ -425,7 +421,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 11
+            "index": 12
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -435,7 +431,7 @@ description: Operations executed counterdrilled-weldment.kcl
           },
           {
             "type": "PipeBodyItem",
-            "index": 7
+            "index": 6
           }
         ]
       },
@@ -475,7 +471,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 12
+            "index": 13
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -549,7 +545,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 12
+            "index": 13
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -611,7 +607,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 15
+            "index": 16
           },
           {
             "type": "ExpressionStatementExpr"
@@ -645,7 +641,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -708,7 +704,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -762,7 +758,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -825,7 +821,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -901,7 +897,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -979,7 +975,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 15
+            "index": 16
           },
           {
             "type": "ExpressionStatementExpr"
@@ -1013,7 +1009,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1076,7 +1072,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1130,7 +1126,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1193,7 +1189,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1269,7 +1265,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1347,7 +1343,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 15
+            "index": 16
           },
           {
             "type": "ExpressionStatementExpr"
@@ -1381,7 +1377,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1444,7 +1440,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1498,7 +1494,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1561,7 +1557,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1637,7 +1633,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1715,7 +1711,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 15
+            "index": 16
           },
           {
             "type": "ExpressionStatementExpr"
@@ -1749,7 +1745,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1812,7 +1808,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1866,7 +1862,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1929,7 +1925,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2005,7 +2001,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2052,7 +2048,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 16
+            "index": 17
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2102,7 +2098,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 16
+            "index": 17
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2150,7 +2146,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 17
+            "index": 18
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2184,7 +2180,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 17
+            "index": 18
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2227,7 +2223,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 17
+            "index": 18
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2277,7 +2273,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 17
+            "index": 18
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2325,7 +2321,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 17
+            "index": 18
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2369,7 +2365,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 19
+            "index": 20
           },
           {
             "type": "ExpressionStatementExpr"
@@ -2393,7 +2389,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2463,7 +2459,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2634,7 +2630,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2690,7 +2686,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 20
+            "index": 21
           },
           {
             "type": "ExpressionStatementExpr"
@@ -2714,7 +2710,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2784,7 +2780,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2955,7 +2951,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"

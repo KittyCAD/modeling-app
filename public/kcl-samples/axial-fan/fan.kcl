@@ -8,8 +8,8 @@
 import * from "parameters.kcl"
 
 // Model the center of the fan
-fanCenter = startSketchOn(XZ)
-  |> startProfile(at = [-0.0001, fanHeight])
+fanCenterSketch = startSketchOn(XZ)
+fanCenter = startProfile(fanCenterSketch, at = [-0.0001, fanHeight])
   |> xLine(endAbsolute = -15 + 1.5)
   |> tangentialArc(radius = 1.5, angle = 90)
   |> yLine(endAbsolute = 4.5)

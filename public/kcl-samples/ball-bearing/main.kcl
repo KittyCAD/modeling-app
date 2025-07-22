@@ -26,12 +26,12 @@ insideWall = extrude(insideWallSketch, length = overallThickness)
 
 // Create the sketch of one of the balls
 ballsSketch = startSketchOn(XY)
-  |> startProfile(at = [shaftDia / 2 + wallThickness, 0.001])
+ballsProfile = startProfile(ballsSketch, at = [shaftDia / 2 + wallThickness, 0.001])
   |> arc(angleStart = 180, angleEnd = 0, radius = sphereDia / 2)
   |> close()
 
 // Revolve the ball to make a sphere and pattern around the inside wall
-balls = revolve(ballsSketch, axis = X)
+balls = revolve(ballsProfile, axis = X)
   |> patternCircular3d(
        arcDegrees = 360,
        axis = [0, 0, 1],
@@ -42,17 +42,20 @@ balls = revolve(ballsSketch, axis = X)
 
 // Create the sketch for the chain around the balls
 chainSketch = startSketchOn(XY)
-  |> startProfile(at = [
-       shaftDia / 2 + wallThickness + sphereDia / 2 - (chainWidth / 2),
-       0.125 * sin(60)
-     ])
+chainProfile = startProfile(
+       chainSketch,
+       at = [
+         shaftDia / 2 + wallThickness + sphereDia / 2 - (chainWidth / 2),
+         0.125 * sin(60)
+       ],
+     )
   |> arc(angleStart = 120, angleEnd = 60, radius = sphereDia / 2)
   |> line(end = [0, chainThickness])
   |> line(end = [-chainWidth, 0])
   |> close()
 
 // Revolve the chain sketch
-chainHead = revolve(chainSketch, axis = X)
+chainHead = revolve(chainProfile, axis = X)
   |> patternCircular3d(
        arcDegrees = 360,
        axis = [0, 0, 1],

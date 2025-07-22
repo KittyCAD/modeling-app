@@ -224,10 +224,6 @@ description: Operations executed bottle.kcl
           },
           {
             "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 0
           }
         ]
       },
@@ -321,7 +317,7 @@ description: Operations executed bottle.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 6
+            "index": 7
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -331,7 +327,7 @@ description: Operations executed bottle.kcl
           },
           {
             "type": "PipeBodyItem",
-            "index": 5
+            "index": 4
           }
         ]
       },
@@ -371,7 +367,7 @@ description: Operations executed bottle.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 6
+            "index": 7
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -381,7 +377,7 @@ description: Operations executed bottle.kcl
           },
           {
             "type": "PipeBodyItem",
-            "index": 7
+            "index": 6
           }
         ]
       },
@@ -412,7 +408,7 @@ description: Operations executed bottle.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 7
+            "index": 8
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -462,7 +458,7 @@ description: Operations executed bottle.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 7
+            "index": 8
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -524,7 +520,7 @@ description: Operations executed bottle.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 8
+            "index": 9
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -565,7 +561,7 @@ description: Operations executed bottle.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 8
+            "index": 9
           },
           {
             "type": "VariableDeclarationDeclaration"

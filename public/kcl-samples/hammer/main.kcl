@@ -5,8 +5,8 @@
 @settings(defaultLengthUnit = in)
 
 // Sketch the side profile of the hammer head
-headSideProfile = startSketchOn(XZ)
-  |> startProfile(at = [0.33, 11.26])
+headSideProfileSketch = startSketchOn(XZ)
+headSideProfile = startProfile(headSideProfileSketch, at = [0.33, 11.26])
   |> yLine(length = 0.1)
   |> tangentialArc(endAbsolute = [0.95, 11.92])
   |> tangentialArc(endAbsolute = [2.72, 11.26], tag = $seg01)
@@ -91,7 +91,7 @@ hammerHead = union([firstProfiles, baseSupport])
 
 // Draw a profile for the handle, then revolve around the center axis
 handleSketch = startSketchOn(XZ)
-  |> startProfile(at = [0.01, 0])
+handleProfile = startProfile(handleSketch, at = [0.01, 0])
   |> xLine(length = 1.125 / 2)
   |> tangentialArc(angle = 90, radius = 0.05)
   |> tangentialArc(endAbsolute = [0.38, 12.8 / 1.612])
@@ -99,5 +99,5 @@ handleSketch = startSketchOn(XZ)
   |> xLine(endAbsolute = profileStartX(%))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-handle = revolve(handleSketch, angle = 360, axis = Y)
+handle = revolve(handleProfile, angle = 360, axis = Y)
   |> appearance(color = "#f14f04")

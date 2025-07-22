@@ -107,8 +107,8 @@ baseUpper = startProfile(coolerBase, at = [0, 10])
   |> extrude(length = 2 * segLen(seg02) * 3 / 4, symmetric = true)
 
 // Create a flexible mounting bracket to secure the heat sink to the motherboard once adhered
-mountingBracket = startSketchOn(XZ)
-  |> startProfile(at = [-10, 16])
+mountingBracketSketch = startSketchOn(XZ)
+mountingBracket = startProfile(mountingBracketSketch, at = [-10, 16])
   |> xLine(length = -20)
   |> tangentialArc(angle = 20, radius = bendRadius)
   |> angledLine(angle = -160, length = 14, tag = $seg09)

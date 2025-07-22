@@ -31,8 +31,8 @@ assert(width, isGreaterThanOrEqual = shelfMountingHoleDiameter * 5.5, error = "H
 assert(width, isGreaterThanOrEqual = wallMountingHoleDiameter * 5.5, error = "Holes not possible. Either decrease hole diameter or increase width")
 
 // Create the body of the bracket
-bracketBody = startSketchOn(XZ)
-  |> startProfile(at = [0, 0])
+bracketSketch = startSketchOn(XZ)
+bracketBody = startProfile(bracketSketch, at = [0, 0])
   |> xLine(length = shelfMountLength - thickness, tag = $seg01)
   |> yLine(length = thickness, tag = $seg02)
   |> xLine(length = -shelfMountLength, tag = $seg03)

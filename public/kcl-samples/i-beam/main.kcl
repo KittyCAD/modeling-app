@@ -13,8 +13,8 @@ webThickness = 0.193
 rootRadius = 0.457
 
 // Sketch a quadrant of the beam cross section, then mirror for symmetry across each axis. Extrude to the appropriate length
-iBeam = startSketchOn(-XZ)
-  |> startProfile(at = [0, beamHeight / 2])
+iBeamSketch = startSketchOn(-XZ)
+iBeam = startProfile(iBeamSketch, at = [0, beamHeight / 2])
   |> xLine(length = flangeWidth / 2)
   |> yLine(length = -flangeThickness)
   |> xLine(endAbsolute = webThickness / 2 + rootRadius)
