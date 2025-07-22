@@ -74,19 +74,13 @@ async fn inner_scale(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<SolidOrSketchOrImportedGeometry, KclError> {
-    // If we have a solid, flush the fillets and chamfers.
-    // Only transforms needs this, it is very odd, see: https://github.com/KittyCAD/modeling-app/issues/5880
-    if let SolidOrSketchOrImportedGeometry::SolidSet(solids) = &objects {
-        exec_state.flush_batch_for_solids((&args).into(), solids).await?;
-    }
-
     let is_global = global.unwrap_or(false);
     let origin = if is_global {
         Some(OriginType::Global)
     } else {
         Some(OriginType::Local)
     };
-
+    
     let mut objects = objects.clone();
     for object_id in objects.ids(&args.ctx).await? {
         exec_state
@@ -179,11 +173,6 @@ async fn inner_translate(
             )));
         }
     };
-    // If we have a solid, flush the fillets and chamfers.
-    // Only transforms needs this, it is very odd, see: https://github.com/KittyCAD/modeling-app/issues/5880
-    if let SolidOrSketchOrImportedGeometry::SolidSet(solids) = &objects {
-        exec_state.flush_batch_for_solids((&args).into(), solids).await?;
-    }
 
     let is_global = global.unwrap_or(false);
     let origin = if is_global {
@@ -191,7 +180,6 @@ async fn inner_translate(
     } else {
         Some(OriginType::Local)
     };
-
     let mut objects = objects.clone();
     for object_id in objects.ids(&args.ctx).await? {
         exec_state
@@ -361,12 +349,6 @@ async fn inner_rotate(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<SolidOrSketchOrImportedGeometry, KclError> {
-    // If we have a solid, flush the fillets and chamfers.
-    // Only transforms needs this, it is very odd, see: https://github.com/KittyCAD/modeling-app/issues/5880
-    if let SolidOrSketchOrImportedGeometry::SolidSet(solids) = &objects {
-        exec_state.flush_batch_for_solids((&args).into(), solids).await?;
-    }
-
     let origin = if let Some(origin) = origin {
         Some(OriginType::Custom {
             origin: shared::Point3d {
