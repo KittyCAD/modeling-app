@@ -51,7 +51,7 @@ export const updateEnvironmentPool = (
   pool: string
 ) => {
   if (environmentName === '') {
-    console.log('reject updating pool,  environment: value is the empy string.')
+    console.log('reject updating pool,  environment: value is the empty string.')
     return
   }
   if (!ENVIRONMENT) return
