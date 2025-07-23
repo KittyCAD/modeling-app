@@ -116,7 +116,7 @@ export class SceneFixture {
   makeMouseHelpers = (
     x: number,
     y: number,
-    { steps, format }: { steps: number; format?: 'pixels' | 'ratio' } = {
+    { steps, format }: { steps?: number; format?: 'pixels' | 'ratio' } = {
       steps: 20,
       format: 'pixels',
     }

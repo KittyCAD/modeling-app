@@ -228,6 +228,11 @@ async function waitForCmdReceive(page: Page, commandType: string) {
     .waitFor()
 }
 
+/**
+ * Moves the mouse in a sine wave along a vector,
+ * useful for emulating organic fluid mouse motion which is not available normally in Playwright.
+ * Ex. used to activate the segment overlays by hovering around the sketch segments.
+ */
 export const wiggleMove = async (
   page: any,
   x: number,
@@ -258,6 +263,11 @@ export const wiggleMove = async (
   }
 }
 
+/**
+ * Moves the mouse in a complete circle about a point.
+ * useful for emulating organic "hovering" around motions, which are not available normally in Playwright.
+ * Ex. used to activate the segment overlays by hovering around the sketch segments.
+ */
 export const circleMove = async (
   page: Page,
   x: number,
