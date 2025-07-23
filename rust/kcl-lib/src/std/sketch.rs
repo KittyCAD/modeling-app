@@ -842,13 +842,13 @@ async fn inner_start_sketch_on(
         (Some(face), None, None) => Some(face),
         (_, Some(_), None) => {
             return Err(KclError::new_semantic(KclErrorDetails::new(
-                format!("`alignAxis` is required if `normalToFace` is specified.").to_owned(),
+                "`alignAxis` is required if `normalToFace` is specified.".to_owned(),
                 vec![args.source_range],
             )));
         }
         (_, None, Some(_)) => {
             return Err(KclError::new_semantic(KclErrorDetails::new(
-                format!("`normalToFace` is required if `alignAxis` is specified.").to_owned(),
+                "`normalToFace` is required if `alignAxis` is specified.".to_owned(),
                 vec![args.source_range],
             )));
         }
@@ -912,18 +912,15 @@ async fn inner_start_sketch_on(
                             (plane_of.info.y_axis.negated(), plane_of.info.z_axis)
                         } else {
                             return Err(KclError::new_semantic(KclErrorDetails::new(
-                                format!(
-                                    "Unsupported axis detected. This function only supports using X, -X, Y and -Y."
-                                )
-                                .to_owned(),
+                                "Unsupported axis detected. This function only supports using X, -X, Y and -Y."
+                                    .to_owned(),
                                 vec![args.source_range],
                             )));
                         }
                     }
                     Axis2dOrEdgeReference::Edge(_) => {
                         return Err(KclError::new_semantic(KclErrorDetails::new(
-                            format!("Use of an edge here is unsupported, please specify an `Axis2d` instead.")
-                                .to_owned(),
+                            "Use of an edge here is unsupported, please specify an `Axis2d` instead.".to_owned(),
                             vec![args.source_range],
                         )));
                     }
