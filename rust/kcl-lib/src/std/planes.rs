@@ -125,6 +125,17 @@ async fn inner_plane_of(
 
     // Engine doesn't send back an ID, so let's just make a new plane ID.
     let plane_id = exec_state.id_generator().next_uuid();
+    #[cfg(feature = "artifact-graph")]
+    {
+        use crate::execution::{Artifact, ArtifactId, CodeRef, PlaneOfFace};
+        // Create artifact used only by the UI, not the engine.
+        exec_state.add_artifact(Artifact::PlaneOfFace(PlaneOfFace {
+            id: ArtifactId::from(plane_id),
+            face_id: face_id.into(),
+            code_ref: CodeRef::placeholder(args.source_range),
+        }));
+    }
+
     Ok(Plane {
         artifact_id: plane_id.into(),
         id: plane_id,
