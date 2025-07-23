@@ -920,7 +920,7 @@ openSketch = startSketchOn(XY)
     })
   })
 
-  test(`Shift-click to select and deselect sketch segments`, async ({
+  test(`Shift-click to select and deselect sketch segments TEST`, async ({
     page,
     homePage,
     scene,
