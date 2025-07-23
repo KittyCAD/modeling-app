@@ -441,7 +441,6 @@ const prepareToEditOffsetPlane: PrepareToEditCallback = async ({
     return { reason: `Couldn't retrieve operation arguments` }
   }
 
-  console.log('operation', operation)
   let plane: Selections | undefined
   const maybeDefaultPlaneName = getStringValue(
     codeManager.code,
