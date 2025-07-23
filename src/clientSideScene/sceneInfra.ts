@@ -509,44 +509,46 @@ export class SceneInfra {
       })
     }
 
-    if (intersects[0] && !this.selected) {
-      const firstIntersectObject = intersects[0].object
-      const planeIntersectPoint = this.getPlaneIntersectPoint()
-      const intersectionPoint = {
-        twoD: planeIntersectPoint?.twoD,
-        threeD: planeIntersectPoint?.threeD,
-      }
+    if (!this.selected) {
+      if (intersects[0]) {
+        const firstIntersectObject = intersects[0].object
+        const planeIntersectPoint = this.getPlaneIntersectPoint()
+        const intersectionPoint = {
+          twoD: planeIntersectPoint?.twoD,
+          threeD: planeIntersectPoint?.threeD,
+        }
 
-      if (this.hoveredObject !== firstIntersectObject) {
-        const hoveredObj = this.hoveredObject
-        this.hoveredObject = null
-        if (hoveredObj) {
-          await this.onMouseLeave({
-            selected: hoveredObj,
+        if (this.hoveredObject !== firstIntersectObject) {
+          const hoveredObj = this.hoveredObject
+          this.hoveredObject = null
+          if (hoveredObj) {
+            await this.onMouseLeave({
+              selected: hoveredObj,
+              mouseEvent: mouseEvent,
+              intersectionPoint,
+            })
+          }
+          this.hoveredObject = firstIntersectObject
+          await this.onMouseEnter({
+            selected: this.hoveredObject,
             mouseEvent: mouseEvent,
             intersectionPoint,
           })
+          this.updateMouseState({
+            type: 'isHovering',
+            on: this.hoveredObject,
+          })
         }
-        this.hoveredObject = firstIntersectObject
-        await this.onMouseEnter({
-          selected: this.hoveredObject,
-          mouseEvent: mouseEvent,
-          intersectionPoint,
-        })
-        this.updateMouseState({
-          type: 'isHovering',
-          on: this.hoveredObject,
-        })
-      }
-    } else {
-      if (this.hoveredObject) {
-        const hoveredObj = this.hoveredObject
-        this.hoveredObject = null
-        await this.onMouseLeave({
-          selected: hoveredObj,
-          mouseEvent: mouseEvent,
-        })
-        if (!this.selected) this.updateMouseState({ type: 'idle' })
+      } else {
+        if (this.hoveredObject) {
+          const hoveredObj = this.hoveredObject
+          this.hoveredObject = null
+          await this.onMouseLeave({
+            selected: hoveredObj,
+            mouseEvent: mouseEvent,
+          })
+          if (!this.selected) this.updateMouseState({ type: 'idle' })
+        }
       }
     }
 
