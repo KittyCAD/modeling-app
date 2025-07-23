@@ -4,7 +4,9 @@ use std::sync::Arc;
 
 use anyhow::Result;
 #[cfg(feature = "artifact-graph")]
-pub use artifact::{Artifact, ArtifactCommand, ArtifactGraph, CodeRef, StartSketchOnFace, StartSketchOnPlane};
+pub use artifact::{
+    Artifact, ArtifactCommand, ArtifactGraph, CodeRef, PlaneOfFace, StartSketchOnFace, StartSketchOnPlane,
+};
 use cache::GlobalState;
 pub use cache::{bust_cache, clear_mem_cache};
 #[cfg(feature = "artifact-graph")]
