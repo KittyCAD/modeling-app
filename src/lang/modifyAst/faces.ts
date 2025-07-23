@@ -32,6 +32,7 @@ import { mutateAstWithTagForSketchSegment } from '@src/lang/modifyAst/addEdgeTre
 import {
   getArtifactOfTypes,
   getCapCodeRef,
+  getFaceCodeRef,
   getSweepArtifactFromSelection,
 } from '@src/lang/std/artifactGraph'
 import type { OpArg, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
@@ -314,26 +315,53 @@ export function retrieveNonDefaultPlaneSelectionFromOpArg(
     )
   }
 
-  const artifact = getArtifactOfTypes(
+  const planeArtifact = getArtifactOfTypes(
     {
       key: planeArg.value.artifact_id,
-      types: ['plane'],
+      types: ['plane', 'planeOfFace'],
     },
     artifactGraph
   )
-  if (err(artifact)) {
-    return new Error("Couldn't retrieve plane artifact")
+  if (err(planeArtifact)) {
+    return new Error("Couldn't retrieve plane or planeOfFace artifact")
   }
 
-  return {
-    graphSelections: [
-      {
-        artifact,
-        codeRef: artifact.codeRef,
-      },
-    ],
-    otherSelections: [],
+  if (planeArtifact.type === 'plane') {
+    return {
+      graphSelections: [
+        {
+          artifact: planeArtifact,
+          codeRef: planeArtifact.codeRef,
+        },
+      ],
+      otherSelections: [],
+    }
+  } else if (planeArtifact.type === 'planeOfFace') {
+    const faceArtifact = getArtifactOfTypes(
+      { key: planeArtifact.faceId, types: ['cap', 'wall'] },
+      artifactGraph
+    )
+    if (err(faceArtifact)) {
+      return new Error("Couldn't retrieve face artifact for planeOfFace")
+    }
+
+    const codeRef = getFaceCodeRef(faceArtifact)
+    if (!codeRef) {
+      return new Error("Couldn't retrieve code reference for face artifact")
+    }
+
+    return {
+      graphSelections: [
+        {
+          artifact: faceArtifact,
+          codeRef,
+        },
+      ],
+      otherSelections: [],
+    }
   }
+
+  return new Error('Unsupported plane artifact type')
 }
 
 function buildSolidsAndFacesExprs(

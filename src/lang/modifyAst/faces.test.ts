@@ -391,15 +391,14 @@ plane001 = offsetPlane(planeOf(extrude001, face = END), offset = 1)`
       op.unlabeledArg!,
       artifactGraph
     )
-    // TODO: this is what we hit at the moment for sweep face offsets
-    // see https://github.com/KittyCAD/modeling-app/issues/7883
     if (err(selections)) throw selections
+
     expect(selections.graphSelections).toHaveLength(1)
-    expect(selections.graphSelections[0].artifact!.type).toEqual('plane')
-    // expect(
-    //   (selections.graphSelections[0].artifact as PlaneArtifact).codeRef
-    //     .pathToNode[1][0]
-    // ).toEqual(0)
+    expect(selections.graphSelections[0].artifact!.type).toEqual('cap')
+    const cap = [...artifactGraph.values()].find(
+      (a) => a.type === 'cap' && a.subType === 'end'
+    )
+    expect(selections.graphSelections[0].artifact!.id).toEqual(cap!.id)
   })
 })
 
