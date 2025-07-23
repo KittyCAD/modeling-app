@@ -364,9 +364,9 @@ test.describe(
         localStorage.setItem(
           'persistCode',
           `sketch001 = startSketchOn(XZ)
-profile001 = startProfile(sketch001, at = [182.59, -246.32])
-  |> xLine(length = 184.3)
-  |> tangentialArc(end = [184.31, 184.31])
+profile001 = startProfile(sketch001, at = [-5, -5])
+  |> xLine(length = 50)
+  |> tangentialArc(end = [50, 50])
 `
         )
       })
@@ -422,9 +422,9 @@ profile001 = startProfile(sketch001, at = [182.59, -246.32])
         localStorage.setItem(
           'persistCode',
           `sketch001 = startSketchOn(XZ)
-profile001 = startProfile(sketch001, at = [182.59, -246.32])
-  |> xLine(length = 184.3)
-  |> tangentialArc(end = [184.31, 184.31])
+profile001 = startProfile(sketch001, at = [-5, -5])
+  |> xLine(length = 50)
+  |> tangentialArc(end = [50, 50])
 `
         )
       })
