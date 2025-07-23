@@ -2168,6 +2168,80 @@ notPipeSub = 1 |> identity(!%))";
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_start_sketch_on_invalid_kwargs() {
+        let ast = r#"
+sketch001 = startSketchOn(XY)
+  |> startProfile(at = [-5, -5])
+  |> xLine(length = 10, tag = $a)
+  |> yLine(length = 10, tag = $b)
+  |> xLine(length = -10, tag = $c)
+  |> close()
+
+cube001 = extrude(sketch001, length = 10)
+
+sketch002 = startSketchOn(cube001, normalToFace = a, face = a)
+"#;
+        assert_eq!(
+            parse_execute(ast).await.unwrap_err().message(),
+            "You cannot give both `face` and `normalToFace` params, you have to choose one or the other.".to_owned(),
+        );
+
+        let ast = r#"
+sketch001 = startSketchOn(XY)
+  |> startProfile(at = [-5, -5])
+  |> xLine(length = 10, tag = $a)
+  |> yLine(length = 10, tag = $b)
+  |> xLine(length = -10, tag = $c)
+  |> close()
+
+cube001 = extrude(sketch001, length = 10)
+
+sketch002 = startSketchOn(cube001, normalToFace = a)
+"#;
+
+        assert_eq!(
+            parse_execute(ast).await.unwrap_err().message(),
+            "`alignAxis` is required if `normalToFace` is specified.".to_owned(),
+        );
+
+        let ast = r#"
+sketch001 = startSketchOn(XY)
+  |> startProfile(at = [-5, -5])
+  |> xLine(length = 10, tag = $a)
+  |> yLine(length = 10, tag = $b)
+  |> xLine(length = -10, tag = $c)
+  |> close()
+
+cube001 = extrude(sketch001, length = 10)
+
+sketch002 = startSketchOn(cube001, alignAxis = X)
+"#;
+
+        assert_eq!(
+            parse_execute(ast).await.unwrap_err().message(),
+            "`normalToFace` is required if `alignAxis` is specified.".to_owned(),
+        );
+
+        let ast = r#"
+sketch001 = startSketchOn(XY)
+  |> startProfile(at = [-5, -5])
+  |> xLine(length = 10, tag = $a)
+  |> yLine(length = 10, tag = $b)
+  |> xLine(length = -10, tag = $c)
+  |> close()
+
+cube001 = extrude(sketch001, length = 10)
+
+sketch002 = startSketchOn(cube001, face = a, alignAxis = X)
+"#;
+
+        assert_eq!(
+            parse_execute(ast).await.unwrap_err().message(),
+            "`normalToFace` is required if `alignAxis` is specified.".to_owned(),
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_math_negative_variable_in_binary_expression() {
         let ast = r#"sigmaAllow = 35000 // psi
 width = 1 // inch

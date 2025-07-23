@@ -834,12 +834,12 @@ async fn inner_start_sketch_on(
     let face = match (face, normal_to_face, &align_axis) {
         (Some(_), Some(_), _) => {
             return Err(KclError::new_semantic(KclErrorDetails::new(
-                format!("You cannot give both `face` and `normalToFace` params, you have to choose one or the other")
+                "You cannot give both `face` and `normalToFace` params, you have to choose one or the other."
                     .to_owned(),
                 vec![args.source_range],
             )));
         }
-        (Some(face), _, _) => Some(face),
+        (Some(face), None, None) => Some(face),
         (_, Some(_), None) => {
             return Err(KclError::new_semantic(KclErrorDetails::new(
                 format!("`alignAxis` is required if `normalToFace` is specified.").to_owned(),
