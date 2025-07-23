@@ -1958,6 +1958,9 @@ test(
   'import from nested directory',
   { tag: ['@desktop', '@windows', '@macos'] },
   async ({ homePage, scene, cmdBar, context, page, editor }) => {
+    const lineOfKcl = runningOnWindows()
+      ? `import 'nested\\main.kcl' as thing\n\nthing`
+      : `import 'nested/main.kcl' as thing\n\nthing`
     await context.folderSetupFn(async (dir) => {
       const bracketDir = path.join(dir, 'bracket')
       await fsp.mkdir(bracketDir, { recursive: true })
@@ -1968,12 +1971,7 @@ test(
         executorInputPath('cylinder-inches.kcl'),
         path.join(nestedDir, 'main.kcl')
       )
-      await fsp.writeFile(
-        path.join(bracketDir, 'main.kcl'),
-        runningOnWindows()
-          ? `import 'nested\\main.kcl' as thing\n\nthing`
-          : `import 'nested/main.kcl' as thing\n\nthing`
-      )
+      await fsp.writeFile(path.join(bracketDir, 'main.kcl'), lineOfKcl)
     })
 
     await test.step('Opening the bracket project should load the stream', async () => {
@@ -1982,7 +1980,7 @@ test(
       await scene.settled(cmdBar)
 
       await editor.expectState({
-        activeLines: ["import'nested/main.kcl'asthing"],
+        activeLines: [lineOfKcl],
         diagnostics: [],
         highlightedCode: '',
       })
