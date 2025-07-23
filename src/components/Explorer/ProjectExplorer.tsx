@@ -20,7 +20,7 @@ import { systemIOActor, useSettings } from '@src/lib/singletons'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { sortFilesAndDirectories } from '@src/lib/desktopFS'
 import {
-  alwaysEndFileWithEXT,
+  enforceFileEXT,
   desktopSafePathJoin,
   desktopSafePathSplit,
   getEXTWithPeriod,
@@ -196,6 +196,7 @@ export const ProjectExplorer = ({
     setOpenedRows(newOpenedRows)
     setSelectedRowWrapper(file)
     setActiveIndex(domIndex)
+    console.log('did this do anything?')
   }
 
   useEffect(() => {
@@ -425,7 +426,7 @@ export const ProjectExplorer = ({
             } else {
               // rename a file
               const originalExt = getEXTWithPeriod(name)
-              const fileNameForcedWithOriginalExt = alwaysEndFileWithEXT(
+              const fileNameForcedWithOriginalExt = enforceFileEXT(
                 requestedName,
                 originalExt
               )
@@ -444,7 +445,7 @@ export const ProjectExplorer = ({
 
               if (row.isFake) {
                 // create a file if it is fake and navigate to that file!
-                if (file && canNavigate) {
+                if (file && !canNavigate) {
                   systemIOActor.send({
                     type: SystemIOMachineEvents.importFileFromURL,
                     data: {
@@ -591,6 +592,19 @@ export const ProjectExplorer = ({
             const value = openedRowsRef.current[key]
             newOpenedRows[key] = !value
             setOpenedRows(newOpenedRows)
+
+            // If you press the left arrow and you are at the first child in a folder, run the callback on the parent
+            // folder which would move your cursor up a level and close the folder
+            if (
+              focusedEntry.positionInSet === 1 &&
+              focusedEntry.level !== 0 &&
+              activeIndexRef.current > 0
+            ) {
+              onRowClickCallback(
+                rowsToRenderRef.current[activeIndexRef.current - 1],
+                activeIndexRef.current - 1
+              )
+            }
           }
           break
         case 'ArrowRight':

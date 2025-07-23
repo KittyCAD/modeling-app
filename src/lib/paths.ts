@@ -248,7 +248,7 @@ export function desktopSafePathJoin(paths: string[]): string {
 /**
  * Don't pass a folder path, only files with extensions for best results.
  */
-export const alwaysEndFileWithEXT = (
+export const enforceFileEXT = (
   filePath: string,
   ext: string | null
 ): string | null => {

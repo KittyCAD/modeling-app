@@ -262,7 +262,7 @@ export const FileExplorerRowElement = ({
       }}
       draggable="true"
       onDragOver={(event) => {
-        // TODO
+        // TODO: the onDrag work is for dragging the DOM element to move folders and files
         // if (!row.isOpen && row.isFolder) {
         //   // on drag over, open!
         //   row.onOpen()
