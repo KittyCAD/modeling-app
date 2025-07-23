@@ -920,7 +920,8 @@ async fn inner_start_sketch_on(
                     }
                     Axis2dOrEdgeReference::Edge(_) => {
                         return Err(KclError::new_semantic(KclErrorDetails::new(
-                            "Use of an edge here is unsupported, please specify an `Axis2d` instead.".to_owned(),
+                            "Use of an edge here is unsupported, please specify an `Axis2d` (e.g. `X`) instead."
+                                .to_owned(),
                             vec![args.source_range],
                         )));
                     }
