@@ -41,7 +41,7 @@ export interface BillingContext {
   credits: undefined | number
   allowance: undefined | number
   error: undefined | Error
-  urlUserService: string
+  urlUserService: () => string
   tier: undefined | Tier
   subscriptionsOrError: undefined | SubscriptionsOrError
   lastFetch: undefined | Date
@@ -58,7 +58,7 @@ export const BILLING_CONTEXT_DEFAULTS: BillingContext = Object.freeze({
   error: undefined,
   tier: undefined,
   subscriptionsOrError: undefined,
-  urlUserService: '',
+  urlUserService: () => '',
   lastFetch: undefined,
 })
 
@@ -102,7 +102,7 @@ export const billingMachine = setup({
 
         const billingOrError: Models['CustomerBalance_type'] | number | Error =
           await crossPlatformFetch(
-            `${input.context.urlUserService}/user/payment/balance`,
+            `${input.context.urlUserService()}/user/payment/balance`,
             { method: 'GET' },
             input.event.apiToken
           )
@@ -116,14 +116,14 @@ export const billingMachine = setup({
           | Models['ZooProductSubscriptions_type']
           | number
           | Error = await crossPlatformFetch(
-          `${input.context.urlUserService}/user/payment/subscriptions`,
+          `${input.context.urlUserService()}/user/payment/subscriptions`,
           { method: 'GET' },
           input.event.apiToken
         )
 
         const orgOrError: Models['Org_type'] | number | Error =
           await crossPlatformFetch(
-            `${input.context.urlUserService}/org`,
+            `${input.context.urlUserService()}/org`,
             { method: 'GET' },
             input.event.apiToken
           )
