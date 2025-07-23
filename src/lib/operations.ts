@@ -27,7 +27,7 @@ import type {
   ModelingCommandSchema,
 } from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import type { KclCommandValue, KclExpression } from '@src/lib/commandTypes'
-import { stringToKclExpression } from '@src/lib/kclHelpers'
+import { getStringValue, stringToKclExpression } from '@src/lib/kclHelpers'
 import { isDefaultPlaneStr } from '@src/lib/planes'
 import type { Selections } from '@src/lib/selections'
 import { codeManager, kclManager, rustContext } from '@src/lib/singletons'
@@ -443,12 +443,10 @@ const prepareToEditOffsetPlane: PrepareToEditCallback = async ({
 
   console.log('operation', operation)
   let plane: Selections | undefined
-  const maybeDefaultPlaneName = codeManager.code
-    .slice(
-      operation.unlabeledArg.sourceRange[0],
-      operation.unlabeledArg.sourceRange[1]
-    )
-    .replaceAll(`'`, ``)
+  const maybeDefaultPlaneName = getStringValue(
+    codeManager.code,
+    operation.unlabeledArg.sourceRange
+  )
   if (isDefaultPlaneStr(maybeDefaultPlaneName)) {
     const id = rustContext.getDefaultPlaneId(maybeDefaultPlaneName)
     if (err(id)) {
@@ -1608,13 +1606,13 @@ async function prepareToEditAppearance({ operation }: EnterEditFlowProps) {
   }
 
   // 2. Convert the color argument from a string to a KCL expression
-  // TODO: other args
   if (!operation.labeledArgs.color) {
     return { reason: "Couldn't find color argument" }
   }
-  let color = codeManager.code.slice(
-    operation.labeledArgs.color.sourceRange[0],
-    operation.labeledArgs.color.sourceRange[1]
+
+  const color = getStringValue(
+    codeManager.code,
+    operation.labeledArgs.color.sourceRange
   )
 
   let metalness: KclCommandValue | undefined

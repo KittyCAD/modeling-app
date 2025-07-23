@@ -2929,8 +2929,8 @@ sketch002 = startSketchOn(extrude001, face = rectangleSegmentA001)
     const initialCode = `sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [0, 0], radius = 1)
 extrude001 = extrude(profile001, length = 1)`
-    const declaration = `appearance(extrude001, color = '#FF0000')`
-    const editedDeclaration = `appearance(extrude001, color = '#00FF00')`
+    const declaration = `appearance(extrude001, color = '#ff0000')`
+    const editedDeclaration = `appearance(extrude001, color = '#00ff00')`
     await context.addInitScript((initialCode) => {
       localStorage.setItem('persistCode', initialCode)
     }, initialCode)
@@ -2969,12 +2969,13 @@ extrude001 = extrude(profile001, length = 1)`
         highlightedHeaderArg: 'color',
         stage: 'arguments',
       })
+      await cmdBar.currentArgumentInput.fill('#ff0000') // uppercase doesn't work here
       await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         commandName: 'Appearance',
         headerArguments: {
           Objects: '1 sweep',
-          Color: '#FF0000',
+          Color: '#ff0000',
         },
         stage: 'review',
       })
@@ -2996,16 +2997,17 @@ extrude001 = extrude(profile001, length = 1)`
         currentArgKey: 'color',
         currentArgValue: '',
         headerArguments: {
-          Color: `'#FF0000'`,
+          Color: '#ff0000',
         },
         highlightedHeaderArg: 'color',
         commandName: 'Appearance',
       })
-      await cmdBar.selectOption({ name: 'Green' }).click()
+      await cmdBar.currentArgumentInput.fill('#00ff00')
+      await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         stage: 'review',
         headerArguments: {
-          Color: '#00FF00',
+          Color: '#00ff00',
         },
         commandName: 'Appearance',
       })

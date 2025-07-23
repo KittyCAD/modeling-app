@@ -1052,55 +1052,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       color: {
-        // TODO: change this to a color picker
-        inputType: 'options',
+        inputType: 'color',
         required: true,
-        options: [
-          {
-            name: 'Red',
-            value: '#FF0000',
-          },
-          {
-            name: 'Green',
-            value: '#00FF00',
-          },
-          {
-            name: 'Blue',
-            value: '#0000FF',
-          },
-          {
-            name: 'Turquoise',
-            value: '#00FFFF',
-          },
-          {
-            name: 'Purple',
-            value: '#FF00FF',
-          },
-          {
-            name: 'Yellow',
-            value: '#FFFF00',
-          },
-          {
-            name: 'Black',
-            value: '#000000',
-          },
-          {
-            name: 'Dark Grey',
-            value: '#080808',
-          },
-          {
-            name: 'Light Grey',
-            value: '#D3D3D3',
-          },
-          {
-            name: 'White',
-            value: '#FFFFFF',
-          },
-          {
-            name: 'Default (clear appearance)',
-            value: COMMAND_APPEARANCE_COLOR_DEFAULT,
-          },
-        ],
       },
       metalness: {
         inputType: 'kcl',
