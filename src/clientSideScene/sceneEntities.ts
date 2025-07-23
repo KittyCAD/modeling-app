@@ -3349,7 +3349,8 @@ export class SceneEntities {
           ])
           colorSegment(selected, SEGMENT_YELLOW)
           const isSelected = parent?.userData?.isSelected
-          updateExtraSegments(parent, 'hoveringLine', true)
+          const hoveringArrow = selected?.parent?.name === ARROWHEAD
+          updateExtraSegments(parent, 'hoveringLine', !hoveringArrow) // no hover effect for arrowheads, they don't color the segment
           updateExtraSegments(parent, 'selected', isSelected)
           const orthoFactor = orthoScale(this.sceneInfra.camControls.camera)
 
