@@ -95,6 +95,9 @@ async fn inner_clone(
             ))
         })?;
 
+        #[cfg(target_arch = "wasm32")]
+    web_sys::console::log_1(&format!("Cloned geometry: {:?}", new_geometry).into());
+
     Ok(new_geometry)
 }
 /// Fix the tags and references of the cloned geometry.
@@ -111,9 +114,13 @@ async fn fix_tags_and_references(
     match new_geometry {
         GeometryWithImportedGeometry::ImportedGeometry(_) => {}
         GeometryWithImportedGeometry::Sketch(sketch) => {
+            #[cfg(target_arch = "wasm32")]
+            web_sys::console::log_1(&format!("Fixing sketch: {:?}", sketch).into());
             fix_sketch_tags_and_references(sketch, &entity_id_map, exec_state).await?;
         }
         GeometryWithImportedGeometry::Solid(solid) => {
+            #[cfg(target_arch = "wasm32")]
+            web_sys::console::log_1(&format!("Fixing solid: {:?}", solid).into());
             // Make the sketch id the new geometry id.
             solid.sketch.id = new_geometry_id;
             solid.sketch.original_id = new_geometry_id;
@@ -230,12 +237,20 @@ async fn fix_sketch_tags_and_references(
     // Fix the path references in the sketch.
     for path in new_sketch.paths.as_mut_slice() {
         if let Some(new_path_id) = entity_id_map.get(&path.get_id()) {
+            #[cfg(target_arch = "wasm32")]
+            web_sys::console::log_1(&format!("OLD ID{:?}", path.get_id()).into());
+
+            #[cfg(target_arch = "wasm32")]
+            web_sys::console::log_1(&format!("NEW ID{:?}", new_path_id).into());
             path.set_id(*new_path_id);
         } else {
             // We log on these because we might have already flushed and the id is no longer
             // relevant since filleted or something.
             crate::log::logln!("Failed to find new path id for old path id: {:?}", path.get_id());
         }
+        // double check the path id
+        #[cfg(target_arch = "wasm32")]
+        web_sys::console::log_1(&format!("PATH ID: {:?}", path.get_id()).into());
     }
 
     // Fix the tags
@@ -244,7 +259,14 @@ async fn fix_sketch_tags_and_references(
     for path in new_sketch.paths.clone() {
         // Check if this path has a tag.
         if let Some(tag) = path.get_tag() {
+            //print the tag
+            #[cfg(target_arch = "wasm32")]
+            web_sys::console::log_1(&format!("TAG: {:?}", tag).into());
+
             new_sketch.add_tag(&tag, &path, exec_state);
+            //double check that the tag was added
+            #[cfg(target_arch = "wasm32")]
+            web_sys::console::log_1(&format!("TAG ADDED: {:?}", path.get_tag()).into());
         }
     }
 
