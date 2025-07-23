@@ -62,9 +62,14 @@ test.describe('Testing Camera Movement', () => {
 
     if (errors.some((e) => e > acceptableCamError)) {
       if (retryCount > 2) {
-        console.log('xVal', vals[0], 'xError', errors[0])
-        console.log('yVal', vals[1], 'yError', errors[1])
-        console.log('zVal', vals[2], 'zError', errors[2])
+        const keys = ['x', 'y', 'z']
+        keys.forEach((key, i) =>
+          console.log(key, {
+            expected: afterPosition[i],
+            received: vals[i],
+            error: errors[i],
+          })
+        )
 
         throw new Error('Camera position not as expected', {
           cause: {
@@ -186,7 +191,8 @@ test.describe('Testing Camera Movement', () => {
       await test.step('Test orbit with spherical mode', async () => {
         await bakeInRetries({
           mouseActions: async () => {
-            await page.mouse.move(700, 200)
+            const moveOne = await scene.convertPagePositionToStream(700, 200)
+            await page.mouse.move(moveOne.x, moveOne.y)
             await page.mouse.down({ button: 'right' })
             await page.waitForTimeout(100)
 
@@ -198,7 +204,8 @@ test.describe('Testing Camera Movement', () => {
               appLogoBBox.y + appLogoBBox.height / 2
             )
             await page.waitForTimeout(100)
-            await page.mouse.move(600, 303)
+            const moveTwo = await scene.convertPagePositionToStream(600, 303)
+            await page.mouse.move(moveTwo.x, moveTwo.y)
             await page.waitForTimeout(100)
             await page.mouse.up({ button: 'right' })
           },
@@ -221,7 +228,8 @@ test.describe('Testing Camera Movement', () => {
 
         await bakeInRetries({
           mouseActions: async () => {
-            await page.mouse.move(700, 200)
+            const moveOne = await scene.convertPagePositionToStream(700, 200)
+            await page.mouse.move(moveOne.x, moveOne.y)
             await page.mouse.down({ button: 'right' })
             await page.waitForTimeout(100)
 
@@ -235,11 +243,12 @@ test.describe('Testing Camera Movement', () => {
               appLogoBBox.y + appLogoBBox.height / 2
             )
             await page.waitForTimeout(100)
-            await page.mouse.move(600, 303)
+            const moveTwo = await scene.convertPagePositionToStream(600, 303)
+            await page.mouse.move(moveTwo.x, moveTwo.y)
             await page.waitForTimeout(100)
             await page.mouse.up({ button: 'right' })
           },
-          afterPosition: [27.07, -43.66, 108.68],
+          afterPosition: [47.27, -15.48, 109.43],
           beforePosition: initialCamPosition,
           page,
           scene,
