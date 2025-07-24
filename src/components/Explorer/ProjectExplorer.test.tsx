@@ -279,4 +279,55 @@ describe('ProjectExplorer', () => {
     expect(items.length).toBe(1)
     expect(items[0].innerText).toBe('parts')
   })
+  it('should collapse all folders which will hide one file and show one folder', () => {
+    const mainFile = createFile('main.kcl')
+    project.children = [createFolder('parts', [mainFile])]
+    const { getByText, rerender } = render(
+      <ProjectExplorer
+        project={project}
+        file={oneFile}
+        createFilePressed={-1}
+        createFolderPressed={-1}
+        refreshExplorerPressed={-1}
+        collapsePressed={-1}
+        onRowClicked={(row: FileExplorerEntry, index: number) => {}}
+        onRowEnter={(row: FileExplorerEntry, index: number) => {}}
+        readOnly={false}
+        canNavigate={true}
+      />
+    )
+    const container = screen.getByTestId('file-explorer')
+
+    let items = screen.getAllByTestId('file-tree-item')
+    expect(container.childNodes.length).toBe(1)
+    expect(items.length).toBe(1)
+    expect(items[0].innerText).toBe('parts')
+
+    fireEvent.click(getByText('parts'))
+
+    items = screen.getAllByTestId('file-tree-item')
+    expect(items.length).toBe(2)
+    expect(items[0].innerText).toBe('parts')
+    expect(items[1].innerText).toBe('main.kcl')
+
+    // collapsePressed since a new time stamp came in!
+    rerender(
+      <ProjectExplorer
+        project={project}
+        file={oneFile}
+        createFilePressed={-1}
+        createFolderPressed={-1}
+        refreshExplorerPressed={-1}
+        collapsePressed={performance.now()}
+        onRowClicked={(row: FileExplorerEntry, index: number) => {}}
+        onRowEnter={(row: FileExplorerEntry, index: number) => {}}
+        readOnly={false}
+        canNavigate={true}
+      />
+    )
+
+    items = screen.getAllByTestId('file-tree-item')
+    expect(items.length).toBe(1)
+    expect(items[0].innerText).toBe('parts')
+  })
 })
