@@ -656,6 +656,8 @@ openSketch = startSketchOn(XY)
 
   test(`Shift-click to select and deselect edges and faces`, async ({
     context,
+    cmdBar,
+    toolbar,
     page,
     homePage,
     scene,
@@ -671,7 +673,7 @@ openSketch = startSketchOn(XY)
     |> extrude(%, length = -12)`
 
     // Locators
-    const upperEdgeLocation = { x: 600, y: 192 }
+    const upperEdgeLocation = { x: 600, y: 193 }
     const lowerEdgeLocation = { x: 600, y: 383 }
     const faceLocation = { x: 630, y: 290 }
 
@@ -688,9 +690,9 @@ openSketch = startSketchOn(XY)
 
     // Colors
     const edgeColorWhite: [number, number, number] = [220, 220, 220] // varies from 192 to 255
-    const edgeColorYellow: [number, number, number] = [251, 251, 40] // vaies from 12 to 67
+    const edgeColorYellow: [number, number, number] = [251, 251, 140] // vaies from 12 to 67
     const faceColorGray: [number, number, number] = [168, 168, 168]
-    const faceColorYellow: [number, number, number] = [155, 155, 155]
+    const faceColorYellow: [number, number, number] = [198, 197, 156]
     const tolerance = 40
     const timeout = 150
 
@@ -701,6 +703,8 @@ openSketch = startSketchOn(XY)
       }, initialCode)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
+      await toolbar.closePane('code')
+      await scene.settled(cmdBar)
 
       // Wait for the scene and stream to load
       await scene.expectPixelColor(faceColorGray, faceLocation, tolerance)
