@@ -19,6 +19,7 @@ import {
   selectOffsetSketchPlane,
 } from '@src/lib/selections'
 import { getSelectedPlaneId } from '@src/lang/queryAst'
+import toast from 'react-hot-toast'
 
 export function useViewControlMenuItems() {
   const { state: modelingState, send: modelingSend } = useModelingContext()
@@ -32,17 +33,15 @@ export function useViewControlMenuItems() {
     !settings.app.allowOrbitInSketchMode.current
 
   // Check if there's a valid selection with source range for "View KCL source code"
-  const hasValidSelection = useMemo(() => {
-    const selections = modelingState.context.selectionRanges.graphSelections
-    return (
-      selections.length > 0 &&
-      selections.some((selection) => {
+  const firstValidSelection = useMemo(() => {
+    return modelingState.context.selectionRanges.graphSelections.find(
+      (selection) => {
         return (
           selection.codeRef?.range &&
           selection.codeRef.range[0] !== undefined &&
           selection.codeRef.range[1] !== undefined
         )
-      })
+      }
     )
   }, [modelingState.context.selectionRanges.graphSelections])
 
@@ -82,16 +81,7 @@ export function useViewControlMenuItems() {
       </ContextMenuItem>,
       <ContextMenuItem
         onClick={() => {
-          // Get the first valid selection with a source range
-          const selection =
-            modelingState.context.selectionRanges.graphSelections.find(
-              (sel) =>
-                sel.codeRef?.range &&
-                sel.codeRef.range[0] !== undefined &&
-                sel.codeRef.range[1] !== undefined
-            )
-
-          if (selection?.codeRef?.range) {
+          if (firstValidSelection?.codeRef?.range) {
             // First, open the code pane if it's not already open
             if (!modelingState.context.store.openPanes.includes('code')) {
               modelingSend({
@@ -108,15 +98,19 @@ export function useViewControlMenuItems() {
               data: {
                 selectionType: 'singleCodeCursor',
                 selection: {
-                  artifact: selection.artifact,
-                  codeRef: selection.codeRef,
+                  artifact: firstValidSelection.artifact,
+                  codeRef: firstValidSelection.codeRef,
                 },
                 scrollIntoView: true,
               },
             })
+          } else {
+            toast.error(
+              'No valid selection with source range found. Please select a valid element.'
+            )
           }
         }}
-        disabled={!hasValidSelection}
+        disabled={!firstValidSelection}
       >
         View KCL source code
       </ContextMenuItem>,
@@ -154,8 +148,7 @@ export function useViewControlMenuItems() {
       VIEW_NAMES_SEMANTIC,
       shouldLockView,
       selectedPlaneId,
-      hasValidSelection,
-      modelingState.context.selectionRanges.graphSelections,
+      firstValidSelection,
       modelingState.context.store.openPanes,
     ]
   )

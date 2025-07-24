@@ -1289,4 +1289,40 @@ part001 = startSketchOn(XZ)
     )
     previousCodeContent = await page.locator('.cm-content').innerText()
   })
+
+  test('"View KCL source code" right click menu in scene', async ({
+    page,
+    homePage,
+    scene,
+    cmdBar,
+  }) => {
+    await page.setBodyDimensions({ width: 1200, height: 500 })
+    const middleX = 1200 / 2
+    const middleY = 500 / 2
+
+    await homePage.goToModelingScene()
+    await scene.settled(cmdBar)
+
+    await test.step('Empty scene should have disabled "View KCL source code"', async () => {
+      // Right-click in empty scene
+      await page.mouse.click(middleX, middleY, { button: 'right' })
+
+      // Verify context menu appears
+      await expect(page.getByTestId('view-controls-menu')).toBeVisible()
+
+      // "View KCL source code" should be disabled in empty scene
+      const menuItems = page.locator(
+        '[data-testid="view-controls-menu"] button'
+      )
+      const viewKclSourceCodeOption = menuItems.filter({
+        hasText: 'View KCL source code',
+      })
+      await expect(viewKclSourceCodeOption).toBeVisible()
+      await expect(viewKclSourceCodeOption).toBeDisabled()
+    })
+
+    // TODO: add this step for happy path, the bracket code is long enough for this
+    // await test.step('Right click on bracket sample leads to the right place in code', async () => {
+    // })
+  })
 })
