@@ -1,4 +1,5 @@
 import type { Models } from '@kittycad/lib'
+import type { EntityType_type } from '@kittycad/lib/dist/types/src/models'
 
 import { angleLengthInfo } from '@src/components/Toolbar/angleLengthInfo'
 import { findUniqueName } from '@src/lang/create'
@@ -7,6 +8,7 @@ import { getVariableDeclaration } from '@src/lang/queryAst/getVariableDeclaratio
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import { transformAstSketchLines } from '@src/lang/std/sketchcombos'
 import type {
+  Artifact,
   PathToNode,
   SourceRange,
   VariableDeclarator,
@@ -59,6 +61,15 @@ const nodeToEditProps = {
   required: false,
   hidden: true,
 } as CommandArgumentConfig<PathToNode | undefined, ModelingMachineContext>
+
+// For all transforms and boolean commands
+const objectsTypesAndFilters: {
+  selectionTypes: Artifact['type'][]
+  selectionFilter: EntityType_type[]
+} = {
+  selectionTypes: ['path', 'sweep', 'compositeSolid'],
+  selectionFilter: ['object'],
+}
 
 export type ModelingCommandSchema = {
   'Enter sketch': { forceNewSketch?: boolean }
@@ -150,7 +161,7 @@ export type ModelingCommandSchema = {
     angleStart: KclCommandValue
     radius?: KclCommandValue // axis or edge modes only
     length?: KclCommandValue // axis or edge modes only
-    ccw: boolean // optional boolean argument, default value to false
+    ccw?: boolean // optional boolean argument, default value to false
   }
   'event.parameter.create': {
     value: KclCommandValue
@@ -618,9 +629,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     needsReview: true,
     args: {
       solids: {
-        inputType: 'selection',
-        selectionTypes: ['path'],
-        selectionFilter: ['object'],
+        ...objectsTypesAndFilters,
+        inputType: 'selectionMixed',
         // TODO: turn back to true once engine supports it, the codemod and KCL are ready
         // Issue link: https://github.com/KittyCAD/engine/issues/3435
         multiple: false,
@@ -628,10 +638,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       tools: {
-        clearSelectionFirst: true,
+        ...objectsTypesAndFilters,
         inputType: 'selection',
-        selectionTypes: ['path'],
-        selectionFilter: ['object'],
+        clearSelectionFirst: true,
         multiple: true,
         required: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
@@ -644,9 +653,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     needsReview: true,
     args: {
       solids: {
-        inputType: 'selection',
-        selectionTypes: ['path'],
-        selectionFilter: ['object'],
+        ...objectsTypesAndFilters,
+        inputType: 'selectionMixed',
         multiple: true,
         required: true,
         skip: false,
@@ -660,9 +668,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     needsReview: true,
     args: {
       solids: {
+        ...objectsTypesAndFilters,
         inputType: 'selectionMixed',
-        selectionTypes: ['path'],
-        selectionFilter: ['object'],
         multiple: true,
         required: true,
         skip: false,
@@ -733,8 +740,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           !['Edge'].includes(context.argumentsToSubmit.mode as string),
       },
       cylinder: {
+        ...objectsTypesAndFilters,
         inputType: 'selection',
-        selectionTypes: ['wall'],
         multiple: false,
         required: (context) =>
           ['Cylinder'].includes(context.argumentsToSubmit.mode as string),
@@ -1044,55 +1051,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       color: {
-        // TODO: change this to a color picker
-        inputType: 'options',
+        inputType: 'color',
         required: true,
-        options: [
-          {
-            name: 'Red',
-            value: '#FF0000',
-          },
-          {
-            name: 'Green',
-            value: '#00FF00',
-          },
-          {
-            name: 'Blue',
-            value: '#0000FF',
-          },
-          {
-            name: 'Turquoise',
-            value: '#00FFFF',
-          },
-          {
-            name: 'Purple',
-            value: '#FF00FF',
-          },
-          {
-            name: 'Yellow',
-            value: '#FFFF00',
-          },
-          {
-            name: 'Black',
-            value: '#000000',
-          },
-          {
-            name: 'Dark Grey',
-            value: '#080808',
-          },
-          {
-            name: 'Light Grey',
-            value: '#D3D3D3',
-          },
-          {
-            name: 'White',
-            value: '#FFFFFF',
-          },
-          {
-            name: 'Default (clear appearance)',
-            value: COMMAND_APPEARANCE_COLOR_DEFAULT,
-          },
-        ],
       },
       metalness: {
         inputType: 'kcl',
@@ -1113,10 +1073,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         ...nodeToEditProps,
       },
       objects: {
-        // selectionMixed allows for feature tree selection of module imports
+        ...objectsTypesAndFilters,
         inputType: 'selectionMixed',
-        selectionTypes: ['path', 'sweep', 'compositeSolid'],
-        selectionFilter: ['object'],
         multiple: true,
         required: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
@@ -1155,10 +1113,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         ...nodeToEditProps,
       },
       objects: {
-        // selectionMixed allows for feature tree selection of module imports
+        ...objectsTypesAndFilters,
         inputType: 'selectionMixed',
-        selectionTypes: ['path', 'sweep', 'compositeSolid'],
-        selectionFilter: ['object'],
         multiple: true,
         required: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
@@ -1197,10 +1153,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         ...nodeToEditProps,
       },
       objects: {
-        // selectionMixed allows for feature tree selection of module imports
+        ...objectsTypesAndFilters,
         inputType: 'selectionMixed',
-        selectionTypes: ['path', 'sweep', 'compositeSolid'],
-        selectionFilter: ['object'],
         multiple: true,
         required: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
@@ -1239,10 +1193,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         ...nodeToEditProps,
       },
       objects: {
-        // selectionMixed allows for feature tree selection of module imports
+        ...objectsTypesAndFilters,
         inputType: 'selectionMixed',
-        selectionTypes: ['path', 'sweep'],
-        selectionFilter: ['object'],
         multiple: false, // only one object can be cloned at this time
         required: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),

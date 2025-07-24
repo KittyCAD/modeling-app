@@ -256,11 +256,11 @@ impl Program {
 
     pub fn recast(&self) -> String {
         // Use the default options until we integrate into the UI the ability to change them.
-        self.ast.recast(&Default::default(), 0)
+        self.ast.recast_top(&Default::default(), 0)
     }
 
     pub fn recast_with_options(&self, options: &FormatOptions) -> String {
-        self.ast.recast(options, 0)
+        self.ast.recast_top(options, 0)
     }
 
     /// Create an empty program.

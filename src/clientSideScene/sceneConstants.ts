@@ -44,7 +44,7 @@ export const PROFILE_START = 'profile-start'
 export const DRAFT_DASHED_LINE = 'draft-dashed-line'
 
 // Measurements
-export const EXTRA_SEGMENT_OFFSET_PX = 8
+export const EXTRA_SEGMENT_OFFSET_PX = 20
 export const SEGMENT_WIDTH_PX = 1.6
 export const HIDE_SEGMENT_LENGTH = 75
 export const HIDE_HOVER_SEGMENT_LENGTH = 60
@@ -69,6 +69,10 @@ export const ARC_SEGMENT_TYPES = [
   THREE_POINT_ARC_SEGMENT,
   ARC_SEGMENT,
 ]
+
+// Colors
+export const SEGMENT_YELLOW = 0xffff00
+export const SEGMENT_BLUE = 0x0000ff
 
 // Helper functions
 export function getParentGroup(

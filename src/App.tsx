@@ -67,6 +67,7 @@ import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes
 import { UndoRedoButtons } from '@src/components/UndoRedoButtons'
 import { Toolbar } from '@src/Toolbar'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
+import env from '@src/env'
 
 // CYCLIC REF
 sceneInfra.camControls.engineStreamActor = engineStreamActor
@@ -92,7 +93,7 @@ export function App() {
 
   // Stream related refs and data
   const [searchParams] = useSearchParams()
-  const pool = searchParams.get('pool')
+  const pool = searchParams.get('pool') || env().POOL || null
 
   const projectName = project?.name || null
   const projectPath = project?.path || null

@@ -860,7 +860,7 @@ impl Backend {
         // Now let's perform the rename on the ast.
         ast.rename_symbol(new_name, pos);
         // Now recast it.
-        let recast = ast.recast(&Default::default(), 0);
+        let recast = ast.recast_top(&Default::default(), 0);
 
         Ok(Some((current_code.to_string(), recast)))
     }
@@ -1480,7 +1480,7 @@ impl LanguageServer for Backend {
             return Ok(None);
         };
         // Now recast it.
-        let recast = ast.recast(
+        let recast = ast.recast_top(
             &crate::parsing::ast::types::FormatOptions {
                 tab_size: params.options.tab_size as usize,
                 insert_final_newline: params.options.insert_final_newline.unwrap_or(false),

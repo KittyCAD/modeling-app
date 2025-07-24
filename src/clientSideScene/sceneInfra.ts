@@ -5,7 +5,6 @@ import type {
   MeshBasicMaterial,
   Object3D,
   Object3DEventMap,
-  Texture,
 } from 'three'
 import {
   AmbientLight,
@@ -16,7 +15,6 @@ import {
   OrthographicCamera,
   Raycaster,
   Scene,
-  TextureLoader,
   Vector2,
   Vector3,
   WebGLRenderer,
@@ -105,7 +103,6 @@ export class SceneInfra {
   isFovAnimationInProgress = false
   _baseUnitMultiplier = 1
   _theme: Themes = Themes.System
-  readonly extraSegmentTexture: Texture
   lastMouseState: MouseState = { type: 'idle' }
   onDragStartCallback: (arg: OnDragCallbackArgs) => Voidish = () => {}
   onDragEndCallback: (arg: OnDragCallbackArgs) => Voidish = () => {}
@@ -323,13 +320,6 @@ export class SceneInfra {
     const light = new AmbientLight(0x505050) // soft white light
     this.scene.add(light)
 
-    const textureLoader = new TextureLoader()
-    this.extraSegmentTexture = textureLoader.load(
-      './clientSideSceneAssets/extra-segment-texture.png'
-    )
-    this.extraSegmentTexture.anisotropy =
-      this.renderer?.capabilities?.getMaxAnisotropy?.()
-
     SceneInfra.instance = this
   }
 
@@ -449,7 +439,24 @@ export class SceneInfra {
       intersection: planeIntersects[0],
     }
   }
+
+  public mouseMoveThrottling = true // Can be turned off for debugging
+  private _processingMouseMove = false
+  private _lastUnprocessedMouseEvent: MouseEvent | undefined
+
   onMouseMove = async (mouseEvent: MouseEvent) => {
+    if (this.mouseMoveThrottling) {
+      // Throttle mouse move events to help with performance.
+      // Without this a new call to executeAstMock() is made by SceneEntities/onDragSegment() while the
+      // previous one is still running, causing multiple wasm calls to be running at the same time.
+      // Here we simply ignore the mouse move event if we are already processing one, until the processing is done.
+      if (this._processingMouseMove) {
+        this._lastUnprocessedMouseEvent = mouseEvent
+        return
+      }
+      this._processingMouseMove = true
+    }
+
     this.currentMouseVector.x = (mouseEvent.clientX / window.innerWidth) * 2 - 1
     this.currentMouseVector.y =
       -(mouseEvent.clientY / window.innerHeight) * 2 + 1
@@ -473,6 +480,7 @@ export class SceneInfra {
         planeIntersectPoint.twoD &&
         planeIntersectPoint.threeD
       ) {
+        const selected = this.selected
         await this.onDragCallback({
           mouseEvent,
           intersectionPoint: {
@@ -480,11 +488,11 @@ export class SceneInfra {
             threeD: planeIntersectPoint.threeD,
           },
           intersects,
-          selected: this.selected.object,
+          selected: selected.object,
         })
         this.updateMouseState({
           type: 'isDragging',
-          on: this.selected.object,
+          on: selected.object,
         })
       }
     } else if (
@@ -543,6 +551,17 @@ export class SceneInfra {
           mouseEvent: mouseEvent,
         })
         if (!this.selected) this.updateMouseState({ type: 'idle' })
+      }
+    }
+
+    if (this.mouseMoveThrottling) {
+      this._processingMouseMove = false
+      const lastUnprocessedMouseEvent = this._lastUnprocessedMouseEvent
+      if (lastUnprocessedMouseEvent) {
+        // Another mousemove happened during the time this callback was processing
+        // -> process that event now
+        this._lastUnprocessedMouseEvent = undefined
+        void this.onMouseMove(lastUnprocessedMouseEvent)
       }
     }
   }

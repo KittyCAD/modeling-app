@@ -35,7 +35,7 @@ fn lint_lower_camel_case_var(decl: &VariableDeclarator, prog: &AstNode<Program>)
 
         let mut prog = prog.clone();
         prog.rename_symbol(&new_name, ident.start);
-        let recast = prog.recast(&Default::default(), 0);
+        let recast = prog.recast_top(&Default::default(), 0);
 
         let suggestion = Suggestion {
             title: format!("rename '{name}' to '{new_name}'"),
