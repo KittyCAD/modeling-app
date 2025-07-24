@@ -405,6 +405,7 @@ export const engineStreamMachine = setup({
               assign({
                 videoRef: { current: null },
                 canvasRef: { current: null },
+                containerElementRef: { current: null },
               }),
             ],
           },
