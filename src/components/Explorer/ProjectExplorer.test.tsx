@@ -1,6 +1,6 @@
 import type { FileEntry, Project } from '@src/lib/project'
 import { ProjectExplorer } from '@src/components/Explorer/ProjectExplorer'
-import { render, screen, cleanup } from '@testing-library/react'
+import { render, screen, cleanup, fireEvent } from '@testing-library/react'
 import {
   addPlaceHoldersForNewFileAndFolder,
   type FileExplorerEntry,
@@ -152,7 +152,7 @@ describe('ProjectExplorer', () => {
     expect(items.length).toBe(1)
     expect(items[0].innerText).toBe('parts')
   })
-  it('render nested main.kcl file on load since it is the loaded file. All folders above opened.', () => {
+  it('should render nested main.kcl file on load since it is the loaded file. All folders above opened.', () => {
     console.log('test')
     const mainFile = createFile('main.kcl', 'parts/')
     project.children = [createFolder('parts', [mainFile])]
@@ -179,7 +179,7 @@ describe('ProjectExplorer', () => {
     expect(items[0].innerText).toBe('parts')
     expect(items[1].innerText).toBe('main.kcl')
   })
-  it('render main.kcl on initialization within 3 nested folders', () => {
+  it('should render main.kcl on initialization within 3 nested folders', () => {
     const mainFile = createFile('main.kcl', 'parts/very/cool/')
     project.children = [
       createFolder('parts', [
@@ -210,5 +210,73 @@ describe('ProjectExplorer', () => {
     expect(items[1].innerText).toBe('very')
     expect(items[2].innerText).toBe('cool')
     expect(items[3].innerText).toBe('main.kcl')
+  })
+  it('should render a folder then render the file when the folder is clicked', () => {
+    const mainFile = createFile('main.kcl')
+    project.children = [createFolder('parts', [mainFile])]
+    const { getByText } = render(
+      <ProjectExplorer
+        project={project}
+        file={oneFile}
+        createFilePressed={-1}
+        createFolderPressed={-1}
+        refreshExplorerPressed={-1}
+        collapsePressed={-1}
+        onRowClicked={(row: FileExplorerEntry, index: number) => {}}
+        onRowEnter={(row: FileExplorerEntry, index: number) => {}}
+        readOnly={false}
+        canNavigate={true}
+      />
+    )
+    const container = screen.getByTestId('file-explorer')
+
+    let items = screen.getAllByTestId('file-tree-item')
+    expect(container.childNodes.length).toBe(1)
+    expect(items.length).toBe(1)
+    expect(items[0].innerText).toBe('parts')
+
+    fireEvent.click(getByText('parts'))
+
+    items = screen.getAllByTestId('file-tree-item')
+    expect(items.length).toBe(2)
+    expect(items[0].innerText).toBe('parts')
+    expect(items[1].innerText).toBe('main.kcl')
+  })
+  it('should open and close a single folder with 1 file', () => {
+    const mainFile = createFile('main.kcl')
+    project.children = [createFolder('parts', [mainFile])]
+    const { getByText } = render(
+      <ProjectExplorer
+        project={project}
+        file={oneFile}
+        createFilePressed={-1}
+        createFolderPressed={-1}
+        refreshExplorerPressed={-1}
+        collapsePressed={-1}
+        onRowClicked={(row: FileExplorerEntry, index: number) => {}}
+        onRowEnter={(row: FileExplorerEntry, index: number) => {}}
+        readOnly={false}
+        canNavigate={true}
+      />
+    )
+    const container = screen.getByTestId('file-explorer')
+
+    let items = screen.getAllByTestId('file-tree-item')
+    expect(container.childNodes.length).toBe(1)
+    expect(items.length).toBe(1)
+    expect(items[0].innerText).toBe('parts')
+
+    fireEvent.click(getByText('parts'))
+
+    items = screen.getAllByTestId('file-tree-item')
+    expect(items.length).toBe(2)
+    expect(items[0].innerText).toBe('parts')
+    expect(items[1].innerText).toBe('main.kcl')
+
+    fireEvent.click(getByText('parts'))
+
+    items = screen.getAllByTestId('file-tree-item')
+    expect(items.length).toBe(1)
+    expect(items[0].innerText).toBe('parts')
   })
 })
