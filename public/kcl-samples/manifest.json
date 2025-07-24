@@ -449,21 +449,6 @@
   },
   {
     "file": "main.kcl",
-    "pathFromProjectDirectoryToFirstFile": "multi-axis-robot/main.kcl",
-    "multipleFiles": true,
-    "title": "Robot Arm",
-    "description": "A 4 axis robotic arm for industrial use. These machines can be used for assembly, packaging, organization of goods, and quality inspection processes",
-    "files": [
-      "globals.kcl",
-      "main.kcl",
-      "robot-arm-base.kcl",
-      "robot-arm-j2.kcl",
-      "robot-arm-j3.kcl",
-      "robot-rotating-base.kcl"
-    ]
-  },
-  {
-    "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "pdu-faceplate/main.kcl",
     "multipleFiles": false,
     "title": "Power Distribution Unit (PDU) faceplate with European plug sockets and switch",
