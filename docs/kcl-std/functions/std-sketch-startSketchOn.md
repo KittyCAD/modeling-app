@@ -13,6 +13,7 @@ startSketchOn(
   face?: TaggedFace,
   normalToFace?: TaggedFace,
   alignAxis?: Axis2d,
+  normalOffset?: number(Length),
 ): Plane | Face
 ```
 
@@ -41,6 +42,7 @@ face, since it will include all the parent faces and Solids.
 | `face` | [`TaggedFace`](/docs/kcl-std/types/std-types-TaggedFace) | Identify a face of a solid if a solid is specified as the input argument (`planeOrSolid`). | No |
 | `normalToFace` | [`TaggedFace`](/docs/kcl-std/types/std-types-TaggedFace) | Identify a face of a solid if a solid is specified as the input argument. Starts a sketch on the plane orthogonal to this specified face. Incompatible with `face`, requires `alignAxis`. | No |
 | `alignAxis` | [`Axis2d`](/docs/kcl-std/types/std-types-Axis2d) | If sketching normal to face, this axis will be the new local x axis of the sketch plane. The selected face's normal will be the local y axis. | No |
+| `normalOffset` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | Offset the sketch plane along its normal by the given amount. | No |
 
 ### Returns
 
