@@ -2,6 +2,7 @@ import {
   type Artifact,
   assertParse,
   type CodeRef,
+  type Name,
   type Program,
   recast,
 } from '@src/lang/wasm'
@@ -13,6 +14,8 @@ import {
   addLoft,
   addRevolve,
   addSweep,
+  getAxisExpressionAndIndex,
+  retrieveAxisOrEdgeSelectionsFromOpArg,
 } from '@src/lang/modifyAst/sweeps'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
@@ -351,9 +354,8 @@ profile001 = circle(sketch001, center = [3, 0], radius = 1)`
     const { ast, sketches } = await getAstAndSketchSelections(circleCode)
     expect(sketches.graphSelections).toHaveLength(1)
     const angle = await getKclCommandValue('10')
-    const axisOrEdge = 'Axis'
     const axis = 'X'
-    const result = addRevolve({ ast, sketches, angle, axisOrEdge, axis })
+    const result = addRevolve({ ast, sketches, angle, axis })
     if (err(result)) throw result
     await runNewAstAndCheckForSweep(result.modifiedAst)
     const newCode = recast(result.modifiedAst)
@@ -367,14 +369,12 @@ profile001 = circle(sketch001, center = [3, 0], radius = 1)`
     const { ast, sketches } = await getAstAndSketchSelections(circleCode)
     expect(sketches.graphSelections).toHaveLength(1)
     const angle = await getKclCommandValue('10')
-    const axisOrEdge = 'Axis'
     const axis = 'X'
     const symmetric = true
     const result = addRevolve({
       ast,
       sketches,
       angle,
-      axisOrEdge,
       axis,
       symmetric,
     })
@@ -395,13 +395,11 @@ profile001 = circle(sketch001, center = [3, 0], radius = 1)`
       circleAndRectProfilesCode
     )
     const angle = await getKclCommandValue('10')
-    const axisOrEdge = 'Axis'
     const axis = 'X'
     const result = addRevolve({
       ast,
       sketches,
       angle,
-      axisOrEdge,
       axis,
     })
     if (err(result)) throw result
@@ -433,8 +431,7 @@ sketch002 = startSketchOn(extrude001, face = rectangleSegmentA001)
     if (!edgeArtifact) throw new Error('Edge artifact not found in graph')
     const edge = createSelectionFromPathArtifact([edgeArtifact])
     const angle = await getKclCommandValue('20')
-    const axisOrEdge = 'Edge'
-    const result = addRevolve({ ast, sketches, angle, axisOrEdge, edge })
+    const result = addRevolve({ ast, sketches, angle, edge })
     if (err(result)) throw result
     await runNewAstAndCheckForSweep(result.modifiedAst)
     const newCode = recast(result.modifiedAst)
@@ -467,8 +464,7 @@ sketch002 = startSketchOn(XY)
     if (!edgeArtifact) throw new Error('Edge artifact not found in graph')
     const edge = createSelectionFromPathArtifact([edgeArtifact])
     const angle = await getKclCommandValue('360')
-    const axisOrEdge = 'Edge'
-    const result = addRevolve({ ast, sketches, angle, axisOrEdge, edge })
+    const result = addRevolve({ ast, sketches, angle, edge })
     if (err(result)) throw result
     await runNewAstAndCheckForSweep(result.modifiedAst)
     const newCode = recast(result.modifiedAst)
@@ -489,7 +485,6 @@ revolve001 = revolve(profile001, angle = 10, axis = X)`
     expect(sketches.graphSelections).toHaveLength(1)
     const angle = await getKclCommandValue('20')
     const bidirectionalAngle = await getKclCommandValue('30')
-    const axisOrEdge = 'Axis'
     const axis = 'Y'
     const nodeToEdit = createPathToNodeForLastVariable(ast)
     const result = addRevolve({
@@ -497,7 +492,6 @@ revolve001 = revolve(profile001, angle = 10, axis = X)`
       sketches,
       angle,
       bidirectionalAngle,
-      axisOrEdge,
       axis,
       nodeToEdit,
     })
@@ -511,5 +505,104 @@ revolve001 = revolve(profile001, angle = 10, axis = X)`
   axis = Y,
   bidirectionalAngle = 30,
 )`)
+  })
+})
+
+describe('Testing getAxisExpressionAndIndex', () => {
+  it.each(['X', 'Y', 'Z'])(
+    'should return axis expression for default axis %s',
+    (axis) => {
+      const ast = assertParse('')
+      const result = getAxisExpressionAndIndex(axis, undefined, ast)
+      if (err(result)) throw result
+      expect(result.generatedAxis.type).toEqual('Name')
+      expect((result.generatedAxis as Node<Name>).name.name).toEqual(axis)
+    }
+  )
+
+  it('should return a generated axis pointing to the selected segment', async () => {
+    const { ast, artifactGraph } =
+      await getAstAndArtifactGraph(`sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> xLine(length = 1)`)
+    const edgeArtifact = [...artifactGraph.values()].find(
+      (a) => a.type === 'segment'
+    )
+    const edge: Selections = createSelectionFromPathArtifact([edgeArtifact!])
+    const result = getAxisExpressionAndIndex(undefined, edge, ast)
+    if (err(result)) throw result
+    expect(result.generatedAxis.type).toEqual('Name')
+    expect((result.generatedAxis as Node<Name>).name.name).toEqual('seg01')
+    expect(recast(ast)).toContain(`xLine(length = 1, tag = $seg01)`)
+  })
+
+  it('should error if nothing is provided', async () => {
+    const result = getAxisExpressionAndIndex(
+      undefined,
+      undefined,
+      assertParse('')
+    )
+    expect(result).toBeInstanceOf(Error)
+  })
+})
+
+describe('Testing retrieveAxisOrEdgeSelectionsFromOpArg', () => {
+  it.each(['X', 'Y', 'Z'])(
+    'should return axis selection from axis op argument %s',
+    async (axis) => {
+      const helixCode = `helix001 = helix(
+  axis = ${axis},
+  revolutions = 1,
+  angleStart = 0,
+  radius = 1,
+  length = 1,
+)`
+      const ast = assertParse(helixCode)
+      const { artifactGraph, operations } = await enginelessExecutor(ast)
+      const op = operations.find(
+        (o) => o.type === 'StdLibCall' && o.name === 'helix'
+      )
+      if (!op || op.type !== 'StdLibCall' || !op.labeledArgs.axis) {
+        throw new Error('Helix operation not found')
+      }
+      const result = retrieveAxisOrEdgeSelectionsFromOpArg(
+        op.labeledArgs.axis,
+        artifactGraph
+      )
+      if (err(result)) throw result
+      expect(result.axisOrEdge).toEqual('Axis')
+      expect(result.axis).toEqual(axis)
+      expect(result.edge).toBeUndefined()
+    }
+  )
+
+  it('should return edge selection from axis op argument', async () => {
+    const helixCode = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> yLine(length = 1, tag = $seg01)
+helix001 = helix(
+  axis = seg01,
+  revolutions = 1,
+  angleStart = 0,
+  radius = 1,
+)`
+    const ast = assertParse(helixCode)
+    const { artifactGraph, operations } = await enginelessExecutor(ast)
+    const op = operations.find(
+      (o) => o.type === 'StdLibCall' && o.name === 'helix'
+    )
+    if (!op || op.type !== 'StdLibCall' || !op.labeledArgs.axis) {
+      throw new Error('Helix operation not found')
+    }
+    const result = retrieveAxisOrEdgeSelectionsFromOpArg(
+      op.labeledArgs.axis,
+      artifactGraph
+    )
+    if (err(result)) throw result
+    const segId = [...artifactGraph.values()].find((a) => a.type === 'segment')
+    expect(result.axisOrEdge).toEqual('Edge')
+    expect(result.edge).toBeDefined()
+    expect(result.edge!.graphSelections[0].codeRef).toEqual(segId!.codeRef)
+    expect(result.axis).toBeUndefined()
   })
 })

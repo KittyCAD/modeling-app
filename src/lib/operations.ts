@@ -1,7 +1,8 @@
-import type { OpKclValue, Operation } from '@rust/kcl-lib/bindings/Operation'
+import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { retrieveFaceSelectionsFromOpArgs } from '@src/lang/modifyAst/faces'
+import { retrieveAxisOrEdgeSelectionsFromOpArg } from '@src/lang/modifyAst/sweeps'
 import {
   getNodeFromPath,
   retrieveSelectionsFromOpArg,
@@ -10,8 +11,6 @@ import type { Artifact } from '@src/lang/std/artifactGraph'
 import {
   getArtifactOfTypes,
   getEdgeCutConsumedCodeRef,
-  getSweepEdgeCodeRef,
-  getWallCodeRef,
 } from '@src/lang/std/artifactGraph'
 import {
   type CallExpressionKw,
@@ -25,7 +24,7 @@ import type {
   ModelingCommandSchema,
 } from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import type { KclCommandValue, KclExpression } from '@src/lib/commandTypes'
-import { stringToKclExpression } from '@src/lib/kclHelpers'
+import { getStringValue, stringToKclExpression } from '@src/lib/kclHelpers'
 import { isDefaultPlaneStr } from '@src/lib/planes'
 import type { Selections } from '@src/lib/selections'
 import { codeManager, kclManager, rustContext } from '@src/lib/singletons'
@@ -442,9 +441,7 @@ const prepareToEditOffsetPlane: PrepareToEditCallback = async ({
   // TODO: Implement conversion to arbitrary plane selection
   // once the Offset Plane command supports it.
   const stdPlane = operation.unlabeledArg
-  const planeName = codeManager.code
-    .slice(stdPlane.sourceRange[0], stdPlane.sourceRange[1])
-    .replaceAll(`'`, ``)
+  const planeName = getStringValue(codeManager.code, stdPlane.sourceRange)
 
   if (!isDefaultPlaneStr(planeName)) {
     // TODO: error handling
@@ -610,14 +607,6 @@ const prepareToEditSweep: PrepareToEditCallback = async ({ operation }) => {
   }
 }
 
-const nonZero = (val: OpKclValue): number => {
-  if (val.type === 'Number') {
-    return val.value
-  } else {
-    return 0
-  }
-}
-
 const prepareToEditHelix: PrepareToEditCallback = async ({ operation }) => {
   const baseCommand = {
     name: 'Helix',
@@ -633,204 +622,95 @@ const prepareToEditHelix: PrepareToEditCallback = async ({ operation }) => {
   let axis: string | undefined
   let edge: Selections | undefined
   let cylinder: Selections | undefined
-  // Rest of stdlib args
-  let revolutions: KclExpression | undefined // common to all modes, can't remain undefined
-  let angleStart: KclExpression | undefined // common to all modes, can't remain undefined
-  let length: KclExpression | undefined // axis or edge modes only
-  let radius: KclExpression | undefined // axis or edge modes only
-  let ccw = false // optional boolean argument, default value
-
   if ('axis' in operation.labeledArgs && operation.labeledArgs.axis) {
     // axis options string or selection arg
-    const axisValue = operation.labeledArgs.axis.value
-    if (axisValue.type === 'Object') {
-      // default axis case
-      mode = 'Axis'
-      const direction = axisValue.value['direction']
-      if (!direction || direction.type !== 'Array') {
-        return { reason: 'No direction vector for axis' }
-      }
-      if (nonZero(direction.value[0])) {
-        axis = 'X'
-      } else if (nonZero(direction.value[1])) {
-        axis = 'Y'
-      } else if (nonZero(direction.value[2])) {
-        axis = 'Z'
-      } else {
-        return { reason: 'Bad direction vector for axis' }
-      }
-    } else if (axisValue.type === 'TagIdentifier' && axisValue.artifact_id) {
-      // segment case
-      mode = 'Edge'
-      const artifact = getArtifactOfTypes(
-        {
-          key: axisValue.artifact_id,
-          types: ['segment'],
-        },
-        kclManager.artifactGraph
-      )
-      if (err(artifact)) {
-        return { reason: "Couldn't find related edge artifact" }
-      }
-
-      edge = {
-        graphSelections: [
-          {
-            artifact,
-            codeRef: artifact.codeRef,
-          },
-        ],
-        otherSelections: [],
-      }
-    } else if (axisValue.type === 'Uuid') {
-      // sweepEdge case
-      mode = 'Edge'
-      const artifact = getArtifactOfTypes(
-        {
-          key: axisValue.value,
-          types: ['sweepEdge'],
-        },
-        kclManager.artifactGraph
-      )
-      if (err(artifact)) {
-        return { reason: "Couldn't find related edge artifact" }
-      }
-
-      const codeRef = getSweepEdgeCodeRef(artifact, kclManager.artifactGraph)
-      if (err(codeRef)) {
-        return { reason: "Couldn't find related edge code ref" }
-      }
-
-      edge = {
-        graphSelections: [
-          {
-            artifact,
-            codeRef,
-          },
-        ],
-        otherSelections: [],
-      }
-    } else {
-      return { reason: 'The type of the axis argument is unsupported' }
+    const axisEdgeSelection = retrieveAxisOrEdgeSelectionsFromOpArg(
+      operation.labeledArgs.axis,
+      kclManager.artifactGraph
+    )
+    if (err(axisEdgeSelection)) {
+      return { reason: "Couldn't retrieve axis or edge selection" }
     }
+    mode = axisEdgeSelection.axisOrEdge
+    axis = axisEdgeSelection.axis
+    edge = axisEdgeSelection.edge
   } else if (
     'cylinder' in operation.labeledArgs &&
     operation.labeledArgs.cylinder
   ) {
-    mode = 'Cylinder'
     // axis cylinder selection arg
-    if (operation.labeledArgs.cylinder.value.type !== 'Solid') {
-      return { reason: "Cylinder arg found isn't of type Solid" }
-    }
-
-    const sweepId = operation.labeledArgs.cylinder.value.value.artifactId
-    const wallArtifact = [...kclManager.artifactGraph.values()].find(
-      (p) => p.type === 'wall' && p.sweepId === sweepId
+    const result = retrieveSelectionsFromOpArg(
+      operation.labeledArgs.cylinder,
+      kclManager.artifactGraph
     )
-    if (!wallArtifact || wallArtifact.type !== 'wall') {
-      return {
-        reason: "Cylinder arg found doesn't point to a valid sweep wall",
-      }
+    if (err(result)) {
+      return { reason: "Couldn't retrieve cylinder selection" }
     }
 
-    const wallCodeRef = getWallCodeRef(wallArtifact, kclManager.artifactGraph)
-    if (err(wallCodeRef)) {
-      return {
-        reason: "Cylinder arg found doesn't point to a valid sweep code ref",
-      }
-    }
-
-    cylinder = {
-      graphSelections: [
-        {
-          artifact: wallArtifact,
-          codeRef: wallCodeRef,
-        },
-      ],
-      otherSelections: [],
-    }
+    mode = 'Cylinder'
+    cylinder = result
   } else {
     return {
-      reason: "The axis or cylinder arguments couldn't be prepared for edit",
+      reason: "The axis or cylinder arguments couldn't be retrieved.",
     }
   }
 
-  // revolutions kcl arg (common for all)
-  if (
-    'revolutions' in operation.labeledArgs &&
-    operation.labeledArgs.revolutions
-  ) {
-    const r = await stringToKclExpression(
-      codeManager.code.slice(
-        operation.labeledArgs.revolutions.sourceRange[0],
-        operation.labeledArgs.revolutions.sourceRange[1]
-      )
+  // revolutions kcl arg (required for all)
+  const revolutions = await stringToKclExpression(
+    codeManager.code.slice(
+      operation.labeledArgs?.revolutions?.sourceRange[0],
+      operation.labeledArgs?.revolutions?.sourceRange[1]
     )
-    if (err(r) || 'errors' in r) {
-      return { reason: 'Errors found in revolutions argument' }
-    }
-
-    revolutions = r
-  } else {
-    return { reason: "Couldn't find revolutions argument" }
+  )
+  if (err(revolutions) || 'errors' in revolutions) {
+    return { reason: 'Errors found in revolutions argument' }
   }
 
-  // angleStart kcl arg (common for all)
-  if (
-    'angleStart' in operation.labeledArgs &&
-    operation.labeledArgs.angleStart
-  ) {
-    const r = await stringToKclExpression(
-      codeManager.code.slice(
-        operation.labeledArgs.angleStart.sourceRange[0],
-        operation.labeledArgs.angleStart.sourceRange[1]
-      )
+  // angleStart kcl arg (required for all)
+  const angleStart = await stringToKclExpression(
+    codeManager.code.slice(
+      operation.labeledArgs?.angleStart?.sourceRange[0],
+      operation.labeledArgs?.angleStart?.sourceRange[1]
     )
-    if (err(r) || 'errors' in r) {
-      return { reason: 'Errors found in angleStart argument' }
-    }
-
-    angleStart = r
-  } else {
-    return { reason: "Couldn't find angleStart argument" }
+  )
+  if (err(angleStart) || 'errors' in angleStart) {
+    return { reason: 'Errors found in angleStart argument' }
   }
 
   // radius and cylinder and kcl arg (only for axis or edge)
-  if (mode !== 'Cylinder') {
-    if ('radius' in operation.labeledArgs && operation.labeledArgs.radius) {
-      const r = await stringToKclExpression(
-        codeManager.code.slice(
-          operation.labeledArgs.radius.sourceRange[0],
-          operation.labeledArgs.radius.sourceRange[1]
-        )
+  let radius: KclExpression | undefined // axis or edge modes only
+  if ('radius' in operation.labeledArgs && operation.labeledArgs.radius) {
+    const r = await stringToKclExpression(
+      codeManager.code.slice(
+        operation.labeledArgs.radius.sourceRange[0],
+        operation.labeledArgs.radius.sourceRange[1]
       )
-      if (err(r) || 'errors' in r) {
-        return { reason: 'Error in radius argument retrieval' }
-      }
-      radius = r
-    } else {
-      return { reason: "Couldn't find radius argument" }
+    )
+    if (err(r) || 'errors' in r) {
+      return { reason: 'Error in radius argument retrieval' }
     }
+
+    radius = r
   }
 
-  if (mode === 'Axis') {
-    if ('length' in operation.labeledArgs && operation.labeledArgs.length) {
-      const r = await stringToKclExpression(
-        codeManager.code.slice(
-          operation.labeledArgs.length.sourceRange[0],
-          operation.labeledArgs.length.sourceRange[1]
-        )
+  // length kcl arg (axis or edge modes only)
+  let length: KclExpression | undefined
+  if ('length' in operation.labeledArgs && operation.labeledArgs.length) {
+    const r = await stringToKclExpression(
+      codeManager.code.slice(
+        operation.labeledArgs.length.sourceRange[0],
+        operation.labeledArgs.length.sourceRange[1]
       )
-      if (err(r) || 'errors' in r) {
-        return { reason: 'Error in length argument retrieval' }
-      }
-      length = r
-    } else {
-      return { reason: "Couldn't find length argument" }
+    )
+    if (err(r) || 'errors' in r) {
+      return { reason: 'Error in length argument retrieval' }
     }
+
+    length = r
   }
 
   // counterClockWise boolean arg (optional)
+  let ccw: boolean | undefined
   if ('ccw' in operation.labeledArgs && operation.labeledArgs.ccw) {
     ccw =
       codeManager.code.slice(
@@ -896,78 +776,14 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
     return { reason: "Couldn't find axis argument" }
   }
 
-  const axisValue = operation.labeledArgs.axis.value
-  let axisOrEdge: 'Axis' | 'Edge' | undefined
-  let axis: string | undefined
-  let edge: Selections | undefined
-  if (axisValue.type === 'Object') {
-    // default axis casee
-    axisOrEdge = 'Axis'
-    const direction = axisValue.value['direction']
-    if (!direction || direction.type !== 'Array') {
-      return { reason: 'No direction vector for axis' }
-    }
-    if (nonZero(direction.value[0])) {
-      axis = 'X'
-    } else if (nonZero(direction.value[1])) {
-      axis = 'Y'
-    } else {
-      return { reason: 'Bad direction vector for axis' }
-    }
-  } else if (axisValue.type === 'TagIdentifier' && axisValue.artifact_id) {
-    // segment case
-    axisOrEdge = 'Edge'
-    const artifact = getArtifactOfTypes(
-      {
-        key: axisValue.artifact_id,
-        types: ['segment'],
-      },
-      kclManager.artifactGraph
-    )
-    if (err(artifact)) {
-      return { reason: "Couldn't find related edge artifact" }
-    }
-
-    edge = {
-      graphSelections: [
-        {
-          artifact,
-          codeRef: artifact.codeRef,
-        },
-      ],
-      otherSelections: [],
-    }
-  } else if (axisValue.type === 'Uuid') {
-    // sweepEdge case
-    axisOrEdge = 'Edge'
-    const artifact = getArtifactOfTypes(
-      {
-        key: axisValue.value,
-        types: ['sweepEdge'],
-      },
-      kclManager.artifactGraph
-    )
-    if (err(artifact)) {
-      return { reason: "Couldn't find related edge artifact" }
-    }
-
-    const codeRef = getSweepEdgeCodeRef(artifact, kclManager.artifactGraph)
-    if (err(codeRef)) {
-      return { reason: "Couldn't find related edge code ref" }
-    }
-
-    edge = {
-      graphSelections: [
-        {
-          artifact,
-          codeRef,
-        },
-      ],
-      otherSelections: [],
-    }
-  } else {
-    return { reason: 'The type of the axis argument is unsupported' }
+  const axisEdgeSelection = retrieveAxisOrEdgeSelectionsFromOpArg(
+    operation.labeledArgs.axis,
+    kclManager.artifactGraph
+  )
+  if (err(axisEdgeSelection)) {
+    return { reason: "Couldn't retrieve axis or edge selections" }
   }
+  const { axisOrEdge, axis, edge } = axisEdgeSelection
 
   // angle kcl arg
   // Default to '360' if not present
@@ -1786,13 +1602,13 @@ async function prepareToEditAppearance({ operation }: EnterEditFlowProps) {
   }
 
   // 2. Convert the color argument from a string to a KCL expression
-  // TODO: other args
   if (!operation.labeledArgs.color) {
     return { reason: "Couldn't find color argument" }
   }
-  let color = codeManager.code.slice(
-    operation.labeledArgs.color.sourceRange[0],
-    operation.labeledArgs.color.sourceRange[1]
+
+  const color = getStringValue(
+    codeManager.code,
+    operation.labeledArgs.color.sourceRange
   )
 
   let metalness: KclCommandValue | undefined

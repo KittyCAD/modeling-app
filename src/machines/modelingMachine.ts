@@ -45,7 +45,6 @@ import {
 import { angleLengthInfo } from '@src/components/Toolbar/angleLengthInfo'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
 import {
-  addHelix,
   addOffsetPlane,
   insertNamedConstant,
   replaceValueAtNodePath,
@@ -58,19 +57,17 @@ import {
   EdgeTreatmentType,
   modifyAstWithEdgeTreatmentAndTag,
   editEdgeTreatment,
-  getPathToExtrudeForSegmentSelection,
 } from '@src/lang/modifyAst/addEdgeTreatment'
 import {
   addExtrude,
   addLoft,
   addRevolve,
   addSweep,
-  getAxisExpressionAndIndex,
 } from '@src/lang/modifyAst/sweeps'
 import {
-  applyIntersectFromTargetOperatorSelections,
-  applySubtractFromTargetOperatorSelections,
-  applyUnionFromTargetOperatorSelections,
+  addSubtract,
+  addUnion,
+  addIntersect,
 } from '@src/lang/modifyAst/boolean'
 import {
   deleteSelectionPromise,
@@ -88,7 +85,6 @@ import {
   isNodeSafeToReplacePath,
   stringifyPathToNode,
   updatePathToNodesAfterEdit,
-  valueOrVariable,
   artifactIsPlaneWithPaths,
   isCursorInFunctionDefinition,
   getSelectedPlaneAsNode,
@@ -102,10 +98,7 @@ import {
 import type { Coords2d } from '@src/lang/std/sketch'
 import type {
   Artifact,
-  CallExpressionKw,
   KclValue,
-  Literal,
-  Name,
   PathToNode,
   Program,
   VariableDeclaration,
@@ -147,6 +140,7 @@ import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import { letEngineAnimateAndSyncCamAfter } from '@src/clientSideScene/CameraControls'
 import { addShell } from '@src/lang/modifyAst/faces'
 import { intersectInfo } from '@src/components/Toolbar/Intersect'
+import { addHelix } from '@src/lang/modifyAst/geometry'
 
 export type SetSelections =
   | {
@@ -2649,128 +2643,18 @@ export const modelingMachine = setup({
         if (!input) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
-        // Extract inputs
-        const ast = kclManager.ast
-        const {
-          mode,
-          axis,
-          edge,
-          cylinder,
-          revolutions,
-          angleStart,
-          ccw,
-          radius,
-          length,
-          nodeToEdit,
-        } = input
 
-        let opInsertIndex: number | undefined = undefined
-        let opVariableName: string | undefined = undefined
-
-        // If this is an edit flow, first we're going to remove the old one
-        if (nodeToEdit && typeof nodeToEdit[1][0] === 'number') {
-          // Extract the old name from the node to edit
-          const oldNode = getNodeFromPath<VariableDeclaration>(
-            ast,
-            nodeToEdit,
-            'VariableDeclaration'
-          )
-          if (err(oldNode)) {
-            console.error('Error extracting plane name')
-          } else {
-            opVariableName = oldNode.node.declaration.id.name
-          }
-
-          const newBody = [...ast.body]
-          newBody.splice(nodeToEdit[1][0], 1)
-          ast.body = newBody
-          opInsertIndex = nodeToEdit[1][0]
-        }
-
-        let cylinderDeclarator: VariableDeclarator | undefined
-        let axisExpression:
-          | Node<CallExpressionKw | Name>
-          | Node<Literal>
-          | undefined
-
-        if (mode === 'Cylinder') {
-          if (
-            !(
-              cylinder &&
-              cylinder.graphSelections[0] &&
-              cylinder.graphSelections[0].artifact?.type === 'wall'
-            )
-          ) {
-            return Promise.reject(new Error('Cylinder argument not valid'))
-          }
-          const clonedAstForGetExtrude = structuredClone(ast)
-          const extrudeLookupResult = getPathToExtrudeForSegmentSelection(
-            clonedAstForGetExtrude,
-            cylinder.graphSelections[0],
-            kclManager.artifactGraph
-          )
-          if (err(extrudeLookupResult)) {
-            return Promise.reject(extrudeLookupResult)
-          }
-          const extrudeNode = getNodeFromPath<VariableDeclaration>(
-            ast,
-            extrudeLookupResult.pathToExtrudeNode,
-            'VariableDeclaration'
-          )
-          if (err(extrudeNode)) {
-            return Promise.reject(extrudeNode)
-          }
-          cylinderDeclarator = extrudeNode.node.declaration
-        } else if (mode === 'Axis' || mode === 'Edge') {
-          const getAxisResult = getAxisExpressionAndIndex(mode, axis, edge, ast)
-          if (err(getAxisResult)) {
-            return Promise.reject(getAxisResult)
-          }
-          axisExpression = getAxisResult.generatedAxis
-        } else {
-          return Promise.reject(
-            new Error(
-              'Generated axis or cylinder declarator selection is missing.'
-            )
-          )
-        }
-
-        // TODO: figure out if we want to smart insert after the sketch as below
-        // *or* after the sweep that consumes the sketch, in which case the below code doesn't work
-        // If an axis was selected in KCL, find the max index to insert the revolve command
-        // if (axisIndexIfAxis) {
-        // opInsertIndex = axisIndexIfAxis + 1
-        // }
-
-        for (const v of [revolutions, angleStart, radius, length]) {
-          if (v === undefined) {
-            continue
-          }
-          const variable = v as KclCommandValue
-          // Insert the variable if it exists
-          if ('variableName' in variable && variable.variableName) {
-            const newBody = [...ast.body]
-            newBody.splice(
-              variable.insertIndex,
-              0,
-              variable.variableDeclarationAst
-            )
-            ast.body = newBody
-          }
-        }
-
-        const { modifiedAst, pathToNode } = addHelix({
-          node: ast,
-          revolutions: valueOrVariable(revolutions),
-          angleStart: valueOrVariable(angleStart),
-          ccw,
-          radius: radius ? valueOrVariable(radius) : undefined,
-          axis: axisExpression,
-          cylinder: cylinderDeclarator,
-          length: length ? valueOrVariable(length) : undefined,
-          insertIndex: opInsertIndex,
-          variableName: opVariableName,
+        const { ast, artifactGraph } = kclManager
+        const astResult = addHelix({
+          ...input,
+          ast,
+          artifactGraph,
         })
+        if (err(astResult)) {
+          return Promise.reject(astResult)
+        }
+
+        const { modifiedAst, pathToNode } = astResult
         await updateModelingState(
           modifiedAst,
           EXECUTION_TYPE_REAL,
@@ -3293,27 +3177,29 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const { solids, tools } = input
-        if (
-          !solids.graphSelections.some((selection) => selection.artifact) ||
-          !tools.graphSelections.some((selection) => selection.artifact)
-        ) {
-          return Promise.reject(new Error('No artifact in selections found'))
-        }
-
-        const result = await applySubtractFromTargetOperatorSelections(
-          solids,
-          tools,
-          {
-            kclManager,
-            codeManager,
-            engineCommandManager,
-            editorManager,
-          }
-        )
+        const ast = kclManager.ast
+        const artifactGraph = kclManager.artifactGraph
+        const result = addSubtract({
+          ...input,
+          ast,
+          artifactGraph,
+        })
         if (err(result)) {
           return Promise.reject(result)
         }
+
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          {
+            kclManager,
+            editorManager,
+            codeManager,
+          },
+          {
+            focusPath: [result.pathToNode],
+          }
+        )
       }
     ),
     boolUnionAstMod: fromPromise(
@@ -3326,20 +3212,29 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const { solids } = input
-        if (!solids.graphSelections[0].artifact) {
-          return Promise.reject(new Error('No artifact in selections found'))
-        }
-
-        const result = await applyUnionFromTargetOperatorSelections(solids, {
-          kclManager,
-          codeManager,
-          engineCommandManager,
-          editorManager,
+        const ast = kclManager.ast
+        const artifactGraph = kclManager.artifactGraph
+        const result = addUnion({
+          ...input,
+          ast,
+          artifactGraph,
         })
         if (err(result)) {
           return Promise.reject(result)
         }
+
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          {
+            kclManager,
+            editorManager,
+            codeManager,
+          },
+          {
+            focusPath: [result.pathToNode],
+          }
+        )
       }
     ),
     boolIntersectAstMod: fromPromise(
@@ -3352,23 +3247,29 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const { solids } = input
-        if (!solids.graphSelections[0].artifact) {
-          return Promise.reject(new Error('No artifact in selections found'))
-        }
-
-        const result = await applyIntersectFromTargetOperatorSelections(
-          solids,
-          {
-            kclManager,
-            codeManager,
-            engineCommandManager,
-            editorManager,
-          }
-        )
+        const ast = kclManager.ast
+        const artifactGraph = kclManager.artifactGraph
+        const result = addIntersect({
+          ...input,
+          ast,
+          artifactGraph,
+        })
         if (err(result)) {
           return Promise.reject(result)
         }
+
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          {
+            kclManager,
+            editorManager,
+            codeManager,
+          },
+          {
+            focusPath: [result.pathToNode],
+          }
+        )
       }
     ),
 

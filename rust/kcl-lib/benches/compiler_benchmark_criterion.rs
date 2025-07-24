@@ -48,7 +48,23 @@ pub fn bench_mock_warmed_up(c: &mut Criterion) {
     }
 }
 
-criterion_group!(benches, bench_parse, bench_mock_warmed_up);
+/// The frontend needs to recast every time the user drags a line/point around in sketch mode,
+/// so this should also correlate with user-perceived sketch mode latency.
+pub fn recast(c: &mut Criterion) {
+    for (name, file) in [
+        ("medium_sketch", MEDIUM_SKETCH),
+        ("mike_stress_test_program", MIKE_STRESS_TEST_PROGRAM),
+    ] {
+        let program = kcl_lib::Program::parse_no_errs(black_box(file)).unwrap();
+        c.bench_function(&format!("recast_{name}"), move |b| {
+            b.iter(|| {
+                black_box(program.recast());
+            })
+        });
+    }
+}
+
+criterion_group!(benches, bench_parse, bench_mock_warmed_up, recast);
 criterion_main!(benches);
 
 const KITT_PROGRAM: &str = include_str!("../e2e/executor/inputs/kittycad_svg.kcl");
