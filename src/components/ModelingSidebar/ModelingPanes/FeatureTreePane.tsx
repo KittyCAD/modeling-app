@@ -342,7 +342,10 @@ const OperationItemWrapper = ({
             {customSuffix && customSuffix}
           </div>
           {valueDetail && (
-            <code className="px-1 text-right text-chalkboard-70 dark:text-chalkboard-40 text-xs">
+            <code
+              data-testid="value-detail"
+              className="px-1 text-right text-chalkboard-70 dark:text-chalkboard-40 text-xs"
+            >
               {valueDetail.display}
             </code>
           )}
