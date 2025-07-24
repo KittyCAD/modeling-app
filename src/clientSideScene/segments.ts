@@ -262,8 +262,6 @@ class StraightSegment implements SegmentUtils {
       Math.pow(to[0] - from[0], 2) + Math.pow(to[1] - from[1], 2)
     )
 
-    console.log('update>>')
-
     const pxLength = length / scale
     const shouldHideIdle = pxLength < HIDE_SEGMENT_LENGTH
     const shouldHideHover = pxLength < HIDE_HOVER_SEGMENT_LENGTH
