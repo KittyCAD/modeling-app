@@ -25,6 +25,7 @@ import {
   stdLibMap,
 } from '@src/lib/operations'
 import {
+  codeManager,
   commandBarActor,
   editorManager,
   kclManager,
@@ -173,6 +174,10 @@ export const FeatureTreePane = () => {
       ? kclManager.execState.operations
       : longestErrorOperationList
     : kclManager.lastSuccessfulOperations
+  // We use the code that corresponds to the operations. In case this is an
+  // error on the first run, fall back to whatever is currently in the code
+  // editor.
+  const operationsCode = kclManager.lastSuccessfulCode || codeManager.code
 
   // We filter out operations that are not useful to show in the feature tree
   const operationList = filterOperations(unfilteredOperationList)
@@ -240,6 +245,7 @@ export const FeatureTreePane = () => {
                 <OperationItem
                   key={key}
                   item={operation}
+                  code={operationsCode}
                   send={featureTreeSend}
                   sketchNoFace={sketchNoFace}
                 />
@@ -359,6 +365,7 @@ const OperationItemWrapper = ({
  */
 const OperationItem = (props: {
   item: Operation
+  code: string
   send: Prop<Actor<typeof featureTreeMachine>, 'send'>
   sketchNoFace: boolean
 }) => {
@@ -368,14 +375,14 @@ const OperationItem = (props: {
     () =>
       props.item.type === 'VariableDeclaration'
         ? {
-            display: kclContext.code.slice(
+            display: props.code.slice(
               props.item.sourceRange[0],
               props.item.sourceRange[1]
             ),
             calculated: props.item.value,
           }
         : undefined,
-    [props.item, kclContext.code]
+    [props.item, props.code]
   )
 
   const variableName = useMemo(() => {
