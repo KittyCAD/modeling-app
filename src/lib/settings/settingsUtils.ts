@@ -79,6 +79,7 @@ export function configurationToSettingsPayload(
       highlightEdges: configuration?.settings?.modeling?.highlight_edges,
       enableSSAO: configuration?.settings?.modeling?.enable_ssao,
       showScaleGrid: configuration?.settings?.modeling?.show_scale_grid,
+      snapToGrid: configuration?.settings?.modeling?.snap_to_grid,
     },
     textEditor: {
       textWrapping: configuration?.settings?.text_editor?.text_wrapping,
@@ -124,6 +125,7 @@ export function settingsPayloadToConfiguration(
         highlight_edges: configuration?.modeling?.highlightEdges,
         enable_ssao: configuration?.modeling?.enableSSAO,
         show_scale_grid: configuration?.modeling?.showScaleGrid,
+        snap_to_grid: configuration?.modeling?.snapToGrid,
       },
       text_editor: {
         text_wrapping: configuration?.textEditor?.textWrapping,

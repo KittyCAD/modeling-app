@@ -160,6 +160,14 @@ Whether or not to show a scale grid in the 3D modeling view
 **Default:** None
 
 
+##### snap_to_grid
+
+Whether or not to snap to the scale grid in sketching mode.
+
+
+**Default:** None
+
+
 #### text_editor
 
 Settings that affect the behavior of the KCL text editor.

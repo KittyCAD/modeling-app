@@ -298,6 +298,9 @@ pub struct ModelingSettings {
     /// Whether or not to show a scale grid in the 3D modeling view
     #[serde(default, skip_serializing_if = "is_default")]
     pub show_scale_grid: bool,
+    /// Whether or not to snap to the scale grid in sketching mode.
+    #[serde(default, skip_serializing_if = "is_default")]
+    pub snap_to_grid: bool,
 }
 
 #[derive(Debug, Copy, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Eq)]
