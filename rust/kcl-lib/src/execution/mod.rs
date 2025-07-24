@@ -2169,74 +2169,36 @@ notPipeSub = 1 |> identity(!%))";
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_start_sketch_on_invalid_kwargs() {
-        let ast = r#"
-sketch001 = startSketchOn(XY)
-  |> startProfile(at = [-5, -5])
-  |> xLine(length = 10, tag = $a)
-  |> yLine(length = 10, tag = $b)
-  |> xLine(length = -10, tag = $c)
-  |> close()
 
-cube001 = extrude(sketch001, length = 10)
-
-sketch002 = startSketchOn(cube001, normalToFace = a, face = a)
-"#;
+    let current_dir = std::env::current_dir().unwrap();
+    let mut path = current_dir.join("tests/inputs/startSketchOn_0.kcl");
+    let mut code = std::fs::read_to_string(&path).unwrap();
         assert_eq!(
-            parse_execute(ast).await.unwrap_err().message(),
+            parse_execute(&code).await.unwrap_err().message(),
             "You cannot give both `face` and `normalToFace` params, you have to choose one or the other.".to_owned(),
         );
 
-        let ast = r#"
-sketch001 = startSketchOn(XY)
-  |> startProfile(at = [-5, -5])
-  |> xLine(length = 10, tag = $a)
-  |> yLine(length = 10, tag = $b)
-  |> xLine(length = -10, tag = $c)
-  |> close()
-
-cube001 = extrude(sketch001, length = 10)
-
-sketch002 = startSketchOn(cube001, normalToFace = a)
-"#;
+        path = current_dir.join("tests/inputs/startSketchOn_1.kcl");
+        code = std::fs::read_to_string(&path).unwrap();
 
         assert_eq!(
-            parse_execute(ast).await.unwrap_err().message(),
+            parse_execute(&code).await.unwrap_err().message(),
             "`alignAxis` is required if `normalToFace` is specified.".to_owned(),
         );
 
-        let ast = r#"
-sketch001 = startSketchOn(XY)
-  |> startProfile(at = [-5, -5])
-  |> xLine(length = 10, tag = $a)
-  |> yLine(length = 10, tag = $b)
-  |> xLine(length = -10, tag = $c)
-  |> close()
-
-cube001 = extrude(sketch001, length = 10)
-
-sketch002 = startSketchOn(cube001, alignAxis = X)
-"#;
+        path = current_dir.join("tests/inputs/startSketchOn_2.kcl");
+        code = std::fs::read_to_string(&path).unwrap();
 
         assert_eq!(
-            parse_execute(ast).await.unwrap_err().message(),
+            parse_execute(&code).await.unwrap_err().message(),
             "`normalToFace` is required if `alignAxis` is specified.".to_owned(),
         );
 
-        let ast = r#"
-sketch001 = startSketchOn(XY)
-  |> startProfile(at = [-5, -5])
-  |> xLine(length = 10, tag = $a)
-  |> yLine(length = 10, tag = $b)
-  |> xLine(length = -10, tag = $c)
-  |> close()
-
-cube001 = extrude(sketch001, length = 10)
-
-sketch002 = startSketchOn(cube001, face = a, alignAxis = X)
-"#;
+        path = current_dir.join("tests/inputs/startSketchOn_3.kcl");
+        code = std::fs::read_to_string(&path).unwrap();
 
         assert_eq!(
-            parse_execute(ast).await.unwrap_err().message(),
+            parse_execute(&code).await.unwrap_err().message(),
             "`normalToFace` is required if `alignAxis` is specified.".to_owned(),
         );
     }
