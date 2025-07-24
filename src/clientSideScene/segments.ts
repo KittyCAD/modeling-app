@@ -323,7 +323,8 @@ class StraightSegment implements SegmentUtils {
       extraSegmentGroup.scale.set(scale, scale, scale)
 
       const segmentLengthInScreenSpace = offset.length() / scale
-      extraSegmentGroup.visible = segmentLengthInScreenSpace > 130
+      extraSegmentGroup.visible =
+        !sceneInfra.selected && segmentLengthInScreenSpace > 130
     }
 
     if (labelGroup) {
@@ -514,7 +515,8 @@ class TangentialArcToSegment implements SegmentUtils {
       extraSegmentGroup.scale.set(scale, scale, scale)
 
       const segmentLengthInScreenSpace = arcInfo.arcLength / scale
-      extraSegmentGroup.visible = segmentLengthInScreenSpace > 70
+      extraSegmentGroup.visible =
+        !sceneInfra.selected && segmentLengthInScreenSpace > 70
     }
 
     const tangentialArcSegmentBody = group.children.find(
