@@ -513,4 +513,58 @@ describe('ProjectExplorer', () => {
     renameField = screen.getByTestId('file-rename-field')
     expect(renameField.innerText).toBe('')
   })
+  it('should open parent folder, open child folder, close parent, then open parent, to see child open.', () => {
+    /**
+     * Whenever you open any folder it will stay open until you close it. When you close a parent it is hidden but it is still open behind the scenes.
+     * This allows you to save the state of the visibility when you open or close a parent folder and the children are already opened.
+     */
+    const mainFile = createFile('main.kcl', 'parts/very/cool/')
+    project.children = [
+      createFolder('parts', [
+        createFolder('very', [createFolder('cool', [mainFile])]),
+      ]),
+    ]
+    addPlaceHoldersForNewFileAndFolder(project.children, project.path)
+    // file={oneFile} is purposefully mismatched to not open these folders on initialization
+    const { getByText } = render(
+      <ProjectExplorer
+        project={project}
+        file={oneFile}
+        createFilePressed={-1}
+        createFolderPressed={-1}
+        refreshExplorerPressed={-1}
+        collapsePressed={-1}
+        onRowClicked={(row: FileExplorerEntry, index: number) => {}}
+        onRowEnter={(row: FileExplorerEntry, index: number) => {}}
+        readOnly={false}
+        canNavigate={true}
+      />
+    )
+    const container = screen.getByTestId('file-explorer')
+    let items = screen.getAllByTestId('file-tree-item')
+    expect(container.childNodes.length).toBe(1)
+    expect(items.length).toBe(1)
+    expect(items[0].innerText).toBe('parts')
+    fireEvent.click(getByText('parts'))
+    items = screen.getAllByTestId('file-tree-item')
+    expect(items.length).toBe(2)
+    expect(items[0].innerText).toBe('parts')
+    expect(items[1].innerText).toBe('very')
+    fireEvent.click(getByText('very'))
+    items = screen.getAllByTestId('file-tree-item')
+    expect(items.length).toBe(3)
+    expect(items[0].innerText).toBe('parts')
+    expect(items[1].innerText).toBe('very')
+    expect(items[2].innerText).toBe('cool')
+    fireEvent.click(getByText('parts'))
+    items = screen.getAllByTestId('file-tree-item')
+    expect(items.length).toBe(1)
+    expect(items[0].innerText).toBe('parts')
+    fireEvent.click(getByText('parts'))
+    items = screen.getAllByTestId('file-tree-item')
+    expect(items.length).toBe(3)
+    expect(items[0].innerText).toBe('parts')
+    expect(items[1].innerText).toBe('very')
+    expect(items[2].innerText).toBe('cool')
+  })
 })
