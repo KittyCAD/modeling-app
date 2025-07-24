@@ -22,7 +22,7 @@ export const StatusDot = () => {
  * @param level supported be from 0 to N
  * @returns
  */
-const Spacer = (level: number) => {
+export const Spacer = (level: number) => {
   if (level < 0) {
     return <div>Do not pass a number less than 0.</div>
   }
@@ -69,7 +69,7 @@ export const FileExplorer = ({
   isRenaming: boolean
 }) => {
   return (
-    <div role="presentation" className="relative">
+    <div data-testid="file-explorer" role="presentation" className="relative">
       {rowsToRender.map((row, index, original) => {
         const key = row.key
         const renderRow: FileExplorerRender = {

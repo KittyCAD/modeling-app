@@ -61,6 +61,7 @@ export const ProjectExplorer = ({
   onRowEnter,
   readOnly,
   canNavigate,
+  overrideApplicationProjectDirectory,
 }: {
   project: Project
   file: FileEntry | undefined
@@ -72,6 +73,7 @@ export const ProjectExplorer = ({
   onRowEnter: (row: FileExplorerEntry, domIndex: number) => void
   readOnly: boolean
   canNavigate: boolean
+  overrideApplicationProjectDirectory?: string
 }) => {
   const { errors } = useKclContext()
   const settings = useSettings()
@@ -83,7 +85,7 @@ export const ProjectExplorer = ({
    */
   const defaultFileKey = parentPathRelativeToApplicationDirectory(
     file?.path || project.default_file,
-    applicationProjectDirectory
+    overrideApplicationProjectDirectory || applicationProjectDirectory
   )
   const defaultOpenedRows: { [key: string]: boolean } = {}
   const pathIterator = desktopSafePathSplit(defaultFileKey)
@@ -196,7 +198,6 @@ export const ProjectExplorer = ({
     setOpenedRows(newOpenedRows)
     setSelectedRowWrapper(file)
     setActiveIndex(domIndex)
-    console.log('did this do anything?')
   }
 
   useEffect(() => {
