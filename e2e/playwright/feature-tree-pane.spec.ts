@@ -334,6 +334,19 @@ test.describe('Feature Tree pane', () => {
       await cmdBar.progressCmdBar()
       await editor.expectEditor.toContain(editedParameterValue)
     })
+
+    await test.step('Edit the parameter value in the editor', async () => {
+      await editor.replaceCode('23 * 2', '42')
+      await editor.expectEditor.toContain('= 42')
+      // Wait for the code to be executed.
+      await page.waitForTimeout(2000)
+      // The parameter value should be updated in the feature tree.
+      const operationButton = await toolbar.getFeatureTreeOperation(
+        'Parameter',
+        0
+      )
+      await expect(operationButton.getByTestId('value-detail')).toHaveText('42')
+    })
   })
   test(`User can edit an offset plane operation from the feature tree`, async ({
     context,
