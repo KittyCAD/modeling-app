@@ -110,7 +110,7 @@ test(
 test(
   'open a file in a project works and renders, open another file in different project with errors, it should clear the scene',
   { tag: '@desktop' },
-  async ({ scene, cmdBar, context, page, editor }, testInfo) => {
+  async ({ homePage, toolbar, scene, cmdBar, context, page, editor }) => {
     await context.folderSetupFn(async (dir) => {
       const bracketDir = path.join(dir, 'bracket')
       await fsp.mkdir(bracketDir, { recursive: true })
@@ -126,63 +126,45 @@ test(
       )
     })
 
-    await page.setBodyDimensions({ width: 1200, height: 500 })
     const u = await getUtils(page)
 
-    page.on('console', console.log)
-
-    const pointOnModel = { x: 630, y: 280 }
-
     await test.step('Opening the bracket project should load the stream', async () => {
-      // expect to see the text bracket
-      await expect(page.getByText('bracket')).toBeVisible()
-
-      await page.getByText('bracket').click()
-
+      await homePage.openProject('bracket')
       await scene.settled(cmdBar)
     })
 
-    await test.step('Clicking the logo takes us back to the projects page / home', async () => {
-      await page.getByTestId('app-logo').click()
+    await u.doAndWaitForImageDiff(
+      async () => {
+        await toolbar.logoLink.click()
+        await homePage.openProject('broken-code')
+        await scene.connectionEstablished()
 
-      await expect(page.getByRole('link', { name: 'bracket' })).toBeVisible()
-      await expect(page.getByText('broken-code')).toBeVisible()
-      await expect(page.getByText('bracket')).toBeVisible()
-      await expect(page.getByText('Create project')).toBeVisible()
-    })
-    await test.step('opening broken code project should clear the scene and show the error', async () => {
-      // Go back home.
-      await expect(page.getByText('broken-code')).toBeVisible()
-
-      await page.getByText('broken-code').click()
-
-      await page.waitForTimeout(2000)
-      await editor.scrollToText(
-        "|> line(end = [0, wallMountL], tag = 'outerEdge')"
-      )
-
-      // error in guter
-      await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
-
-      // error text on hover
-      await page.hover('.cm-lint-marker-error')
-      const crypticErrorText =
-        'tag requires a value with type `TagDecl`, but found a value with type `string`.'
-      await expect(page.getByText(crypticErrorText).first()).toBeVisible()
-
-      // black pixel means the scene has been cleared.
-      await expect
-        .poll(() => u.getGreatestPixDiff(pointOnModel, [30, 30, 30]), {
-          timeout: 10_000,
+        await test.step('Verify error appears', async () => {
+          await editor.scrollToText(
+            "|> line(end = [0, wallMountL], tag = 'outerEdge')"
+          )
+          // error in gutter
+          await expect(page.locator('.cm-lint-marker-error')).toBeVisible({
+            timeout: 10_000,
+          })
+          // error text on hover
+          await page.hover('.cm-lint-marker-error')
+          const crypticErrorText =
+            'tag requires a value with type `TagDecl`, but found a value with type `string`.'
+          await expect(page.getByText(crypticErrorText).first()).toBeVisible()
         })
-        .toBeLessThan(15)
-    })
+      },
+      500,
+      scene.streamWrapper
+    )
   }
 )
 
 test(
   'open a file in a project works and renders, open another file in different project that is empty, it should clear the scene',
-  { tag: '@desktop' },
+  {
+    tag: '@desktop',
+  },
   async ({ scene, cmdBar, context, page }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
       const bracketDir = path.join(dir, 'bracket')
@@ -242,7 +224,9 @@ test(
 
 test(
   'open a file in a project works and renders, open empty file, it should clear the scene',
-  { tag: '@desktop' },
+  {
+    tag: '@desktop',
+  },
   async ({ context, page }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
       const bracketDir = path.join(dir, 'bracket')
@@ -308,7 +292,9 @@ test(
 
 test(
   'open a file in a project works and renders, open another file in the same project with errors, it should clear the scene',
-  { tag: '@desktop' },
+  {
+    tag: '@desktop',
+  },
   async ({ scene, cmdBar, context, page }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
       const bracketDir = path.join(dir, 'bracket')
@@ -381,7 +367,9 @@ test(
 
 test(
   'when code with error first loads you get errors in console',
-  { tag: '@desktop' },
+  {
+    tag: '@desktop',
+  },
   async ({ context, page, editor }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
       await fsp.mkdir(path.join(dir, 'broken-code'), { recursive: true })
@@ -412,7 +400,9 @@ test(
 
 test(
   'Rename and delete projects, also spam arrow keys when renaming',
-  { tag: '@desktop' },
+  {
+    tag: '@desktop',
+  },
   async ({ context, page }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
       await fsp.mkdir(`${dir}/router-template-slate`, { recursive: true })
@@ -628,7 +618,9 @@ test(
 
 test(
   'pressing "delete" on home screen should do nothing',
-  { tag: '@desktop' },
+  {
+    tag: '@desktop',
+  },
   async ({ context, page, homePage }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
       await fsp.mkdir(`${dir}/router-template-slate`, { recursive: true })
@@ -971,10 +963,9 @@ test.describe(`Project management commands`, () => {
   })
 })
 
-test(`Create a few projects using the default project name`, async ({
-  homePage,
-  toolbar,
-}) => {
+test(`Create a few projects
+using the
+default project name`, async ({ homePage, toolbar }) => {
   for (let i = 0; i < 12; i++) {
     await test.step(`Create project ${i}`, async () => {
       await homePage.expectState({
@@ -992,7 +983,9 @@ test(`Create a few projects using the default project name`, async ({
 
 test(
   'File in the file pane should open with a single click',
-  { tag: '@desktop' },
+  {
+    tag: '@desktop',
+  },
   async ({ context, homePage, page }, testInfo) => {
     const projectName = 'router-template-slate'
     await context.folderSetupFn(async (dir) => {
@@ -1034,7 +1027,9 @@ test(
 
 test(
   'Nested directories in project without main.kcl do not create main.kcl',
-  { tag: '@desktop' },
+  {
+    tag: '@desktop',
+  },
   async ({ scene, cmdBar, context, page }, testInfo) => {
     let testDir: string | undefined
     await context.folderSetupFn(async (dir) => {
@@ -1091,7 +1086,9 @@ test(
 
 test(
   'Deleting projects, can delete individual project, can still create projects after deleting all',
-  { tag: '@desktop' },
+  {
+    tag: '@desktop',
+  },
   async ({ context, page }, testInfo) => {
     const projectData = [
       ['router-template-slate', 'cylinder.kcl'],
@@ -1169,7 +1166,9 @@ test(
 
 test(
   'Can load a file with CRLF line endings',
-  { tag: '@desktop' },
+  {
+    tag: '@desktop',
+  },
   async ({ context, page, scene, cmdBar }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
       const routerTemplateDir = path.join(dir, 'router-template-slate')
@@ -1201,7 +1200,9 @@ test(
 
 test(
   'Can sort projects on home page',
-  { tag: '@desktop' },
+  {
+    tag: '@desktop',
+  },
   async ({ context, page }, testInfo) => {
     const projectData = [
       ['router-template-slate', 'cylinder.kcl'],
@@ -1308,7 +1309,9 @@ test(
 
 test(
   'When the project folder is empty, user can create new project and open it.',
-  { tag: '@desktop' },
+  {
+    tag: '@desktop',
+  },
   async ({ page }, testInfo) => {
     const u = await getUtils(page)
     await page.setBodyDimensions({ width: 1200, height: 500 })
@@ -1404,7 +1407,9 @@ extrude001 = extrude(sketch001, length = 200)`)
 
 test(
   'Opening a project should successfully load the stream, (regression test that this also works when switching between projects)',
-  { tag: '@desktop' },
+  {
+    tag: '@desktop',
+  },
   async ({ context, page, cmdBar, homePage, scene }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
       await fsp.mkdir(path.join(dir, 'router-template-slate'), {
@@ -1517,7 +1522,9 @@ test(
 
 test(
   'You can change the root projects directory and nothing is lost',
-  { tag: '@desktop' },
+  {
+    tag: '@desktop',
+  },
   async ({ context, page, tronApp, homePage }, testInfo) => {
     if (!tronApp) {
       fail()
@@ -1624,7 +1631,9 @@ test(
 
 test(
   'Search projects on desktop home',
-  { tag: '@desktop' },
+  {
+    tag: '@desktop',
+  },
   async ({ context, page }, testInfo) => {
     const projectData = [
       ['basic bracket', 'focusrite_scarlett_mounting_bracket.kcl'],
@@ -1680,7 +1689,9 @@ test(
 
 test(
   'file pane is scrollable when there are many files',
-  { tag: '@desktop' },
+  {
+    tag: '@desktop',
+  },
   async ({ scene, cmdBar, context, page }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
       const testDir = path.join(dir, 'testProject')
@@ -1781,7 +1792,9 @@ test(
 
 test(
   'select all in code editor does not actually select all, just what is visible (regression)',
-  { tag: '@desktop' },
+  {
+    tag: '@desktop',
+  },
   async ({ context, page }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
       // rust/kcl-lib/e2e/executor/inputs/mike_stress_test.kcl
@@ -1839,7 +1852,9 @@ test(
 
 test(
   'Settings persist across restarts',
-  { tag: '@desktop' },
+  {
+    tag: '@desktop',
+  },
   async ({ page, toolbar }, testInfo) => {
     await test.step('We can change a user setting like theme', async () => {
       await page.setBodyDimensions({ width: 1200, height: 500 })
@@ -1871,7 +1886,9 @@ test(
 
 test(
   'Original project name persist after onboarding',
-  { tag: '@desktop' },
+  {
+    tag: '@desktop',
+  },
   async ({ page, toolbar }, testInfo) => {
     const nextButton = page.getByTestId('onboarding-next')
     await page.setBodyDimensions({ width: 1200, height: 500 })
@@ -1911,7 +1928,9 @@ test(
 
 test(
   'project name with foreign characters should open',
-  { tag: '@desktop' },
+  {
+    tag: '@desktop',
+  },
   async ({ context, page }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
       const bracketDir = path.join(dir, 'العربية')
@@ -1956,7 +1975,9 @@ test(
 
 test(
   'import from nested directory',
-  { tag: ['@desktop', '@windows', '@macos'] },
+  {
+    tag: ['@desktop', '@windows', '@macos'],
+  },
   async ({ homePage, scene, cmdBar, context, page, editor }) => {
     const lineOfKcl = runningOnWindows()
       ? `import 'nested\\main.kcl' as thing`
@@ -1993,7 +2014,9 @@ test(
 
 test(
   'segment position changes persist after dragging and reopening project',
-  { tag: '@desktop' },
+  {
+    tag: '@desktop',
+  },
   async ({ scene, cmdBar, context, page, editor, toolbar }, testInfo) => {
     const projectName = 'segment-drag-test'
 

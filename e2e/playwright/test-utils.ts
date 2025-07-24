@@ -537,8 +537,11 @@ export async function getUtils(page: Page, test_?: typeof test) {
       return maxDiff
     },
     getPixelRGBs: getPixelRGBs(page),
-    doAndWaitForImageDiff: (fn: () => Promise<unknown>, diffCount = 200) =>
-      doAndWaitForImageDiff(page, fn, diffCount),
+    doAndWaitForImageDiff: (
+      fn: () => Promise<unknown>,
+      diffCount = 200,
+      locator?: Locator
+    ) => doAndWaitForImageDiff(locator || page, fn, diffCount),
     emulateNetworkConditions: async (
       networkOptions: Protocol.Network.emulateNetworkConditionsParameters
     ) => {
@@ -1065,19 +1068,19 @@ export function kclSamplesPath(fileName: string): string {
 }
 
 export async function doAndWaitForImageDiff(
-  page: Page,
+  pageOrLocator: Page | Locator,
   fn: () => Promise<unknown>,
   diffCount = 200
 ) {
   return new Promise<boolean>((resolve) => {
     ;(async () => {
-      await page.screenshot({
+      await pageOrLocator.screenshot({
         path: './e2e/playwright/temp1.png',
         fullPage: true,
       })
       await fn()
       const isImageDiff = async () => {
-        await page.screenshot({
+        await pageOrLocator.screenshot({
           path: './e2e/playwright/temp2.png',
           fullPage: true,
         })
