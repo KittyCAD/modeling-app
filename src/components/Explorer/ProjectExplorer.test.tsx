@@ -330,4 +330,187 @@ describe('ProjectExplorer', () => {
     expect(items.length).toBe(1)
     expect(items[0].innerText).toBe('parts')
   })
+  it('should render a placefolder for a file when create file is pressed', () => {
+    const mainFile = createFile('main.kcl')
+    project.children = [createFolder('parts', [mainFile])]
+    addPlaceHoldersForNewFileAndFolder(project.children, project.path)
+    const { rerender } = render(
+      <ProjectExplorer
+        project={project}
+        file={oneFile}
+        createFilePressed={-1}
+        createFolderPressed={-1}
+        refreshExplorerPressed={-1}
+        collapsePressed={-1}
+        onRowClicked={(row: FileExplorerEntry, index: number) => {}}
+        onRowEnter={(row: FileExplorerEntry, index: number) => {}}
+        readOnly={false}
+        canNavigate={true}
+      />
+    )
+    const container = screen.getByTestId('file-explorer')
+
+    let items = screen.getAllByTestId('file-tree-item')
+    expect(container.childNodes.length).toBe(1)
+    expect(items.length).toBe(1)
+    expect(items[0].innerText).toBe('parts')
+
+    rerender(
+      <ProjectExplorer
+        project={project}
+        file={oneFile}
+        createFilePressed={performance.now()}
+        createFolderPressed={-1}
+        refreshExplorerPressed={-1}
+        collapsePressed={-1}
+        onRowClicked={(row: FileExplorerEntry, index: number) => {}}
+        onRowEnter={(row: FileExplorerEntry, index: number) => {}}
+        readOnly={false}
+        canNavigate={true}
+      />
+    )
+
+    items = screen.getAllByTestId('file-tree-item')
+    expect(items.length).toBe(2)
+    expect(items[0].innerText).toBe('parts')
+
+    const renameField = screen.getByTestId('file-rename-field')
+    expect(renameField.innerText).toBe('')
+  })
+  it('should render a placefolder for a folder when create folder is pressed', () => {
+    const mainFile = createFile('main.kcl')
+    project.children = [createFolder('parts', [mainFile])]
+    addPlaceHoldersForNewFileAndFolder(project.children, project.path)
+    const { rerender } = render(
+      <ProjectExplorer
+        project={project}
+        file={oneFile}
+        createFilePressed={-1}
+        createFolderPressed={-1}
+        refreshExplorerPressed={-1}
+        collapsePressed={-1}
+        onRowClicked={(row: FileExplorerEntry, index: number) => {}}
+        onRowEnter={(row: FileExplorerEntry, index: number) => {}}
+        readOnly={false}
+        canNavigate={true}
+      />
+    )
+    const container = screen.getByTestId('file-explorer')
+
+    let items = screen.getAllByTestId('file-tree-item')
+    expect(container.childNodes.length).toBe(1)
+    expect(items.length).toBe(1)
+    expect(items[0].innerText).toBe('parts')
+
+    rerender(
+      <ProjectExplorer
+        project={project}
+        file={oneFile}
+        createFilePressed={-1}
+        createFolderPressed={performance.now()}
+        refreshExplorerPressed={-1}
+        collapsePressed={-1}
+        onRowClicked={(row: FileExplorerEntry, index: number) => {}}
+        onRowEnter={(row: FileExplorerEntry, index: number) => {}}
+        readOnly={false}
+        canNavigate={true}
+      />
+    )
+
+    items = screen.getAllByTestId('file-tree-item')
+    expect(items.length).toBe(2)
+    // The folder is shifted down because placeholders always render to the top of the correct tree level it is in.
+    expect(items[1].innerText).toBe('parts')
+
+    const renameField = screen.getByTestId('file-rename-field')
+    expect(renameField.innerText).toBe('')
+  })
+  it('should press create file, press create folder, press create file', () => {
+    /**
+     * This test would create a file see the placeholder, the user would create a folder
+     * so in place it would update to be create a folder workflow even though no create file was made
+     * then we click create file again to swap from folder to file.
+     * e.g. When you create your input field will always put up no matter what and the other one will hide
+     */
+    const mainFile = createFile('main.kcl')
+    project.children = [createFolder('parts', [mainFile])]
+    addPlaceHoldersForNewFileAndFolder(project.children, project.path)
+
+    const { rerender } = render(
+      <ProjectExplorer
+        project={project}
+        file={oneFile}
+        createFilePressed={-1}
+        createFolderPressed={-1}
+        refreshExplorerPressed={-1}
+        collapsePressed={-1}
+        onRowClicked={(row: FileExplorerEntry, index: number) => {}}
+        onRowEnter={(row: FileExplorerEntry, index: number) => {}}
+        readOnly={false}
+        canNavigate={true}
+      />
+    )
+    const container = screen.getByTestId('file-explorer')
+    let items = screen.getAllByTestId('file-tree-item')
+    expect(container.childNodes.length).toBe(1)
+    expect(items.length).toBe(1)
+    expect(items[0].innerText).toBe('parts')
+    rerender(
+      <ProjectExplorer
+        project={project}
+        file={oneFile}
+        createFilePressed={performance.now()}
+        createFolderPressed={-1}
+        refreshExplorerPressed={-1}
+        collapsePressed={-1}
+        onRowClicked={(row: FileExplorerEntry, index: number) => {}}
+        onRowEnter={(row: FileExplorerEntry, index: number) => {}}
+        readOnly={false}
+        canNavigate={true}
+      />
+    )
+    items = screen.getAllByTestId('file-tree-item')
+    expect(items.length).toBe(2)
+    expect(items[0].innerText).toBe('parts')
+    let renameField = screen.getByTestId('file-rename-field')
+    expect(renameField.innerText).toBe('')
+    rerender(
+      <ProjectExplorer
+        project={project}
+        file={oneFile}
+        createFilePressed={-1}
+        createFolderPressed={performance.now()}
+        refreshExplorerPressed={-1}
+        collapsePressed={-1}
+        onRowClicked={(row: FileExplorerEntry, index: number) => {}}
+        onRowEnter={(row: FileExplorerEntry, index: number) => {}}
+        readOnly={false}
+        canNavigate={true}
+      />
+    )
+    items = screen.getAllByTestId('file-tree-item')
+    expect(items.length).toBe(2)
+    expect(items[1].innerText).toBe('parts')
+    renameField = screen.getByTestId('file-rename-field')
+    expect(renameField.innerText).toBe('')
+    rerender(
+      <ProjectExplorer
+        project={project}
+        file={oneFile}
+        createFilePressed={performance.now()}
+        createFolderPressed={-1}
+        refreshExplorerPressed={-1}
+        collapsePressed={-1}
+        onRowClicked={(row: FileExplorerEntry, index: number) => {}}
+        onRowEnter={(row: FileExplorerEntry, index: number) => {}}
+        readOnly={false}
+        canNavigate={true}
+      />
+    )
+    items = screen.getAllByTestId('file-tree-item')
+    expect(items.length).toBe(2)
+    expect(items[0].innerText).toBe('parts')
+    renameField = screen.getByTestId('file-rename-field')
+    expect(renameField.innerText).toBe('')
+  })
 })
