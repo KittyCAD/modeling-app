@@ -191,6 +191,7 @@
 ///   |> close()
 /// 
 /// cube001 = extrude(sketch001, length = 10)
+///   |> rotate(roll = 10, pitch = 20, yaw = 30)
 /// 
 /// sketch002 = startSketchOn(cube001, normalToFace = END, alignAxis = Y)
 ///   |> circle(radius = 2, center = [0, 0])
