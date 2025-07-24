@@ -179,6 +179,7 @@ import type {
   SketchTool,
 } from '@src/machines/modelingMachine'
 import { calculateIntersectionOfTwoLines } from 'sketch-helpers'
+import { getSettings } from '@src/lib/singletons'
 
 type DraftSegment = 'line' | 'tangentialArc'
 
@@ -2746,12 +2747,20 @@ export class SceneEntities {
       }
     }
 
-    // Snap to the main axes if there was no snapping to tangent direction
     if (!snappedToTangent) {
+      // Snap to the main axes if there was no snapping to tangent direction
       snappedPoint = [
         intersectsYAxis ? 0 : snappedPoint[0],
         intersectsXAxis ? 0 : snappedPoint[1],
       ]
+
+      // Not snapping to any axis, snap to default unit grid, ie. round it.
+      if (getSettings().modeling.snapToGrid.current) {
+        snappedPoint = [
+          Math.round(snappedPoint[0]),
+          Math.round(snappedPoint[1]),
+        ]
+      }
     }
 
     return {
