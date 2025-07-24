@@ -17,14 +17,13 @@ use super::{
     shapes::{get_radius, get_radius_labelled},
     utils::{untype_array, untype_point},
 };
-use crate::execution::Point3d;
 #[cfg(feature = "artifact-graph")]
 use crate::execution::{Artifact, ArtifactId, CodeRef, StartSketchOnFace, StartSketchOnPlane};
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        BasePath, ExecState, Face, GeoMeta, KclValue, ModelingCmdMeta, Path, Plane, PlaneInfo, Point2d, Sketch,
-        SketchSurface, Solid, TagEngineInfo, TagIdentifier,
+        BasePath, ExecState, Face, GeoMeta, KclValue, ModelingCmdMeta, Path, Plane, PlaneInfo, Point2d, Point3d,
+        Sketch, SketchSurface, Solid, TagEngineInfo, TagIdentifier,
         types::{ArrayLen, NumericType, PrimitiveType, RuntimeType, UnitLen},
     },
     parsing::ast::types::TagNode,
@@ -817,9 +816,9 @@ pub async fn start_sketch_on(exec_state: &mut ExecState, args: Args) -> Result<K
     let face = args.get_kw_arg_opt("face", &RuntimeType::tagged_face(), exec_state)?;
     let normal_to_face = args.get_kw_arg_opt("normalToFace", &RuntimeType::tagged_face(), exec_state)?;
     let align_axis = args.get_kw_arg_opt("alignAxis", &RuntimeType::Primitive(PrimitiveType::Axis2d), exec_state)?;
-    let at: Option<[TyF64; 2]> = args.get_kw_arg_opt("at", &RuntimeType::point2d(), exec_state)?;
+    let normal_offset = args.get_kw_arg_opt("normalOffset", &RuntimeType::length(), exec_state)?;
 
-    match inner_start_sketch_on(data, face, normal_to_face, align_axis, at, exec_state, &args).await? {
+    match inner_start_sketch_on(data, face, normal_to_face, align_axis, normal_offset, exec_state, &args).await? {
         SketchSurface::Plane(value) => Ok(KclValue::Plane { value }),
         SketchSurface::Face(value) => Ok(KclValue::Face { value }),
     }
@@ -830,7 +829,7 @@ async fn inner_start_sketch_on(
     face: Option<FaceTag>,
     normal_to_face: Option<FaceTag>,
     align_axis: Option<Axis2dOrEdgeReference>,
-    at: Option<[TyF64; 2]>,
+    normal_offset: Option<TyF64>,
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<SketchSurface, KclError> {
@@ -930,9 +929,9 @@ async fn inner_start_sketch_on(
                     }
                 };
                 let origin = Point3d::new(0.0, 0.0, 0.0, plane_of.info.origin.units);
-                let at = at.map_or([0.0, 0.0], |x| untype_array(x).0);
+                let normal_offset = normal_offset.map_or(0.0, |x| x.n);
                 let plane_data = PlaneData::Plane(PlaneInfo {
-                    origin: plane_of.project(origin) + plane_of.info.x_axis * at[0] + plane_of.info.y_axis * at[1],
+                    origin: plane_of.project(origin) + plane_of.info.y_axis * normal_offset,
                     x_axis,
                     y_axis,
                     z_axis: x_axis.axes_cross_product(&y_axis),

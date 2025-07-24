@@ -1073,7 +1073,7 @@ impl Sub for Point3d {
     type Output = Point3d;
 
     fn sub(self, rhs: Self) -> Self::Output {
-        Point3d{
+        Point3d {
             x: self.x - rhs.x,
             y: self.y - rhs.y,
             z: self.z - rhs.z,
