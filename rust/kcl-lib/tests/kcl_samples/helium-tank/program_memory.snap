@@ -22,7 +22,120 @@ description: Variables in memory after executing helium-tank.kcl
       "type": "Solid",
       "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": [],
+      "value": [
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 3388,
+            "end": 3394,
+            "moduleId": 0,
+            "start": 3388,
+            "type": "TagDeclarator",
+            "value": "seg04"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 3521,
+            "end": 3527,
+            "moduleId": 0,
+            "start": 3521,
+            "type": "TagDeclarator",
+            "value": "seg05"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 2738,
+            "end": 2744,
+            "moduleId": 0,
+            "start": 2738,
+            "type": "TagDeclarator",
+            "value": "seg06"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 2887,
+            "end": 2893,
+            "moduleId": 0,
+            "start": 2887,
+            "type": "TagDeclarator",
+            "value": "seg07"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        }
+      ],
       "sketch": {
         "type": "Sketch",
         "id": "[uuid]",
@@ -418,6 +531,14 @@ description: Variables in memory after executing helium-tank.kcl
           "seg05": {
             "type": "TagIdentifier",
             "value": "seg05"
+          },
+          "seg06": {
+            "type": "TagIdentifier",
+            "value": "seg06"
+          },
+          "seg07": {
+            "type": "TagIdentifier",
+            "value": "seg07"
           }
         },
         "artifactId": "[uuid]",
@@ -683,7 +804,120 @@ description: Variables in memory after executing helium-tank.kcl
       "type": "Solid",
       "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": [],
+      "value": [
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 3388,
+            "end": 3394,
+            "moduleId": 0,
+            "start": 3388,
+            "type": "TagDeclarator",
+            "value": "seg04"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 3521,
+            "end": 3527,
+            "moduleId": 0,
+            "start": 3521,
+            "type": "TagDeclarator",
+            "value": "seg05"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 2738,
+            "end": 2744,
+            "moduleId": 0,
+            "start": 2738,
+            "type": "TagDeclarator",
+            "value": "seg06"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 2887,
+            "end": 2893,
+            "moduleId": 0,
+            "start": 2887,
+            "type": "TagDeclarator",
+            "value": "seg07"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        }
+      ],
       "sketch": {
         "type": "Sketch",
         "id": "[uuid]",
@@ -1079,6 +1313,14 @@ description: Variables in memory after executing helium-tank.kcl
           "seg05": {
             "type": "TagIdentifier",
             "value": "seg05"
+          },
+          "seg06": {
+            "type": "TagIdentifier",
+            "value": "seg06"
+          },
+          "seg07": {
+            "type": "TagIdentifier",
+            "value": "seg07"
           }
         },
         "artifactId": "[uuid]",
@@ -1102,7 +1344,120 @@ description: Variables in memory after executing helium-tank.kcl
       "type": "Solid",
       "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": [],
+      "value": [
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 3388,
+            "end": 3394,
+            "moduleId": 0,
+            "start": 3388,
+            "type": "TagDeclarator",
+            "value": "seg04"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 3521,
+            "end": 3527,
+            "moduleId": 0,
+            "start": 3521,
+            "type": "TagDeclarator",
+            "value": "seg05"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 2738,
+            "end": 2744,
+            "moduleId": 0,
+            "start": 2738,
+            "type": "TagDeclarator",
+            "value": "seg06"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 2887,
+            "end": 2893,
+            "moduleId": 0,
+            "start": 2887,
+            "type": "TagDeclarator",
+            "value": "seg07"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        }
+      ],
       "sketch": {
         "type": "Sketch",
         "id": "[uuid]",
@@ -1498,6 +1853,14 @@ description: Variables in memory after executing helium-tank.kcl
           "seg05": {
             "type": "TagIdentifier",
             "value": "seg05"
+          },
+          "seg06": {
+            "type": "TagIdentifier",
+            "value": "seg06"
+          },
+          "seg07": {
+            "type": "TagIdentifier",
+            "value": "seg07"
           }
         },
         "artifactId": "[uuid]",
