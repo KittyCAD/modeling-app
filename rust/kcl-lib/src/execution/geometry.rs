@@ -1,4 +1,4 @@
-use std::ops::{Add, AddAssign, Mul};
+use std::ops::{Add, AddAssign, Mul, Sub, SubAssign};
 
 use anyhow::Result;
 use indexmap::IndexMap;
@@ -561,6 +561,13 @@ impl Plane {
     pub fn is_standard(&self) -> bool {
         !matches!(self.value, PlaneType::Custom | PlaneType::Uninit)
     }
+
+    pub fn project(&self, point: Point3d) -> Point3d {
+        let v = point - self.info.origin;
+        let dot = v.axes_dot_product(&self.info.z_axis);
+
+        point - self.info.z_axis * dot
+    }
 }
 
 /// A face.
@@ -1059,6 +1066,25 @@ impl Add for Point3d {
 impl AddAssign for Point3d {
     fn add_assign(&mut self, rhs: Self) {
         *self = *self + rhs
+    }
+}
+
+impl Sub for Point3d {
+    type Output = Point3d;
+
+    fn sub(self, rhs: Self) -> Self::Output {
+        Point3d{
+            x: self.x - rhs.x,
+            y: self.y - rhs.y,
+            z: self.z - rhs.z,
+            units: self.units,
+        }
+    }
+}
+
+impl SubAssign for Point3d {
+    fn sub_assign(&mut self, rhs: Self) {
+        *self = *self - rhs
     }
 }
 
