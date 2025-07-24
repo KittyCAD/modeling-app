@@ -1,5 +1,10 @@
 import { executeAstMock } from '@src/lang/langHelpers'
-import { formatNumberValue, parse, resultIsOk } from '@src/lang/wasm'
+import {
+  formatNumberValue,
+  parse,
+  resultIsOk,
+  type SourceRange,
+} from '@src/lang/wasm'
 import type { KclExpression } from '@src/lib/commandTypes'
 import { rustContext } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
@@ -68,4 +73,8 @@ export async function stringToKclExpression(value: string) {
     valueCalculated: calculatedResult.valueAsString,
     valueText: value,
   } satisfies KclExpression
+}
+
+export function getStringValue(code: string, range: SourceRange): string {
+  return code.slice(range[0], range[1]).replaceAll(`'`, ``).replaceAll(`"`, ``)
 }

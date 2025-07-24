@@ -1,5 +1,8 @@
-import type { ParseResult } from '@src/lang/wasm'
-import { getCalculatedKclExpressionValue } from '@src/lib/kclHelpers'
+import type { ParseResult, SourceRange } from '@src/lang/wasm'
+import {
+  getCalculatedKclExpressionValue,
+  getStringValue,
+} from '@src/lib/kclHelpers'
 
 describe('KCL expression calculations', () => {
   it('calculates a simple expression without units', async () => {
@@ -21,5 +24,21 @@ describe('KCL expression calculations', () => {
     const coercedActual = actual as Exclude<typeof actual, Error | ParseResult>
     expect(coercedActual.valueAsString).toEqual('NAN')
     expect(coercedActual.astNode).toBeDefined()
+  })
+})
+
+describe('getStringValue', () => {
+  it('returns a string value from a range', () => {
+    const code = `appearance(abc, color = "#00FF00")`
+    const range: SourceRange = [25, 25 + 7, 0] // '#00FF00' range
+    const result = getStringValue(code, range)
+    expect(result).toBe('#00FF00')
+  })
+
+  it('an empty string on bad range', () => {
+    const code = `badboi`
+    const range: SourceRange = [10, 12, 0]
+    const result = getStringValue(code, range)
+    expect(result).toBe('')
   })
 })
