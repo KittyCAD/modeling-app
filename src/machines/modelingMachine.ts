@@ -3630,6 +3630,11 @@ export const modelingMachine = setup({
               target: 'Change Tool',
               reenter: true,
             },
+
+            'event.parameter.create': {
+              target: '#Modeling.state:parameter:creating',
+              guard: 'no kcl errors',
+            },
           },
 
           states: {
