@@ -399,7 +399,6 @@ export function updateExtraSegments(
     extraSegmentGroup.traverse((child) => {
       if (child instanceof CSS2DObject) {
         child.element.classList.toggle(className, value)
-        //child.element.classList.toggle('selected', selected)
       }
     })
   }
