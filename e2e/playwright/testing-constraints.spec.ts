@@ -341,25 +341,25 @@ test.describe('Testing constraints', () => {
         testName: 'Add variable',
         addVariable: true,
         constraint: 'Absolute X',
-        value: 'xDis001, 61.34',
+        value: 'xDis001, 45',
       },
       {
         testName: 'No variable',
         addVariable: false,
         constraint: 'Absolute X',
-        value: '154.9, 61.34',
+        value: '95, 45',
       },
       {
         testName: 'Add variable',
         addVariable: true,
         constraint: 'Absolute Y',
-        value: '154.9, yDis001',
+        value: '95, yDis001',
       },
       {
         testName: 'No variable',
         addVariable: false,
         constraint: 'Absolute Y',
-        value: '154.9, 61.34',
+        value: '95, 45',
       },
     ] as const
     for (const { testName, addVariable, value, constraint } of cases) {
@@ -368,6 +368,7 @@ test.describe('Testing constraints', () => {
         homePage,
         scene,
         cmdBar,
+        toolbar,
       }) => {
         await page.addInitScript(async () => {
           localStorage.setItem(
@@ -375,40 +376,35 @@ test.describe('Testing constraints', () => {
             `@settings(defaultLengthUnit = in)
       yo = 5
       part001 = startSketchOn(XZ)
-        |> startProfile(at = [-7.54, -26.74])
-        |> line(end = [74.36, 130.4])
-        |> line(end = [78.92, -120.11])
-        |> line(end = [9.16, 77.79])
-        |> line(end = [51.19, 48.97])
-      part002 = startSketchOn(XZ)
-        |> startProfile(at = [299.05, 231.45])
-        |> xLine(length = -425.34, tag = $seg_what)
-        |> yLine(length = -264.06)
-        |> xLine(length = segLen(seg_what))
-        |> line(endAbsolute = [profileStartX(%), profileStartY(%)])`
+        |> startProfile(at = [5, -15])
+        |> line(end = [20, 20])
+        |> line(end = [70, 40])
+        |> line(end = [0, 10])`
           )
         })
         const u = await getUtils(page)
-        await page.setBodyDimensions({ width: 1200, height: 500 })
+        await page.setBodyDimensions({ width: 1200, height: 800 })
 
         await homePage.goToModelingScene()
         await scene.settled(cmdBar)
 
-        await page.getByText('line(end = [74.36, 130.4])').click()
+        await page.getByText('line(end = [20, 20])').click()
         await page.getByRole('button', { name: 'Edit Sketch' }).click()
+        await toolbar.closePane('code')
 
         // Wait for overlays to populate
         await page.waitForTimeout(1000)
 
         const [line3] = await Promise.all([
-          u.getSegmentBodyCoords(`[data-overlay-index="${3}"]`),
+          u.getSegmentBodyCoords(`[data-overlay-index="${2}"]`),
         ])
 
         if (constraint === 'Absolute X') {
-          await page.mouse.click(600, 130)
+          await scene.clickYAxis()
         } else {
-          await page.mouse.click(900, 250)
+          await scene.clickXAxis()
         }
+        // await page.waitForTimeout(120_000)
         await page.keyboard.down('Shift')
         await page.waitForTimeout(100)
         await page.mouse.click(line3.x, line3.y)
@@ -438,6 +434,7 @@ test.describe('Testing constraints', () => {
         // checking activeLines assures the cursors are where they should be
         const codeAfter = [`|> line(endAbsolute = [${value}])`]
 
+        await toolbar.openPane('code')
         const activeLinesContent = await page.locator('.cm-activeLine').all()
         await Promise.all(
           activeLinesContent.map(async (line, i) => {
@@ -450,7 +447,7 @@ test.describe('Testing constraints', () => {
         )
 
         // checking the count of the overlays is a good proxy check that the client sketch scene is in a good state
-        await expect(page.getByTestId('segment-overlay')).toHaveCount(5)
+        await expect(page.getByTestId('segment-overlay')).toHaveCount(3)
       })
     }
   })

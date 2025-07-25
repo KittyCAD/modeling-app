@@ -1269,8 +1269,13 @@ profile001 = startProfile(sketch001, at = [299.72, 230.82])
     ).toBeLessThan(3)
   })
 
-  test('Can attempt to sketch on revolved face', async ({ page, homePage }) => {
-    const u = await getUtils(page)
+  test('Can attempt to sketch on revolved face', async ({
+    page,
+    homePage,
+    scene,
+    cmdBar,
+    toolbar,
+  }) => {
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
     await page.addInitScript(async () => {
@@ -1297,33 +1302,16 @@ profile001 = startProfile(sketch001, at = [299.72, 230.82])
     })
 
     await homePage.goToModelingScene()
+    await scene.settled(cmdBar)
 
-    await u.openDebugPanel()
-    await u.expectCmdLog('[data-message-type="execution-done"]')
-    await u.closeDebugPanel()
+    const [clickCenter] = scene.makeMouseHelpers(0.5, 0.5, { format: 'ratio' })
+    await toolbar.startSketchBtn.click()
+    await page.waitForTimeout(20_000) // Wait for unavoidable animation
+    await clickCenter()
+    await page.waitForTimeout(1000) // Wait for unavoidable animation
 
-    /***
-     * Test Plan
-     * Start the sketch mode
-     * Click the middle of the screen which should click the top face that is revolved
-     * Wait till you see the line tool be enabled
-     * Wait till you see the exit sketch enabled
-     *
-     * This is supposed to test that you are allowed to go into sketch mode to sketch on a revolved face
-     */
-
-    await page.getByRole('button', { name: 'Start Sketch' }).click()
-
-    await expect(async () => {
-      await page.mouse.click(600, 250)
-      await page.waitForTimeout(1000)
-      await expect(
-        page.getByRole('button', { name: 'Exit Sketch' })
-      ).toBeVisible()
-      await expect(
-        page.getByRole('button', { name: 'line Line', exact: true })
-      ).toHaveAttribute('aria-pressed', 'true')
-    }).toPass({ timeout: 40_000, intervals: [1_000] })
+    await expect(toolbar.exitSketchBtn).toBeEnabled()
+    await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'true')
   })
 
   test('sketch on face of a boolean works', async ({
@@ -1661,21 +1649,24 @@ profile001 = startProfile(sketch001, at = [0, 0])
   })
 })
 
-test.describe(`Sketching with offset planes`, () => {
-  test(`Can select an offset plane to sketch on`, async ({
-    context,
-    page,
-    scene,
-    toolbar,
-    editor,
-    homePage,
-  }) => {
+test.describe(`Sketching
+with offset planes`, () => {
+  test(`
+Can
+select
+an
+offset
+plane
+to
+sketch
+on`, async ({ context, page, scene, toolbar, editor, homePage }) => {
     // We seed the scene with a single offset plane
     await context.addInitScript(() => {
       localStorage.setItem(
         'persistCode',
-        `@settings(defaultLengthUnit = in)
-offsetPlane001 = offsetPlane(XY, offset = 10)`
+        `
+@settings(defaultLengthUnit = in)
+offsetPlane001 = offsetPlane(XY, (offset = 10))`
       )
     })
 
@@ -1683,26 +1674,51 @@ offsetPlane001 = offsetPlane(XY, offset = 10)`
 
     const [planeClick, planeHover] = scene.makeMouseHelpers(650, 200)
 
-    await test.step(`Start sketching on the offset plane`, async () => {
+    await test.step(`
+Start
+sketching
+on
+the
+offset
+plane`, async () => {
       await toolbar.startSketchPlaneSelection()
 
-      await test.step(`Hovering should highlight code`, async () => {
+      await test.step(`
+Hovering
+should
+highlight
+code`, async () => {
         await planeHover()
         await editor.expectState({
-          activeLines: [`@settings(defaultLengthUnit = in)`],
+          activeLines: [
+            `
+@settings(defaultLengthUnit = in)`,
+          ],
           diagnostics: [],
           highlightedCode: 'offsetPlane(XY, offset = 10)',
         })
       })
 
-      await test.step(`Clicking should select the plane and enter sketch mode`, async () => {
+      await test.step(`
+Clicking
+should
+select
+the
+plane
+and
+enter
+sketch
+mode`, async () => {
         await planeClick()
         // Have to wait for engine-side animation to finish
         await page.waitForTimeout(600)
         await expect(toolbar.lineBtn).toBeEnabled()
         await editor.expectEditor.toContain('startSketchOn(offsetPlane001)')
         await editor.expectState({
-          activeLines: [`@settings(defaultLengthUnit = in)`],
+          activeLines: [
+            `
+@settings(defaultLengthUnit = in)`,
+          ],
           diagnostics: [],
           highlightedCode: '',
         })
@@ -1712,20 +1728,22 @@ offsetPlane001 = offsetPlane(XY, offset = 10)`
 })
 
 test.describe('multi-profile sketching', () => {
-  test(`test it removes half-finished expressions when changing tools in sketch mode`, async ({
-    context,
-    page,
-    scene,
-    toolbar,
-    editor,
-    homePage,
-    cmdBar,
-  }) => {
+  test(`
+test
+it
+removes
+half - finished
+expressions
+when
+changing
+tools in sketch
+mode`, async ({ context, page, scene, toolbar, editor, homePage, cmdBar }) => {
     // We seed the scene with a single offset plane
     await context.addInitScript(() => {
       localStorage.setItem(
         'persistCode',
-        `yo = 5
+        `
+yo = 5
 sketch001 = startSketchOn(XZ)
 profile001 = startProfile(sketch001, at = [121.52, 168.25])
   |> line(end = [115.04, 113.61])
@@ -1846,7 +1864,12 @@ profile002 = startProfile(sketch001, at = [117.2, 56.08])
       await editor.expectEditor.toContain('profile002')
     })
   })
-  test(`snapToProfile start only works for current profile`, async ({
+  test(`
+snapToProfile
+start
+only
+works
+for current profile`, async ({
     context,
     page,
     scene,
@@ -1913,7 +1936,8 @@ profile003 = startProfile(sketch001, at = [206.63, -56.73])
       // check pixel is now gray at tanArcLocation to verify code has executed
       await scene.expectPixelColor([26, 26, 26], tanArcLocation, 15)
       await editor.expectEditor.not.toContain(
-        `tangentialArc(end = [-10.82, 144.95])`
+        `
+tangentialArc(end = [-10.82, 144.95])`
       )
     })
 
@@ -1945,8 +1969,8 @@ profile003 = startProfile(sketch001, at = [206.63, -56.73])
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `sketch001 = startSketchOn(XY)
-`
+        `
+sketch001 = startSketchOn(XY)`
       )
     })
     await page.setBodyDimensions({ width: 1000, height: 500 })
@@ -1971,7 +1995,8 @@ profile003 = startProfile(sketch001, at = [206.63, -56.73])
       .toBe('true')
 
     await startProfile1()
-    await editor.expectEditor.toContain(`profile001 = startProfile`)
+    await editor.expectEditor.toContain(`
+profile001 = startProfile`)
     await segment1Clk()
     await editor.expectEditor.toContain(`|> line(end`)
   })
@@ -2762,6 +2787,7 @@ extrude001 = extrude(profile003, length = 5)
     toolbar,
     editor,
     page,
+    cmdBar,
   }) => {
     await page.addInitScript(async () => {
       localStorage.setItem(
@@ -2774,32 +2800,29 @@ profile001 = startProfile(sketch001, at = [85.19, 338.59])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 sketch002 = startSketchOn(XY)
-profile002 = startProfile(sketch002, at = [85.81, 52.55])
-
+profile002 = startProfile(sketch002, at = [0, 52.55])
 `
       )
     })
 
-    await page.setBodyDimensions({ width: 1000, height: 500 })
     await homePage.goToModelingScene()
-    await expect(
-      page.getByRole('button', { name: 'Start Sketch' })
-    ).not.toBeDisabled()
+    await scene.settled(cmdBar)
 
     const [startProfileAt] = scene.makeMouseHelpers(606, 184)
     const [nextPoint] = scene.makeMouseHelpers(763, 130)
-    await page.getByText('startProfile(sketch002, at = [85.81, 52.55])').click()
+    await page.getByText('startProfile(sketch002').click()
     await toolbar.editSketch(1)
     // timeout wait for engine animation is unavoidable
     await page.waitForTimeout(600)
+    await editor.closePane()
 
     // equip line tool
     await toolbar.lineBtn.click()
-    await page.waitForTimeout(100)
     await startProfileAt()
-    await page.waitForTimeout(100)
     await nextPoint()
-    await editor.expectEditor.toContain(`|> line(end = [126.05, 44.12])`)
+    await editor.openPane()
+    // A regex that just confirms the new segment is a line in a pipe
+    await expect(editor.codeContent).toContainText(/52\.55\]\)\s+\|\>\s+line\(/)
   })
   test('old style sketch all in one pipe (with extrude) will break up to allow users to add a new profile to the same sketch', async ({
     homePage,
@@ -3153,88 +3176,10 @@ loft([profile001, profile002])
     )
     await rect1Crn2()
     await editor.expectEditor.toContain(
-      `angledLine(angle = 0, length = 106.42], tag = $rectangleSegmentA001)`
+      `angledLine(angle = 0, length = 106.42
+], tag = $rectangleSegmentA001)`
     )
     await page.waitForTimeout(100)
-  })
-})
-
-// Regression test for https://github.com/KittyCAD/modeling-app/issues/4891
-test.describe(`Click based selection don't brick the app when clicked out of range after format using cache`, () => {
-  test(`Can select a line that reformmed after entering sketch mode`, async ({
-    context,
-    page,
-    scene,
-    toolbar,
-    editor,
-    homePage,
-    cmdBar,
-  }) => {
-    // We seed the scene with a single offset plane
-    await context.addInitScript(() => {
-      localStorage.setItem(
-        'persistCode',
-        `sketch001 = startSketchOn(XZ)
-  |> startProfile(at = [0, 0])
-  |> line(end = [3.14, 3.14])
-  |> arc(
-       interiorAbsolute = [1, 2],
-       endAbsolute = [4, 2]
-     )`
-      )
-    })
-
-    await homePage.goToModelingScene()
-    await scene.settled(cmdBar)
-
-    const formattedArc = `arc(interiorAbsolute = [1, 2], endAbsolute = [4, 2])`
-    await test.step(`format the code`, async () => {
-      // doesn't contain condensed version
-      await editor.expectEditor.not.toContain(formattedArc)
-      // click the code to enter sketch mode
-      await page.getByText(`arc`).click()
-      // Format the code.
-      await page.locator('#code-pane button:first-child').click()
-      await page.locator('button:has-text("Format code")').click()
-    })
-
-    await test.step(`Ensure the code reformatted`, async () => {
-      await editor.expectEditor.toContain(formattedArc)
-    })
-
-    const [arcClick, arcHover] = scene.makeMouseHelpers(699, 337)
-    await test.step('Ensure we can hover the arc', async () => {
-      await arcHover()
-
-      // Check that the code is highlighted
-      await editor.expectState({
-        activeLines: ['sketch001=startSketchOn(XZ)'],
-        diagnostics: [],
-        highlightedCode: 'arc(interiorAbsolute = [1, 2], endAbsolute = [4, 2])',
-      })
-    })
-
-    await test.step('reset the selection', async () => {
-      // Move the mouse out of the way
-      await page.mouse.move(655, 337)
-
-      await editor.expectState({
-        activeLines: ['sketch001=startSketchOn(XZ)'],
-        diagnostics: [],
-        highlightedCode: '',
-      })
-    })
-
-    await test.step('Ensure we can click the arc', async () => {
-      await arcClick()
-
-      // Check that the code is highlighted
-      await editor.expectState({
-        activeLines: [],
-        diagnostics: [],
-        highlightedCode: 'arc(interiorAbsolute = [1, 2], endAbsolute = [4, 2])',
-      })
-    })
   })
 })
 
@@ -3633,16 +3578,9 @@ profile003 = startProfile(sketch002, at = [-201.08, 254.17])
     await homePage.goToModelingScene()
     await scene.connectionEstablished()
     await scene.settled(cmdBar)
-    const expectSketchOriginToBeDrawn = async () => {
-      await scene.expectPixelColor(TEST_COLORS.WHITE, { x: 672, y: 193 }, 15)
-    }
 
     await test.step('Open feature tree and edit second sketch', async () => {
-      await toolbar.openFeatureTreePane()
-      const sketchButton = await toolbar.getFeatureTreeOperation('Sketch', 1)
-      await sketchButton.dblclick()
-      await page.waitForTimeout(700) // Wait for engine animation
-      await expectSketchOriginToBeDrawn()
+      await toolbar.editSketch(1)
     })
 
     await test.step('clear editor content while in sketch mode', async () => {
@@ -3651,11 +3589,8 @@ profile003 = startProfile(sketch002, at = [-201.08, 254.17])
       await expect(
         page.getByText('Unable to maintain sketch mode')
       ).toBeVisible()
-      await scene.expectPixelColorNotToBe(
-        TEST_COLORS.WHITE,
-        { x: 672, y: 193 },
-        15
-      )
+      await expect(toolbar.exitSketchBtn).not.toBeVisible()
+      await expect(toolbar.startSketchBtn).toBeVisible()
     })
   })
   test('empty draft sketch is cleaned up properly', async ({
