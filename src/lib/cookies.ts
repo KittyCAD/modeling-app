@@ -23,23 +23,21 @@ export class Cookie {
 // Pass along custom cookies to requests ONLY ON STAGING OR DEBUG BUILDS.
 // Cookies can only be deleted by setting their expiry to immediately,
 // otherwise they are overridden.
-export const initializeCustomCookies = (cookies: ICookie[]) => {
+export const initializeCustomCookies = (cookies_: ICookie[]) => {
   if (!IS_STAGING_OR_DEBUG) return
+
+  const cookies = cookies_.map((c: ICookie) => c instanceof Cookie ? c : new Cookie(c))
 
   // Each document.cookie assignment has the side-effect of the browser engine
   // entering a cookie row, so it's a bit unorthodox.
-  cookies.forEach((cookie: ICookie) => {
-    const cookieStr = (
-      !(cookie instanceof Cookie) ? new Cookie(cookie) : cookie
-    ).toString()
-    document.cookie = cookieStr
+  cookies.forEach((c: Cookie) => {
+    document.cookie = c.toString()
   })
 
   // On window close, clean up the custom cookies.
   window.addEventListener('close', () => {
-    document.cookie.split(';').forEach((cookieStr: string) => {
-      cookieStr += ` ;expires=`
-      document.cookie = cookieStr
+    cookies.forEach((c: Cookie) => {
+      document.cookie = c.toString() + ';expires='
     })
   })
 }
