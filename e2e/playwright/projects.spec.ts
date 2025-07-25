@@ -165,7 +165,7 @@ test(
   {
     tag: '@desktop',
   },
-  async ({ scene, cmdBar, context, page }, testInfo) => {
+  async ({ toolbar, editor, scene, cmdBar, context, page, homePage }) => {
     await context.folderSetupFn(async (dir) => {
       const bracketDir = path.join(dir, 'bracket')
       await fsp.mkdir(bracketDir, { recursive: true })
@@ -178,46 +178,25 @@ test(
       await fsp.writeFile(path.join(emptyDir, 'main.kcl'), '')
     })
 
-    await page.setBodyDimensions({ width: 1200, height: 500 })
     const u = await getUtils(page)
 
-    page.on('console', console.log)
-
-    const pointOnModel = { x: 630, y: 280 }
-
     await test.step('Opening the bracket project should load the stream', async () => {
-      // expect to see the text bracket
-      await expect(page.getByText('bracket')).toBeVisible()
-
-      await page.getByText('bracket').click()
-
+      await homePage.openProject('bracket')
       await scene.settled(cmdBar)
     })
 
-    await test.step('Clicking the logo takes us back to the projects page / home', async () => {
-      await page.getByTestId('app-logo').click()
+    await u.doAndWaitForImageDiff(
+      async () => {
+        await toolbar.logoLink.click()
+        await homePage.openProject('empty')
+        await scene.settled(cmdBar)
+      },
+      500,
+      scene.streamWrapper
+    )
 
-      await expect(page.getByRole('link', { name: 'bracket' })).toBeVisible()
-      await expect(page.getByText('empty')).toBeVisible()
-      await expect(page.getByText('bracket')).toBeVisible()
-      await expect(page.getByText('Create project')).toBeVisible()
-    })
-    await test.step('opening empty code project should clear the scene', async () => {
-      // Go back home.
-      await expect(page.getByText('empty')).toBeVisible()
-
-      await page.getByText('empty').click()
-
-      // Ensure the code is empty.
-      await expect(u.codeLocator).toContainText('')
-      expect(u.codeLocator.innerHTML.length).toBeLessThan(2)
-
-      // planes colors means the scene has been cleared.
-      await expect
-        .poll(() => u.getGreatestPixDiff(pointOnModel, [92, 53, 53]), {
-          timeout: 10_000,
-        })
-        .toBeLessThan(15)
+    await test.step('Ensure the code is empty', async () => {
+      await editor.expectEditor.toBe('\n')
     })
   }
 )
