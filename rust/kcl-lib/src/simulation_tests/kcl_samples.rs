@@ -75,6 +75,9 @@ async fn unparse_test(test: &Test) {
 #[kcl_directory_test_macro::test_all_dirs("../public/kcl-samples")]
 async fn kcl_test_execute(dir_name: &str, dir_path: &Path) {
     if DISABLED_SAMPLES.contains(&dir_name) {
+        // NOTE: Do not remove this line. The error message is included in the
+        // JUnit XML report for the Test Analysis Bot to post-process results
+        // and determine whether the test should be marked as skipped.
         eprintln!("Skipping disabled sample: {}", dir_name);
         return;
     }
