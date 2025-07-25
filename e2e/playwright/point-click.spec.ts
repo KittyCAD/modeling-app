@@ -2771,7 +2771,7 @@ sketch002 = startSketchOn(extrude001, face = rectangleSegmentA001)
     await cmdBar.progressCmdBar()
     await page.getByText('Edge', { exact: true }).click()
     const lineCodeToSelection = `angledLine(angle = 0, length = 202.6, tag = $rectangleSegmentA001)`
-    await page.getByText(lineCodeToSelection).click()
+    await editor.selectText(lineCodeToSelection)
     await cmdBar.progressCmdBar()
     await cmdBar.progressCmdBar()
     await cmdBar.progressCmdBar()
