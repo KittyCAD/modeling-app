@@ -455,16 +455,6 @@ export async function getProjectInfo(projectPath: string): Promise<Project> {
   return project
 }
 
-// Write project settings file.
-export async function writeProjectSettingsFile(
-  projectPath: string,
-  tomlStr: string
-): Promise<void> {
-  const projectSettingsFilePath = await getProjectSettingsFilePath(projectPath)
-  if (err(tomlStr)) return Promise.reject(tomlStr)
-  return window.electron.writeFile(projectSettingsFilePath, tomlStr)
-}
-
 // Important for saving settings.
 // TODO: should be pulled from electron-builder.yml
 const APP_ID = IS_STAGING
@@ -600,7 +590,7 @@ const getRawTelemetryFilePath = async () => {
   return window.electron.path.join(fullPath, TELEMETRY_RAW_FILE_NAME)
 }
 
-const getProjectSettingsFilePath = async (projectPath: string) => {
+export const getProjectSettingsFilePath = async (projectPath: string) => {
   try {
     await window.electron.stat(projectPath)
   } catch (e) {
