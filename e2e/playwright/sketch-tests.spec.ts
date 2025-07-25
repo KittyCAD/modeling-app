@@ -2818,9 +2818,7 @@ profile002 = startProfile(sketch002, at = [0, 52.55])
 
     // equip line tool
     await toolbar.lineBtn.click()
-    await page.waitForTimeout(4_000)
     await startProfileAt()
-    await page.waitForTimeout(4_000)
     await nextPoint()
     await editor.openPane()
     // A regex that just confirms the new segment is a line in a pipe
