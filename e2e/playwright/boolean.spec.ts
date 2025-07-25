@@ -47,6 +47,7 @@ test.describe('Point and click for boolean workflows', () => {
       }, file)
       await homePage.goToModelingScene()
       await scene.settled(cmdBar)
+      await toolbar.closePane('code')
 
       // Test coordinates for selection - these might need adjustment based on actual scene layout
       const cylinderPoint = { x: 592, y: 174 }
