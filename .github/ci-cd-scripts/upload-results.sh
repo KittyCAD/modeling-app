@@ -25,6 +25,7 @@ curl --silent --request POST \
   --form "GITHUB_HEAD_REF=${GITHUB_HEAD_REF:-}" \
   --form "GITHUB_REF_NAME=${GITHUB_REF_NAME:-}" \
   --form "GITHUB_REF=${GITHUB_REF:-}" \
+  --form "GITHUB_RUN_ID=${GITHUB_RUN_ID:-}" \
   --form "GITHUB_SHA=${GITHUB_SHA:-}" \
   --form "GITHUB_WORKFLOW=${GITHUB_WORKFLOW:-}" \
   --form "RUNNER_ARCH=${RUNNER_ARCH:-}" \
