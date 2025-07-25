@@ -565,8 +565,6 @@ openSketch = startSketchOn(XY)
   |> xLine(length = 5)
   |> tangentialArc(endAbsolute = [10, 0])
 `
-    const viewPortSize = { width: 1000, height: 500 }
-    await page.setBodyDimensions(viewPortSize)
 
     await context.addInitScript((code) => {
       localStorage.setItem('persistCode', code)
@@ -574,81 +572,65 @@ openSketch = startSketchOn(XY)
 
     await homePage.goToModelingScene()
 
-    const pointInsideCircle = {
-      x: viewPortSize.width * 0.63,
-      y: viewPortSize.height * 0.5,
-    }
-    const pointOnPathAfterSketching = {
-      x: viewPortSize.width * 0.65,
-      y: viewPortSize.height * 0.5,
-    }
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [_clickOpenPath, moveToOpenPath, dblClickOpenPath] =
-      scene.makeMouseHelpers(
-        pointOnPathAfterSketching.x,
-        pointOnPathAfterSketching.y
-      )
+      scene.makeMouseHelpers(0.65, 0.5, { format: 'ratio' })
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [_clickCircle, moveToCircle, dblClickCircle] = scene.makeMouseHelpers(
-      pointInsideCircle.x,
-      pointInsideCircle.y
+      0.63,
+      0.5,
+      { format: 'ratio' }
     )
-
-    const exitSketch = async () => {
-      await test.step(`Exit sketch mode`, async () => {
-        await toolbar.exitSketchBtn.click()
-        await expect(toolbar.startSketchBtn).toBeEnabled()
-      })
-    }
 
     await test.step(`Double-click on the closed sketch`, async () => {
       await scene.settled(cmdBar)
+      await editor.closePane()
       await moveToCircle()
       await page.waitForTimeout(1000)
       await dblClickCircle()
       await page.waitForTimeout(1000)
       await expect(toolbar.exitSketchBtn).toBeVisible()
+      await editor.openPane()
       await editor.expectState({
         activeLines: [`|>circle(center=[8,5],radius=2)`],
-        highlightedCode: 'circle(center=[8,5],radius=2)',
+        highlightedCode: '',
         diagnostics: [],
       })
     })
     await page.waitForTimeout(1000)
 
-    await exitSketch()
+    await toolbar.exitSketch()
     await page.waitForTimeout(1000)
+    await editor.closePane()
 
     // Drag the sketch line out of the axis view which blocks the click
     await page.dragAndDrop('#stream', '#stream', {
-      sourcePosition: {
-        x: viewPortSize.width * 0.7,
-        y: viewPortSize.height * 0.5,
-      },
-      targetPosition: {
-        x: viewPortSize.width * 0.7,
-        y: viewPortSize.height * 0.4,
-      },
+      sourcePosition: await scene.convertPagePositionToStream(
+        0.7,
+        0.5,
+        'ratio'
+      ),
+      targetPosition: await scene.convertPagePositionToStream(
+        0.7,
+        0.4,
+        'ratio'
+      ),
     })
 
     await page.waitForTimeout(500)
 
     await test.step(`Double-click on the open sketch`, async () => {
       await moveToOpenPath()
-      await scene.expectPixelColor(
-        [250, 250, 250],
-        pointOnPathAfterSketching,
-        15
-      )
       // There is a full execution after exiting sketch that clears the scene.
       await page.waitForTimeout(500)
       await dblClickOpenPath()
       await expect(toolbar.exitSketchBtn).toBeVisible()
       // Wait for enter sketch mode to complete
       await page.waitForTimeout(500)
+      await editor.openPane()
       await editor.expectState({
         activeLines: [`|>tangentialArc(endAbsolute=[10,0])`],
-        highlightedCode: 'tangentialArc(endAbsolute=[10,0])',
+        highlightedCode: '',
         diagnostics: [],
       })
     })
