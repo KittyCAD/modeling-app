@@ -10,12 +10,21 @@ import '@src/index.css'
 import { initPromise } from '@src/lang/wasmUtils'
 import { AUTO_UPDATER_TOAST_ID } from '@src/lib/constants'
 import { initializeWindowExceptionHandler } from '@src/lib/exceptions'
+import { initializeCustomCookies } from '@src/lib/cookies'
 import { isDesktop } from '@src/lib/isDesktop'
 import { markOnce } from '@src/lib/performance'
 import { reportRejection } from '@src/lib/trap'
 import { appActor, systemIOActor, commandBarActor } from '@src/lib/singletons'
 import reportWebVitals from '@src/reportWebVitals'
 import { createApplicationCommands } from '@src/lib/commandBarConfigs/applicationCommandConfig'
+
+initializeCustomCookies([
+  {
+    name: 'preview-pr-2751',
+    value: 'always',
+    domain: 'localhost',
+  },
+])
 
 markOnce('code/willAuth')
 initializeWindowExceptionHandler()
