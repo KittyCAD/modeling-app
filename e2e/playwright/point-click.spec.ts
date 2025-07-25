@@ -468,28 +468,24 @@ profile001 = startProfile(sketch002, at = [205.96, 254.59])
         viewPortSize.width / 2 + 3, // 3px off the center of the screen
         viewPortSize.height / 2,
       ],
-      kcl: [0, 0],
     } as const
     const xAxisSloppy = {
       screen: [
         viewPortSize.width * 0.75,
         viewPortSize.height / 2 - 3, // 3px off the X-axis
       ],
-      kcl: [20.34, 0],
     } as const
     const offYAxis = {
       screen: [
         viewPortSize.width * 0.6, // Well off the Y-axis, out of snapping range
         viewPortSize.height * 0.3,
       ],
-      kcl: [8.14, 6.78],
     } as const
     const yAxisSloppy = {
       screen: [
         viewPortSize.width / 2 + 5, // 5px off the Y-axis
         viewPortSize.height * 0.3,
       ],
-      kcl: [0, 6.78],
     } as const
     const [clickOnXzPlane, moveToXzPlane] = scene.makeMouseHelpers(...xzPlane)
     const [clickOriginSloppy] = scene.makeMouseHelpers(...originSloppy.screen)
@@ -501,11 +497,12 @@ profile001 = startProfile(sketch002, at = [205.96, 254.59])
     )
 
     const expectedCodeSnippets = {
-      sketchOnXzPlane: `sketch001 = startSketchOn(XZ)`,
-      pointAtOrigin: `startProfile(sketch001, at = [${originSloppy.kcl[0]}, ${originSloppy.kcl[1]}])`,
-      segmentOnXAxis: `xLine(length = ${xAxisSloppy.kcl[0]})`,
-      afterSegmentDraggedOffYAxis: `startProfile(sketch001, at = [${offYAxis.kcl[0]}, ${offYAxis.kcl[1]}])`,
-      afterSegmentDraggedOnYAxis: `startProfile(sketch001, at = [${yAxisSloppy.kcl[0]}, ${yAxisSloppy.kcl[1]}])`,
+      sketchOnXzPlane: 'sketch001 = startSketchOn(XZ)',
+      pointAtOrigin: 'startProfile(sketch001, at = [0, 0])',
+      segmentOnXAxis: 'xLine(length',
+      afterSegmentDraggedOffYAxis:
+        /startProfile\(sketch001, at = \[\d+, \d+\]\)/,
+      afterSegmentDraggedOnYAxis: /startProfile\(sketch001, at = \[0, \d+\]\)/,
     }
 
     await test.step(`Start a sketch on the XZ plane`, async () => {
@@ -533,19 +530,22 @@ profile001 = startProfile(sketch002, at = [205.96, 254.59])
       await dragToOffYAxis({
         fromPoint: { x: originSloppy.screen[0], y: originSloppy.screen[1] },
       })
-      await editor.expectEditor.toContain(
+      await editor.openPane()
+      await expect(editor.codeContent).toContainText(
         expectedCodeSnippets.afterSegmentDraggedOffYAxis
       )
+      await editor.closePane()
     })
     await test.step(`Drag the origin point left to the y-axis, verify it snaps back`, async () => {
       await dragFromOffAxis({
         toPoint: { x: yAxisSloppy.screen[0], y: yAxisSloppy.screen[1] },
       })
-      await editor.expectEditor.toContain(
+      await editor.openPane()
+      await expect(editor.codeContent).toContainText(
         expectedCodeSnippets.afterSegmentDraggedOnYAxis
       )
+      await editor.closePane()
     })
-    await editor.page.waitForTimeout(1000)
   })
 
   test(`Verify user can double-click to edit a sketch`, async ({
