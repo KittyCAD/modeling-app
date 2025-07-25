@@ -26,7 +26,9 @@ export class Cookie {
 export const initializeCustomCookies = (cookies_: ICookie[]) => {
   if (!IS_STAGING_OR_DEBUG) return
 
-  const cookies = cookies_.map((c: ICookie) => c instanceof Cookie ? c : new Cookie(c))
+  const cookies = cookies_.map((c: ICookie) =>
+    c instanceof Cookie ? c : new Cookie(c)
+  )
 
   // Each document.cookie assignment has the side-effect of the browser engine
   // entering a cookie row, so it's a bit unorthodox.
