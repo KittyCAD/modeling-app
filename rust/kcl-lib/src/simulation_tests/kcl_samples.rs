@@ -13,7 +13,7 @@ use walkdir::WalkDir;
 use super::Test;
 
 /// Some samples may be temporarily disabled.
-const DISABLED_SAMPLES: [&str; 2] = ["ball-joint-rod-end", "multi-axis-robot"];
+const DISABLED_SAMPLES: [&str; 1] = ["ball-joint-rod-end"];
 
 lazy_static::lazy_static! {
     /// The directory containing the KCL samples source.
