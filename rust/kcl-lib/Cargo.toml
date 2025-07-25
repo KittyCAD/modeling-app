@@ -26,7 +26,7 @@ async-trait = { workspace = true }
 base64 = "0.22.1"
 bson = { workspace = true }
 chrono = "0.4.41"
-clap = { version = "4.5.40", default-features = false, optional = true, features = [
+clap = { version = "4.5.41", default-features = false, optional = true, features = [
     "std",
     "derive",
 ] }
@@ -74,7 +74,7 @@ sha2 = "0.10.9"
 tabled = { version = "0.20.0", optional = true }
 tempfile = "3.20"
 thiserror = "2.0.0"
-toml = "0.8.23"
+toml = "0.9.2"
 ts-rs = { version = "11.0.1", features = [
     "uuid-impl",
     "url-impl",
