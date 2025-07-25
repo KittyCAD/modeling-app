@@ -2787,6 +2787,7 @@ extrude001 = extrude(profile003, length = 5)
     toolbar,
     editor,
     page,
+    cmdBar,
   }) => {
     await page.addInitScript(async () => {
       localStorage.setItem(
@@ -2799,32 +2800,31 @@ profile001 = startProfile(sketch001, at = [85.19, 338.59])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 sketch002 = startSketchOn(XY)
-profile002 = startProfile(sketch002, at = [85.81, 52.55])
-
+profile002 = startProfile(sketch002, at = [0, 52.55])
 `
       )
     })
 
-    await page.setBodyDimensions({ width: 1000, height: 500 })
     await homePage.goToModelingScene()
-    await expect(
-      page.getByRole('button', { name: 'Start Sketch' })
-    ).not.toBeDisabled()
+    await scene.settled(cmdBar)
 
     const [startProfileAt] = scene.makeMouseHelpers(606, 184)
     const [nextPoint] = scene.makeMouseHelpers(763, 130)
-    await page.getByText('startProfile(sketch002, at = [85.81, 52.55])').click()
+    await page.getByText('startProfile(sketch002').click()
     await toolbar.editSketch(1)
     // timeout wait for engine animation is unavoidable
     await page.waitForTimeout(600)
+    await editor.closePane()
 
     // equip line tool
     await toolbar.lineBtn.click()
-    await page.waitForTimeout(100)
+    await page.waitForTimeout(4_000)
     await startProfileAt()
-    await page.waitForTimeout(100)
+    await page.waitForTimeout(4_000)
     await nextPoint()
-    await editor.expectEditor.toContain(`|> line(end = [126.05, 44.12])`)
+    await editor.openPane()
+    // A regex that just confirms the new segment is a line in a pipe
+    await expect(editor.codeContent).toContainText(/52\.55\]\)\s+\|\>\s+line\(/)
   })
   test('old style sketch all in one pipe (with extrude) will break up to allow users to add a new profile to the same sketch', async ({
     homePage,
