@@ -274,7 +274,7 @@ test(
   {
     tag: '@desktop',
   },
-  async ({ scene, cmdBar, context, page }, testInfo) => {
+  async ({ scene, cmdBar, context, page, toolbar, homePage, editor }) => {
     await context.folderSetupFn(async (dir) => {
       const bracketDir = path.join(dir, 'bracket')
       await fsp.mkdir(bracketDir, { recursive: true })
@@ -288,59 +288,38 @@ test(
       )
     })
 
-    await page.setBodyDimensions({ width: 1200, height: 500 })
     const u = await getUtils(page)
 
-    const pointOnModel = { x: 630, y: 280 }
-
     await test.step('Opening the bracket project should load the stream', async () => {
-      // expect to see the text bracket
-      await expect(page.getByText('bracket')).toBeVisible()
-
-      await page.getByText('bracket').click()
-
+      await homePage.openProject('bracket')
       await scene.settled(cmdBar)
-
-      await expect(
-        page.getByRole('button', { name: 'Start Sketch' })
-      ).toBeEnabled({
-        timeout: 20_000,
-      })
-
-      // gray at this pixel means the stream has loaded in the most
-      // user way we can verify it (pixel color)
-      await expect
-        .poll(() => u.getGreatestPixDiff(pointOnModel, [125, 125, 125]), {
-          timeout: 10_000,
-        })
-        .toBeLessThan(15)
     })
-    await test.step('opening broken code file should clear the scene and show the error', async () => {
-      // open the file pane.
-      await page.getByTestId('files-pane-button').click()
 
-      // Open the other file.
-      const file = page.getByRole('button', { name: 'broken-code-test.kcl' })
-      await expect(file).toBeVisible()
+    await u.doAndWaitForImageDiff(
+      async () => {
+        await toolbar.openPane('files')
+        await toolbar.openFile('broken-code-test.kcl')
+        await toolbar.closePane('files')
+        await scene.settled(cmdBar, { expectError: true })
 
-      await file.click()
-
-      // error in guter
-      await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
-
-      // error text on hover
-      await page.hover('.cm-lint-marker-error')
-      const crypticErrorText =
-        'tag requires a value with type `TagDecl`, but found a value with type `string`.'
-      await expect(page.getByText(crypticErrorText).first()).toBeVisible()
-
-      // black pixel means the scene has been cleared.
-      await expect
-        .poll(() => u.getGreatestPixDiff(pointOnModel, [30, 30, 30]), {
-          timeout: 10_000,
+        await test.step('Verify error appears', async () => {
+          await editor.scrollToText(
+            "|> line(end = [0, wallMountL], tag = 'outerEdge')"
+          )
+          // error in gutter
+          await expect(page.locator('.cm-lint-marker-error')).toBeVisible({
+            timeout: 10_000,
+          })
+          // error text on hover
+          await page.hover('.cm-lint-marker-error')
+          const crypticErrorText =
+            'tag requires a value with type `TagDecl`, but found a value with type `string`.'
+          await expect(page.getByText(crypticErrorText).first()).toBeVisible()
         })
-        .toBeLessThan(15)
-    })
+      },
+      500,
+      scene.streamWrapper
+    )
   }
 )
 
