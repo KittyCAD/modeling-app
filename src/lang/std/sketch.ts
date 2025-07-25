@@ -3913,7 +3913,6 @@ export const getStartProfile = (
   const tag = findKwArg(ARG_TAG, callExp)
   if (absoluteCoords) {
     if (absoluteCoords.type === 'ArrayExpression') {
-      console.log('absoluteCoords', absoluteCoords)
       return {
         val: [absoluteCoords.elements[0], absoluteCoords.elements[1]],
         tag,
