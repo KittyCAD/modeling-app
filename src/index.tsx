@@ -10,6 +10,7 @@ import '@src/index.css'
 import { createApplicationCommands } from '@src/lib/commandBarConfigs/applicationCommandConfig'
 import { AUTO_UPDATER_TOAST_ID } from '@src/lib/constants'
 import { initializeWindowExceptionHandler } from '@src/lib/exceptions'
+import { initializeCustomCookies } from '@src/lib/cookies'
 import { markOnce } from '@src/lib/performance'
 import {
   appActor,
@@ -21,6 +22,12 @@ import {
 import { reportRejection } from '@src/lib/trap'
 import reportWebVitals from '@src/reportWebVitals'
 import monkeyPatchForBrowserTranslation from '@src/lib/monkeyPatchBrowserTranslate'
+
+initializeCustomCookies([{
+  name: 'preview-pr-2751',
+  value: 'always',
+  domain: 'localhost',
+}])
 
 markOnce('code/willAuth')
 initializeWindowExceptionHandler(kclManager, rustContext)
