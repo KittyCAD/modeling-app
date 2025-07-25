@@ -179,7 +179,7 @@ import type {
   SketchTool,
 } from '@src/machines/modelingMachine'
 import { calculateIntersectionOfTwoLines } from 'sketch-helpers'
-import { getSettings } from '@src/lib/singletons'
+import type { SettingsType } from '@src/lib/settings/initialSettings'
 
 type DraftSegment = 'line' | 'tangentialArc'
 
@@ -200,6 +200,8 @@ export class SceneEntities {
   axisGroup: Group | null = null
   draftPointGroups: Group[] = []
   currentSketchQuaternion: Quaternion | null = null
+
+  getSettings: (() => SettingsType) | null = null
 
   constructor(
     engineCommandManager: EngineCommandManager,
@@ -2755,11 +2757,15 @@ export class SceneEntities {
       ]
 
       // Not snapping to any axis, snap to default unit grid, ie. round it.
-      if (getSettings().modeling.snapToGrid.current) {
-        snappedPoint = [
-          Math.round(snappedPoint[0]),
-          Math.round(snappedPoint[1]),
-        ]
+      if (this.getSettings) {
+        if (this.getSettings().modeling.snapToGrid.current) {
+          snappedPoint = [
+            Math.round(snappedPoint[0]),
+            Math.round(snappedPoint[1]),
+          ]
+        }
+      } else {
+        console.error('getSettings not injected!')
       }
     }
 
