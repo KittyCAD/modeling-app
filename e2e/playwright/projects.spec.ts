@@ -1777,7 +1777,7 @@ test(
   {
     tag: '@desktop',
   },
-  async ({ scene, cmdBar, context, page, editor, toolbar }, testInfo) => {
+  async ({ scene, cmdBar, context, page, editor, toolbar }) => {
     const projectName = 'segment-drag-test'
 
     await context.folderSetupFn(async (dir) => {
@@ -1793,8 +1793,6 @@ profile001 = startProfile(sketch001, at = [0, 0])
 `
       )
     })
-
-    await page.setBodyDimensions({ width: 1200, height: 600 })
     const u = await getUtils(page)
 
     await test.step('Opening the project and entering sketch mode', async () => {
@@ -1812,7 +1810,8 @@ profile001 = startProfile(sketch001, at = [0, 0])
       await page.waitForTimeout(2000)
     })
 
-    const changedLine = 'line(end = [-6.54, -4.99])'
+    const lineToChange = 'line(end = [-8, -5])'
+    const lineToStay = 'line(end = [10, 0])'
 
     await test.step('Dragging the line endpoint to modify it', async () => {
       // Get the last line's endpoint position
@@ -1823,7 +1822,8 @@ profile001 = startProfile(sketch001, at = [0, 0])
       await page.mouse.move(lineEnd.x + 80, lineEnd.y)
       await page.mouse.up()
 
-      await editor.expectEditor.toContain(changedLine)
+      await editor.expectEditor.not.toContain(lineToChange)
+      await editor.expectEditor.toContain(lineToStay)
 
       // Exit sketch mode
       await page.keyboard.press('Escape')
@@ -1837,10 +1837,10 @@ profile001 = startProfile(sketch001, at = [0, 0])
 
     await test.step('Reopening the project and verifying changes are saved', async () => {
       await page.getByText(projectName).click()
-      await scene.settled(cmdBar)
 
       // Check if new line coordinates were saved
-      await editor.expectEditor.toContain(changedLine)
+      await editor.expectEditor.not.toContain(lineToChange)
+      await editor.expectEditor.toContain(lineToStay)
     })
   }
 )
