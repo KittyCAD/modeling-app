@@ -170,6 +170,7 @@ pub const TEST_NAMES: &[&str] = &[
     "std-sketch-startSketchOn-3",
     "std-sketch-startSketchOn-4",
     "std-sketch-startSketchOn-5",
+    "std-sketch-startSketchOn-6",
     "std-sketch-angledLineThatIntersects-0",
     "std-sketch-angledLine-0",
     "std-sketch-arc-0",

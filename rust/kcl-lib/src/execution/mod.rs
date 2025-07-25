@@ -2168,6 +2168,49 @@ notPipeSub = 1 |> identity(!%))";
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_start_sketch_on_invalid_kwargs() {
+        let current_dir = std::env::current_dir().unwrap();
+        let mut path = current_dir.join("tests/inputs/startSketchOn_0.kcl");
+        let mut code = std::fs::read_to_string(&path).unwrap();
+        assert_eq!(
+            parse_execute(&code).await.unwrap_err().message(),
+            "You cannot give both `face` and `normalToFace` params, you have to choose one or the other.".to_owned(),
+        );
+
+        path = current_dir.join("tests/inputs/startSketchOn_1.kcl");
+        code = std::fs::read_to_string(&path).unwrap();
+
+        assert_eq!(
+            parse_execute(&code).await.unwrap_err().message(),
+            "`alignAxis` is required if `normalToFace` is specified.".to_owned(),
+        );
+
+        path = current_dir.join("tests/inputs/startSketchOn_2.kcl");
+        code = std::fs::read_to_string(&path).unwrap();
+
+        assert_eq!(
+            parse_execute(&code).await.unwrap_err().message(),
+            "`normalToFace` is required if `alignAxis` is specified.".to_owned(),
+        );
+
+        path = current_dir.join("tests/inputs/startSketchOn_3.kcl");
+        code = std::fs::read_to_string(&path).unwrap();
+
+        assert_eq!(
+            parse_execute(&code).await.unwrap_err().message(),
+            "`normalToFace` is required if `alignAxis` is specified.".to_owned(),
+        );
+
+        path = current_dir.join("tests/inputs/startSketchOn_4.kcl");
+        code = std::fs::read_to_string(&path).unwrap();
+
+        assert_eq!(
+            parse_execute(&code).await.unwrap_err().message(),
+            "`normalToFace` is required if `normalOffset` is specified.".to_owned(),
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_math_negative_variable_in_binary_expression() {
         let ast = r#"sigmaAllow = 35000 // psi
 width = 1 // inch
