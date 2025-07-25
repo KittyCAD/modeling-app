@@ -137,7 +137,7 @@ test(
       async () => {
         await toolbar.logoLink.click()
         await homePage.openProject('broken-code')
-        await scene.connectionEstablished()
+        await scene.settled(cmdBar, { expectError: true })
 
         await test.step('Verify error appears', async () => {
           await editor.scrollToText(

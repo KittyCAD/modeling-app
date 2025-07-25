@@ -335,10 +335,20 @@ export class SceneFixture {
     ])
   }
 
-  settled = async (cmdBar: CmdBarFixture) => {
+  settled = async (
+    cmdBar: CmdBarFixture,
+    { expectError }: Partial<{ expectError: boolean }> | undefined = {
+      expectError: false,
+    }
+  ) => {
     const u = await getUtils(this.page)
 
-    await expect(this.startEditSketchBtn).not.toBeDisabled({ timeout: 15_000 })
+    // If the caller expects a KCL error, don't wait for the sketch button to enable.
+    if (!expectError) {
+      await expect(this.startEditSketchBtn).not.toBeDisabled({
+        timeout: 15_000,
+      })
+    }
     await expect(this.startEditSketchBtn).toBeVisible()
     await expect(this.engineConnectionsSpinner).not.toBeVisible()
 
