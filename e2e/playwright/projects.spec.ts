@@ -788,15 +788,13 @@ test.describe(`Project management commands`, () => {
       })
     }
   )
-  test(`Create a new project with a colliding name`, async ({
+  test('Create a new project with a colliding name', async ({
     context,
     homePage,
     toolbar,
-    cmdBar,
-    scene,
   }) => {
     const projectName = 'test-project'
-    await test.step(`Setup`, async () => {
+    await test.step('Setup', async () => {
       await context.folderSetupFn(async (dir) => {
         const projectDir = path.join(dir, projectName)
         await Promise.all([fsp.mkdir(projectDir, { recursive: true })])
@@ -819,29 +817,15 @@ test.describe(`Project management commands`, () => {
     })
 
     await test.step('Create a new project with the same name', async () => {
-      await cmdBar.openCmdBar()
-      await cmdBar.chooseCommand('create project')
-      await cmdBar.expectState({
-        stage: 'arguments',
-        commandName: 'Create project',
-        currentArgKey: 'name',
-        currentArgValue: '',
-        headerArguments: {
-          Name: '',
-        },
-        highlightedHeaderArg: 'name',
-      })
-      await cmdBar.argumentInput.fill(projectName)
-      await cmdBar.progressCmdBar()
-      await scene.settled(cmdBar)
+      await homePage.createAndGoToProject(projectName)
       await toolbar.logoLink.click()
     })
 
-    await test.step(`Check the project was created with a non-colliding name`, async () => {
+    await test.step('Check the project was created with a non-colliding name', async () => {
       await homePage.expectState({
         projectCards: [
           {
-            title: projectName + '-1',
+            title: `${projectName}-1`,
             fileCount: 1,
           },
           {
@@ -854,33 +838,19 @@ test.describe(`Project management commands`, () => {
     })
 
     await test.step('Create another project with the same name', async () => {
-      await cmdBar.openCmdBar()
-      await cmdBar.chooseCommand('create project')
-      await cmdBar.expectState({
-        stage: 'arguments',
-        commandName: 'Create project',
-        currentArgKey: 'name',
-        currentArgValue: '',
-        headerArguments: {
-          Name: '',
-        },
-        highlightedHeaderArg: 'name',
-      })
-      await cmdBar.argumentInput.fill(projectName)
-      await cmdBar.progressCmdBar()
-      await scene.settled(cmdBar)
+      await homePage.createAndGoToProject(projectName)
       await toolbar.logoLink.click()
     })
 
-    await test.step(`Check the second project was created with a non-colliding name`, async () => {
+    await test.step('Check the second project was created with a non-colliding name', async () => {
       await homePage.expectState({
         projectCards: [
           {
-            title: projectName + '-2',
+            title: `${projectName}-2`,
             fileCount: 1,
           },
           {
-            title: projectName + '-1',
+            title: `${projectName}-1`,
             fileCount: 1,
           },
           {
