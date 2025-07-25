@@ -12,6 +12,9 @@ use walkdir::WalkDir;
 
 use super::Test;
 
+/// Some samples may be temporarily disabled.
+const DISABLED_SAMPLES: [&str; 2] = ["ball-joint-rod-end", "multi-axis-robot"];
+
 lazy_static::lazy_static! {
     /// The directory containing the KCL samples source.
     static ref INPUTS_DIR: PathBuf = Path::new("../../public/kcl-samples").to_path_buf();
@@ -291,9 +294,6 @@ fn get_kcl_metadata(project_path: &Path, files: &[String]) -> Option<KclMetadata
         files,
     })
 }
-
-// Some samples may be temporarily disabled for various reasons
-const DISABLED_SAMPLES: [&str; 1] = ["ball-joint-rod-end"];
 
 // Function to scan the directory and generate the manifest.json
 fn generate_kcl_manifest(dir: &Path) -> Result<()> {

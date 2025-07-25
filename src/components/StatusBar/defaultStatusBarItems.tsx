@@ -15,6 +15,10 @@ import { isDesktop } from '@src/lib/isDesktop'
 import { APP_DOWNLOAD_PATH } from '@src/lib/constants'
 import { desktopAppPitchMessage } from '@src/components/DownloadAppToast'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
+import {
+  EnvironmentChip,
+  EnvironmentDescription,
+} from '@src/components/environment/Environment'
 
 export const defaultGlobalStatusBarItems = ({
   location,
@@ -43,6 +47,10 @@ export const defaultGlobalStatusBarItems = ({
           children: desktopAppPitchMessage,
         },
       },
+  {
+    id: 'environment',
+    component: EnvironmentStatusBarItem,
+  },
   {
     id: 'telemetry',
     element: 'link',
@@ -98,6 +106,24 @@ function BillingStatusBarItem() {
         <BillingDialog billingActor={billingActor} />
       </Popover.Panel>
     </Popover>
+  )
+}
+
+function EnvironmentStatusBarItem() {
+  return isDesktop() ? (
+    <Popover className="relative flex items-stretch">
+      <Popover.Button
+        className="m-0 p-0 border-0 flex items-stretch"
+        data-testid="environment-subdomain-bar"
+      >
+        <EnvironmentChip />
+      </Popover.Button>
+      <Popover.Panel className="absolute left-0 bottom-full mb-1 w-64 flex flex-col gap-1 align-stretch rounded-lg shadow-lg text-sm">
+        <EnvironmentDescription />
+      </Popover.Panel>
+    </Popover>
+  ) : (
+    <></>
   )
 }
 

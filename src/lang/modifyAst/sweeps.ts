@@ -1,4 +1,5 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type { OpArg, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
 
 import {
   createCallExpressionStdLibKw,
@@ -21,11 +22,20 @@ import {
   valueOrVariable,
 } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
-import type { PathToNode, Program, VariableDeclaration } from '@src/lang/wasm'
+import type {
+  ArtifactGraph,
+  PathToNode,
+  Program,
+  VariableDeclaration,
+} from '@src/lang/wasm'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import type { Selections } from '@src/lib/selections'
 import { err } from '@src/lib/trap'
+import {
+  getArtifactOfTypes,
+  getSweepEdgeCodeRef,
+} from '@src/lang/std/artifactGraph'
 
 export function addExtrude({
   ast,
@@ -266,7 +276,6 @@ export function addRevolve({
   ast,
   sketches,
   angle,
-  axisOrEdge,
   axis,
   edge,
   symmetric,
@@ -276,7 +285,6 @@ export function addRevolve({
   ast: Node<Program>
   sketches: Selections
   angle: KclCommandValue
-  axisOrEdge: 'Axis' | 'Edge'
   axis?: string
   edge?: Selections
   symmetric?: boolean
@@ -299,12 +307,7 @@ export function addRevolve({
   }
 
   // Retrieve axis expression depending on mode
-  const getAxisResult = getAxisExpressionAndIndex(
-    axisOrEdge,
-    axis,
-    edge,
-    modifiedAst
-  )
+  const getAxisResult = getAxisExpressionAndIndex(axis, edge, modifiedAst)
   if (err(getAxisResult) || !getAxisResult.generatedAxis) {
     return new Error('Generated axis selection is missing.')
   }
@@ -369,16 +372,11 @@ export function addRevolve({
 // Utilities
 
 export function getAxisExpressionAndIndex(
-  axisOrEdge: 'Axis' | 'Edge',
   axis: string | undefined,
   edge: Selections | undefined,
   ast: Node<Program>
 ) {
-  let generatedAxis
-  let axisDeclaration: PathToNode | null = null
-  let axisIndexIfAxis: number | undefined = undefined
-
-  if (axisOrEdge === 'Edge' && edge) {
+  if (edge) {
     const pathToAxisSelection = getNodePathFromSourceRange(
       ast,
       edge.graphSelections[0]?.codeRef.range
@@ -386,32 +384,139 @@ export function getAxisExpressionAndIndex(
     const tagResult = mutateAstWithTagForSketchSegment(ast, pathToAxisSelection)
 
     // Have the tag whether it is already created or a new one is generated
-    if (err(tagResult)) return tagResult
+    if (err(tagResult)) {
+      return tagResult
+    }
+
     const { tag } = tagResult
     const axisSelection = edge?.graphSelections[0]?.artifact
-    if (!axisSelection) return new Error('Generated axis selection is missing.')
-    generatedAxis = getEdgeTagCall(tag, axisSelection)
+    if (!axisSelection) {
+      return new Error('Generated axis selection is missing.')
+    }
+
+    const generatedAxis = getEdgeTagCall(tag, axisSelection)
     if (
       axisSelection.type === 'segment' ||
       axisSelection.type === 'path' ||
       axisSelection.type === 'edgeCut'
     ) {
-      axisDeclaration = axisSelection.codeRef.pathToNode
-      if (!axisDeclaration)
+      const axisDeclaration = axisSelection.codeRef.pathToNode
+      if (!axisDeclaration) {
         return new Error('Expected to find axis declaration')
+      }
+
       const axisIndexInPathToNode =
         axisDeclaration.findIndex((a) => a[0] === 'body') + 1
       const value = axisDeclaration[axisIndexInPathToNode][0]
-      if (typeof value !== 'number')
+      if (typeof value !== 'number') {
         return new Error('expected axis index value to be a number')
-      axisIndexIfAxis = value
+      }
+
+      const axisIndexIfAxis = value
+      return { generatedAxis, axisIndexIfAxis }
+    } else {
+      return { generatedAxis }
     }
-  } else if (axisOrEdge === 'Axis' && axis) {
-    generatedAxis = createLocalName(axis)
   }
 
-  return {
-    generatedAxis,
-    axisIndexIfAxis,
+  if (axis) {
+    return { generatedAxis: createLocalName(axis) }
   }
+
+  return new Error('Axis or edge selection is missing.')
+}
+
+// Sort of an inverse from getAxisExpressionAndIndex
+export function retrieveAxisOrEdgeSelectionsFromOpArg(
+  opArg: OpArg,
+  artifactGraph: ArtifactGraph
+):
+  | Error
+  | {
+      axisOrEdge: 'Axis' | 'Edge'
+      axis?: string
+      edge?: Selections
+    } {
+  let axisOrEdge: 'Axis' | 'Edge' | undefined
+  let axis: string | undefined
+  let edge: Selections | undefined
+  const axisValue = opArg.value
+  const nonZero = (val: OpKclValue): number => {
+    if (val.type === 'Number') {
+      return val.value
+    } else {
+      return 0
+    }
+  }
+  if (axisValue.type === 'Object') {
+    // default axis casee
+    axisOrEdge = 'Axis'
+    const direction = axisValue.value['direction']
+    if (!direction || direction.type !== 'Array') {
+      return new Error('No direction vector for axis')
+    }
+    if (nonZero(direction.value[0])) {
+      axis = 'X'
+    } else if (nonZero(direction.value[1])) {
+      axis = 'Y'
+    } else if (nonZero(direction.value[2])) {
+      axis = 'Z'
+    } else {
+      return new Error('Bad direction vector for axis')
+    }
+  } else if (axisValue.type === 'TagIdentifier' && axisValue.artifact_id) {
+    // segment case
+    axisOrEdge = 'Edge'
+    const artifact = getArtifactOfTypes(
+      {
+        key: axisValue.artifact_id,
+        types: ['segment'],
+      },
+      artifactGraph
+    )
+    if (err(artifact)) {
+      return new Error("Couldn't find related edge artifact")
+    }
+
+    edge = {
+      graphSelections: [
+        {
+          artifact,
+          codeRef: artifact.codeRef,
+        },
+      ],
+      otherSelections: [],
+    }
+  } else if (axisValue.type === 'Uuid') {
+    // sweepEdge case
+    axisOrEdge = 'Edge'
+    const artifact = getArtifactOfTypes(
+      {
+        key: axisValue.value,
+        types: ['sweepEdge'],
+      },
+      artifactGraph
+    )
+    if (err(artifact)) {
+      return new Error("Couldn't find related edge artifact")
+    }
+
+    const codeRef = getSweepEdgeCodeRef(artifact, artifactGraph)
+    if (err(codeRef)) {
+      return new Error("Couldn't find related edge code ref")
+    }
+
+    edge = {
+      graphSelections: [
+        {
+          artifact,
+          codeRef,
+        },
+      ],
+      otherSelections: [],
+    }
+  } else {
+    return new Error('The type of the axis argument is unsupported')
+  }
+  return { axisOrEdge, axis, edge }
 }

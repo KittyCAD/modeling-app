@@ -5,7 +5,6 @@ import type {
   MeshBasicMaterial,
   Object3D,
   Object3DEventMap,
-  Texture,
 } from 'three'
 import {
   AmbientLight,
@@ -16,7 +15,6 @@ import {
   OrthographicCamera,
   Raycaster,
   Scene,
-  TextureLoader,
   Vector2,
   Vector3,
   WebGLRenderer,
@@ -53,7 +51,6 @@ type SendType = ReturnType<typeof useModelingContext>['send']
 
 export interface OnMouseEnterLeaveArgs {
   selected: Object3D<Object3DEventMap>
-  dragSelected?: Object3D<Object3DEventMap>
   mouseEvent: MouseEvent
   /** The intersection of the mouse with the THREEjs raycast plane */
   intersectionPoint?: {
@@ -105,7 +102,6 @@ export class SceneInfra {
   isFovAnimationInProgress = false
   _baseUnitMultiplier = 1
   _theme: Themes = Themes.System
-  readonly extraSegmentTexture: Texture
   lastMouseState: MouseState = { type: 'idle' }
   onDragStartCallback: (arg: OnDragCallbackArgs) => Voidish = () => {}
   onDragEndCallback: (arg: OnDragCallbackArgs) => Voidish = () => {}
@@ -323,13 +319,6 @@ export class SceneInfra {
     const light = new AmbientLight(0x505050) // soft white light
     this.scene.add(light)
 
-    const textureLoader = new TextureLoader()
-    this.extraSegmentTexture = textureLoader.load(
-      './clientSideSceneAssets/extra-segment-texture.png'
-    )
-    this.extraSegmentTexture.anisotropy =
-      this.renderer?.capabilities?.getMaxAnisotropy?.()
-
     SceneInfra.instance = this
   }
 
@@ -520,47 +509,46 @@ export class SceneInfra {
       })
     }
 
-    if (intersects[0]) {
-      const firstIntersectObject = intersects[0].object
-      const planeIntersectPoint = this.getPlaneIntersectPoint()
-      const intersectionPoint = {
-        twoD: planeIntersectPoint?.twoD,
-        threeD: planeIntersectPoint?.threeD,
-      }
+    if (!this.selected) {
+      if (intersects[0]) {
+        const firstIntersectObject = intersects[0].object
+        const planeIntersectPoint = this.getPlaneIntersectPoint()
+        const intersectionPoint = {
+          twoD: planeIntersectPoint?.twoD,
+          threeD: planeIntersectPoint?.threeD,
+        }
 
-      if (this.hoveredObject !== firstIntersectObject) {
-        const hoveredObj = this.hoveredObject
-        this.hoveredObject = null
-        if (hoveredObj) {
-          await this.onMouseLeave({
-            selected: hoveredObj,
+        if (this.hoveredObject !== firstIntersectObject) {
+          const hoveredObj = this.hoveredObject
+          this.hoveredObject = null
+          if (hoveredObj) {
+            await this.onMouseLeave({
+              selected: hoveredObj,
+              mouseEvent: mouseEvent,
+              intersectionPoint,
+            })
+          }
+          this.hoveredObject = firstIntersectObject
+          await this.onMouseEnter({
+            selected: this.hoveredObject,
             mouseEvent: mouseEvent,
             intersectionPoint,
           })
-        }
-        this.hoveredObject = firstIntersectObject
-        await this.onMouseEnter({
-          selected: this.hoveredObject,
-          dragSelected: this.selected?.object,
-          mouseEvent: mouseEvent,
-          intersectionPoint,
-        })
-        if (!this.selected)
           this.updateMouseState({
             type: 'isHovering',
             on: this.hoveredObject,
           })
-      }
-    } else {
-      if (this.hoveredObject) {
-        const hoveredObj = this.hoveredObject
-        this.hoveredObject = null
-        await this.onMouseLeave({
-          selected: hoveredObj,
-          dragSelected: this.selected?.object,
-          mouseEvent: mouseEvent,
-        })
-        if (!this.selected) this.updateMouseState({ type: 'idle' })
+        }
+      } else {
+        if (this.hoveredObject) {
+          const hoveredObj = this.hoveredObject
+          this.hoveredObject = null
+          await this.onMouseLeave({
+            selected: hoveredObj,
+            mouseEvent: mouseEvent,
+          })
+          if (!this.selected) this.updateMouseState({ type: 'idle' })
+        }
       }
     }
 

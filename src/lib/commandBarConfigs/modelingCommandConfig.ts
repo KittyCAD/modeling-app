@@ -161,7 +161,7 @@ export type ModelingCommandSchema = {
     angleStart: KclCommandValue
     radius?: KclCommandValue // axis or edge modes only
     length?: KclCommandValue // axis or edge modes only
-    ccw: boolean // optional boolean argument, default value to false
+    ccw?: boolean // optional boolean argument, default value to false
   }
   'event.parameter.create': {
     value: KclCommandValue
@@ -740,8 +740,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           !['Edge'].includes(context.argumentsToSubmit.mode as string),
       },
       cylinder: {
+        ...objectsTypesAndFilters,
         inputType: 'selection',
-        selectionTypes: ['wall'],
         multiple: false,
         required: (context) =>
           ['Cylinder'].includes(context.argumentsToSubmit.mode as string),
@@ -1051,55 +1051,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       color: {
-        // TODO: change this to a color picker
-        inputType: 'options',
+        inputType: 'color',
         required: true,
-        options: [
-          {
-            name: 'Red',
-            value: '#FF0000',
-          },
-          {
-            name: 'Green',
-            value: '#00FF00',
-          },
-          {
-            name: 'Blue',
-            value: '#0000FF',
-          },
-          {
-            name: 'Turquoise',
-            value: '#00FFFF',
-          },
-          {
-            name: 'Purple',
-            value: '#FF00FF',
-          },
-          {
-            name: 'Yellow',
-            value: '#FFFF00',
-          },
-          {
-            name: 'Black',
-            value: '#000000',
-          },
-          {
-            name: 'Dark Grey',
-            value: '#080808',
-          },
-          {
-            name: 'Light Grey',
-            value: '#D3D3D3',
-          },
-          {
-            name: 'White',
-            value: '#FFFFFF',
-          },
-          {
-            name: 'Default (clear appearance)',
-            value: COMMAND_APPEARANCE_COLOR_DEFAULT,
-          },
-        ],
       },
       metalness: {
         inputType: 'kcl',
