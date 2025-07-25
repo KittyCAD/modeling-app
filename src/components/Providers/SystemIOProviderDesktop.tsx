@@ -36,7 +36,6 @@ import {
 } from '@src/machines/systemIO/utils'
 import { useNavigate } from 'react-router-dom'
 import { useEffect } from 'react'
-import { submitAndAwaitTextToKclSystemIO } from '@src/lib/textToCad'
 import { reportRejection } from '@src/lib/trap'
 import { getUniqueProjectName } from '@src/lib/desktopFS'
 import { useLspContext } from '@src/components/LspProvider'
@@ -238,34 +237,6 @@ export function SystemIOMachineLogicListenerDesktop() {
         ? [settings.app.projectDirectory.current]
         : []
     )
-
-    // TODO: Move this generateTextToCAD to another machine in the future and make a whole machine out of it.
-    useEffect(() => {
-      const requestedPromptTrimmed =
-        requestedTextToCadGeneration.requestedPrompt.trim()
-      const requestedProjectName =
-        requestedTextToCadGeneration.requestedProjectName
-      const isProjectNew = requestedTextToCadGeneration.isProjectNew
-      if (!requestedPromptTrimmed || !requestedProjectName) return
-      const uniqueNameIfNeeded = isProjectNew
-        ? getUniqueProjectName(requestedProjectName, folders)
-        : requestedProjectName
-      submitAndAwaitTextToKclSystemIO({
-        trimmedPrompt: requestedPromptTrimmed,
-        projectName: uniqueNameIfNeeded,
-        navigate,
-        token,
-        isProjectNew,
-        settings: { highlightEdges: settings.modeling.highlightEdges.current },
-      })
-        .then(() => {
-          billingActor.send({
-            type: BillingTransition.Update,
-            apiToken: token,
-          })
-        })
-        .catch(reportRejection)
-    }, [requestedTextToCadGeneration])
   }
 
   useEffect(() => {
@@ -281,6 +252,10 @@ export function SystemIOMachineLogicListenerDesktop() {
       ) {
         return
       }
+
+      let hadUpdate =
+        next.context.promptsInProgressToCompleted.promptsBelongingToProject
+          .length > 0
 
       next.context.promptsInProgressToCompleted.promptsBelongingToProject.forEach(
         (promptId: Prompt['id']) => {
@@ -331,6 +306,13 @@ export function SystemIOMachineLogicListenerDesktop() {
           }
         }
       )
+
+      if (hadUpdate) {
+        billingActor.send({
+          type: BillingTransition.Update,
+          apiToken: token,
+        })
+      }
     })
     return () => {
       subscription.unsubscribe()
