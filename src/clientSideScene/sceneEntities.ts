@@ -3330,7 +3330,7 @@ export class SceneEntities {
 
   mouseEnterLeaveCallbacks() {
     return {
-      onMouseEnter: ({ selected, dragSelected }: OnMouseEnterLeaveArgs) => {
+      onMouseEnter: ({ selected }: OnMouseEnterLeaveArgs) => {
         if ([X_AXIS, Y_AXIS].includes(selected?.userData?.type)) {
           const obj = selected as Mesh
           const mat = obj.material as MeshBasicMaterial
@@ -3358,7 +3358,8 @@ export class SceneEntities {
           ])
           colorSegment(selected, SEGMENT_YELLOW)
           const isSelected = parent?.userData?.isSelected
-          updateExtraSegments(parent, 'hoveringLine', true)
+          const hoveringArrow = selected?.parent?.name === ARROWHEAD
+          updateExtraSegments(parent, 'hoveringLine', !hoveringArrow) // no hover effect for arrowheads, they don't color the segment
           updateExtraSegments(parent, 'selected', isSelected)
           const orthoFactor = orthoScale(this.sceneInfra.camControls.camera)
 
