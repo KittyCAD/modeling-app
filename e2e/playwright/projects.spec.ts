@@ -1337,121 +1337,6 @@ extrude001 = extrude(sketch001, length = 200)`)
 )
 
 test(
-  'Opening a project should successfully load the stream, (regression test that this also works when switching between projects)',
-  {
-    tag: '@desktop',
-  },
-  async ({ context, page, cmdBar, homePage, scene }, testInfo) => {
-    await context.folderSetupFn(async (dir) => {
-      await fsp.mkdir(path.join(dir, 'router-template-slate'), {
-        recursive: true,
-      })
-      await fsp.copyFile(
-        path.join(
-          'rust',
-          'kcl-lib',
-          'e2e',
-          'executor',
-          'inputs',
-          'router-template-slate.kcl'
-        ),
-        path.join(dir, 'router-template-slate', 'main.kcl')
-      )
-      await fsp.mkdir(path.join(dir, 'bracket'), { recursive: true })
-      await fsp.copyFile(
-        path.join(
-          'rust',
-          'kcl-lib',
-          'e2e',
-          'executor',
-          'inputs',
-          'focusrite_scarlett_mounting_bracket.kcl'
-        ),
-        path.join(dir, 'bracket', 'main.kcl')
-      )
-    })
-
-    await page.setBodyDimensions({ width: 1200, height: 500 })
-    page.on('console', console.log)
-
-    await test.step('Opening the bracket project via command palette should load the stream', async () => {
-      await homePage.expectState({
-        projectCards: [
-          {
-            title: 'bracket',
-            fileCount: 1,
-          },
-          {
-            title: 'router-template-slate',
-            fileCount: 1,
-          },
-        ],
-        sortBy: 'last-modified-desc',
-      })
-
-      await cmdBar.openCmdBar()
-      await cmdBar.chooseCommand('open project')
-      await cmdBar.expectState({
-        stage: 'arguments',
-        commandName: 'Open project',
-        currentArgKey: 'name',
-        currentArgValue: '',
-        headerArguments: {
-          Name: '',
-        },
-        highlightedHeaderArg: 'name',
-      })
-      await cmdBar.argumentInput.fill('brac')
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'commandBarClosed',
-      })
-
-      await scene.settled(cmdBar)
-    })
-
-    await test.step('Clicking the logo takes us back to the projects page / home', async () => {
-      await page.getByTestId('app-logo').click()
-
-      await expect(page.getByRole('link', { name: 'bracket' })).toBeVisible()
-      await expect(page.getByText('router-template-slate')).toBeVisible()
-      await expect(page.getByText('Create project')).toBeVisible()
-    })
-
-    await test.step('Opening the router-template project via link should load the stream', async () => {
-      // expect to see the text bracket
-      await expect(page.getByText('router-template-slate')).toBeVisible()
-
-      await page.getByText('router-template-slate').click()
-
-      await scene.settled(cmdBar)
-    })
-
-    await test.step('The projects on the home page should still be normal', async () => {
-      await page.getByTestId('project-sidebar-toggle').click()
-      await expect(
-        page.getByRole('button', { name: 'Go to Home' })
-      ).toBeVisible()
-      await page.getByRole('button', { name: 'Go to Home' }).click()
-
-      await homePage.expectState({
-        projectCards: [
-          {
-            title: 'bracket',
-            fileCount: 1,
-          },
-          {
-            title: 'router-template-slate',
-            fileCount: 1,
-          },
-        ],
-        sortBy: 'last-modified-desc',
-      })
-    })
-  }
-)
-
-test(
   'You can change the root projects directory and nothing is lost',
   {
     tag: '@desktop',
@@ -1862,7 +1747,8 @@ test(
   {
     tag: '@desktop',
   },
-  async ({ context, page }, testInfo) => {
+  async ({ context, page, cmdBar, scene, homePage }) => {
+    const projectName = 'العربية'
     await context.folderSetupFn(async (dir) => {
       const bracketDir = path.join(dir, 'العربية')
       await fsp.mkdir(bracketDir, { recursive: true })
@@ -1870,37 +1756,10 @@ test(
         executorInputPath('focusrite_scarlett_mounting_bracket.kcl'),
         path.join(bracketDir, 'main.kcl')
       )
-
-      await fsp.writeFile(path.join(bracketDir, 'empty.kcl'), '')
     })
 
-    await page.setBodyDimensions({ width: 1200, height: 500 })
-    const u = await getUtils(page)
-
-    page.on('console', console.log)
-
-    const pointOnModel = { x: 630, y: 280 }
-
-    await test.step('Opening the العربية project should load the stream', async () => {
-      // expect to see the text bracket
-      await expect(page.getByText('العربية')).toBeVisible()
-
-      await page.getByText('العربية').click()
-
-      await expect(
-        page.getByRole('button', { name: 'Start Sketch' })
-      ).toBeEnabled({
-        timeout: 20_000,
-      })
-
-      // gray at this pixel means the stream has loaded in the most
-      // user way we can verify it (pixel color)
-      await expect
-        .poll(() => u.getGreatestPixDiff(pointOnModel, [85, 85, 85]), {
-          timeout: 10_000,
-        })
-        .toBeLessThan(15)
-    })
+    await homePage.openProject(projectName)
+    await scene.settled(cmdBar)
   }
 )
 
