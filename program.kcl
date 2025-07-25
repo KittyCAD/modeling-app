@@ -1,0 +1,9 @@
+triangle = startSketchOn(XY)
+  |> polygon(radius = 3, numSides = 3, center = [0, 0])
+  |> extrude(length = 2)
+
+// Find the plane of the triangle's top face.
+topPlane = planeOf(triangle, face = END)
+
+// Create a new plane, 10 units above the triangle's top face.
+startSketchOn(offsetPlane(topPlane, offset = 10))
