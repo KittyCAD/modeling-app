@@ -833,29 +833,35 @@ async fn inner_start_sketch_on(
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<SketchSurface, KclError> {
-    let face = match (face, normal_to_face, &align_axis) {
-        (Some(_), Some(_), _) => {
+    let face = match (face, normal_to_face, &align_axis, &normal_offset) {
+        (Some(_), Some(_), _, _) => {
             return Err(KclError::new_semantic(KclErrorDetails::new(
                 "You cannot give both `face` and `normalToFace` params, you have to choose one or the other."
                     .to_owned(),
                 vec![args.source_range],
             )));
         }
-        (Some(face), None, None) => Some(face),
-        (_, Some(_), None) => {
+        (Some(face), None, None, None) => Some(face),
+        (_, Some(_), None, _) => {
             return Err(KclError::new_semantic(KclErrorDetails::new(
                 "`alignAxis` is required if `normalToFace` is specified.".to_owned(),
                 vec![args.source_range],
             )));
         }
-        (_, None, Some(_)) => {
+        (_, None, Some(_), _) => {
             return Err(KclError::new_semantic(KclErrorDetails::new(
                 "`normalToFace` is required if `alignAxis` is specified.".to_owned(),
                 vec![args.source_range],
             )));
         }
-        (_, Some(face), Some(_)) => Some(face),
-        (None, None, None) => None,
+        (_, None, _, Some(_)) => {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "`normalToFace` is required if `normalOffset` is specified.".to_owned(),
+                vec![args.source_range],
+            )));
+        }
+        (_, Some(face), Some(_), _) => Some(face),
+        (None, None, None, None) => None,
     };
 
     match plane_or_solid {

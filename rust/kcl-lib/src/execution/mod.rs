@@ -2200,6 +2200,14 @@ notPipeSub = 1 |> identity(!%))";
             parse_execute(&code).await.unwrap_err().message(),
             "`normalToFace` is required if `alignAxis` is specified.".to_owned(),
         );
+
+        path = current_dir.join("tests/inputs/startSketchOn_4.kcl");
+        code = std::fs::read_to_string(&path).unwrap();
+
+        assert_eq!(
+            parse_execute(&code).await.unwrap_err().message(),
+            "`normalToFace` is required if `normalOffset` is specified.".to_owned(),
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]
