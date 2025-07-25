@@ -185,54 +185,90 @@ export class SceneFixture {
   makeDragHelpers = (
     x: number,
     y: number,
-    { steps, format }: { steps: number; format?: 'pixels' | 'ratio' } = {
+    {
+      steps,
+      format,
+      debug,
+    }: Partial<{
+      steps: number
+      format: 'pixels' | 'ratio'
+      debug: boolean
+    }> = {
       steps: 20,
       format: 'pixels',
     }
   ): [DragToHandler, DragFromHandler] =>
     [
       async (dragToParams: MouseDragToParams) => {
-        const resolvedPoint = await this.convertPagePositionToStream(
+        const resolvedToPoint = await this.convertPagePositionToStream(
           x,
           y,
           format
         )
+        const resolvedFromPoint = await this.convertPagePositionToStream(
+          dragToParams.fromPoint.x,
+          dragToParams.fromPoint.y,
+          format
+        )
+        if (debug) {
+          console.log({
+            x,
+            y,
+            dragToParams,
+            resolvedToPoint,
+            resolvedFromPoint,
+          })
+        }
         if (dragToParams?.pixelDiff) {
           return doAndWaitForImageDiff(
             this.page,
             () =>
               this.page.dragAndDrop('#stream', '#stream', {
-                sourcePosition: dragToParams.fromPoint,
-                targetPosition: { x: resolvedPoint.x, y: resolvedPoint.y },
+                sourcePosition: resolvedFromPoint,
+                targetPosition: resolvedToPoint,
               }),
             dragToParams.pixelDiff
           )
         }
         return this.page.dragAndDrop('#stream', '#stream', {
-          sourcePosition: dragToParams.fromPoint,
-          targetPosition: { x: resolvedPoint.x, y: resolvedPoint.y },
+          sourcePosition: resolvedFromPoint,
+          targetPosition: resolvedToPoint,
         })
       },
       async (dragFromParams: MouseDragFromParams) => {
-        const resolvedPoint = await this.convertPagePositionToStream(
+        const resolvedFromPoint = await this.convertPagePositionToStream(
           x,
           y,
           format
         )
+        const resolvedToPoint = await this.convertPagePositionToStream(
+          dragFromParams.toPoint.x,
+          dragFromParams.toPoint.y,
+          format
+        )
+        if (debug) {
+          console.log({
+            x,
+            y,
+            dragFromParams,
+            resolvedToPoint,
+            resolvedFromPoint,
+          })
+        }
         if (dragFromParams?.pixelDiff) {
           return doAndWaitForImageDiff(
             this.page,
             () =>
               this.page.dragAndDrop('#stream', '#stream', {
-                sourcePosition: { x: resolvedPoint.x, y: resolvedPoint.y },
-                targetPosition: dragFromParams.toPoint,
+                sourcePosition: resolvedFromPoint,
+                targetPosition: resolvedToPoint,
               }),
             dragFromParams.pixelDiff
           )
         }
         return this.page.dragAndDrop('#stream', '#stream', {
-          sourcePosition: { x: resolvedPoint.x, y: resolvedPoint.y },
-          targetPosition: dragFromParams.toPoint,
+          sourcePosition: resolvedFromPoint,
+          targetPosition: resolvedToPoint,
         })
       },
     ] as const
