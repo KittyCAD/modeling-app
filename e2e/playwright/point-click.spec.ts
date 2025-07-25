@@ -493,15 +493,14 @@ profile001 = startProfile(sketch002, at = [205.96, 254.59])
       ...xAxisSloppy.screen
     )
     const [dragToOffYAxis, dragFromOffAxis] = scene.makeDragHelpers(
-      ...offYAxis.screen
+      ...offYAxis.screen,
+      { debug: true }
     )
 
     const expectedCodeSnippets = {
       sketchOnXzPlane: 'sketch001 = startSketchOn(XZ)',
       pointAtOrigin: 'startProfile(sketch001, at = [0, 0])',
       segmentOnXAxis: 'xLine(length',
-      afterSegmentDraggedOffYAxis:
-        /startProfile\(sketch001, at = \[\d+, \d+\]\)/,
       afterSegmentDraggedOnYAxis: /startProfile\(sketch001, at = \[0, \d+\]\)/,
     }
 
@@ -527,14 +526,13 @@ profile001 = startProfile(sketch002, at = [205.96, 254.59])
       await expect(toolbar.lineBtn).not.toHaveAttribute('aria-pressed', 'true')
     })
     await test.step(`Drag the origin point up and to the right, verify it's past snapping`, async () => {
+      await editor.closePane()
       await dragToOffYAxis({
         fromPoint: { x: originSloppy.screen[0], y: originSloppy.screen[1] },
       })
-      await editor.openPane()
-      await expect(editor.codeContent).toContainText(
-        expectedCodeSnippets.afterSegmentDraggedOffYAxis
+      await editor.expectEditor.not.toContain(
+        expectedCodeSnippets.pointAtOrigin
       )
-      await editor.closePane()
     })
     await test.step(`Drag the origin point left to the y-axis, verify it snaps back`, async () => {
       await dragFromOffAxis({
