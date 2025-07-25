@@ -18,11 +18,13 @@ import { appActor, systemIOActor, commandBarActor } from '@src/lib/singletons'
 import reportWebVitals from '@src/reportWebVitals'
 import { createApplicationCommands } from '@src/lib/commandBarConfigs/applicationCommandConfig'
 
-initializeCustomCookies([{
-  name: 'preview-pr-2751',
-  value: 'always',
-  domain: 'localhost',
-}])
+initializeCustomCookies([
+  {
+    name: 'preview-pr-2751',
+    value: 'always',
+    domain: 'localhost',
+  },
+])
 
 markOnce('code/willAuth')
 initializeWindowExceptionHandler()

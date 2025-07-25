@@ -1,10 +1,10 @@
 import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 
 export interface ICookie {
-  name: string,
-  value: string,
-  domain: string,
-  secure?: true,
+  name: string
+  value: string
+  domain: string
+  secure?: true
 }
 export interface Cookie extends ICookie {}
 export class Cookie {
@@ -16,7 +16,7 @@ export class Cookie {
   }
 
   toString(): string {
-    return `${this.name}=${this.value}; domain=${this.domain} ${this.secure ? ' ; Secure' : ''}`;
+    return `${this.name}=${this.value}; domain=${this.domain} ${this.secure ? ' ; Secure' : ''}`
   }
 }
 
@@ -29,7 +29,9 @@ export const initializeCustomCookies = (cookies: ICookie[]) => {
   // Each document.cookie assignment has the side-effect of the browser engine
   // entering a cookie row, so it's a bit unorthodox.
   cookies.forEach((cookie: ICookie) => {
-    const cookieStr = (!(cookie instanceof Cookie) ? new Cookie(cookie) : cookie).toString()
+    const cookieStr = (
+      !(cookie instanceof Cookie) ? new Cookie(cookie) : cookie
+    ).toString()
     document.cookie = cookieStr
   })
 
