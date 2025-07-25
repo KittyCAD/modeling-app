@@ -88,7 +88,7 @@
     "start": "vite --port=3000 --host=0.0.0.0",
     "start:prod": "vite preview --port=3000",
     "serve": "vite serve --port=3000",
-    "build": "npm run install:rust && . $HOME/.cargo/env && rustup default stable && npm run install:wasm-pack:cargo && npm run build:wasm && vite build",
+    "build": "npm run install:rust && . $HOME/.cargo/env && npm run install:wasm-pack:sh && npm run build:wasm && vite build",
     "build:wasm": "./scripts/build-wasm.sh",
     "build:wasm:windows": "powershell -ExecutionPolicy Bypass -File ./scripts/build-wasm.ps1",
     "build:wasm-dev": "npm run build:wasm:dev",
