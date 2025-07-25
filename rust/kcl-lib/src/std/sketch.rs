@@ -898,20 +898,37 @@ async fn inner_start_sketch_on(
             if let Some(align_axis) = align_axis {
                 let plane_of = inner_plane_of(*solid, tag, exec_state, args).await?;
 
-                let (x_axis, y_axis) = match align_axis {
+                let offset = normal_offset.map_or(0.0, |x| x.n);
+                let (x_axis, y_axis, normal_offset) = match align_axis {
                     Axis2dOrEdgeReference::Axis { direction, origin: _ } => {
                         if (direction[0].n - 1.0).abs() < f64::EPSILON {
                             //X axis chosen
-                            (plane_of.info.x_axis, plane_of.info.z_axis)
+                            (
+                                plane_of.info.x_axis,
+                                plane_of.info.z_axis,
+                                plane_of.info.y_axis * offset,
+                            )
                         } else if (direction[0].n + 1.0).abs() < f64::EPSILON {
                             // -X axis chosen
-                            (plane_of.info.x_axis.negated(), plane_of.info.z_axis)
+                            (
+                                plane_of.info.x_axis.negated(),
+                                plane_of.info.z_axis,
+                                plane_of.info.y_axis * offset,
+                            )
                         } else if (direction[1].n - 1.0).abs() < f64::EPSILON {
                             // Y axis chosen
-                            (plane_of.info.y_axis, plane_of.info.z_axis)
+                            (
+                                plane_of.info.y_axis,
+                                plane_of.info.z_axis,
+                                plane_of.info.x_axis * offset,
+                            )
                         } else if (direction[1].n + 1.0).abs() < f64::EPSILON {
                             // -Y axis chosen
-                            (plane_of.info.y_axis.negated(), plane_of.info.z_axis)
+                            (
+                                plane_of.info.y_axis.negated(),
+                                plane_of.info.z_axis,
+                                plane_of.info.x_axis * offset,
+                            )
                         } else {
                             return Err(KclError::new_semantic(KclErrorDetails::new(
                                 "Unsupported axis detected. This function only supports using X, -X, Y and -Y."
@@ -929,9 +946,8 @@ async fn inner_start_sketch_on(
                     }
                 };
                 let origin = Point3d::new(0.0, 0.0, 0.0, plane_of.info.origin.units);
-                let normal_offset = normal_offset.map_or(0.0, |x| x.n);
                 let plane_data = PlaneData::Plane(PlaneInfo {
-                    origin: plane_of.project(origin) + plane_of.info.y_axis * normal_offset,
+                    origin: plane_of.project(origin) + normal_offset,
                     x_axis,
                     y_axis,
                     z_axis: x_axis.axes_cross_product(&y_axis),
