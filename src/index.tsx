@@ -23,11 +23,13 @@ import { reportRejection } from '@src/lib/trap'
 import reportWebVitals from '@src/reportWebVitals'
 import monkeyPatchForBrowserTranslation from '@src/lib/monkeyPatchBrowserTranslate'
 
-initializeCustomCookies([{
-  name: 'preview-pr-2751',
-  value: 'always',
-  domain: 'localhost',
-}])
+initializeCustomCookies([
+  {
+    name: 'preview-pr-2751',
+    value: 'always',
+    domain: 'localhost',
+  },
+])
 
 markOnce('code/willAuth')
 initializeWindowExceptionHandler(kclManager, rustContext)
