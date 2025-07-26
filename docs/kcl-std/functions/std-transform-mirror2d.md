@@ -33,7 +33,7 @@ Mirror occurs around a local sketch axis rather than a global axis.
 ```kcl
 // Mirror an un-closed sketch across the Y axis.
 sketch001 = startSketchOn(XZ)
-  |> startProfile(at = [0, 10])
+profile001 = startProfile(sketch001, at = [0, 10])
   |> line(end = [15, 0])
   |> line(end = [-7, -3])
   |> line(end = [9, -1])
@@ -44,7 +44,7 @@ sketch001 = startSketchOn(XZ)
   |> line(end = [-19, -0])
   |> mirror2d(axis = Y)
 
-example = extrude(sketch001, length = 10)
+example = extrude(profile001, length = 10)
 
 ```
 
@@ -53,12 +53,12 @@ example = extrude(sketch001, length = 10)
 ```kcl
 // Mirror a un-closed sketch across the Y axis.
 sketch001 = startSketchOn(XZ)
-  |> startProfile(at = [0, 8.5])
+profile001 = startProfile(sketch001, at = [0, 8.5])
   |> line(end = [20, -8.5])
   |> line(end = [-20, -8.5])
   |> mirror2d(axis = Y)
 
-example = extrude(sketch001, length = 10)
+example = extrude(profile001, length = 10)
 
 ```
 
@@ -71,12 +71,12 @@ helper001 = startSketchOn(XZ)
   |> line(end = [0, 10], tag = $edge001)
 
 sketch001 = startSketchOn(XZ)
-  |> startProfile(at = [0, 8.5])
+profile001 = startProfile(sketch001, at = [0, 8.5])
   |> line(end = [20, -8.5])
   |> line(end = [-20, -8.5])
   |> mirror2d(axis = edge001)
 
-// example = extrude(sketch001, length = 10)
+// example = extrude(profile001, length = 10)
 
 ```
 
@@ -85,7 +85,7 @@ sketch001 = startSketchOn(XZ)
 ```kcl
 // Mirror an un-closed sketch across a custom axis.
 sketch001 = startSketchOn(XZ)
-  |> startProfile(at = [0, 8.5])
+profile001 = startProfile(sketch001, at = [0, 8.5])
   |> line(end = [20, -8.5])
   |> line(end = [-20, -8.5])
   |> mirror2d(axis = {
@@ -93,7 +93,7 @@ sketch001 = startSketchOn(XZ)
        origin = [0.0, 0.0]
      })
 
-example = extrude(sketch001, length = 10)
+example = extrude(profile001, length = 10)
 
 ```
 
@@ -101,8 +101,8 @@ example = extrude(sketch001, length = 10)
 
 ```kcl
 // Sketch on the face of a mirrored sketch, that has been extruded.
-sketch0011 = startSketchOn(XY)
-  |> startProfile(at = [6.77, 0])
+sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [6.77, 0])
   |> yLine(length = 1.27)
   |> tangentialArc(endAbsolute = [5.96, 2.37])
   |> tangentialArc(endAbsolute = [-6.2, 2.44])
@@ -111,11 +111,11 @@ sketch0011 = startSketchOn(XY)
   |> mirror2d(axis = X)
   |> extrude(length = 10)
 
-sketch002 = startSketchOn(sketch0011, face = END)
-  |> circle(center = [-0.01, 1.58], radius = 1.2)
+sketch002 = startSketchOn(profile001, face = END)
+profile002 = circle(sketch002, center = [-0.01, 1.58], radius = 1.2)
   |> extrude(length = 1.2)
 
-shell([sketch002], faces = [END], thickness = .1)
+shell([profile002], faces = [END], thickness = .1)
 
 ```
 

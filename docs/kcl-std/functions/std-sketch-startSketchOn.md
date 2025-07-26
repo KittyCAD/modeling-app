@@ -47,31 +47,31 @@ face, since it will include all the parent faces and Solids.
 
 ```kcl
 exampleSketch = startSketchOn(XY)
-  |> startProfile(at = [0, 0])
+exampleProfile = startProfile(exampleSketch, at = [0, 0])
   |> line(end = [10, 0])
   |> line(end = [0, 10])
   |> line(end = [-10, 0])
   |> close()
 
-example = extrude(exampleSketch, length = 5)
+example = extrude(exampleProfile, length = 5)
 
 exampleSketch002 = startSketchOn(example, face = END)
-  |> startProfile(at = [1, 1])
+exampleProfile002 = startProfile(exampleSketch002, at = [1, 1])
   |> line(end = [8, 0])
   |> line(end = [0, 8])
   |> line(end = [-8, 0])
   |> close()
 
-example002 = extrude(exampleSketch002, length = 5)
+example002 = extrude(exampleProfile002, length = 5)
 
 exampleSketch003 = startSketchOn(example002, face = END)
-  |> startProfile(at = [2, 2])
+exampleProfile003 = startProfile(exampleSketch003, at = [2, 2])
   |> line(end = [6, 0])
   |> line(end = [0, 6])
   |> line(end = [-6, 0])
   |> close()
 
-example003 = extrude(exampleSketch003, length = 5)
+example003 = extrude(exampleProfile003, length = 5)
 
 ```
 
@@ -82,31 +82,31 @@ example003 = extrude(exampleSketch003, length = 5)
 
 
 exampleSketch = startSketchOn(XY)
-  |> startProfile(at = [0, 0])
+exampleProfile = startProfile(exampleSketch, at = [0, 0])
   |> line(end = [10, 0])
   |> line(end = [0, 10])
   |> line(end = [-10, 0])
   |> close()
 
-example = extrude(exampleSketch, length = 5, tagEnd = $end01)
+example = extrude(exampleProfile, length = 5, tagEnd = $end01)
 
 exampleSketch002 = startSketchOn(example, face = end01)
-  |> startProfile(at = [1, 1])
+exampleProfile002 = startProfile(exampleSketch002, at = [1, 1])
   |> line(end = [8, 0])
   |> line(end = [0, 8])
   |> line(end = [-8, 0])
   |> close()
 
-example002 = extrude(exampleSketch002, length = 5, tagEnd = $end02)
+example002 = extrude(exampleProfile002, length = 5, tagEnd = $end02)
 
 exampleSketch003 = startSketchOn(example002, face = end02)
-  |> startProfile(at = [2, 2])
+exampleProfile003 = startProfile(exampleSketch003, at = [2, 2])
   |> line(end = [6, 0])
   |> line(end = [0, 6])
   |> line(end = [-6, 0])
   |> close()
 
-example003 = extrude(exampleSketch003, length = 5)
+example003 = extrude(exampleProfile003, length = 5)
 
 ```
 
@@ -114,31 +114,31 @@ example003 = extrude(exampleSketch003, length = 5)
 
 ```kcl
 exampleSketch = startSketchOn(XY)
-  |> startProfile(at = [0, 0])
+exampleProfile = startProfile(exampleSketch, at = [0, 0])
   |> line(end = [10, 0])
   |> line(end = [0, 10], tag = $sketchingFace)
   |> line(end = [-10, 0])
   |> close()
 
-example = extrude(exampleSketch, length = 10)
+example = extrude(exampleProfile, length = 10)
 
 exampleSketch002 = startSketchOn(example, face = sketchingFace)
-  |> startProfile(at = [1, 1])
+exampleProfile002 = startProfile(exampleSketch002, at = [1, 1])
   |> line(end = [8, 0])
   |> line(end = [0, 8])
   |> line(end = [-8, 0])
   |> close(tag = $sketchingFace002)
 
-example002 = extrude(exampleSketch002, length = 10)
+example002 = extrude(exampleProfile002, length = 10)
 
 exampleSketch003 = startSketchOn(example002, face = sketchingFace002)
-  |> startProfile(at = [-8, 12])
+exampleProfile003 = startProfile(exampleSketch003, at = [-8, 12])
   |> line(end = [0, 6])
   |> line(end = [6, 0])
   |> line(end = [0, -6])
   |> close()
 
-example003 = extrude(exampleSketch003, length = 5)
+example003 = extrude(exampleProfile003, length = 5)
 
 ```
 
