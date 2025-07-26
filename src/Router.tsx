@@ -12,7 +12,7 @@ import { App } from '@src/App'
 import { Auth } from '@src/Auth'
 import { CommandBar } from '@src/components/CommandBar/CommandBar'
 import { ErrorPage } from '@src/components/ErrorPage'
-import FileMachineProvider from '@src/components/FileMachineProvider'
+import ModelingPageProvider from '@src/components/ModelingPageProvider'
 import ModelingMachineProvider from '@src/components/ModelingMachineProvider'
 import { NetworkContext } from '@src/hooks/useNetworkContext'
 import { useNetworkStatus } from '@src/hooks/useNetworkStatus'
@@ -76,14 +76,14 @@ const router = createRouter([
         errorElement: <ErrorPage />,
         element: (
           <Auth>
-            <FileMachineProvider>
+            <ModelingPageProvider>
               <ModelingMachineProvider>
                 <CoreDump />
                 <Outlet />
                 <App />
                 <CommandBar />
               </ModelingMachineProvider>
-            </FileMachineProvider>
+            </ModelingPageProvider>
           </Auth>
         ),
         children: [

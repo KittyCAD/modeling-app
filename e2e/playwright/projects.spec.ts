@@ -246,7 +246,7 @@ test(
 test(
   'open a file in a project works and renders, open empty file, it should clear the scene',
   { tag: '@desktop' },
-  async ({ context, page }, testInfo) => {
+  async ({ context, page, scene, toolbar }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
       const bracketDir = path.join(dir, 'bracket')
       await fsp.mkdir(bracketDir, { recursive: true })
@@ -289,11 +289,8 @@ test(
       // open the file pane.
       await page.getByTestId('files-pane-button').click()
 
-      // OPen the other file.
-      const file = page.getByRole('button', { name: 'empty.kcl' })
-      await expect(file).toBeVisible()
-
-      await file.click()
+      // Open the other file.
+      await toolbar.openFile('empty.kcl')
 
       // planes colors means the scene has been cleared.
       await expect
@@ -312,7 +309,7 @@ test(
 test(
   'open a file in a project works and renders, open another file in the same project with errors, it should clear the scene',
   { tag: '@desktop' },
-  async ({ scene, cmdBar, context, page }, testInfo) => {
+  async ({ scene, cmdBar, context, page, toolbar }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
       const bracketDir = path.join(dir, 'bracket')
       await fsp.mkdir(bracketDir, { recursive: true })
@@ -358,10 +355,7 @@ test(
       await page.getByTestId('files-pane-button').click()
 
       // Open the other file.
-      const file = page.getByRole('button', { name: 'broken-code-test.kcl' })
-      await expect(file).toBeVisible()
-
-      await file.click()
+      await toolbar.openFile('broken-code-test.kcl')
 
       // error in guter
       await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
@@ -1092,7 +1086,7 @@ test(`Create a few projects using the default project name`, async ({
 test(
   'File in the file pane should open with a single click',
   { tag: '@desktop' },
-  async ({ context, homePage, page }, testInfo) => {
+  async ({ context, homePage, page, scene, toolbar }, testInfo) => {
     const projectName = 'router-template-slate'
     await context.folderSetupFn(async (dir) => {
       await fsp.mkdir(`${dir}/${projectName}`, { recursive: true })
@@ -1119,11 +1113,7 @@ test(
     await expect(u.codeLocator).toContainText('minClampingDistance')
 
     await page.getByRole('button', { name: 'Project Files' }).click()
-
-    const file = page.getByRole('button', { name: 'otherThingToClickOn.kcl' })
-    await expect(file).toBeVisible()
-
-    await file.click()
+    await toolbar.openFile('otherThingToClickOn.kcl')
 
     await expect(u.codeLocator).toContainText(
       'A mounting bracket for the Focusrite Scarlett Solo audio interface'
@@ -1864,7 +1854,8 @@ test(
     })
 
     await test.step('check the last file is out of view initially, and can be scrolled to', async () => {
-      const element = page.getByText('tangential_arc.kcl')
+      const u = await getUtils(page)
+      const element = u.locatorFile('tangential_arc.kcl')
       const container = page.getByTestId('file-pane-scroll-container')
 
       await expect(await isOutOfViewInScrollContainer(element, container)).toBe(
