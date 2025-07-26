@@ -1,8 +1,17 @@
+import { PROJECT_ENTRYPOINT } from '@src/lib/constants'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import type { ActorRefFrom } from 'xstate'
+import type { MlEphantManagerActor } from '@src/machines/mlEphantManagerMachine'
+import {
+  MlEphantManagerStates,
+  MlEphantManagerTransitions,
+} from '@src/machines/mlEphantManagerMachine'
 import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
 import type { RequestedKCLFile } from '@src/machines/systemIO/utils'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import {
+  SystemIOMachineEvents,
+  determineProjectFilePathFromPrompt,
+} from '@src/machines/systemIO/utils'
 import { isDesktop } from '@src/lib/isDesktop'
 import {
   everyKclSample,
@@ -126,8 +135,10 @@ function onSubmitKCLSampleCreation({
 
 export function createApplicationCommands({
   systemIOActor,
+  mlEphantManagerActor,
 }: {
   systemIOActor: ActorRefFrom<typeof systemIOMachine>
+  mlEphantManagerActor: MlEphantManagerActor
 }) {
   const textToCADCommand: Command = {
     name: 'Text-to-CAD',
@@ -142,9 +153,32 @@ export function createApplicationCommands({
         const requestedProjectName = record.newProjectName || record.projectName
         const requestedPrompt = record.prompt
         const isProjectNew = !!record.newProjectName
+
+        const { folders } = systemIOActor.getSnapshot().context
+
+        const uniqueProjectPath = getUniqueProjectName(
+          requestedProjectName,
+          folders
+        )
+        const uniquePromptFilePath = determineProjectFilePathFromPrompt({
+          existingProjectName: uniqueProjectPath,
+          requestedPrompt,
+        })
+
+        // Maybe create a new project if necessary, and navigate to it.
         systemIOActor.send({
-          type: SystemIOMachineEvents.generateTextToCAD,
-          data: { requestedPrompt, requestedProjectName, isProjectNew },
+          type: SystemIOMachineEvents.importFileFromURL,
+          data: {
+            requestedProjectName: uniqueProjectPath,
+            requestedCode: '',
+            requestedFileNameWithExtension: PROJECT_ENTRYPOINT,
+          },
+        })
+
+        mlEphantManagerActor.send({
+          type: MlEphantManagerTransitions.PromptCreateModel,
+          projectPathForPromptOutput: uniquePromptFilePath,
+          prompt: requestedPrompt,
         })
       }
     },
