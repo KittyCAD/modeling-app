@@ -211,6 +211,7 @@ export const getSettings = () => {
 // These are all late binding because of their circular dependency.
 // TODO: proper dependency injection.
 sceneInfra.camControls.getSettings = getSettings
+sceneEntitiesManager.getSettings = getSettings
 
 export const useSettings = () =>
   useSelector(settingsActor, (state) => {
