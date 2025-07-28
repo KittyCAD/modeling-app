@@ -4,11 +4,14 @@ use kcl_lib::{
     lint::{checks, Discovered},
     ExecutorContext, UnitLength,
 };
+use kittycad_modeling_cmds as kcmc;
 use pyo3::{
     prelude::PyModuleMethods, pyclass, pyfunction, pymethods, pymodule, types::PyModule, wrap_pyfunction, Bound, PyErr,
     PyResult,
 };
 use serde::{Deserialize, Serialize};
+
+mod bridge;
 
 fn tokio() -> &'static tokio::runtime::Runtime {
     use std::sync::OnceLock;
@@ -414,7 +417,19 @@ async fn execute_and_snapshot(path: String, image_format: ImageFormat) -> PyResu
 
 /// Execute the kcl code and snapshot it in a specific format.
 #[pyfunction]
-async fn execute_code_and_snapshot(code: String, image_format: ImageFormat) -> PyResult<Vec<u8>> {
+async fn execute_code_and_snapshot(code: String, image_format: ImageFormat) -> PyResult<Vec<Vec<u8>>> {
+    execute_code_and_snapshot_at_views(code, image_format, Vec::new()).await
+}
+
+/// Execute the kcl code and snapshot it in a specific format.
+/// Returns one image for each camera angle you provide.
+/// If you don't provide any camera angles, a default head-on camera angle will be used.
+#[pyfunction]
+async fn execute_code_and_snapshot_at_views(
+    code: String,
+    image_format: ImageFormat,
+    pre_snapshot: Vec<bridge::CameraLookAt>,
+) -> PyResult<Vec<Vec<u8>>> {
     tokio()
         .spawn(async move {
             let program =
@@ -428,44 +443,71 @@ async fn execute_code_and_snapshot(code: String, image_format: ImageFormat) -> P
                 .await
                 .map_err(|err| into_miette(err, &code))?;
 
-            // Zoom to fit.
-            ctx.engine
-                .send_modeling_cmd(
-                    uuid::Uuid::new_v4(),
-                    kcl_lib::SourceRange::default(),
-                    &kittycad_modeling_cmds::ModelingCmd::ZoomToFit(kittycad_modeling_cmds::ZoomToFit {
-                        object_ids: Default::default(),
-                        padding: 0.1,
-                        animated: false,
-                    }),
-                )
-                .await?;
+            if pre_snapshot.is_empty() {
+                let data_bytes = snapshot(ctx, image_format).await?;
+                return Ok(vec![data_bytes]);
+            }
 
-            // Send a snapshot request to the engine.
-            let resp = ctx
-                .engine
-                .send_modeling_cmd(
-                    uuid::Uuid::new_v4(),
-                    kcl_lib::SourceRange::default(),
-                    &kittycad_modeling_cmds::ModelingCmd::TakeSnapshot(kittycad_modeling_cmds::TakeSnapshot {
-                        format: image_format.into(),
-                    }),
-                )
-                .await?;
-
-            let kittycad_modeling_cmds::websocket::OkWebSocketResponseData::Modeling {
-                modeling_response: kittycad_modeling_cmds::ok_response::OkModelingCmdResponse::TakeSnapshot(data),
-            } = resp
-            else {
-                return Err(pyo3::exceptions::PyException::new_err(format!(
-                    "Unexpected response from engine: {resp:?}"
-                )));
-            };
-
-            Ok(data.contents.0)
+            let mut snaps = Vec::with_capacity(pre_snapshot.len());
+            for pre_snap in pre_snapshot {
+                let view_cmd = kcmc::DefaultCameraLookAt::from(pre_snap);
+                let view_cmd = kcmc::ModelingCmd::DefaultCameraLookAt(view_cmd);
+                let resp = ctx
+                    .engine
+                    .send_modeling_cmd(uuid::Uuid::new_v4(), Default::default(), &view_cmd)
+                    .await?;
+                let kittycad_modeling_cmds::websocket::OkWebSocketResponseData::Modeling {
+                    modeling_response: kittycad_modeling_cmds::ok_response::OkModelingCmdResponse::TakeSnapshot(data),
+                } = resp
+                else {
+                    return Err(pyo3::exceptions::PyException::new_err(format!(
+                        "Unexpected response from engine: {resp:?}",
+                    )));
+                };
+                snaps.push(data.contents.0);
+            }
+            Ok(snaps)
         })
         .await
         .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?
+}
+
+async fn snapshot(ctx: ExecutorContext, image_format: ImageFormat) -> PyResult<Vec<u8>> {
+    // Zoom to fit.
+    ctx.engine
+        .send_modeling_cmd(
+            uuid::Uuid::new_v4(),
+            kcl_lib::SourceRange::default(),
+            &kittycad_modeling_cmds::ModelingCmd::ZoomToFit(kittycad_modeling_cmds::ZoomToFit {
+                object_ids: Default::default(),
+                padding: 0.1,
+                animated: false,
+            }),
+        )
+        .await?;
+
+    // Send a snapshot request to the engine.
+    let resp = ctx
+        .engine
+        .send_modeling_cmd(
+            uuid::Uuid::new_v4(),
+            kcl_lib::SourceRange::default(),
+            &kittycad_modeling_cmds::ModelingCmd::TakeSnapshot(kittycad_modeling_cmds::TakeSnapshot {
+                format: image_format.into(),
+            }),
+        )
+        .await?;
+
+    let kittycad_modeling_cmds::websocket::OkWebSocketResponseData::Modeling {
+        modeling_response: kittycad_modeling_cmds::ok_response::OkModelingCmdResponse::TakeSnapshot(data),
+    } = resp
+    else {
+        return Err(pyo3::exceptions::PyException::new_err(format!(
+            "Unexpected response from engine: {resp:?}",
+        )));
+    };
+
+    Ok(data.contents.0)
 }
 
 /// Execute a kcl file and export it to a specific file format.
