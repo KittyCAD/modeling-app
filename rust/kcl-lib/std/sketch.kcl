@@ -2262,8 +2262,10 @@ export fn ellipticPoint(
 /// // Find the plane of the triangle's top face.
 /// topPlane = planeOf(triangle, face = END)
 /// 
-/// // Create a new plane, 10 units above the triangle's top face.
-/// startSketchOn(offsetPlane(topPlane, offset = 10))
+/// // Create a new plane, above the triangle's top face.
+/// startSketchOn(offsetPlane(topPlane, offset = 2))
+/// |> circle(radius = 1, center = [0,0])
+/// |> extrude(length = 1)
 /// ```
 @(impl = std_rust)
 export fn planeOf(

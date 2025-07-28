@@ -53,5 +53,13 @@ test-group = "after-engine"
 [profile.default.junit]
 path = "../../../../test-results/junit.xml"
 
+[[profile.default.overrides]]
+filter = 'test(kcl_samples)'
+junit.store-success-output = true
+
 [profile.ci.junit]
 path = "../../../../test-results/junit.xml"
+
+[[profile.ci.overrides]]
+filter = 'test(kcl_samples)'
+junit.store-success-output = true
