@@ -417,8 +417,9 @@ async fn execute_and_snapshot(path: String, image_format: ImageFormat) -> PyResu
 
 /// Execute the kcl code and snapshot it in a specific format.
 #[pyfunction]
-async fn execute_code_and_snapshot(code: String, image_format: ImageFormat) -> PyResult<Vec<Vec<u8>>> {
-    execute_code_and_snapshot_at_views(code, image_format, Vec::new()).await
+async fn execute_code_and_snapshot(code: String, image_format: ImageFormat) -> PyResult<Vec<u8>> {
+    let mut snaps = execute_code_and_snapshot_at_views(code, image_format, Vec::new()).await?;
+    Ok(snaps.pop().unwrap())
 }
 
 #[derive(Serialize, Deserialize, PartialEq, Debug, Clone)]
