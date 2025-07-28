@@ -425,7 +425,8 @@ async fn execute_code_and_snapshot(code: String, image_format: ImageFormat) -> P
 #[derive(Serialize, Deserialize, PartialEq, Debug, Clone)]
 #[pyclass]
 struct SnapshotOptions {
-    camera: bridge::CameraLookAt,
+    /// If none, will use isometric view.
+    camera: Option<bridge::CameraLookAt>,
     padding: f32,
 }
 
@@ -458,11 +459,18 @@ async fn execute_code_and_snapshot_at_views(
 
             let mut snaps = Vec::with_capacity(snapshot_options.len());
             for pre_snap in snapshot_options {
-                let view_cmd = kcmc::DefaultCameraLookAt::from(pre_snap.camera);
-                let view_cmd = kcmc::ModelingCmd::DefaultCameraLookAt(view_cmd);
-                ctx.engine
-                    .send_modeling_cmd(uuid::Uuid::new_v4(), Default::default(), &view_cmd)
-                    .await?;
+                if let Some(camera) = pre_snap.camera {
+                    let view_cmd = kcmc::DefaultCameraLookAt::from(camera);
+                    let view_cmd = kcmc::ModelingCmd::DefaultCameraLookAt(view_cmd);
+                    ctx.engine
+                        .send_modeling_cmd(uuid::Uuid::new_v4(), Default::default(), &view_cmd)
+                        .await?;
+                } else {
+                    let view_cmd = kcmc::ModelingCmd::ViewIsometric(kcmc::ViewIsometric { padding: 0.0 });
+                    ctx.engine
+                        .send_modeling_cmd(uuid::Uuid::new_v4(), Default::default(), &view_cmd)
+                        .await?;
+                }
                 let data_bytes = snapshot(&ctx, image_format, pre_snap.padding).await?;
                 snaps.push(data_bytes);
             }
