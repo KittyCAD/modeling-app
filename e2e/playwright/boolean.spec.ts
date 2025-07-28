@@ -115,6 +115,8 @@ test.describe('Point and click for boolean workflows', () => {
 
         await cmdBar.submit()
         await scene.settled(cmdBar)
+        await editor.openPane()
+        await editor.scrollToText(operation.code)
         await editor.expectEditor.toContain(operation.code)
       })
 
@@ -127,7 +129,6 @@ test.describe('Point and click for boolean workflows', () => {
         await toolbar.closePane('feature-tree')
 
         // Expect changes in ft and code
-        await toolbar.openPane('code')
         await editor.expectEditor.not.toContain(operation.code)
         await expect(
           await toolbar.getFeatureTreeOperation(operationName, 0)
