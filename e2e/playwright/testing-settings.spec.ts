@@ -10,7 +10,6 @@ import * as fsp from 'fs/promises'
 import type { Settings } from '@rust/kcl-lib/bindings/Settings'
 
 import {
-  TEST_SETTINGS,
   TEST_SETTINGS_CORRUPTED,
   TEST_SETTINGS_DEFAULT_THEME,
   TEST_SETTINGS_KEY,
@@ -444,7 +443,7 @@ test.describe(
         })
 
         const { dir: projectDirName } = await context.folderSetupFn(
-          async () => {}
+          async () => { }
         )
 
         await page.setBodyDimensions({ width: 1200, height: 500 })
@@ -489,7 +488,7 @@ test.describe(
       { tag: '@desktop' },
       async ({ context, page }, testInfo) => {
         const { dir: projectDirName } = await context.folderSetupFn(
-          async () => {}
+          async () => { }
         )
 
         await page.setBodyDimensions({ width: 1200, height: 500 })
