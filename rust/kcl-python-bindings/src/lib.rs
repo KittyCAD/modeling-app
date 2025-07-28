@@ -421,6 +421,13 @@ async fn execute_code_and_snapshot(code: String, image_format: ImageFormat) -> P
     execute_code_and_snapshot_at_views(code, image_format, Vec::new()).await
 }
 
+#[derive(Serialize, Deserialize, PartialEq, Debug, Clone)]
+#[pyclass]
+struct SnapshotOptions {
+    camera: bridge::CameraLookAt,
+    padding: f32,
+}
+
 /// Execute the kcl code and snapshot it in a specific format.
 /// Returns one image for each camera angle you provide.
 /// If you don't provide any camera angles, a default head-on camera angle will be used.
@@ -428,7 +435,7 @@ async fn execute_code_and_snapshot(code: String, image_format: ImageFormat) -> P
 async fn execute_code_and_snapshot_at_views(
     code: String,
     image_format: ImageFormat,
-    pre_snapshot: Vec<bridge::CameraLookAt>,
+    snapshot_options: Vec<SnapshotOptions>,
 ) -> PyResult<Vec<Vec<u8>>> {
     tokio()
         .spawn(async move {
@@ -443,28 +450,20 @@ async fn execute_code_and_snapshot_at_views(
                 .await
                 .map_err(|err| into_miette(err, &code))?;
 
-            if pre_snapshot.is_empty() {
-                let data_bytes = snapshot(ctx, image_format).await?;
+            if snapshot_options.is_empty() {
+                let data_bytes = snapshot(&ctx, image_format, 0.1).await?;
                 return Ok(vec![data_bytes]);
             }
 
-            let mut snaps = Vec::with_capacity(pre_snapshot.len());
-            for pre_snap in pre_snapshot {
-                let view_cmd = kcmc::DefaultCameraLookAt::from(pre_snap);
+            let mut snaps = Vec::with_capacity(snapshot_options.len());
+            for pre_snap in snapshot_options {
+                let view_cmd = kcmc::DefaultCameraLookAt::from(pre_snap.camera);
                 let view_cmd = kcmc::ModelingCmd::DefaultCameraLookAt(view_cmd);
-                let resp = ctx
-                    .engine
+                ctx.engine
                     .send_modeling_cmd(uuid::Uuid::new_v4(), Default::default(), &view_cmd)
                     .await?;
-                let kittycad_modeling_cmds::websocket::OkWebSocketResponseData::Modeling {
-                    modeling_response: kittycad_modeling_cmds::ok_response::OkModelingCmdResponse::TakeSnapshot(data),
-                } = resp
-                else {
-                    return Err(pyo3::exceptions::PyException::new_err(format!(
-                        "Unexpected response from engine: {resp:?}",
-                    )));
-                };
-                snaps.push(data.contents.0);
+                let data_bytes = snapshot(&ctx, image_format, pre_snap.padding).await?;
+                snaps.push(data_bytes);
             }
             Ok(snaps)
         })
@@ -472,7 +471,7 @@ async fn execute_code_and_snapshot_at_views(
         .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?
 }
 
-async fn snapshot(ctx: ExecutorContext, image_format: ImageFormat) -> PyResult<Vec<u8>> {
+async fn snapshot(ctx: &ExecutorContext, image_format: ImageFormat, padding: f32) -> PyResult<Vec<u8>> {
     // Zoom to fit.
     ctx.engine
         .send_modeling_cmd(
@@ -480,7 +479,7 @@ async fn snapshot(ctx: ExecutorContext, image_format: ImageFormat) -> PyResult<V
             kcl_lib::SourceRange::default(),
             &kittycad_modeling_cmds::ModelingCmd::ZoomToFit(kittycad_modeling_cmds::ZoomToFit {
                 object_ids: Default::default(),
-                padding: 0.1,
+                padding,
                 animated: false,
             }),
         )
