@@ -39,10 +39,10 @@ face, since it will include all the parent faces and Solids.
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `planeOrSolid` | [`Solid`](/docs/kcl-std/types/std-types-Solid) or [`Plane`](/docs/kcl-std/types/std-types-Plane) | Profile whose start is being used. | Yes |
-| `face` | [`TaggedFace`](/docs/kcl-std/types/std-types-TaggedFace) | Identify a face of a solid if a solid is specified as the input argument (`planeOrSolid`). | No |
+| `face` | [`TaggedFace`](/docs/kcl-std/types/std-types-TaggedFace) | Identify a face of a solid if a solid is specified as the input argument (`planeOrSolid`). Incompatible with `normalToFace`. | No |
 | `normalToFace` | [`TaggedFace`](/docs/kcl-std/types/std-types-TaggedFace) | Identify a face of a solid if a solid is specified as the input argument. Starts a sketch on the plane orthogonal to this specified face. Incompatible with `face`, requires `alignAxis`. | No |
-| `alignAxis` | [`Axis2d`](/docs/kcl-std/types/std-types-Axis2d) | If sketching normal to face, this axis will be the new local x axis of the sketch plane. The selected face's normal will be the local y axis. | No |
-| `normalOffset` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | Offset the sketch plane along its normal by the given amount. | No |
+| `alignAxis` | [`Axis2d`](/docs/kcl-std/types/std-types-Axis2d) | If sketching normal to face, this axis will be the new local x axis of the sketch plane. The selected face's normal will be the local y axis. Incompatible with `face`, requires `normalToFace`. | No |
+| `normalOffset` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | Offset the sketch plane along its normal by the given amount. Incompatible with `face`, requires `normalToFace`. | No |
 
 ### Returns
 
