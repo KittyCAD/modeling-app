@@ -562,6 +562,8 @@ impl Plane {
         !matches!(self.value, PlaneType::Custom | PlaneType::Uninit)
     }
 
+    /// Project a point onto a plane by calculating how far away it is and moving it along the
+    /// normal of the plane so that it now lies on the plane.
     pub fn project(&self, point: Point3d) -> Point3d {
         let v = point - self.info.origin;
         let dot = v.axes_dot_product(&self.info.z_axis);
@@ -1073,10 +1075,19 @@ impl Sub for Point3d {
     type Output = Point3d;
 
     fn sub(self, rhs: Self) -> Self::Output {
+        let (x, y, z) = if rhs.units != self.units {
+            (
+                rhs.units.adjust_to(rhs.x, self.units).0,
+                rhs.units.adjust_to(rhs.y, self.units).0,
+                rhs.units.adjust_to(rhs.z, self.units).0,
+            )
+        } else {
+            (rhs.x, rhs.y, rhs.z)
+        };
         Point3d {
-            x: self.x - rhs.x,
-            y: self.y - rhs.y,
-            z: self.z - rhs.z,
+            x: self.x - x,
+            y: self.y - y,
+            z: self.z - z,
             units: self.units,
         }
     }
