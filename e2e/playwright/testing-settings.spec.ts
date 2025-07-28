@@ -443,7 +443,7 @@ test.describe(
         })
 
         const { dir: projectDirName } = await context.folderSetupFn(
-          async () => { }
+          async () => {}
         )
 
         await page.setBodyDimensions({ width: 1200, height: 500 })
@@ -488,7 +488,7 @@ test.describe(
       { tag: '@desktop' },
       async ({ context, page }, testInfo) => {
         const { dir: projectDirName } = await context.folderSetupFn(
-          async () => { }
+          async () => {}
         )
 
         await page.setBodyDimensions({ width: 1200, height: 500 })

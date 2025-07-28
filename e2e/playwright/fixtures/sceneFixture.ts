@@ -400,11 +400,15 @@ export class SceneFixture {
   expectPixelColor = async (
     colour: [number, number, number] | [number, number, number][],
     coords: { x: number; y: number },
-    diff: number
+    diff: number,
+    { format }: Partial<{ format?: 'pixels' | 'ratio' }> = {
+      format: 'pixels',
+    }
   ) => {
     const transformedCoords = await this.convertPagePositionToStream(
       coords.x,
-      coords.y
+      coords.y,
+      format
     )
     await expectPixelColor(this.page, colour, transformedCoords, diff)
   }
@@ -412,11 +416,15 @@ export class SceneFixture {
   expectPixelColorNotToBe = async (
     colour: [number, number, number] | [number, number, number][],
     coords: { x: number; y: number },
-    diff: number
+    diff: number,
+    { format }: Partial<{ format?: 'pixels' | 'ratio' }> = {
+      format: 'pixels',
+    }
   ) => {
     const transformedCoords = await this.convertPagePositionToStream(
       coords.x,
-      coords.y
+      coords.y,
+      format
     )
     await expectPixelColorNotToBe(this.page, colour, transformedCoords, diff)
   }
