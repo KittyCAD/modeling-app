@@ -659,6 +659,7 @@ fn kcl(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(mock_execute_code, m)?)?;
     m.add_function(wrap_pyfunction!(execute_and_snapshot, m)?)?;
     m.add_function(wrap_pyfunction!(execute_code_and_snapshot, m)?)?;
+    m.add_function(wrap_pyfunction!(execute_code_and_snapshot_at_views, m)?)?;
     m.add_function(wrap_pyfunction!(execute_and_export, m)?)?;
     m.add_function(wrap_pyfunction!(execute_code_and_export, m)?)?;
     m.add_function(wrap_pyfunction!(format, m)?)?;
