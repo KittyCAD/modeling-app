@@ -239,10 +239,12 @@ export const systemIOMachine = setup({
         return { project: event.output.name }
       },
     }),
-    [SystemIOMachineActions.toastProjectNameTooLong]: ()=>{
-      toast.error(`Project name is too long, must be less than or equal to ${MAX_PROJECT_NAME_LENGTH} characters`)
-    }
+    [SystemIOMachineActions.toastProjectNameTooLong]: () => {
+      toast.error(
+        `Project name is too long, must be less than or equal to ${MAX_PROJECT_NAME_LENGTH} characters`
+      )
     },
+  },
   actors: {
     [SystemIOMachineActors.readFoldersFromProjectDirectory]: fromPromise(
       async ({ input: context }: { input: SystemIOContext }) => {
@@ -436,12 +438,12 @@ export const systemIOMachine = setup({
         },
         [SystemIOMachineEvents.createProject]: [
           {
-            guard:SystemIOMachineGuards.projectNameIsValidLength,
+            guard: SystemIOMachineGuards.projectNameIsValidLength,
             target: SystemIOMachineStates.creatingProject,
           },
           {
-            actions: [SystemIOMachineActions.toastProjectNameTooLong]
-          }
+            actions: [SystemIOMachineActions.toastProjectNameTooLong],
+          },
         ],
         [SystemIOMachineEvents.renameProject]: [
           {
@@ -449,8 +451,8 @@ export const systemIOMachine = setup({
             guard: SystemIOMachineGuards.projectNameIsValidLength,
           },
           {
-            actions: [SystemIOMachineActions.toastProjectNameTooLong]
-          }
+            actions: [SystemIOMachineActions.toastProjectNameTooLong],
+          },
         ],
         [SystemIOMachineEvents.deleteProject]: {
           target: SystemIOMachineStates.deletingProject,
