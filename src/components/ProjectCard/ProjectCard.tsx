@@ -88,6 +88,9 @@ function ProjectCard({
     }
   }, [isEditing, inputRef.current])
 
+
+  const projectName = project.name?.replace(FILE_EXT, '')
+
   return (
     <li
       {...props}
@@ -127,10 +130,11 @@ function ProjectCard({
             />
           ) : (
             <h3
-              className="font-sans relative z-0 p-2"
+              className="font-sans relative z-0 p-2 truncate"
               data-testid="project-title"
+              title={projectName}
             >
-              {project.name?.replace(FILE_EXT, '')}
+              {projectName}
             </h3>
           )}
           {project.readWriteAccess && (
