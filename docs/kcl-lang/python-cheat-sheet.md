@@ -19,6 +19,7 @@ layout: manual
 | **Map a Collection**       | `list(map(lambda x: 2 * x, arr))`<br/>OR<br/>`[2 * x for x in arr]` | `map(arr, f = fn(@x) { return 2 * x })` |
 | **Reduce a Collection**    | <pre><code>result = 0<br/>for item in arr:<br/>    result += 2 * item</code></pre>OR<pre><code>from functools import reduce<br/>result = reduce(lambda sum, item: sum + 2 * item, arr, 0)</code></pre> | The accumulator parameter must be named `accum`. <pre><code>result = reduce(arr,<br/>               initial = 0,<br/>               f = fn(@item, accum) &lbrace; return accum + 2 * item &rbrace;)</code></pre> |
 | **Array Concatenation**    | `[1, 2, 3] + [4, 5, 6]` | `concat([1, 2, 3], items = [4, 5, 6])` |
+| **Integer Division**       | `8 // 3`                        | `floor(8 / 3)` |
 | **Raise to a Power**       | `2**5`                          | `2^5`<br/>OR<br/>`pow(2, exp = 5)` |
 | **Vector Addition**        | <pre><code>a = [1, 2, 3]<br/>b = [4, 5, 6]<br/>result = [x + y for x, y in zip(a, b)]</code></pre>OR<pre><code>import numpy as np<br/>a = np.array([1, 2, 3])<br/>b = np.array([4, 5, 6])<br/>result = a + b</code></pre> | <pre><code>a = [1, 2, 3]<br/>b = [4, 5, 6]<br/>result = vector::add(a, v = b)</code></pre> |
 | **Logical Operators**      | Short circuits.<br/>`a and b`<br/>`a or b`<br/>`not a` | Does not short circuit. See [docs](/docs/kcl-lang/arithmetic).<br/>`a & b`<br/>`a \| b`<br/>`!a` |
