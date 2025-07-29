@@ -257,11 +257,7 @@ const Home = () => {
       default:
         const _ex: never = tabSelected
     }
-  }, [
-    tabSelected,
-    promptsInProgressToCompleted,
-    projects,
-  ])
+  }, [tabSelected, promptsInProgressToCompleted, projects])
 
   useEffect(() => {
     searchAgainst(items)('')
@@ -715,11 +711,7 @@ function ResultGridConversations(props: ResultGridConversationsProps) {
       {props.searchResults
         .sort(getConvoSortFunction(props.sortBy))
         .map((convo: IResponseMlConversation) => (
-          <ConvoCard
-            key={convo.id}
-            {...convo}
-            onAction={onAction}
-          />
+          <ConvoCard key={convo.id} {...convo} onAction={onAction} />
         ))}
     </div>
   )

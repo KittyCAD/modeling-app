@@ -82,35 +82,59 @@ interface TextToKclPropsApplicationLevel {
 }
 
 export interface IResponseMlConversation {
-  created_at: string,
-  first_prompt: string,
-  id: string,
-  updated_at: string,
-  user_id: string,
+  created_at: string
+  first_prompt: string
+  id: string
+  updated_at: string
+  user_id: string
 }
 
 export interface IResponseMlConversations {
-  items: IResponseMlConversation[],
-  next_page?: string,
+  items: IResponseMlConversation[]
+  next_page?: string
 }
 
-export async function textToCadMlConversations(token: string, args: {
-  pageToken?: string,
-  limit?: number,
-  sortBy: 'created_at'
-}): Promise<IResponseMlConversations | Error> {
-
+export async function textToCadMlConversations(
+  token: string,
+  args: {
+    pageToken?: string
+    limit?: number
+    sortBy: 'created_at'
+  }
+): Promise<IResponseMlConversations | Error> {
   return {
     items: [
-     { first_prompt: "shamam lama bing bong", id: 1, created_at: new Date().toString(), },
-     { first_prompt: "shamam lama bing bong", id: 2, created_at: new Date().toString(), },
-     { first_prompt: "shamam lama bing bong", id: 3, created_at: new Date().toString(), },
-     { first_prompt: "shamam lama bing bong", id: 4, created_at: new Date().toString(), },
-     { first_prompt: "shamam lama bing bong", id: 5, created_at: new Date().toString(), },
+      {
+        first_prompt: 'shamam lama bing bong',
+        id: 1,
+        created_at: new Date().toString(),
+      },
+      {
+        first_prompt: 'shamam lama bing bong',
+        id: 2,
+        created_at: new Date().toString(),
+      },
+      {
+        first_prompt: 'shamam lama bing bong',
+        id: 3,
+        created_at: new Date().toString(),
+      },
+      {
+        first_prompt: 'shamam lama bing bong',
+        id: 4,
+        created_at: new Date().toString(),
+      },
+      {
+        first_prompt: 'shamam lama bing bong',
+        id: 5,
+        created_at: new Date().toString(),
+      },
     ],
   }
 
-  const url = withAPIBaseURL(`/ml/conversations?limit=${args.limit ?? '20'}&sort_by=${args.sortBy ?? 'created_at'}${args.pageToken ? ('&page_token=' + args.pageToken) : ''}`)
+  const url = withAPIBaseURL(
+    `/ml/conversations?limit=${args.limit ?? '20'}&sort_by=${args.sortBy ?? 'created_at'}${args.pageToken ? '&page_token=' + args.pageToken : ''}`
+  )
   const data: Models['TextToCad_type'] | Error = await crossPlatformFetch(
     url,
     {

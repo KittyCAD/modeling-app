@@ -5,7 +5,10 @@ import { useHotkeys } from 'react-hotkeys-hook'
 import { CustomIcon } from '@src/components/CustomIcon'
 
 import type { Project } from '@src/lib/project'
-import type { IResponseMlConversation, IResponseMlConversations } from '@src/lib/textToCad'
+import type {
+  IResponseMlConversation,
+  IResponseMlConversations,
+} from '@src/lib/textToCad'
 
 export type HomeItem = Project | IResponseMlConversation
 export type HomeItems = Project[] | IResponseMlConversations
@@ -16,7 +19,9 @@ export const areHomeItemsProjects = (items: HomeItems): items is Project[] => {
   return item !== undefined && 'path' in item
 }
 
-export const areHomeItemsConversations = (items: HomeItems): items is IResponseMlConversations => {
+export const areHomeItemsConversations = (
+  items: HomeItems
+): items is IResponseMlConversations => {
   if (items.length === 0) return true
   const item = items[0]
   return item !== undefined && 'first_prompt' in item

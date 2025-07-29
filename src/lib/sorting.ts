@@ -57,7 +57,10 @@ export function getProjectSortFunction(sortBy: string) {
 // Below is to keep the same behavior as above but for converstions.
 // Do NOT take it as actually "sort by modified" but more like "sort by time".
 export function getConvoSortFunction(sortBy: string) {
-  const sortByName = (a: IResponseMlConversation, b: IResponseMlConversation) => {
+  const sortByName = (
+    a: IResponseMlConversation,
+    b: IResponseMlConversation
+  ) => {
     if (a.first_prompt && b.first_prompt) {
       return sortBy.includes('desc')
         ? a.first_prompt.localeCompare(b.prompt)
@@ -66,7 +69,10 @@ export function getConvoSortFunction(sortBy: string) {
     return 0
   }
 
-  const sortByModified = (a: IResponseMlConversation, b: IResponseMlConversation) => {
+  const sortByModified = (
+    a: IResponseMlConversation,
+    b: IResponseMlConversation
+  ) => {
     if (a.created_at && b.created_at) {
       // INTENTIONALLY REVERSED
       // Will not show properly otherwise.
