@@ -34,6 +34,8 @@ The point is if you want to export the result of a sketch on a face, you
 only need to export the final Solid that was created from the sketch on the
 face, since it will include all the parent faces and Solids.
 
+See [sketch on face](/docs/kcl-lang/sketch-on-face) for more details.
+
 ### Arguments
 
 | Name | Type | Description | Required |

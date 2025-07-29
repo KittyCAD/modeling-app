@@ -52,6 +52,20 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
     () =>
       [
         {
+          id: 'account',
+          Element: 'externalLink',
+          to: withSiteBaseURL('/account'),
+          children: (
+            <>
+              <span className="flex-1">Manage Zoo account</span>
+              <CustomIcon
+                name="link"
+                className="w-3 h-3 text-chalkboard-70 dark:text-chalkboard-40"
+              />
+            </>
+          ),
+        },
+        {
           id: 'settings',
           Element: 'button',
           children: (
@@ -80,20 +94,6 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
               : PATHS.HOME + PATHS.SETTINGS_KEYBINDINGS
             navigate(targetPath)
           },
-        },
-        {
-          id: 'account',
-          Element: 'externalLink',
-          to: withSiteBaseURL('/account'),
-          children: (
-            <>
-              <span className="flex-1">Manage account</span>
-              <CustomIcon
-                name="link"
-                className="w-3 h-3 text-chalkboard-70 dark:text-chalkboard-40"
-              />
-            </>
-          ),
         },
         'break',
         {
