@@ -1,4 +1,4 @@
-import { DEFAULT_PROJECT_NAME } from '@src/lib/constants'
+import { DEFAULT_PROJECT_NAME, MAX_PROJECT_NAME_LENGTH } from '@src/lib/constants'
 import type { Project } from '@src/lib/project'
 import type {
   SystemIOContext,
@@ -9,6 +9,7 @@ import {
   SystemIOMachineActions,
   SystemIOMachineActors,
   SystemIOMachineEvents,
+  SystemIOMachineGuards,
   SystemIOMachineStates,
 } from '@src/machines/systemIO/utils'
 import toast from 'react-hot-toast'
@@ -141,6 +142,21 @@ export const systemIOMachine = setup({
             requestedFileName: string
           }
         },
+  },
+  guards: {
+    [SystemIOMachineGuards.projectNameIsValidLength]: ({
+      context,
+      event
+    }) : boolean => {
+      assertEvent(
+        event,
+        [SystemIOMachineEvents.createProject, SystemIOMachineEvents.renameProject]
+      )
+      const {requestedProjectName} = event.data
+      console.log(requestedProjectName.length)
+      console.log(requestedProjectName.length <= MAX_PROJECT_NAME_LENGTH)
+      return requestedProjectName.length <= MAX_PROJECT_NAME_LENGTH
+    }
   },
   actions: {
     [SystemIOMachineActions.setFolders]: assign({
@@ -416,9 +432,11 @@ export const systemIOMachine = setup({
         },
         [SystemIOMachineEvents.createProject]: {
           target: SystemIOMachineStates.creatingProject,
+          guard: SystemIOMachineGuards.projectNameIsValidLength
         },
         [SystemIOMachineEvents.renameProject]: {
           target: SystemIOMachineStates.renamingProject,
+          guard: SystemIOMachineGuards.projectNameIsValidLength
         },
         [SystemIOMachineEvents.deleteProject]: {
           target: SystemIOMachineStates.deletingProject,

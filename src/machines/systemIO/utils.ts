@@ -76,6 +76,10 @@ export enum SystemIOMachineActions {
   setLastProjectDeleteRequest = 'set last project delete request',
 }
 
+export enum SystemIOMachineGuards {
+  projectNameIsValidLength = 'project name is value length'
+}
+
 export const NO_PROJECT_DIRECTORY = ''
 
 export type SystemIOContext = {
