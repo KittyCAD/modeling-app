@@ -74,6 +74,7 @@ export enum SystemIOMachineActions {
   setReadWriteProjectDirectory = 'set read write project directory',
   setRequestedTextToCadGeneration = 'set requested text to cad generation',
   setLastProjectDeleteRequest = 'set last project delete request',
+  toastProjectNameTooLong = 'toast project name too long'
 }
 
 export enum SystemIOMachineGuards {

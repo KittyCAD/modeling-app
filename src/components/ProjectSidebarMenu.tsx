@@ -237,12 +237,11 @@ function ProjectMenuPopover({
   // Breadcrumb for project and file
   const breadCrumb = {
     projectName: project?.name || '',
-    sep:'/',
-    filename: isDesktop() && file?.name
-      ? file.name.slice(
-        file.name.lastIndexOf(window.electron.path.sep) + 1
-      )
-      : APP_NAME
+    sep: '/',
+    filename:
+      isDesktop() && file?.name
+        ? file.name.slice(file.name.lastIndexOf(window.electron.path.sep) + 1)
+        : APP_NAME,
   }
   const breadCrumbTooltip = `${breadCrumb.projectName}${breadCrumb.sep}${breadCrumb.filename}`
 
@@ -252,7 +251,10 @@ function ProjectMenuPopover({
         className="gap-1 rounded-sm mr-auto max-h-min min-w-max border-0 py-1 px-2 flex items-center  focus-visible:outline-appForeground dark:hover:bg-chalkboard-90"
         data-testid="project-sidebar-toggle"
       >
-        <div className="flex items-baseline py-0.5 text-sm gap-1" title={breadCrumbTooltip}>
+        <div
+          className="flex items-baseline py-0.5 text-sm gap-1"
+          title={breadCrumbTooltip}
+        >
           {isDesktop() && project?.name && (
             <>
               <span

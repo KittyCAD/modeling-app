@@ -156,8 +156,6 @@ export const systemIOMachine = setup({
         SystemIOMachineEvents.renameProject,
       ])
       const { requestedProjectName } = event.data
-      console.log(requestedProjectName.length)
-      console.log(requestedProjectName.length <= MAX_PROJECT_NAME_LENGTH)
       return requestedProjectName.length <= MAX_PROJECT_NAME_LENGTH
     },
   },
@@ -241,7 +239,10 @@ export const systemIOMachine = setup({
         return { project: event.output.name }
       },
     }),
-  },
+    [SystemIOMachineActions.toastProjectNameTooLong]: ()=>{
+      toast.error(`Project name is too long, must be less than or equal to ${MAX_PROJECT_NAME_LENGTH} characters`)
+    }
+    },
   actors: {
     [SystemIOMachineActors.readFoldersFromProjectDirectory]: fromPromise(
       async ({ input: context }: { input: SystemIOContext }) => {
@@ -433,14 +434,24 @@ export const systemIOMachine = setup({
         [SystemIOMachineEvents.navigateToFile]: {
           actions: [SystemIOMachineActions.setRequestedFileName],
         },
-        [SystemIOMachineEvents.createProject]: {
-          target: SystemIOMachineStates.creatingProject,
-          guard: SystemIOMachineGuards.projectNameIsValidLength,
-        },
-        [SystemIOMachineEvents.renameProject]: {
-          target: SystemIOMachineStates.renamingProject,
-          guard: SystemIOMachineGuards.projectNameIsValidLength,
-        },
+        [SystemIOMachineEvents.createProject]: [
+          {
+            guard:SystemIOMachineGuards.projectNameIsValidLength,
+            target: SystemIOMachineStates.creatingProject,
+          },
+          {
+            actions: [SystemIOMachineActions.toastProjectNameTooLong]
+          }
+        ],
+        [SystemIOMachineEvents.renameProject]: [
+          {
+            target: SystemIOMachineStates.renamingProject,
+            guard: SystemIOMachineGuards.projectNameIsValidLength,
+          },
+          {
+            actions: [SystemIOMachineActions.toastProjectNameTooLong]
+          }
+        ],
         [SystemIOMachineEvents.deleteProject]: {
           target: SystemIOMachineStates.deletingProject,
         },

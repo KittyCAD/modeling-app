@@ -88,7 +88,6 @@ function ProjectCard({
     }
   }, [isEditing, inputRef.current])
 
-
   const projectName = project.name?.replace(FILE_EXT, '')
 
   return (
@@ -212,11 +211,11 @@ function ProjectCard({
           }, reportRejection)}
           onDismiss={() => setIsConfirmingDelete(false)}
         >
-          <p className="my-4">
+          <p className="my-4 text-wrap break-words">
             This will permanently delete "{project.name || 'this file'}
             ".
           </p>
-          <p className="my-4">
+          <p className="my-4 text-wrap break-words">
             Are you sure you want to delete "{project.name || 'this file'}
             "? This action cannot be undone.
           </p>
