@@ -19,10 +19,29 @@ use crate::settings::types::{
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
 pub struct ProjectConfiguration {
+    /// A unique identifier for external services.
+    /// Some projects may not have one by default since this is a new addition.
+    /// Here we will deserialize projects without an id and auto-create one,
+    /// so that when they are reserialized, they'll have one.
+    #[serde(
+        deserialize_with = "deserialize_project_id",
+    )]
+    pub id: uuid::Uuid
+
     /// The settings for the project.
     #[serde(default)]
     #[validate(nested)]
     pub settings: PerProjectSettings,
+}
+
+fn deserialize_project_id<'de, D>(deserializer: D) -> Result<uuid::Uuid, D::Error>
+where
+    D: Deserializer<'de>,
+{
+  Ok(match uuid::Uuid::deserialize(deserializer) {
+    Ok(u) => u,
+    _ => uuid::Uuid::new_v4(),
+  })
 }
 
 impl ProjectConfiguration {
