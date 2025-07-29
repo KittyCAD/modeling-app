@@ -1,8 +1,41 @@
 import ms from 'ms'
 import type { Prompt } from '@src/lib/prompt'
+import type { IResponseMlConversation } from '@src/lib/textToCad.ts'
 import { useEffect, useState, useRef, useLayoutEffect } from 'react'
 import type { ReactNode } from 'react'
 import Loading from '@src/components/Loading'
+
+// In the future we can split this out but the code is 99% the same as
+// the PromptCard, which came first.
+export interface ConvoCardProps extends IResponseMlConversation {
+  onAction?: (id: Prompt['id'], prompt: Prompt['prompt']) => void
+}
+
+export const ConvoCard = (props: ConvoCardProps) => {
+  const cssCard = `flex flex-col border rounded-md p-2 gap-2 justify-between
+    transition-height duration-500 overflow-hidden
+  `
+  return (
+    <div className={cssCard}>
+      <div className="flex flex-row justify-between gap-2">
+        <div>{props.first_prompt}</div>
+      </div>
+      <div className="flex flex-row justify-between">
+        <div className="flex flex-row gap-2">
+          {props.onAction !== undefined && (
+            <PromptCardActionButton
+              status={props.status}
+              onClick={() => props.onAction?.(props.id, props.first_prompt)}
+            />
+          )}
+        </div>
+        <div className="text-sm text-chalkboard-70">
+          {ms(new Date(props.created_at).getTime(), { long: true })} ago
+        </div>
+      </div>
+    </div>
+  )
+}
 
 export interface PromptCardProps extends Prompt {
   disabled?: boolean

@@ -8,6 +8,7 @@ import type { Selections } from '@src/lib/selections'
 import type { Project } from '@src/lib/project'
 import type { Prompt } from '@src/lib/prompt'
 import { generateFakeSubmittedPrompt, PromptType } from '@src/lib/prompt'
+import { textToCadMlConversations, IResponseMlConversations } from '@src/lib/textToCad'
 
 const MLEPHANT_POLL_STATUSES_MS = 5000
 
@@ -21,7 +22,7 @@ export enum MlEphantManagerStates {
 
 export enum MlEphantManagerTransitions {
   SetApiToken = 'set-api-token',
-  GetPromptsThatCreatedProjects = 'get-prompts-that-created-projects',
+  GetConversationsThatCreatedProjects = 'get-conversations-that-created-projects',
   GetPromptsBelongingToProject = 'get-prompts-belonging-to-project',
   GetPromptsPendingStatuses = 'get-prompts-pending-statuses',
   PromptEditModel = 'prompt-edit-model',
@@ -37,7 +38,7 @@ export type MlEphantManagerEvents =
       token: string
     }
   | {
-      type: MlEphantManagerTransitions.GetPromptsThatCreatedProjects
+      type: MlEphantManagerTransitions.GetConversationsThatCreatedProjects
     }
   | {
       type: MlEphantManagerTransitions.GetPromptsBelongingToProject
@@ -72,20 +73,21 @@ type XSEvent<T> = Extract<MlEphantManagerEvents, { type: T }>
 export interface MlEphantManagerContext {
   apiTokenMlephant?: string
 
+  conversations: IResponseMlConversations
+
   // A cache of prompts
   promptsPool: Map<Prompt['id'], Prompt>
 
-  // Essentially prompts that were used to start a "session".
-  promptsToSeedProjects: Set<Prompt['id']>
+  // Project related data is reset on project changes.
   // If no project is selected: undefined.
   promptsBelongingToProject?: Set<Prompt['id']>
+  pageTokenPromptsBelongingToProject?: string
 
   // When prompts transition from in_progress to completed
   // NOTE TO SUBSCRIBERS! You must check the last event in combination with this
   // data to ensure it's from a status poll, and not some other event, that
   // update the context.
   promptsInProgressToCompleted: {
-    promptsToSeedProjects: Set<Prompt['id']>
     promptsBelongingToProject: Set<Prompt['id']>
   }
 
@@ -108,14 +110,17 @@ export interface MlEphantManagerContext {
 
 export const mlEphantDefaultContext = () => ({
   apiTokenMlephant: undefined,
+  conversations: {
+    items: [],
+    next_page: undefined,
+  },
   promptsPool: new Map(),
-  promptsToSeedProjects: [],
   promptsBelongingToProject: undefined,
   promptsInProgressToCompleted: {
-    promptsToSeedProjects: [],
     promptsBelongingToProject: [],
   },
   promptsMeta: new Map(),
+  conversationsMeta: new Map(),
 })
 
 export const mlEphantManagerMachine = setup({
@@ -124,7 +129,7 @@ export const mlEphantManagerMachine = setup({
     events: {} as MlEphantManagerEvents,
   },
   actors: {
-    [MlEphantManagerTransitions.GetPromptsThatCreatedProjects]: fromPromise(
+    [MlEphantManagerTransitions.GetConversationsThatCreatedProjects]: fromPromise(
       async function (args: {
         input: {
           context: MlEphantManagerContext
@@ -134,25 +139,21 @@ export const mlEphantManagerMachine = setup({
         if (context.apiTokenMlephant === undefined)
           return Promise.reject('missing api token')
 
-        return new Promise((resolve) => {
-          setTimeout(() => {
-            const results = new Array(13)
-              .fill(undefined)
-              .map(generateFakeSubmittedPrompt)
+        const conversations: IResponseMlConversations = await textToCadMlConversations(
+          context.apiTokenMlephant, {
+            pageToken: context.conversations.next_page,
+            limit: 20,
+            sortBy: 'created_at',
+          })
 
-            const promptsPool = context.promptsPool
-            const promptsToSeedProjects = new Set(context.promptsToSeedProjects)
+        const nextItems = context.conversations.items.concat(conversations.items)
 
-            results.forEach((result) => {
-              promptsPool.set(result.id, result)
-              promptsToSeedProjects.add(result.id)
-            })
-
-            resolve({
-              promptsToSeedProjects,
-            })
-          }, 2000)
-        })
+        return {
+          conversations: {
+            items: nextItems,
+            next_page: conversations.next_page,
+          },
+        }
       }
     ),
     [MlEphantManagerTransitions.PromptCreateModel]: fromPromise(
@@ -181,14 +182,12 @@ export const mlEphantManagerMachine = setup({
             result.status = 'in_progress'
 
             const promptsPool = context.promptsPool
-            const promptsToSeedProjects = new Set(context.promptsToSeedProjects)
             const promptsBelongingToProject = new Set(
               context.promptsBelongingToProject
             )
             const promptsMeta = new Map(context.promptsMeta)
 
             promptsPool.set(result.id, result)
-            promptsToSeedProjects.add(result.id)
             promptsBelongingToProject.add(result.id)
             promptsMeta.set(result.id, {
               type: PromptType.Create,
@@ -196,7 +195,6 @@ export const mlEphantManagerMachine = setup({
             })
 
             resolve({
-              promptsToSeedProjects,
               promptsBelongingToProject,
               promptsMeta,
             })
@@ -273,10 +271,8 @@ export const mlEphantManagerMachine = setup({
           setTimeout(() => {
             const promptsPool = context.promptsPool
             const promptsInProgressToCompleted = {
-              promptsToSeedProjects: new Set(),
               promptsBelongingToProject: new Set(),
             }
-            const promptsToSeedProjects = context.promptsToSeedProjects
             const promptsBelongingToProject = context.promptsBelongingToProject
 
             promptsPool.values().forEach((prompt) => {
@@ -284,11 +280,6 @@ export const mlEphantManagerMachine = setup({
               if (prompt.status !== ('in_progress' as any)) return
               prompt.status = 'completed'
 
-              if (promptsToSeedProjects.has(prompt.id)) {
-                promptsInProgressToCompleted.promptsToSeedProjects.add(
-                  prompt.id
-                )
-              }
               if (promptsBelongingToProject?.has(prompt.id)) {
                 promptsInProgressToCompleted.promptsBelongingToProject.add(
                   prompt.id
@@ -323,7 +314,7 @@ export const mlEphantManagerMachine = setup({
     [MlEphantManagerStates.Setup]: {
       invoke: {
         input: (args: { context: MlEphantManagerContext }) => args,
-        src: MlEphantManagerTransitions.GetPromptsThatCreatedProjects,
+        src: MlEphantManagerTransitions.GetConversationsThatCreatedProjects,
         onDone: {
           target: MlEphantManagerStates.Ready,
           actions: assign(({ event }) => event.output),
@@ -369,17 +360,17 @@ export const mlEphantManagerMachine = setup({
               // Reduces boilerplate. Lets you specify many transitions with
               // states of the same name.
               on: transitions([
-                MlEphantManagerTransitions.GetPromptsThatCreatedProjects,
+                MlEphantManagerTransitions.GetConversationsThatCreatedProjects,
                 MlEphantManagerTransitions.PromptCreateModel,
                 MlEphantManagerTransitions.PromptEditModel,
               ]),
             },
-            [MlEphantManagerTransitions.GetPromptsThatCreatedProjects]: {
+            [MlEphantManagerTransitions.GetConversationsThatCreatedProjects]: {
               invoke: {
                 input: (args) => ({
                   context: args.context,
                 }),
-                src: MlEphantManagerTransitions.GetPromptsThatCreatedProjects,
+                src: MlEphantManagerTransitions.GetConversationsThatCreatedProjects,
                 onDone: {
                   target: S.Await,
                   actions: assign(({ event }) => event.output),
