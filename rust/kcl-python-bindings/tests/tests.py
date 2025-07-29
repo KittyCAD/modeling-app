@@ -2,6 +2,8 @@
 import os
 
 import kcl
+from kcl import SnapshotOptions
+from kcl import CameraLookAt
 import pytest
 
 # Get the path to this script's parent directory.
@@ -170,6 +172,16 @@ async def test_kcl_execute_dir_assembly():
 async def test_kcl_execute_and_snapshot():
     # Read from a file.
     image_bytes = await kcl.execute_and_snapshot(lego_file, kcl.ImageFormat.Jpeg)
+    assert image_bytes is not None
+    assert len(image_bytes) > 0
+
+@pytest.mark.asyncio
+async def test_kcl_execute_and_snapshot_options():
+    # Read from a file.
+    camera = kcl.CameraLookAt()  # however it's exposed
+    options = kcl.SnapshotOptions(camera=camera, padding=0.5)
+    views = [options]
+    image_bytes = await kcl.execute_code_and_snapshot_at_views(lego_file, kcl.ImageFormat.Jpeg, views)
     assert image_bytes is not None
     assert len(image_bytes) > 0
 

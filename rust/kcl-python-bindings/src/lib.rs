@@ -11,6 +11,8 @@ use pyo3::{
 };
 use serde::{Deserialize, Serialize};
 
+use crate::bridge::CameraLookAt;
+
 mod bridge;
 
 fn tokio() -> &'static tokio::runtime::Runtime {
@@ -357,6 +359,7 @@ async fn mock_execute(path: String) -> PyResult<bool> {
 }
 
 /// Execute a kcl file and snapshot it in a specific format.
+/// TODO: Add the same Vec<SnapshotOptions>
 #[pyfunction]
 async fn execute_and_snapshot(path: String, image_format: ImageFormat) -> PyResult<Vec<u8>> {
     tokio()
@@ -426,7 +429,7 @@ async fn execute_code_and_snapshot(code: String, image_format: ImageFormat) -> P
 #[pyclass]
 pub struct SnapshotOptions {
     /// If none, will use isometric view.
-    pub camera: Option<bridge::CameraLookAt>,
+    pub camera: Option<CameraLookAt>,
     pub padding: f32,
 }
 
@@ -658,6 +661,7 @@ fn kcl(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<UnitLength>()?;
     m.add_class::<Discovered>()?;
     m.add_class::<SnapshotOptions>()?;
+    m.add_class::<CameraLookAt>()?;
 
     // Add our functions to the module.
     m.add_function(wrap_pyfunction!(parse, m)?)?;

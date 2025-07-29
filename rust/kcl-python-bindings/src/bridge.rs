@@ -3,20 +3,20 @@ use kittycad_modeling_cmds as kcmc;
 use pyo3::pyclass;
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize, PartialEq, Debug, Clone)]
+#[derive(Serialize, Deserialize, PartialEq, Debug, Clone, Copy)]
 #[pyclass]
 pub struct Point3d {
-    x: f32,
-    y: f32,
-    z: f32,
+    pub x: f32,
+    pub y: f32,
+    pub z: f32,
 }
 
-#[derive(Serialize, Deserialize, PartialEq, Debug, Clone)]
+#[derive(Serialize, Deserialize, PartialEq, Debug, Clone, Copy)]
 #[pyclass]
 pub struct CameraLookAt {
-    vantage: Point3d,
-    center: Point3d,
-    up: Point3d,
+    pub vantage: Point3d,
+    pub center: Point3d,
+    pub up: Point3d,
 }
 
 impl From<CameraLookAt> for kcmc::DefaultCameraLookAt {

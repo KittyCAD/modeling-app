@@ -1,6 +1,11 @@
 test:
     uv pip install .[test]
     uv run pytest tests/tests.py
+
+test-filter name:
+    uv pip install .[test]
+    uv run pytest tests/tests.py::{{name}}
+
 setup-uv:
     uv python install
     uv venv .venv
