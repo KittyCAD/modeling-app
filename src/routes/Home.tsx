@@ -14,12 +14,12 @@ import { ActionButton } from '@src/components/ActionButton'
 import { AppHeader } from '@src/components/AppHeader'
 import Loading from '@src/components/Loading'
 import ProjectCard from '@src/components/ProjectCard/ProjectCard'
-import { PromptCard } from '@src/components/PromptCard'
+import { ConvoCard } from '@src/components/PromptCard'
 import {
   HomeSearchBar,
   useHomeSearch,
   areHomeItemsProjects,
-  areHomeItemsPrompts,
+  areHomeItemsConversations,
 } from '@src/components/HomeSearchBar'
 import type { HomeItems } from '@src/components/HomeSearchBar'
 import { BillingDialog } from '@src/components/BillingDialog'
@@ -29,11 +29,10 @@ import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
 import type { Project } from '@src/lib/project'
-import type { Prompt } from '@src/lib/prompt'
 import {
   getNextSearchParams,
   getProjectSortFunction,
-  getPromptSortFunction,
+  getConvoSortFunction,
   getSortIcon,
 } from '@src/lib/sorting'
 import { reportRejection } from '@src/lib/trap'
@@ -224,8 +223,8 @@ const Home = () => {
     }
   )
   const projects = useFolders()
-  const promptsToSeedProjects = useSelector(mlEphantManagerActor, (actor) => {
-    return actor.context.promptsToSeedProjects
+  const conversations = useSelector(mlEphantManagerActor, (actor) => {
+    return actor.context.conversations
   })
 
   // Trigger a rerender for the Prompts tab when prompts change state.
@@ -254,25 +253,13 @@ const Home = () => {
         setItems(projects)
         break
       case HomeTabKeys.Prompts:
-        // Lessons hard learned: VERY important to do this here, and not within
-        // the useSelector. React will think it's a new value every time, and
-        // cause this useEffect to fire indefinitely.
-        const context = mlEphantManagerActor.getSnapshot().context
-        setItems(
-          Array.from(
-            promptsToSeedProjects
-              .values()
-              .map((promptId) => context.promptsPool.get(promptId))
-              .filter((prompt) => prompt !== undefined)
-          )
-        )
+        setItems(conversations.items)
         break
       default:
         const _ex: never = tabSelected
     }
   }, [
     tabSelected,
-    promptsToSeedProjects,
     promptsInProgressToCompleted,
     projects,
   ])
@@ -668,8 +655,8 @@ function HomeItemsArea(props: HomeItemsAreaProps) {
       )
       break
     case HomeTabKeys.Prompts:
-      grid = areHomeItemsPrompts(props.searchResults) ? (
-        <ResultGridPrompts
+      grid = areHomeItemsConversations(props.searchResults) ? (
+        <ResultGridConversations
           searchResults={props.searchResults}
           query={props.query}
           sortBy={props.sortBy}
@@ -690,16 +677,16 @@ function HomeItemsArea(props: HomeItemsAreaProps) {
   )
 }
 
-interface ResultGridPromptsProps {
-  searchResults: Prompt[]
+interface ResultGridConversationsProps {
+  searchResults: IResponseMlConversation[]
   query: string
   sortBy: string
   settings: ReturnType<typeof useSettings>
 }
 
-function ResultGridPrompts(props: ResultGridPromptsProps) {
+function ResultGridConversations(props: ResultGridConversationsProps) {
   // Maybe consider lifting this higher but I see no reason at the moment
-  const onAction = (_id: Prompt['id'], prompt: Prompt['prompt']) => {
+  const onAction = (prompt: string) => {
     commandBarActor.send({
       type: 'Find and select command',
       data: {
@@ -712,13 +699,6 @@ function ResultGridPrompts(props: ResultGridPromptsProps) {
         },
       },
     })
-  }
-  // no-op for now
-  const onDelete = (...args: any) => {
-    console.log(args)
-  }
-  const onFeedback = (...args: any) => {
-    console.log(args)
   }
 
   const mlEphantManagerSnapshot = mlEphantManagerActor.getSnapshot()
@@ -734,15 +714,12 @@ function ResultGridPrompts(props: ResultGridPromptsProps) {
   return (
     <div className="grid w-full sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-4">
       {props.searchResults
-        .sort(getPromptSortFunction(props.sortBy))
-        .map((prompt: Prompt) => (
-          <PromptCard
-            key={prompt.id}
-            {...prompt}
-            disabled={prompt.status !== 'completed'}
+        .sort(getConvoSortFunction(props.sortBy))
+        .map((convo: IResponseMlConversation) => (
+          <ConvoCard
+            key={convo.id}
+            {...convo}
             onAction={onAction}
-            onDelete={onDelete}
-            onFeedback={onFeedback}
           />
         ))}
     </div>

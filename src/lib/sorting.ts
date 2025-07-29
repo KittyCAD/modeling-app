@@ -1,6 +1,6 @@
 import type { CustomIconName } from '@src/components/CustomIcon'
 import type { Project } from '@src/lib/project'
-import type { Prompt } from '@src/lib/prompt'
+import type { IResponseMlConversation } from '@src/lib/textToCad'
 
 const DESC = ':desc'
 
@@ -54,19 +54,19 @@ export function getProjectSortFunction(sortBy: string) {
   }
 }
 
-// Below is to keep the same behavior as above but for prompts.
+// Below is to keep the same behavior as above but for converstions.
 // Do NOT take it as actually "sort by modified" but more like "sort by time".
-export function getPromptSortFunction(sortBy: string) {
-  const sortByName = (a: Prompt, b: Prompt) => {
-    if (a.prompt && b.prompt) {
+export function getConvoSortFunction(sortBy: string) {
+  const sortByName = (a: IResponseMlConversation, b: IResponseMlConversation) => {
+    if (a.first_prompt && b.first_prompt) {
       return sortBy.includes('desc')
-        ? a.prompt.localeCompare(b.prompt)
-        : b.prompt.localeCompare(a.prompt)
+        ? a.first_prompt.localeCompare(b.prompt)
+        : b.first_prompt.localeCompare(a.prompt)
     }
     return 0
   }
 
-  const sortByModified = (a: Prompt, b: Prompt) => {
+  const sortByModified = (a: IResponseMlConversation, b: IResponseMlConversation) => {
     if (a.created_at && b.created_at) {
       // INTENTIONALLY REVERSED
       // Will not show properly otherwise.

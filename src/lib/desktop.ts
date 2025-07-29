@@ -913,4 +913,3 @@ export function getPathFilenameInVariableCase(path: string) {
   )
   return getInVariableCase(basenameNoExt)
 }
-
