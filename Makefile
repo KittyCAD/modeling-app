@@ -45,10 +45,10 @@ endif
 
 CARGO_SOURCES := rust/.cargo/config.toml $(wildcard rust/Cargo.*) $(wildcard rust/*/Cargo.*)
 KCL_SOURCES := $(wildcard public/kcl-samples/*/*.kcl)
-RUST_SOURCES := $(shell find rust -name "*.rs")
+RUST_SOURCES := $(wildcard rust/*.rs rust/*/*.rs rust/*/*/*.rs rust/*/*/*/*.rs rust/*/*/*/*/*.rs)
 
-REACT_SOURCES := $(wildcard src/*.tsx) $(shell find src -name "*.tsx")
-TYPESCRIPT_SOURCES := tsconfig.* $(wildcard src/*.ts) $(shell find src -name "*.ts")
+REACT_SOURCES := $(wildcard src/*.tsx src/*/*.tsx src/*/*/*.tsx src/*/*/*/*.tsx)
+TYPESCRIPT_SOURCES := tsconfig.* $(wildcard src/*.ts src/*/*.ts src/*/*/*.ts src/*/*/*/*.ts)
 VITE_SOURCES := $(wildcard vite.*) .env*
 
 .PHONY: build
