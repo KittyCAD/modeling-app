@@ -424,10 +424,10 @@ async fn execute_code_and_snapshot(code: String, image_format: ImageFormat) -> P
 
 #[derive(Serialize, Deserialize, PartialEq, Debug, Clone)]
 #[pyclass]
-struct SnapshotOptions {
+pub struct SnapshotOptions {
     /// If none, will use isometric view.
-    camera: Option<bridge::CameraLookAt>,
-    padding: f32,
+    pub camera: Option<bridge::CameraLookAt>,
+    pub padding: f32,
 }
 
 /// Execute the kcl code and snapshot it in a specific format.
@@ -657,6 +657,7 @@ fn kcl(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<FileExportFormat>()?;
     m.add_class::<UnitLength>()?;
     m.add_class::<Discovered>()?;
+    m.add_class::<SnapshotOptions>()?;
 
     // Add our functions to the module.
     m.add_function(wrap_pyfunction!(parse, m)?)?;
