@@ -78,7 +78,7 @@ export enum SystemIOMachineActions {
 }
 
 export enum SystemIOMachineGuards {
-  projectNameIsValidLength = 'project name is value length',
+  projectNameIsValidLength = 'project name is valid length',
 }
 
 export const NO_PROJECT_DIRECTORY = ''
