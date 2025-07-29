@@ -8,7 +8,10 @@ import type { Selections } from '@src/lib/selections'
 import type { Project } from '@src/lib/project'
 import type { Prompt } from '@src/lib/prompt'
 import { generateFakeSubmittedPrompt, PromptType } from '@src/lib/prompt'
-import { textToCadMlConversations, IResponseMlConversations } from '@src/lib/textToCad'
+import {
+  textToCadMlConversations,
+  IResponseMlConversations,
+} from '@src/lib/textToCad'
 
 const MLEPHANT_POLL_STATUSES_MS = 5000
 
@@ -129,8 +132,8 @@ export const mlEphantManagerMachine = setup({
     events: {} as MlEphantManagerEvents,
   },
   actors: {
-    [MlEphantManagerTransitions.GetConversationsThatCreatedProjects]: fromPromise(
-      async function (args: {
+    [MlEphantManagerTransitions.GetConversationsThatCreatedProjects]:
+      fromPromise(async function (args: {
         input: {
           context: MlEphantManagerContext
         }
@@ -139,14 +142,16 @@ export const mlEphantManagerMachine = setup({
         if (context.apiTokenMlephant === undefined)
           return Promise.reject('missing api token')
 
-        const conversations: IResponseMlConversations = await textToCadMlConversations(
-          context.apiTokenMlephant, {
+        const conversations: IResponseMlConversations =
+          await textToCadMlConversations(context.apiTokenMlephant, {
             pageToken: context.conversations.next_page,
             limit: 20,
             sortBy: 'created_at',
           })
 
-        const nextItems = context.conversations.items.concat(conversations.items)
+        const nextItems = context.conversations.items.concat(
+          conversations.items
+        )
 
         return {
           conversations: {
@@ -154,8 +159,7 @@ export const mlEphantManagerMachine = setup({
             next_page: conversations.next_page,
           },
         }
-      }
-    ),
+      }),
     [MlEphantManagerTransitions.PromptCreateModel]: fromPromise(
       async function (args: {
         system: any
