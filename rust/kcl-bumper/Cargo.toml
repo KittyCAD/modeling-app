@@ -19,7 +19,7 @@ anyhow = { workspace = true }
 clap = { workspace = true, features = ["derive"] }
 semver = "1.0.25"
 serde = { workspace = true }
-toml_edit = "0.22.27"
+toml_edit = "0.23.2"
 
 [lints]
 workspace = true
