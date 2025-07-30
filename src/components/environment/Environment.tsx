@@ -21,7 +21,7 @@ export function EnvironmentDescription() {
   return (
     <div className="absolute left-2 bottom-full mb-1 flex-col gap-1 align-stretch bg-chalkboard-10 dark:bg-chalkboard-90 rounded shadow-lg border border-solid border-chalkboard-20/50 dark:border-chalkboard-80/50 text-sm">
       <div
-        className={`flex flex-col p-2 mb-2 rounded-t-sm bg-chalkboard-20 text-chalkboard-100`}
+        className={`flex flex-col p-2 mb-2 rounded-t-sm bg-chalkboard-20 text-chalkboard-100 dark:bg-chalkboard-80 dark:text-chalkboard-10`}
       >
         <p className="flex flex-row justify-between">
           <h2 className="text-sm font-sans font-normal">Environment</h2>
@@ -47,7 +47,7 @@ export function EnvironmentDescription() {
                 }
               }}
               iconEnd={{ icon: 'sketch', bgClassName: '!bg-transparent' }}
-              className="ml-1 pr-0"
+              className="ml-1 py-0.5 pr-0.5"
             >
               {fullEnvironmentName}
             </ActionButton>
@@ -56,26 +56,30 @@ export function EnvironmentDescription() {
       </div>
       <ul>
         <li className="flex flex-col px-2 py-2 gap-1 last:mb-0 ">
-          <p className="text-chalkboard-100">API</p>{' '}
-          <p className="text-chalkboard-60">
+          <p className="text-chalkboard-100 dark:text-chalkboard-10">API</p>{' '}
+          <p className="text-chalkboard-60 dark:text-chalkboard-40">
             {env().VITE_KITTYCAD_API_BASE_URL}
           </p>
         </li>
         <li className="flex flex-col px-2 py-2 gap-1 last:mb-0 ">
-          <p className="text-chalkboard-100">Site</p>{' '}
-          <p className="text-chalkboard-60">
+          <p className="text-chalkboard-100 dark:text-chalkboard-10">Site</p>{' '}
+          <p className="text-chalkboard-60 dark:text-chalkboard-40">
             {env().VITE_KITTYCAD_SITE_BASE_URL}
           </p>
         </li>
         <li className="flex flex-col px-2 py-2 gap-1 last:mb-0 ">
-          <p className="text-chalkboard-100">WebSocket (real-time-data)</p>{' '}
-          <p className="text-chalkboard-60">
+          <p className="text-chalkboard-100 dark:text-chalkboard-10">
+            WebSocket (real-time-data)
+          </p>{' '}
+          <p className="text-chalkboard-60 dark:text-chalkboard-40">
             {env().VITE_KITTYCAD_API_WEBSOCKET_URL}
           </p>
         </li>
         <li className="flex flex-col px-2 py-2 gap-1 last:mb-0 ">
-          <p className="text-chalkboard-100">Connection Pool</p>{' '}
-          <p className="text-chalkboard-60 flex flex-row justify-between">
+          <p className="text-chalkboard-100 dark:text-chalkboard-10">
+            Connection Pool
+          </p>{' '}
+          <p className="text-chalkboard-60 dark:text-chalkboard-40 flex flex-row justify-between">
             <span>{env().POOL || 'Auto'}</span>
             <div className="flex flex-row gap-1">
               <ActionButton
