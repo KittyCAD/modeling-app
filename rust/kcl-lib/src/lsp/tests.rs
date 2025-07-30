@@ -16,12 +16,6 @@ use crate::{
     parsing::ast::types::{Node, Program},
 };
 
-// TODO: Revert this before merging
-#[tokio::test(flavor = "multi_thread", worker_threads = 12)]
-async fn test_example_failing_test_to_disable() {
-    assert_eq!(1, 2);
-}
-
 #[track_caller]
 fn assert_diagnostic_count(diagnostics: Option<&Vec<Diagnostic>>, n: usize) {
     let Some(diagnostics) = diagnostics else {
@@ -653,7 +647,7 @@ async fn test_kcl_lsp_completions() {
                 version: 1,
                 // Blank lines to check that we get completions even in an AST newline thing.
                 text: r#"
-
+                
 thing= 1
 st"#
                 .to_string(),
@@ -1736,7 +1730,7 @@ async fn test_kcl_lsp_semantic_tokens_multiple_comments() {
                 language_id: "kcl".to_string(),
                 version: 1,
                 text: r#"// Ball Bearing
-// A ball bearing is a type of rolling-element bearing that uses balls to maintain the separation between the bearing races. The primary purpose of a ball bearing is to reduce rotational friction and support radial and axial loads.
+// A ball bearing is a type of rolling-element bearing that uses balls to maintain the separation between the bearing races. The primary purpose of a ball bearing is to reduce rotational friction and support radial and axial loads. 
 
 // Define constants like ball diameter, inside diameter, overhange length, and thickness
 sphereDia = 0.5"#
@@ -1963,7 +1957,7 @@ async fn test_kcl_lsp_formatting_extra_parens() {
                 language_id: "kcl".to_string(),
                 version: 1,
                 text: r#"// Ball Bearing
-// A ball bearing is a type of rolling-element bearing that uses balls to maintain the separation between the bearing races. The primary purpose of a ball bearing is to reduce rotational friction and support radial and axial loads.
+// A ball bearing is a type of rolling-element bearing that uses balls to maintain the separation between the bearing races. The primary purpose of a ball bearing is to reduce rotational friction and support radial and axial loads. 
 
 // Define constants like ball diameter, inside diameter, overhange length, and thickness
 sphereDia = 0.5
@@ -2483,7 +2477,7 @@ async fn test_copilot_lsp_completions() {
             relative_path: "test.copilot".to_string(),
             source: r#"bracket = startSketchOn(XY)
   |> startProfile(at = [0, 0])
-
+  
   |> close()
   |> extrude(length = 10)
 "#
