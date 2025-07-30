@@ -110,6 +110,11 @@ export class KclManager extends EventTarget {
   private _variables: VariableMap = {}
   lastSuccessfulVariables: VariableMap = {}
   lastSuccessfulOperations: Operation[] = []
+  /**
+   * Since the operations reference the code, we need to store the code that the
+   * operations were executed on.
+   */
+  lastSuccessfulCode: string = ''
   private _logs: string[] = []
   private _errors: KCLError[] = []
   private _diagnostics: Diagnostic[] = []
@@ -158,6 +163,7 @@ export class KclManager extends EventTarget {
 
     // These belonged to the previous file
     this.lastSuccessfulOperations = []
+    this.lastSuccessfulCode = ''
     this.lastSuccessfulVariables = {}
 
     // Without this, when leaving a project which has errors and opening another project which doesn't,
@@ -456,6 +462,7 @@ export class KclManager extends EventTarget {
     this.isExecuting = true
     await this.ensureWasmInit()
 
+    const codeThatExecuted = this.singletons.codeManager.code
     const { logs, errors, execState, isInterrupted } = await executeAst({
       ast,
       path: this.singletons.codeManager.currentFilePath || undefined,
@@ -506,6 +513,7 @@ export class KclManager extends EventTarget {
     if (!errors.length) {
       this.lastSuccessfulVariables = execState.variables
       this.lastSuccessfulOperations = execState.operations
+      this.lastSuccessfulCode = codeThatExecuted
     }
     this.ast = structuredClone(ast)
     // updateArtifactGraph relies on updated executeState/variables
@@ -560,6 +568,7 @@ export class KclManager extends EventTarget {
     }
     this._ast = { ...newAst }
 
+    const codeThatExecuted = this.singletons.codeManager.code
     const { logs, errors, execState } = await executeAstMock({
       ast: newAst,
       rustContext: this.singletons.rustContext,
@@ -571,6 +580,7 @@ export class KclManager extends EventTarget {
     if (!errors.length) {
       this.lastSuccessfulVariables = execState.variables
       this.lastSuccessfulOperations = execState.operations
+      this.lastSuccessfulCode = codeThatExecuted
     }
     await this.updateArtifactGraph(execState.artifactGraph)
     return null

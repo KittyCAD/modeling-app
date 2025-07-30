@@ -9,6 +9,8 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 import {
   SEGMENT_BODIES_PLUS_PROFILE_START,
   getParentGroup,
+  SEGMENT_BLUE,
+  EXTRA_SEGMENT_HANDLE,
 } from '@src/clientSideScene/sceneConstants'
 import { AXIS_GROUP, X_AXIS } from '@src/clientSideScene/sceneUtils'
 import { getNodeFromPath, isSingleCursorInPipe } from '@src/lang/queryAst'
@@ -47,6 +49,7 @@ import {
 import { engineStreamActor } from '@src/lib/singletons'
 import type { ModelingMachineEvent } from '@src/machines/modelingMachine'
 import { showUnsupportedSelectionToast } from '@src/components/ToastUnsupportedSelection'
+import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 
 export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'
 export const Y_AXIS_UUID = '680fd157-266f-4b8a-984f-cdf46b8bdf01'
@@ -369,17 +372,36 @@ function updateSceneObjectColors(codeBasedSelections: Selection[]) {
     })
 
     const color = groupHasCursor
-      ? 0x0000ff
+      ? SEGMENT_BLUE
       : segmentGroup?.userData?.baseColor || 0xffffff
-    segmentGroup.traverse(
-      (child) => child instanceof Mesh && child.material.color.set(color)
-    )
+    segmentGroup.traverse((child) => {
+      child instanceof Mesh && child.material.color.set(color)
+    })
+    // This is only needed if we want the extra segment to be blue when selected, even if it's still hovered
+    updateExtraSegments(segmentGroup, 'selected', groupHasCursor)
+    updateExtraSegments(segmentGroup, 'hoveringLine', false)
+
     // TODO if we had access to the xstate context and therefore selections
     // we wouldn't need to set this here,
     // it would be better to treat xstate context as the source of truth instead of having
     // extra redundant state floating around
     segmentGroup.userData.isSelected = groupHasCursor
   })
+}
+
+export function updateExtraSegments(
+  parent: Object3D | null,
+  className: string,
+  value: boolean
+) {
+  const extraSegmentGroup = parent?.getObjectByName(EXTRA_SEGMENT_HANDLE)
+  if (extraSegmentGroup) {
+    extraSegmentGroup.traverse((child) => {
+      if (child instanceof CSS2DObject) {
+        child.element.classList.toggle(className, value)
+      }
+    })
+  }
 }
 
 function resetAndSetEngineEntitySelectionCmds(

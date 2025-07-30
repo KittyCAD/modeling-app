@@ -183,7 +183,7 @@ async fn unparse_test(test: &Test) {
     let ast = crate::parsing::parse_tokens(tokens).unwrap();
 
     // Check recasting.
-    let actual = ast.recast(&Default::default(), 0);
+    let actual = ast.recast_top(&Default::default(), 0);
     let input_result = catch_unwind(AssertUnwindSafe(|| {
         assert_snapshot(test, "Result of unparsing", || {
             insta::assert_snapshot!("unparsed", actual);

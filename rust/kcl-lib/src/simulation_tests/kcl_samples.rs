@@ -12,6 +12,9 @@ use walkdir::WalkDir;
 
 use super::Test;
 
+/// Some samples may be temporarily disabled.
+const DISABLED_SAMPLES: [&str; 2] = ["ball-joint-rod-end", "multi-axis-robot"];
+
 lazy_static::lazy_static! {
     /// The directory containing the KCL samples source.
     static ref INPUTS_DIR: PathBuf = Path::new("../../public/kcl-samples").to_path_buf();
@@ -72,6 +75,9 @@ async fn unparse_test(test: &Test) {
 #[kcl_directory_test_macro::test_all_dirs("../public/kcl-samples")]
 async fn kcl_test_execute(dir_name: &str, dir_path: &Path) {
     if DISABLED_SAMPLES.contains(&dir_name) {
+        // NOTE: Do not remove this line. The error message is included in the
+        // JUnit XML report for the Test Analysis Bot to post-process results
+        // and determine whether the test should be marked as skipped.
         eprintln!("Skipping disabled sample: {}", dir_name);
         return;
     }
@@ -291,9 +297,6 @@ fn get_kcl_metadata(project_path: &Path, files: &[String]) -> Option<KclMetadata
         files,
     })
 }
-
-// Some samples may be temporarily disabled for various reasons
-const DISABLED_SAMPLES: [&str; 1] = ["ball-joint-rod-end"];
 
 // Function to scan the directory and generate the manifest.json
 fn generate_kcl_manifest(dir: &Path) -> Result<()> {
