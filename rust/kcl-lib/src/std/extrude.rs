@@ -332,6 +332,9 @@ pub(crate) async fn do_post_extrude<'a>(
         // Ok so you would think that the id would be the id of the solid,
         // that we passed in to the function, but it's actually the id of the
         // sketch.
+        //
+        // Why? Because when you extrude a sketch, the engine lets the solid absorb the
+        // sketch's ID. So the solid should take over the sketch's ID.
         id: sketch.id,
         artifact_id: solid_id,
         value: new_value,
