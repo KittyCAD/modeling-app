@@ -209,6 +209,7 @@ pub(crate) async fn do_post_extrude<'a>(
     };
 
     let mut sketch = sketch.clone();
+    sketch.is_closed = true;
 
     // If we were sketching on a face, we need the original face id.
     if let SketchSurface::Face(ref face) = sketch.on {
