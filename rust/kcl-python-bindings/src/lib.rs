@@ -398,19 +398,31 @@ async fn execute_code_and_snapshot(code: String, image_format: ImageFormat) -> P
     Ok(snaps.pop().unwrap())
 }
 
+/// Customize a snapshot.
 #[derive(Serialize, Deserialize, PartialEq, Debug, Clone)]
 #[pyclass]
 pub struct SnapshotOptions {
     /// If none, will use isometric view.
     pub camera: Option<bridge::CameraLookAt>,
+    /// How much to pad the view frame by, as a fraction of the object(s) bounding box size.
+    /// Negative padding will crop the view of the object proportionally.
+    /// e.g. padding = 0.2 means the view will span 120% of the object(s) bounding box,
+    /// and padding = -0.2 means the view will span 80% of the object(s) bounding box.
     pub padding: f32,
 }
 
 #[pymethods]
 impl SnapshotOptions {
     #[new]
+    /// Takes a kcl.CameraLookAt, and a padding number.
     fn new(camera: Option<bridge::CameraLookAt>, padding: f32) -> Self {
         Self { camera, padding }
+    }
+
+    #[staticmethod]
+    /// Takes a padding number.
+    fn isometric_view(padding: f32) -> Self {
+        Self::new(None, padding)
     }
 }
 
@@ -448,7 +460,7 @@ async fn take_snaps(
     snapshot_options: Vec<SnapshotOptions>,
 ) -> PyResult<Vec<Vec<u8>>> {
     if snapshot_options.is_empty() {
-        let data_bytes = snapshot(&ctx, image_format, 0.1).await?;
+        let data_bytes = snapshot(ctx, image_format, 0.1).await?;
         return Ok(vec![data_bytes]);
     }
 
@@ -466,7 +478,7 @@ async fn take_snaps(
                 .send_modeling_cmd(uuid::Uuid::new_v4(), Default::default(), &view_cmd)
                 .await?;
         }
-        let data_bytes = snapshot(&ctx, image_format, pre_snap.padding).await?;
+        let data_bytes = snapshot(ctx, image_format, pre_snap.padding).await?;
         snaps.push(data_bytes);
     }
     Ok(snaps)

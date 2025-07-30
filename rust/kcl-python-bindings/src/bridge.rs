@@ -14,6 +14,8 @@ pub struct Point3d {
 #[pymethods]
 impl Point3d {
     #[new]
+    /// Create a new point from its 3 components x, y and z
+    /// All of them take floating point values.
     fn new(x: f32, y: f32, z: f32) -> Self {
         Self { x, y, z }
     }
