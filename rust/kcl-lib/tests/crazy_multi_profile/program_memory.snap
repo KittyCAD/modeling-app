@@ -1311,7 +1311,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
       "originalId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "isClosed": false
     }
   },
   "profile003": {
@@ -2796,7 +2797,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
       "originalId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "isClosed": false
     }
   },
   "profile008": {

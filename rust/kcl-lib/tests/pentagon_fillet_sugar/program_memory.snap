@@ -307,7 +307,8 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
             "originalId": "[uuid]",
             "units": {
               "type": "Mm"
-            }
+            },
+            "isClosed": false
           },
           "height": 200.0,
           "startCapId": "[uuid]",
@@ -636,7 +637,8 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
             "originalId": "[uuid]",
             "units": {
               "type": "Mm"
-            }
+            },
+            "isClosed": false
           },
           "height": 200.0,
           "startCapId": "[uuid]",
@@ -892,7 +894,8 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        }
+        },
+        "isClosed": false
       },
       "height": 200.0,
       "startCapId": "[uuid]",
@@ -1207,7 +1210,8 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
               "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
-              }
+              },
+              "isClosed": false
             },
             "height": 200.0,
             "startCapId": "[uuid]",
@@ -1602,7 +1606,8 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
               "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
-              }
+              },
+              "isClosed": false
             },
             "height": 200.0,
             "startCapId": "[uuid]",

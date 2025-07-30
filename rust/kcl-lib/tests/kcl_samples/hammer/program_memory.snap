@@ -1993,7 +1993,8 @@ description: Variables in memory after executing hammer.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Inches"
-        }
+        },
+        "isClosed": false
       },
       "height": 14.0,
       "startCapId": "[uuid]",
