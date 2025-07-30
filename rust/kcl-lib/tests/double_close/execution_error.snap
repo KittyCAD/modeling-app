@@ -1,0 +1,14 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Error from executing double_close.kcl
+---
+KCL Engine error
+
+  × engine: The provided object is of type Object, which is not a valid input
+  │ for use in this operation.
+   ╭─[4:6]
+ 3 │   |> rectangle(center = [0, 0], width = 10, height = 10)
+ 4 │   |> close()
+   ·      ───┬───
+   ·         ╰── tests/double_close/input.kcl
+   ╰────
