@@ -16,8 +16,6 @@ flowchart LR
     7["Segment<br>[62, 113, 0]"]
       %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }]
     8[Solid2d]
-    9["Segment<br>[119, 126, 0]"]
-      %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 3 }]
   end
   1["Plane<br>[8, 25, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
@@ -28,5 +26,4 @@ flowchart LR
   3 --- 6
   3 --- 7
   3 --- 8
-  3 --- 9
 ```
