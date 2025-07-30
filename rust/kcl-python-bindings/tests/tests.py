@@ -2,6 +2,7 @@
 import os
 
 import kcl
+from kcl import Point3d
 import pytest
 
 # Get the path to this script's parent directory.
@@ -170,6 +171,31 @@ async def test_kcl_execute_dir_assembly():
 async def test_kcl_execute_and_snapshot():
     # Read from a file.
     image_bytes = await kcl.execute_and_snapshot(lego_file, kcl.ImageFormat.Jpeg)
+    assert image_bytes is not None
+    assert len(image_bytes) > 0
+
+
+@pytest.mark.asyncio
+async def test_kcl_execute_and_snapshot_options():
+    camera = kcl.CameraLookAt(
+        # Test both constructors, with unnamed fields and named fields.
+        up=Point3d(0, 0, 1),
+        vantage=Point3d(x=0, y=-1, z=0),
+        center=Point3d(x=0, y=0, z=0),
+    )
+    views = [
+        # Specific camera perspective
+        kcl.SnapshotOptions(camera=camera, padding=0.5),
+        # Camera=None means isometric view.
+        kcl.SnapshotOptions(camera=None, padding=0),
+    ]
+    # Read from a file.
+    images = await kcl.execute_and_snapshot_views(
+        lego_file, kcl.ImageFormat.Jpeg, views
+    )
+    assert images is not None
+    assert len(images) == len(views)
+    image_bytes = images[0]
     assert image_bytes is not None
     assert len(image_bytes) > 0
 
