@@ -47,7 +47,7 @@ export function EnvironmentDescription() {
                 }
               }}
               iconEnd={{ icon: 'sketch', bgClassName: '!bg-transparent' }}
-              className="ml-1 pr-0"
+              className="ml-1 py-0.5 pr-0.5"
             >
               {fullEnvironmentName}
             </ActionButton>
@@ -71,7 +71,7 @@ export function EnvironmentDescription() {
           <p className="text-chalkboard-100 dark:text-chalkboard-10">
             WebSocket (real-time-data)
           </p>{' '}
-          <p className="text-chalkboard-60 dark:text:chalkboard-40">
+          <p className="text-chalkboard-60 dark:text-chalkboard-40">
             {env().VITE_KITTYCAD_API_WEBSOCKET_URL}
           </p>
         </li>
