@@ -2,8 +2,7 @@
 import os
 
 import kcl
-from kcl import SnapshotOptions
-from kcl import CameraLookAt
+from kcl import Point3d
 import pytest
 
 # Get the path to this script's parent directory.
@@ -175,13 +174,23 @@ async def test_kcl_execute_and_snapshot():
     assert image_bytes is not None
     assert len(image_bytes) > 0
 
+
 @pytest.mark.asyncio
 async def test_kcl_execute_and_snapshot_options():
-    # Read from a file.
-    camera = kcl.CameraLookAt()  # however it's exposed
+    camera = kcl.CameraLookAt(
+        up=Point3d(x=0, y=0, z=1),
+        vantage=Point3d(x=0, y=-1, z=0),
+        center=Point3d(x=0, y=0, z=0),
+    )
     options = kcl.SnapshotOptions(camera=camera, padding=0.5)
     views = [options]
-    image_bytes = await kcl.execute_code_and_snapshot_at_views(lego_file, kcl.ImageFormat.Jpeg, views)
+    # Read from a file.
+    images = await kcl.execute_code_and_snapshot_at_views(
+        lego_file, kcl.ImageFormat.Jpeg, views
+    )
+    assert images is not None
+    assert len(images) == len(views)
+    image_bytes = images[0]
     assert image_bytes is not None
     assert len(image_bytes) > 0
 

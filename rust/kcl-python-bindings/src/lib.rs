@@ -11,8 +11,6 @@ use pyo3::{
 };
 use serde::{Deserialize, Serialize};
 
-use crate::bridge::CameraLookAt;
-
 mod bridge;
 
 fn tokio() -> &'static tokio::runtime::Runtime {
@@ -429,8 +427,16 @@ async fn execute_code_and_snapshot(code: String, image_format: ImageFormat) -> P
 #[pyclass]
 pub struct SnapshotOptions {
     /// If none, will use isometric view.
-    pub camera: Option<CameraLookAt>,
+    pub camera: Option<bridge::CameraLookAt>,
     pub padding: f32,
+}
+
+#[pymethods]
+impl SnapshotOptions {
+    #[new]
+    fn new(camera: Option<bridge::CameraLookAt>, padding: f32) -> Self {
+        Self { camera, padding }
+    }
 }
 
 /// Execute the kcl code and snapshot it in a specific format.
@@ -661,7 +667,9 @@ fn kcl(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<UnitLength>()?;
     m.add_class::<Discovered>()?;
     m.add_class::<SnapshotOptions>()?;
-    m.add_class::<CameraLookAt>()?;
+    m.add_class::<bridge::CameraLookAt>()?;
+    m.add_class::<bridge::Point3d>()?;
+    m.add_class::<bridge::CameraLookAt>()?;
 
     // Add our functions to the module.
     m.add_function(wrap_pyfunction!(parse, m)?)?;

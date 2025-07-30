@@ -1,6 +1,6 @@
 //! For creating equivalents to the core kcmc types that support Python.
 use kittycad_modeling_cmds as kcmc;
-use pyo3::pyclass;
+use pyo3::{pyclass, pymethods};
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, PartialEq, Debug, Clone, Copy)]
@@ -11,12 +11,28 @@ pub struct Point3d {
     pub z: f32,
 }
 
+#[pymethods]
+impl Point3d {
+    #[new]
+    fn new(x: f32, y: f32, z: f32) -> Self {
+        Self { x, y, z }
+    }
+}
+
 #[derive(Serialize, Deserialize, PartialEq, Debug, Clone, Copy)]
 #[pyclass]
 pub struct CameraLookAt {
     pub vantage: Point3d,
     pub center: Point3d,
     pub up: Point3d,
+}
+
+#[pymethods]
+impl CameraLookAt {
+    #[new]
+    fn new(vantage: Point3d, center: Point3d, up: Point3d) -> Self {
+        Self { vantage, center, up }
+    }
 }
 
 impl From<CameraLookAt> for kcmc::DefaultCameraLookAt {
