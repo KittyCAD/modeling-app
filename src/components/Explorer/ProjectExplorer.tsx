@@ -446,7 +446,7 @@ export const ProjectExplorer = ({
 
               if (row.isFake) {
                 // create a file if it is fake and navigate to that file!
-                if (file && !canNavigate) {
+                if (file && canNavigate) {
                   systemIOActor.send({
                     type: SystemIOMachineEvents.importFileFromURL,
                     data: {
