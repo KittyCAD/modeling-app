@@ -357,9 +357,18 @@ async fn mock_execute(path: String) -> PyResult<bool> {
 }
 
 /// Execute a kcl file and snapshot it in a specific format.
-/// TODO: Add the same Vec<SnapshotOptions>
 #[pyfunction]
 async fn execute_and_snapshot(path: String, image_format: ImageFormat) -> PyResult<Vec<u8>> {
+    let img = execute_and_snapshot_views(path, image_format, Vec::new()).await?.pop();
+    Ok(img.unwrap())
+}
+
+#[pyfunction]
+async fn execute_and_snapshot_views(
+    path: String,
+    image_format: ImageFormat,
+    snapshot_options: Vec<SnapshotOptions>,
+) -> PyResult<Vec<Vec<u8>>> {
     tokio()
         .spawn(async move {
             let (code, path) = get_code_and_file_path(&path)
@@ -376,41 +385,7 @@ async fn execute_and_snapshot(path: String, image_format: ImageFormat) -> PyResu
                 .await
                 .map_err(|err| into_miette(err, &code))?;
 
-            // Zoom to fit.
-            ctx.engine
-                .send_modeling_cmd(
-                    uuid::Uuid::new_v4(),
-                    kcl_lib::SourceRange::default(),
-                    &kittycad_modeling_cmds::ModelingCmd::ZoomToFit(kittycad_modeling_cmds::ZoomToFit {
-                        object_ids: Default::default(),
-                        padding: 0.1,
-                        animated: false,
-                    }),
-                )
-                .await?;
-
-            // Send a snapshot request to the engine.
-            let resp = ctx
-                .engine
-                .send_modeling_cmd(
-                    uuid::Uuid::new_v4(),
-                    kcl_lib::SourceRange::default(),
-                    &kittycad_modeling_cmds::ModelingCmd::TakeSnapshot(kittycad_modeling_cmds::TakeSnapshot {
-                        format: image_format.into(),
-                    }),
-                )
-                .await?;
-
-            let kittycad_modeling_cmds::websocket::OkWebSocketResponseData::Modeling {
-                modeling_response: kittycad_modeling_cmds::ok_response::OkModelingCmdResponse::TakeSnapshot(data),
-            } = resp
-            else {
-                return Err(pyo3::exceptions::PyException::new_err(format!(
-                    "Unexpected response from engine: {resp:?}"
-                )));
-            };
-
-            Ok(data.contents.0)
+            take_snaps(&ctx, image_format, snapshot_options).await
         })
         .await
         .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?
@@ -419,7 +394,7 @@ async fn execute_and_snapshot(path: String, image_format: ImageFormat) -> PyResu
 /// Execute the kcl code and snapshot it in a specific format.
 #[pyfunction]
 async fn execute_code_and_snapshot(code: String, image_format: ImageFormat) -> PyResult<Vec<u8>> {
-    let mut snaps = execute_code_and_snapshot_at_views(code, image_format, Vec::new()).await?;
+    let mut snaps = execute_code_and_snapshot_views(code, image_format, Vec::new()).await?;
     Ok(snaps.pop().unwrap())
 }
 
@@ -443,7 +418,7 @@ impl SnapshotOptions {
 /// Returns one image for each camera angle you provide.
 /// If you don't provide any camera angles, a default head-on camera angle will be used.
 #[pyfunction]
-async fn execute_code_and_snapshot_at_views(
+async fn execute_code_and_snapshot_views(
     code: String,
     image_format: ImageFormat,
     snapshot_options: Vec<SnapshotOptions>,
@@ -461,32 +436,40 @@ async fn execute_code_and_snapshot_at_views(
                 .await
                 .map_err(|err| into_miette(err, &code))?;
 
-            if snapshot_options.is_empty() {
-                let data_bytes = snapshot(&ctx, image_format, 0.1).await?;
-                return Ok(vec![data_bytes]);
-            }
-
-            let mut snaps = Vec::with_capacity(snapshot_options.len());
-            for pre_snap in snapshot_options {
-                if let Some(camera) = pre_snap.camera {
-                    let view_cmd = kcmc::DefaultCameraLookAt::from(camera);
-                    let view_cmd = kcmc::ModelingCmd::DefaultCameraLookAt(view_cmd);
-                    ctx.engine
-                        .send_modeling_cmd(uuid::Uuid::new_v4(), Default::default(), &view_cmd)
-                        .await?;
-                } else {
-                    let view_cmd = kcmc::ModelingCmd::ViewIsometric(kcmc::ViewIsometric { padding: 0.0 });
-                    ctx.engine
-                        .send_modeling_cmd(uuid::Uuid::new_v4(), Default::default(), &view_cmd)
-                        .await?;
-                }
-                let data_bytes = snapshot(&ctx, image_format, pre_snap.padding).await?;
-                snaps.push(data_bytes);
-            }
-            Ok(snaps)
+            take_snaps(&ctx, image_format, snapshot_options).await
         })
         .await
         .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?
+}
+
+async fn take_snaps(
+    ctx: &ExecutorContext,
+    image_format: ImageFormat,
+    snapshot_options: Vec<SnapshotOptions>,
+) -> PyResult<Vec<Vec<u8>>> {
+    if snapshot_options.is_empty() {
+        let data_bytes = snapshot(&ctx, image_format, 0.1).await?;
+        return Ok(vec![data_bytes]);
+    }
+
+    let mut snaps = Vec::with_capacity(snapshot_options.len());
+    for pre_snap in snapshot_options {
+        if let Some(camera) = pre_snap.camera {
+            let view_cmd = kcmc::DefaultCameraLookAt::from(camera);
+            let view_cmd = kcmc::ModelingCmd::DefaultCameraLookAt(view_cmd);
+            ctx.engine
+                .send_modeling_cmd(uuid::Uuid::new_v4(), Default::default(), &view_cmd)
+                .await?;
+        } else {
+            let view_cmd = kcmc::ModelingCmd::ViewIsometric(kcmc::ViewIsometric { padding: 0.0 });
+            ctx.engine
+                .send_modeling_cmd(uuid::Uuid::new_v4(), Default::default(), &view_cmd)
+                .await?;
+        }
+        let data_bytes = snapshot(&ctx, image_format, pre_snap.padding).await?;
+        snaps.push(data_bytes);
+    }
+    Ok(snaps)
 }
 
 async fn snapshot(ctx: &ExecutorContext, image_format: ImageFormat, padding: f32) -> PyResult<Vec<u8>> {
@@ -667,7 +650,6 @@ fn kcl(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<UnitLength>()?;
     m.add_class::<Discovered>()?;
     m.add_class::<SnapshotOptions>()?;
-    m.add_class::<bridge::CameraLookAt>()?;
     m.add_class::<bridge::Point3d>()?;
     m.add_class::<bridge::CameraLookAt>()?;
 
@@ -679,8 +661,9 @@ fn kcl(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(mock_execute, m)?)?;
     m.add_function(wrap_pyfunction!(mock_execute_code, m)?)?;
     m.add_function(wrap_pyfunction!(execute_and_snapshot, m)?)?;
+    m.add_function(wrap_pyfunction!(execute_and_snapshot_views, m)?)?;
     m.add_function(wrap_pyfunction!(execute_code_and_snapshot, m)?)?;
-    m.add_function(wrap_pyfunction!(execute_code_and_snapshot_at_views, m)?)?;
+    m.add_function(wrap_pyfunction!(execute_code_and_snapshot_views, m)?)?;
     m.add_function(wrap_pyfunction!(execute_and_export, m)?)?;
     m.add_function(wrap_pyfunction!(execute_code_and_export, m)?)?;
     m.add_function(wrap_pyfunction!(format, m)?)?;

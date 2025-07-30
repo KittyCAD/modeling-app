@@ -178,14 +178,19 @@ async def test_kcl_execute_and_snapshot():
 @pytest.mark.asyncio
 async def test_kcl_execute_and_snapshot_options():
     camera = kcl.CameraLookAt(
-        up=Point3d(x=0, y=0, z=1),
+        # Test both constructors, with unnamed fields and named fields.
+        up=Point3d(0, 0, 1),
         vantage=Point3d(x=0, y=-1, z=0),
         center=Point3d(x=0, y=0, z=0),
     )
-    options = kcl.SnapshotOptions(camera=camera, padding=0.5)
-    views = [options]
+    views = [
+        # Specific camera perspective
+        kcl.SnapshotOptions(camera=camera, padding=0.5),
+        # Camera=None means isometric view.
+        kcl.SnapshotOptions(camera=None, padding=0),
+    ]
     # Read from a file.
-    images = await kcl.execute_code_and_snapshot_at_views(
+    images = await kcl.execute_and_snapshot_views(
         lego_file, kcl.ImageFormat.Jpeg, views
     )
     assert images is not None
