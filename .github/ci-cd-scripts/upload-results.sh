@@ -2,8 +2,9 @@
 set -euo pipefail
 
 if [ -z "${TAB_API_URL:-}" ] || [ -z "${TAB_API_KEY:-}" ]; then
-    echo "ERROR: TAB_API_URL and TAB_API_KEY must be set to analyze results"
-    exit 1
+    echo "WARNING: TAB_API_URL and TAB_API_KEY must be set to analyze results"
+    grep --quiet 'failures="0"' test-results/junit.xml
+    exit 0
 fi
 
 project="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}"
