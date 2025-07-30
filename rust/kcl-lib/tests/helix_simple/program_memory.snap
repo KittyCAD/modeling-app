@@ -121,7 +121,8 @@ description: Variables in memory after executing helix_simple.kcl
       "originalId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "isClosed": false
     }
   }
 }
