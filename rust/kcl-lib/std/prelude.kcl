@@ -344,9 +344,11 @@ export fn offsetPlane(
 ///
 /// sketch002 = clone(sketch001)
 ///     |> translate(x = 0, y = 0, z = 20)
-///     |> fillet(
+/// 
+/// fillet(
+///     sketch002,
 ///     radius = 2,
-///     tags = [getNextAdjacentEdge(filletTag)],
+///     tags = [getNextAdjacentEdge(sketch002.sketch.tags.filletTag)],
 ///     )
 /// ```
 ///
@@ -391,15 +393,17 @@ export fn offsetPlane(
 /// mountingPlate = extrude(mountingPlateSketch, length = thickness)
 ///
 /// clonedMountingPlate = clone(mountingPlate)
-///   |> fillet(
-///     radius = filletRadius,
-///     tags = [
-///       getNextAdjacentEdge(edge1),
-///       getNextAdjacentEdge(edge2),
-///       getNextAdjacentEdge(edge3),
-///       getNextAdjacentEdge(edge4)
-///     ],
-///   )
+///
+/// fillet(
+///       clonedMountingPlate,
+///        radius = filletRadius,
+///        tags = [
+///          getNextAdjacentEdge(clonedMountingPlate.sketch.tags.edge1),
+///          getNextAdjacentEdge(clonedMountingPlate.sketch.tags.edge2),
+///          getNextAdjacentEdge(clonedMountingPlate.sketch.tags.edge3),
+///          getNextAdjacentEdge(clonedMountingPlate.sketch.tags.edge4)
+///        ],
+///      )
 ///   |> translate(x = 0, y = 50, z = 0)
 /// ```
 ///
@@ -460,7 +464,7 @@ export fn offsetPlane(
 /// // |> translate(x = 0, y = 20, z = 0)
 ///
 /// // Sketch on the cloned face.
-/// // exampleSketch002 = startSketchOn(example002, face = end01)
+/// // exampleSketch002 = startSketchOn(example002, face = example002.sketch.tags.end01)
 /// //  |> startProfile(at = [4.5, -5])
 /// //  |> line(end = [0, 5])
 /// //  |> line(end = [5, 0])

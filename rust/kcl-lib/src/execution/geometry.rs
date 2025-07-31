@@ -759,7 +759,7 @@ impl GetTangentialInfoFromPathsResult {
 }
 
 impl Sketch {
-    pub(crate) fn add_tag(&mut self, tag: NodeRef<'_, TagDeclarator>, current_path: &Path, exec_state: &ExecState) {
+    pub(crate) fn add_tag(&mut self, tag: NodeRef<'_, TagDeclarator>, current_path: &Path, exec_state: &ExecState, surface: &Option<ExtrudeSurface>) {
         let mut tag_identifier: TagIdentifier = tag.into();
         let base = current_path.get_base();
         tag_identifier.info.push((
@@ -768,7 +768,7 @@ impl Sketch {
                 id: base.geo_meta.id,
                 sketch: self.id,
                 path: Some(current_path.clone()),
-                surface: None,
+                surface: surface.clone(),
             },
         ));
 
@@ -1626,6 +1626,24 @@ impl ExtrudeSurface {
             ExtrudeSurface::ExtrudeArc(ea) => ea.geo_meta.id,
             ExtrudeSurface::Fillet(f) => f.geo_meta.id,
             ExtrudeSurface::Chamfer(c) => c.geo_meta.id,
+        }
+    }
+
+    pub fn get_face_id(&self) -> uuid::Uuid {
+        match self {
+            ExtrudeSurface::ExtrudePlane(ep) => ep.face_id,
+            ExtrudeSurface::ExtrudeArc(ea) => ea.face_id,
+            ExtrudeSurface::Fillet(f) => f.face_id,
+            ExtrudeSurface::Chamfer(c) => c.face_id,
+        }
+    }
+
+    pub fn set_face_id(&mut self, face_id: uuid::Uuid) {
+        match self {
+            ExtrudeSurface::ExtrudePlane(ep) => ep.face_id = face_id,
+            ExtrudeSurface::ExtrudeArc(ea) => ea.face_id = face_id,
+            ExtrudeSurface::Fillet(f) => f.face_id = face_id,
+            ExtrudeSurface::Chamfer(c) => c.face_id = face_id,
         }
     }
 

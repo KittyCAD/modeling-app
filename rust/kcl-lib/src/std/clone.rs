@@ -14,11 +14,10 @@ use super::extrude::do_post_extrude;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        ExecState, GeometryWithImportedGeometry, KclValue, ModelingCmdMeta, Sketch, Solid,
-        types::{NumericType, PrimitiveType, RuntimeType},
+        types::{NumericType, PrimitiveType, RuntimeType}, ExecState, ExtrudeSurface, GeometryWithImportedGeometry, KclValue, ModelingCmdMeta, Sketch, Solid
     },
     parsing::ast::types::TagNode,
-    std::{Args, extrude::NamedCapTags},
+    std::{extrude::NamedCapTags, Args},
 };
 
 /// Clone a sketch or solid.
@@ -116,7 +115,7 @@ async fn fix_tags_and_references(
         GeometryWithImportedGeometry::Sketch(sketch) => {
             #[cfg(target_arch = "wasm32")]
             web_sys::console::log_1(&format!("Fixing sketch: {:?}", sketch).into());
-            fix_sketch_tags_and_references(sketch, &entity_id_map, exec_state).await?;
+            fix_sketch_tags_and_references(sketch, &entity_id_map, exec_state, None).await?;
         }
         GeometryWithImportedGeometry::Solid(solid) => {
             #[cfg(target_arch = "wasm32")]
@@ -126,7 +125,11 @@ async fn fix_tags_and_references(
             solid.sketch.original_id = new_geometry_id;
             solid.sketch.artifact_id = new_geometry_id.into();
 
-            fix_sketch_tags_and_references(&mut solid.sketch, &entity_id_map, exec_state).await?;
+            #[cfg(target_arch = "wasm32")]
+            web_sys::console::log_1(&format!("solid value: {:?}", solid.value).into());
+            #[cfg(target_arch = "wasm32")]
+            web_sys::console::log_1(&format!("solid value size: {:?}", solid.value.len()).into());
+            fix_sketch_tags_and_references(&mut solid.sketch, &entity_id_map, exec_state, Some(solid.value.clone())).await?;
 
             let (start_tag, end_tag) = get_named_cap_tags(solid);
 
@@ -232,7 +235,7 @@ async fn get_old_new_child_map(
 async fn fix_sketch_tags_and_references(
     new_sketch: &mut Sketch,
     entity_id_map: &HashMap<uuid::Uuid, uuid::Uuid>,
-    exec_state: &mut ExecState,
+    exec_state: &mut ExecState, surfaces: Option<Vec<ExtrudeSurface>>,
 ) -> Result<()> {
     // Fix the path references in the sketch.
     for path in new_sketch.paths.as_mut_slice() {
@@ -263,7 +266,24 @@ async fn fix_sketch_tags_and_references(
             #[cfg(target_arch = "wasm32")]
             web_sys::console::log_1(&format!("TAG: {:?}", tag).into());
 
-            new_sketch.add_tag(&tag, &path, exec_state);
+            // log entity id mapping
+            #[cfg(target_arch = "wasm32")]
+            web_sys::console::log_1(&format!("entity map: {:?}", entity_id_map).into());
+
+            let mut surface: Option<ExtrudeSurface> = None;
+            for (i, s) in surfaces.clone().unwrap_or(vec![]).iter().enumerate() {
+                if s.get_tag() == Some(tag.clone()) {
+                    surface = Some(s.clone());
+                    surface.as_mut().unwrap().set_face_id(entity_id_map.get(&s.get_face_id()).copied().unwrap_or_default());
+                    #[cfg(target_arch = "wasm32")]
+                    web_sys::console::log_1(&format!("NEW SURFACEID : {:?}", surface.clone().unwrap().get_face_id()).into());
+
+                    #[cfg(target_arch = "wasm32")]
+                    web_sys::console::log_1(&format!("OLD SURFACE ID: {:?}", s.clone().get_face_id()).into());
+                }
+            }
+
+            new_sketch.add_tag(&tag.clone(), &path, exec_state, &surface);
             //double check that the tag was added
             #[cfg(target_arch = "wasm32")]
             web_sys::console::log_1(&format!("TAG ADDED: {:?}", path.get_tag()).into());
