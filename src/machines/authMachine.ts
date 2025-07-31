@@ -1,7 +1,12 @@
 import type { Models } from '@kittycad/lib'
 import env, { updateEnvironment, updateEnvironmentPool } from '@src/env'
 import { assign, fromPromise, setup } from 'xstate'
-import { COOKIE_NAME, OAUTH2_DEVICE_CLIENT_ID } from '@src/lib/constants'
+import {
+  COOKIE_NAME,
+  COOKIE_NAME_DEV,
+  COOKIE_NAME_LEGACY,
+  OAUTH2_DEVICE_CLIENT_ID,
+} from '@src/lib/constants'
 import {
   getUser as getUserDesktop,
   listAllEnvironments,
@@ -223,11 +228,19 @@ async function getUser(input: { token?: string }) {
   }
 }
 
-export function getCookie(cname: string): string | null {
+export function getCookie(): string | null {
   if (isDesktop()) {
     return null
   }
 
+  if (window.electron.process.env.NODE_ENV === 'production') {
+    return getCookieByName(COOKIE_NAME) || getCookieByName(COOKIE_NAME_LEGACY)
+  } else {
+    return getCookieByName(COOKIE_NAME_DEV)
+  }
+}
+
+function getCookieByName(cname: string): string | null {
   let name = cname + '='
   let decodedCookie = decodeURIComponent(document.cookie)
   let ca = decodedCookie.split(';')
