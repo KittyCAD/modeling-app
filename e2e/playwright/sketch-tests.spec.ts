@@ -2746,11 +2746,7 @@ extrude001 = extrude(profile003, length = 5)
 
     await page.setBodyDimensions({ width: 1000, height: 500 })
     await homePage.goToModelingScene()
-
-    await page.waitForTimeout(5000)
-    await expect(
-      page.getByRole('button', { name: 'Start Sketch' })
-    ).not.toBeDisabled()
+    await scene.settled(cmdBar)
 
     const [selectXZPlane] = scene.makeMouseHelpers(650, 150)
 
@@ -2776,6 +2772,7 @@ extrude001 = extrude(profile003, length = 5)
   )`
       )
 
+      await editor.closePane()
       await scene.settled(cmdBar)
 
       await scene.expectPixelColor([255, 255, 255], { x: 633, y: 211 }, 15)
