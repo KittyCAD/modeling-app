@@ -361,10 +361,12 @@ export fn ellipse(
   /// The center of the ellipse.
   @(snippetArray = ["0", "0"])
   center: Point2d,
-  /// The major radius of the ellipse.
-  majorRadius: number(Length),
   /// The minor radius of the ellipse.
   minorRadius: number(Length),
+  /// The major radius of the ellipse.
+  majorRadius?: number(Length),
+  /// The major axis of the ellipse.
+  majorAxis?: Point2d,
   /// Create a new tag which refers to this ellipse.
   tag?: tag,
 ): Sketch {}
