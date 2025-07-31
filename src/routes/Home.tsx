@@ -1,5 +1,4 @@
 import type { FormEvent, HTMLProps } from 'react'
-import { useSelector } from '@xstate/react'
 import { useEffect, useState } from 'react'
 import { toast } from 'react-hot-toast'
 import { useHotkeys } from 'react-hotkeys-hook'

@@ -1,3 +1,4 @@
+import { useSettings } from '@src/lib/singletons'
 import { useLoaderData } from 'react-router-dom'
 import { useFileContext } from '@src/hooks/useFileContext'
 import { useSelector } from '@xstate/react'
@@ -22,6 +23,7 @@ const hasPromptsPending = (promptsPool: Prompt[]) => {
 }
 
 export const MlEphantConversationPane = () => {
+  const settings = useSettings()
   const { context: contextModeling } = useModelingContext()
   const { context: contextFile } = useFileContext()
   const { file: loaderFile } = useLoaderData() as IndexLoaderData
