@@ -573,7 +573,7 @@ async fn inner_ellipse(
     let major_axis = match (major_axis, major_radius) {
         (Some(_), Some(_)) | (None, None) => {
             return Err(KclError::new_type(KclErrorDetails::new(
-                format!("Provide either `majorAxis` or `majorRadius."),
+                "Provide either `majorAxis` or `majorRadius.".to_string(),
                 vec![args.source_range],
             )));
         }
