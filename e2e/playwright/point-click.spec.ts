@@ -657,17 +657,6 @@ openSketch = startSketchOn(XY)
     const lowerEdgeLocation = { x: 600, y: 383 }
     const faceLocation = { x: 630, y: 290 }
 
-    // Click helpers
-    const [clickOnUpperEdge] = scene.makeMouseHelpers(
-      upperEdgeLocation.x,
-      upperEdgeLocation.y
-    )
-    const [clickOnLowerEdge] = scene.makeMouseHelpers(
-      lowerEdgeLocation.x,
-      lowerEdgeLocation.y
-    )
-    const [clickOnFace] = scene.makeMouseHelpers(faceLocation.x, faceLocation.y)
-
     // Colors
     const edgeColorWhite: [number, number, number] = [220, 220, 220] // varies from 192 to 255
     const edgeColorYellow: [number, number, number] = [251, 251, 140] // vaies from 12 to 67
@@ -685,12 +674,23 @@ openSketch = startSketchOn(XY)
       await homePage.goToModelingScene()
       await toolbar.closePane('code')
       await scene.settled(cmdBar)
-
-      // Wait for the scene and stream to load
-      await scene.expectPixelColor(faceColorGray, faceLocation, tolerance)
     })
 
+    // Click helpers
+    const [clickOnUpperEdge] = scene.makeMouseHelpers(
+      upperEdgeLocation.x,
+      upperEdgeLocation.y
+    )
+    const [clickOnLowerEdge] = scene.makeMouseHelpers(
+      lowerEdgeLocation.x,
+      lowerEdgeLocation.y
+    )
+    const [clickOnFace] = scene.makeMouseHelpers(faceLocation.x, faceLocation.y)
+
     await test.step('Select and deselect a single edge', async () => {
+      // Wait for the scene and stream to load
+      await scene.expectPixelColor(faceColorGray, faceLocation, tolerance)
+
       await test.step('Click the edge', async () => {
         await scene.expectPixelColor(
           edgeColorWhite,
