@@ -883,9 +883,9 @@ part002 = startSketchOn(XZ)
         const line3 = await u.getBoundingBox(`[data-overlay-index="${3}"]`)
 
         // select two segments by holding down shift
-        await page.mouse.click(line1.x - 20, line1.y + 20)
+        await page.mouse.click(line1.x, line1.y)
         await page.keyboard.down('Shift')
-        await page.mouse.click(line3.x - 3, line3.y + 20)
+        await page.mouse.click(line3.x, line3.y)
         await page.keyboard.up('Shift')
         const constraintMenuButton = page.getByRole('button', {
           name: 'constraints: open menu',
