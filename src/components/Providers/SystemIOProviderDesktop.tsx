@@ -275,7 +275,6 @@ export function SystemIOMachineLogicListenerDesktop() {
             systemIOActor.send({
               type: SystemIOMachineEvents.importFileFromURL,
               data: {
-                requestedProjectName: promptProjectName,
                 requestedCode: prompt.code,
                 requestedFileNameWithExtension: PROJECT_ENTRYPOINT,
               },

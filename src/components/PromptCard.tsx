@@ -25,12 +25,12 @@ export const ConvoCard = (props: ConvoCardProps) => {
           {props.onAction !== undefined && (
             <PromptCardActionButton
               status={props.status}
-              onClick={() => props.onAction?.(props.id, props.first_prompt)}
+              onClick={() => props.onAction?.(props.first_prompt)}
             />
           )}
         </div>
         <div className="text-sm text-chalkboard-70">
-          {ms(new Date(props.created_at).getTime(), { long: true })} ago
+          {ms(new Date(props.created_at).getTime() / 1000, { long: true })} ago
         </div>
       </div>
     </div>
