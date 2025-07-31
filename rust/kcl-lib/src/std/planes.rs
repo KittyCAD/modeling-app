@@ -25,7 +25,7 @@ pub async fn plane_of(exec_state: &mut ExecState, args: Args) -> Result<KclValue
         .map(|value| KclValue::Plane { value })
 }
 
-async fn inner_plane_of(
+pub(crate) async fn inner_plane_of(
     solid: crate::execution::Solid,
     face: FaceTag,
     exec_state: &mut ExecState,
@@ -61,7 +61,8 @@ async fn inner_plane_of(
 
     // Query the engine to learn what plane, if any, this face is on.
     let face_id = face.get_face_id(&solid, exec_state, args, true).await?;
-    let meta = args.into();
+    let plane_id = exec_state.id_generator().next_uuid();
+    let meta = ModelingCmdMeta::with_id(&args.ctx, args.source_range, plane_id);
     let cmd = ModelingCmd::FaceIsPlanar(mcmd::FaceIsPlanar { object_id: face_id });
     let plane_resp = exec_state.send_modeling_cmd(meta, cmd).await?;
     let OkWebSocketResponseData::Modeling {
@@ -123,13 +124,10 @@ async fn inner_plane_of(
     };
     let plane_info = plane_info.make_right_handed();
 
-    // Engine doesn't send back an ID, so let's just make a new plane ID.
-    let plane_id = exec_state.id_generator().next_uuid();
     Ok(Plane {
         artifact_id: plane_id.into(),
         id: plane_id,
-        // Engine doesn't know about the ID we created, so set this to Uninit.
-        value: PlaneType::Uninit,
+        value: PlaneType::Custom,
         info: plane_info,
         meta: vec![Metadata {
             source_range: args.source_range,

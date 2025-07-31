@@ -289,7 +289,6 @@ code {
 .extra-segment-handle {
   position: absolute;
   pointer-events: auto;
-  cursor: pointer;
   width: 12px;
   height: 12px;
   display: flex;

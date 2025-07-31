@@ -25,6 +25,11 @@ extrude(
 You can provide more than one sketch to extrude, and they will all be
 extruded in the same direction.
 
+When you sketch on a face of a solid, extruding extends or cuts into the
+existing solid, meaning you don't need to union or subtract the volumes. You
+can change this behavior by using the `method` parameter. See
+[sketch on face](/docs/kcl-lang/sketch-on-face) for more details.
+
 ### Arguments
 
 | Name | Type | Description | Required |
