@@ -1986,7 +1986,8 @@ pub async fn elliptic(exec_state: &mut ExecState, args: Args) -> Result<KclValue
     let center = args.get_kw_arg("center", &RuntimeType::point2d(), exec_state)?;
     let angle_start = args.get_kw_arg("angleStart", &RuntimeType::degrees(), exec_state)?;
     let angle_end = args.get_kw_arg("angleEnd", &RuntimeType::degrees(), exec_state)?;
-    let major_radius = args.get_kw_arg("majorRadius", &RuntimeType::length(), exec_state)?;
+    let major_radius = args.get_kw_arg_opt("majorRadius", &RuntimeType::length(), exec_state)?;
+    let major_axis = args.get_kw_arg_opt("majorAxis", &RuntimeType::point2d(), exec_state)?;
     let minor_radius = args.get_kw_arg("minorRadius", &RuntimeType::length(), exec_state)?;
     let tag = args.get_kw_arg_opt("tag", &RuntimeType::tag_decl(), exec_state)?;
 
@@ -1996,6 +1997,7 @@ pub async fn elliptic(exec_state: &mut ExecState, args: Args) -> Result<KclValue
         angle_start,
         angle_end,
         major_radius,
+        major_axis,
         minor_radius,
         tag,
         exec_state,
@@ -2013,7 +2015,8 @@ pub(crate) async fn inner_elliptic(
     center: [TyF64; 2],
     angle_start: TyF64,
     angle_end: TyF64,
-    major_radius: TyF64,
+    major_radius: Option<TyF64>,
+    major_axis: Option<[TyF64; 2]>,
     minor_radius: TyF64,
     tag: Option<TagNode>,
     exec_state: &mut ExecState,
@@ -2024,15 +2027,36 @@ pub(crate) async fn inner_elliptic(
 
     let (center_u, _) = untype_point(center);
 
+    let major_axis = match (major_axis, major_radius) {
+        (Some(_), Some(_)) | (None, None) => {
+            return Err(KclError::new_type(KclErrorDetails::new(
+                format!("Provide either `majorAxis` or `majorRadius."),
+                vec![args.source_range],
+            )));
+        }
+        (Some(major_axis), None) => major_axis,
+        (None, Some(major_radius)) => [
+            major_radius.clone(),
+            TyF64 {
+                n: 0.0,
+                ty: major_radius.ty,
+            },
+        ],
+    };
     let start_angle = Angle::from_degrees(angle_start.to_degrees());
     let end_angle = Angle::from_degrees(angle_end.to_degrees());
     let to = [
-        center_u[0] + major_radius.to_length_units(from.units) * libm::cos(end_angle.to_radians()),
-        center_u[1] + minor_radius.to_length_units(from.units) * libm::sin(end_angle.to_radians()),
+        major_axis[0].to_length_units(from.units) * libm::cos(end_angle.to_radians()),
+        minor_radius.to_length_units(from.units) * libm::sin(end_angle.to_radians()),
+    ];
+    let major_axis_angle = (major_axis[1].n / major_axis[0].n).atan();
+
+    let point = [
+        center_u[0] + to[0] * major_axis_angle.cos() - to[1] * major_axis_angle.sin(),
+        center_u[1] + to[0] * major_axis_angle.sin() + to[1] * major_axis_angle.cos(),
     ];
 
-    let major_axis = KPoint2d::from(untyped_point_to_mm([major_radius.n, 0.0], from.units)).map(LengthUnit);
-
+    let axis = KPoint2d::from(untyped_point_to_mm([major_axis[0].n, major_axis[1].n], from.units)).map(LengthUnit);
     exec_state
         .batch_modeling_cmd(
             ModelingCmdMeta::from_args_id(&args, id),
@@ -2040,7 +2064,7 @@ pub(crate) async fn inner_elliptic(
                 path: sketch.id.into(),
                 segment: PathSegment::Ellipse {
                     center: KPoint2d::from(untyped_point_to_mm(center_u, from.units)).map(LengthUnit),
-                    major_axis,
+                    major_axis: axis,
                     minor_radius: LengthUnit(minor_radius.to_mm()),
                     start_angle,
                     end_angle,
@@ -2052,11 +2076,11 @@ pub(crate) async fn inner_elliptic(
     let current_path = Path::Ellipse {
         ccw: start_angle < end_angle,
         center: center_u,
-        major_radius: major_radius.to_mm(),
+        major_axis: major_axis.map(|x| x.to_mm()),
         minor_radius: minor_radius.to_mm(),
         base: BasePath {
             from: from.ignore_units(),
-            to,
+            to: point,
             tag: tag.clone(),
             units: sketch.units,
             geo_meta: GeoMeta {

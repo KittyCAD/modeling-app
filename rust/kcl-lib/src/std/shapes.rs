@@ -571,13 +571,7 @@ async fn inner_ellipse(
     let units = ty.expect_length();
 
     let major_axis = match (major_axis, major_radius) {
-        (Some(_), Some(_)) => {
-            return Err(KclError::new_type(KclErrorDetails::new(
-                format!("Provide either `majorAxis` or `majorRadius."),
-                vec![args.source_range],
-            )));
-        }
-        (None, None) => {
+        (Some(_), Some(_)) | (None, None) => {
             return Err(KclError::new_type(KclErrorDetails::new(
                 format!("Provide either `majorAxis` or `majorRadius."),
                 vec![args.source_range],
@@ -635,7 +629,7 @@ async fn inner_ellipse(
                 metadata: args.source_range.into(),
             },
         },
-        major_radius: major_axis[0].to_length_units(units),
+        major_axis: major_axis.map(|x| x.to_length_units(units)),
         minor_radius: minor_radius.to_length_units(units),
         center: center_u,
         ccw: angle_start < angle_end,

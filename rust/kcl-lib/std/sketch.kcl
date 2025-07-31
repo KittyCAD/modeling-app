@@ -2224,12 +2224,14 @@ export fn elliptic(
   /// Where along the ellptic should this segment end?
   @(includeInSnippet = true)
   angleEnd: number(Angle),
-  /// The major radius, a, of the elliptic equation x^2 / a^2 + y^2 / b^2 = 1.
-  @(includeInSnippet = true)
-  majorRadius: number(Length),
   /// The minor radius, b, of the elliptic equation x^2 / a^2 + y^2 / b^2 = 1.
   @(includeInSnippet = true)
   minorRadius: number(Length),
+  /// The major radius, a, of the elliptic equation x^2 / a^2 + y^2 / b^2 = 1.
+  @(includeInSnippet = true)
+  majorRadius?: number(Length),
+  /// The major axis of the elliptic.
+  majorAxis?: Point2d,
   /// Create a new tag which refers to this arc.
   tag?: tag,
 ): Sketch {}
