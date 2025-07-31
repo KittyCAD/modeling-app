@@ -92,11 +92,7 @@ export const FileExplorer = ({
 }
 
 /**
- * TODO Support more context menu callback functions
- * cut
- * paste
- * copy
- *
+ * TODO Support cut, copy, paste https://github.com/KittyCAD/modeling-app/issues/7952
  */
 function FileExplorerRowContextMenu({
   itemRef,
