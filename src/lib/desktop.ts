@@ -637,7 +637,6 @@ export const readProjectSettingsFile = async (
     await window.electron.stat(settingsPath)
   } catch (e) {
     if (e === 'ENOENT') {
-      // Return the default configuration.
       return {}
     }
   }
