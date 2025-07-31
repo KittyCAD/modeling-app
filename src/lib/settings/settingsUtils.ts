@@ -350,6 +350,28 @@ export async function loadAndValidateSettings(
       ? await readProjectSettingsFile(projectPath)
       : readLocalStorageProjectSettingsFile()
 
+    // An id was missing. Create one and write it to disk immediately.
+    if (!projectSettings.settings?.meta?.id) {
+      projectSettings = {
+        meta: {
+          id: v4(),
+        },
+      }
+      // Duplicated from settingsUtils.ts
+      const projectTomlString = serializeProjectConfiguration(
+        settingsPayloadToProjectConfiguration(projectSettings)
+      )
+      if (err(projectTomlString)) return
+      if (onDesktop) {
+        await writeProjectSettingsFile(projectPath, projectTomlString)
+      } else {
+        localStorage.setItem(
+          localStorageProjectSettingsPath(),
+          projectTomlString
+        )
+      }
+    }
+
     if (err(projectSettings))
       return Promise.reject(new Error('Invalid project settings'))
 
