@@ -247,3 +247,5 @@ export type EnvironmentConfigurationRuntime = {
 }
 
 export const ENVIRONMENT_CONFIGURATION_FOLDER = 'envs'
+
+export const MAX_PROJECT_NAME_LENGTH = 240

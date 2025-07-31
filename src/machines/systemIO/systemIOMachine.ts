@@ -1,4 +1,7 @@
-import { DEFAULT_PROJECT_NAME } from '@src/lib/constants'
+import {
+  DEFAULT_PROJECT_NAME,
+  MAX_PROJECT_NAME_LENGTH,
+} from '@src/lib/constants'
 import type { Project } from '@src/lib/project'
 import type {
   SystemIOContext,
@@ -9,6 +12,7 @@ import {
   SystemIOMachineActions,
   SystemIOMachineActors,
   SystemIOMachineEvents,
+  SystemIOMachineGuards,
   SystemIOMachineStates,
 } from '@src/machines/systemIO/utils'
 import toast from 'react-hot-toast'
@@ -142,6 +146,19 @@ export const systemIOMachine = setup({
           }
         },
   },
+  guards: {
+    [SystemIOMachineGuards.projectNameIsValidLength]: ({
+      context,
+      event,
+    }): boolean => {
+      assertEvent(event, [
+        SystemIOMachineEvents.createProject,
+        SystemIOMachineEvents.renameProject,
+      ])
+      const { requestedProjectName } = event.data
+      return requestedProjectName.length <= MAX_PROJECT_NAME_LENGTH
+    },
+  },
   actions: {
     [SystemIOMachineActions.setFolders]: assign({
       folders: ({ event }) => {
@@ -222,6 +239,11 @@ export const systemIOMachine = setup({
         return { project: event.output.name }
       },
     }),
+    [SystemIOMachineActions.toastProjectNameTooLong]: () => {
+      toast.error(
+        `Project name is too long, must be less than or equal to ${MAX_PROJECT_NAME_LENGTH} characters`
+      )
+    },
   },
   actors: {
     [SystemIOMachineActors.readFoldersFromProjectDirectory]: fromPromise(
@@ -414,12 +436,24 @@ export const systemIOMachine = setup({
         [SystemIOMachineEvents.navigateToFile]: {
           actions: [SystemIOMachineActions.setRequestedFileName],
         },
-        [SystemIOMachineEvents.createProject]: {
-          target: SystemIOMachineStates.creatingProject,
-        },
-        [SystemIOMachineEvents.renameProject]: {
-          target: SystemIOMachineStates.renamingProject,
-        },
+        [SystemIOMachineEvents.createProject]: [
+          {
+            guard: SystemIOMachineGuards.projectNameIsValidLength,
+            target: SystemIOMachineStates.creatingProject,
+          },
+          {
+            actions: [SystemIOMachineActions.toastProjectNameTooLong],
+          },
+        ],
+        [SystemIOMachineEvents.renameProject]: [
+          {
+            target: SystemIOMachineStates.renamingProject,
+            guard: SystemIOMachineGuards.projectNameIsValidLength,
+          },
+          {
+            actions: [SystemIOMachineActions.toastProjectNameTooLong],
+          },
+        ],
         [SystemIOMachineEvents.deleteProject]: {
           target: SystemIOMachineStates.deletingProject,
         },
