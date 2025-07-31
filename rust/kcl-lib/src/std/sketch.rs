@@ -2030,7 +2030,7 @@ pub(crate) async fn inner_elliptic(
     let major_axis = match (major_axis, major_radius) {
         (Some(_), Some(_)) | (None, None) => {
             return Err(KclError::new_type(KclErrorDetails::new(
-                "Provide either `majorAxis` or `majorRadius.".to_string(),
+                "Provide either `majorAxis` or `majorRadius`.".to_string(),
                 vec![args.source_range],
             )));
         }
@@ -2049,7 +2049,7 @@ pub(crate) async fn inner_elliptic(
         major_axis[0].to_length_units(from.units) * libm::cos(end_angle.to_radians()),
         minor_radius.to_length_units(from.units) * libm::sin(end_angle.to_radians()),
     ];
-    let major_axis_angle = libm::atan(major_axis[1].n / major_axis[0].n);
+    let major_axis_angle = libm::atan2(major_axis[1].n, major_axis[0].n);
 
     let point = [
         center_u[0] + to[0] * libm::cos(major_axis_angle) - to[1] * libm::sin(major_axis_angle),
