@@ -648,6 +648,17 @@ pub struct Sketch {
     /// Metadata.
     #[serde(skip)]
     pub meta: Vec<Metadata>,
+    /// If not given, defaults to true.
+    #[serde(default = "very_true", skip_serializing_if = "is_true")]
+    pub is_closed: bool,
+}
+
+fn very_true() -> bool {
+    true
+}
+
+fn is_true(b: &bool) -> bool {
+    *b
 }
 
 impl Sketch {

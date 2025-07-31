@@ -1,0 +1,4 @@
+shape = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> rectangle(center = [0, 0], width = 10, height = 10)
+  |> close()

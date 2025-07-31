@@ -1175,6 +1175,7 @@ pub(crate) async fn inner_start_profile(
             Default::default()
         },
         start: current_path,
+        is_closed: false,
     };
     Ok(sketch)
 }
@@ -1231,6 +1232,16 @@ pub(crate) async fn inner_close(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
+    if sketch.is_closed {
+        exec_state.warn(crate::CompilationError {
+            source_range: args.source_range,
+            message: "This sketch is already closed. Remove this unnecessary `close()` call".to_string(),
+            suggestion: None,
+            severity: crate::errors::Severity::Warning,
+            tag: crate::errors::Tag::Unnecessary,
+        });
+        return Ok(sketch);
+    }
     let from = sketch.current_pen_position()?;
     let to = point_to_len_unit(sketch.start.get_from(), from.units);
 
@@ -1260,8 +1271,8 @@ pub(crate) async fn inner_close(
     if let Some(tag) = &tag {
         new_sketch.add_tag(tag, &current_path, exec_state, &None);
     }
-
     new_sketch.paths.push(current_path);
+    new_sketch.is_closed = true;
 
     Ok(new_sketch)
 }
