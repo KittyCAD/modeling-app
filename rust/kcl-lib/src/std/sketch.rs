@@ -2052,8 +2052,8 @@ pub(crate) async fn inner_elliptic(
     let major_axis_angle = (major_axis[1].n / major_axis[0].n).atan();
 
     let point = [
-        center_u[0] + to[0] * major_axis_angle.cos() - to[1] * major_axis_angle.sin(),
-        center_u[1] + to[0] * major_axis_angle.sin() + to[1] * major_axis_angle.cos(),
+        center_u[0] + to[0] * libm::cos(major_axis_angle) - to[1] * libm::sin(major_axis_angle),
+        center_u[1] + to[0] * libm::sin(major_axis_angle) + to[1] * libm::cos(major_axis_angle),
     ];
 
     let axis = KPoint2d::from(untyped_point_to_mm([major_axis[0].n, major_axis[1].n], from.units)).map(LengthUnit);
