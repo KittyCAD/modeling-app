@@ -14,6 +14,7 @@ import {
   getUtils,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
+import type { EditorFixture } from './fixtures/editorFixture'
 
 test.describe('Sketch tests', () => {
   test('multi-sketch file shows multiple Edit Sketch buttons', async ({
@@ -916,7 +917,9 @@ sketch001 = startSketchOn(XZ)
   })
   test.describe('Snap to close works (at any scale)', () => {
     const doSnapAtDifferentScales = async (
-      page: any,
+      page: Page,
+      scene: SceneFixture,
+      editor: EditorFixture,
       camPos: [number, number, number],
       scale = 1
     ) => {
@@ -927,10 +930,10 @@ sketch001 = startSketchOn(XZ)
 
       const code = `@settings(defaultLengthUnit = in)
 sketch001 = startSketchOn(-XZ)
-profile001 = startProfile(sketch001, at = [${roundOff(scale * 69.6)}, ${roundOff(
+profile001 = startProfile(sketch001, at = [${roundOff(scale * 77.11)}, ${roundOff(
         scale * 34.8
       )}])
-    |> xLine(length = ${roundOff(scale * 139.19)})
+    |> xLine(length = ${roundOff(scale * 154.22)})
     |> yLine(length = -${roundOff(scale * 139.2)})
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
     |> close()`
@@ -955,74 +958,55 @@ profile001 = startProfile(sketch001, at = [${roundOff(scale * 69.6)}, ${roundOff
       // select a plane
       await page.mouse.move(700, 200, { steps: 10 })
       await page.mouse.click(700, 200, { delay: 200 })
-      await expect(page.locator('.cm-content')).toHaveText(
+      await editor.expectEditor.toContain(
         `@settings(defaultLengthUnit = in)sketch001 = startSketchOn(-XZ)`
       )
 
-      let prevContent = await page.locator('.cm-content').innerText()
-
-      const pointA = [700, 200]
-      const pointB = [900, 200]
-      const pointC = [900, 400]
+      await editor.closePane()
 
       // draw three lines
       await page.waitForTimeout(500)
-      await page.mouse.move(pointA[0], pointA[1], { steps: 10 })
-      await page.mouse.click(pointA[0], pointA[1], { delay: 200 })
-      await page.waitForTimeout(100)
-      await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
-      prevContent = await page.locator('.cm-content').innerText()
+      const pointA = await scene.convertPagePositionToStream(700, 200)
+      const pointB = await scene.convertPagePositionToStream(900, 200)
+      const pointC = await scene.convertPagePositionToStream(900, 400)
 
-      await page.mouse.move(pointB[0], pointB[1], { steps: 10 })
-      await page.mouse.click(pointB[0], pointB[1], { delay: 200 })
+      await page.mouse.move(pointA.x, pointA.y, { steps: 10 })
+      await page.mouse.click(pointA.x, pointA.y, { delay: 200 })
       await page.waitForTimeout(100)
-      await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
-      prevContent = await page.locator('.cm-content').innerText()
 
-      await page.mouse.move(pointC[0], pointC[1], { steps: 10 })
-      await page.mouse.click(pointC[0], pointC[1], { delay: 200 })
+      await page.mouse.move(pointB.x, pointB.y, { steps: 10 })
+      await page.mouse.click(pointB.x, pointB.y, { delay: 200 })
       await page.waitForTimeout(100)
-      await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
-      prevContent = await page.locator('.cm-content').innerText()
 
-      await page.mouse.move(pointA[0] - 12, pointA[1] + 12, { steps: 10 })
-      const pointNotQuiteA = [pointA[0] - 7, pointA[1] + 7]
-      await page.mouse.move(pointNotQuiteA[0], pointNotQuiteA[1], {
+      await page.mouse.move(pointC.x, pointC.y, { steps: 10 })
+      await page.mouse.click(pointC.x, pointC.y, { delay: 200 })
+      await page.waitForTimeout(100)
+
+      await page.mouse.move(pointA.x - 12, pointA.y + 12, { steps: 10 })
+      const pointNotQuiteA = { x: pointA.x - 7, y: pointA.y + 7 }
+      await page.mouse.move(pointNotQuiteA.x, pointNotQuiteA.y, {
         steps: 10,
       })
 
-      await page.mouse.click(pointNotQuiteA[0], pointNotQuiteA[1], {
+      await page.mouse.click(pointNotQuiteA.x, pointNotQuiteA.y, {
         delay: 200,
       })
-      await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
-      prevContent = await page.locator('.cm-content').innerText()
 
-      await expect
-        .poll(async () => {
-          const text = await page.locator('.cm-content').innerText()
-          return text.replace(/\s/g, '')
-        })
-        .toBe(code.replace(/\s/g, ''))
+      await editor.expectEditor.toContain(code, { shouldNormalise: true })
 
       // Assert the tool stays equipped after a profile is closed (ready for the next one)
       await expect(
         page.getByRole('button', { name: 'line Line', exact: true })
       ).toHaveAttribute('aria-pressed', 'true')
-
-      // exit sketch
-      await u.openAndClearDebugPanel()
-      await page.getByRole('button', { name: 'Exit Sketch' }).click()
-      await u.expectCmdLog('[data-message-type="execution-done"]')
-      await u.removeCurrentCode()
     }
-    test('[0, 100, 100]', async ({ page, homePage }) => {
+    test('[0, 100, 100]', async ({ page, homePage, scene, editor }) => {
       await homePage.goToModelingScene()
-      await doSnapAtDifferentScales(page, [0, 100, 100], 0.01)
+      await doSnapAtDifferentScales(page, scene, editor, [0, 100, 100], 0.01)
     })
 
-    test('[0, 10000, 10000]', async ({ page, homePage }) => {
+    test('[0, 10000, 10000]', async ({ page, homePage, scene, editor }) => {
       await homePage.goToModelingScene()
-      await doSnapAtDifferentScales(page, [0, 10000, 10000])
+      await doSnapAtDifferentScales(page, scene, editor, [0, 10000, 10000])
     })
   })
   test('exiting a close extrude, has the extrude button enabled ready to go', async ({
