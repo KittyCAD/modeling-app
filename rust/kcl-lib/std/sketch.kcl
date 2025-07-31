@@ -363,7 +363,7 @@ export fn ellipse(
   center: Point2d,
   /// The minor radius of the ellipse.
   minorRadius: number(Length),
-  /// The major radius of the ellipse.
+  /// The major radius of the ellipse. Equivalent to majorAxis = [majorRadius, 0].
   majorRadius?: number(Length),
   /// The major axis of the ellipse.
   majorAxis?: Point2d,
@@ -2227,10 +2227,10 @@ export fn elliptic(
   /// The minor radius, b, of the elliptic equation x^2 / a^2 + y^2 / b^2 = 1.
   @(includeInSnippet = true)
   minorRadius: number(Length),
-  /// The major radius, a, of the elliptic equation x^2 / a^2 + y^2 / b^2 = 1.
-  @(includeInSnippet = true)
+  /// The major radius, a, of the elliptic equation x^2 / a^2 + y^2 / b^2 = 1. Equivalent to majorAxis = [majorRadius, 0].
   majorRadius?: number(Length),
   /// The major axis of the elliptic.
+  @(includeInSnippet = true)
   majorAxis?: Point2d,
   /// Create a new tag which refers to this arc.
   tag?: tag,
