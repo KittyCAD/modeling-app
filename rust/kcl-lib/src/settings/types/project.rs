@@ -3,7 +3,7 @@
 use anyhow::Result;
 use indexmap::IndexMap;
 use schemars::JsonSchema;
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Deserializer, Serialize};
 use validator::Validate;
 
 use crate::settings::types::{
@@ -41,6 +41,13 @@ impl ProjectConfiguration {
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
 pub struct PerProjectSettings {
+    /// Information about the project itself.
+    /// Choices about how settings are merged have prevent me (lee) from easily
+    /// moving this out of the settings structure.
+    #[serde(default)]
+    #[validate(nested)]
+    pub meta: ProjectMetaSettings,
+
     /// The settings for the Design Studio.
     #[serde(default)]
     #[validate(nested)]
@@ -57,6 +64,27 @@ pub struct PerProjectSettings {
     #[serde(default)]
     #[validate(nested)]
     pub command_bar: CommandBarSettings,
+}
+
+fn deserialize_project_id<'de, D>(deserializer: D) -> Result<uuid::Uuid, D::Error>
+where
+    D: Deserializer<'de>,
+{
+  Ok(match uuid::Uuid::deserialize(deserializer) {
+    Ok(u) => u,
+    _ => uuid::Uuid::new_v4(),
+  })
+}
+
+/// Information about the project.
+#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Validate)]
+#[ts(export)]
+#[serde(rename_all = "snake_case")]
+pub struct ProjectMetaSettings {
+    #[serde(
+        deserialize_with = "deserialize_project_id",
+    )]
+    pub id: uuid::Uuid,
 }
 
 /// Project specific application settings.
@@ -166,7 +194,7 @@ mod tests {
     use serde_json::Value;
 
     use super::{
-        CommandBarSettings, NamedView, PerProjectSettings, ProjectAppSettings, ProjectAppearanceSettings,
+        CommandBarSettings, NamedView, PerProjectSettings, ProjectMetaSettings, ProjectAppSettings, ProjectAppearanceSettings,
         ProjectConfiguration, ProjectModelingSettings, TextEditorSettings,
     };
     use crate::settings::types::UnitLength;
@@ -268,6 +296,9 @@ color = 1567.4"#;
     fn test_project_settings_named_views() {
         let conf = ProjectConfiguration {
             settings: PerProjectSettings {
+                meta: ProjectMetaSettings {
+                  id: uuid::Uuid::new_v4(),
+                },
                 app: ProjectAppSettings {
                     appearance: ProjectAppearanceSettings { color: 138.0.into() },
                     onboarding_status: Default::default(),
