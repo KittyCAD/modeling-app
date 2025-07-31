@@ -1233,10 +1233,14 @@ pub(crate) async fn inner_close(
     args: Args,
 ) -> Result<Sketch, KclError> {
     if sketch.is_closed {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            "This sketch is already closed. Remove this unnecessary `close()` call".to_owned(),
-            vec![args.source_range],
-        )));
+        exec_state.warn(crate::CompilationError {
+            source_range: args.source_range,
+            message: "This sketch is already closed. Remove this unnecessary `close()` call".to_string(),
+            suggestion: None,
+            severity: crate::errors::Severity::Warning,
+            tag: crate::errors::Tag::Unnecessary,
+        });
+        return Ok(sketch);
     }
     let from = sketch.current_pen_position()?;
     let to = point_to_len_unit(sketch.start.get_from(), from.units);
