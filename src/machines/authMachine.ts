@@ -234,7 +234,7 @@ export function getCookie(): string | null {
   }
 
   if (window.electron.process.env.NODE_ENV === 'production') {
-    return getCookieByName(COOKIE_NAME) || getCookieByName(COOKIE_NAME_LEGACY)
+    return getCookieByName(COOKIE_NAME)
   } else {
     return getCookieByName(COOKIE_NAME_DEV)
   }
