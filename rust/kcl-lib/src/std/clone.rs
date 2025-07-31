@@ -94,9 +94,6 @@ async fn inner_clone(
             ))
         })?;
 
-        #[cfg(target_arch = "wasm32")]
-    web_sys::console::log_1(&format!("Cloned geometry: {:?}", new_geometry).into());
-
     Ok(new_geometry)
 }
 /// Fix the tags and references of the cloned geometry.
@@ -113,22 +110,14 @@ async fn fix_tags_and_references(
     match new_geometry {
         GeometryWithImportedGeometry::ImportedGeometry(_) => {}
         GeometryWithImportedGeometry::Sketch(sketch) => {
-            #[cfg(target_arch = "wasm32")]
-            web_sys::console::log_1(&format!("Fixing sketch: {:?}", sketch).into());
             fix_sketch_tags_and_references(sketch, &entity_id_map, exec_state, None).await?;
         }
         GeometryWithImportedGeometry::Solid(solid) => {
-            #[cfg(target_arch = "wasm32")]
-            web_sys::console::log_1(&format!("Fixing solid: {:?}", solid).into());
             // Make the sketch id the new geometry id.
             solid.sketch.id = new_geometry_id;
             solid.sketch.original_id = new_geometry_id;
             solid.sketch.artifact_id = new_geometry_id.into();
 
-            #[cfg(target_arch = "wasm32")]
-            web_sys::console::log_1(&format!("solid value: {:?}", solid.value).into());
-            #[cfg(target_arch = "wasm32")]
-            web_sys::console::log_1(&format!("solid value size: {:?}", solid.value.len()).into());
             fix_sketch_tags_and_references(&mut solid.sketch, &entity_id_map, exec_state, Some(solid.value.clone())).await?;
 
             let (start_tag, end_tag) = get_named_cap_tags(solid);
@@ -240,20 +229,12 @@ async fn fix_sketch_tags_and_references(
     // Fix the path references in the sketch.
     for path in new_sketch.paths.as_mut_slice() {
         if let Some(new_path_id) = entity_id_map.get(&path.get_id()) {
-            #[cfg(target_arch = "wasm32")]
-            web_sys::console::log_1(&format!("OLD ID{:?}", path.get_id()).into());
-
-            #[cfg(target_arch = "wasm32")]
-            web_sys::console::log_1(&format!("NEW ID{:?}", new_path_id).into());
             path.set_id(*new_path_id);
         } else {
             // We log on these because we might have already flushed and the id is no longer
             // relevant since filleted or something.
             crate::log::logln!("Failed to find new path id for old path id: {:?}", path.get_id());
         }
-        // double check the path id
-        #[cfg(target_arch = "wasm32")]
-        web_sys::console::log_1(&format!("PATH ID: {:?}", path.get_id()).into());
     }
 
     // Fix the tags
@@ -262,31 +243,15 @@ async fn fix_sketch_tags_and_references(
     for path in new_sketch.paths.clone() {
         // Check if this path has a tag.
         if let Some(tag) = path.get_tag() {
-            //print the tag
-            #[cfg(target_arch = "wasm32")]
-            web_sys::console::log_1(&format!("TAG: {:?}", tag).into());
-
-            // log entity id mapping
-            #[cfg(target_arch = "wasm32")]
-            web_sys::console::log_1(&format!("entity map: {:?}", entity_id_map).into());
-
             let mut surface: Option<ExtrudeSurface> = None;
             for (i, s) in surfaces.clone().unwrap_or(vec![]).iter().enumerate() {
                 if s.get_tag() == Some(tag.clone()) {
                     surface = Some(s.clone());
                     surface.as_mut().unwrap().set_face_id(entity_id_map.get(&s.get_face_id()).copied().unwrap_or_default());
-                    #[cfg(target_arch = "wasm32")]
-                    web_sys::console::log_1(&format!("NEW SURFACEID : {:?}", surface.clone().unwrap().get_face_id()).into());
-
-                    #[cfg(target_arch = "wasm32")]
-                    web_sys::console::log_1(&format!("OLD SURFACE ID: {:?}", s.clone().get_face_id()).into());
                 }
             }
 
             new_sketch.add_tag(&tag.clone(), &path, exec_state, &surface);
-            //double check that the tag was added
-            #[cfg(target_arch = "wasm32")]
-            web_sys::console::log_1(&format!("TAG ADDED: {:?}", path.get_tag()).into());
         }
     }
 
