@@ -340,25 +340,25 @@ test.describe('Testing constraints', () => {
         testName: 'Add variable',
         addVariable: true,
         constraint: 'Absolute X',
-        value: 'xDis001, 45',
+        value: 'xDis001, 15',
       },
       {
         testName: 'No variable',
         addVariable: false,
         constraint: 'Absolute X',
-        value: '95, 45',
+        value: '15, 15',
       },
       {
         testName: 'Add variable',
         addVariable: true,
         constraint: 'Absolute Y',
-        value: '95, yDis001',
+        value: '15, yDis001',
       },
       {
         testName: 'No variable',
         addVariable: false,
         constraint: 'Absolute Y',
-        value: '95, 45',
+        value: '15, 15',
       },
     ] as const
     for (const { testName, addVariable, value, constraint } of cases) {
@@ -375,10 +375,10 @@ test.describe('Testing constraints', () => {
             `@settings(defaultLengthUnit = in)
       yo = 5
       part001 = startSketchOn(XZ)
-        |> startProfile(at = [5, -15])
+        |> startProfile(at = [-15, -15])
         |> line(end = [20, 20])
-        |> line(end = [70, 40])
-        |> line(end = [0, 10])`
+        |> line(end = [10, 10])
+        |> line(end = [5, -5])`
           )
         })
         const u = await getUtils(page)
@@ -406,6 +406,7 @@ test.describe('Testing constraints', () => {
         // await page.waitForTimeout(120_000)
         await page.keyboard.down('Shift')
         await page.waitForTimeout(100)
+        console.log('clicking line', line3)
         await page.mouse.click(line3.x, line3.y)
         await page.waitForTimeout(100)
         await page.keyboard.up('Shift')
@@ -446,7 +447,7 @@ test.describe('Testing constraints', () => {
         )
 
         // checking the count of the overlays is a good proxy check that the client sketch scene is in a good state
-        await expect(page.getByTestId('segment-overlay')).toHaveCount(3)
+        await expect(page.getByTestId('segment-overlay')).toHaveCount(4)
       })
     }
   })
