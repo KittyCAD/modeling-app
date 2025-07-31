@@ -1633,17 +1633,15 @@ profile001 = startProfile(sketch001, at = [0, 0])
   })
 })
 
-test.describe(`Sketching
-with offset planes`, () => {
-  test(`
-Can
-select
-an
-offset
-plane
-to
-sketch
-on`, async ({ context, page, scene, toolbar, editor, homePage }) => {
+test.describe(`Sketching with offset planes`, () => {
+  test(`Can select an offset plane to sketch on`, async ({
+    context,
+    page,
+    scene,
+    toolbar,
+    editor,
+    homePage,
+  }) => {
     // We seed the scene with a single offset plane
     await context.addInitScript(() => {
       localStorage.setItem(
@@ -1712,16 +1710,15 @@ mode`, async () => {
 })
 
 test.describe('multi-profile sketching', () => {
-  test(`
-test
-it
-removes
-half - finished
-expressions
-when
-changing
-tools in sketch
-mode`, async ({ context, page, scene, toolbar, editor, homePage, cmdBar }) => {
+  test(`test it removes half - finished expressions when changing tools in sketch mode`, async ({
+    context,
+    page,
+    scene,
+    toolbar,
+    editor,
+    homePage,
+    cmdBar,
+  }) => {
     // We seed the scene with a single offset plane
     await context.addInitScript(() => {
       localStorage.setItem(
@@ -1848,12 +1845,7 @@ profile002 = startProfile(sketch001, at = [117.2, 56.08])
       await editor.expectEditor.toContain('profile002')
     })
   })
-  test(`
-snapToProfile
-start
-only
-works
-for current profile`, async ({
+  test(`snapToProfile start only works for current profile`, async ({
     context,
     page,
     scene,
