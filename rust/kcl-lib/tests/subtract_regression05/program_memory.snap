@@ -685,7 +685,8 @@ description: Variables in memory after executing subtract_regression05.kcl
       "originalId": "[uuid]",
       "units": {
         "type": "Inches"
-      }
+      },
+      "isClosed": false
     }
   },
   "sketch004": {
