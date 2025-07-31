@@ -1521,60 +1521,6 @@ sketch001 = startSketchOn(XZ)
     )
   })
 
-  test('Can undo with closed code pane', async ({
-    page,
-    homePage,
-    editor,
-    toolbar,
-    scene,
-    cmdBar,
-  }) => {
-    const u = await getUtils(page)
-
-    const viewportSize = { width: 1500, height: 750 }
-    await page.setBodyDimensions(viewportSize)
-
-    await page.addInitScript(async () => {
-      localStorage.setItem(
-        'persistCode',
-        `@settings(defaultLengthUnit=in)
-sketch001 = startSketchOn(XZ)
-  |> startProfile(at = [-10, -10])
-  |> line(end = [20.0, 10.0])
-  |> tangentialArc(end = [5.49, 8.37])`
-      )
-    })
-
-    await homePage.goToModelingScene()
-    await toolbar.waitForFeatureTreeToBeBuilt()
-    await scene.settled(cmdBar)
-
-    await (await toolbar.getFeatureTreeOperation('Sketch', 0)).dblclick()
-
-    await page.waitForTimeout(1000)
-
-    await page.mouse.move(1200, 139)
-    await page.mouse.down()
-    await page.mouse.move(870, 250)
-    await page.mouse.up()
-
-    await editor.expectEditor.toContain(`tangentialArc(end=[-5.85,4.32])`, {
-      shouldNormalise: true,
-    })
-
-    await u.closeKclCodePanel()
-
-    // Undo the last change
-    await page.keyboard.down('Control')
-    await page.keyboard.press('KeyZ')
-    await page.keyboard.up('Control')
-
-    await u.openKclCodePanel()
-    await editor.expectEditor.toContain(`tangentialArc(end = [5.49, 8.37])`, {
-      shouldNormalise: true,
-    })
-  })
-
   test('Can delete a single segment line with keyboard', async ({
     page,
     scene,
@@ -2631,6 +2577,8 @@ profile003 = circle(sketch001, center = [6.92, -4.2], radius = 3.16)
       await toolbar.lengthConstraintBtn.click()
       await cmdBar.progressCmdBar()
       await editor.expectEditor.toContain('length001 = 7')
+      // Undo should work with the pane closed
+      await editor.closePane()
 
       // wait for execute defer
       await page.waitForTimeout(600)
