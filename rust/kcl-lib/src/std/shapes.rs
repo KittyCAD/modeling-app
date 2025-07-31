@@ -553,6 +553,7 @@ pub async fn ellipse(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     })
 }
 
+#[allow(clippy::too_many_arguments)]
 async fn inner_ellipse(
     sketch_surface_or_group: SketchOrSurface,
     center: [TyF64; 2],
