@@ -11,9 +11,13 @@ export POWERSHELL := true
 endif
 endif
 
+ifdef WINDOWS
+PLATFORM := Windows
+else
 PLATFORM := $(shell uname -s)
 ifeq ($(PLATFORM),Linux)
 export LINUX := true
+endif
 endif
 
 ifdef WINDOWS
