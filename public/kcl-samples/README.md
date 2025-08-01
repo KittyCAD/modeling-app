@@ -27,8 +27,6 @@ When you submit a PR to add or modify KCL samples, images will be generated and 
 [![axial-fan](screenshots/axial-fan.png)](axial-fan/main.kcl)
 #### [ball-bearing](ball-bearing/main.kcl) ([screenshot](screenshots/ball-bearing.png))
 [![ball-bearing](screenshots/ball-bearing.png)](ball-bearing/main.kcl)
-#### [ball-joint-rod-end](ball-joint-rod-end/main.kcl) ([screenshot](screenshots/ball-joint-rod-end.png))
-[![ball-joint-rod-end](screenshots/ball-joint-rod-end.png)](ball-joint-rod-end/main.kcl)
 #### [bench](bench/main.kcl) ([screenshot](screenshots/bench.png))
 [![bench](screenshots/bench.png)](bench/main.kcl)
 #### [bone-plate](bone-plate/main.kcl) ([screenshot](screenshots/bone-plate.png))
