@@ -358,8 +358,12 @@ async fn mock_execute(path: String) -> PyResult<bool> {
 }
 
 #[pyfunction]
-async fn import_and_snapshot(path: String, format: InputFormat3d, image_format: ImageFormat) -> PyResult<Vec<u8>> {
-    let img = import_and_snapshot_views(vec![path], format, image_format, Vec::new())
+async fn import_and_snapshot(
+    filepaths: Vec<String>,
+    format: InputFormat3d,
+    image_format: ImageFormat,
+) -> PyResult<Vec<u8>> {
+    let img = import_and_snapshot_views(filepaths, format, image_format, Vec::new())
         .await?
         .pop();
     Ok(img.unwrap())

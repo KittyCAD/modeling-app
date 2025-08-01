@@ -226,7 +226,20 @@ async def test_import_and_snapshots():
     )
     assert images is not None
     assert len(images) == len(views)
-    image_bytes = images[0]
+    for i, image_bytes in enumerate(images):
+        assert image_bytes is not None
+        assert len(image_bytes) > 0
+
+
+@pytest.mark.asyncio
+async def test_import_and_snapshots_single():
+    # Read from a file.
+    step_options = kcl.step_import.Options()
+    input_format = kcl.InputFormat3d.Step(step_options)
+    print(cube_step_file)
+    image_bytes = await kcl.import_and_snapshot(
+        [cube_step_file], input_format, kcl.ImageFormat.Jpeg
+    )
     assert image_bytes is not None
     assert len(image_bytes) > 0
 
