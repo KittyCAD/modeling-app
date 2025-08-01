@@ -36,7 +36,7 @@ cat test-results/tab.json
 echo
 
 if ! grep --quiet "block" test-results/tab.json; then
-  echo "ERROR: Invalid response from ${TAB_API_URL}"
+  echo "ERROR: Invalid response from TAB_API_URL"
   grep --quiet 'failures="0"' test-results/junit.xml
   exit 0
 fi
