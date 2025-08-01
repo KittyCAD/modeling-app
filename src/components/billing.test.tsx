@@ -60,7 +60,7 @@ const createOrgResponse = (): Models['Org_type'] => ({
   created_at: '2025-05-05T18:52:02.021Z',
   domain: 'Ctxde1hpG8xTvvlef5SEPm7',
   id: '78432284-8660-46bf-ac65-d00bf9b18c3e',
-  image: 'https://Rt0.yK.com/R2SoRtl/tpUdckyDJ',
+  image: 'NOT_A_REAL_IMAGE',
   name: 'AevRR4w42KdkA487dh',
   phone: '+1-696-641-2790',
   stripe_id: 'sCfjVscpLyOBYUWO7Vlx',
