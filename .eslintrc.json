@@ -109,7 +109,6 @@
         ]
       }
     ],
-    "no-warning-comments": ["error",{"terms":["Menu.setApplicationMenu(null)"]}],
     "semi": ["error", "never"],
     "react-hooks/exhaustive-deps": "off",
     "react-hooks/rules-of-hooks":"error",
