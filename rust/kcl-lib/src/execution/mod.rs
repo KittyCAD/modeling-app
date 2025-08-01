@@ -388,12 +388,13 @@ impl ExecutorContext {
     /// Create a new default executor context.
     #[cfg(not(target_arch = "wasm32"))]
     pub async fn new(client: &kittycad::Client, settings: ExecutorSettings) -> Result<Self> {
+        let pool = std::env::var("ZOO_ENGINE_POOL").ok();
         let (ws, _headers) = client
             .modeling()
             .commands_ws(
                 None,
                 None,
-                None,
+                pool,
                 if settings.enable_ssao {
                     Some(kittycad::types::PostEffectType::Ssao)
                 } else {
