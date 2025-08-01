@@ -106,6 +106,8 @@ import type { SidebarType } from '@src/components/ModelingSidebar/ModelingPanes'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 
+const OVERLAY_TIMEOUT_MS = 1_000
+
 export const ModelingMachineContext = createContext(
   {} as {
     state: StateFrom<typeof modelingMachine>
@@ -200,8 +202,7 @@ export const ModelingMachineProvider = ({
                     pathToNodeString,
                   },
                 })
-                // overlay timeout is 1s
-              }, 1000) as unknown as number
+              }, OVERLAY_TIMEOUT_MS) as unknown as number
               return {
                 ...context.segmentHoverMap,
                 [pathToNodeString]: timeoutId,

@@ -165,7 +165,7 @@ jobs:
           TARGET: web
 
       - name: Update snapshots
-        if: always()
+        if: failure()
         run: npm run test:snapshots -- --last-failed --update-snapshots
         env:
           VITE_KITTYCAD_API_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
