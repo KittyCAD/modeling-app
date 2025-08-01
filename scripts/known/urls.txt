@@ -17,7 +17,6 @@ URL	STATUS
 302	https://github.com/KittyCAD/modeling-app/issues/new?title=${title}&body=${body}
 404	https://github.com/KittyCAD/modeling-app/releases/tag/v${version}
 521	https://placekitten.com/200/200
-000	https://Rt0.yK.com/R2SoRtl/tpUdckyDJ
 302	https://stackoverflow.com/a/57390160/22753272
 302	https://stackoverflow.com/a/58436959/22753272
 303	https://text-to-cad.zoo.dev/dashboard
