@@ -84,12 +84,12 @@ async fn inner_extrude(
     let tolerance = LengthUnit(tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM));
 
     let extrude_method = match method.as_deref() {
-        Some("new") => ExtrudeMethod::New,
-        Some("merge") => ExtrudeMethod::Merge,
+        Some("new" | "NEW") => ExtrudeMethod::New,
+        Some("merge" | "MERGE") => ExtrudeMethod::Merge,
         None => ExtrudeMethod::default(),
         Some(other) => {
             return Err(KclError::new_semantic(KclErrorDetails::new(
-                format!("Unknown merge method {other}, try using MERGE or NEW"),
+                format!("Unknown merge method {other}, try using `MERGE` or `NEW`"),
                 vec![args.source_range],
             )));
         }
@@ -209,6 +209,7 @@ pub(crate) async fn do_post_extrude<'a>(
     };
 
     let mut sketch = sketch.clone();
+    sketch.is_closed = true;
 
     // If we were sketching on a face, we need the original face id.
     if let SketchSurface::Face(ref face) = sketch.on {
@@ -332,6 +333,9 @@ pub(crate) async fn do_post_extrude<'a>(
         // Ok so you would think that the id would be the id of the solid,
         // that we passed in to the function, but it's actually the id of the
         // sketch.
+        //
+        // Why? Because when you extrude a sketch, the engine lets the solid absorb the
+        // sketch's ID. So the solid should take over the sketch's ID.
         id: sketch.id,
         artifact_id: solid_id,
         value: new_value,

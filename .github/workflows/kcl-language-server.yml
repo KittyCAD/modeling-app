@@ -61,7 +61,6 @@ jobs:
           cd rust/kcl-language-server
           npm run build
           npm run test-compile
-          ls -la dist
           xvfb-run -a npm run test
         if: runner.os == 'Linux'
       - name: Run tests
@@ -317,7 +316,6 @@ jobs:
           #with:
           #name: release-aarch64-pc-windows-msvc
           #path: rust/build
-      - run: ls -al ./rust/build
       - name: Publish Release
         uses: ./.github/actions/github-release
         with:

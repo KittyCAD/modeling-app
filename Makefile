@@ -43,13 +43,13 @@ endif
 ###############################################################################
 # BUILD
 
-CARGO_SOURCES := rust/.cargo/config.toml $(wildcard rust/Cargo.*) $(wildcard rust/**/Cargo.*)
-KCL_SOURCES := $(wildcard public/kcl-samples/**/*.kcl)
-RUST_SOURCES := $(wildcard rust/**/*.rs)
+CARGO_SOURCES := rust/.cargo/config.toml $(wildcard rust/Cargo.*) $(wildcard rust/*/Cargo.*)
+KCL_SOURCES := $(wildcard public/kcl-samples/*/*.kcl)
+RUST_SOURCES := $(wildcard rust/*.rs rust/*/*.rs rust/*/*/*.rs rust/*/*/*/*.rs rust/*/*/*/*/*.rs)
 
-REACT_SOURCES := $(wildcard src/*.tsx) $(wildcard src/**/*.tsx)
-TYPESCRIPT_SOURCES := tsconfig.* $(wildcard src/*.ts) $(wildcard src/**/*.ts)
-VITE_SOURCES := $(wildcard vite.*) $(wildcard vite/**/*.tsx) .env*
+REACT_SOURCES := $(wildcard src/*.tsx src/*/*.tsx src/*/*/*.tsx src/*/*/*/*.tsx)
+TYPESCRIPT_SOURCES := tsconfig.* $(wildcard src/*.ts src/*/*.ts src/*/*/*.ts src/*/*/*/*.ts)
+VITE_SOURCES := .env* $(wildcard vite.*)
 
 .PHONY: build
 build: install public/kcl_wasm_lib_bg.wasm public/kcl-samples/manifest.json .vite/build/main.js

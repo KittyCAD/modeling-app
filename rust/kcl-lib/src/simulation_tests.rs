@@ -183,7 +183,7 @@ async fn unparse_test(test: &Test) {
     let ast = crate::parsing::parse_tokens(tokens).unwrap();
 
     // Check recasting.
-    let actual = ast.recast(&Default::default(), 0);
+    let actual = ast.recast_top(&Default::default(), 0);
     let input_result = catch_unwind(AssertUnwindSafe(|| {
         assert_snapshot(test, "Result of unparsing", || {
             insta::assert_snapshot!("unparsed", actual);
@@ -3819,6 +3819,50 @@ mod elliptic_curve_inches_regression {
 }
 mod tag_inner_face {
     const TEST_NAME: &str = "tag_inner_face";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+
+mod double_close {
+    const TEST_NAME: &str = "double_close";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+
+mod revolve_on_face {
+    const TEST_NAME: &str = "revolve_on_face";
 
     /// Test parsing KCL.
     #[test]

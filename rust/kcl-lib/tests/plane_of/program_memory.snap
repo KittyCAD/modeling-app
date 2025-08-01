@@ -16,7 +16,7 @@ description: Variables in memory after executing plane_of.kcl
           "type": "Mm"
         }
       },
-      "value": "Uninit",
+      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,

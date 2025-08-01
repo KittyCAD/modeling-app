@@ -17,7 +17,6 @@ import {
   OrthographicCamera,
   PerspectiveCamera,
   PlaneGeometry,
-  Points,
   Shape,
   Vector2,
   Vector3,
@@ -67,6 +66,8 @@ import {
   THREE_POINT_ARC_HANDLE3,
   THREE_POINT_ARC_SEGMENT,
   getParentGroup,
+  SEGMENT_BLUE,
+  SEGMENT_YELLOW,
 } from '@src/clientSideScene/sceneConstants'
 import type {
   OnClickCallbackArgs,
@@ -158,6 +159,7 @@ import {
   updateRectangleSketch,
 } from '@src/lib/rectangleTool'
 import type RustContext from '@src/lib/rustContext'
+import { updateExtraSegments } from '@src/lib/selections'
 import type { Selections } from '@src/lib/selections'
 import { getEventForSegmentSelection } from '@src/lib/selections'
 import type { Themes } from '@src/lib/theme'
@@ -865,7 +867,6 @@ export class SceneEntities {
           pathToNode: segPathToNode,
           isDraftSegment,
           scale,
-          texture: this.sceneInfra.extraSegmentTexture,
           theme: this.sceneInfra._theme,
           isSelected,
           sceneInfra: this.sceneInfra,
@@ -2546,14 +2547,14 @@ export class SceneEntities {
 
           const pipeIndex = pathToNode[pathToNodeIndex + 1][0] as number
           if (addingNewSegmentStatus === 'nothing') {
-            const prevSegment = sketch.paths[pipeIndex - 2]
+            const prevSegment = sketch.paths[pipeIndex - 2] // Is undefined when dragging the first segment
             const mod = addNewSketchLn({
               node: this.kclManager.ast,
               variables: this.kclManager.variables,
               input: {
                 type: 'straight-segment',
                 to: [intersectionPoint.twoD.x, intersectionPoint.twoD.y],
-                from: prevSegment.from,
+                from: prevSegment?.from || [0, 0],
               },
               // TODO assuming it's always a straight segments being added
               // as this is easiest, and we'll need to add "tabbing" behavior
@@ -3340,7 +3341,7 @@ export class SceneEntities {
 
   mouseEnterLeaveCallbacks() {
     return {
-      onMouseEnter: ({ selected, dragSelected }: OnMouseEnterLeaveArgs) => {
+      onMouseEnter: ({ selected }: OnMouseEnterLeaveArgs) => {
         if ([X_AXIS, Y_AXIS].includes(selected?.userData?.type)) {
           const obj = selected as Mesh
           const mat = obj.material as MeshBasicMaterial
@@ -3366,16 +3367,11 @@ export class SceneEntities {
           this.editorManager.setHighlightRange([
             topLevelRange(node.start, node.end),
           ])
-          const yellow = 0xffff00
-          colorSegment(selected, yellow)
-          const extraSegmentGroup = parent.getObjectByName(EXTRA_SEGMENT_HANDLE)
-          if (extraSegmentGroup) {
-            extraSegmentGroup.traverse((child) => {
-              if (child instanceof Points || child instanceof Mesh) {
-                child.material.opacity = dragSelected ? 0 : 1
-              }
-            })
-          }
+          colorSegment(selected, SEGMENT_YELLOW)
+          const isSelected = parent?.userData?.isSelected
+          const hoveringArrow = selected?.parent?.name === ARROWHEAD
+          updateExtraSegments(parent, 'hoveringLine', !hoveringArrow) // no hover effect for arrowheads, they don't color the segment
+          updateExtraSegments(parent, 'selected', isSelected)
           const orthoFactor = orthoScale(this.sceneInfra.camControls.camera)
 
           let input: SegmentInputs = {
@@ -3528,18 +3524,12 @@ export class SceneEntities {
         colorSegment(
           selected,
           isSelected
-            ? 0x0000ff
+            ? SEGMENT_BLUE
             : parent?.userData?.baseColor ||
                 getThemeColorForThreeJs(this.sceneInfra._theme)
         )
-        const extraSegmentGroup = parent?.getObjectByName(EXTRA_SEGMENT_HANDLE)
-        if (extraSegmentGroup) {
-          extraSegmentGroup.traverse((child) => {
-            if (child instanceof Points || child instanceof Mesh) {
-              child.material.opacity = 0
-            }
-          })
-        }
+        updateExtraSegments(parent, 'hoveringLine', false)
+        updateExtraSegments(parent, 'selected', isSelected)
         if ([X_AXIS, Y_AXIS].includes(selected?.userData?.type)) {
           const obj = selected as Mesh
           const mat = obj.material as MeshBasicMaterial
@@ -3836,7 +3826,7 @@ function sketchFromPathToNode({
   return sg
 }
 
-function colorSegment(object: any, color: number) {
+function colorSegment(object: Object3D, color: number) {
   const segmentHead = getParentGroup(object, [ARROWHEAD, PROFILE_START])
   if (segmentHead) {
     segmentHead.traverse((child) => {

@@ -1,5 +1,7 @@
 //! Functions related to sketching.
 
+use std::f64;
+
 use anyhow::Result;
 use indexmap::IndexMap;
 use kcmc::shared::Point2d as KPoint2d; // Point2d is already defined in this pkg, to impl ts_rs traits.
@@ -20,13 +22,15 @@ use crate::execution::{Artifact, ArtifactId, CodeRef, StartSketchOnFace, StartSk
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        BasePath, ExecState, Face, GeoMeta, KclValue, ModelingCmdMeta, Path, Plane, PlaneInfo, Point2d, Sketch,
-        SketchSurface, Solid, TagEngineInfo, TagIdentifier,
+        BasePath, ExecState, Face, GeoMeta, KclValue, ModelingCmdMeta, Path, Plane, PlaneInfo, Point2d, Point3d,
+        Sketch, SketchSurface, Solid, TagEngineInfo, TagIdentifier,
         types::{ArrayLen, NumericType, PrimitiveType, RuntimeType, UnitLen},
     },
     parsing::ast::types::TagNode,
     std::{
         args::{Args, TyF64},
+        axis_or_reference::Axis2dOrEdgeReference,
+        planes::inner_plane_of,
         utils::{
             TangentialArcInfoInput, arc_center_and_end, get_tangential_arc_to_info, get_x_component, get_y_component,
             intersection_with_parallel_line, point_to_len_unit, point_to_mm, untyped_point_to_mm,
@@ -810,8 +814,11 @@ pub async fn start_sketch_on(exec_state: &mut ExecState, args: Args) -> Result<K
         exec_state,
     )?;
     let face = args.get_kw_arg_opt("face", &RuntimeType::tagged_face(), exec_state)?;
+    let normal_to_face = args.get_kw_arg_opt("normalToFace", &RuntimeType::tagged_face(), exec_state)?;
+    let align_axis = args.get_kw_arg_opt("alignAxis", &RuntimeType::Primitive(PrimitiveType::Axis2d), exec_state)?;
+    let normal_offset = args.get_kw_arg_opt("normalOffset", &RuntimeType::length(), exec_state)?;
 
-    match inner_start_sketch_on(data, face, exec_state, &args).await? {
+    match inner_start_sketch_on(data, face, normal_to_face, align_axis, normal_offset, exec_state, &args).await? {
         SketchSurface::Plane(value) => Ok(KclValue::Plane { value }),
         SketchSurface::Face(value) => Ok(KclValue::Face { value }),
     }
@@ -820,9 +827,43 @@ pub async fn start_sketch_on(exec_state: &mut ExecState, args: Args) -> Result<K
 async fn inner_start_sketch_on(
     plane_or_solid: SketchData,
     face: Option<FaceTag>,
+    normal_to_face: Option<FaceTag>,
+    align_axis: Option<Axis2dOrEdgeReference>,
+    normal_offset: Option<TyF64>,
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<SketchSurface, KclError> {
+    let face = match (face, normal_to_face, &align_axis, &normal_offset) {
+        (Some(_), Some(_), _, _) => {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "You cannot give both `face` and `normalToFace` params, you have to choose one or the other."
+                    .to_owned(),
+                vec![args.source_range],
+            )));
+        }
+        (Some(face), None, None, None) => Some(face),
+        (_, Some(_), None, _) => {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "`alignAxis` is required if `normalToFace` is specified.".to_owned(),
+                vec![args.source_range],
+            )));
+        }
+        (_, None, Some(_), _) => {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "`normalToFace` is required if `alignAxis` is specified.".to_owned(),
+                vec![args.source_range],
+            )));
+        }
+        (_, None, _, Some(_)) => {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "`normalToFace` is required if `normalOffset` is specified.".to_owned(),
+                vec![args.source_range],
+            )));
+        }
+        (_, Some(face), Some(_), _) => Some(face),
+        (None, None, None, None) => None,
+    };
+
     match plane_or_solid {
         SketchData::PlaneOrientation(plane_data) => {
             let plane = make_sketch_plane_from_orientation(plane_data, exec_state, args).await?;
@@ -860,20 +901,93 @@ async fn inner_start_sketch_on(
                     vec![args.source_range],
                 )));
             };
-            let face = start_sketch_on_face(solid, tag, exec_state, args).await?;
+            if let Some(align_axis) = align_axis {
+                let plane_of = inner_plane_of(*solid, tag, exec_state, args).await?;
 
-            #[cfg(feature = "artifact-graph")]
-            {
+                let offset = normal_offset.map_or(0.0, |x| x.n);
+                let (x_axis, y_axis, normal_offset) = match align_axis {
+                    Axis2dOrEdgeReference::Axis { direction, origin: _ } => {
+                        if (direction[0].n - 1.0).abs() < f64::EPSILON {
+                            //X axis chosen
+                            (
+                                plane_of.info.x_axis,
+                                plane_of.info.z_axis,
+                                plane_of.info.y_axis * offset,
+                            )
+                        } else if (direction[0].n + 1.0).abs() < f64::EPSILON {
+                            // -X axis chosen
+                            (
+                                plane_of.info.x_axis.negated(),
+                                plane_of.info.z_axis,
+                                plane_of.info.y_axis * offset,
+                            )
+                        } else if (direction[1].n - 1.0).abs() < f64::EPSILON {
+                            // Y axis chosen
+                            (
+                                plane_of.info.y_axis,
+                                plane_of.info.z_axis,
+                                plane_of.info.x_axis * offset,
+                            )
+                        } else if (direction[1].n + 1.0).abs() < f64::EPSILON {
+                            // -Y axis chosen
+                            (
+                                plane_of.info.y_axis.negated(),
+                                plane_of.info.z_axis,
+                                plane_of.info.x_axis * offset,
+                            )
+                        } else {
+                            return Err(KclError::new_semantic(KclErrorDetails::new(
+                                "Unsupported axis detected. This function only supports using X, -X, Y and -Y."
+                                    .to_owned(),
+                                vec![args.source_range],
+                            )));
+                        }
+                    }
+                    Axis2dOrEdgeReference::Edge(_) => {
+                        return Err(KclError::new_semantic(KclErrorDetails::new(
+                            "Use of an edge here is unsupported, please specify an `Axis2d` (e.g. `X`) instead."
+                                .to_owned(),
+                            vec![args.source_range],
+                        )));
+                    }
+                };
+                let origin = Point3d::new(0.0, 0.0, 0.0, plane_of.info.origin.units);
+                let plane_data = PlaneData::Plane(PlaneInfo {
+                    origin: plane_of.project(origin) + normal_offset,
+                    x_axis,
+                    y_axis,
+                    z_axis: x_axis.axes_cross_product(&y_axis),
+                });
+                let plane = make_sketch_plane_from_orientation(plane_data, exec_state, args).await?;
+
                 // Create artifact used only by the UI, not the engine.
-                let id = exec_state.next_uuid();
-                exec_state.add_artifact(Artifact::StartSketchOnFace(StartSketchOnFace {
-                    id: ArtifactId::from(id),
-                    face_id: face.artifact_id,
-                    code_ref: CodeRef::placeholder(args.source_range),
-                }));
-            }
+                #[cfg(feature = "artifact-graph")]
+                {
+                    let id = exec_state.next_uuid();
+                    exec_state.add_artifact(Artifact::StartSketchOnPlane(StartSketchOnPlane {
+                        id: ArtifactId::from(id),
+                        plane_id: plane.artifact_id,
+                        code_ref: CodeRef::placeholder(args.source_range),
+                    }));
+                }
 
-            Ok(SketchSurface::Face(face))
+                Ok(SketchSurface::Plane(plane))
+            } else {
+                let face = start_sketch_on_face(solid, tag, exec_state, args).await?;
+
+                #[cfg(feature = "artifact-graph")]
+                {
+                    // Create artifact used only by the UI, not the engine.
+                    let id = exec_state.next_uuid();
+                    exec_state.add_artifact(Artifact::StartSketchOnFace(StartSketchOnFace {
+                        id: ArtifactId::from(id),
+                        face_id: face.artifact_id,
+                        code_ref: CodeRef::placeholder(args.source_range),
+                    }));
+                }
+
+                Ok(SketchSurface::Face(face))
+            }
         }
     }
 }
@@ -1061,6 +1175,7 @@ pub(crate) async fn inner_start_profile(
             Default::default()
         },
         start: current_path,
+        is_closed: false,
     };
     Ok(sketch)
 }
@@ -1117,6 +1232,16 @@ pub(crate) async fn inner_close(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
+    if sketch.is_closed {
+        exec_state.warn(crate::CompilationError {
+            source_range: args.source_range,
+            message: "This sketch is already closed. Remove this unnecessary `close()` call".to_string(),
+            suggestion: None,
+            severity: crate::errors::Severity::Warning,
+            tag: crate::errors::Tag::Unnecessary,
+        });
+        return Ok(sketch);
+    }
     let from = sketch.current_pen_position()?;
     let to = point_to_len_unit(sketch.start.get_from(), from.units);
 
@@ -1146,8 +1271,8 @@ pub(crate) async fn inner_close(
     if let Some(tag) = &tag {
         new_sketch.add_tag(tag, &current_path, exec_state);
     }
-
     new_sketch.paths.push(current_path);
+    new_sketch.is_closed = true;
 
     Ok(new_sketch)
 }

@@ -150,7 +150,7 @@ function Toolbar() {
   useOnboardingPanes()
 
   return (
-    <div className="cursor-not-allowed fixed inset-0 z-[99] grid items-start justify-center p-16">
+    <div className="cursor-not-allowed fixed inset-0 z-[99] grid items-start justify-center p-24">
       <OnboardingCard>
         <h1 className="text-xl font-bold">This is the toolbar</h1>
         <p className="my-4">
@@ -171,7 +171,7 @@ function TextToCad() {
   useOnboardingPanes()
 
   return (
-    <div className="cursor-not-allowed fixed inset-0 z-50 grid items-start justify-center p-16">
+    <div className="cursor-not-allowed fixed inset-0 z-50 grid items-start justify-center p-24">
       <OnboardingCard>
         <h1 className="text-xl font-bold">Text-to-CAD</h1>
         <p className="my-4">
@@ -184,7 +184,7 @@ function TextToCad() {
           <strong>One</strong> Text-to-CAD generation costs{' '}
           <strong>one credit per minute</strong>, rounded up to the nearest
           minute. A large majority of Text-to-CAD generations take under a
-          minute. If you are on the free plan, you get 40 free credits per
+          minute. If you are on the free plan, you get 20 free credits per
           month. With any of our paid plans, you get unlimited Text-to-CAD
           generations.
         </p>
@@ -326,7 +326,7 @@ function PromptToEdit() {
   useAdvanceOnboardingOnFormSubmit(thisOnboardingStatus)
 
   return (
-    <div className="cursor-not-allowed fixed inset-0 z-50 grid items-center justify-center p-16">
+    <div className="cursor-not-allowed fixed inset-0 z-50 grid items-center justify-center p-24">
       <OnboardingCard className="col-start-3 col-span-2">
         <h1 className="text-xl font-bold">Modify with Zoo Text-to-CAD</h1>
         <p className="my-4">
@@ -464,7 +464,7 @@ function OnboardingConclusion() {
   const downloadLink = withSiteBaseURL(`/${APP_DOWNLOAD_PATH}`)
 
   return (
-    <div className="cursor-not-allowed fixed inset-0 z-50 p-16 grid justify-center items-center">
+    <div className="cursor-not-allowed fixed inset-0 z-50 p-24 grid justify-center items-center">
       <OnboardingCard>
         <h1 className="text-xl font-bold">Download the desktop app</h1>
         <p className="my-4">
