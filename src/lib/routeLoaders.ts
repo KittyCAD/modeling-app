@@ -193,11 +193,6 @@ export const homeLoader: LoaderFunction = async ({
   request,
 }): Promise<HomeLoaderData | Response> => {
   const url = new URL(request.url)
-  if (!isDesktop()) {
-    return redirect(
-      PATHS.FILE + '/%2F' + BROWSER_PROJECT_NAME + (url.search || '')
-    )
-  }
   settingsActor.send({
     type: 'clear.project',
   })
