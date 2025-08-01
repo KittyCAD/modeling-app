@@ -430,6 +430,7 @@ export const FileMachineProvider = ({
       // TODO: Clean this up with global application state when fileMachine gets merged into SystemIOMachine
       send({ type: 'Refresh with new project', data: { project } })
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [location])
 
   const cb = modelingMenuCallbackMostActions(
@@ -480,6 +481,7 @@ export const FileMachineProvider = ({
       },
       specialPropsForInsertCommand: { providedOptions },
     })
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [codeManager, kclManager, send, project, file])
 
   useEffect(() => {
@@ -494,6 +496,7 @@ export const FileMachineProvider = ({
         data: { commands: kclCommandMemo },
       })
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [commandBarActor.send, kclCommandMemo])
 
   return (

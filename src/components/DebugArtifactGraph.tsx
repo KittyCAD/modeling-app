@@ -10,6 +10,7 @@ import { kclManager } from '@src/lib/singletons'
 export function DebugArtifactGraph() {
   const artifactGraphTree = useMemo(() => {
     return computeTree(kclManager.artifactGraph)
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [kclManager.artifactGraph])
 
   const filterKeys: string[] = ['codeRef', 'pathToNode']

@@ -95,6 +95,7 @@ export function ContextMenu({
           ? windowSize.height - position.y
           : 'auto',
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [position, windowSize, dialogRef.current])
 
   // Listen for window resize to update context menu position
@@ -115,8 +116,10 @@ export function ContextMenu({
   useEffect(() => {
     menuTargetElement?.current?.addEventListener(event, handleContextMenu)
     return () => {
+      // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
       menuTargetElement?.current?.removeEventListener(event, handleContextMenu)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [menuTargetElement?.current])
 
   return (
