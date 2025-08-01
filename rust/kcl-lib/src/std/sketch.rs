@@ -2030,7 +2030,7 @@ pub(crate) async fn inner_elliptic(
     let major_axis = match (major_axis, major_radius) {
         (Some(_), Some(_)) | (None, None) => {
             return Err(KclError::new_type(KclErrorDetails::new(
-                "Provide either `majorAxis` or `majorRadius`.".to_string(),
+                "Provide either `majorAxis` or `majorRadius` but not both.".to_string(),
                 vec![args.source_range],
             )));
         }
