@@ -162,9 +162,7 @@ test(
 
 test(
   'open a file in a project works and renders, open another file in different project that is empty, it should clear the scene',
-  {
-    tag: '@desktop',
-  },
+  { tag: '@desktop' },
   async ({ toolbar, editor, scene, cmdBar, context, page, homePage }) => {
     await context.folderSetupFn(async (dir) => {
       const bracketDir = path.join(dir, 'bracket')
@@ -203,9 +201,7 @@ test(
 
 test(
   'open a file in a project works and renders, open empty file, it should clear the scene',
-  {
-    tag: '@desktop',
-  },
+  { tag: '@desktop' },
   async ({ scene, cmdBar, context, page, toolbar, editor, homePage }) => {
     await context.folderSetupFn(async (dir) => {
       const bracketDir = path.join(dir, 'bracket')
@@ -244,9 +240,7 @@ test(
 
 test(
   'open a file in a project works and renders, open another file in the same project with errors, it should clear the scene',
-  {
-    tag: '@desktop',
-  },
+  { tag: '@desktop' },
   async ({ scene, cmdBar, context, page, toolbar, homePage, editor }) => {
     await context.folderSetupFn(async (dir) => {
       const bracketDir = path.join(dir, 'bracket')
@@ -1714,9 +1708,7 @@ test(
 
 test(
   'project name with foreign characters should open',
-  {
-    tag: '@desktop',
-  },
+  { tag: '@desktop' },
   async ({ context, page, cmdBar, scene, homePage }) => {
     const projectName = 'العربية'
     await context.folderSetupFn(async (dir) => {
@@ -1735,9 +1727,7 @@ test(
 
 test(
   'import from nested directory',
-  {
-    tag: ['@desktop', '@windows', '@macos'],
-  },
+  { tag: ['@desktop', '@windows', '@macos'] },
   async ({ homePage, scene, cmdBar, context, page, editor }) => {
     const lineOfKcl = runningOnWindows()
       ? `import 'nested\\main.kcl' as thing`
@@ -1774,9 +1764,7 @@ test(
 
 test(
   'segment position changes persist after dragging and reopening project',
-  {
-    tag: '@desktop',
-  },
+  { tag: '@desktop' },
   async ({ scene, cmdBar, context, page, editor, toolbar }) => {
     const projectName = 'segment-drag-test'
 

@@ -2580,15 +2580,20 @@ profile003 = circle(sketch001, center = [6.92, -4.2], radius = 3.16)
       // Undo should work with the pane closed
       await editor.closePane()
 
-      // wait for execute defer
-      await page.waitForTimeout(600)
-      await sketchIsDrawnProperly()
+      await test.step('Undo should work with the pane closed', async () => {
+        await editor.closePane()
 
-      await page.keyboard.down('Meta')
-      await page.keyboard.press('KeyZ')
-      await page.keyboard.up('Meta')
+        // wait for execute defer
+        await page.waitForTimeout(600)
+        await sketchIsDrawnProperly()
 
-      await editor.expectEditor.not.toContain('length001 = 7')
+        await page.keyboard.down('Meta')
+        await page.keyboard.press('KeyZ')
+        await page.keyboard.up('Meta')
+
+        await editor.expectEditor.not.toContain('length001 = 7')
+      })
+
       await sketchIsDrawnProperly()
     })
   })

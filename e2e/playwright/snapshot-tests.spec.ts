@@ -10,6 +10,8 @@ import {
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { KCL_DEFAULT_LENGTH } from '@src/lib/constants'
 
+const TEST_OVERLAY_TIMEOUT_MS = 1_500 // slightly longer than OVERLAY_TIMEOUT_MS in @src/components/ModelingMachineProvider
+
 test.beforeEach(async ({ page, context }) => {
   // Make the user avatar image always 404
   // so we see the fallback menu icon for all snapshot tests
@@ -129,13 +131,13 @@ test(
   async ({ page, scene, toolbar }) => {
     const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
-    const PUR = 400 / 37.5 //pixeltoUnitRatio
     await u.waitForAuthSkipAppStart()
 
-    const startXPx = 600
+    const startPixelX = 600
+    const pixelToUnitRatio = 400 / 37.5
     const [endOfTangentClk, endOfTangentMv] = scene.makeMouseHelpers(
-      startXPx + PUR * 30,
-      500 - PUR * 20,
+      startPixelX + pixelToUnitRatio * 30,
+      500 - pixelToUnitRatio * 20,
       { steps: 10 }
     )
     const [threePointArcMidPointClk, threePointArcMidPointMv] =
@@ -149,35 +151,41 @@ test(
       steps: 10,
     })
 
-    // click on "Start Sketch" button
+    // Start a sketch
     await u.doAndWaitForImageDiff(
       () => page.getByRole('button', { name: 'Start Sketch' }).click(),
       200
     )
 
-    // select a plane
+    // Select a plane
     await page.mouse.click(700, 200)
-
     let code = `sketch001 = startSketchOn(XZ)`
     await expect(page.locator('.cm-content')).toHaveText(code)
 
-    await page.waitForTimeout(700) // TODO detect animation ending, or disable animation
-
-    await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
+    await page.mouse.click(
+      startPixelX + pixelToUnitRatio * 10,
+      500 - pixelToUnitRatio * 10
+    )
     code += `profile001 = startProfile(sketch001, at = [182.59, -246.32])`
     await expect(page.locator('.cm-content')).toHaveText(code)
     await page.waitForTimeout(100)
 
-    await page.mouse.move(startXPx + PUR * 20, 500 - PUR * 10)
+    await page.mouse.move(
+      startPixelX + pixelToUnitRatio * 20,
+      500 - pixelToUnitRatio * 10
+    )
 
-    await page.waitForTimeout(500)
+    await page.waitForTimeout(TEST_OVERLAY_TIMEOUT_MS)
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
       mask: lowerRightMasks(page),
     })
 
     const lineEndClick = () =>
-      page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
+      page.mouse.click(
+        startPixelX + pixelToUnitRatio * 20,
+        500 - pixelToUnitRatio * 10
+      )
     await lineEndClick()
     await page.waitForTimeout(500)
 
@@ -197,7 +205,7 @@ test(
     await page.waitForTimeout(500)
 
     await endOfTangentMv()
-    await page.waitForTimeout(500)
+    await page.waitForTimeout(TEST_OVERLAY_TIMEOUT_MS)
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
       mask: lowerRightMasks(page),
@@ -208,7 +216,7 @@ test(
     await page.waitForTimeout(500)
     await endOfTangentClk()
     await threePointArcMidPointMv()
-    await page.waitForTimeout(500)
+    await page.waitForTimeout(TEST_OVERLAY_TIMEOUT_MS)
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
       mask: lowerRightMasks(page),
@@ -217,7 +225,7 @@ test(
     await page.waitForTimeout(100)
 
     await threePointArcEndPointMv()
-    await page.waitForTimeout(500)
+    await page.waitForTimeout(TEST_OVERLAY_TIMEOUT_MS)
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
       mask: lowerRightMasks(page),
@@ -237,7 +245,7 @@ test(
     await arcCenterClk()
 
     await arcEndMv()
-    await page.waitForTimeout(500)
+    await page.waitForTimeout(TEST_OVERLAY_TIMEOUT_MS)
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
       mask: lowerRightMasks(page),
@@ -252,42 +260,38 @@ test(
   async ({ page, context, cmdBar, scene }) => {
     const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
-    const PUR = 400 / 37.5 //pixeltoUnitRatio
-
     await u.waitForAuthSkipAppStart()
 
-    // click on "Start Sketch" button
+    // Start a sketch
     await u.doAndWaitForImageDiff(
       () => page.getByRole('button', { name: 'Start Sketch' }).click(),
       200
     )
 
-    // select a plane
+    // Select a plane
     await page.mouse.click(700, 200)
-
     await expect(page.locator('.cm-content')).toHaveText(
       `sketch001 = startSketchOn(XZ)`
     )
 
-    // Wait for camera animation
-    await page.waitForTimeout(2000)
-
-    const startXPx = 600
-
     // Equip the rectangle tool
-    const rectangleBtn = page.getByTestId('corner-rectangle')
-    await rectangleBtn.click()
-    await expect(rectangleBtn).toHaveAttribute('aria-pressed', 'true')
+    await page.getByTestId('corner-rectangle').click()
 
     // Draw the rectangle
+    const startPixelX = 600
+    const pixelToUnitRatio = 400 / 37.5
     const rectanglePointOne: [number, number] = [
-      startXPx + PUR * 40,
-      500 - PUR * 30,
+      startPixelX + pixelToUnitRatio * 40,
+      500 - pixelToUnitRatio * 30,
     ]
     await page.mouse.move(...rectanglePointOne, { steps: 5 })
-    await page.mouse.click(...rectanglePointOne, { delay: 50 })
-    await page.mouse.move(startXPx + PUR * 10, 500 - PUR * 10, { steps: 5 })
-    await page.waitForTimeout(800)
+    await page.mouse.click(...rectanglePointOne, { delay: 500 })
+    await page.mouse.move(
+      startPixelX + pixelToUnitRatio * 10,
+      500 - pixelToUnitRatio * 10,
+      { steps: 5 }
+    )
+    await page.waitForTimeout(TEST_OVERLAY_TIMEOUT_MS)
 
     // Ensure the draft rectangle looks the same as it usually does
     await expect(page).toHaveScreenshot({
@@ -317,6 +321,7 @@ test(
 
     await u.waitForAuthSkipAppStart()
 
+    // Start a sketch
     await u.doAndWaitForImageDiff(
       () => page.getByRole('button', { name: 'Start Sketch' }).click(),
       200
