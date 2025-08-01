@@ -125,7 +125,7 @@ impl<T> Node<T> {
         }
     }
 
-    pub fn boxed(inner: T, start: usize, end: usize, module_id: ModuleId) -> BoxNode<T> {
+    pub fn boxed(start: usize, end: usize, module_id: ModuleId, inner: T) -> BoxNode<T> {
         Box::new(Node {
             inner,
             start,

@@ -1773,7 +1773,8 @@ description: Variables in memory after executing cold-plate.kcl
       "originalId": "[uuid]",
       "units": {
         "type": "Inches"
-      }
+      },
+      "isClosed": false
     }
   },
   "seg01": {

@@ -1,5 +1,5 @@
 import { Dialog } from '@headlessui/react'
-import type { RefObject } from 'react'
+import type { RefObject, MouseEvent } from 'react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useHotkeys } from 'react-hotkeys-hook'
@@ -60,6 +60,19 @@ export function ContextMenu({
     [guard, setPosition, setOpen, callback]
   )
 
+  const onDialogMouseUp = useCallback((e: MouseEvent) => {
+    // Prevent mouseup event to propagate to EngineStream's handleMouseUp which would update the selection depending
+    // on what's behind the ContextMenu at the position of the mouse.
+    // Bug without this:
+    // - Open ContextMenu
+    // - Click on an item in the ContextMenu and see how what's behind will get selected.
+    e.stopPropagation()
+  }, [])
+
+  const onCloseDialog = useCallback(() => {
+    setOpen(false)
+  }, [])
+
   const dialogPositionStyle = useMemo(() => {
     if (!dialogRef.current)
       return {
@@ -112,7 +125,7 @@ export function ContextMenu({
   }, [menuTargetElement?.current, callback])
 
   return (
-    <Dialog open={open} onClose={() => setOpen(false)}>
+    <Dialog open={open} onClose={onCloseDialog} onMouseUp={onDialogMouseUp}>
       <div
         className="fixed inset-0 z-50 w-screen h-screen"
         onContextMenu={(e) => {
