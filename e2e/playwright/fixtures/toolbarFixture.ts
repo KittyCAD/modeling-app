@@ -212,8 +212,8 @@ export class ToolbarFixture {
   }
   selectArc = async () => {
     await this.page.getByRole('button', { name: 'caret down arcs:' }).click()
-    await expect(this.page.getByTestId('dropdown-arc')).toBeVisible()
-    await this.page.getByTestId('dropdown-arc').click()
+    await expect(this.page.getByTestId('dropdown-tangential-arc')).toBeVisible()
+    await this.page.getByTestId('dropdown-tangential-arc').click()
   }
   selectThreePointArc = async () => {
     await this.page.getByRole('button', { name: 'caret down arcs:' }).click()
