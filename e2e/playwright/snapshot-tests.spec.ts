@@ -9,6 +9,9 @@ import {
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { KCL_DEFAULT_LENGTH } from '@src/lib/constants'
+import { OVERLAY_TIMEOUT_MS } from '@src/components/ModelingMachineProvider'
+
+const TEST_OVERLAY_TIMEOUT_MS = OVERLAY_TIMEOUT_MS + 500
 
 test.beforeEach(async ({ page, context }) => {
   // Make the user avatar image always 404
@@ -173,7 +176,7 @@ test(
       500 - pixelToUnitRatio * 10
     )
 
-    await page.waitForTimeout(1_500) // modeling machine timeout is 1s
+    await page.waitForTimeout(TEST_OVERLAY_TIMEOUT_MS)
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
       mask: lowerRightMasks(page),
@@ -203,7 +206,7 @@ test(
     await page.waitForTimeout(500)
 
     await endOfTangentMv()
-    await page.waitForTimeout(1_500) // modeling machine timeout is 1s
+    await page.waitForTimeout(TEST_OVERLAY_TIMEOUT_MS)
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
       mask: lowerRightMasks(page),
@@ -214,7 +217,7 @@ test(
     await page.waitForTimeout(500)
     await endOfTangentClk()
     await threePointArcMidPointMv()
-    await page.waitForTimeout(1_500) // modeling machine timeout is 1s
+    await page.waitForTimeout(TEST_OVERLAY_TIMEOUT_MS)
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
       mask: lowerRightMasks(page),
@@ -223,7 +226,7 @@ test(
     await page.waitForTimeout(100)
 
     await threePointArcEndPointMv()
-    await page.waitForTimeout(1_500) // modeling machine timeout is 1s
+    await page.waitForTimeout(TEST_OVERLAY_TIMEOUT_MS)
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
       mask: lowerRightMasks(page),
@@ -243,7 +246,7 @@ test(
     await arcCenterClk()
 
     await arcEndMv()
-    await page.waitForTimeout(1_500) // modeling machine timeout is 1s
+    await page.waitForTimeout(TEST_OVERLAY_TIMEOUT_MS)
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
       mask: lowerRightMasks(page),
@@ -289,7 +292,7 @@ test(
       500 - pixelToUnitRatio * 10,
       { steps: 5 }
     )
-    await page.waitForTimeout(1_500) // modeling machine timeout is 1s
+    await page.waitForTimeout(TEST_OVERLAY_TIMEOUT_MS)
 
     // Ensure the draft rectangle looks the same as it usually does
     await expect(page).toHaveScreenshot({
@@ -333,7 +336,7 @@ test(
       500 - pixelToUnitRatio * 10,
       { steps: 5 }
     )
-    await page.waitForTimeout(1_500) // modeling machine timeout is 1s
+    await page.waitForTimeout(TEST_OVERLAY_TIMEOUT_MS)
 
     // Ensure the draft circle looks the same as it usually does
     await expect(page).toHaveScreenshot({
