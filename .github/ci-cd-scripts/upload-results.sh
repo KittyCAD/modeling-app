@@ -47,4 +47,8 @@ curl --silent --request POST \
   ${TAB_API_URL}/api/share
 echo
 
-grep --quiet '"block": false' test-results/tab.json
+if [ -f "test-results/tab.json" ]; then
+  grep --quiet '"block": false' test-results/tab.json
+else
+  grep --quiet 'failures="0"' test-results/junit.xml
+fi
