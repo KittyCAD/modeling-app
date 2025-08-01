@@ -106,7 +106,7 @@ import type { SidebarType } from '@src/components/ModelingSidebar/ModelingPanes'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 
-export const OVERLAY_TIMEOUT_MS = 1_000
+const OVERLAY_TIMEOUT_MS = 1_000
 
 export const ModelingMachineContext = createContext(
   {} as {
