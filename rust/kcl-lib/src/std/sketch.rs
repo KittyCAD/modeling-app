@@ -2045,8 +2045,11 @@ pub(crate) async fn inner_elliptic(
     };
     let start_angle = Angle::from_degrees(angle_start.to_degrees());
     let end_angle = Angle::from_degrees(angle_end.to_degrees());
+    let major_axis_magnitude = (major_axis[0].to_length_units(from.units) * major_axis[0].to_length_units(from.units)
+        + major_axis[1].to_length_units(from.units) * major_axis[1].to_length_units(from.units))
+    .sqrt();
     let to = [
-        major_axis[0].to_length_units(from.units) * libm::cos(end_angle.to_radians()),
+        major_axis_magnitude * libm::cos(end_angle.to_radians()),
         minor_radius.to_length_units(from.units) * libm::sin(end_angle.to_radians()),
     ];
     let major_axis_angle = libm::atan2(major_axis[1].n, major_axis[0].n);
@@ -2056,7 +2059,7 @@ pub(crate) async fn inner_elliptic(
         center_u[1] + to[0] * libm::sin(major_axis_angle) + to[1] * libm::cos(major_axis_angle),
     ];
 
-    let axis = KPoint2d::from(untyped_point_to_mm([major_axis[0].n, major_axis[1].n], from.units)).map(LengthUnit);
+    let axis = major_axis.map(|x| x.to_mm());
     exec_state
         .batch_modeling_cmd(
             ModelingCmdMeta::from_args_id(&args, id),
@@ -2064,7 +2067,7 @@ pub(crate) async fn inner_elliptic(
                 path: sketch.id.into(),
                 segment: PathSegment::Ellipse {
                     center: KPoint2d::from(untyped_point_to_mm(center_u, from.units)).map(LengthUnit),
-                    major_axis: axis,
+                    major_axis: axis.map(LengthUnit).into(),
                     minor_radius: LengthUnit(minor_radius.to_mm()),
                     start_angle,
                     end_angle,
@@ -2076,7 +2079,7 @@ pub(crate) async fn inner_elliptic(
     let current_path = Path::Ellipse {
         ccw: start_angle < end_angle,
         center: center_u,
-        major_axis: major_axis.map(|x| x.to_mm()),
+        major_axis: axis,
         minor_radius: minor_radius.to_mm(),
         base: BasePath {
             from: from.ignore_units(),
