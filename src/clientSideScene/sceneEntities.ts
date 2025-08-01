@@ -94,7 +94,9 @@ import { createLineShape } from '@src/clientSideScene/segments'
 import {
   createProfileStartHandle,
   dashedStraight,
+  getSegmentColor,
   getTanPreviousPoint,
+  isSegmentFullyConstrained,
   segmentUtils,
 } from '@src/clientSideScene/segments'
 import type EditorManager from '@src/editor/manager'
@@ -3265,6 +3267,7 @@ export class SceneEntities {
         p3: segment.p3,
       }
     }
+    // (window as any).truncatedAst = modifiedAst
     const callBack =
       update &&
       !err(update) &&
@@ -3295,15 +3298,47 @@ export class SceneEntities {
   updateSegmentBaseColor(newColor: Themes.Light | Themes.Dark) {
     const newColorThreeJs = getThemeColorForThreeJs(newColor)
     Object.values(this.activeSegments).forEach((group) => {
+      // Update the stored base color
       group.userData.baseColor = newColorThreeJs
-      group.traverse((child) => {
-        if (
-          child instanceof Mesh &&
-          child.material instanceof MeshBasicMaterial
-        ) {
-          child.material.color.set(newColorThreeJs)
-        }
-      })
+
+      // Use constraint-aware coloring instead of directly setting theme color
+      if (this.kclManager.ast && this.codeManager.code) {
+        const pathToNode = group.userData.pathToNode
+        const isFullyConstrained =
+          group.userData.callExpName === 'close'
+            ? true
+            : isSegmentFullyConstrained(
+                pathToNode,
+                this.kclManager.ast,
+                this.codeManager.code
+              )
+
+        const constraintAwareColor = getSegmentColor({
+          theme: newColor,
+          isSelected: group.userData.isSelected || false,
+          callExpName: group.userData.callExpName,
+          isFullyConstrained,
+        })
+
+        group.traverse((child) => {
+          if (
+            child instanceof Mesh &&
+            child.material instanceof MeshBasicMaterial
+          ) {
+            child.material.color.set(constraintAwareColor)
+          }
+        })
+      } else {
+        // Fallback to theme color if no AST/code available
+        group.traverse((child) => {
+          if (
+            child instanceof Mesh &&
+            child.material instanceof MeshBasicMaterial
+          ) {
+            child.material.color.set(newColorThreeJs)
+          }
+        })
+      }
     })
   }
 
@@ -3521,13 +3556,37 @@ export class SceneEntities {
             })
         }
         const isSelected = parent?.userData?.isSelected
-        colorSegment(
-          selected,
-          isSelected
-            ? SEGMENT_BLUE
-            : parent?.userData?.baseColor ||
-                getThemeColorForThreeJs(this.sceneInfra._theme)
-        )
+
+        // Use constraint-aware coloring for mouse leave
+        if (parent && this.kclManager.ast && this.codeManager.code) {
+          const pathToNode = parent.userData.pathToNode
+          const isFullyConstrained =
+            parent.userData.callExpName === 'close'
+              ? true
+              : isSegmentFullyConstrained(
+                  pathToNode,
+                  this.kclManager.ast,
+                  this.codeManager.code
+                )
+
+          const constraintAwareColor = getSegmentColor({
+            theme: this.sceneInfra._theme,
+            isSelected: isSelected || false,
+            callExpName: parent.userData.callExpName,
+            isFullyConstrained,
+          })
+
+          colorSegment(selected, constraintAwareColor)
+        } else {
+          // Fallback to old logic if no constraint info available
+          colorSegment(
+            selected,
+            isSelected
+              ? SEGMENT_BLUE
+              : parent?.userData?.baseColor ||
+                  getThemeColorForThreeJs(this.sceneInfra._theme)
+          )
+        }
         updateExtraSegments(parent, 'hoveringLine', false)
         updateExtraSegments(parent, 'selected', isSelected)
         if ([X_AXIS, Y_AXIS].includes(selected?.userData?.type)) {

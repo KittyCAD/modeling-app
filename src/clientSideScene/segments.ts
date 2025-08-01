@@ -158,7 +158,7 @@ export interface SegmentUtils {
 /**
  * Checks if a segment is fully constrained by examining all its constraint info
  */
-function isSegmentFullyConstrained(
+export function isSegmentFullyConstrained(
   pathToNode: PathToNode,
   ast: Program,
   code: string
@@ -187,7 +187,7 @@ function isSegmentFullyConstrained(
 /**
  * Gets the appropriate color for a segment based on selection, constraints, and theme
  */
-function getSegmentColor({
+export function getSegmentColor({
   theme,
   isSelected,
   callExpName = '',
