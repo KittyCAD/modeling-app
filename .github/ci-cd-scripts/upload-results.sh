@@ -2,15 +2,17 @@
 set -euo pipefail
 
 if [ -z "${TAB_API_URL:-}" ] || [ -z "${TAB_API_KEY:-}" ]; then
+    echo "WARNING: TAB_API_URL and TAB_API_KEY must be set to analyze results"
+    grep --quiet 'failures="0"' test-results/junit.xml
     exit 0
 fi
 
-project="https://github.com/KittyCAD/modeling-app"
+project="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}"
 suite="${CI_SUITE:-unit}"
 branch="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME:-}}"
 commit="${CI_COMMIT_SHA:-${GITHUB_SHA:-}}"
 
-echo "Uploading batch results"
+echo "Uploading batch results:"
 curl --silent --request POST \
   --header "X-API-Key: ${TAB_API_KEY}" \
   --form "project=${project}" \
@@ -29,10 +31,17 @@ curl --silent --request POST \
   --form "GITHUB_SHA=${GITHUB_SHA:-}" \
   --form "GITHUB_WORKFLOW=${GITHUB_WORKFLOW:-}" \
   --form "RUNNER_ARCH=${RUNNER_ARCH:-}" \
-  ${TAB_API_URL}/api/results/bulk
-
+  ${TAB_API_URL}/api/results/bulk > test-results/tab.json
+cat test-results/tab.json
 echo
-echo "Sharing updated report"
+
+if ! grep --quiet "block" test-results/tab.json; then
+  echo "ERROR: Invalid response from ${TAB_API_URL}"
+  grep --quiet 'failures="0"' test-results/junit.xml
+  exit 0
+fi
+
+echo "Sharing updated report:"
 curl --silent --request POST \
   --header "Content-Type: application/json" \
   --header "X-API-Key: ${TAB_API_KEY}" \
@@ -42,3 +51,6 @@ curl --silent --request POST \
     \"commit\": \"${commit}\"
   }" \
   ${TAB_API_URL}/api/share
+echo
+
+grep --quiet '"block": false' test-results/tab.json

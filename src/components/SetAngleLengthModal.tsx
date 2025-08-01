@@ -64,6 +64,8 @@ export const SetAngleLengthModal = ({
     initialVariableName: valueName,
     selectionRanges,
   })
+  const isDisabled =
+    (calcResult === 'NAN' || !isNewVariableNameUnique) && shouldCreateVariable
 
   return (
     <Transition appear show={isOpen} as={Fragment}>
@@ -141,11 +143,9 @@ export const SetAngleLengthModal = ({
                 <div className="mt-4">
                   <button
                     type="button"
-                    disabled={calcResult === 'NAN' || !isNewVariableNameUnique}
+                    disabled={isDisabled}
                     className={`inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 ${
-                      calcResult === 'NAN' || !isNewVariableNameUnique
-                        ? 'opacity-50 cursor-not-allowed'
-                        : ''
+                      isDisabled ? 'opacity-50 cursor-not-allowed' : ''
                     }`}
                     onClick={() =>
                       valueNode &&

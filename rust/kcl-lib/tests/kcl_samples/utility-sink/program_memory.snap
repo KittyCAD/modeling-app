@@ -1541,7 +1541,8 @@ description: Variables in memory after executing utility-sink.kcl
       "originalId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "isClosed": false
     }
   },
   "handleProfileSection": {
