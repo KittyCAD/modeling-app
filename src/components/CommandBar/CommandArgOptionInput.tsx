@@ -33,6 +33,7 @@ function CommandArgOptionInput({
       typeof arg.options === 'function'
         ? arg.options(commandBarState.context, actorContext)
         : arg.options,
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
     [argName, arg, commandBarState.context, actorContext]
   )
   // The initial current option is either an already-input value or the configured default
@@ -49,6 +50,7 @@ function CommandArgOptionInput({
   const [selectedOption, setSelectedOption] = useState<
     CommandArgumentOption<unknown>
   >(currentOption || resolvedOptions[0])
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   const initialQuery = useMemo(() => '', [arg.options, argName])
   const [query, setQuery] = useState(initialQuery)
   const [filteredOptions, setFilteredOptions] =
@@ -61,6 +63,7 @@ function CommandArgOptionInput({
         keys: ['name', 'description'],
         threshold: 0.3,
       }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
     [argName, resolvedOptions]
   )
 
@@ -68,6 +71,7 @@ function CommandArgOptionInput({
   useEffect(() => {
     setQuery(initialQuery)
     setSelectedOption(currentOption || resolvedOptions[0])
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [argName])
 
   // Auto focus and select the input when the component mounts

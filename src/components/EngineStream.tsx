@@ -90,6 +90,7 @@ export const EngineStream = (props: {
 
   useEffect(() => {
     setStreamIdleMode(settings.app.streamIdleMode.current)
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [settings.app.streamIdleMode.current])
 
   useEffect(() => {
@@ -99,6 +100,7 @@ export const EngineStream = (props: {
       type: EngineStreamTransition.SetVideoRef,
       videoRef: { current: videoRef.current },
     })
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [videoRef.current, engineStreamState])
 
   useEffect(() => {
@@ -107,6 +109,7 @@ export const EngineStream = (props: {
       type: EngineStreamTransition.SetCanvasRef,
       canvasRef: { current: canvasRef.current },
     })
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [canvasRef.current, engineStreamState])
 
   useEffect(() => {
@@ -214,6 +217,7 @@ export const EngineStream = (props: {
         executeKcl
       )
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [needsExecution])
 
   useEffect(() => {
@@ -283,6 +287,7 @@ export const EngineStream = (props: {
         onOffline
       )
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [
     engineStreamState,
     attemptTimes,
@@ -327,6 +332,7 @@ export const EngineStream = (props: {
     return () => {
       observer.disconnect()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [engineStreamState.value])
 
   /**
@@ -414,6 +420,7 @@ export const EngineStream = (props: {
     return () => {
       window.cancelAnimationFrame(frameId)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [modelingMachineState, engineStreamState.value])
 
   useEffect(() => {
@@ -468,6 +475,7 @@ export const EngineStream = (props: {
       window.document.removeEventListener('touchstart', onAnyInput)
       window.document.removeEventListener('touchend', onAnyInput)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [streamIdleMode, engineStreamState.value])
 
   // On various inputs save the camera state, in case we get disconnected.

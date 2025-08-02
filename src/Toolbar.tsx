@@ -58,6 +58,7 @@ export function Toolbar({
       kclManager.artifactGraph,
       context.selectionRanges
     )
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [kclManager.artifactGraph, context.selectionRanges])
 
   const toolbarButtonsRef = useRef<HTMLUListElement>(null)
@@ -90,11 +91,13 @@ export function Toolbar({
       sketchPathId,
       editorHasFocus: editorManager.getEditorView()?.hasFocus,
     }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
     [
       state,
       send,
       commandBarActor.send,
       sketchPathId,
+      // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
       editorManager.getEditorView()?.hasFocus,
     ]
   )
@@ -189,6 +192,7 @@ export function Toolbar({
         status: maybeIconConfig.status,
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [currentMode, disableAllButtons, configCallbackProps])
 
   // To remember the last selected item in an ActionButtonDropdown

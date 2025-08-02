@@ -40,6 +40,7 @@ function CommandBarBasicInput({
           ? arg.defaultValue(commandBarState.context, argMachineContext)
           : arg.defaultValue
         : ''),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
     [
       arg.defaultValue,
       commandBarState.context,

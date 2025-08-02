@@ -75,6 +75,7 @@ export function useQueryParamEffects() {
       searchParams.delete(CODE_QUERY_PARAM)
       setSearchParams(searchParams)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [shouldInvokeCreateFile, setSearchParams, authState])
 
   /**
@@ -182,6 +183,7 @@ export function useQueryParamEffects() {
       }
       setSearchParams(searchParams)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [shouldInvokeGenericCmd, setSearchParams, authState])
 }
 

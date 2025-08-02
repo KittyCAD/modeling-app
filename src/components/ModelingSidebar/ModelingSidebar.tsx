@@ -68,6 +68,7 @@ export function ModelingSidebar() {
       settings,
       platform: getPlatformString(),
     }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
     [kclContext.diagnostics, settings]
   )
 
@@ -157,6 +158,7 @@ export function ModelingSidebar() {
           !pane.hide ||
           (pane.hide instanceof Function && !pane.hide(paneCallbackProps))
       ),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
     [sidebarPanes, paneCallbackProps]
   )
 
@@ -175,6 +177,7 @@ export function ModelingSidebar() {
       },
       {} as Record<SidebarType, BadgeInfoComputed>
     )
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [paneCallbackProps])
 
   // Clear any hidden panes from the `openPanes` array
@@ -200,6 +203,7 @@ export function ModelingSidebar() {
         },
       })
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [settings.app.showDebugPanel])
 
   const togglePane = useCallback(

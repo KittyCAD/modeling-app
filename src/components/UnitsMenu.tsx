@@ -16,6 +16,7 @@ export function UnitsMenu() {
   const [fileSettings, setFileSettings] = useState(kclManager.fileSettings)
   useEffect(() => {
     setFileSettings(kclManager.fileSettings)
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [kclManager.fileSettings])
 
   return (

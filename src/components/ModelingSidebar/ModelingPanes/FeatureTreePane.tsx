@@ -188,11 +188,13 @@ export const FeatureTreePane = () => {
     if (codeOpen && isEditorMounted) {
       featureTreeSend({ type: 'codePaneOpened' })
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [modelingState.context.store.openPanes, isEditorMounted])
 
   // Watch for changes in the selection and send an event to the feature tree machine
   useEffect(() => {
     featureTreeSend({ type: 'selected' })
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [lastSelectionEvent])
 
   function goToError() {
@@ -272,6 +274,7 @@ const VisibilityToggle = (props: VisibilityToggleProps) => {
   const visible = props.visible
   const handleToggleVisible = useCallback(() => {
     props.onVisibilityChange()
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [props.onVisibilityChange])
 
   return (
@@ -400,6 +403,7 @@ const OperationItem = (props: {
         diag.from >= props.item.sourceRange[0] &&
         diag.to <= props.item.sourceRange[1]
     )
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [kclContext.diagnostics.length])
 
   async function selectOperation() {
@@ -672,6 +676,7 @@ const OperationItem = (props: {
           ]
         : []),
     ],
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
     [props.item, props.send]
   )
 
@@ -723,6 +728,7 @@ const DefaultPlanes = () => {
         }
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
     [sketchNoFace]
   )
 

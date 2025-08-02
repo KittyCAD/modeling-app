@@ -71,6 +71,7 @@ function CommandBarSelectionInput({
         return Promise.all(promises)
       }, reportRejection)()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [])
 
   // Fast-forward through this arg if it's marked as skippable
@@ -80,6 +81,7 @@ function CommandBarSelectionInput({
     if (canSubmitSelection && arg.skip && argValue === undefined) {
       handleSubmit()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [arg.name, canSubmitSelection])
 
   function handleChange() {
@@ -140,12 +142,14 @@ function CommandBarSelectionInput({
         onSubmit(resolvedSelection)
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [hasClearedSelection])
 
   // Set selection filter if needed, and reset it when the component unmounts
   useEffect(() => {
     arg.selectionFilter && kclManager.setSelectionFilter(arg.selectionFilter)
     return () => kclManager.defaultSelectionFilter(selection)
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [arg.selectionFilter])
 
   return (

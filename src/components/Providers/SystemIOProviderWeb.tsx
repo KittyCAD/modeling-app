@@ -33,6 +33,7 @@ export function SystemIOMachineLogicListenerWeb() {
       if (clearURLParams.value) {
         clearImportSearchParams()
       }
+      // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
     }, [clearURLParams])
   }
 
@@ -58,6 +59,7 @@ export function SystemIOMachineLogicListenerWeb() {
         billingActor.send({ type: BillingTransition.Update, apiToken: token })
       })
       .catch(reportRejection)
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [requestedTextToCadGeneration])
 
   useClearQueryParams()

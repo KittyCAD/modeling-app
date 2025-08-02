@@ -30,6 +30,7 @@ export const useFileSystemWatcher = (
   useEffect(() => {
     if (!output) return
     callback(output.eventType, output.path).catch(reportRejection)
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [output])
 
   // On component teardown obliterate all watchers.
@@ -54,6 +55,7 @@ export const useFileSystemWatcher = (
 
     return () => {
       for (let path of pathsTracked) {
+        // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
         window.electron.watchFileOff(path, key.current)
       }
     }
@@ -80,5 +82,6 @@ export const useFileSystemWatcher = (
     const [, pathsRemaining] = difference(pathsTracked, paths)
     const [pathsAdded] = difference(paths, pathsTracked)
     setPathsTracked(pathsRemaining.concat(pathsAdded))
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [hasDiff])
 }

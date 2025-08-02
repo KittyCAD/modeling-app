@@ -113,6 +113,7 @@ function DisplayObj({
     } else {
       setHasCursor(false)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [node.start, node.end, node.type])
 
   return (

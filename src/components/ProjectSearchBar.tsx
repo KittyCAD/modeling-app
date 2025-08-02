@@ -17,6 +17,7 @@ export function useProjectSearch(projects: Project[]) {
   useEffect(() => {
     const results = fuse.search(query).map((result) => result.item)
     setSearchResults(query.length > 0 ? results : projects)
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [query, projects])
 
   return {

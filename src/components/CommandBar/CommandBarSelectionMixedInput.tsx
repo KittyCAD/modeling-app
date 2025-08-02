@@ -63,12 +63,14 @@ export default function CommandBarSelectionMixedInput({
         setHasAutoSkipped(true)
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [arg.name])
 
   // Set selection filter if needed, and reset it when the component unmounts
   useEffect(() => {
     arg.selectionFilter && kclManager.setSelectionFilter(arg.selectionFilter)
     return () => kclManager.defaultSelectionFilter(selection)
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [arg.selectionFilter])
 
   // Watch for outside teardowns of this component
@@ -87,6 +89,7 @@ export default function CommandBarSelectionMixedInput({
         onSubmit(resolvedSelection)
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [])
 
   function handleChange() {

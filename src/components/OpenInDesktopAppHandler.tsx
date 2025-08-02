@@ -49,6 +49,7 @@ export const OpenInDesktopAppHandler = (props: React.PropsWithChildren) => {
       decodeURIComponent(searchParams.get('code') ?? '')
     )
     codeManager.goIntoTemporaryWorkspaceModeWithCode(codeB64)
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [hasAskToOpenParam])
 
   /**

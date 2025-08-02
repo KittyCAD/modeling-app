@@ -98,6 +98,7 @@ export function useCalculateKclExpression({
         inputRef.current.setSelectionRange(0, String(value).length)
     }, 100)
     setNewVariableName(findUniqueName(kclManager.ast, valueName))
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [])
 
   useEffect(() => {
@@ -120,6 +121,7 @@ export function useCalculateKclExpression({
       endingSourceRange
     )
     setAvailableVarInfo(varInfo)
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [kclManager.ast, kclManager.variables, endingSourceRange])
 
   useEffect(() => {
@@ -143,6 +145,7 @@ export function useCalculateKclExpression({
       setIsExecuting(false)
       setValueNode(null)
     })
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [value, availableVarInfo, code, kclManager.variables])
 
   return {

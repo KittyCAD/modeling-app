@@ -83,6 +83,7 @@ export function useNetworkStatus() {
     let pingEMANext = ((pingEMA ?? 0) + pingRaw) / 2
     pingEMANext = pingEMANext * multiplier + (pingEMA ?? 0) * (1 - multiplier)
     setPingEMA(pingEMANext)
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [pingRaw])
 
   useEffect(() => {

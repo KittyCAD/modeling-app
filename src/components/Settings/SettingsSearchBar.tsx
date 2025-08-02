@@ -78,6 +78,7 @@ export function SettingsSearchBar() {
   useEffect(() => {
     const results = fuse.search(query).map((result) => result.item)
     setSearchResults(query.length > 0 ? results : settingsAsSearchable)
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [query])
 
   function handleSelection({ level, name }: SettingsSearchItem) {
