@@ -526,45 +526,22 @@ description: Result of parsing elliptic_curve_inches_regression.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "name": "majorAxis",
+                      "name": "majorRadius",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
                       "commentStart": 0,
-                      "elements": [
-                        {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "raw": "90.658755",
-                          "start": 0,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 90.658755,
-                            "suffix": "None"
-                          }
-                        },
-                        {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "raw": "0",
-                          "start": 0,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 0.0,
-                            "suffix": "None"
-                          }
-                        }
-                      ],
                       "end": 0,
                       "moduleId": 0,
+                      "raw": "90.658755",
                       "start": 0,
-                      "type": "ArrayExpression",
-                      "type": "ArrayExpression"
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 90.658755,
+                        "suffix": "None"
+                      }
                     }
                   },
                   {
