@@ -394,26 +394,23 @@ test.describe('Feature Tree pane', () => {
       await cmdBar.expectState({
         commandName: 'Offset plane',
         stage: 'arguments',
-        currentArgKey: 'distance',
+        currentArgKey: 'offset',
         currentArgValue: initialInput,
         headerArguments: {
-          Plane: '1 plane',
-          Distance: initialInput,
+          Offset: initialInput,
         },
-        highlightedHeaderArg: 'distance',
+        highlightedHeaderArg: 'offset',
       })
     })
 
-    await test.step('Edit the distance argument and submit', async () => {
+    await test.step('Edit the offset argument and submit', async () => {
       await expect(cmdBar.currentArgumentInput).toBeVisible()
       await cmdBar.currentArgumentInput.locator('.cm-content').fill(newInput)
       await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         stage: 'review',
         headerArguments: {
-          Plane: '1 plane',
-          // We show the calculated value in the argument summary
-          Distance: '15',
+          Offset: '15',
         },
         commandName: 'Offset plane',
       })
