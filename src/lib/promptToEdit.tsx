@@ -4,8 +4,7 @@ import type { Models } from '@kittycad/lib'
 import { diffLines } from 'diff'
 import toast from 'react-hot-toast'
 import type { TextToCadMultiFileIteration_type } from '@kittycad/lib/dist/types/src/models'
-import { getCookie, TOKEN_PERSIST_KEY } from '@src/machines/authMachine'
-import { APP_DOWNLOAD_PATH, COOKIE_NAME } from '@src/lib/constants'
+import { APP_DOWNLOAD_PATH } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { ActionButton } from '@src/components/ActionButton'
@@ -112,14 +111,9 @@ export async function submitPromptToEditToQueue({
   selections: Selections | null
   projectFiles: FileMeta[]
   projectName: string
-  token?: string
+  token: string
   artifactGraph: ArtifactGraph
 }) {
-  const _token =
-    token && token !== ''
-      ? token
-      : getCookie(COOKIE_NAME) || localStorage?.getItem(TOKEN_PERSIST_KEY) || ''
-
   const kclFilesMap: KclFileMetaMap = {}
   const endPointFiles: KittyCadLibFile[] = []
   projectFiles.forEach((file) => {
@@ -150,7 +144,7 @@ export async function submitPromptToEditToQueue({
         kcl_version: kclManager.kclVersion,
       },
       endPointFiles,
-      _token
+      token
     )
   }
 
@@ -328,7 +322,7 @@ export async function doPromptEdit({
   prompt: string
   selections: Selections
   projectFiles: FileMeta[]
-  token?: string
+  token: string
   projectName: string
   artifactGraph: ArtifactGraph
 }): Promise<Models['TextToCadMultiFileIteration_type'] | Error> {
@@ -413,7 +407,7 @@ export async function promptToEditFlow({
   prompt: string
   selections: Selections
   projectFiles: FileMeta[]
-  token?: string
+  token: string
   artifactGraph: ArtifactGraph
   projectName: string
   filePath: string | undefined
