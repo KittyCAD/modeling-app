@@ -78,7 +78,7 @@ fn transform(@id) {
 
 // Sketch 4 cylinders.
 sketch001 = startSketchOn(XZ)
-  |> circle(center = [0, 0], radius = 2)
+extrude001 = circle(sketch001, center = [0, 0], radius = 2)
   |> extrude(length = 5)
   |> patternTransform(instances = 4, transform = transform)
 
@@ -95,7 +95,7 @@ fn transform(@id) {
 }
 
 sketch001 = startSketchOn(XZ)
-  |> circle(center = [0, 0], radius = 2)
+extrude001 = circle(sketch001, center = [0, 0], radius = 2)
   |> extrude(length = 5)
   |> patternTransform(instances = 4, transform = transform)
 

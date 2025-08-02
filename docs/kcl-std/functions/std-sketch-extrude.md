@@ -53,8 +53,8 @@ can change this behavior by using the `method` parameter. See
 ### Examples
 
 ```kcl
-example = startSketchOn(XZ)
-  |> startProfile(at = [0, 0])
+exampleSketch = startSketchOn(XZ)
+example = startProfile(exampleSketch, at = [0, 0])
   |> line(end = [10, 0])
   |> arc(angleStart = 120deg, angleEnd = 0, radius = 5)
   |> line(end = [5, 0])
@@ -70,7 +70,7 @@ example = startSketchOn(XZ)
 
 ```kcl
 exampleSketch = startSketchOn(XZ)
-  |> startProfile(at = [-10, 0])
+exampleProfile = startProfile(exampleSketch, at = [-10, 0])
   |> arc(angleStart = 120deg, angleEnd = -60deg, radius = 5)
   |> line(end = [10, 0])
   |> line(end = [5, 0])
@@ -79,7 +79,7 @@ exampleSketch = startSketchOn(XZ)
   |> line(end = [-5, -2])
   |> close()
 
-example = extrude(exampleSketch, length = 10)
+example = extrude(exampleProfile, length = 10)
 
 ```
 
@@ -87,7 +87,7 @@ example = extrude(exampleSketch, length = 10)
 
 ```kcl
 exampleSketch = startSketchOn(XZ)
-  |> startProfile(at = [-10, 0])
+exampleProfile = startProfile(exampleSketch, at = [-10, 0])
   |> arc(angleStart = 120deg, angleEnd = -60deg, radius = 5)
   |> line(end = [10, 0])
   |> line(end = [5, 0])
@@ -96,7 +96,7 @@ exampleSketch = startSketchOn(XZ)
   |> line(end = [-5, -2])
   |> close()
 
-example = extrude(exampleSketch, length = 20, symmetric = true)
+example = extrude(exampleProfile, length = 20, symmetric = true)
 
 ```
 
@@ -104,7 +104,7 @@ example = extrude(exampleSketch, length = 20, symmetric = true)
 
 ```kcl
 exampleSketch = startSketchOn(XZ)
-  |> startProfile(at = [-10, 0])
+exampleProfile = startProfile(exampleSketch, at = [-10, 0])
   |> arc(angleStart = 120deg, angleEnd = -60deg, radius = 5)
   |> line(end = [10, 0])
   |> line(end = [5, 0])
@@ -113,7 +113,7 @@ exampleSketch = startSketchOn(XZ)
   |> line(end = [-5, -2])
   |> close()
 
-example = extrude(exampleSketch, length = 10, bidirectionalLength = 50)
+example = extrude(exampleProfile, length = 10, bidirectionalLength = 50)
 
 ```
 
