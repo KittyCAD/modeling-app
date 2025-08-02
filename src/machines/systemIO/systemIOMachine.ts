@@ -87,6 +87,7 @@ export const systemIOMachine = setup({
           type: SystemIOMachineEvents.createKCLFile
           data: {
             requestedProjectName: string
+            requestedSubDirectory?: string
             requestedFileNameWithExtension: string
             requestedCode: string
           }
@@ -290,6 +291,7 @@ export const systemIOMachine = setup({
         input: {
           context: SystemIOContext
           requestedProjectName: string
+          requestedSubDirectory?: string
           requestedFileNameWithExtension: string
           requestedCode: string
           rootContext: AppMachineContext
