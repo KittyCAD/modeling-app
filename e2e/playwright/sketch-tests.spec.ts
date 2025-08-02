@@ -14,7 +14,7 @@ import {
   getUtils,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
-import type { EditorFixture } from './fixtures/editorFixture'
+import type { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
 
 test.describe('Sketch tests', () => {
   test('multi-sketch file shows multiple Edit Sketch buttons', async ({
@@ -2542,7 +2542,7 @@ profile003 = circle(sketch001, center = [6.92, -4.2], radius = 3.16)
       await page.waitForTimeout(600)
     })
 
-    await test.step('select and delete code for a profile', async () => {})
+    await test.step('select and delete code for a profile', async () => { })
     await page.getByText('close()').click()
     await page.keyboard.down('Shift')
     for (let i = 0; i < 11; i++) {
