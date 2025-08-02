@@ -52,7 +52,7 @@ test.describe('Can create sketches on all planes and their back sides', () => {
       },
     }
 
-    const code = `@settings(defaultLengthUnit = in)sketch001 = startSketchOn(${plane})profile001 = startProfile(sketch001, at = [0.91, -1.22])`
+    const code = `@settings(defaultLengthUnit = in)sketch001 = startSketchOn(${plane})profile001 = startProfile(sketch001, at = [0.57, -1.22])`
 
     await u.openDebugPanel()
 
@@ -65,7 +65,11 @@ test.describe('Can create sketches on all planes and their back sides', () => {
 
     await u.closeDebugPanel()
 
-    await page.mouse.click(clickCoords.x, clickCoords.y)
+    const resolvedCoords = await scene.convertPagePositionToStream(
+      clickCoords.x,
+      clickCoords.y
+    )
+    await page.mouse.click(resolvedCoords.x, resolvedCoords.y)
     await page.waitForTimeout(600) // wait for animation
 
     await toolbar.waitUntilSketchingReady()
@@ -75,7 +79,8 @@ test.describe('Can create sketches on all planes and their back sides', () => {
     ).toBeVisible()
 
     await u.closeDebugPanel()
-    await page.mouse.click(707, 393)
+    const lineCoords = await scene.convertPagePositionToStream(707, 393)
+    await page.mouse.click(lineCoords.x, lineCoords.y)
 
     await expect(page.locator('.cm-content')).toHaveText(code)
 
@@ -194,7 +199,7 @@ yzPlane = offsetPlane(YZ, offset = 0.05)
       .toLocaleLowerCase()
 
     const codeLine1 = `sketch001 = startSketchOn(${prefix}${planeName}Plane)`
-    const codeLine2 = `profile001 = startProfile(sketch001, at = [${0.91 + (plane[0] === '-' ? 0.01 : 0)}, -${1.21 + (plane[0] === '-' ? 0.01 : 0)}])`
+    const codeLine2 = `profile001 = startProfile(sketch001, at = [${0.57 + (plane[0] === '-' ? 0.01 : 0)}, -${1.22 + (plane[0] === '-' ? 0.01 : 0)}])`
 
     await u.openDebugPanel()
 
@@ -217,7 +222,11 @@ yzPlane = offsetPlane(YZ, offset = 0.05)
         .locator('[aria-label="eye crossed out"]')
     ).toBeVisible()
 
-    await page.mouse.click(clickCoords.x, clickCoords.y)
+    const resolvedCoords = await scene.convertPagePositionToStream(
+      clickCoords.x,
+      clickCoords.y
+    )
+    await page.mouse.click(resolvedCoords.x, resolvedCoords.y)
     await page.waitForTimeout(600) // wait for animation
 
     await toolbar.waitUntilSketchingReady()
@@ -227,7 +236,8 @@ yzPlane = offsetPlane(YZ, offset = 0.05)
     ).toBeVisible()
 
     await u.closeDebugPanel()
-    await page.mouse.click(707, 393)
+    const lineCoords = await scene.convertPagePositionToStream(707, 393)
+    await page.mouse.click(lineCoords.x, lineCoords.y)
 
     await expect(page.locator('.cm-content')).toContainText(codeLine1)
     await expect(page.locator('.cm-content')).toContainText(codeLine2)
