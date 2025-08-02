@@ -230,6 +230,12 @@ describe('testing simulateOnMouseDragMatch', () => {
     expect(actual).toStrictEqual(expected)
   })
 
+  it('works with .5', () => {
+    const actual = simulateOnMouseDragMatch('.5')
+    const expected = ['.5']
+    expect(actual).toStrictEqual(expected)
+  })
+
   it('works with 1.0', () => {
     const actual = simulateOnMouseDragMatch('1.0')
     const expected = ['1.0']
@@ -263,6 +269,12 @@ describe('testing simulateOnMouseDragMatch', () => {
   it('works with 10.01', () => {
     const actual = simulateOnMouseDragMatch('10.01')
     const expected = ['10.01']
+    expect(actual).toStrictEqual(expected)
+  })
+
+  it('works with 1.50', () => {
+    const actual = simulateOnMouseDragMatch('1.50')
+    const expected = ['1.50']
     expect(actual).toStrictEqual(expected)
   })
 
@@ -331,6 +343,18 @@ describe('testing simulateOnMouseDragMatch', () => {
   it('works with -0.0001', () => {
     const actual = simulateOnMouseDragMatch('-0.0001')
     const expected = ['-0.0001']
+    expect(actual).toStrictEqual(expected)
+  })
+
+  it('works with -.5', () => {
+    const actual = simulateOnMouseDragMatch('-.5')
+    const expected = ['-.5']
+    expect(actual).toStrictEqual(expected)
+  })
+
+  it('works with -0.50', () => {
+    const actual = simulateOnMouseDragMatch('-0.50')
+    const expected = ['-0.50']
     expect(actual).toStrictEqual(expected)
   })
 
