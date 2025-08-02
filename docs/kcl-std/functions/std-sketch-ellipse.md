@@ -11,8 +11,9 @@ Construct a 2-dimensional ellipse, of the specified major/minor radius, centered
 ellipse(
   @sketchOrSurface: Sketch | Plane | Face,
   center: Point2d,
-  majorRadius: number(Length),
   minorRadius: number(Length),
+  majorRadius?: number(Length),
+  majorAxis?: Point2d,
   tag?: tag,
 ): Sketch
 ```
@@ -25,8 +26,9 @@ ellipse(
 |----------|------|-------------|----------|
 | `sketchOrSurface` | [`Sketch`](/docs/kcl-std/types/std-types-Sketch) or [`Plane`](/docs/kcl-std/types/std-types-Plane) or [`Face`](/docs/kcl-std/types/std-types-Face) | Sketch to extend, or plane or surface to sketch on. | Yes |
 | `center` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | The center of the ellipse. | Yes |
-| `majorRadius` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The major radius of the ellipse. | Yes |
 | `minorRadius` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The minor radius of the ellipse. | Yes |
+| `majorRadius` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The major radius of the ellipse. Equivalent to majorAxis = [majorRadius, 0]. | No |
+| `majorAxis` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | The major axis of the ellipse. | No |
 | `tag` | `tag` | Create a new tag which refers to this ellipse. | No |
 
 ### Returns
