@@ -20,7 +20,7 @@ export class EditorFixture {
   private paneButtonTestId = 'code-pane-button'
   private diagnosticsTooltip!: Locator
   private diagnosticsGutterIcon!: Locator
-  private codeContent!: Locator
+  public codeContent!: Locator
   public activeLine!: Locator
 
   constructor(page: Page) {
