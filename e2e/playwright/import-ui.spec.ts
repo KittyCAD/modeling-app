@@ -85,6 +85,8 @@ sketch002 = startSketchOn(extrude001, face = seg01)`
 
       await test.step('check the user is warned when sketching on a imported face', async () => {
         // Start sketch mode
+        await toolbar.closePane('debug')
+        await toolbar.closePane('code')
         await toolbar.startSketchPlaneSelection()
 
         // Click on a face from the imported model

@@ -403,8 +403,10 @@ test.describe('Testing constraints', () => {
         } else {
           await scene.clickXAxis()
         }
+        // await page.waitForTimeout(120_000)
         await page.keyboard.down('Shift')
         await page.waitForTimeout(100)
+        console.log('clicking line', line3)
         await page.mouse.click(line3.x, line3.y)
         await page.waitForTimeout(100)
         await page.keyboard.up('Shift')

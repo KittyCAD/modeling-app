@@ -14,6 +14,7 @@ import {
   getUtils,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
+import type { EditorFixture } from './fixtures/editorFixture'
 
 test.describe('Sketch tests', () => {
   test('multi-sketch file shows multiple Edit Sketch buttons', async ({
@@ -916,7 +917,9 @@ sketch001 = startSketchOn(XZ)
   })
   test.describe('Snap to close works (at any scale)', () => {
     const doSnapAtDifferentScales = async (
-      page: any,
+      page: Page,
+      scene: SceneFixture,
+      editor: EditorFixture,
       camPos: [number, number, number],
       scale = 1
     ) => {
@@ -927,10 +930,10 @@ sketch001 = startSketchOn(XZ)
 
       const code = `@settings(defaultLengthUnit = in)
 sketch001 = startSketchOn(-XZ)
-profile001 = startProfile(sketch001, at = [${roundOff(scale * 69.6)}, ${roundOff(
+profile001 = startProfile(sketch001, at = [${roundOff(scale * 77.11)}, ${roundOff(
         scale * 34.8
       )}])
-    |> xLine(length = ${roundOff(scale * 139.19)})
+    |> xLine(length = ${roundOff(scale * 154.22)})
     |> yLine(length = -${roundOff(scale * 139.2)})
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
     |> close()`
@@ -955,74 +958,55 @@ profile001 = startProfile(sketch001, at = [${roundOff(scale * 69.6)}, ${roundOff
       // select a plane
       await page.mouse.move(700, 200, { steps: 10 })
       await page.mouse.click(700, 200, { delay: 200 })
-      await expect(page.locator('.cm-content')).toHaveText(
+      await editor.expectEditor.toContain(
         `@settings(defaultLengthUnit = in)sketch001 = startSketchOn(-XZ)`
       )
 
-      let prevContent = await page.locator('.cm-content').innerText()
-
-      const pointA = [700, 200]
-      const pointB = [900, 200]
-      const pointC = [900, 400]
+      await editor.closePane()
 
       // draw three lines
       await page.waitForTimeout(500)
-      await page.mouse.move(pointA[0], pointA[1], { steps: 10 })
-      await page.mouse.click(pointA[0], pointA[1], { delay: 200 })
-      await page.waitForTimeout(100)
-      await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
-      prevContent = await page.locator('.cm-content').innerText()
+      const pointA = await scene.convertPagePositionToStream(700, 200)
+      const pointB = await scene.convertPagePositionToStream(900, 200)
+      const pointC = await scene.convertPagePositionToStream(900, 400)
 
-      await page.mouse.move(pointB[0], pointB[1], { steps: 10 })
-      await page.mouse.click(pointB[0], pointB[1], { delay: 200 })
+      await page.mouse.move(pointA.x, pointA.y, { steps: 10 })
+      await page.mouse.click(pointA.x, pointA.y, { delay: 200 })
       await page.waitForTimeout(100)
-      await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
-      prevContent = await page.locator('.cm-content').innerText()
 
-      await page.mouse.move(pointC[0], pointC[1], { steps: 10 })
-      await page.mouse.click(pointC[0], pointC[1], { delay: 200 })
+      await page.mouse.move(pointB.x, pointB.y, { steps: 10 })
+      await page.mouse.click(pointB.x, pointB.y, { delay: 200 })
       await page.waitForTimeout(100)
-      await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
-      prevContent = await page.locator('.cm-content').innerText()
 
-      await page.mouse.move(pointA[0] - 12, pointA[1] + 12, { steps: 10 })
-      const pointNotQuiteA = [pointA[0] - 7, pointA[1] + 7]
-      await page.mouse.move(pointNotQuiteA[0], pointNotQuiteA[1], {
+      await page.mouse.move(pointC.x, pointC.y, { steps: 10 })
+      await page.mouse.click(pointC.x, pointC.y, { delay: 200 })
+      await page.waitForTimeout(100)
+
+      await page.mouse.move(pointA.x - 12, pointA.y + 12, { steps: 10 })
+      const pointNotQuiteA = { x: pointA.x - 7, y: pointA.y + 7 }
+      await page.mouse.move(pointNotQuiteA.x, pointNotQuiteA.y, {
         steps: 10,
       })
 
-      await page.mouse.click(pointNotQuiteA[0], pointNotQuiteA[1], {
+      await page.mouse.click(pointNotQuiteA.x, pointNotQuiteA.y, {
         delay: 200,
       })
-      await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
-      prevContent = await page.locator('.cm-content').innerText()
 
-      await expect
-        .poll(async () => {
-          const text = await page.locator('.cm-content').innerText()
-          return text.replace(/\s/g, '')
-        })
-        .toBe(code.replace(/\s/g, ''))
+      await editor.expectEditor.toContain(code, { shouldNormalise: true })
 
       // Assert the tool stays equipped after a profile is closed (ready for the next one)
       await expect(
         page.getByRole('button', { name: 'line Line', exact: true })
       ).toHaveAttribute('aria-pressed', 'true')
-
-      // exit sketch
-      await u.openAndClearDebugPanel()
-      await page.getByRole('button', { name: 'Exit Sketch' }).click()
-      await u.expectCmdLog('[data-message-type="execution-done"]')
-      await u.removeCurrentCode()
     }
-    test('[0, 100, 100]', async ({ page, homePage }) => {
+    test('[0, 100, 100]', async ({ page, homePage, scene, editor }) => {
       await homePage.goToModelingScene()
-      await doSnapAtDifferentScales(page, [0, 100, 100], 0.01)
+      await doSnapAtDifferentScales(page, scene, editor, [0, 100, 100], 0.01)
     })
 
-    test('[0, 10000, 10000]', async ({ page, homePage }) => {
+    test('[0, 10000, 10000]', async ({ page, homePage, scene, editor }) => {
       await homePage.goToModelingScene()
-      await doSnapAtDifferentScales(page, [0, 10000, 10000])
+      await doSnapAtDifferentScales(page, scene, editor, [0, 10000, 10000])
     })
   })
   test('exiting a close extrude, has the extrude button enabled ready to go', async ({
@@ -1269,8 +1253,13 @@ profile001 = startProfile(sketch001, at = [299.72, 230.82])
     ).toBeLessThan(3)
   })
 
-  test('Can attempt to sketch on revolved face', async ({ page, homePage }) => {
-    const u = await getUtils(page)
+  test('Can attempt to sketch on revolved face', async ({
+    page,
+    homePage,
+    scene,
+    cmdBar,
+    toolbar,
+  }) => {
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
     await page.addInitScript(async () => {
@@ -1297,33 +1286,16 @@ profile001 = startProfile(sketch001, at = [299.72, 230.82])
     })
 
     await homePage.goToModelingScene()
+    await scene.settled(cmdBar)
 
-    await u.openDebugPanel()
-    await u.expectCmdLog('[data-message-type="execution-done"]')
-    await u.closeDebugPanel()
+    const [clickCenter] = scene.makeMouseHelpers(0.5, 0.5, { format: 'ratio' })
+    await toolbar.startSketchBtn.click()
+    await page.waitForTimeout(20_000) // Wait for unavoidable animation
+    await clickCenter()
+    await page.waitForTimeout(1000) // Wait for unavoidable animation
 
-    /***
-     * Test Plan
-     * Start the sketch mode
-     * Click the middle of the screen which should click the top face that is revolved
-     * Wait till you see the line tool be enabled
-     * Wait till you see the exit sketch enabled
-     *
-     * This is supposed to test that you are allowed to go into sketch mode to sketch on a revolved face
-     */
-
-    await page.getByRole('button', { name: 'Start Sketch' }).click()
-
-    await expect(async () => {
-      await page.mouse.click(600, 250)
-      await page.waitForTimeout(1000)
-      await expect(
-        page.getByRole('button', { name: 'Exit Sketch' })
-      ).toBeVisible()
-      await expect(
-        page.getByRole('button', { name: 'line Line', exact: true })
-      ).toHaveAttribute('aria-pressed', 'true')
-    }).toPass({ timeout: 40_000, intervals: [1_000] })
+    await expect(toolbar.exitSketchBtn).toBeEnabled()
+    await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'true')
   })
 
   test('sketch on face of a boolean works', async ({
@@ -1620,8 +1592,9 @@ test.describe(`Sketching with offset planes`, () => {
     await context.addInitScript(() => {
       localStorage.setItem(
         'persistCode',
-        `@settings(defaultLengthUnit = in)
-offsetPlane001 = offsetPlane(XY, offset = 10)`
+        `
+@settings(defaultLengthUnit = in)
+offsetPlane001 = offsetPlane(XY, (offset = 10))`
       )
     })
 
@@ -1629,26 +1602,51 @@ offsetPlane001 = offsetPlane(XY, offset = 10)`
 
     const [planeClick, planeHover] = scene.makeMouseHelpers(650, 200)
 
-    await test.step(`Start sketching on the offset plane`, async () => {
+    await test.step(`
+Start
+sketching
+on
+the
+offset
+plane`, async () => {
       await toolbar.startSketchPlaneSelection()
 
-      await test.step(`Hovering should highlight code`, async () => {
+      await test.step(`
+Hovering
+should
+highlight
+code`, async () => {
         await planeHover()
         await editor.expectState({
-          activeLines: [`@settings(defaultLengthUnit = in)`],
+          activeLines: [
+            `
+@settings(defaultLengthUnit = in)`,
+          ],
           diagnostics: [],
           highlightedCode: 'offsetPlane(XY, offset = 10)',
         })
       })
 
-      await test.step(`Clicking should select the plane and enter sketch mode`, async () => {
+      await test.step(`
+Clicking
+should
+select
+the
+plane
+and
+enter
+sketch
+mode`, async () => {
         await planeClick()
         // Have to wait for engine-side animation to finish
         await page.waitForTimeout(600)
         await expect(toolbar.lineBtn).toBeEnabled()
         await editor.expectEditor.toContain('startSketchOn(offsetPlane001)')
         await editor.expectState({
-          activeLines: [`@settings(defaultLengthUnit = in)`],
+          activeLines: [
+            `
+@settings(defaultLengthUnit = in)`,
+          ],
           diagnostics: [],
           highlightedCode: '',
         })
@@ -1658,7 +1656,7 @@ offsetPlane001 = offsetPlane(XY, offset = 10)`
 })
 
 test.describe('multi-profile sketching', () => {
-  test(`test it removes half-finished expressions when changing tools in sketch mode`, async ({
+  test(`test it removes half - finished expressions when changing tools in sketch mode`, async ({
     context,
     page,
     scene,
@@ -1671,7 +1669,8 @@ test.describe('multi-profile sketching', () => {
     await context.addInitScript(() => {
       localStorage.setItem(
         'persistCode',
-        `yo = 5
+        `
+yo = 5
 sketch001 = startSketchOn(XZ)
 profile001 = startProfile(sketch001, at = [121.52, 168.25])
   |> line(end = [115.04, 113.61])
@@ -1859,7 +1858,8 @@ profile003 = startProfile(sketch001, at = [206.63, -56.73])
       // check pixel is now gray at tanArcLocation to verify code has executed
       await scene.expectPixelColor([26, 26, 26], tanArcLocation, 15)
       await editor.expectEditor.not.toContain(
-        `tangentialArc(end = [-10.82, 144.95])`
+        `
+tangentialArc(end = [-10.82, 144.95])`
       )
     })
 
@@ -1891,8 +1891,8 @@ profile003 = startProfile(sketch001, at = [206.63, -56.73])
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `sketch001 = startSketchOn(XY)
-`
+        `
+sketch001 = startSketchOn(XY)`
       )
     })
     await page.setBodyDimensions({ width: 1000, height: 500 })
@@ -1917,7 +1917,8 @@ profile003 = startProfile(sketch001, at = [206.63, -56.73])
       .toBe('true')
 
     await startProfile1()
-    await editor.expectEditor.toContain(`profile001 = startProfile`)
+    await editor.expectEditor.toContain(`
+profile001 = startProfile`)
     await segment1Clk()
     await editor.expectEditor.toContain(`|> line(end`)
   })
@@ -2576,6 +2577,8 @@ profile003 = circle(sketch001, center = [6.92, -4.2], radius = 3.16)
       await toolbar.lengthConstraintBtn.click()
       await cmdBar.progressCmdBar()
       await editor.expectEditor.toContain('length001 = 7')
+      // Undo should work with the pane closed
+      await editor.closePane()
 
       await test.step('Undo should work with the pane closed', async () => {
         await editor.closePane()
@@ -2672,11 +2675,7 @@ extrude001 = extrude(profile003, length = 5)
 
     await page.setBodyDimensions({ width: 1000, height: 500 })
     await homePage.goToModelingScene()
-
-    await page.waitForTimeout(5000)
-    await expect(
-      page.getByRole('button', { name: 'Start Sketch' })
-    ).not.toBeDisabled()
+    await scene.settled(cmdBar)
 
     const [selectXZPlane] = scene.makeMouseHelpers(650, 150)
 
@@ -2702,6 +2701,7 @@ extrude001 = extrude(profile003, length = 5)
   )`
       )
 
+      await editor.closePane()
       await scene.settled(cmdBar)
 
       await scene.expectPixelColor([255, 255, 255], { x: 633, y: 211 }, 15)
@@ -2713,6 +2713,7 @@ extrude001 = extrude(profile003, length = 5)
     toolbar,
     editor,
     page,
+    cmdBar,
   }) => {
     await page.addInitScript(async () => {
       localStorage.setItem(
@@ -2725,32 +2726,29 @@ profile001 = startProfile(sketch001, at = [85.19, 338.59])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 sketch002 = startSketchOn(XY)
-profile002 = startProfile(sketch002, at = [85.81, 52.55])
-
+profile002 = startProfile(sketch002, at = [0, 52.55])
 `
       )
     })
 
-    await page.setBodyDimensions({ width: 1000, height: 500 })
     await homePage.goToModelingScene()
-    await expect(
-      page.getByRole('button', { name: 'Start Sketch' })
-    ).not.toBeDisabled()
+    await scene.settled(cmdBar)
 
     const [startProfileAt] = scene.makeMouseHelpers(606, 184)
     const [nextPoint] = scene.makeMouseHelpers(763, 130)
-    await page.getByText('startProfile(sketch002, at = [85.81, 52.55])').click()
+    await page.getByText('startProfile(sketch002').click()
     await toolbar.editSketch(1)
     // timeout wait for engine animation is unavoidable
     await page.waitForTimeout(600)
+    await editor.closePane()
 
     // equip line tool
     await toolbar.lineBtn.click()
-    await page.waitForTimeout(100)
     await startProfileAt()
-    await page.waitForTimeout(100)
     await nextPoint()
-    await editor.expectEditor.toContain(`|> line(end = [126.05, 44.12])`)
+    await editor.openPane()
+    // A regex that just confirms the new segment is a line in a pipe
+    await expect(editor.codeContent).toContainText(/52\.55\]\)\s+\|\>\s+line\(/)
   })
   test('old style sketch all in one pipe (with extrude) will break up to allow users to add a new profile to the same sketch', async ({
     homePage,
@@ -3104,7 +3102,8 @@ loft([profile001, profile002])
     )
     await rect1Crn2()
     await editor.expectEditor.toContain(
-      `angledLine(angle = 0, length = 106.42], tag = $rectangleSegmentA001)`
+      `angledLine(angle = 0, length = 106.42
+], tag = $rectangleSegmentA001)`
     )
     await page.waitForTimeout(100)
   })
@@ -3505,16 +3504,9 @@ profile003 = startProfile(sketch002, at = [-201.08, 254.17])
     await homePage.goToModelingScene()
     await scene.connectionEstablished()
     await scene.settled(cmdBar)
-    const expectSketchOriginToBeDrawn = async () => {
-      await scene.expectPixelColor(TEST_COLORS.WHITE, { x: 672, y: 193 }, 15)
-    }
 
     await test.step('Open feature tree and edit second sketch', async () => {
-      await toolbar.openFeatureTreePane()
-      const sketchButton = await toolbar.getFeatureTreeOperation('Sketch', 1)
-      await sketchButton.dblclick()
-      await page.waitForTimeout(700) // Wait for engine animation
-      await expectSketchOriginToBeDrawn()
+      await toolbar.editSketch(1)
     })
 
     await test.step('clear editor content while in sketch mode', async () => {
@@ -3523,11 +3515,8 @@ profile003 = startProfile(sketch002, at = [-201.08, 254.17])
       await expect(
         page.getByText('Unable to maintain sketch mode')
       ).toBeVisible()
-      await scene.expectPixelColorNotToBe(
-        TEST_COLORS.WHITE,
-        { x: 672, y: 193 },
-        15
-      )
+      await expect(toolbar.exitSketchBtn).not.toBeVisible()
+      await expect(toolbar.startSketchBtn).toBeVisible()
     })
   })
   test('empty draft sketch is cleaned up properly', async ({

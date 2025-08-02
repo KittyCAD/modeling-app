@@ -1420,6 +1420,7 @@ sketch001 = startSketchOn(XZ)
     page,
     homePage,
     toolbar,
+    scene,
   }) => {
     await page.addInitScript(async () => {
       localStorage.setItem(
@@ -1446,9 +1447,15 @@ sketch001 = startSketchOn(XZ)
     await toolbar.editSketch(0)
 
     await page.waitForTimeout(1000)
+    await toolbar.closePane('code')
 
     // Click on the bottom segment that lies on the x axis
-    await page.mouse.click(width * 0.85, height / 2)
+    const clickCoords = await scene.convertPagePositionToStream(
+      0.85,
+      0.5,
+      'ratio'
+    )
+    await page.mouse.click(clickCoords.x, clickCoords.y)
 
     await page.waitForTimeout(1000)
 

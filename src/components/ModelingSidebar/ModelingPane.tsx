@@ -32,7 +32,6 @@ export const ModelingPaneHeader = ({
         {icon && (
           <ActionIcon
             icon={icon}
-            className="p-1"
             size="sm"
             iconClassName="!text-chalkboard-80 dark:!text-chalkboard-30"
             bgClassName="!bg-transparent"
