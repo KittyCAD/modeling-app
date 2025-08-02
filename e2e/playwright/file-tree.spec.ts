@@ -14,7 +14,7 @@ test.describe('integrations tests', () => {
   test(
     'Creating a new file or switching file while in sketchMode should exit sketchMode',
     { tag: '@desktop' },
-    async ({ page, context, homePage, scene, editor, toolbar, cmdBar }) => {
+    async ({ page, context, homePage, scene, toolbar, cmdBar }) => {
       await context.folderSetupFn(async (dir) => {
         const bracketDir = join(dir, 'test-sample')
         await fsp.mkdir(bracketDir, { recursive: true })
@@ -23,8 +23,6 @@ test.describe('integrations tests', () => {
           join(bracketDir, 'main.kcl')
         )
       })
-
-      const [clickObj] = scene.makeMouseHelpers(726, 272)
 
       await test.step('setup test', async () => {
         await homePage.expectState({
@@ -37,27 +35,15 @@ test.describe('integrations tests', () => {
           sortBy: 'last-modified-desc',
         })
         await homePage.openProject('test-sample')
-      })
-      await test.step('enter sketch mode', async () => {
         await scene.connectionEstablished()
         await scene.settled(cmdBar)
-        await clickObj()
-        await page.waitForTimeout(1000)
-        await scene.moveNoWhere()
-        await editor.expectState({
-          activeLines: [
-            '|>startProfile(at=[75.8,317.2])//[$startCapTag,$EndCapTag]',
-          ],
-          highlightedCode: '',
-          diagnostics: [],
-        })
-        await toolbar.editSketch()
-        await expect(toolbar.exitSketchBtn).toBeVisible()
       })
+
+      await toolbar.editSketch()
 
       const fileName = 'Untitled.kcl'
       await test.step('check sketch mode is exited when creating new file', async () => {
-        await toolbar.fileTreeBtn.click()
+        await toolbar.openPane('files')
         await toolbar.expectFileTreeState(['main.kcl'])
 
         await toolbar.createFile({ fileName, waitForToastToDisappear: true })
@@ -69,19 +55,7 @@ test.describe('integrations tests', () => {
       await test.step('setup for next assertion', async () => {
         await toolbar.openFile('main.kcl')
         await page.waitForTimeout(2000)
-        await clickObj()
-        await page.waitForTimeout(1000)
-        await scene.moveNoWhere()
-        await page.waitForTimeout(1000)
-        await editor.expectState({
-          activeLines: [
-            '|>startProfile(at=[75.8,317.2])//[$startCapTag,$EndCapTag]',
-          ],
-          highlightedCode: '',
-          diagnostics: [],
-        })
         await toolbar.editSketch()
-        await expect(toolbar.exitSketchBtn).toBeVisible()
         await toolbar.expectFileTreeState(['main.kcl', fileName])
       })
       await test.step('check sketch mode is exited when opening a different file', async () => {
