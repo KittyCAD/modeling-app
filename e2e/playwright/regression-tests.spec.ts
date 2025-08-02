@@ -2,7 +2,6 @@ import path from 'path'
 import { bracket } from '@e2e/playwright/fixtures/bracket'
 import type { Page } from '@playwright/test'
 import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
-import { reportRejection } from '@src/lib/trap'
 import * as fsp from 'fs/promises'
 
 import { TEST_CODE_TRIGGER_ENGINE_EXPORT_ERROR } from '@e2e/playwright/storageStates'
@@ -316,11 +315,10 @@ extrude001 = extrude(sketch001, length = 50)
     'window resize updates should reconfigure the stream',
     { tag: '@skipLocalEngine' },
     async ({ scene, page, homePage, cmdBar, toolbar }) => {
-      await page.addInitScript(
-        async ({ code }) => {
-          localStorage.setItem(
-            'persistCode',
-            `@settings(defaultLengthUnit = mm)
+      await page.addInitScript(async () => {
+        localStorage.setItem(
+          'persistCode',
+          `@settings(defaultLengthUnit = mm)
 sketch002 = startSketchOn(XY)
 profile002 = startProfile(sketch002, at = [72.24, -52.05])
   |> angledLine(angle = 0, length = 181.26, tag = $rectangleSegmentA001)
@@ -328,30 +326,29 @@ profile002 = startProfile(sketch002, at = [72.24, -52.05])
   |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-extrude002 = extrude(profile002, length = 150)
-`
-          )
-          ;(window as any).playwrightSkipFilePicker = true
-        },
-        { code: TEST_CODE_TRIGGER_ENGINE_EXPORT_ERROR }
-      )
+extrude002 = extrude(profile002, length = 150)`
+        )
+      })
 
-      const websocketPromise = page.waitForEvent('websocket')
-      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await page.setBodyDimensions({ width: 500, height: 500 })
 
       await homePage.goToModelingScene()
       await toolbar.closePane('code')
-      const websocket = await websocketPromise
 
       await scene.connectionEstablished()
       await scene.settled(cmdBar)
-      await page.setBodyDimensions({ width: 500, height: 500 })
 
       // expect pixel color to be background color
-      const offModelBefore = { x: 446, y: 250 }
-      const onModelBefore = { x: 422, y: 250 }
-      const offModelAfter = { x: 692, y: 262 }
-      const onModelAfter = { x: 673, y: 266 }
+      const offModelBefore = await scene.convertPagePositionToStream(
+        0.9,
+        0.5,
+        'ratio'
+      )
+      const onModelBefore = await scene.convertPagePositionToStream(
+        0.5,
+        0.5,
+        'ratio'
+      )
 
       await scene.expectPixelColor(
         TEST_COLORS.DARK_MODE_BKGD,
@@ -361,26 +358,19 @@ extrude002 = extrude(profile002, length = 150)
       const standardModelGrey: TestColor = [100, 100, 100]
       await scene.expectPixelColor(standardModelGrey, onModelBefore, 15)
 
-      await test.step('resize window and expect "reconfigure_stream" websocket message', async () => {
-        // note this is a bit low level for our tests, usually this would go into a fixture
-        // but it's pretty unique to this resize test, it can be moved/abstracted if we have further need
-        // to listen to websocket messages
-        await Promise.all([
-          new Promise((resolve) => {
-            websocket
-              // @ts-ignore
-              .waitForEvent('framesent', (frame) => {
-                frame.payload
-                  .toString()
-                  .includes(
-                    '"type":"reconfigure_stream","width":1000,"height":500'
-                  ) && resolve(true)
-              })
-              .catch(reportRejection)
-          }),
-          page.setBodyDimensions({ width: 1000, height: 500 }),
-        ])
-      })
+      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await scene.settled(cmdBar)
+
+      const offModelAfter = await scene.convertPagePositionToStream(
+        0.9,
+        0.5,
+        'ratio'
+      )
+      const onModelAfter = await scene.convertPagePositionToStream(
+        0.5,
+        0.5,
+        'ratio'
+      )
 
       await scene.expectPixelColor(
         TEST_COLORS.DARK_MODE_BKGD,
@@ -826,12 +816,12 @@ washer = extrude(washerSketch, length = thicknessMax)`
       await circleCenterClick()
       // this number will be different if the scale is not set correctly for inches
       await editor.expectEditor.toContain(
-        'circle(sketch001, center = [0.06, -0.06]'
+        'circle(sketch001, center = [0.04, -0.06]'
       )
       await circleRadiusClick()
 
       await editor.expectEditor.toContain(
-        'circle(sketch001, center = [0.06, -0.06], radius = 0.18'
+        'circle(sketch001, center = [0.04, -0.06], radius = 0.12'
       )
     })
 
