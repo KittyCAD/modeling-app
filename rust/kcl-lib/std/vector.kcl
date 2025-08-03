@@ -93,12 +93,11 @@ export fn div(@u: [number], v: [number]): [number] {
 /// assert(vz[1], isEqualTo = 0)
 /// assert(vz[2], isEqualTo = 1)
 /// ```
-export fn cross(@u: Point3d, v: Point3d) {
-  return [
-    u[1] * v[2] - (u[2] * v[1]),
-    u[2] * v[0] - (u[0] * v[2]),
-    u[0] * v[1] - (u[1] * v[0])
-  ]
+export fn cross(@u: [number; 3], v: [number; 3]): [number; 3] {
+    x = (u[1] * v[2] - (u[2] * v[1]))
+    y = (u[2] * v[0] - (u[0] * v[2]))
+    z = (u[0] * v[1] - (u[1] * v[0]))
+  return [x, y, z]
 }
 
 /// Find the dot product of two points or vectors of any dimension.
