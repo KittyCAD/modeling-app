@@ -222,7 +222,7 @@ async fn inner_involute_circular(
 
     let mut new_sketch = sketch;
     if let Some(tag) = &tag {
-        new_sketch.add_tag(tag, &current_path, exec_state);
+        new_sketch.add_tag(tag, &current_path, exec_state, &None);
     }
     new_sketch.paths.push(current_path);
     Ok(new_sketch)
@@ -358,7 +358,7 @@ async fn straight_line(
 
     let mut new_sketch = sketch;
     if let Some(tag) = &tag {
-        new_sketch.add_tag(tag, &current_path, exec_state);
+        new_sketch.add_tag(tag, &current_path, exec_state, &None);
     }
 
     new_sketch.paths.push(current_path);
@@ -576,7 +576,7 @@ async fn inner_angled_line_length(
 
     let mut new_sketch = sketch;
     if let Some(tag) = &tag {
-        new_sketch.add_tag(tag, &current_path, exec_state);
+        new_sketch.add_tag(tag, &current_path, exec_state, &None);
     }
 
     new_sketch.paths.push(current_path);
@@ -1269,7 +1269,7 @@ pub(crate) async fn inner_close(
 
     let mut new_sketch = sketch;
     if let Some(tag) = &tag {
-        new_sketch.add_tag(tag, &current_path, exec_state);
+        new_sketch.add_tag(tag, &current_path, exec_state, &None);
     }
     new_sketch.paths.push(current_path);
     new_sketch.is_closed = true;
@@ -1395,7 +1395,7 @@ pub async fn absolute_arc(
 
     let mut new_sketch = sketch;
     if let Some(tag) = &tag {
-        new_sketch.add_tag(tag, &current_path, exec_state);
+        new_sketch.add_tag(tag, &current_path, exec_state, &None);
     }
 
     new_sketch.paths.push(current_path);
@@ -1461,7 +1461,7 @@ pub async fn relative_arc(
 
     let mut new_sketch = sketch;
     if let Some(tag) = &tag {
-        new_sketch.add_tag(tag, &current_path, exec_state);
+        new_sketch.add_tag(tag, &current_path, exec_state, &None);
     }
 
     new_sketch.paths.push(current_path);
@@ -1630,7 +1630,7 @@ async fn inner_tangential_arc_radius_angle(
 
     let mut new_sketch = sketch;
     if let Some(tag) = &tag {
-        new_sketch.add_tag(tag, &current_path, exec_state);
+        new_sketch.add_tag(tag, &current_path, exec_state, &None);
     }
 
     new_sketch.paths.push(current_path);
@@ -1719,7 +1719,7 @@ async fn inner_tangential_arc_to_point(
 
     let mut new_sketch = sketch;
     if let Some(tag) = &tag {
-        new_sketch.add_tag(tag, &current_path, exec_state);
+        new_sketch.add_tag(tag, &current_path, exec_state, &None);
     }
 
     new_sketch.paths.push(current_path);
@@ -1846,7 +1846,7 @@ async fn inner_bezier_curve(
 
     let mut new_sketch = sketch;
     if let Some(tag) = &tag {
-        new_sketch.add_tag(tag, &current_path, exec_state);
+        new_sketch.add_tag(tag, &current_path, exec_state, &None);
     }
 
     new_sketch.paths.push(current_path);
@@ -2076,7 +2076,7 @@ pub(crate) async fn inner_elliptic(
     };
     let mut new_sketch = sketch;
     if let Some(tag) = &tag {
-        new_sketch.add_tag(tag, &current_path, exec_state);
+        new_sketch.add_tag(tag, &current_path, exec_state, &None);
     }
 
     new_sketch.paths.push(current_path);
@@ -2247,7 +2247,7 @@ pub(crate) async fn inner_hyperbolic(
 
     let mut new_sketch = sketch;
     if let Some(tag) = &tag {
-        new_sketch.add_tag(tag, &current_path, exec_state);
+        new_sketch.add_tag(tag, &current_path, exec_state, &None);
     }
 
     new_sketch.paths.push(current_path);
@@ -2467,7 +2467,7 @@ pub(crate) async fn inner_parabolic(
 
     let mut new_sketch = sketch;
     if let Some(tag) = &tag {
-        new_sketch.add_tag(tag, &current_path, exec_state);
+        new_sketch.add_tag(tag, &current_path, exec_state, &None);
     }
 
     new_sketch.paths.push(current_path);
@@ -2628,7 +2628,7 @@ pub(crate) async fn inner_conic(
 
     let mut new_sketch = sketch;
     if let Some(tag) = &tag {
-        new_sketch.add_tag(tag, &current_path, exec_state);
+        new_sketch.add_tag(tag, &current_path, exec_state, &None);
     }
 
     new_sketch.paths.push(current_path);
