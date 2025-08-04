@@ -24,8 +24,8 @@ import type { AppMachineContext } from '@src/lib/types'
  * report               = fileNameWithoutExtension
  * report.csv           = fileNameWithExtension
  * /some/dir/report.csv = absolutePathToFileNameWithExtension
- * /some/dir/report     = absolutePathTOFileNameWithoutExtension
- * /some/dir/dreport    = absolutePathToDirectory
+ * /some/dir/report     = absolutePathToFileNameWithoutExtension
+ * /some/dir/report    = absolutePathToDirectory
  * some/dir/report      = relativePathToDirectory
  * some/dir/report      = relativePathFileWithoutExtension
  */
@@ -143,6 +143,65 @@ export const systemIOMachine = setup({
           data: {
             requestedProjectName: string
             requestedFileName: string
+          }
+        }
+      | {
+          type: SystemIOMachineEvents.renameFolder
+          data: {
+            requestedFolderName: string
+            folderName: string
+            absolutePathToParentDirectory: string
+          }
+        }
+      | {
+          type: SystemIOMachineEvents.renameFile
+          data: {
+            requestedFileNameWithExtension: string
+            fileNameWithExtension: string
+            absolutePathToParentDirectory: string
+          }
+        }
+      | {
+          type: SystemIOMachineEvents.renameFileAndNavigateToFile
+          data: {
+            requestedFileNameWithExtension: string
+            fileNameWithExtension: string
+            absolutePathToParentDirectory: string
+          }
+        }
+      | {
+          type: SystemIOMachineEvents.deleteFileOrFolder
+          data: {
+            requestedPath: string
+          }
+        }
+      | {
+          type: SystemIOMachineEvents.createBlankFile
+          data: {
+            requestedAbsolutePath: string
+          }
+        }
+      | {
+          type: SystemIOMachineEvents.createBlankFolder
+          data: {
+            requestedAbsolutePath: string
+          }
+        }
+      | {
+          type: SystemIOMachineEvents.renameFolderAndNavigateToFile
+          data: {
+            requestedFolderName: string
+            folderName: string
+            absolutePathToParentDirectory: string
+            requestedProjectName: string
+            requestedFileNameWithExtension: string
+          }
+        }
+      | {
+          type: SystemIOMachineEvents.deleteFileOrFolderAndNavigate
+          data: {
+            requestedPath: string
+            requestedProjectName: string
           }
         },
   },
@@ -392,6 +451,98 @@ export const systemIOMachine = setup({
         return { message: '', fileName: '', projectName: '', subRoute: '' }
       }
     ),
+    [SystemIOMachineActors.renameFolder]: fromPromise(
+      async ({
+        input,
+      }: {
+        input: {
+          context: SystemIOContext
+          rootContext: AppMachineContext
+          requestedFolderName: string
+          folderName: string
+          absolutePathToParentDirectory: string
+          requestedProjectName?: string
+          requestedFileNameWithExtension?: string
+        }
+      }) => {
+        return {
+          message: '',
+          folderName: '',
+          requestedFolderName: '',
+          requestedProjectName: '',
+          requestedFileNameWithExtension: '',
+        }
+      }
+    ),
+    [SystemIOMachineActors.renameFile]: fromPromise(
+      async ({
+        input,
+      }: {
+        input: {
+          context: SystemIOContext
+          rootContext: AppMachineContext
+          requestedFileNameWithExtension: string
+          fileNameWithExtension: string
+          absolutePathToParentDirectory: string
+        }
+      }) => {
+        return {
+          message: '',
+          projectName: '',
+          filePathWithExtensionRelativeToProject: '',
+        }
+      }
+    ),
+    [SystemIOMachineActors.deleteFileOrFolder]: fromPromise(
+      async ({
+        input,
+      }: {
+        input: {
+          context: SystemIOContext
+          rootContext: AppMachineContext
+          requestedPath: string
+          requestedProjectName?: string | undefined
+        }
+      }) => {
+        return {
+          message: '',
+          requestedPath: '',
+          requestedProjectName: '',
+        }
+      }
+    ),
+    [SystemIOMachineActors.createBlankFile]: fromPromise(
+      async ({
+        input,
+      }: {
+        input: {
+          context: SystemIOContext
+          rootContext: AppMachineContext
+          requestedAbsolutePath: string
+        }
+      }) => {
+        return {
+          message: '',
+          requestedAbsolutePath: '',
+        }
+      }
+    ),
+    [SystemIOMachineActors.createBlankFolder]: fromPromise(
+      async ({
+        input,
+      }: {
+        input: {
+          context: SystemIOContext
+          rootContext: AppMachineContext
+          requestedAbsolutePath: string
+        }
+      }) => {
+        return {
+          message: '',
+          requestedAbsolutePath: '',
+        }
+      }
+    ),
   },
 }).createMachine({
   initial: SystemIOMachineStates.idle,
@@ -481,6 +632,30 @@ export const systemIOMachine = setup({
         },
         [SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToFile]: {
           target: SystemIOMachineStates.bulkCreatingKCLFilesAndNavigateToFile,
+        },
+        [SystemIOMachineEvents.renameFolder]: {
+          target: SystemIOMachineStates.renamingFolder,
+        },
+        [SystemIOMachineEvents.renameFile]: {
+          target: SystemIOMachineStates.renamingFile,
+        },
+        [SystemIOMachineEvents.deleteFileOrFolder]: {
+          target: SystemIOMachineStates.deletingFileOrFolder,
+        },
+        [SystemIOMachineEvents.createBlankFile]: {
+          target: SystemIOMachineStates.creatingBlankFile,
+        },
+        [SystemIOMachineEvents.createBlankFolder]: {
+          target: SystemIOMachineStates.creatingBlankFolder,
+        },
+        [SystemIOMachineEvents.renameFileAndNavigateToFile]: {
+          target: SystemIOMachineStates.renamingFileAndNavigateToFile,
+        },
+        [SystemIOMachineEvents.renameFolderAndNavigateToFile]: {
+          target: SystemIOMachineStates.renamingFolderAndNavigateToFile,
+        },
+        [SystemIOMachineEvents.deleteFileOrFolderAndNavigate]: {
+          target: SystemIOMachineStates.deletingFileOrFolderAndNavigate,
         },
       },
     },
@@ -642,6 +817,7 @@ export const systemIOMachine = setup({
               },
             }),
             assign({ clearURLParams: { value: true } }),
+            SystemIOMachineActions.toastSuccess,
           ],
         },
         onError: {
@@ -787,6 +963,260 @@ export const systemIOMachine = setup({
                 return {
                   project: event.output.projectName,
                   file,
+                }
+              },
+            }),
+            SystemIOMachineActions.toastSuccess,
+          ],
+        },
+        onError: {
+          target: SystemIOMachineStates.idle,
+          actions: [SystemIOMachineActions.toastError],
+        },
+      },
+    },
+    [SystemIOMachineStates.renamingFolder]: {
+      invoke: {
+        id: SystemIOMachineActors.renameFolder,
+        src: SystemIOMachineActors.renameFolder,
+        input: ({ context, event, self }) => {
+          assertEvent(event, SystemIOMachineEvents.renameFolder)
+          return {
+            context,
+            requestedFolderName: event.data.requestedFolderName,
+            folderName: event.data.folderName,
+            absolutePathToParentDirectory:
+              event.data.absolutePathToParentDirectory,
+            rootContext: self.system.get('root').getSnapshot().context,
+          }
+        },
+        onDone: {
+          target: SystemIOMachineStates.readingFolders,
+          actions: [SystemIOMachineActions.toastSuccess],
+        },
+        onError: {
+          target: SystemIOMachineStates.idle,
+          actions: [SystemIOMachineActions.toastError],
+        },
+      },
+    },
+    [SystemIOMachineStates.renamingFile]: {
+      invoke: {
+        id: SystemIOMachineActors.renameFile,
+        src: SystemIOMachineActors.renameFile,
+        input: ({ context, event, self }) => {
+          assertEvent(event, SystemIOMachineEvents.renameFile)
+          return {
+            context,
+            requestedFileNameWithExtension:
+              event.data.requestedFileNameWithExtension,
+            fileNameWithExtension: event.data.fileNameWithExtension,
+            absolutePathToParentDirectory:
+              event.data.absolutePathToParentDirectory,
+            rootContext: self.system.get('root').getSnapshot().context,
+          }
+        },
+        onDone: {
+          target: SystemIOMachineStates.readingFolders,
+          actions: [SystemIOMachineActions.toastSuccess],
+        },
+        onError: {
+          target: SystemIOMachineStates.idle,
+          actions: [SystemIOMachineActions.toastError],
+        },
+      },
+    },
+    [SystemIOMachineStates.deletingFileOrFolder]: {
+      invoke: {
+        id: SystemIOMachineActors.deleteFileOrFolder,
+        src: SystemIOMachineActors.deleteFileOrFolder,
+        input: ({ context, event, self }) => {
+          assertEvent(event, SystemIOMachineEvents.deleteFileOrFolder)
+          return {
+            context,
+            requestedPath: event.data.requestedPath,
+            rootContext: self.system.get('root').getSnapshot().context,
+          }
+        },
+        onDone: {
+          target: SystemIOMachineStates.readingFolders,
+          actions: [SystemIOMachineActions.toastSuccess],
+        },
+        onError: {
+          target: SystemIOMachineStates.idle,
+          actions: [SystemIOMachineActions.toastError],
+        },
+      },
+    },
+    [SystemIOMachineStates.creatingBlankFile]: {
+      invoke: {
+        id: SystemIOMachineActors.createBlankFile,
+        src: SystemIOMachineActors.createBlankFile,
+        input: ({ context, event, self }) => {
+          assertEvent(event, SystemIOMachineEvents.createBlankFile)
+          return {
+            context,
+            requestedAbsolutePath: event.data.requestedAbsolutePath,
+            rootContext: self.system.get('root').getSnapshot().context,
+          }
+        },
+        onDone: {
+          target: SystemIOMachineStates.readingFolders,
+          actions: [SystemIOMachineActions.toastSuccess],
+        },
+        onError: {
+          target: SystemIOMachineStates.idle,
+          actions: [SystemIOMachineActions.toastError],
+        },
+      },
+    },
+    [SystemIOMachineStates.creatingBlankFolder]: {
+      invoke: {
+        id: SystemIOMachineActors.createBlankFolder,
+        src: SystemIOMachineActors.createBlankFolder,
+        input: ({ context, event, self }) => {
+          assertEvent(event, SystemIOMachineEvents.createBlankFolder)
+          return {
+            context,
+            requestedAbsolutePath: event.data.requestedAbsolutePath,
+            rootContext: self.system.get('root').getSnapshot().context,
+          }
+        },
+        onDone: {
+          target: SystemIOMachineStates.readingFolders,
+          actions: [SystemIOMachineActions.toastSuccess],
+        },
+        onError: {
+          target: SystemIOMachineStates.idle,
+          actions: [SystemIOMachineActions.toastError],
+        },
+      },
+    },
+    [SystemIOMachineStates.renamingFileAndNavigateToFile]: {
+      invoke: {
+        id: SystemIOMachineActors.renameFileAndNavigateToFile,
+        src: SystemIOMachineActors.renameFile,
+        input: ({ context, event, self }) => {
+          assertEvent(event, SystemIOMachineEvents.renameFileAndNavigateToFile)
+          return {
+            context,
+            requestedFileNameWithExtension:
+              event.data.requestedFileNameWithExtension,
+            fileNameWithExtension: event.data.fileNameWithExtension,
+            absolutePathToParentDirectory:
+              event.data.absolutePathToParentDirectory,
+            rootContext: self.system.get('root').getSnapshot().context,
+          }
+        },
+        onDone: {
+          target: SystemIOMachineStates.readingFolders,
+          actions: [
+            assign({
+              requestedFileName: ({ event }) => {
+                assertEvent(
+                  event,
+                  SystemIOMachineEvents.done_renameFileAndNavigateToFile
+                )
+                // Gotcha: file could have an ending of .kcl...
+                const file =
+                  event.output.filePathWithExtensionRelativeToProject.endsWith(
+                    '.kcl'
+                  )
+                    ? event.output.filePathWithExtensionRelativeToProject
+                    : event.output.filePathWithExtensionRelativeToProject +
+                      '.kcl'
+                return {
+                  project: event.output.projectName,
+                  file,
+                }
+              },
+            }),
+            SystemIOMachineActions.toastSuccess,
+          ],
+        },
+        onError: {
+          target: SystemIOMachineStates.idle,
+          actions: [SystemIOMachineActions.toastError],
+        },
+      },
+    },
+    [SystemIOMachineStates.renamingFolderAndNavigateToFile]: {
+      invoke: {
+        id: SystemIOMachineActors.renameFolderAndNavigateToFile,
+        src: SystemIOMachineActors.renameFolder,
+        input: ({ context, event, self }) => {
+          assertEvent(
+            event,
+            SystemIOMachineEvents.renameFolderAndNavigateToFile
+          )
+          return {
+            context,
+            requestedFolderName: event.data.requestedFolderName,
+            folderName: event.data.folderName,
+            absolutePathToParentDirectory:
+              event.data.absolutePathToParentDirectory,
+            rootContext: self.system.get('root').getSnapshot().context,
+            requestedProjectName: event.data.requestedProjectName,
+            requestedFileNameWithExtension:
+              event.data.requestedFileNameWithExtension,
+          }
+        },
+        onDone: {
+          target: SystemIOMachineStates.readingFolders,
+          actions: [
+            assign({
+              requestedFileName: ({ event }) => {
+                assertEvent(
+                  event,
+                  SystemIOMachineEvents.done_renameFolderAndNavigateToFile
+                )
+                // Gotcha: file could have an ending of .kcl...
+                const file =
+                  event.output.requestedFileNameWithExtension.endsWith('.kcl')
+                    ? event.output.requestedFileNameWithExtension
+                    : event.output.requestedFileNameWithExtension + '.kcl'
+                return {
+                  project: event.output.requestedProjectName,
+                  file,
+                }
+              },
+            }),
+            SystemIOMachineActions.toastSuccess,
+          ],
+        },
+        onError: {
+          target: SystemIOMachineStates.idle,
+          actions: [SystemIOMachineActions.toastError],
+        },
+      },
+    },
+    [SystemIOMachineStates.deletingFileOrFolderAndNavigate]: {
+      invoke: {
+        id: SystemIOMachineActors.deleteFileOrFolderAndNavigate,
+        src: SystemIOMachineActors.deleteFileOrFolder,
+        input: ({ context, event, self }) => {
+          assertEvent(
+            event,
+            SystemIOMachineEvents.deleteFileOrFolderAndNavigate
+          )
+          return {
+            context,
+            requestedPath: event.data.requestedPath,
+            requestedProjectName: event.data.requestedProjectName,
+            rootContext: self.system.get('root').getSnapshot().context,
+          }
+        },
+        onDone: {
+          target: SystemIOMachineStates.readingFolders,
+          actions: [
+            assign({
+              requestedProjectName: ({ event }) => {
+                assertEvent(
+                  event,
+                  SystemIOMachineEvents.done_deleteFileOrFolderAndNavigate
+                )
+                return {
+                  name: event.output.requestedProjectName,
                 }
               },
             }),

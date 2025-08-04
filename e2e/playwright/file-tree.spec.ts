@@ -267,7 +267,7 @@ test.describe('when using the file tree to', () => {
     {
       tag: '@desktop',
     },
-    async ({ page }, testInfo) => {
+    async ({ page, toolbar }, testInfo) => {
       const {
         panesOpen,
         pasteCodeInEditor,
@@ -293,19 +293,11 @@ test.describe('when using the file tree to', () => {
 
       // Create a large lego file
       await createNewFile('lego')
-      const legoFile = page.getByRole('listitem').filter({
-        has: page.getByRole('button', { name: 'lego.kcl' }),
-      })
-      await expect(legoFile).toBeVisible({ timeout: 60_000 })
-      await legoFile.click()
       const kclLego = await fsp.readFile(
         'rust/kcl-lib/e2e/executor/inputs/lego.kcl',
         'utf-8'
       )
       await pasteCodeInEditor(kclLego)
-      const mainFile = page.getByRole('listitem').filter({
-        has: page.getByRole('button', { name: 'main.kcl' }),
-      })
 
       // Open settings and enable the debug panel
       await page
@@ -319,12 +311,12 @@ test.describe('when using the file tree to', () => {
       await test.step('swap between small and large files', async () => {
         await openDebugPanel()
         // Previously created a file so we need to start back at main.kcl
-        await mainFile.click()
+        await toolbar.openFile('main.kcl')
         await expectCmdLog('[data-message-type="execution-done"]', 60_000)
         // Click the large file
-        await legoFile.click()
+        await toolbar.openFile('lego.kcl')
         // Once it is building, click back to the smaller file
-        await mainFile.click()
+        await toolbar.openFile('main.kcl')
         await expectCmdLog('[data-message-type="execution-done"]', 60_000)
         await closeDebugPanel()
       })
@@ -364,13 +356,8 @@ test.describe('Renaming in the file tree', () => {
         const filePath = join(dir, 'Test Project', `${newFileName}.kcl`)
         return fs.existsSync(filePath)
       }
-
-      const fileToRename = page
-        .getByRole('listitem')
-        .filter({ has: page.getByRole('button', { name: 'fileToRename.kcl' }) })
-      const renamedFile = page
-        .getByRole('listitem')
-        .filter({ has: page.getByRole('button', { name: 'newFileName.kcl' }) })
+      const fileToRename = u.locatorFile('fileToRename.kcl')
+      const renamedFile = u.locatorFile('newFileName.kcl')
       const renameMenuItem = page.getByRole('button', { name: 'Rename' })
       const renameInput = page.getByPlaceholder('fileToRename.kcl')
       const codeLocator = page.locator('.cm-content')
@@ -453,12 +440,8 @@ test.describe('Renaming in the file tree', () => {
       }
       const projectLink = page.getByText('Test Project')
       const projectMenuButton = page.getByTestId('project-sidebar-toggle')
-      const fileToRename = page
-        .getByRole('listitem')
-        .filter({ has: page.getByRole('button', { name: 'fileToRename.kcl' }) })
-      const renamedFile = page.getByRole('listitem').filter({
-        has: page.getByRole('button', { name: newFileName + FILE_EXT }),
-      })
+      const fileToRename = u.locatorFile('fileToRename.kcl')
+      const renamedFile = u.locatorFile(newFileName + FILE_EXT)
       const renameMenuItem = page.getByRole('button', { name: 'Rename' })
       const renameInput = page.getByPlaceholder('fileToRename.kcl')
       const codeLocator = page.locator('.cm-content')
@@ -534,10 +517,8 @@ test.describe('Renaming in the file tree', () => {
       // Constants and locators
       const projectLink = page.getByText('Test Project')
       const projectMenuButton = page.getByTestId('project-sidebar-toggle')
-      const folderToRename = page.getByRole('button', {
-        name: 'folderToRename',
-      })
-      const renamedFolder = page.getByRole('button', { name: 'newFolderName' })
+      const folderToRename = u.locatorFolder('folderToRename')
+      const renamedFolder = u.locatorFolder('newFolderName')
       const renameMenuItem = page.getByRole('button', { name: 'Rename' })
       const originalFolderName = 'folderToRename'
       const renameInput = page.getByPlaceholder(originalFolderName)
@@ -616,13 +597,9 @@ test.describe('Renaming in the file tree', () => {
       // Constants and locators
       const projectLink = page.getByText('Test Project')
       const projectMenuButton = page.getByTestId('project-sidebar-toggle')
-      const folderToRename = page.getByRole('button', {
-        name: 'folderToRename',
-      })
-      const renamedFolder = page.getByRole('button', { name: 'newFolderName' })
-      const fileWithinFolder = page.getByRole('listitem').filter({
-        has: page.getByRole('button', { name: 'someFileWithin.kcl' }),
-      })
+      const folderToRename = u.locatorFolder('folderToRename')
+      const renamedFolder = u.locatorFolder('newFolderName')
+      const fileWithinFolder = u.locatorFile('someFileWithin.kcl')
       const renameMenuItem = page.getByRole('button', { name: 'Rename' })
       const originalFolderName = 'folderToRename'
       const renameInput = page.getByPlaceholder(originalFolderName)
@@ -716,9 +693,7 @@ test.describe('Deleting items from the file pane', () => {
       // Constants and locators
       const projectCard = page.getByText('testProject')
       const projectMenuButton = page.getByTestId('project-sidebar-toggle')
-      const fileToDelete = page
-        .getByRole('listitem')
-        .filter({ has: page.getByRole('button', { name: 'fileToDelete.kcl' }) })
+      const fileToDelete = u.locatorFile('fileToDelete.kcl')
       const deleteMenuItem = page.getByRole('button', { name: 'Delete' })
       const deleteConfirmation = page.getByTestId('delete-confirmation')
 
@@ -783,9 +758,7 @@ test.describe('Deleting items from the file pane', () => {
       // Constants and locators
       const projectCard = page.getByText('Test Project')
       const projectMenuButton = page.getByTestId('project-sidebar-toggle')
-      const folderToDelete = page.getByRole('button', {
-        name: 'folderToDelete',
-      })
+      const folderToDelete = u.locatorFolder('folderToDelete')
       const deleteMenuItem = page.getByRole('button', { name: 'Delete' })
       const deleteConfirmation = page.getByTestId('delete-confirmation')
 
@@ -837,12 +810,8 @@ test.describe('Deleting items from the file pane', () => {
       // Constants and locators
       const projectCard = page.getByText('Test Project')
       const projectMenuButton = page.getByTestId('project-sidebar-toggle')
-      const folderToDelete = page.getByRole('button', {
-        name: 'folderToDelete',
-      })
-      const fileWithinFolder = page.getByRole('listitem').filter({
-        has: page.getByRole('button', { name: 'someFileWithin.kcl' }),
-      })
+      const folderToDelete = u.locatorFolder('folderToDelete')
+      const fileWithinFolder = u.locatorFile('someFileWithin.kcl')
       const deleteMenuItem = page.getByRole('button', { name: 'Delete' })
       const deleteConfirmation = page.getByTestId('delete-confirmation')
 
@@ -905,12 +874,8 @@ test.describe('Deleting items from the file pane', () => {
       // Constants and locators
       const projectCard = page.getByText(TEST_PROJECT_NAME)
       const projectMenuButton = page.getByTestId('project-sidebar-toggle')
-      const folderToDelete = page.getByRole('button', {
-        name: 'folderToDelete',
-      })
-      const fileWithinFolder = page.getByRole('listitem').filter({
-        has: page.getByRole('button', { name: 'someFileWithin.kcl' }),
-      })
+      const folderToDelete = u.locatorFolder('folderToDelete')
+      const fileWithinFolder = u.locatorFile('someFileWithin.kcl')
 
       await test.step('Open project and navigate into folderToDelete', async () => {
         await projectCard.click()
@@ -969,12 +934,8 @@ test.describe('Deleting items from the file pane', () => {
       // Constants and locators
       const projectCard = page.getByText(TEST_PROJECT_NAME)
       const projectMenuButton = page.getByTestId('project-sidebar-toggle')
-      const folderToDelete = page.getByRole('button', {
-        name: 'folderToDelete',
-      })
-      const fileWithinFolder = page.getByRole('listitem').filter({
-        has: page.getByRole('button', { name: 'someFileWithin.kcl' }),
-      })
+      const folderToDelete = u.locatorFolder('folderToDelete')
+      const fileWithinFolder = u.locatorFile('someFileWithin.kcl')
 
       await test.step('Open project and navigate into folderToDelete', async () => {
         await projectCard.click()
@@ -1039,9 +1000,7 @@ test.describe('Undo and redo do not keep history when navigating between files',
 
       // Constants and locators
       const projectCard = page.getByText('testProject')
-      const otherFile = page
-        .getByRole('listitem')
-        .filter({ has: page.getByRole('button', { name: 'other.kcl' }) })
+      const otherFile = u.locatorFile('other.kcl')
 
       await test.step('Open project and make a change to the file', async () => {
         await projectCard.click()
@@ -1106,9 +1065,7 @@ test.describe('Undo and redo do not keep history when navigating between files',
 
       // Constants and locators
       const projectCard = page.getByText('testProject')
-      const otherFile = page
-        .getByRole('listitem')
-        .filter({ has: page.getByRole('button', { name: 'other.kcl' }) })
+      const otherFile = u.locatorFile('other.kcl')
 
       const badContent = 'this shit'
       await test.step('Open project and make a change to the file', async () => {

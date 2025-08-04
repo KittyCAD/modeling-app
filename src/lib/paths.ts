@@ -193,6 +193,31 @@ export function getProjectDirectoryFromKCLFilePath(
   return ''
 }
 
+export function parentPathRelativeToProject(
+  absoluteFilePath: string,
+  applicationProjectDirectory: string
+): string {
+  const replacedPath = absoluteFilePath.replace(applicationProjectDirectory, '')
+  const [iAmABlankString, _projectDirectory, ...rest] =
+    desktopSafePathSplit(replacedPath)
+  if (iAmABlankString === '') {
+    return desktopSafePathJoin(rest)
+  }
+  return ''
+}
+
+export function parentPathRelativeToApplicationDirectory(
+  absoluteFilePath: string,
+  applicationProjectDirectory: string
+): string {
+  const replacedPath = absoluteFilePath.replace(applicationProjectDirectory, '')
+  const [iAmABlankString, ...rest] = desktopSafePathSplit(replacedPath)
+  if (iAmABlankString === '') {
+    return desktopSafePathJoin(rest)
+  }
+  return ''
+}
+
 /**
  * Use this for only web related paths not paths in OS or on disk
  * e.g. document.location.pathname
@@ -218,4 +243,37 @@ export function desktopSafePathSplit(path: string): string[] {
 
 export function desktopSafePathJoin(paths: string[]): string {
   return isDesktop() ? paths.join(window?.electron?.sep) : webSafeJoin(paths)
+}
+
+/**
+ * Don't pass a folder path, only files with extensions for best results.
+ */
+export const enforceFileEXT = (
+  filePath: string,
+  ext: string | null
+): string | null => {
+  if (ext === null) {
+    return null
+  }
+  return filePath ? (filePath.endsWith(ext) ? filePath : filePath + ext) : null
+}
+
+export const getEXTNoPeriod = (filePath: string) => {
+  const extension = filePath.split('.').pop() || null
+  return extension
+}
+
+export const getEXTWithPeriod = (filePath: string) => {
+  let extension = getEXTNoPeriod(filePath)
+  if (extension) {
+    extension = '.' + extension
+  }
+  return extension
+}
+
+export const getParentAbsolutePath = (absolutePath: string) => {
+  const split = desktopSafePathSplit(absolutePath)
+  split.pop()
+  const joined = desktopSafePathJoin(split)
+  return joined
 }
