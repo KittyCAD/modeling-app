@@ -1356,7 +1356,7 @@ mod test {
             }
             twenty_twenty::assert_image(
                 format!(
-                    "tests/outputs/serial_test_example_fn_{}{i}.png",
+                    "tests/outputs/images/serial_test_example_fn_{}{i}.png",
                     qualname.replace("::", "-")
                 ),
                 &result.image,
@@ -1364,7 +1364,7 @@ mod test {
             );
             for gltf_file in result.gltf {
                 let path = format!(
-                    "tests/outputs/serial_test_example_fn_{}{i}_{}",
+                    "tests/outputs/models/serial_test_example_fn_{}{i}_{}",
                     qualname.replace("::", "-"),
                     gltf_file.name,
                 );
