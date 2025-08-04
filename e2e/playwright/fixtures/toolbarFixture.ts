@@ -50,6 +50,8 @@ export class ToolbarFixture {
   loadButton!: Locator
   /** User button for the user sidebar menu */
   userSidebarButton!: Locator
+  /** Project button for the project's settings */
+  projectSidebarToggle!: Locator
   signOutButton!: Locator
 
   constructor(page: Page) {
