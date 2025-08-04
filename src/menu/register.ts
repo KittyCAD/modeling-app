@@ -4,7 +4,7 @@ import type { Project } from '@src/lib/project'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import { engineCommandManager, sceneInfra } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
-import { uuidv4 } from '@src/lib/utils'
+import { activeFocusIsInput, uuidv4 } from '@src/lib/utils'
 import {
   authActor,
   commandBarActor,
@@ -124,9 +124,13 @@ export function modelingMenuCallbackMostActions(
         data: { name: 'format-code', groupId: 'code' },
       })
     } else if (data.menuLabel === 'Edit.Undo') {
-      editorManager.undo()
+      if (!activeFocusIsInput()) {
+        editorManager.undo()
+      }
     } else if (data.menuLabel === 'Edit.Redo') {
-      editorManager.redo()
+      if (!activeFocusIsInput()) {
+        editorManager.redo()
+      }
     } else if (data.menuLabel === 'View.Orthographic view') {
       settingsActor.send({
         type: 'set.modeling.cameraProjection',
