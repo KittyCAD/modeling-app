@@ -15,6 +15,7 @@ export interface ContextMenuProps
   menuTargetElement?: RefObject<HTMLElement>
   guard?: (e: globalThis.MouseEvent) => boolean
   event?: 'contextmenu' | 'mouseup'
+  callback?: (event: globalThis.MouseEvent) => void
 }
 
 const DefaultContextMenuItems = [
@@ -29,6 +30,7 @@ export function ContextMenu({
   className,
   guard,
   event = 'contextmenu',
+  callback,
   ...props
 }: ContextMenuProps) {
   const dialogRef = useRef<HTMLDivElement>(null)
@@ -43,6 +45,9 @@ export function ContextMenu({
   })
   const handleContextMenu = useCallback(
     (e: globalThis.MouseEvent) => {
+      if (callback) {
+        callback(e)
+      }
       if (guard && !guard(e)) return
       e.preventDefault()
       // This stopPropagation is needed in case multiple nested items use a separate context menu each,
@@ -52,7 +57,7 @@ export function ContextMenu({
       setPosition({ x: e.clientX, y: e.clientY })
       setOpen(true)
     },
-    [guard, setPosition, setOpen]
+    [guard, setPosition, setOpen, callback]
   )
 
   const onDialogMouseUp = useCallback((e: MouseEvent) => {
@@ -117,7 +122,7 @@ export function ContextMenu({
     return () => {
       menuTargetElement?.current?.removeEventListener(event, handleContextMenu)
     }
-  }, [menuTargetElement?.current])
+  }, [menuTargetElement?.current, callback])
 
   return (
     <Dialog open={open} onClose={onCloseDialog} onMouseUp={onDialogMouseUp}>
