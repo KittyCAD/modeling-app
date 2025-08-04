@@ -149,6 +149,7 @@ export const ModelingMachineProvider = ({
       return
     }
     theProject.current = foundYourProject
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [projects, loaderData, file])
 
   const token = useToken()
@@ -1464,6 +1465,7 @@ export const ModelingMachineProvider = ({
   // wrong
   useEffect(() => {
     sceneInfra.camControls.resetCameraPosition().catch(reportRejection)
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [cameraOrbit.current])
 
   useEffect(() => {
@@ -1485,6 +1487,7 @@ export const ModelingMachineProvider = ({
         onConnectionStateChanged as EventListener
       )
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [engineCommandManager.engineConnection, modelingSend])
 
   useEffect(() => {
@@ -1510,6 +1513,7 @@ export const ModelingMachineProvider = ({
     if (inSketchMode) {
       sceneInfra.camControls.enableRotate = allowOrbitInSketchMode.current
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [allowOrbitInSketchMode.current])
 
   // Allow using the delete key to delete solids. Backspace only on macOS as Windows and Linux have dedicated Delete

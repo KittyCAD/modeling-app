@@ -102,6 +102,7 @@ export const MachineManagerProvider = ({
       type: 'Set machine manager',
       data: machineManagerNext,
     })
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [machines, machineApiIp, currentMachine])
 
   return (

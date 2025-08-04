@@ -180,6 +180,7 @@ export const sidebarPanes: SidebarPane[] = [
         const duplicated = JSON.parse(JSON.stringify(theProject))
         addPlaceHoldersForNewFileAndFolder(duplicated.children, theProject.path)
         setTheProject(duplicated)
+        // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
       }, [projects, loaderData])
 
       const [createFilePressed, setCreateFilePressed] = useState<number>(0)
