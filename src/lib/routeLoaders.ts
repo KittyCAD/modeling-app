@@ -38,12 +38,13 @@ export const fileLoader: LoaderFunction = async (
 
   const isBrowserProject = params.id === decodeURIComponent(BROWSER_PATH)
 
-  const heuristicProjectFilePath = isDesktop()
-    ? params.id
-        .split(window.electron.sep)
-        .slice(0, -1)
-        .join(window.electron.sep)
-    : undefined
+  const heuristicProjectFilePath =
+    isDesktop() && params.id
+      ? params.id
+          .split(window.electron.sep)
+          .slice(0, -1)
+          .join(window.electron.sep)
+      : undefined
 
   let settings = await loadAndValidateSettings(heuristicProjectFilePath)
 

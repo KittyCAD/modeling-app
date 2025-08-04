@@ -632,6 +632,8 @@ export function createSettings() {
     },
     /** Settings that affect the behavior of the entire app,
      *  beyond just modeling or navigating, for example
+     *  NOTE: before using the project id for anything, check it isn't the
+     *  NIL uuid, which is the default value.
      */
     meta: {
       id: new Setting<string>({
