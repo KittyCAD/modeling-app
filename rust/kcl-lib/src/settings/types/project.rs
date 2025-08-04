@@ -287,7 +287,7 @@ color = 1567.4"#;
         let conf = ProjectConfiguration {
             settings: PerProjectSettings {
                 meta: ProjectMetaSettings {
-                    id: uuid::Uuid::new_v4(),
+                    id: uuid::Uuid::nil(),
                 },
                 app: ProjectAppSettings {
                     appearance: ProjectAppearanceSettings { color: 138.0.into() },
@@ -344,7 +344,10 @@ color = 1567.4"#;
             },
         };
         let serialized = toml::to_string(&conf).unwrap();
-        let old_project_file = r#"[settings.app]
+        let old_project_file = r#"[settings.meta]
+id = "00000000-0000-0000-0000-000000000000"
+
+[settings.app]
 show_debug_panel = true
 
 [settings.app.appearance]
