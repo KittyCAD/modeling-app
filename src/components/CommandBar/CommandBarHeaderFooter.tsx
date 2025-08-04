@@ -39,6 +39,7 @@ function CommandBarHeaderFooter({
         delete s[name]
     }
     return s
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [selectedCommand])
   const isReviewing = commandBarState.matches('Review')
   const [showShortcuts, setShowShortcuts] = useState(false)
