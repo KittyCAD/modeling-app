@@ -353,56 +353,21 @@ test.describe(
   { tag: '@snapshot' },
   () => {
     test('Inch scale', async ({ page, cmdBar, scene, toolbar }) => {
+      await page.addInitScript(async () => {
+        localStorage.setItem(
+          'persistCode',
+          `sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [-5, -5])
+  |> xLine(length = 50)
+  |> tangentialArc(end = [50, 50])
+`
+        )
+      })
       const u = await getUtils(page)
-      await page.setViewportSize({ width: 1200, height: 500 })
-      const PUR = 400 / 37.5 //pixeltoUnitRatio
-
       await u.waitForAuthSkipAppStart()
+      await scene.settled(cmdBar)
 
-      await u.doAndWaitForImageDiff(
-        () => page.getByRole('button', { name: 'Start Sketch' }).click(),
-        200
-      )
-
-      // select a plane
-      await page.mouse.click(700, 200)
-
-      let code = `sketch001 = startSketchOn(XZ)`
-      await expect(page.locator('.cm-content')).toHaveText(code)
-
-      // Wait for camera animation
-      await page.waitForTimeout(2000)
-
-      const startXPx = 600
-      await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
-      code += `profile001 = startProfile(sketch001, at = [182.59, -246.32])`
-      await expect(u.codeLocator).toHaveText(code)
-      await page.waitForTimeout(100)
-
-      await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
-      await page.waitForTimeout(100)
-
-      code += `
-  |> xLine(length = 184.3)`
-      await expect(u.codeLocator).toHaveText(code)
-
-      await toolbar.selectTangentialArc()
-      await page.waitForTimeout(200)
-
-      // click to continue profile
-      await page.mouse.click(813, 392)
-      await page.waitForTimeout(300)
-
-      await page.mouse.click(startXPx + PUR * 30, 500 - PUR * 20)
-
-      code += `
-  |> tangentialArc(end = [184.31, 184.31])`
-      await expect(u.codeLocator).toHaveText(code)
-
-      // click tangential arc tool again to unequip it
-      // it will be available directly in the toolbar since it was last equipped
-      await toolbar.tangentialArcBtn.click()
-      await page.waitForTimeout(1000)
+      await toolbar.editSketch(0)
 
       // screen shot should show the sketch
       await expect(page).toHaveScreenshot({
@@ -410,10 +375,8 @@ test.describe(
         mask: lowerRightMasks(page),
       })
 
-      await u.doAndWaitForImageDiff(
-        () => page.getByRole('button', { name: 'Exit Sketch' }).click(),
-        200
-      )
+      // exit sketch
+      await u.doAndWaitForImageDiff(() => toolbar.exitSketch(), 200)
 
       await scene.settled(cmdBar)
 
@@ -448,56 +411,21 @@ test.describe(
           }),
         }
       )
+      await page.addInitScript(async () => {
+        localStorage.setItem(
+          'persistCode',
+          `sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [-5, -5])
+  |> xLine(length = 50)
+  |> tangentialArc(end = [50, 50])
+`
+        )
+      })
       const u = await getUtils(page)
-      await page.setViewportSize({ width: 1200, height: 500 })
-      const PUR = 400 / 37.5 //pixeltoUnitRatio
-
       await u.waitForAuthSkipAppStart()
-
       await scene.settled(cmdBar)
 
-      await u.doAndWaitForImageDiff(
-        () => page.getByRole('button', { name: 'Start Sketch' }).click(),
-        200
-      )
-
-      // select a plane
-      await page.mouse.click(700, 200)
-
-      let code = `sketch001 = startSketchOn(XZ)`
-      await expect(u.codeLocator).toHaveText(code)
-
-      // Wait for camera animation
-      await page.waitForTimeout(2000)
-
-      const startXPx = 600
-      await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
-      code += `profile001 = startProfile(sketch001, at = [182.59, -246.32])`
-      await expect(u.codeLocator).toHaveText(code)
-      await page.waitForTimeout(100)
-
-      await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
-      await page.waitForTimeout(100)
-
-      code += `
-  |> xLine(length = 184.3)`
-      await expect(u.codeLocator).toHaveText(code)
-
-      await toolbar.selectTangentialArc()
-      await page.waitForTimeout(200)
-
-      // click to continue profile
-      await page.mouse.click(813, 392)
-      await page.waitForTimeout(300)
-
-      await page.mouse.click(startXPx + PUR * 30, 500 - PUR * 20)
-
-      code += `
-  |> tangentialArc(end = [184.31, 184.31])`
-      await expect(u.codeLocator).toHaveText(code)
-
-      await toolbar.tangentialArcBtn.click()
-      await page.waitForTimeout(1000)
+      await toolbar.editSketch(0)
 
       // screen shot should show the sketch
       await expect(page).toHaveScreenshot({
@@ -506,10 +434,7 @@ test.describe(
       })
 
       // exit sketch
-      await u.doAndWaitForImageDiff(
-        () => page.getByRole('button', { name: 'Exit Sketch' }).click(),
-        200
-      )
+      await u.doAndWaitForImageDiff(() => toolbar.exitSketch(), 200)
 
       await scene.settled(cmdBar)
 

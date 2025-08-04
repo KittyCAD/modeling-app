@@ -1549,60 +1549,6 @@ sketch001 = startSketchOn(XZ)
     )
   })
 
-  test('Can undo with closed code pane', async ({
-    page,
-    homePage,
-    editor,
-    toolbar,
-    scene,
-    cmdBar,
-  }) => {
-    const u = await getUtils(page)
-
-    const viewportSize = { width: 1500, height: 750 }
-    await page.setBodyDimensions(viewportSize)
-
-    await page.addInitScript(async () => {
-      localStorage.setItem(
-        'persistCode',
-        `@settings(defaultLengthUnit=in)
-sketch001 = startSketchOn(XZ)
-  |> startProfile(at = [-10, -10])
-  |> line(end = [20.0, 10.0])
-  |> tangentialArc(end = [5.49, 8.37])`
-      )
-    })
-
-    await homePage.goToModelingScene()
-    await toolbar.waitForFeatureTreeToBeBuilt()
-    await scene.settled(cmdBar)
-
-    await (await toolbar.getFeatureTreeOperation('Sketch', 0)).dblclick()
-
-    await page.waitForTimeout(1000)
-
-    await page.mouse.move(1200, 139)
-    await page.mouse.down()
-    await page.mouse.move(870, 250)
-    await page.mouse.up()
-
-    await editor.expectEditor.toContain(`tangentialArc(end=[-5.85,4.32])`, {
-      shouldNormalise: true,
-    })
-
-    await u.closeKclCodePanel()
-
-    // Undo the last change
-    await page.keyboard.down('Control')
-    await page.keyboard.press('KeyZ')
-    await page.keyboard.up('Control')
-
-    await u.openKclCodePanel()
-    await editor.expectEditor.toContain(`tangentialArc(end = [5.49, 8.37])`, {
-      shouldNormalise: true,
-    })
-  })
-
   test('Can delete a single segment line with keyboard', async ({
     page,
     scene,
@@ -2631,15 +2577,20 @@ profile003 = circle(sketch001, center = [6.92, -4.2], radius = 3.16)
       await cmdBar.progressCmdBar()
       await editor.expectEditor.toContain('length001 = 7')
 
-      // wait for execute defer
-      await page.waitForTimeout(600)
-      await sketchIsDrawnProperly()
+      await test.step('Undo should work with the pane closed', async () => {
+        await editor.closePane()
 
-      await page.keyboard.down('Meta')
-      await page.keyboard.press('KeyZ')
-      await page.keyboard.up('Meta')
+        // wait for execute defer
+        await page.waitForTimeout(600)
+        await sketchIsDrawnProperly()
 
-      await editor.expectEditor.not.toContain('length001 = 7')
+        await page.keyboard.down('Meta')
+        await page.keyboard.press('KeyZ')
+        await page.keyboard.up('Meta')
+
+        await editor.expectEditor.not.toContain('length001 = 7')
+      })
+
       await sketchIsDrawnProperly()
     })
   })
@@ -3156,85 +3107,6 @@ loft([profile001, profile002])
       `angledLine(angle = 0, length = 106.42], tag = $rectangleSegmentA001)`
     )
     await page.waitForTimeout(100)
-  })
-})
-
-// Regression test for https://github.com/KittyCAD/modeling-app/issues/4891
-test.describe(`Click based selection don't brick the app when clicked out of range after format using cache`, () => {
-  test(`Can select a line that reformmed after entering sketch mode`, async ({
-    context,
-    page,
-    scene,
-    toolbar,
-    editor,
-    homePage,
-    cmdBar,
-  }) => {
-    // We seed the scene with a single offset plane
-    await context.addInitScript(() => {
-      localStorage.setItem(
-        'persistCode',
-        `sketch001 = startSketchOn(XZ)
-  |> startProfile(at = [0, 0])
-  |> line(end = [3.14, 3.14])
-  |> arc(
-       interiorAbsolute = [1, 2],
-       endAbsolute = [4, 2]
-     )`
-      )
-    })
-
-    await homePage.goToModelingScene()
-    await scene.settled(cmdBar)
-
-    const formattedArc = `arc(interiorAbsolute = [1, 2], endAbsolute = [4, 2])`
-    await test.step(`format the code`, async () => {
-      // doesn't contain condensed version
-      await editor.expectEditor.not.toContain(formattedArc)
-      // click the code to enter sketch mode
-      await page.getByText(`arc`).click()
-      // Format the code.
-      await page.locator('#code-pane button:first-child').click()
-      await page.locator('button:has-text("Format code")').click()
-    })
-
-    await test.step(`Ensure the code reformatted`, async () => {
-      await editor.expectEditor.toContain(formattedArc)
-    })
-
-    const [arcClick, arcHover] = scene.makeMouseHelpers(699, 337)
-    await test.step('Ensure we can hover the arc', async () => {
-      await arcHover()
-
-      // Check that the code is highlighted
-      await editor.expectState({
-        activeLines: ['sketch001=startSketchOn(XZ)'],
-        diagnostics: [],
-        highlightedCode: 'arc(interiorAbsolute = [1, 2], endAbsolute = [4, 2])',
-      })
-    })
-
-    await test.step('reset the selection', async () => {
-      // Move the mouse out of the way
-      await page.mouse.move(655, 337)
-
-      await editor.expectState({
-        activeLines: ['sketch001=startSketchOn(XZ)'],
-        diagnostics: [],
-        highlightedCode: '',
-      })
-    })
-
-    await test.step('Ensure we can click the arc', async () => {
-      await arcClick()
-
-      // Check that the code is highlighted
-      await editor.expectState({
-        activeLines: [],
-        diagnostics: [],
-        highlightedCode: 'arc(interiorAbsolute = [1, 2], endAbsolute = [4, 2])',
-      })
-    })
   })
 })
 

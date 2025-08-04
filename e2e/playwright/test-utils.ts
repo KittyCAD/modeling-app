@@ -228,6 +228,11 @@ async function waitForCmdReceive(page: Page, commandType: string) {
     .waitFor()
 }
 
+/**
+ * Moves the mouse in a sine wave along a vector,
+ * useful for emulating organic fluid mouse motion which is not available normally in Playwright.
+ * Ex. used to activate the segment overlays by hovering around the sketch segments.
+ */
 export const wiggleMove = async (
   page: any,
   x: number,
@@ -258,6 +263,11 @@ export const wiggleMove = async (
   }
 }
 
+/**
+ * Moves the mouse in a complete circle about a point.
+ * useful for emulating organic "hovering" around motions, which are not available normally in Playwright.
+ * Ex. used to activate the segment overlays by hovering around the sketch segments.
+ */
 export const circleMove = async (
   page: Page,
   x: number,
@@ -482,8 +492,11 @@ export async function getUtils(page: Page, test_?: typeof test) {
       return maxDiff
     },
     getPixelRGBs: getPixelRGBs(page),
-    doAndWaitForImageDiff: (fn: () => Promise<unknown>, diffCount = 200) =>
-      doAndWaitForImageDiff(page, fn, diffCount),
+    doAndWaitForImageDiff: (
+      fn: () => Promise<unknown>,
+      diffCount = 200,
+      locator?: Locator
+    ) => doAndWaitForImageDiff(locator || page, fn, diffCount),
     emulateNetworkConditions: async (
       networkOptions: Protocol.Network.emulateNetworkConditionsParameters
     ) => {
@@ -1022,19 +1035,19 @@ export function kclSamplesPath(fileName: string): string {
 }
 
 export async function doAndWaitForImageDiff(
-  page: Page,
+  pageOrLocator: Page | Locator,
   fn: () => Promise<unknown>,
   diffCount = 200
 ) {
   return new Promise<boolean>((resolve) => {
     ;(async () => {
-      await page.screenshot({
+      await pageOrLocator.screenshot({
         path: './e2e/playwright/temp1.png',
         fullPage: true,
       })
       await fn()
       const isImageDiff = async () => {
-        await page.screenshot({
+        await pageOrLocator.screenshot({
           path: './e2e/playwright/temp2.png',
           fullPage: true,
         })
