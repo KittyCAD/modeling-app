@@ -91,6 +91,7 @@ export class ToolbarFixture {
     this.gizmoDisabled = page.getByTestId('gizmo-disabled')
 
     this.userSidebarButton = page.getByTestId('user-sidebar-toggle')
+    this.projectSidebarToggle = page.getByTestId('project-sidebar-toggle')
     this.signOutButton = page.getByTestId('user-sidebar-sign-out')
   }
 
