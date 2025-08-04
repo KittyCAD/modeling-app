@@ -36,6 +36,7 @@ export const CommandBar = () => {
   useEffect(() => {
     if (commandBarState.matches('Closed')) return
     commandBarActor.send({ type: 'Close' })
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [pathname])
 
   /**
@@ -55,6 +56,7 @@ export const CommandBar = () => {
       commandBarActor.send({ type: 'Close' })
       toast.error('Exiting command flow because engine disconnected')
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [immediateState, commandBarActor])
 
   // Hook up keyboard shortcuts

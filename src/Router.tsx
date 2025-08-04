@@ -173,6 +173,7 @@ function CoreDump() {
         rustContext,
         token
       ),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
     []
   )
   useHotkeyWrapper(['mod + shift + period'], () => {

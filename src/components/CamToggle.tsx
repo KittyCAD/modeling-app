@@ -22,6 +22,7 @@ export const CamToggle = () => {
         sceneInfra.camControls.dollyZoom(fov).catch(reportRejection)
       }
     )
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [])
 
   const toggleCamera = () => {
