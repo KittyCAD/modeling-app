@@ -1814,7 +1814,7 @@ test.describe('Project id', () => {
       await homePage.goToModelingScene()
       await u.waitForPageLoad()
 
-    const inputProjectId = page.getByTestId('project-id')
+      const inputProjectId = page.getByTestId('project-id')
 
       await test.step('Open the project settings modal', async () => {
         await toolbar.projectSidebarToggle.click()
