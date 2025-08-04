@@ -501,7 +501,8 @@ profile001 = startProfile(sketch002, at = [205.96, 254.59])
       sketchOnXzPlane: 'sketch001 = startSketchOn(XZ)',
       pointAtOrigin: 'startProfile(sketch001, at = [0, 0])',
       segmentOnXAxis: 'xLine(length',
-      afterSegmentDraggedOnYAxis: /startProfile\(sketch001, at = \[0, \d+\]\)/,
+      afterSegmentDraggedOnYAxis:
+        /startProfile\(sketch001, at = \[0, (\d+(\.\d+)?)\]\)/,
     }
 
     await test.step(`Start a sketch on the XZ plane`, async () => {
