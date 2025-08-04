@@ -46,10 +46,17 @@ pub async fn execute_and_snapshot_3d(code: &str, current_file: Option<PathBuf>) 
         .await
         .map(|(_, _, snap)| snap)
         .map_err(|err| err.error)?;
-    let gltf = ctx
+    let gltf_res = ctx
         .export(kittycad_modeling_cmds::format::OutputFormat3d::Gltf(Default::default()))
-        .await
-        .map_err(|err| ExecError::BadExport(err.to_string()))?;
+        .await;
+    let gltf = match gltf_res {
+        Err(err) if err.message() == "Nothing to export" => Vec::new(),
+        Err(err) => {
+            eprintln!("Error exporting: {}", err.message());
+            Vec::new()
+        }
+        Ok(x) => x,
+    };
     ctx.close().await;
     Ok(Snapshot3d { image, gltf })
 }

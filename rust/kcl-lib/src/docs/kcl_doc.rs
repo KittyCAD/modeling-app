@@ -1364,7 +1364,7 @@ mod test {
             );
             for gltf_file in result.gltf {
                 let path = format!(
-                    "tests/outputs/serial_test_example_fn_{}{i}_{}.gltf",
+                    "tests/outputs/serial_test_example_fn_{}{i}_{}",
                     qualname.replace("::", "-"),
                     gltf_file.name,
                 );
