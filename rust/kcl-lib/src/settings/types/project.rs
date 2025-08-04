@@ -286,9 +286,7 @@ color = 1567.4"#;
     fn test_project_settings_named_views() {
         let conf = ProjectConfiguration {
             settings: PerProjectSettings {
-                meta: ProjectMetaSettings {
-                    id: uuid::Uuid::nil(),
-                },
+                meta: ProjectMetaSettings { id: uuid::Uuid::nil() },
                 app: ProjectAppSettings {
                     appearance: ProjectAppearanceSettings { color: 138.0.into() },
                     onboarding_status: Default::default(),
