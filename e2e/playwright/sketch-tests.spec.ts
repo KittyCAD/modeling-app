@@ -930,10 +930,10 @@ sketch001 = startSketchOn(XZ)
 
       const code = `@settings(defaultLengthUnit = in)
 sketch001 = startSketchOn(-XZ)
-profile001 = startProfile(sketch001, at = [${roundOff(scale * 77.11)}, ${roundOff(
+profile001 = startProfile(sketch001, at = [${roundOff(scale * 69.6)}, ${roundOff(
         scale * 34.8
       )}])
-    |> xLine(length = ${roundOff(scale * 154.22)})
+    |> xLine(length = ${roundOff(scale * 139.19)})
     |> yLine(length = -${roundOff(scale * 139.2)})
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
     |> close()`
@@ -1813,11 +1813,7 @@ tangentialArc(end = [-10.82, 144.95])`
     homePage,
   }) => {
     await page.addInitScript(async () => {
-      localStorage.setItem(
-        'persistCode',
-        `
-sketch001 = startSketchOn(XY)`
-      )
+      localStorage.setItem('persistCode', 'sketch001 = startSketchOn(XY)')
     })
     await page.setBodyDimensions({ width: 1000, height: 500 })
     await homePage.goToModelingScene()
@@ -1841,10 +1837,9 @@ sketch001 = startSketchOn(XY)`
       .toBe('true')
 
     await startProfile1()
-    await editor.expectEditor.toContain(`
-profile001 = startProfile`)
+    await editor.expectEditor.toContain('profile001 = startProfile')
     await segment1Clk()
-    await editor.expectEditor.toContain(`|> line(end`)
+    await editor.expectEditor.toContain('|> line(end')
   })
   test('can delete all profiles in sketch mode and user can still equip a tool and draw something', async ({
     scene,
