@@ -873,7 +873,7 @@ default project name`, async ({ homePage, toolbar }) => {
 test(
   'File in the file pane should open with a single click',
   { tag: '@desktop' },
-  async ({ context, homePage, page }, testInfo) => {
+  async ({ context, homePage, page, scene, toolbar }, testInfo) => {
     const projectName = 'router-template-slate'
     await context.folderSetupFn(async (dir) => {
       await fsp.mkdir(`${dir}/${projectName}`, { recursive: true })
@@ -900,11 +900,7 @@ test(
     await expect(u.codeLocator).toContainText('minClampingDistance')
 
     await page.getByRole('button', { name: 'Project Files' }).click()
-
-    const file = page.getByRole('button', { name: 'otherThingToClickOn.kcl' })
-    await expect(file).toBeVisible()
-
-    await file.click()
+    await toolbar.openFile('otherThingToClickOn.kcl')
 
     await expect(u.codeLocator).toContainText(
       'A mounting bracket for the Focusrite Scarlett Solo audio interface'
@@ -1532,7 +1528,8 @@ test(
     })
 
     await test.step('check the last file is out of view initially, and can be scrolled to', async () => {
-      const element = page.getByText('tangential_arc.kcl')
+      const u = await getUtils(page)
+      const element = u.locatorFile('tangential_arc.kcl')
       const container = page.getByTestId('file-pane-scroll-container')
 
       await expect(await isOutOfViewInScrollContainer(element, container)).toBe(

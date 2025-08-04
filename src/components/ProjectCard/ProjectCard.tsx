@@ -79,6 +79,7 @@ function ProjectCard({
 
     void getNumberOfFiles()
     void setupImageUrl()
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [project.kcl_file_count, project.directory_count])
 
   useEffect(() => {
@@ -86,6 +87,7 @@ function ProjectCard({
       inputRef.current.focus()
       inputRef.current.select()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [isEditing, inputRef.current])
 
   const projectName = project.name?.replace(FILE_EXT, '')
