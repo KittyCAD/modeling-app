@@ -209,6 +209,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
           props === 'break' ||
           (typeof props !== 'string' && !props.className?.includes('hidden'))
       ) as (ActionButtonProps | 'break')[],
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
     [platform, location, filePath, navigate, send, hasMultipleEnvironments]
   )
 

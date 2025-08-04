@@ -117,8 +117,10 @@ const useTextareaAutoGrow = (ref: RefObject<HTMLTextAreaElement>) => {
 
     return () => {
       if (ref.current === null) return
+      // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
       ref.current.removeEventListener('input', listener)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [ref.current])
 }
 

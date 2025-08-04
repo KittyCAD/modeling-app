@@ -103,6 +103,8 @@ export const ModelingPageProvider = ({
         },
       })
     }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [location])
 
   const cb = modelingMenuCallbackMostActions(settings, navigate, filePath)
@@ -147,6 +149,7 @@ export const ModelingPageProvider = ({
       },
       specialPropsForInsertCommand: { providedOptions },
     })
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [codeManager, kclManager, project, file])
 
   useEffect(() => {
@@ -161,6 +164,7 @@ export const ModelingPageProvider = ({
         data: { commands: kclCommandMemo },
       })
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [commandBarActor.send, kclCommandMemo])
 
   return <div>{children}</div>
