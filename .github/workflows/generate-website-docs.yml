@@ -40,9 +40,11 @@ jobs:
           # cleanup old
           rm -rf documentation/content/pages/docs/kcl-std
           rm -rf documentation/content/pages/docs/kcl-lang
+          rm -rf documentation/content/models
           # move new
           mv -f docs/kcl-std documentation/content/pages/docs
           mv -f docs/kcl-lang documentation/content/pages/docs
+          mv -f docs/kcl-std-models documentation/content/models
           # We don't need the README
           rm documentation/content/pages/docs/kcl-std/README.md
       - name: move kcl-samples

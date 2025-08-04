@@ -48,6 +48,19 @@ layout: manual
 ![Rendered example of {{@root.name}} {{@index}}](data:image/png;base64,{{{this.image_base64}}})
 {{/if}}
 
+{{#if this.gltf_path}}
+<model-viewer
+  alt="Rendered example of {{@root.name}} {{@index}}"
+  src="{{this.gltf_path}}"
+  ar
+  environment-image="public/images/moon_1k.hdr"
+  poster="data:image/png;base64,{{{this.image_base64}}}"
+  shadow-intensity="1"
+  camera-controls
+  touch-action="pan-y">
+</model-viewer>
+{{/if}}
+
 {{/each}}
 {{/if}}
 
