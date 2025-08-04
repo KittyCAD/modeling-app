@@ -121,11 +121,17 @@ export function modelingMenuCallbackMostActions(
         data: { name: 'format-code', groupId: 'code' },
       })
     } else if (data.menuLabel === 'Edit.Undo') {
-      if (!activeFocusIsInput()) {
+      if (activeFocusIsInput()) {
+        document.execCommand('undo')
+        // Cleaner, but can't import 'electron' to this file:
+        // webContents.getFocusedWebContents()?.undo()
+      } else {
         editorManager.undo()
       }
     } else if (data.menuLabel === 'Edit.Redo') {
-      if (!activeFocusIsInput()) {
+      if (activeFocusIsInput()) {
+        document.execCommand('redo')
+      } else {
         editorManager.redo()
       }
     } else if (data.menuLabel === 'View.Orthographic view') {
