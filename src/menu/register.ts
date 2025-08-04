@@ -1,6 +1,5 @@
 import { AxisNames } from '@src/lib/constants'
 import { PATHS } from '@src/lib/paths'
-import type { Project } from '@src/lib/project'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import { engineCommandManager, sceneInfra } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
@@ -17,9 +16,7 @@ import type { NavigateFunction } from 'react-router-dom'
 export function modelingMenuCallbackMostActions(
   settings: SettingsType,
   navigate: NavigateFunction,
-  filePath: string,
-  project: Project | undefined,
-  token: string | undefined
+  filePath: string
 ) {
   // Menu listeners
   const cb = (data: WebContentSendPayload) => {
