@@ -144,6 +144,7 @@ export const ProjectExplorer = ({
       newOpenedRows[row?.key] = true
       setOpenedRows(newOpenedRows)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [createFilePressed])
 
   useEffect(() => {
@@ -161,6 +162,7 @@ export const ProjectExplorer = ({
       newOpenedRows[row?.key] = true
       setOpenedRows(newOpenedRows)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [createFolderPressed])
 
   useEffect(() => {
@@ -549,6 +551,7 @@ export const ProjectExplorer = ({
     setRowsToRender(requestedRowsToRender)
     rowsToRenderRef.current = requestedRowsToRender
     previousProject.current = project
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [project, openedRows, fakeRow, activeIndex, errors])
 
   // Handle clicks and keyboard presses within the global DOM level
@@ -677,8 +680,10 @@ export const ProjectExplorer = ({
       document.removeEventListener('click', handleClickOutside)
       document.removeEventListener('keydown', keyDownHandler)
       fileExplorerContainer.current?.removeEventListener('focus', handleFocus)
+      // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
       fileExplorerContainer.current?.removeEventListener('blur', handleBlur)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [])
 
   return (

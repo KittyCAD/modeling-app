@@ -149,6 +149,7 @@ export const ModelingMachineProvider = ({
       return
     }
     theProject.current = foundYourProject
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [projects, loaderData, file])
 
   const token = useToken()
