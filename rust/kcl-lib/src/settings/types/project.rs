@@ -70,10 +70,10 @@ fn deserialize_project_id<'de, D>(deserializer: D) -> Result<uuid::Uuid, D::Erro
 where
     D: Deserializer<'de>,
 {
-  Ok(match uuid::Uuid::deserialize(deserializer) {
-    Ok(u) => u,
-    _ => uuid::Uuid::new_v4(),
-  })
+    Ok(match uuid::Uuid::deserialize(deserializer) {
+        Ok(u) => u,
+        _ => uuid::Uuid::new_v4(),
+    })
 }
 
 /// Information about the project.
@@ -81,9 +81,7 @@ where
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
 pub struct ProjectMetaSettings {
-    #[serde(
-        deserialize_with = "deserialize_project_id",
-    )]
+    #[serde(deserialize_with = "deserialize_project_id")]
     pub id: uuid::Uuid,
 }
 
@@ -194,8 +192,8 @@ mod tests {
     use serde_json::Value;
 
     use super::{
-        CommandBarSettings, NamedView, PerProjectSettings, ProjectMetaSettings, ProjectAppSettings, ProjectAppearanceSettings,
-        ProjectConfiguration, ProjectModelingSettings, TextEditorSettings,
+        CommandBarSettings, NamedView, PerProjectSettings, ProjectAppSettings, ProjectAppearanceSettings,
+        ProjectConfiguration, ProjectMetaSettings, ProjectModelingSettings, TextEditorSettings,
     };
     use crate::settings::types::UnitLength;
 
@@ -297,7 +295,7 @@ color = 1567.4"#;
         let conf = ProjectConfiguration {
             settings: PerProjectSettings {
                 meta: ProjectMetaSettings {
-                  id: uuid::Uuid::new_v4(),
+                    id: uuid::Uuid::new_v4(),
                 },
                 app: ProjectAppSettings {
                     appearance: ProjectAppearanceSettings { color: 138.0.into() },
