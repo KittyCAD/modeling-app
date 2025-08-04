@@ -1,5 +1,5 @@
 import { Dialog } from '@headlessui/react'
-import type { RefObject } from 'react'
+import type { RefObject, MouseEvent } from 'react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useHotkeys } from 'react-hotkeys-hook'
@@ -15,6 +15,7 @@ export interface ContextMenuProps
   menuTargetElement?: RefObject<HTMLElement>
   guard?: (e: globalThis.MouseEvent) => boolean
   event?: 'contextmenu' | 'mouseup'
+  callback?: (event: globalThis.MouseEvent) => void
 }
 
 const DefaultContextMenuItems = [
@@ -29,6 +30,7 @@ export function ContextMenu({
   className,
   guard,
   event = 'contextmenu',
+  callback,
   ...props
 }: ContextMenuProps) {
   const dialogRef = useRef<HTMLDivElement>(null)
@@ -43,6 +45,9 @@ export function ContextMenu({
   })
   const handleContextMenu = useCallback(
     (e: globalThis.MouseEvent) => {
+      if (callback) {
+        callback(e)
+      }
       if (guard && !guard(e)) return
       e.preventDefault()
       // This stopPropagation is needed in case multiple nested items use a separate context menu each,
@@ -52,8 +57,21 @@ export function ContextMenu({
       setPosition({ x: e.clientX, y: e.clientY })
       setOpen(true)
     },
-    [guard, setPosition, setOpen]
+    [guard, setPosition, setOpen, callback]
   )
+
+  const onDialogMouseUp = useCallback((e: MouseEvent) => {
+    // Prevent mouseup event to propagate to EngineStream's handleMouseUp which would update the selection depending
+    // on what's behind the ContextMenu at the position of the mouse.
+    // Bug without this:
+    // - Open ContextMenu
+    // - Click on an item in the ContextMenu and see how what's behind will get selected.
+    e.stopPropagation()
+  }, [])
+
+  const onCloseDialog = useCallback(() => {
+    setOpen(false)
+  }, [])
 
   const dialogPositionStyle = useMemo(() => {
     if (!dialogRef.current)
@@ -104,10 +122,10 @@ export function ContextMenu({
     return () => {
       menuTargetElement?.current?.removeEventListener(event, handleContextMenu)
     }
-  }, [menuTargetElement?.current])
+  }, [menuTargetElement?.current, callback])
 
   return (
-    <Dialog open={open} onClose={() => setOpen(false)}>
+    <Dialog open={open} onClose={onCloseDialog} onMouseUp={onDialogMouseUp}>
       <div
         className="fixed inset-0 z-50 w-screen h-screen"
         onContextMenu={(e) => {

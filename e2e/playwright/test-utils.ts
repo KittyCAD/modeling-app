@@ -228,6 +228,11 @@ async function waitForCmdReceive(page: Page, commandType: string) {
     .waitFor()
 }
 
+/**
+ * Moves the mouse in a sine wave along a vector,
+ * useful for emulating organic fluid mouse motion which is not available normally in Playwright.
+ * Ex. used to activate the segment overlays by hovering around the sketch segments.
+ */
 export const wiggleMove = async (
   page: any,
   x: number,
@@ -258,6 +263,11 @@ export const wiggleMove = async (
   }
 }
 
+/**
+ * Moves the mouse in a complete circle about a point.
+ * useful for emulating organic "hovering" around motions, which are not available normally in Playwright.
+ * Ex. used to activate the segment overlays by hovering around the sketch segments.
+ */
 export const circleMove = async (
   page: Page,
   x: number,
@@ -482,8 +492,11 @@ export async function getUtils(page: Page, test_?: typeof test) {
       return maxDiff
     },
     getPixelRGBs: getPixelRGBs(page),
-    doAndWaitForImageDiff: (fn: () => Promise<unknown>, diffCount = 200) =>
-      doAndWaitForImageDiff(page, fn, diffCount),
+    doAndWaitForImageDiff: (
+      fn: () => Promise<unknown>,
+      diffCount = 200,
+      locator?: Locator
+    ) => doAndWaitForImageDiff(locator || page, fn, diffCount),
     emulateNetworkConditions: async (
       networkOptions: Protocol.Network.emulateNetworkConditionsParameters
     ) => {
@@ -524,7 +537,7 @@ export async function getUtils(page: Page, test_?: typeof test) {
     createNewFile: async (name: string) => {
       return test?.step(`Create a file named ${name}`, async () => {
         await page.getByTestId('create-file-button').click()
-        await page.getByTestId('tree-input-field').fill(name)
+        await page.getByTestId('file-rename-field').fill(name)
         await page.keyboard.press('Enter')
       })
     },
@@ -532,7 +545,7 @@ export async function getUtils(page: Page, test_?: typeof test) {
     createNewFolder: async (name: string) => {
       return test?.step(`Create a folder named ${name}`, async () => {
         await page.getByTestId('create-folder-button').click()
-        await page.getByTestId('tree-input-field').fill(name)
+        await page.getByTestId('file-rename-field').fill(name)
         await page.keyboard.press('Enter')
       })
     },
@@ -540,7 +553,7 @@ export async function getUtils(page: Page, test_?: typeof test) {
     cloneFile: async (name: string) => {
       return test?.step(`Cloning file '${name}'`, async () => {
         await page
-          .locator('[data-testid="file-pane-scroll-container"] button')
+          .locator('[data-testid="file-pane-scroll-container"] [role=treeitem]')
           .filter({ hasText: name })
           .click({ button: 'right' })
         await page.getByTestId('context-menu-clone').click()
@@ -550,7 +563,7 @@ export async function getUtils(page: Page, test_?: typeof test) {
     selectFile: async (name: string) => {
       return test?.step(`Select ${name}`, async () => {
         await page
-          .locator('[data-testid="file-pane-scroll-container"] button')
+          .locator('[data-testid="file-pane-scroll-container"] [role=treeitem]')
           .filter({ hasText: name })
           .click()
         await expect(page.getByTestId('project-sidebar-toggle')).toContainText(
@@ -566,7 +579,7 @@ export async function getUtils(page: Page, test_?: typeof test) {
         await page.getByTestId('file-rename-field').fill(name)
         await page.keyboard.press('Enter')
         const newFile = page
-          .locator('[data-testid="file-pane-scroll-container"] button')
+          .locator('[data-testid="file-pane-scroll-container"] [role=treeitem]')
           .filter({ hasText: name })
 
         await expect(newFile).toBeVisible()
@@ -577,14 +590,14 @@ export async function getUtils(page: Page, test_?: typeof test) {
     renameFile: async (fromName: string, toName: string) => {
       return test?.step(`Rename ${fromName} to ${toName}`, async () => {
         await page
-          .locator('[data-testid="file-pane-scroll-container"] button')
+          .locator('[data-testid="file-pane-scroll-container"] [role=treeitem]')
           .filter({ hasText: fromName })
           .click({ button: 'right' })
         await page.getByTestId('context-menu-rename').click()
         await page.getByTestId('file-rename-field').fill(toName)
         await page.keyboard.press('Enter')
         await page
-          .locator('[data-testid="file-pane-scroll-container"] button')
+          .locator('[data-testid="file-pane-scroll-container"] [role=treeitem]')
           .filter({ hasText: toName })
           .click()
       })
@@ -593,12 +606,24 @@ export async function getUtils(page: Page, test_?: typeof test) {
     deleteFile: async (name: string) => {
       return test?.step(`Delete ${name}`, async () => {
         await page
-          .locator('[data-testid="file-pane-scroll-container"] button')
+          .locator('[data-testid="file-pane-scroll-container"] [role=treeitem]')
           .filter({ hasText: name })
           .click({ button: 'right' })
         await page.getByTestId('context-menu-delete').click()
         await page.getByTestId('delete-confirmation').click()
       })
+    },
+
+    locatorFile: (name: string) => {
+      return page
+        .locator('[data-testid="file-pane-scroll-container"] [role=treeitem]')
+        .filter({ hasText: name })
+    },
+
+    locatorFolder: (name: string) => {
+      return page
+        .locator('[data-testid="file-pane-scroll-container"] [role=treeitem]')
+        .filter({ hasText: name })
     },
 
     /**
@@ -1010,19 +1035,19 @@ export function kclSamplesPath(fileName: string): string {
 }
 
 export async function doAndWaitForImageDiff(
-  page: Page,
+  pageOrLocator: Page | Locator,
   fn: () => Promise<unknown>,
   diffCount = 200
 ) {
   return new Promise<boolean>((resolve) => {
     ;(async () => {
-      await page.screenshot({
+      await pageOrLocator.screenshot({
         path: './e2e/playwright/temp1.png',
         fullPage: true,
       })
       await fn()
       const isImageDiff = async () => {
-        await page.screenshot({
+        await pageOrLocator.screenshot({
           path: './e2e/playwright/temp2.png',
           fullPage: true,
         })

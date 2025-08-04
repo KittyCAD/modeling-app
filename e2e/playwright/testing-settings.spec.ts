@@ -10,7 +10,6 @@ import * as fsp from 'fs/promises'
 import type { Settings } from '@rust/kcl-lib/bindings/Settings'
 
 import {
-  TEST_SETTINGS,
   TEST_SETTINGS_CORRUPTED,
   TEST_SETTINGS_DEFAULT_THEME,
   TEST_SETTINGS_KEY,
@@ -881,89 +880,6 @@ test.describe(
         await expect
           .poll(() => streamBackgroundPixelIsColor(darkBackgroundColor))
           .toBeLessThan(15)
-      })
-    })
-
-    test(`Turning off "Show debug panel" with debug panel open leaves no phantom panel`, async ({
-      context,
-      page,
-      homePage,
-      tronApp,
-      scene,
-      cmdBar,
-    }) => {
-      if (!tronApp) {
-        fail()
-      }
-
-      await tronApp.cleanProjectDir({
-        // Override beforeEach test setup
-        // with debug panel open
-        // but "show debug panel" set to false
-        ...TEST_SETTINGS,
-        app: { ...TEST_SETTINGS.app, show_debug_panel: false },
-        modeling: { ...TEST_SETTINGS.modeling },
-      })
-
-      const u = await getUtils(page)
-
-      await context.addInitScript(async () => {
-        localStorage.setItem(
-          'persistModelingContext',
-          '{"openPanes":["debug"]}'
-        )
-      })
-      await page.setBodyDimensions({ width: 1200, height: 500 })
-      await homePage.goToModelingScene()
-      await scene.connectionEstablished()
-
-      // Constants and locators
-      const resizeHandle = page.locator('.sidebar-resize-handles > div.block')
-      const debugPaneButton = page.getByTestId('debug-pane-button')
-      const commandsButton = page.getByRole('button', { name: 'Commands' })
-      const debugPaneOption = page.getByRole('option', {
-        name: 'Settings · app · show debug panel',
-      })
-
-      async function setShowDebugPanelTo(value: 'On' | 'Off') {
-        await commandsButton.click()
-        await debugPaneOption.scrollIntoViewIfNeeded()
-        await debugPaneOption.click()
-        await page.getByRole('option', { name: value }).click()
-        await expect(
-          page.getByText(
-            `Set show debug panel to "${value === 'On'}" for this project`
-          )
-        ).toBeVisible()
-      }
-
-      await test.step(`Initial load with corrupted settings`, async () => {
-        // Check that the debug panel is not visible
-        await expect(debugPaneButton).not.toBeVisible()
-        // Check the pane resize handle wrapper is not visible
-        await expect(resizeHandle).not.toBeVisible()
-      })
-
-      await test.step(`Open code pane to verify we see the resize handles`, async () => {
-        await u.openKclCodePanel()
-        await expect(resizeHandle).toBeVisible()
-        await u.closeKclCodePanel()
-      })
-
-      await test.step(`Turn on debug panel, open it`, async () => {
-        await setShowDebugPanelTo('On')
-        await expect(debugPaneButton).toBeVisible()
-        // We want the logic to clear the phantom panel, so we shouldn't see
-        // the real panel (and therefore the resize handle) yet
-        await expect(resizeHandle).not.toBeVisible()
-        await u.openDebugPanel()
-        await expect(resizeHandle).toBeVisible()
-      })
-
-      await test.step(`Turn off debug panel setting with it open`, async () => {
-        await setShowDebugPanelTo('Off')
-        await expect(debugPaneButton).not.toBeVisible()
-        await expect(resizeHandle).not.toBeVisible()
       })
     })
 

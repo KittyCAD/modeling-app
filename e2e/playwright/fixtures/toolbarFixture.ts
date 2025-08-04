@@ -76,7 +76,7 @@ export class ToolbarFixture {
     this.exitSketchBtn = page.getByTestId('sketch-exit')
     this.fileTreeBtn = page.locator('[id="files-button-holder"]')
     this.createFileBtn = page.getByTestId('create-file-button')
-    this.treeInputField = page.getByTestId('tree-input-field')
+    this.treeInputField = page.getByTestId('file-rename-field')
     this.loadButton = page.getByTestId('add-file-to-project-pane-button')
 
     this.filePane = page.locator('#files-pane')
@@ -212,8 +212,8 @@ export class ToolbarFixture {
   }
   selectArc = async () => {
     await this.page.getByRole('button', { name: 'caret down arcs:' }).click()
-    await expect(this.page.getByTestId('dropdown-arc')).toBeVisible()
-    await this.page.getByTestId('dropdown-arc').click()
+    await expect(this.page.getByTestId('dropdown-tangential-arc')).toBeVisible()
+    await this.page.getByTestId('dropdown-tangential-arc').click()
   }
   selectThreePointArc = async () => {
     await this.page.getByRole('button', { name: 'caret down arcs:' }).click()
