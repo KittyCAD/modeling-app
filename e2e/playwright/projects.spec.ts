@@ -1,6 +1,11 @@
 import fs from 'fs'
+import {
+  NIL as uuidNIL,
+  validate as uuidValidate,
+  version as uuidVersion,
+} from 'uuid'
 import path from 'path'
-import { DEFAULT_PROJECT_KCL_FILE } from '@src/lib/constants'
+import { DEFAULT_PROJECT_KCL_FILE, REGEXP_UUIDV4 } from '@src/lib/constants'
 import fsp from 'fs/promises'
 
 import {
@@ -1802,35 +1807,32 @@ profile001 = startProfile(sketch001, at = [0, 0])
 
 test.describe('Project id', () => {
   // Should work on both web and desktop.
-  test('is created on new project', async ({
-    page,
-    toolbar,
-    context,
-    homePage,
-  }, testInfo) => {
-    const u = await getUtils(page)
-    await page.setBodyDimensions({ width: 1200, height: 500 })
-    await homePage.goToModelingScene()
-    await u.waitForPageLoad()
+  test(
+    'is created on new project',
+    {
+      tag: ['@desktop', '@web'],
+    },
+    async ({ page, toolbar, context, homePage }, testInfo) => {
+      const u = await getUtils(page)
+      await page.setBodyDimensions({ width: 1200, height: 500 })
+      await homePage.goToModelingScene()
+      await u.waitForPageLoad()
 
-    const inputProjectId = page.getByTestId('project-id')
+      const inputProjectId = page.getByTestId('project-id')
 
-    await test.step('Open the project settings modal', async () => {
-      await toolbar.projectSidebarToggle.click()
-      await page.getByTestId('project-settings').click()
-      // Give time to system for writing to a persistent store
-      await page.waitForTimeout(1000)
-    })
+      await test.step('Open the project settings modal', async () => {
+        await toolbar.projectSidebarToggle.click()
+        await page.getByTestId('project-settings').click()
+        // Give time to system for writing to a persistent store
+        await page.waitForTimeout(1000)
+      })
 
-    await test.step('Check project id is not the NIL UUID and not empty', async () => {
-      await expect(inputProjectId).not.toHaveValue(
-        /^[0]{8}(-[0]{4}){3}-[0]{12}$/
-      )
-      await expect(inputProjectId).toHaveValue(
-        /^[0-9A-F]{8}(-[0-9A-F]{4}){3}-[0-9A-F]{12}$/i
-      )
-    })
-  })
+      await test.step('Check project id is not the NIL UUID and not empty', async () => {
+        await expect(inputProjectId).not.toHaveValue(uuidNIL)
+        await expect(inputProjectId).toHaveValue(REGEXP_UUIDV4)
+      })
+    }
+  )
   test(
     'is created on existing project without one',
     { tag: '@desktop' },
@@ -1861,12 +1863,8 @@ themeColor = "255"
       })
 
       await test.step('Check project id is not the NIL UUID and not empty', async () => {
-        await expect(inputProjectId).not.toHaveValue(
-          /^[0]{8}(-[0]{4}){3}-[0]{12}$/
-        )
-        await expect(inputProjectId).toHaveValue(
-          /^[0-9A-F]{8}(-[0-9A-F]{4}){3}-[0-9A-F]{12}$/i
-        )
+        await expect(inputProjectId).not.toHaveValue(uuidNIL)
+        await expect(inputProjectId).toHaveValue(REGEXP_UUIDV4)
       })
     }
   )

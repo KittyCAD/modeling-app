@@ -3,7 +3,7 @@
 use anyhow::Result;
 use indexmap::IndexMap;
 use schemars::JsonSchema;
-use serde::{Deserialize, Deserializer, Serialize};
+use serde::{Deserialize, Serialize};
 use validator::Validate;
 
 use crate::settings::types::{
@@ -66,22 +66,12 @@ pub struct PerProjectSettings {
     pub command_bar: CommandBarSettings,
 }
 
-fn deserialize_project_id<'de, D>(deserializer: D) -> Result<uuid::Uuid, D::Error>
-where
-    D: Deserializer<'de>,
-{
-    Ok(match uuid::Uuid::deserialize(deserializer) {
-        Ok(u) => u,
-        _ => uuid::Uuid::new_v4(),
-    })
-}
-
 /// Information about the project.
 #[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Validate)]
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
 pub struct ProjectMetaSettings {
-    #[serde(deserialize_with = "deserialize_project_id")]
+    #[serde(default, skip_serializing_if = "is_default")]
     pub id: uuid::Uuid,
 }
 
@@ -208,7 +198,9 @@ mod tests {
         let serialized = toml::to_string(&parsed).unwrap();
         assert_eq!(
             serialized,
-            r#"[settings.app]
+            r#"[settings.meta]
+
+[settings.app]
 
 [settings.modeling]
 

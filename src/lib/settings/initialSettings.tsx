@@ -14,6 +14,7 @@ import { cameraMouseDragGuards, cameraSystems } from '@src/lib/cameraControls'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
   DEFAULT_PROJECT_NAME,
+  REGEXP_UUIDV4,
 } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import type {
@@ -641,7 +642,7 @@ export function createSettings() {
         defaultValue: uuidNIL,
         description: 'The unique project identifier',
         // Never allow the user to change the id, only view it.
-        validate: (v) => /^[0-9A-F]{8}(-[0-9A-F]{4}){3}-[0-9A-F]{12}$/i.test(v),
+        validate: (v) => REGEXP_UUIDV4.test(v),
         Component: ({ value }) => {
           return (
             <div className="flex gap-4 p-1 border rounded-sm border-chalkboard-30">
