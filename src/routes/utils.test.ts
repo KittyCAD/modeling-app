@@ -37,7 +37,7 @@ describe('Routes utility functions', () => {
       })
       expect(actual).toBe(expected)
     })
-    it('should return another 0.0.0', () => {
+    it('should return 0.0.0 for desktop testing', () => {
       const expected = '0.0.0'
       const actual = getAppVersion({
         isTestEnvironment: true,
