@@ -9,13 +9,29 @@ import { withSiteBaseURL } from '@src/lib/withBaseURL'
 
 const isTestEnv = window?.localStorage.getItem(IS_PLAYWRIGHT_KEY) === 'true'
 
-export const APP_VERSION =
-  isTestEnv && env().NODE_ENV === 'development'
-    ? '0.0.0'
-    : isDesktop()
-      ? // @ts-ignore
-        window.electron.packageJson.version
-      : 'main'
+export function getAppVersion ({isTestEnvironment, NODE_ENV, isDesktop}: {isTestEnvironment: boolean, NODE_ENV: string | undefined, isDesktop: boolean}) {
+  if (isTestEnvironment && NODE_ENV === 'development') {
+    return '0.0.0'
+  }
+
+  if (isDesktop) {
+    // @ts-ignore
+    return window.electron.packageJson.version
+  }
+
+  // Web based runtimes
+  if (NODE_ENV === 'development') {
+    return 'main/development'
+  }
+
+  return 'main'
+}
+
+export const APP_VERSION = getAppVersion({
+  isTestEnvironment: isTestEnv,
+  NODE_ENV: env().NODE_ENV,
+  isDesktop: isDesktop()
+})
 
 export const PACKAGE_NAME = isDesktop()
   ? window.electron.packageJson.name
@@ -23,7 +39,7 @@ export const PACKAGE_NAME = isDesktop()
 
 export const IS_STAGING = PACKAGE_NAME.indexOf('-staging') > -1
 
-export const IS_STAGING_OR_DEBUG = IS_STAGING || APP_VERSION === '0.0.0'
+export const IS_STAGING_OR_DEBUG = IS_STAGING || APP_VERSION === '0.0.0' || APP_VERSION === 'main/development'
 
 export function getRefFromVersion(version: string) {
   const hash = version.split('.').pop()
