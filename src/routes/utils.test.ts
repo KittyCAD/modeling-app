@@ -28,7 +28,7 @@ describe('Routes utility functions', () => {
   })
 
   describe('getAppVersion', () => {
-    it('should return 0.0.0', () => {
+    it('should return 0.0.0 for web testing', () => {
       const expected = '0.0.0'
       const actual = getAppVersion({
         isTestEnvironment: true,
