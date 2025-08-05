@@ -80,6 +80,10 @@ export function configurationToSettingsPayload(
       enableSSAO: configuration?.settings?.modeling?.enable_ssao,
       showScaleGrid: configuration?.settings?.modeling?.show_scale_grid,
       snapToGrid: configuration?.settings?.modeling?.snap_to_grid,
+      majorGridSpacing: configuration?.settings?.modeling?.major_grid_spacing,
+      minorGridsPerMajor:
+        configuration?.settings?.modeling?.minor_grids_per_major,
+      snapsPerMinor: configuration?.settings?.modeling?.snaps_per_minor,
     },
     textEditor: {
       textWrapping: configuration?.settings?.text_editor?.text_wrapping,
@@ -126,6 +130,9 @@ export function settingsPayloadToConfiguration(
         enable_ssao: configuration?.modeling?.enableSSAO,
         show_scale_grid: configuration?.modeling?.showScaleGrid,
         snap_to_grid: configuration?.modeling?.snapToGrid,
+        major_grid_spacing: configuration?.modeling?.majorGridSpacing,
+        minor_grids_per_major: configuration?.modeling?.minorGridsPerMajor,
+        snaps_per_minor: configuration?.modeling?.snapsPerMinor,
       },
       text_editor: {
         text_wrapping: configuration?.textEditor?.textWrapping,
@@ -201,6 +208,11 @@ export function projectConfigurationToSettingsPayload(
       defaultUnit: configuration?.settings?.modeling?.base_unit,
       highlightEdges: configuration?.settings?.modeling?.highlight_edges,
       enableSSAO: configuration?.settings?.modeling?.enable_ssao,
+      snapToGrid: configuration?.settings?.modeling?.snap_to_grid,
+      majorGridSpacing: configuration?.settings?.modeling?.major_grid_spacing,
+      minorGridsPerMajor:
+        configuration?.settings?.modeling?.minor_grids_per_major,
+      snapsPerMinor: configuration?.settings?.modeling?.snaps_per_minor,
     },
     textEditor: {
       textWrapping: configuration?.settings?.text_editor?.text_wrapping,
@@ -235,6 +247,10 @@ export function settingsPayloadToProjectConfiguration(
         base_unit: configuration?.modeling?.defaultUnit,
         highlight_edges: configuration?.modeling?.highlightEdges,
         enable_ssao: configuration?.modeling?.enableSSAO,
+        snap_to_grid: configuration?.modeling?.snapToGrid,
+        major_grid_spacing: configuration?.modeling?.majorGridSpacing,
+        minor_grids_per_major: configuration?.modeling?.minorGridsPerMajor,
+        snaps_per_minor: configuration?.modeling?.snapsPerMinor,
       },
       text_editor: {
         text_wrapping: configuration?.textEditor?.textWrapping,
@@ -527,9 +543,11 @@ export function shouldShowSettingInput(
   return (
     !shouldHideSetting(setting, settingsLevel) &&
     (setting.Component ||
-      ['string', 'boolean'].some((t) => typeof setting.default === t) ||
+      ['string', 'boolean', 'number'].some(
+        (t) => typeof setting.default === t
+      ) ||
       (setting.commandConfig?.inputType &&
-        ['string', 'options', 'boolean'].some(
+        ['string', 'options', 'boolean', 'number'].some(
           (t) => setting.commandConfig?.inputType === t
         )))
   )
@@ -543,8 +561,12 @@ export function shouldShowSettingInput(
 export function getSettingInputType(setting: Setting) {
   if (setting.Component) return 'component'
   if (setting.commandConfig)
-    return setting.commandConfig.inputType as 'string' | 'options' | 'boolean'
-  return typeof setting.default as 'string' | 'boolean'
+    return setting.commandConfig.inputType as
+      | 'string'
+      | 'options'
+      | 'boolean'
+      | 'number'
+  return typeof setting.default as 'string' | 'boolean' | 'number'
 }
 
 export const jsAppSettings = async (): Promise<DeepPartial<Configuration>> => {

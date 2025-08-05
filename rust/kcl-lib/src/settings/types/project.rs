@@ -104,7 +104,7 @@ pub struct ProjectAppearanceSettings {
 }
 
 /// Project specific settings that affect the behavior while modeling.
-#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Eq, Validate)]
+#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Validate)]
 #[serde(rename_all = "snake_case")]
 #[ts(export)]
 pub struct ProjectModelingSettings {
@@ -117,6 +117,18 @@ pub struct ProjectModelingSettings {
     /// Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.
     #[serde(default, skip_serializing_if = "is_default")]
     pub enable_ssao: DefaultTrue,
+    /// Whether or not to snap to the scale grid in sketching mode.
+    #[serde(default, skip_serializing_if = "is_default")]
+    pub snap_to_grid: bool,
+    /// The space between major grid lines, specified in the current unit
+    #[serde(default, skip_serializing_if = "is_default")]
+    pub major_grid_spacing: f64,
+    /// Specifies how many minor grid lines to have per major grid line.
+    #[serde(default, skip_serializing_if = "is_default")]
+    pub minor_grids_per_major: f64,
+    /// The number of snaps to have between minor grid lines. 1 means snapping to the minor grid lines.
+    #[serde(default, skip_serializing_if = "is_default")]
+    pub snaps_per_minor: f64,
 }
 
 fn named_view_point_version_one() -> f64 {
@@ -312,6 +324,10 @@ color = 1567.4"#;
                     base_unit: UnitLength::Yd,
                     highlight_edges: Default::default(),
                     enable_ssao: true.into(),
+                    snap_to_grid: false,
+                    major_grid_spacing: 1.0,
+                    minor_grids_per_major: 4.0,
+                    snaps_per_minor: 1.0,
                 },
                 text_editor: TextEditorSettings {
                     text_wrapping: false.into(),

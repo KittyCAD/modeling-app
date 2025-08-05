@@ -530,8 +530,34 @@ export function createSettings() {
         commandConfig: {
           inputType: 'boolean',
         },
-        hideOnLevel: 'project',
       }),
+      majorGridSpacing: new Setting<number>({
+        defaultValue: 1,
+        description:
+          'The space between major grid lines, specified in the current unit',
+        validate: (v) => typeof v === 'number',
+        commandConfig: {
+          inputType: 'number',
+        },
+      }),
+      minorGridsPerMajor: new Setting<number>({
+        defaultValue: 4,
+        description: 'Number of minor grid lines per major grid line',
+        validate: (v) => typeof v === 'number',
+        commandConfig: {
+          inputType: 'number',
+        },
+      }),
+      snapsPerMinor: new Setting<number>({
+        defaultValue: 1,
+        description:
+          'Number of snaps between minor grid lines. 1 means snapping to every minor grid line',
+        validate: (v) => typeof v === 'number',
+        commandConfig: {
+          inputType: 'number',
+        },
+      }),
+
       /**
        * TODO: This setting is not yet implemented.
        * Whether to turn off animations and other motion effects

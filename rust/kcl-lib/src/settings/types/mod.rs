@@ -270,7 +270,7 @@ impl From<AppTheme> for kittycad::types::Color {
 }
 
 /// Settings that affect the behavior while modeling.
-#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Eq, Validate)]
+#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Validate)]
 #[serde(rename_all = "snake_case")]
 #[ts(export)]
 pub struct ModelingSettings {
@@ -301,6 +301,16 @@ pub struct ModelingSettings {
     /// Whether or not to snap to the scale grid in sketching mode.
     #[serde(default, skip_serializing_if = "is_default")]
     pub snap_to_grid: bool,
+     /// The space between major grid lines, specified in the current unit
+    #[serde(default, skip_serializing_if = "is_default")]
+    pub major_grid_spacing: f64,
+     /// Specifies ow many minor grid lines to have per major grid line.
+    #[serde(default, skip_serializing_if = "is_default")]
+    pub minor_grids_per_major: f64,
+     /// The number of snaps to have between minor grid lines. 1 means snapping to the minor grid lines.
+     #[serde(default, skip_serializing_if = "is_default")]
+    pub snaps_per_minor: f64,
+
 }
 
 #[derive(Debug, Copy, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Eq)]
