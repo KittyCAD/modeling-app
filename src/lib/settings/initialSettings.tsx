@@ -541,7 +541,7 @@ export function createSettings() {
       snapToGrid: new Setting<boolean>({
         defaultValue: false,
         description:
-            'Snap the cursor to the unit grid when drawing lines, arcs, and other segment-based tools',
+          'Snap the cursor to the unit grid when drawing lines, arcs, and other segment-based tools',
         validate: (v) => typeof v === 'boolean',
         commandConfig: {
           inputType: 'boolean',
