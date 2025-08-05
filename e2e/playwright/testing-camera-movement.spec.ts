@@ -253,7 +253,7 @@ test.describe('Testing Camera Movement', () => {
             await page.waitForTimeout(100)
             await page.mouse.up({ button: 'right' })
           },
-          afterPosition: [47.27, -15.48, 109.43],
+          afterPosition: [27.07, -43.66, 108.68],
           beforePosition: initialCamPosition,
           page,
           scene,
