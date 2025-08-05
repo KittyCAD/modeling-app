@@ -4,12 +4,13 @@ use kcl_lib::{
     lint::{checks, Discovered},
     ExecutorContext, UnitLength,
 };
-use kittycad_modeling_cmds as kcmc;
+use kittycad_modeling_cmds::{self as kcmc, format::InputFormat3d, ImportFile};
 use pyo3::{
-    prelude::PyModuleMethods, pyclass, pyfunction, pymethods, pymodule, types::PyModule, wrap_pyfunction, Bound, PyErr,
-    PyResult,
+    exceptions::PyException, prelude::PyModuleMethods, pyclass, pyfunction, pymethods, pymodule, types::PyModule,
+    wrap_pyfunction, Bound, PyErr, PyResult, Python,
 };
 use serde::{Deserialize, Serialize};
+use uuid::Uuid;
 
 mod bridge;
 
@@ -356,6 +357,68 @@ async fn mock_execute(path: String) -> PyResult<bool> {
         .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?
 }
 
+#[pyfunction]
+async fn import_and_snapshot(
+    filepaths: Vec<String>,
+    format: InputFormat3d,
+    image_format: ImageFormat,
+) -> PyResult<Vec<u8>> {
+    let img = import_and_snapshot_views(filepaths, format, image_format, Vec::new())
+        .await?
+        .pop();
+    Ok(img.unwrap())
+}
+
+fn to_py_exception(err: impl std::fmt::Display) -> PyErr {
+    PyException::new_err(err.to_string())
+}
+
+#[pyfunction]
+async fn import_and_snapshot_views(
+    filepaths: Vec<String>,
+    format: InputFormat3d,
+    image_format: ImageFormat,
+    snapshot_options: Vec<SnapshotOptions>,
+) -> PyResult<Vec<Vec<u8>>> {
+    tokio()
+        .spawn(async move {
+            let (ctx, _state) = new_context_state(None, false).await.map_err(to_py_exception)?;
+            import(&ctx, filepaths, format).await?;
+            take_snaps(&ctx, image_format, snapshot_options).await
+        })
+        .await
+        .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?
+}
+
+/// Return the ID of the imported object.
+async fn import(ctx: &ExecutorContext, filepaths: Vec<String>, format: InputFormat3d) -> PyResult<Uuid> {
+    let mut files = Vec::with_capacity(filepaths.len());
+    for filepath in filepaths {
+        let file_contents = tokio::fs::read(&filepath).await.map_err(to_py_exception)?;
+        files.push(ImportFile {
+            path: filepath,
+            data: file_contents,
+        });
+    }
+    let resp = ctx
+        .engine
+        .send_modeling_cmd(
+            Uuid::new_v4().into(),
+            Default::default(),
+            &kcmc::ModelingCmd::ImportFiles(kcmc::ImportFiles { files, format }),
+        )
+        .await?;
+    let kittycad_modeling_cmds::websocket::OkWebSocketResponseData::Modeling {
+        modeling_response: kittycad_modeling_cmds::ok_response::OkModelingCmdResponse::ImportFiles(data),
+    } = resp
+    else {
+        return Err(pyo3::exceptions::PyException::new_err(format!(
+            "Unexpected response from engine: {resp:?}",
+        )));
+    };
+    Ok(data.object_id)
+}
+
 /// Execute a kcl file and snapshot it in a specific format.
 #[pyfunction]
 async fn execute_and_snapshot(path: String, image_format: ImageFormat) -> PyResult<Vec<u8>> {
@@ -654,7 +717,7 @@ fn lint(code: String) -> PyResult<Vec<Discovered>> {
 
 /// The kcl python module.
 #[pymodule]
-fn kcl(m: &Bound<'_, PyModule>) -> PyResult<()> {
+fn kcl(py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     // Add our types to the module.
     m.add_class::<ImageFormat>()?;
     m.add_class::<ExportFile>()?;
@@ -664,6 +727,46 @@ fn kcl(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<SnapshotOptions>()?;
     m.add_class::<bridge::Point3d>()?;
     m.add_class::<bridge::CameraLookAt>()?;
+    m.add_class::<kcmc::format::InputFormat3d>()?;
+
+    let step_import = PyModule::new(py, "step_import")?;
+    step_import.add_class::<kcmc::format::step::import::Options>()?;
+    m.add_submodule(&step_import)?;
+    let step_export = PyModule::new(py, "step_export")?;
+    step_export.add_class::<kcmc::format::step::export::Options>()?;
+    m.add_submodule(&step_export)?;
+
+    let gltf_import = PyModule::new(py, "gltf_import")?;
+    gltf_import.add_class::<kcmc::format::gltf::import::Options>()?;
+    m.add_submodule(&gltf_import)?;
+    let gltf_export = PyModule::new(py, "gltf_export")?;
+    gltf_export.add_class::<kcmc::format::gltf::export::Options>()?;
+    m.add_submodule(&gltf_export)?;
+
+    let obj_import = PyModule::new(py, "obj_import")?;
+    obj_import.add_class::<kcmc::format::obj::import::Options>()?;
+    m.add_submodule(&obj_import)?;
+    let obj_export = PyModule::new(py, "obj_export")?;
+    obj_export.add_class::<kcmc::format::obj::export::Options>()?;
+    m.add_submodule(&obj_export)?;
+
+    let ply_import = PyModule::new(py, "ply_import")?;
+    ply_import.add_class::<kcmc::format::ply::import::Options>()?;
+    m.add_submodule(&ply_import)?;
+    let ply_export = PyModule::new(py, "ply_export")?;
+    ply_export.add_class::<kcmc::format::ply::export::Options>()?;
+    m.add_submodule(&ply_export)?;
+
+    let stl_import = PyModule::new(py, "stl_import")?;
+    stl_import.add_class::<kcmc::format::stl::import::Options>()?;
+    m.add_submodule(&stl_import)?;
+    let stl_export = PyModule::new(py, "stl_export")?;
+    stl_export.add_class::<kcmc::format::stl::export::Options>()?;
+    m.add_submodule(&stl_export)?;
+
+    let sldprt_import = PyModule::new(py, "sldprt_import")?;
+    sldprt_import.add_class::<kcmc::format::sldprt::import::Options>()?;
+    m.add_submodule(&sldprt_import)?;
 
     // Add our functions to the module.
     m.add_function(wrap_pyfunction!(parse, m)?)?;
@@ -676,6 +779,8 @@ fn kcl(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(execute_and_snapshot_views, m)?)?;
     m.add_function(wrap_pyfunction!(execute_code_and_snapshot, m)?)?;
     m.add_function(wrap_pyfunction!(execute_code_and_snapshot_views, m)?)?;
+    m.add_function(wrap_pyfunction!(import_and_snapshot, m)?)?;
+    m.add_function(wrap_pyfunction!(import_and_snapshot_views, m)?)?;
     m.add_function(wrap_pyfunction!(execute_and_export, m)?)?;
     m.add_function(wrap_pyfunction!(execute_code_and_export, m)?)?;
     m.add_function(wrap_pyfunction!(format, m)?)?;

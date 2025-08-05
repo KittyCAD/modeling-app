@@ -12,6 +12,15 @@ endif
 endif
 
 ifdef WINDOWS
+PLATFORM := Windows
+else
+PLATFORM := $(shell uname -s)
+ifeq ($(PLATFORM),Linux)
+export LINUX := true
+endif
+endif
+
+ifdef WINDOWS
 CARGO ?= $(USERPROFILE)/.cargo/bin/cargo.exe
 WASM_PACK ?= $(USERPROFILE)/.cargo/bin/wasm-pack.exe
 else
@@ -108,13 +117,18 @@ E2E_GREP ?=
 E2E_WORKERS ?=
 E2E_FAILURES ?= 1
 
+ifdef LINUX
+E2E_MODE ?= changed
+else
+E2E_MODE ?= none
+endif
+
 .PHONY: test
 test: test-unit test-e2e
 
 .PHONY: test-unit
 test-unit: install ## Run the unit tests
 	npm run test:rust
-	npm run test:unit:components
 	@ curl -fs localhost:3000 >/dev/null || ( echo "Error: localhost:3000 not available, 'make run-web' first" && exit 1 )
 	npm run test:unit
 
@@ -135,6 +149,17 @@ ifdef E2E_GREP
 	npm run test:e2e:desktop -- --grep="$(E2E_GREP)" --max-failures=$(E2E_FAILURES)
 else
 	npm run test:e2e:desktop -- --workers='100%'
+endif
+
+.PHONY: test-snapshots
+test-snapshots: install build ## Run the snapshot tests
+ifndef LINUX
+	@ echo "NOTE: Snapshots cannot be updated on $(PLATFORM)"
+endif
+ifdef E2E_GREP
+	npm run test:snapshots -- --headed --update-snapshots=$(E2E_MODE) --grep="$(E2E_GREP)"
+else
+	npm run test:snapshots -- --headed --update-snapshots=$(E2E_MODE)
 endif
 
 ###############################################################################

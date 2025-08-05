@@ -16,6 +16,9 @@ lego_file = os.path.join(kcl_dir, "e2e", "executor", "inputs", "lego.kcl")
 engine_error_file = os.path.join(
     tests_dir, "error_revolve_on_edge_get_edge", "input.kcl"
 )
+cube_step_file = os.path.join(
+    os.path.dirname(os.path.realpath(__file__)), "..", "files", "cube.step"
+)
 car_wheel_dir = os.path.join(
     os.path.dirname(os.path.realpath(__file__)),
     "..",
@@ -196,6 +199,47 @@ async def test_kcl_execute_and_snapshot_options():
     assert images is not None
     assert len(images) == len(views)
     image_bytes = images[0]
+    assert image_bytes is not None
+    assert len(image_bytes) > 0
+
+
+@pytest.mark.asyncio
+async def test_import_and_snapshots():
+    camera = kcl.CameraLookAt(
+        # Test both constructors, with unnamed fields and named fields.
+        up=Point3d(0, 0, 1),
+        vantage=Point3d(x=0, y=-1, z=0),
+        center=Point3d(x=0, y=0, z=0),
+    )
+    views = [
+        # Specific camera perspective
+        kcl.SnapshotOptions(camera=camera, padding=0.5),
+        # Camera=None means isometric view.
+        kcl.SnapshotOptions(camera=None, padding=0),
+    ]
+    # Read from a file.
+    step_options = kcl.step_import.Options()
+    input_format = kcl.InputFormat3d.Step(step_options)
+    print(cube_step_file)
+    images = await kcl.import_and_snapshot_views(
+        [cube_step_file], input_format, kcl.ImageFormat.Jpeg, views
+    )
+    assert images is not None
+    assert len(images) == len(views)
+    for i, image_bytes in enumerate(images):
+        assert image_bytes is not None
+        assert len(image_bytes) > 0
+
+
+@pytest.mark.asyncio
+async def test_import_and_snapshots_single():
+    # Read from a file.
+    step_options = kcl.step_import.Options()
+    input_format = kcl.InputFormat3d.Step(step_options)
+    print(cube_step_file)
+    image_bytes = await kcl.import_and_snapshot(
+        [cube_step_file], input_format, kcl.ImageFormat.Jpeg
+    )
     assert image_bytes is not None
     assert len(image_bytes) > 0
 
