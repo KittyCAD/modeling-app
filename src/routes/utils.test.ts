@@ -82,7 +82,7 @@ describe('Routes utility functions', () => {
       })
       expect(actual).toBe(expected)
     })
-    it('should return main beacuse NODE_ENV is production', () => {
+    it('should return main because NODE_ENV is production', () => {
       const expected = 'main'
       const actual = getAppVersion({
         isTestEnvironment: false,
