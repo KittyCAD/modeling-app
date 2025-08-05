@@ -657,13 +657,6 @@ openSketch = startSketchOn(XY)
     const upperEdgeLocation = { x: 600, y: 193 }
     const lowerEdgeLocation = { x: 600, y: 383 }
     const faceLocation = { x: 630, y: 290 }
-
-    // Colors
-    const edgeColorWhite: [number, number, number] = [220, 220, 220] // varies from 192 to 255
-    const edgeColorYellow: [number, number, number] = [251, 251, 140] // vaies from 12 to 67
-    const faceColorGray: [number, number, number] = [168, 168, 168]
-    const faceColorYellow: [number, number, number] = [198, 197, 156]
-    const tolerance = 40
     const timeout = 150
 
     // Setup
@@ -689,121 +682,68 @@ openSketch = startSketchOn(XY)
     const [clickOnFace] = scene.makeMouseHelpers(faceLocation.x, faceLocation.y)
 
     await test.step('Select and deselect a single edge', async () => {
-      // Wait for the scene and stream to load
-      await scene.expectPixelColor(faceColorGray, faceLocation, tolerance)
-
+      await expect(toolbar.selectionStatus).toContainText('No selection')
       await test.step('Click the edge', async () => {
-        await scene.expectPixelColor(
-          edgeColorWhite,
-          upperEdgeLocation,
-          tolerance
-        )
         await clickOnUpperEdge()
-        await scene.expectPixelColor(
-          edgeColorYellow,
-          upperEdgeLocation,
-          tolerance
-        )
+        await expect(toolbar.selectionStatus).toContainText('1 segment')
       })
       await test.step('Shift-click the same edge to deselect', async () => {
         await page.keyboard.down('Shift')
-        await page.waitForTimeout(timeout)
         await clickOnUpperEdge()
         await page.waitForTimeout(timeout)
         await page.keyboard.up('Shift')
-        await scene.expectPixelColor(
-          edgeColorWhite,
-          upperEdgeLocation,
-          tolerance
-        )
+        await expect(toolbar.selectionStatus).toContainText('No selection')
       })
     })
 
     await test.step('Select and deselect multiple objects', async () => {
       await test.step('Select both edges and the face', async () => {
         await test.step('Select the upper edge', async () => {
-          await scene.expectPixelColor(
-            edgeColorWhite,
-            upperEdgeLocation,
-            tolerance
-          )
           await clickOnUpperEdge()
-          await scene.expectPixelColor(
-            edgeColorYellow,
-            upperEdgeLocation,
-            tolerance
-          )
+          await expect(toolbar.selectionStatus).toContainText('1 segment')
         })
         await test.step('Select the lower edge (Shift-click)', async () => {
-          await scene.expectPixelColor(
-            edgeColorWhite,
-            lowerEdgeLocation,
-            tolerance
-          )
           await page.keyboard.down('Shift')
-          await page.waitForTimeout(timeout)
           await clickOnLowerEdge()
           await page.waitForTimeout(timeout)
           await page.keyboard.up('Shift')
-          await scene.expectPixelColor(
-            edgeColorYellow,
-            lowerEdgeLocation,
-            tolerance
+          await expect(toolbar.selectionStatus).toContainText(
+            '1 segment, 1 sweepEdge'
           )
         })
         await test.step('Select the face (Shift-click)', async () => {
-          await scene.expectPixelColor(faceColorGray, faceLocation, tolerance)
           await page.keyboard.down('Shift')
-          await page.waitForTimeout(timeout)
           await clickOnFace()
           await page.waitForTimeout(timeout)
           await page.keyboard.up('Shift')
-          await scene.expectPixelColor(faceColorYellow, faceLocation, tolerance)
+          await expect(toolbar.selectionStatus).toContainText(
+            '1 segment, 1 sweepEdge, 1 face'
+          )
         })
       })
       await test.step('Deselect them one by one', async () => {
         await test.step('Deselect the face (Shift-click)', async () => {
-          await scene.expectPixelColor(faceColorYellow, faceLocation, tolerance)
           await page.keyboard.down('Shift')
-          await page.waitForTimeout(timeout)
           await clickOnFace()
           await page.waitForTimeout(timeout)
           await page.keyboard.up('Shift')
-          await scene.expectPixelColor(faceColorGray, faceLocation, tolerance)
+          await expect(toolbar.selectionStatus).toContainText(
+            '1 segment, 1 sweepEdge'
+          )
         })
         await test.step('Deselect the lower edge (Shift-click)', async () => {
-          await scene.expectPixelColor(
-            edgeColorYellow,
-            lowerEdgeLocation,
-            tolerance
-          )
           await page.keyboard.down('Shift')
-          await page.waitForTimeout(timeout)
           await clickOnLowerEdge()
           await page.waitForTimeout(timeout)
           await page.keyboard.up('Shift')
-          await scene.expectPixelColor(
-            edgeColorWhite,
-            lowerEdgeLocation,
-            tolerance
-          )
+          await expect(toolbar.selectionStatus).toContainText('1 segment')
         })
         await test.step('Deselect the upper edge (Shift-click)', async () => {
-          await scene.expectPixelColor(
-            edgeColorYellow,
-            upperEdgeLocation,
-            tolerance
-          )
           await page.keyboard.down('Shift')
-          await page.waitForTimeout(timeout)
           await clickOnUpperEdge()
           await page.waitForTimeout(timeout)
           await page.keyboard.up('Shift')
-          await scene.expectPixelColor(
-            edgeColorWhite,
-            upperEdgeLocation,
-            tolerance
-          )
+          await expect(toolbar.selectionStatus).toContainText('No selection')
         })
       })
     })
