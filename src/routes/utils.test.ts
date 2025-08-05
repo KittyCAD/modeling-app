@@ -64,8 +64,8 @@ describe('Routes utility functions', () => {
       })
       expect(actual).toBe(expected)
     })
-    it('should return main/development', () => {
-      const expected = 'main/development'
+    it('should return dev', () => {
+      const expected = 'dev'
       const actual = getAppVersion({
         isTestEnvironment: false,
         NODE_ENV: 'development',

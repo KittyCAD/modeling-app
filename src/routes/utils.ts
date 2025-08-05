@@ -29,7 +29,7 @@ export function getAppVersion({
 
   // Web based runtimes
   if (NODE_ENV === 'development') {
-    return 'main/development'
+    return 'dev'
   }
 
   return 'main'
@@ -48,7 +48,7 @@ export const PACKAGE_NAME = isDesktop()
 export const IS_STAGING = PACKAGE_NAME.indexOf('-staging') > -1
 
 export const IS_STAGING_OR_DEBUG =
-  IS_STAGING || APP_VERSION === '0.0.0' || APP_VERSION === 'main/development'
+  IS_STAGING || APP_VERSION === '0.0.0' || APP_VERSION === 'dev'
 
 export function getRefFromVersion(version: string) {
   const hash = version.split('.').pop()
