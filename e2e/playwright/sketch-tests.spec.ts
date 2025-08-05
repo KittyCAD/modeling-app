@@ -1580,7 +1580,7 @@ profile001 = startProfile(sketch001, at = [0, 0])
 })
 
 test.describe('multi-profile sketching', () => {
-  test(`test it removes half - finished expressions when changing tools in sketch mode`, async ({
+  test(`test it removes half-finished expressions when changing tools in sketch mode`, async ({
     context,
     page,
     scene,
