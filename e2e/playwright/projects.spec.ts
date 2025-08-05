@@ -1,9 +1,5 @@
 import fs from 'fs'
-import {
-  NIL as uuidNIL,
-  validate as uuidValidate,
-  version as uuidVersion,
-} from 'uuid'
+import { NIL as uuidNIL } from 'uuid'
 import path from 'path'
 import { DEFAULT_PROJECT_KCL_FILE, REGEXP_UUIDV4 } from '@src/lib/constants'
 import fsp from 'fs/promises'

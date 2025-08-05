@@ -39,8 +39,9 @@ nameToUuid.set('uuid3', uuid3)
  * Given the project.toml string, overwrite the named views to be the constant uuid
  * values to match the snapshots. The uuids are randomly generated
  */
-function tomlStringOverWriteNamedViewUuids(toml: string): string {
+function tomlStringMakeTestDataNotAsFragile(toml: string): string {
   const settings = tomlToPerProjectSettings(toml)
+  delete settings.settings?.meta
   const namedViews = settings.settings?.app?.named_views
   if (namedViews) {
     const entries = Object.entries(namedViews)
@@ -120,7 +121,7 @@ test.describe('Named view tests', () => {
       let tomlString = await fsp.readFile(tempProjectSettingsFilePath, 'utf-8')
 
       // Rewrite the uuids in the named views to match snapshot otherwise they will be randomly generated from rust and break
-      tomlString = tomlStringOverWriteNamedViewUuids(tomlString)
+      tomlString = tomlStringMakeTestDataNotAsFragile(tomlString)
 
       // Write the entire tomlString to a snapshot.
       // There are many key/value pairs to check this is a safer match.
@@ -166,7 +167,7 @@ test.describe('Named view tests', () => {
       // Read project.toml into memory
       let tomlString = await fsp.readFile(tempProjectSettingsFilePath, 'utf-8')
       // Rewrite the uuids in the named views to match snapshot otherwise they will be randomly generated from rust and break
-      tomlString = tomlStringOverWriteNamedViewUuids(tomlString)
+      tomlString = tomlStringMakeTestDataNotAsFragile(tomlString)
 
       // Write the entire tomlString to a snapshot.
       // There are many key/value pairs to check this is a safer match.
@@ -186,7 +187,7 @@ test.describe('Named view tests', () => {
       // Read project.toml into memory again since we deleted a named view
       let tomlString = await fsp.readFile(tempProjectSettingsFilePath, 'utf-8')
       // Rewrite the uuids in the named views to match snapshot otherwise they will be randomly generated from rust and break
-      tomlString = tomlStringOverWriteNamedViewUuids(tomlString)
+      tomlString = tomlStringMakeTestDataNotAsFragile(tomlString)
 
       // Write the entire tomlString to a snapshot.
       // There are many key/value pairs to check this is a safer match.
@@ -232,7 +233,7 @@ test.describe('Named view tests', () => {
       // Read project.toml into memory
       let tomlString = await fsp.readFile(tempProjectSettingsFilePath, 'utf-8')
       // Rewrite the uuids in the named views to match snapshot otherwise they will be randomly generated from rust and break
-      tomlString = tomlStringOverWriteNamedViewUuids(tomlString)
+      tomlString = tomlStringMakeTestDataNotAsFragile(tomlString)
 
       // Write the entire tomlString to a snapshot.
       // There are many key/value pairs to check this is a safer match.
@@ -301,7 +302,7 @@ test.describe('Named view tests', () => {
       // Read project.toml into memory
       let tomlString = await fsp.readFile(tempProjectSettingsFilePath, 'utf-8')
       // Rewrite the uuids in the named views to match snapshot otherwise they will be randomly generated from rust and break
-      tomlString = tomlStringOverWriteNamedViewUuids(tomlString)
+      tomlString = tomlStringMakeTestDataNotAsFragile(tomlString)
 
       // Write the entire tomlString to a snapshot.
       // There are many key/value pairs to check this is a safer match.
