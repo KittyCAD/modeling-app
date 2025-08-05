@@ -182,7 +182,9 @@ export const mlEphantManagerMachine = setup({
             // project.conversationId = response.conversationId
             // writeToFile(project)
 
-            const result = generateFakeSubmittedPrompt({ prompt: args.input.event.prompt })
+            const result = generateFakeSubmittedPrompt({
+              prompt: args.input.event.prompt,
+            })
             result.status = 'in_progress'
 
             const promptsPool = context.promptsPool
@@ -233,7 +235,9 @@ export const mlEphantManagerMachine = setup({
         // project.conversationId = response.conversation_id
         // writeTofile(project)
 
-        const result = generateFakeSubmittedPrompt({ prompt: args.input.event.prompt })
+        const result = generateFakeSubmittedPrompt({
+          prompt: args.input.event.prompt,
+        })
         result.status = 'in_progress'
         result.outputs = {
           'brake-caliper.kcl': `
@@ -605,8 +609,7 @@ startSketchOn(XY)
   |> revolve(axis = Y)
   |> appearance(color = "#ffffff", metalness = 0, roughness = 0)
           `,
-          'lug-nut.kcl':
-          `
+          'lug-nut.kcl': `
           // Lug Nut
 // lug Nuts are essential components used to create secure connections, whether for electrical purposes, like terminating wires or grounding, or for mechanical purposes, such as providing mounting points or reinforcing structural joints.
 
@@ -642,8 +645,7 @@ fn lug(plane, length, diameter) {
 
 lugNut = lug(plane = customPlane, length = lugLength, diameter = lugDiameter)
           `,
-          'parameters.kcl':
-          `
+          'parameters.kcl': `
           // Car wheel assembly parameters
 
 // Set units

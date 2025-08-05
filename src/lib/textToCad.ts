@@ -110,17 +110,20 @@ export async function textToCadMlConversations(
         created_at: '2025-07-20T13:01:35Z',
       },
       {
-        first_prompt: 'A ball bearing is a type of rolling-element bearing that uses balls to maintain the separation between the bearing races. The primary purpose of a ball bearing is to reduce rotational friction and support radial and axial loads.',
+        first_prompt:
+          'A ball bearing is a type of rolling-element bearing that uses balls to maintain the separation between the bearing races. The primary purpose of a ball bearing is to reduce rotational friction and support radial and axial loads.',
         id: 3,
         created_at: '2025-07-30T13:01:35Z',
       },
       {
-        first_prompt: 'A 320mm vented brake disc (rotor), with straight vanes, 30mm thick. The disc bell should accommodate 5 M12 wheel studs on a 114.3mm pitch circle diameter.',
+        first_prompt:
+          'A 320mm vented brake disc (rotor), with straight vanes, 30mm thick. The disc bell should accommodate 5 M12 wheel studs on a 114.3mm pitch circle diameter.',
         id: 1,
         created_at: '2025-07-29T13:01:35Z',
       },
       {
-        first_prompt: 'This is a bracket that holds a shelf. It is made of aluminum and is designed to hold a force of 300 lbs. The bracket is 6 inches wide and the force is applied at the end of the shelf, 12 inches from the wall. The bracket has a factor of safety of 1.2. The legs of the bracket are 5 inches and 2 inches long. The thickness of the bracket is calculated from the constraints provided.',
+        first_prompt:
+          'This is a bracket that holds a shelf. It is made of aluminum and is designed to hold a force of 300 lbs. The bracket is 6 inches wide and the force is applied at the end of the shelf, 12 inches from the wall. The bracket has a factor of safety of 1.2. The legs of the bracket are 5 inches and 2 inches long. The thickness of the bracket is calculated from the constraints provided.',
         id: 4,
         created_at: '2025-06-30T13:01:35Z',
       },
