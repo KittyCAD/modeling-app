@@ -42,6 +42,7 @@ function CommandComboBox({
   useEffect(() => {
     const results = fuse.search(query).map((result) => result.item)
     setFilteredOptions(query.length > 0 ? results : sortedOptions)
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [query, sortedOptions])
 
   function handleSelection(command: Command) {
