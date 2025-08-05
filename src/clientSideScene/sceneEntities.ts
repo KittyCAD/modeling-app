@@ -3267,7 +3267,6 @@ export class SceneEntities {
         p3: segment.p3,
       }
     }
-    // (window as any).truncatedAst = modifiedAst
     const callBack =
       update &&
       !err(update) &&
