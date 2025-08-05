@@ -65,7 +65,6 @@ export function configurationToSettingsPayload(
         configuration?.settings?.app?.allow_orbit_in_sketch_mode,
       projectDirectory: configuration?.settings?.project?.directory,
       showDebugPanel: configuration?.settings?.app?.show_debug_panel,
-      fixedSizeGrid: configuration?.settings?.app?.fixed_size_grid,
     },
     modeling: {
       defaultUnit: configuration?.settings?.modeling?.base_unit,
@@ -79,6 +78,7 @@ export function configurationToSettingsPayload(
       highlightEdges: configuration?.settings?.modeling?.highlight_edges,
       enableSSAO: configuration?.settings?.modeling?.enable_ssao,
       showScaleGrid: configuration?.settings?.modeling?.show_scale_grid,
+      fixedSizeGrid: configuration?.settings?.modeling?.fixed_size_grid,
       snapToGrid: configuration?.settings?.modeling?.snap_to_grid,
       majorGridSpacing: configuration?.settings?.modeling?.major_grid_spacing,
       minorGridsPerMajor:
@@ -116,7 +116,6 @@ export function settingsPayloadToConfiguration(
         stream_idle_mode: configuration?.app?.streamIdleMode,
         allow_orbit_in_sketch_mode: configuration?.app?.allowOrbitInSketchMode,
         show_debug_panel: configuration?.app?.showDebugPanel,
-        fixed_size_grid: configuration?.app?.fixedSizeGrid,
       },
       modeling: {
         base_unit: configuration?.modeling?.defaultUnit,
@@ -129,6 +128,7 @@ export function settingsPayloadToConfiguration(
         highlight_edges: configuration?.modeling?.highlightEdges,
         enable_ssao: configuration?.modeling?.enableSSAO,
         show_scale_grid: configuration?.modeling?.showScaleGrid,
+        fixed_size_grid: configuration?.modeling?.fixedSizeGrid,
         snap_to_grid: configuration?.modeling?.snapToGrid,
         major_grid_spacing: configuration?.modeling?.majorGridSpacing,
         minor_grids_per_major: configuration?.modeling?.minorGridsPerMajor,
@@ -208,6 +208,7 @@ export function projectConfigurationToSettingsPayload(
       defaultUnit: configuration?.settings?.modeling?.base_unit,
       highlightEdges: configuration?.settings?.modeling?.highlight_edges,
       enableSSAO: configuration?.settings?.modeling?.enable_ssao,
+      fixedSizeGrid: configuration?.settings?.modeling?.fixed_size_grid,
       snapToGrid: configuration?.settings?.modeling?.snap_to_grid,
       majorGridSpacing: configuration?.settings?.modeling?.major_grid_spacing,
       minorGridsPerMajor:
@@ -247,6 +248,7 @@ export function settingsPayloadToProjectConfiguration(
         base_unit: configuration?.modeling?.defaultUnit,
         highlight_edges: configuration?.modeling?.highlightEdges,
         enable_ssao: configuration?.modeling?.enableSSAO,
+        fixed_size_grid: configuration?.modeling?.fixedSizeGrid,
         snap_to_grid: configuration?.modeling?.snapToGrid,
         major_grid_spacing: configuration?.modeling?.majorGridSpacing,
         minor_grids_per_major: configuration?.modeling?.minorGridsPerMajor,

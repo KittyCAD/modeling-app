@@ -207,16 +207,6 @@ export function createSettings() {
           inputType: 'boolean',
         },
       }),
-      fixedSizeGrid: new Setting<boolean>({
-        defaultValue: true,
-        hideOnLevel: 'project',
-        description:
-          'When enabled, the grid will use a fixed size based on your selected units rather than automatically scaling with zoom level.',
-        validate: (v) => typeof v === 'boolean',
-        commandConfig: {
-          inputType: 'boolean',
-        },
-      }),
       /**
        * Stream resource saving behavior toggle
        */
@@ -522,10 +512,10 @@ export function createSettings() {
         },
         hideOnLevel: 'project',
       }),
-      snapToGrid: new Setting<boolean>({
-        defaultValue: false,
+      fixedSizeGrid: new Setting<boolean>({
+        defaultValue: true,
         description:
-          'Snap the cursor to the unit grid when drawing lines, arcs, and other segment-based tools',
+          'When enabled, the grid will use a fixed size based on your selected units rather than automatically scaling with zoom level.',
         validate: (v) => typeof v === 'boolean',
         commandConfig: {
           inputType: 'boolean',
@@ -546,6 +536,15 @@ export function createSettings() {
         validate: (v) => typeof v === 'number',
         commandConfig: {
           inputType: 'number',
+        },
+      }),
+      snapToGrid: new Setting<boolean>({
+        defaultValue: false,
+        description:
+            'Snap the cursor to the unit grid when drawing lines, arcs, and other segment-based tools',
+        validate: (v) => typeof v === 'boolean',
+        commandConfig: {
+          inputType: 'boolean',
         },
       }),
       snapsPerMinor: new Setting<number>({

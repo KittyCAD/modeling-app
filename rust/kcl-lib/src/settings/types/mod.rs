@@ -94,10 +94,6 @@ pub struct AppSettings {
     /// of the app to aid in development.
     #[serde(default, skip_serializing_if = "is_default")]
     pub show_debug_panel: bool,
-    /// If true, the grid cells will be fixed-size, where the width is your default length unit.
-    /// If false, the grid will get larger as you zoom out, and smaller as you zoom in.
-    #[serde(default = "make_it_so", skip_serializing_if = "is_true")]
-    pub fixed_size_grid: bool,
 }
 
 /// Default to true.
@@ -118,7 +114,6 @@ impl Default for AppSettings {
             stream_idle_mode: Default::default(),
             allow_orbit_in_sketch_mode: Default::default(),
             show_debug_panel: Default::default(),
-            fixed_size_grid: make_it_so(),
         }
     }
 }
@@ -298,6 +293,11 @@ pub struct ModelingSettings {
     /// Whether or not to show a scale grid in the 3D modeling view
     #[serde(default, skip_serializing_if = "is_default")]
     pub show_scale_grid: bool,
+    /// When enabled, the grid will use a fixed size based on your selected units rather than automatically scaling with zoom level.
+    /// If true, the grid cells will be fixed-size, where the width is your default length unit.
+    /// If false, the grid will get larger as you zoom out, and smaller as you zoom in.
+    #[serde(default = "make_it_so", skip_serializing_if = "is_true")]
+    pub fixed_size_grid: bool,
     /// Whether or not to snap to the scale grid in sketching mode.
     #[serde(default, skip_serializing_if = "is_default")]
     pub snap_to_grid: bool,

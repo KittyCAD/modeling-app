@@ -117,6 +117,9 @@ pub struct ProjectModelingSettings {
     /// Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.
     #[serde(default, skip_serializing_if = "is_default")]
     pub enable_ssao: DefaultTrue,
+    /// When enabled, the grid will use a fixed size based on your selected units rather than automatically scaling with zoom level.
+    #[serde(default, skip_serializing_if = "is_default")]
+    pub fixed_size_grid: DefaultTrue,
     /// Whether or not to snap to the scale grid in sketching mode.
     #[serde(default, skip_serializing_if = "is_default")]
     pub snap_to_grid: bool,
@@ -328,6 +331,7 @@ color = 1567.4"#;
                     major_grid_spacing: 1.0,
                     minor_grids_per_major: 4.0,
                     snaps_per_minor: 1.0,
+                    fixed_size_grid: true.into(),
                 },
                 text_editor: TextEditorSettings {
                     text_wrapping: false.into(),
