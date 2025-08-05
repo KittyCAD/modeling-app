@@ -1,17 +1,17 @@
 import { getAppVersion, getRefFromVersion } from '@src/routes/utils'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-beforeEach(()=>{
-      const mockElectron = {
-        packageJson: {
-          version: 'mocked-version'
-        }
-      }
-      vi.stubGlobal('window', { electron: mockElectron })
+beforeEach(() => {
+  const mockElectron = {
+    packageJson: {
+      version: 'mocked-version',
+    },
+  }
+  vi.stubGlobal('window', { electron: mockElectron })
 })
 
-afterEach(() =>{
-      vi.unstubAllGlobals()
+afterEach(() => {
+  vi.unstubAllGlobals()
 })
 
 describe('Routes utility functions', () => {
@@ -33,7 +33,7 @@ describe('Routes utility functions', () => {
       const actual = getAppVersion({
         isTestEnvironment: true,
         NODE_ENV: 'development',
-        isDesktop: false
+        isDesktop: false,
       })
       expect(actual).toBe(expected)
     })
@@ -42,25 +42,25 @@ describe('Routes utility functions', () => {
       const actual = getAppVersion({
         isTestEnvironment: true,
         NODE_ENV: 'development',
-        isDesktop: true
+        isDesktop: true,
       })
       expect(actual).toBe(expected)
     })
-    it('should return another mocked packageJson version', ()=>{
+    it('should return another mocked packageJson version', () => {
       const expected = 'mocked-version'
       const actual = getAppVersion({
         isTestEnvironment: false,
         NODE_ENV: 'development',
-        isDesktop: true
+        isDesktop: true,
       })
       expect(actual).toBe(expected)
     })
-    it('should return another mocked packageJson version', ()=>{
+    it('should return another mocked packageJson version', () => {
       const expected = 'mocked-version'
       const actual = getAppVersion({
         isTestEnvironment: true,
         NODE_ENV: 'not-development',
-        isDesktop: true
+        isDesktop: true,
       })
       expect(actual).toBe(expected)
     })
@@ -69,7 +69,7 @@ describe('Routes utility functions', () => {
       const actual = getAppVersion({
         isTestEnvironment: false,
         NODE_ENV: 'development',
-        isDesktop: false
+        isDesktop: false,
       })
       expect(actual).toBe(expected)
     })
@@ -78,7 +78,7 @@ describe('Routes utility functions', () => {
       const actual = getAppVersion({
         isTestEnvironment: false,
         NODE_ENV: 'not-development',
-        isDesktop: false
+        isDesktop: false,
       })
       expect(actual).toBe(expected)
     })
@@ -87,7 +87,7 @@ describe('Routes utility functions', () => {
       const actual = getAppVersion({
         isTestEnvironment: false,
         NODE_ENV: 'production',
-        isDesktop: false
+        isDesktop: false,
       })
       expect(actual).toBe(expected)
     })
