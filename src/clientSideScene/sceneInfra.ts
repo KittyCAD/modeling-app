@@ -46,6 +46,7 @@ import type {
   SegmentOverlayPayload,
 } from '@src/machines/modelingMachine'
 import { PROFILE_START } from '@src/clientSideScene/sceneConstants'
+import {GridHelperInfinite} from "@src/clientSideScene/GridHelperInfinite"
 
 type SendType = ReturnType<typeof useModelingContext>['send']
 
@@ -311,6 +312,7 @@ export class SceneInfra {
       opacity: 0.5,
     })
 
+    // This is the GridHelper in the 3D scene, the one in sketching is in sceneEntities.ts
     const gridHelper = new GridHelper(size, divisions, 0x0000ff, 0xffffff)
     gridHelper.material = gridHelperMaterial
     gridHelper.rotation.x = Math.PI / 2
@@ -327,10 +329,13 @@ export class SceneInfra {
       this.camControls.camera,
       this.camControls.target
     )
-    const axisGroup = this.scene
+    const gridHelper = this.scene
       .getObjectByName(AXIS_GROUP)
       ?.getObjectByName('gridHelper')
-    axisGroup?.name === 'gridHelper' && axisGroup.scale.set(scale, scale, scale)
+    if (gridHelper instanceof GridHelperInfinite) {
+      gridHelper.update(this.camControls.camera, 1, 4)
+      //  axisGroup.scale.set(scale, scale, scale)
+    }
   }
 
   // Called after canvas is attached to the DOM and on each resize.
