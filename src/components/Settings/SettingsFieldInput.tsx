@@ -152,12 +152,13 @@ export function SettingsFieldInput({
           data-testid={`${category}-${settingName}`}
           type="number"
           step="any"
-          className="p-1 bg-transparent border rounded-sm border-chalkboard-30 w-full"
+          className="p-1 bg-transparent border rounded-sm border-chalkboard-30 w-full disabled:opacity-50 disabled:pointer-events-none"
           defaultValue={Number(
             setting[settingsLevel] !== undefined
               ? setting[settingsLevel]
               : setting.getFallback(settingsLevel)
           )}
+          disabled={!setting.isEnabled(context)}
           onBlur={(e) => {
             const numValue = parseFloat(e.target.value)
             if (!Number.isNaN(numValue)) {

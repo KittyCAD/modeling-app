@@ -98,6 +98,8 @@ export interface SettingProps<T = unknown> {
    * ```
    */
   validate: (v: T) => boolean
+
+  isEnabled?: (settings: any) => boolean // TODO any not too nice
   /**
    * A command argument configuration for the setting.
    * If this is provided, the setting will appear in the command bar.
