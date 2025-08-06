@@ -22,11 +22,6 @@ export interface SettingsViaQueryString {
   cameraOrbit: CameraOrbitType
 }
 
-export enum UnitSystem {
-  Imperial = 'imperial',
-  Metric = 'metric',
-}
-
 export const baseUnits = {
   imperial: ['in', 'ft', 'yd'],
   metric: ['mm', 'cm', 'm'],
