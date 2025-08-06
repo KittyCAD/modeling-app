@@ -2,9 +2,21 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <!-- PERPETUAL TODO reconsider this option.
-      <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
+
+    <!--
+        1. By default, only allow scripts from the same origin.
+        2. Allow inline styles and styles from the same origin. This is how we use CSS rightnow.
+        3. Allow images from any source and inline images. We fetch user profile images from any origin.
+        4. Allow scripts from the same origin and from Plausible Analytics. Allow WASM execution.
+        5. Allow WebSocket connections and fetches to our API.
     -->
+    <meta http-equiv="Content-Security-Policy" content="
+      default-src 'self';
+      style-src 'self' 'unsafe-inline';
+      img-src * 'unsafe-inline';
+      script-src 'self' https://plausible.corp.zoo.dev/js/script.tagged-events.js 'wasm-unsafe-eval';
+      connect-src 'self' https://api.zoo.dev https://api.dev.zoo.dev;
+    ">
 
     <link rel="icon" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
