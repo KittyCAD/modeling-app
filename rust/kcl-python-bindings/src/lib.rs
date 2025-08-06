@@ -1,10 +1,10 @@
 #![allow(clippy::useless_conversion)]
 use anyhow::Result;
-use kcl_lib::{
+pub use kcl_lib::{
     lint::{checks, Discovered},
     ExecutorContext, UnitLength,
 };
-use kittycad_modeling_cmds::{self as kcmc, format::InputFormat3d, ImportFile};
+pub use kittycad_modeling_cmds::{self as kcmc, format::InputFormat3d, ImportFile};
 use pyo3::{
     exceptions::PyException, prelude::PyModuleMethods, pyclass, pyfunction, pymethods, pymodule, types::PyModule,
     wrap_pyfunction, Bound, PyErr, PyResult, Python,
