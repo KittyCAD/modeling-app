@@ -229,10 +229,12 @@ test.describe(
 
         // Set project-level value to 50
         await themeColorSetting.fill(settingValues.project)
+        await themeColorSetting.press('Enter')
 
         // Set user-level value to 120
         await userSettingsTab.click()
         await themeColorSetting.fill(settingValues.user)
+        await themeColorSetting.press('Enter')
         await projectSettingsTab.click()
       })
 
@@ -254,6 +256,7 @@ test.describe(
         await test.step(`Set project-level again to test the user-level reset`, async () => {
           await projectSettingsTab.click()
           await themeColorSetting.fill(settingValues.project)
+          await themeColorSetting.press('Enter')
           await userSettingsTab.click()
         })
       })
@@ -323,6 +326,7 @@ test.describe(
           // The user tab should be selected by default on home
           await expect(userSettingsTab).toBeChecked()
           await themeColorSetting.fill(userThemeColor)
+          await themeColorSetting.press('Enter')
           await expect(logoLink).toHaveCSS('--primary-hue', userThemeColor)
           await settingsCloseButton.click()
           await expect
@@ -340,6 +344,7 @@ test.describe(
           // The project tab should be selected by default within a project
           await expect(projectSettingsTab).toBeChecked()
           await themeColorSetting.fill(projectThemeColor)
+          await themeColorSetting.press('Enter')
           await expect(logoLink).toHaveCSS('--primary-hue', projectThemeColor)
           await settingsCloseButton.click()
           // Make sure that the project settings file has been written to before continuing
