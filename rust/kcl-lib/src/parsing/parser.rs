@@ -800,7 +800,7 @@ pub(crate) fn array_elem_by_elem(i: &mut TokenSlice) -> ModalResult<Node<ArrayEx
         0..,
         alt((
             terminated(expression.map(NonCodeOr::Code), array_separator),
-            terminated(non_code_node.map(NonCodeOr::NonCode), whitespace),
+            terminated(non_code_node.map(NonCodeOr::NonCode), opt(whitespace)),
         )),
     )
     .context(expected("array contents, a list of elements (like [1, 2, 3])"))
@@ -4848,6 +4848,14 @@ export fn cos(num: number(rad)): number(_) {}"#;
             2, // two
             3  // three
         ]"#;
+        let module_id = ModuleId::default();
+        let tokens = crate::parsing::token::lex(program, module_id).unwrap();
+        let _arr = array_elem_by_elem(&mut tokens.as_slice()).unwrap();
+    }
+
+    #[test]
+    fn array_block_comment_no_whitespace() {
+        let program = r#"[1/* comment*/]"#;
         let module_id = ModuleId::default();
         let tokens = crate::parsing::token::lex(program, module_id).unwrap();
         let _arr = array_elem_by_elem(&mut tokens.as_slice()).unwrap();
