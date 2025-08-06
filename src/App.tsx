@@ -304,6 +304,7 @@ export function App() {
             : []),
           {
             id: 'selection',
+            'data-testid': 'selection-status',
             element: 'text',
             label:
               getSelectionTypeDisplayText(

@@ -370,6 +370,46 @@ export function normaliseKclNumbers(code: string, ignoreZero = true): string {
   return replaceNumbers(code)
 }
 
+/**
+ * We've written a lot of tests using hard-coded pixel coordinates.
+ * This function translates those to stream-relative ones,
+ * or can be used to get stream coordinates by ratio.
+ *
+ * This is a duplicate impl to the one in sceneFixture.ts, for use in util functions
+ * which predate the fixture-based test system.
+ */
+async function convertPagePositionToStream(
+  x: number,
+  y: number,
+  page: Page,
+  format: 'pixels' | 'ratio' | undefined = 'pixels'
+) {
+  const viewportSize = page.viewportSize()
+  const streamBoundingBox = await page.getByTestId('stream').boundingBox()
+  if (viewportSize === null) {
+    throw Error('No viewport')
+  }
+  if (streamBoundingBox === null) {
+    throw Error('No stream to click')
+  }
+
+  const resolvedX =
+    (x / (format === 'pixels' ? viewportSize.width : 1)) *
+      streamBoundingBox.width +
+    streamBoundingBox.x
+  const resolvedY =
+    (y / (format === 'pixels' ? viewportSize.height : 1)) *
+      streamBoundingBox.height +
+    streamBoundingBox.y
+
+  const resolvedPoint = {
+    x: Math.round(resolvedX),
+    y: Math.round(resolvedY),
+  }
+
+  return resolvedPoint
+}
+
 export async function getUtils(page: Page, test_?: typeof test) {
   if (!test) {
     console.warn(
@@ -466,6 +506,11 @@ export async function getUtils(page: Page, test_?: typeof test) {
       coords: { x: number; y: number },
       expected: [number, number, number]
     ): Promise<number> => {
+      const transformedCoords = await convertPagePositionToStream(
+        coords.x,
+        coords.y,
+        page
+      )
       const buffer = await page.screenshot({
         fullPage: true,
       })
@@ -474,8 +519,8 @@ export async function getUtils(page: Page, test_?: typeof test) {
         'window.devicePixelRatio'
       )
       const index =
-        (screenshot.width * coords.y * pixMultiplier +
-          coords.x * pixMultiplier) *
+        (screenshot.width * transformedCoords.y * pixMultiplier +
+          transformedCoords.x * pixMultiplier) *
         4 // rbga is 4 channels
       const maxDiff = Math.max(
         Math.abs(screenshot.data[index] - expected[0]),
