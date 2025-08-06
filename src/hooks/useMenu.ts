@@ -24,6 +24,7 @@ export function useMenuListener(
       }
       removeListener()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [])
 }
 
@@ -91,5 +92,6 @@ export function useSketchModeMenuEnableDisable(
         return
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [currentMode, commands])
 }

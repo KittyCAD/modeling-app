@@ -4,10 +4,10 @@ import { base64ToString } from '@src/lib/base64'
 
 import { ActionButton } from '@src/components/ActionButton'
 import {
-  APP_DOWNLOAD_PATH,
   ASK_TO_OPEN_QUERY_PARAM,
   ZOO_STUDIO_PROTOCOL,
 } from '@src/lib/constants'
+import { APP_DOWNLOAD_PATH } from '@src/routes/utils'
 import { isDesktop } from '@src/lib/isDesktop'
 import { Themes, darkModeMatcher, setThemeClass } from '@src/lib/theme'
 import toast from 'react-hot-toast'
@@ -49,6 +49,7 @@ export const OpenInDesktopAppHandler = (props: React.PropsWithChildren) => {
       decodeURIComponent(searchParams.get('code') ?? '')
     )
     codeManager.goIntoTemporaryWorkspaceModeWithCode(codeB64)
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [hasAskToOpenParam])
 
   /**

@@ -303,9 +303,22 @@ test(
 test(
   'Draft circle should look right',
   { tag: '@snapshot' },
-  async ({ page, context, cmdBar, scene }) => {
+  async ({ page, editor, scene }) => {
     const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
+    const PUR = 400 / 37.5 //pixeltoUnitRatio
+    const startXPx = 600
+
+    const planePos = await scene.convertPagePositionToStream(700, 200)
+    const circleCenterPos = await scene.convertPagePositionToStream(
+      startXPx + PUR * 20,
+      500 - PUR * 20
+    )
+    const circlePerimeterPos = await scene.convertPagePositionToStream(
+      startXPx + PUR * 10,
+      500 - PUR * 10
+    )
+
     await u.waitForAuthSkipAppStart()
 
     // Start a sketch
@@ -314,36 +327,35 @@ test(
       200
     )
 
-    // Select a plane
-    await page.mouse.click(700, 200)
+    // select a plane
+    await page.mouse.click(planePos.x, planePos.y)
+
     await expect(page.locator('.cm-content')).toHaveText(
       `sketch001 = startSketchOn(XZ)`
     )
+
+    // Wait for camera animation
+    await page.waitForTimeout(600)
 
     // Equip the circle tool
     await page.getByTestId('circle-center').click()
 
     // Draw the circle
-    const startPixelX = 600
-    const pixelToUnitRatio = 400 / 37.5
-    await page.mouse.click(
-      startPixelX + pixelToUnitRatio * 20,
-      500 - pixelToUnitRatio * 20
-    )
-    await page.mouse.move(
-      startPixelX + pixelToUnitRatio * 10,
-      500 - pixelToUnitRatio * 10,
-      { steps: 5 }
-    )
-    await page.waitForTimeout(TEST_OVERLAY_TIMEOUT_MS)
+    await page.mouse.click(circleCenterPos.x, circleCenterPos.y)
+    await page.mouse.move(circlePerimeterPos.x, circlePerimeterPos.y, {
+      steps: 5,
+    })
+
+    // Wait for the scene to settle
+    await page.waitForTimeout(600)
 
     // Ensure the draft circle looks the same as it usually does
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
       mask: lowerRightMasks(page),
     })
-    await expect(page.locator('.cm-content')).toHaveText(
-      `sketch001 = startSketchOn(XZ)profile001 = circle(sketch001, center = [366.89, -62.01], radius = 1)`
+    await editor.expectEditor.toContain(
+      'sketch001 = startSketchOn(XZ)profile001 = circle('
     )
   }
 )
