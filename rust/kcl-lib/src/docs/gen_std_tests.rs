@@ -183,7 +183,7 @@ fn generate_example(index: usize, src: &str, props: &ExampleProperties, file_nam
         String::new()
     } else {
         let image_path = format!(
-            "{}/tests/outputs/serial_test_example_{}{}.png",
+            "{}/tests/outputs/images/serial_test_example_{}{}.png",
             env!("CARGO_MANIFEST_DIR"),
             file_name,
             index

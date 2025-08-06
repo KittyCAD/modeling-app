@@ -1356,7 +1356,7 @@ mod test {
             }
             twenty_twenty::assert_image(
                 format!(
-                    "tests/outputs/serial_test_example_fn_{}{i}.png",
+                    "tests/outputs/images/serial_test_example_fn_{}{i}.png",
                     qualname.replace("::", "-")
                 ),
                 &result,
