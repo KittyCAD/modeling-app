@@ -47,11 +47,11 @@ import { DownloadAppToast } from '@src/components/DownloadAppToast'
 import { WasmErrToast } from '@src/components/WasmErrToast'
 import openWindow from '@src/lib/openWindow'
 import {
-  APP_DOWNLOAD_PATH,
   DOWNLOAD_APP_TOAST_ID,
   ONBOARDING_TOAST_ID,
   WASM_INIT_FAILED_TOAST_ID,
 } from '@src/lib/constants'
+import { APP_DOWNLOAD_PATH } from '@src/routes/utils'
 import { isPlaywright } from '@src/lib/isPlaywright'
 import { useNetworkHealthStatus } from '@src/components/NetworkHealthIndicator'
 import { useNetworkMachineStatus } from '@src/components/NetworkMachineIndicator'
@@ -67,6 +67,7 @@ import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes
 import { UndoRedoButtons } from '@src/components/UndoRedoButtons'
 import { Toolbar } from '@src/Toolbar'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
+import env from '@src/env'
 
 // CYCLIC REF
 sceneInfra.camControls.engineStreamActor = engineStreamActor
@@ -92,7 +93,7 @@ export function App() {
 
   // Stream related refs and data
   const [searchParams] = useSearchParams()
-  const pool = searchParams.get('pool')
+  const pool = searchParams.get('pool') || env().POOL || null
 
   const projectName = project?.name || null
   const projectPath = project?.path || null
@@ -149,6 +150,7 @@ export function App() {
       // Stop is more serious than Pause
       engineStreamActor.send({ type: EngineStreamTransition.Stop })
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [])
 
   // Show a custom toast to users if they haven't done the onboarding
@@ -178,6 +180,7 @@ export function App() {
         }
       )
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [settings.app.onboardingStatus])
 
   useEffect(() => {
@@ -213,6 +216,7 @@ export function App() {
         }
       )
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [])
 
   useEffect(() => {
@@ -232,6 +236,7 @@ export function App() {
         }
       )
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [kclManager.wasmInitFailed])
 
   // Only create the native file menus on desktop
@@ -245,7 +250,6 @@ export function App() {
         .catch(reportRejection)
     }
   }, [])
-
   return (
     <div className="h-screen flex flex-col overflow-hidden select-none">
       <div className="relative flex flex-1 flex-col">
@@ -300,6 +304,7 @@ export function App() {
             : []),
           {
             id: 'selection',
+            'data-testid': 'selection-status',
             element: 'text',
             label:
               getSelectionTypeDisplayText(

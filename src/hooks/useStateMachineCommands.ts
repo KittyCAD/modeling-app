@@ -81,5 +81,6 @@ export default function useStateMachineCommands<
         data: { commands: newCommands },
       })
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [shouldDisableEngineCommands, commandBarConfig])
 }

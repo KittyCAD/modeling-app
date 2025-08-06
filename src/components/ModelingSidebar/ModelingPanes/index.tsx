@@ -1,14 +1,14 @@
 import type { IconDefinition } from '@fortawesome/free-solid-svg-icons'
-import type { MouseEventHandler, ReactNode } from 'react'
+import {
+  useState,
+  useEffect,
+  type MouseEventHandler,
+  type ReactNode,
+  useRef,
+} from 'react'
 import type { ContextFrom } from 'xstate'
 
 import type { CustomIconName } from '@src/components/CustomIcon'
-import {
-  FileTreeInner,
-  FileTreeMenu,
-  FileTreeRoot,
-  useFileTreeOperations,
-} from '@src/components/FileTree'
 import { ModelingPaneHeader } from '@src/components/ModelingSidebar/ModelingPane'
 import { DebugPane } from '@src/components/ModelingSidebar/ModelingPanes/DebugPane'
 import { FeatureTreeMenu } from '@src/components/ModelingSidebar/ModelingPanes/FeatureTreeMenu'
@@ -22,8 +22,27 @@ import {
 } from '@src/components/ModelingSidebar/ModelingPanes/MemoryPane'
 import type { useKclContext } from '@src/lang/KclProvider'
 import { kclErrorsByFilename } from '@src/lang/errors'
-import { editorManager } from '@src/lib/singletons'
+import {
+  commandBarActor,
+  editorManager,
+  systemIOActor,
+  useSettings,
+} from '@src/lib/singletons'
 import type { settingsMachine } from '@src/machines/settingsMachine'
+import { ProjectExplorer } from '@src/components/Explorer/ProjectExplorer'
+import { FileExplorerHeaderActions } from '@src/components/Explorer/FileExplorerHeaderActions'
+import { parentPathRelativeToProject, PATHS } from '@src/lib/paths'
+import type { IndexLoaderData } from '@src/lib/types'
+import { useRouteLoaderData } from 'react-router-dom'
+import type { FileExplorerEntry } from '@src/components/Explorer/utils'
+import { addPlaceHoldersForNewFileAndFolder } from '@src/components/Explorer/utils'
+import { useFolders } from '@src/machines/systemIO/hooks'
+import type { Project } from '@src/lib/project'
+import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import { FILE_EXT, INSERT_FOREIGN_TOAST_ID } from '@src/lib/constants'
+import { relevantFileExtensions } from '@src/lang/wasmUtils'
+import toast from 'react-hot-toast'
+import { ToastInsert } from '@src/components/ToastInsert'
 
 export type SidebarType =
   | 'code'
@@ -133,37 +152,135 @@ export const sidebarPanes: SidebarPane[] = [
     icon: 'folder',
     sidebarName: 'Project Files',
     Content: (props: { id: SidebarType; onClose: () => void }) => {
-      const {
-        createFile,
-        createFolder,
-        cloneFileOrDir,
-        openInNewWindow,
-        newTreeEntry,
-      } = useFileTreeOperations()
+      const projects = useFolders()
+      const loaderData = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
+      const projectRef = useRef(loaderData.project)
+      const [theProject, setTheProject] = useState<Project | null>(null)
+      const { project, file } = loaderData
+      const settings = useSettings()
+      useEffect(() => {
+        projectRef.current = loaderData?.project
+
+        // Have no idea why the project loader data doesn't have the children from the ls on disk
+        // That means it is a different object or cached incorrectly?
+        if (!project || !file) {
+          return
+        }
+
+        // You need to find the real project in the storage from the loader information since the loader Project is not hydrated
+        const theProject = projects.find((p) => {
+          return p.name === project.name
+        })
+
+        if (!theProject) {
+          return
+        }
+
+        // Duplicate the state to not edit the raw data
+        const duplicated = JSON.parse(JSON.stringify(theProject))
+        addPlaceHoldersForNewFileAndFolder(duplicated.children, theProject.path)
+        setTheProject(duplicated)
+        // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
+      }, [projects, loaderData])
+
+      const [createFilePressed, setCreateFilePressed] = useState<number>(0)
+      const [createFolderPressed, setCreateFolderPressed] = useState<number>(0)
+      const [refreshExplorerPressed, setRefresFolderPressed] =
+        useState<number>(0)
+      const [collapsePressed, setCollapsedPressed] = useState<number>(0)
+
+      const onRowClicked = (entry: FileExplorerEntry, domIndex: number) => {
+        const applicationProjectDirectory =
+          settings.app.projectDirectory.current
+        const requestedFileName = parentPathRelativeToProject(
+          entry.path,
+          applicationProjectDirectory
+        )
+
+        const RELEVANT_FILE_EXTENSIONS = relevantFileExtensions()
+        const isRelevantFile = (filename: string): boolean =>
+          RELEVANT_FILE_EXTENSIONS.some((ext) => filename.endsWith('.' + ext))
+
+        // Only open the file if it is a kcl file.
+        if (
+          projectRef.current?.name &&
+          entry.children == null &&
+          entry.path.endsWith(FILE_EXT)
+        ) {
+          systemIOActor.send({
+            type: SystemIOMachineEvents.navigateToFile,
+            data: {
+              requestedProjectName: projectRef.current.name,
+              requestedFileName: requestedFileName,
+            },
+          })
+        } else if (isRelevantFile(entry.path) && projectRef.current?.path) {
+          // Allow insert if it is a importable file
+          toast.custom(
+            ToastInsert({
+              onInsert: () => {
+                const relativeFilePath = entry.path.replace(
+                  projectRef.current?.path + window.electron.sep,
+                  ''
+                )
+                commandBarActor.send({
+                  type: 'Find and select command',
+                  data: {
+                    name: 'Insert',
+                    groupId: 'code',
+                    argDefaultValues: { path: relativeFilePath },
+                  },
+                })
+                toast.dismiss(INSERT_FOREIGN_TOAST_ID)
+              },
+            }),
+            { duration: 30000, id: INSERT_FOREIGN_TOAST_ID }
+          )
+        }
+      }
 
       return (
         <>
           <ModelingPaneHeader
             id={props.id}
             icon="folder"
-            title={<FileTreeRoot />}
+            title={`${theProject?.name || ''}`}
             Menu={
-              <FileTreeMenu
-                onCreateFile={() => createFile({ dryRun: true })}
-                onCreateFolder={() => createFolder({ dryRun: true })}
-              />
+              <FileExplorerHeaderActions
+                onCreateFile={() => {
+                  setCreateFilePressed(performance.now())
+                }}
+                onCreateFolder={() => {
+                  setCreateFolderPressed(performance.now())
+                }}
+                onRefreshExplorer={() => {
+                  setRefresFolderPressed(performance.now())
+                }}
+                onCollapseExplorer={() => {
+                  setCollapsedPressed(performance.now())
+                }}
+              ></FileExplorerHeaderActions>
             }
             onClose={props.onClose}
           />
-          <FileTreeInner
-            onCreateFile={(name: string) => createFile({ dryRun: false, name })}
-            onCreateFolder={(name: string) =>
-              createFolder({ dryRun: false, name })
-            }
-            onCloneFileOrFolder={(path: string) => cloneFileOrDir({ path })}
-            onOpenInNewWindow={(path: string) => openInNewWindow({ path })}
-            newTreeEntry={newTreeEntry}
-          />
+          {theProject && file ? (
+            <div className={'w-full h-full flex flex-col'}>
+              <ProjectExplorer
+                project={theProject}
+                file={file}
+                createFilePressed={createFilePressed}
+                createFolderPressed={createFolderPressed}
+                refreshExplorerPressed={refreshExplorerPressed}
+                collapsePressed={collapsePressed}
+                onRowClicked={onRowClicked}
+                onRowEnter={onRowClicked}
+                canNavigate={true}
+                readOnly={false}
+              ></ProjectExplorer>
+            </div>
+          ) : (
+            <div></div>
+          )}
         </>
       )
     },

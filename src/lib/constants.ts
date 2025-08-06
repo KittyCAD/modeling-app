@@ -3,7 +3,6 @@ import type { Models } from '@kittycad/lib/dist/types/src'
 import type { UnitAngle, UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
 
 export const APP_NAME = 'Design Studio'
-export const APP_DOWNLOAD_PATH = 'design-studio/download'
 /** Search string in new project names to increment as an index */
 export const INDEX_IDENTIFIER = '$n'
 /** The maximum number of 0's to pad a default project name's index with */
@@ -68,11 +67,11 @@ export const KCL_DEFAULT_DEGREE = `360`
 export const KCL_DEFAULT_COLOR = `#3c73ff`
 
 export const SETTINGS_FILE_NAME = 'settings.toml'
-export const TOKEN_FILE_NAME = 'token.txt'
 export const PROJECT_SETTINGS_FILE_NAME = 'project.toml'
 export const COOKIE_NAME = '__Secure-next-auth.session-token'
 export const TELEMETRY_FILE_NAME = 'boot.txt'
 export const TELEMETRY_RAW_FILE_NAME = 'raw-metrics.txt'
+export const ENVIRONMENT_FILE_NAME = 'environment.txt'
 
 /** localStorage key to determine if we're in Playwright tests */
 export const PLAYWRIGHT_KEY = 'playwright'
@@ -226,3 +225,26 @@ export const IMMEDIATE_SIGN_IN_IF_NECESSARY_QUERY_PARAM =
 
 // Only used by the desktop app
 export const OAUTH2_DEVICE_CLIENT_ID = '2af127fb-e14e-400a-9c57-a9ed08d1a5b7'
+
+/**
+ * Signed in environment data, when you sign in on desktop
+ * you will get one of these written to disk.
+ */
+export type EnvironmentConfiguration = {
+  domain: string // same name as the file development for development.json
+  pool: string // can be the empty string to indicate no pool for engine
+  token: string // authentication token from signing in. Can be empty string
+}
+
+/**
+ * Signed in environment data, when you sign in on desktop
+ * you will get one of these written to disk.
+ */
+export type EnvironmentConfigurationRuntime = {
+  domain: string // same name as the file development for development.json
+  pool: string // can be the empty string to indicate no pool for engine
+}
+
+export const ENVIRONMENT_CONFIGURATION_FOLDER = 'envs'
+
+export const MAX_PROJECT_NAME_LENGTH = 240

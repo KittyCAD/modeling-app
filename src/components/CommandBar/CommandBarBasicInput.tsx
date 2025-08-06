@@ -16,13 +16,16 @@ function CommandBarBasicInput({
   onSubmit,
 }: {
   arg: CommandArgument<unknown> & {
-    inputType: 'string'
+    inputType: 'string' | 'color'
     name: string
   }
   stepBack: () => void
   onSubmit: (event: unknown) => void
 }) {
   const commandBarState = useCommandBarState()
+  const previouslySetValue = commandBarState.context.argumentsToSubmit[
+    arg.name
+  ] as string | undefined
   useHotkeys('mod + k, mod + /', () => commandBarActor.send({ type: 'Close' }))
   const inputRef = useRef<HTMLInputElement>(null)
   const argMachineContext = useSelector(
@@ -31,12 +34,19 @@ function CommandBarBasicInput({
   )
   const defaultValue = useMemo(
     () =>
-      arg.defaultValue
+      previouslySetValue ||
+      (arg.defaultValue
         ? arg.defaultValue instanceof Function
           ? arg.defaultValue(commandBarState.context, argMachineContext)
           : arg.defaultValue
-        : '',
-    [arg.defaultValue, commandBarState.context, argMachineContext]
+        : ''),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
+    [
+      arg.defaultValue,
+      commandBarState.context,
+      argMachineContext,
+      previouslySetValue,
+    ]
   )
 
   useEffect(() => {
@@ -67,7 +77,7 @@ function CommandBarBasicInput({
           ref={inputRef}
           type={arg.inputType}
           required
-          className="flex-grow px-2 py-1 border-b border-b-chalkboard-100 dark:border-b-chalkboard-80 !bg-transparent focus:outline-none"
+          className={`flex-grow ${arg.inputType === 'color' ? 'h-[41px]' : 'px-2 py-1 border-b border-b-chalkboard-100 dark:border-b-chalkboard-80'} !bg-transparent focus:outline-none`}
           placeholder="Enter a value"
           defaultValue={defaultValue}
           onKeyDown={(event) => {

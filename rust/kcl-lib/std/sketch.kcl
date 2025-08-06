@@ -26,6 +26,7 @@
 /// only need to export the final Solid that was created from the sketch on the
 /// face, since it will include all the parent faces and Solids.
 ///
+/// See [sketch on face](/docs/kcl-lang/sketch-on-face) for more details.
 ///
 /// ```kcl
 /// exampleSketch = startSketchOn(XY)
@@ -181,12 +182,36 @@
 ///  |> close()
 ///  |> extrude(length = 3.14)
 /// ```
+///
+/// ```kcl
+/// sketch001 = startSketchOn(XY)
+///   |> startProfile(at = [-5, -5])
+///   |> xLine(length = 10)
+///   |> yLine(length = 10, tag = $b)
+///   |> xLine(length = -10)
+///   |> close()
+/// 
+/// cube001 = extrude(sketch001, length = 10)
+///   |> rotate(roll = 10, pitch = 20, yaw = 30)
+/// 
+/// sketch002 = startSketchOn(cube001, normalToFace = END, alignAxis = Y)
+///   |> circle(radius = 2, center = [0, 0])
+/// cube002 = extrude(sketch002, length = 4)
+/// 
+/// subtract(cube001, tools = cube002)
+/// ```
 @(impl = std_rust)
 export fn startSketchOn(
   /// Profile whose start is being used.
   @planeOrSolid: Solid | Plane,
-  /// Identify a face of a solid if a solid is specified as the input argument (`planeOrSolid`).
+  /// Identify a face of a solid if a solid is specified as the input argument (`planeOrSolid`). Incompatible with `normalToFace`.
   face?: TaggedFace,
+  /// Identify a face of a solid if a solid is specified as the input argument. Starts a sketch on the plane orthogonal to this specified face. Incompatible with `face`, requires `alignAxis`.
+  normalToFace?: TaggedFace,
+  /// If sketching normal to face, this axis will be the new local x axis of the sketch plane. The selected face's normal will be the local y axis. Incompatible with `face`, requires `normalToFace`.
+  alignAxis?: Axis2d,
+  /// Offset the sketch plane along its normal by the given amount. Incompatible with `face`, requires `normalToFace`.
+  normalOffset?: number(Length),
 ): Plane | Face {}
 
 /// Start a new profile at a given point.
@@ -351,6 +376,11 @@ export fn ellipse(
 ///
 /// You can provide more than one sketch to extrude, and they will all be
 /// extruded in the same direction.
+///
+/// When you sketch on a face of a solid, extruding extends or cuts into the
+/// existing solid, meaning you don't need to union or subtract the volumes. You
+/// can change this behavior by using the `method` parameter. See
+/// [sketch on face](/docs/kcl-lang/sketch-on-face) for more details.
 ///
 /// ```kcl
 /// example = startSketchOn(XZ)
@@ -2238,8 +2268,10 @@ export fn ellipticPoint(
 /// // Find the plane of the triangle's top face.
 /// topPlane = planeOf(triangle, face = END)
 /// 
-/// // Create a new plane, 10 units above the triangle's top face.
-/// startSketchOn(offsetPlane(topPlane, offset = 10))
+/// // Create a new plane, above the triangle's top face.
+/// startSketchOn(offsetPlane(topPlane, offset = 2))
+/// |> circle(radius = 1, center = [0,0])
+/// |> extrude(length = 1)
 /// ```
 @(impl = std_rust)
 export fn planeOf(

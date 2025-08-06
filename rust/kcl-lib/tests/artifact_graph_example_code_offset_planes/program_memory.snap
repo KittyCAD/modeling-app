@@ -209,7 +209,8 @@ description: Variables in memory after executing artifact_graph_example_code_off
       "originalId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "isClosed": false
     }
   }
 }

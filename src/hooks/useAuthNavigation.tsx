@@ -38,5 +38,6 @@ export function useAuthNavigation() {
 
       navigate(PATHS.SIGN_IN + (location.search || ''))
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [authState, location.pathname])
 }

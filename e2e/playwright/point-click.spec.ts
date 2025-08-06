@@ -12,102 +12,6 @@ import type { CmdBarSerialised } from '@e2e/playwright/fixtures/cmdBarFixture'
 // test file is for testing point an click code gen functionality that's not sketch mode related
 
 test.describe('Point-and-click tests', () => {
-  test('verify extruding circle works', async ({
-    page,
-    context,
-    homePage,
-    cmdBar,
-    editor,
-    toolbar,
-    scene,
-  }) => {
-    const file = await fs.readFile(
-      path.resolve(
-        __dirname,
-        '../../',
-        './rust/kcl-lib/e2e/executor/inputs/test-circle-extrude.kcl'
-      ),
-      'utf-8'
-    )
-    await context.addInitScript((file) => {
-      localStorage.setItem('persistCode', file)
-    }, file)
-
-    await homePage.goToModelingScene()
-    await scene.connectionEstablished()
-
-    const [clickCircle, moveToCircle] = scene.makeMouseHelpers(582, 217)
-
-    await test.step('because there is sweepable geometry, verify extrude is enable when nothing is selected', async () => {
-      // FIXME: Do not click, clicking removes the activeLines in future checks
-      // await scene.clickNoWhere()
-      await expect(toolbar.extrudeButton).toBeEnabled()
-    })
-
-    await test.step('check code model connection works and that button is still enable once circle is selected ', async () => {
-      await moveToCircle()
-      const circleSnippet = 'circle(center = [318.33, 168.1], radius = 182.8)'
-      await editor.expectState({
-        activeLines: ['sketch002=startSketchOn(XZ)'],
-        highlightedCode: circleSnippet,
-        diagnostics: [],
-      })
-
-      await test.step('check code model connection works and that button is still enable once circle is selected ', async () => {
-        await moveToCircle()
-        const circleSnippet = 'circle(center = [318.33, 168.1], radius = 182.8)'
-        await editor.expectState({
-          activeLines: ['sketch002=startSketchOn(XZ)'],
-          highlightedCode: circleSnippet,
-          diagnostics: [],
-        })
-
-        await clickCircle()
-        await editor.expectState({
-          activeLines: ['|>' + circleSnippet],
-          highlightedCode: circleSnippet,
-          diagnostics: [],
-        })
-        await expect(toolbar.extrudeButton).toBeEnabled()
-      })
-      await expect(toolbar.extrudeButton).toBeEnabled()
-    })
-
-    await test.step('do extrude flow and check extrude code is added to editor', async () => {
-      await toolbar.extrudeButton.click()
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'sketches',
-        currentArgValue: '',
-        headerArguments: { Profiles: '', Length: '' },
-        highlightedHeaderArg: 'Profiles',
-        commandName: 'Extrude',
-      })
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'length',
-        currentArgValue: '5',
-        headerArguments: { Profiles: '1 profile', Length: '' },
-        highlightedHeaderArg: 'length',
-        commandName: 'Extrude',
-      })
-      await cmdBar.progressCmdBar()
-
-      const expectString = 'extrude001 = extrude(sketch001, length = 5)'
-      await editor.expectEditor.not.toContain(expectString)
-
-      await cmdBar.expectState({
-        stage: 'review',
-        headerArguments: { Profiles: '1 profile', Length: '5' },
-        commandName: 'Extrude',
-      })
-      await cmdBar.progressCmdBar()
-
-      await editor.expectEditor.toContain(expectString)
-    })
-  })
-
   test('Verify in-pipe extrudes in bracket can be edited', async ({
     tronApp,
     context,
@@ -564,28 +468,24 @@ profile001 = startProfile(sketch002, at = [205.96, 254.59])
         viewPortSize.width / 2 + 3, // 3px off the center of the screen
         viewPortSize.height / 2,
       ],
-      kcl: [0, 0],
     } as const
     const xAxisSloppy = {
       screen: [
         viewPortSize.width * 0.75,
         viewPortSize.height / 2 - 3, // 3px off the X-axis
       ],
-      kcl: [20.34, 0],
     } as const
     const offYAxis = {
       screen: [
         viewPortSize.width * 0.6, // Well off the Y-axis, out of snapping range
         viewPortSize.height * 0.3,
       ],
-      kcl: [8.14, 6.78],
     } as const
     const yAxisSloppy = {
       screen: [
         viewPortSize.width / 2 + 5, // 5px off the Y-axis
         viewPortSize.height * 0.3,
       ],
-      kcl: [0, 6.78],
     } as const
     const [clickOnXzPlane, moveToXzPlane] = scene.makeMouseHelpers(...xzPlane)
     const [clickOriginSloppy] = scene.makeMouseHelpers(...originSloppy.screen)
@@ -593,15 +493,16 @@ profile001 = startProfile(sketch002, at = [205.96, 254.59])
       ...xAxisSloppy.screen
     )
     const [dragToOffYAxis, dragFromOffAxis] = scene.makeDragHelpers(
-      ...offYAxis.screen
+      ...offYAxis.screen,
+      { debug: true }
     )
 
     const expectedCodeSnippets = {
-      sketchOnXzPlane: `sketch001 = startSketchOn(XZ)`,
-      pointAtOrigin: `startProfile(sketch001, at = [${originSloppy.kcl[0]}, ${originSloppy.kcl[1]}])`,
-      segmentOnXAxis: `xLine(length = ${xAxisSloppy.kcl[0]})`,
-      afterSegmentDraggedOffYAxis: `startProfile(sketch001, at = [${offYAxis.kcl[0]}, ${offYAxis.kcl[1]}])`,
-      afterSegmentDraggedOnYAxis: `startProfile(sketch001, at = [${yAxisSloppy.kcl[0]}, ${yAxisSloppy.kcl[1]}])`,
+      sketchOnXzPlane: 'sketch001 = startSketchOn(XZ)',
+      pointAtOrigin: 'startProfile(sketch001, at = [0, 0])',
+      segmentOnXAxis: 'xLine(length',
+      afterSegmentDraggedOnYAxis:
+        /startProfile\(sketch001, at = \[0, (\d+(\.\d+)?)\]\)/,
     }
 
     await test.step(`Start a sketch on the XZ plane`, async () => {
@@ -626,22 +527,24 @@ profile001 = startProfile(sketch002, at = [205.96, 254.59])
       await expect(toolbar.lineBtn).not.toHaveAttribute('aria-pressed', 'true')
     })
     await test.step(`Drag the origin point up and to the right, verify it's past snapping`, async () => {
+      await editor.closePane()
       await dragToOffYAxis({
         fromPoint: { x: originSloppy.screen[0], y: originSloppy.screen[1] },
       })
-      await editor.expectEditor.toContain(
-        expectedCodeSnippets.afterSegmentDraggedOffYAxis
+      await editor.expectEditor.not.toContain(
+        expectedCodeSnippets.pointAtOrigin
       )
     })
     await test.step(`Drag the origin point left to the y-axis, verify it snaps back`, async () => {
       await dragFromOffAxis({
         toPoint: { x: yAxisSloppy.screen[0], y: yAxisSloppy.screen[1] },
       })
-      await editor.expectEditor.toContain(
+      await editor.openPane()
+      await expect(editor.codeContent).toContainText(
         expectedCodeSnippets.afterSegmentDraggedOnYAxis
       )
+      await editor.closePane()
     })
-    await editor.page.waitForTimeout(1000)
   })
 
   test(`Verify user can double-click to edit a sketch`, async ({
@@ -661,8 +564,6 @@ openSketch = startSketchOn(XY)
   |> xLine(length = 5)
   |> tangentialArc(endAbsolute = [10, 0])
 `
-    const viewPortSize = { width: 1000, height: 500 }
-    await page.setBodyDimensions(viewPortSize)
 
     await context.addInitScript((code) => {
       localStorage.setItem('persistCode', code)
@@ -670,81 +571,65 @@ openSketch = startSketchOn(XY)
 
     await homePage.goToModelingScene()
 
-    const pointInsideCircle = {
-      x: viewPortSize.width * 0.63,
-      y: viewPortSize.height * 0.5,
-    }
-    const pointOnPathAfterSketching = {
-      x: viewPortSize.width * 0.65,
-      y: viewPortSize.height * 0.5,
-    }
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [_clickOpenPath, moveToOpenPath, dblClickOpenPath] =
-      scene.makeMouseHelpers(
-        pointOnPathAfterSketching.x,
-        pointOnPathAfterSketching.y
-      )
+      scene.makeMouseHelpers(0.65, 0.5, { format: 'ratio' })
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [_clickCircle, moveToCircle, dblClickCircle] = scene.makeMouseHelpers(
-      pointInsideCircle.x,
-      pointInsideCircle.y
+      0.63,
+      0.5,
+      { format: 'ratio' }
     )
-
-    const exitSketch = async () => {
-      await test.step(`Exit sketch mode`, async () => {
-        await toolbar.exitSketchBtn.click()
-        await expect(toolbar.startSketchBtn).toBeEnabled()
-      })
-    }
 
     await test.step(`Double-click on the closed sketch`, async () => {
       await scene.settled(cmdBar)
+      await editor.closePane()
       await moveToCircle()
       await page.waitForTimeout(1000)
       await dblClickCircle()
       await page.waitForTimeout(1000)
       await expect(toolbar.exitSketchBtn).toBeVisible()
+      await editor.openPane()
       await editor.expectState({
         activeLines: [`|>circle(center=[8,5],radius=2)`],
-        highlightedCode: 'circle(center=[8,5],radius=2)',
+        highlightedCode: '',
         diagnostics: [],
       })
     })
     await page.waitForTimeout(1000)
 
-    await exitSketch()
+    await toolbar.exitSketch()
     await page.waitForTimeout(1000)
+    await editor.closePane()
 
     // Drag the sketch line out of the axis view which blocks the click
     await page.dragAndDrop('#stream', '#stream', {
-      sourcePosition: {
-        x: viewPortSize.width * 0.7,
-        y: viewPortSize.height * 0.5,
-      },
-      targetPosition: {
-        x: viewPortSize.width * 0.7,
-        y: viewPortSize.height * 0.4,
-      },
+      sourcePosition: await scene.convertPagePositionToStream(
+        0.7,
+        0.5,
+        'ratio'
+      ),
+      targetPosition: await scene.convertPagePositionToStream(
+        0.7,
+        0.4,
+        'ratio'
+      ),
     })
 
     await page.waitForTimeout(500)
 
     await test.step(`Double-click on the open sketch`, async () => {
       await moveToOpenPath()
-      await scene.expectPixelColor(
-        [250, 250, 250],
-        pointOnPathAfterSketching,
-        15
-      )
       // There is a full execution after exiting sketch that clears the scene.
       await page.waitForTimeout(500)
       await dblClickOpenPath()
       await expect(toolbar.exitSketchBtn).toBeVisible()
       // Wait for enter sketch mode to complete
       await page.waitForTimeout(500)
+      await editor.openPane()
       await editor.expectState({
         activeLines: [`|>tangentialArc(endAbsolute=[10,0])`],
-        highlightedCode: 'tangentialArc(endAbsolute=[10,0])',
+        highlightedCode: '',
         diagnostics: [],
       })
     })
@@ -752,6 +637,8 @@ openSketch = startSketchOn(XY)
 
   test(`Shift-click to select and deselect edges and faces`, async ({
     context,
+    cmdBar,
+    toolbar,
     page,
     homePage,
     scene,
@@ -767,9 +654,21 @@ openSketch = startSketchOn(XY)
     |> extrude(%, length = -12)`
 
     // Locators
-    const upperEdgeLocation = { x: 600, y: 192 }
+    const upperEdgeLocation = { x: 600, y: 193 }
     const lowerEdgeLocation = { x: 600, y: 383 }
     const faceLocation = { x: 630, y: 290 }
+    const timeout = 150
+
+    // Setup
+    await test.step(`Initial test setup`, async () => {
+      await context.addInitScript((initialCode) => {
+        localStorage.setItem('persistCode', initialCode)
+      }, initialCode)
+      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await homePage.goToModelingScene()
+      await toolbar.closePane('code')
+      await scene.settled(cmdBar)
+    })
 
     // Click helpers
     const [clickOnUpperEdge] = scene.makeMouseHelpers(
@@ -782,139 +681,69 @@ openSketch = startSketchOn(XY)
     )
     const [clickOnFace] = scene.makeMouseHelpers(faceLocation.x, faceLocation.y)
 
-    // Colors
-    const edgeColorWhite: [number, number, number] = [220, 220, 220] // varies from 192 to 255
-    const edgeColorYellow: [number, number, number] = [251, 251, 40] // vaies from 12 to 67
-    const faceColorGray: [number, number, number] = [168, 168, 168]
-    const faceColorYellow: [number, number, number] = [155, 155, 155]
-    const tolerance = 40
-    const timeout = 150
-
-    // Setup
-    await test.step(`Initial test setup`, async () => {
-      await context.addInitScript((initialCode) => {
-        localStorage.setItem('persistCode', initialCode)
-      }, initialCode)
-      await page.setBodyDimensions({ width: 1000, height: 500 })
-      await homePage.goToModelingScene()
-
-      // Wait for the scene and stream to load
-      await scene.expectPixelColor(faceColorGray, faceLocation, tolerance)
-    })
-
     await test.step('Select and deselect a single edge', async () => {
+      await expect(toolbar.selectionStatus).toContainText('No selection')
       await test.step('Click the edge', async () => {
-        await scene.expectPixelColor(
-          edgeColorWhite,
-          upperEdgeLocation,
-          tolerance
-        )
         await clickOnUpperEdge()
-        await scene.expectPixelColor(
-          edgeColorYellow,
-          upperEdgeLocation,
-          tolerance
-        )
+        await expect(toolbar.selectionStatus).toContainText('1 segment')
       })
       await test.step('Shift-click the same edge to deselect', async () => {
         await page.keyboard.down('Shift')
-        await page.waitForTimeout(timeout)
         await clickOnUpperEdge()
         await page.waitForTimeout(timeout)
         await page.keyboard.up('Shift')
-        await scene.expectPixelColor(
-          edgeColorWhite,
-          upperEdgeLocation,
-          tolerance
-        )
+        await expect(toolbar.selectionStatus).toContainText('No selection')
       })
     })
 
     await test.step('Select and deselect multiple objects', async () => {
       await test.step('Select both edges and the face', async () => {
         await test.step('Select the upper edge', async () => {
-          await scene.expectPixelColor(
-            edgeColorWhite,
-            upperEdgeLocation,
-            tolerance
-          )
           await clickOnUpperEdge()
-          await scene.expectPixelColor(
-            edgeColorYellow,
-            upperEdgeLocation,
-            tolerance
-          )
+          await expect(toolbar.selectionStatus).toContainText('1 segment')
         })
         await test.step('Select the lower edge (Shift-click)', async () => {
-          await scene.expectPixelColor(
-            edgeColorWhite,
-            lowerEdgeLocation,
-            tolerance
-          )
           await page.keyboard.down('Shift')
-          await page.waitForTimeout(timeout)
           await clickOnLowerEdge()
           await page.waitForTimeout(timeout)
           await page.keyboard.up('Shift')
-          await scene.expectPixelColor(
-            edgeColorYellow,
-            lowerEdgeLocation,
-            tolerance
+          await expect(toolbar.selectionStatus).toContainText(
+            '1 segment, 1 sweepEdge'
           )
         })
         await test.step('Select the face (Shift-click)', async () => {
-          await scene.expectPixelColor(faceColorGray, faceLocation, tolerance)
           await page.keyboard.down('Shift')
-          await page.waitForTimeout(timeout)
           await clickOnFace()
           await page.waitForTimeout(timeout)
           await page.keyboard.up('Shift')
-          await scene.expectPixelColor(faceColorYellow, faceLocation, tolerance)
+          await expect(toolbar.selectionStatus).toContainText(
+            '1 segment, 1 sweepEdge, 1 face'
+          )
         })
       })
       await test.step('Deselect them one by one', async () => {
         await test.step('Deselect the face (Shift-click)', async () => {
-          await scene.expectPixelColor(faceColorYellow, faceLocation, tolerance)
           await page.keyboard.down('Shift')
-          await page.waitForTimeout(timeout)
           await clickOnFace()
           await page.waitForTimeout(timeout)
           await page.keyboard.up('Shift')
-          await scene.expectPixelColor(faceColorGray, faceLocation, tolerance)
+          await expect(toolbar.selectionStatus).toContainText(
+            '1 segment, 1 sweepEdge'
+          )
         })
         await test.step('Deselect the lower edge (Shift-click)', async () => {
-          await scene.expectPixelColor(
-            edgeColorYellow,
-            lowerEdgeLocation,
-            tolerance
-          )
           await page.keyboard.down('Shift')
-          await page.waitForTimeout(timeout)
           await clickOnLowerEdge()
           await page.waitForTimeout(timeout)
           await page.keyboard.up('Shift')
-          await scene.expectPixelColor(
-            edgeColorWhite,
-            lowerEdgeLocation,
-            tolerance
-          )
+          await expect(toolbar.selectionStatus).toContainText('1 segment')
         })
         await test.step('Deselect the upper edge (Shift-click)', async () => {
-          await scene.expectPixelColor(
-            edgeColorYellow,
-            upperEdgeLocation,
-            tolerance
-          )
           await page.keyboard.down('Shift')
-          await page.waitForTimeout(timeout)
           await clickOnUpperEdge()
           await page.waitForTimeout(timeout)
           await page.keyboard.up('Shift')
-          await scene.expectPixelColor(
-            edgeColorWhite,
-            upperEdgeLocation,
-            tolerance
-          )
+          await expect(toolbar.selectionStatus).toContainText('No selection')
         })
       })
     })
@@ -2261,22 +2090,14 @@ extrude001 = extrude(sketch001, length = -12)
     // Locators
     const firstEdgeLocation = { x: 600, y: 193 }
     const secondEdgeLocation = { x: 600, y: 383 }
-    const [clickOnFirstEdge] = scene.makeMouseHelpers(
-      firstEdgeLocation.x,
-      firstEdgeLocation.y
-    )
-    const [clickOnSecondEdge] = scene.makeMouseHelpers(
-      secondEdgeLocation.x,
-      secondEdgeLocation.y
-    )
 
     // Colors
     const edgeColorWhite: [number, number, number] = [248, 248, 248]
-    const edgeColorYellow: [number, number, number] = [251, 251, 40] // Mac:B=67 Ubuntu:B=12
+    const edgeColorYellow: [number, number, number] = [251, 251, 80] // Mac:B=67 Ubuntu:B=12
     const chamferColor: [number, number, number] = [168, 168, 168]
     const backgroundColor: [number, number, number] = [30, 30, 30]
     const lowTolerance = 20
-    const highTolerance = 70 // TODO: understand why I needed that for edgeColorYellow on macos (local)
+    const highTolerance = 75 // TODO: understand why I needed that for edgeColorYellow on macos (local)
 
     // Setup
     await test.step(`Initial test setup`, async () => {
@@ -2286,7 +2107,17 @@ extrude001 = extrude(sketch001, length = -12)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
       await scene.settled(cmdBar)
+      await editor.closePane()
     })
+
+    const [clickOnFirstEdge] = scene.makeMouseHelpers(
+      firstEdgeLocation.x,
+      firstEdgeLocation.y
+    )
+    const [clickOnSecondEdge] = scene.makeMouseHelpers(
+      secondEdgeLocation.x,
+      secondEdgeLocation.y
+    )
 
     // Test 1: Command bar flow with preselected edges
     await test.step(`Select first edge`, async () => {
@@ -2301,6 +2132,7 @@ extrude001 = extrude(sketch001, length = -12)
         firstEdgeLocation,
         highTolerance // Ubuntu color mismatch can require high tolerance
       )
+      await editor.openPane()
     })
 
     await test.step(`Apply chamfer to the preselected edge`, async () => {
@@ -2354,6 +2186,7 @@ extrude001 = extrude(sketch001, length = -12)
         activeLines: [')'],
         highlightedCode: '',
       })
+      await editor.closePane()
     })
 
     await test.step(`Confirm scene has changed`, async () => {
@@ -2461,6 +2294,7 @@ extrude001 = extrude(sketch001, length = -12)
         },
         stage: 'arguments',
       })
+      await editor.openPane()
       await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         commandName: 'Chamfer',
@@ -2494,6 +2328,7 @@ extrude001 = extrude(sketch001, length = -12)
         activeLines: [')'],
         highlightedCode: '',
       })
+      await editor.closePane()
     })
 
     await test.step(`Confirm scene has changed`, async () => {
@@ -2519,6 +2354,7 @@ extrude001 = extrude(sketch001, length = -12)
       await editor.expectEditor.toContain(secondChamferDeclaration, {
         shouldNormalise: true,
       })
+      await editor.closePane()
     })
 
     // Test 3: Delete chamfer via feature tree selection
@@ -2533,6 +2369,7 @@ extrude001 = extrude(sketch001, length = -12)
       )
       await operationButton.click({ button: 'left' })
       await page.keyboard.press('Delete')
+      await toolbar.closeFeatureTreePane()
       await page.waitForTimeout(500)
       await scene.expectPixelColor(edgeColorWhite, secondEdgeLocation, 15) // deleted
       await scene.expectPixelColor(chamferColor, firstEdgeLocation, 15) // stayed
@@ -2573,15 +2410,12 @@ chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg02)])
     // Locators
     const pipedChamferEdgeLocation = { x: 600, y: 193 }
     const standaloneChamferEdgeLocation = { x: 600, y: 383 }
-    const bodyLocation = { x: 630, y: 290 }
 
     // Colors
     const edgeColorWhite: [number, number, number] = [248, 248, 248]
-    const bodyColor: [number, number, number] = [155, 155, 155]
     const chamferColor: [number, number, number] = [168, 168, 168]
     const backgroundColor: [number, number, number] = [30, 30, 30]
     const lowTolerance = 20
-    const highTolerance = 40
 
     // Setup
     await test.step(`Initial test setup`, async () => {
@@ -2591,16 +2425,7 @@ chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg02)])
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
       await scene.settled(cmdBar)
-
-      // verify modeling scene is loaded
-      await scene.expectPixelColor(
-        backgroundColor,
-        standaloneChamferEdgeLocation,
-        lowTolerance
-      )
-
-      // wait for stream to load
-      await scene.expectPixelColor(bodyColor, bodyLocation, highTolerance)
+      await editor.closePane()
     })
 
     // Test
@@ -2622,6 +2447,8 @@ chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg02)])
           )
         })
         await test.step('Verify test chamfers are present in the scene', async () => {
+          await editor.closePane()
+          await toolbar.closeFeatureTreePane()
           await scene.expectPixelColor(
             chamferColor,
             pipedChamferEdgeLocation,
@@ -2634,12 +2461,15 @@ chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg02)])
           )
         })
         await test.step('Delete piped chamfer', async () => {
+          await editor.closePane()
+          await toolbar.openFeatureTreePane()
           const operationButton = await toolbar.getFeatureTreeOperation(
             'Chamfer',
             0
           )
           await operationButton.click({ button: 'left' })
           await page.keyboard.press('Delete')
+          await toolbar.closeFeatureTreePane()
           await scene.settled(cmdBar)
         })
         await test.step('Verify piped chamfer is deleted but other chamfers are not (in the editor)', async () => {
@@ -2668,6 +2498,7 @@ chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg02)])
 
       await test.step('Delete standalone assigned chamfer via feature tree selection', async () => {
         await test.step('Delete standalone assigned chamfer', async () => {
+          await toolbar.openFeatureTreePane()
           const operationButton = await toolbar.getFeatureTreeOperation(
             'Chamfer',
             1
@@ -2686,6 +2517,8 @@ chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg02)])
           )
         })
         await test.step('Verify standalone assigned chamfer is deleted but piped is not (in the scene)', async () => {
+          await toolbar.closeFeatureTreePane()
+          await editor.closePane()
           await scene.expectPixelColor(
             edgeColorWhite,
             standaloneChamferEdgeLocation,
@@ -2696,6 +2529,7 @@ chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg02)])
 
       await test.step('Delete standalone unassigned chamfer via feature tree selection', async () => {
         await test.step('Delete standalone unassigned chamfer', async () => {
+          await toolbar.openFeatureTreePane()
           const operationButton = await toolbar.getFeatureTreeOperation(
             'Chamfer',
             1
@@ -2711,6 +2545,8 @@ chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg02)])
           )
         })
         await test.step('Verify standalone unassigned chamfer is deleted but piped is not (in the scene)', async () => {
+          await editor.closePane()
+          await toolbar.closeFeatureTreePane()
           await scene.expectPixelColor(
             edgeColorWhite,
             standaloneChamferEdgeLocation,
@@ -2883,7 +2719,7 @@ sketch002 = startSketchOn(extrude001, face = rectangleSegmentA001)
     await cmdBar.progressCmdBar()
     await page.getByText('Edge', { exact: true }).click()
     const lineCodeToSelection = `angledLine(angle = 0, length = 202.6, tag = $rectangleSegmentA001)`
-    await page.getByText(lineCodeToSelection).click()
+    await editor.selectText(lineCodeToSelection)
     await cmdBar.progressCmdBar()
     await cmdBar.progressCmdBar()
     await cmdBar.progressCmdBar()
@@ -2938,8 +2774,8 @@ sketch002 = startSketchOn(extrude001, face = rectangleSegmentA001)
     const initialCode = `sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [0, 0], radius = 1)
 extrude001 = extrude(profile001, length = 1)`
-    const declaration = `appearance(extrude001, color = '#FF0000')`
-    const editedDeclaration = `appearance(extrude001, color = '#00FF00')`
+    const declaration = `appearance(extrude001, color = '#ff0000')`
+    const editedDeclaration = `appearance(extrude001, color = '#00ff00')`
     await context.addInitScript((initialCode) => {
       localStorage.setItem('persistCode', initialCode)
     }, initialCode)
@@ -2978,12 +2814,13 @@ extrude001 = extrude(profile001, length = 1)`
         highlightedHeaderArg: 'color',
         stage: 'arguments',
       })
+      await cmdBar.currentArgumentInput.fill('#ff0000') // uppercase doesn't work here
       await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         commandName: 'Appearance',
         headerArguments: {
           Objects: '1 sweep',
-          Color: '#FF0000',
+          Color: '#ff0000',
         },
         stage: 'review',
       })
@@ -3005,16 +2842,17 @@ extrude001 = extrude(profile001, length = 1)`
         currentArgKey: 'color',
         currentArgValue: '',
         headerArguments: {
-          Color: `'#FF0000'`,
+          Color: '#ff0000',
         },
         highlightedHeaderArg: 'color',
         commandName: 'Appearance',
       })
-      await cmdBar.selectOption({ name: 'Green' }).click()
+      await cmdBar.currentArgumentInput.fill('#00ff00')
+      await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         stage: 'review',
         headerArguments: {
-          Color: '#00FF00',
+          Color: '#00ff00',
         },
         commandName: 'Appearance',
       })

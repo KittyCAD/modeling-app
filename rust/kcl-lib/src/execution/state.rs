@@ -107,6 +107,9 @@ pub(super) struct ModuleState {
     pub(super) path: ModulePath,
     /// Artifacts for only this module.
     pub artifacts: ModuleArtifactState,
+
+    pub(super) allowed_warnings: Vec<&'static str>,
+    pub(super) denied_warnings: Vec<&'static str>,
 }
 
 impl ExecState {
@@ -132,8 +135,19 @@ impl ExecState {
     }
 
     /// Log a warning.
-    pub fn warn(&mut self, mut e: CompilationError) {
-        e.severity = Severity::Warning;
+    pub fn warn(&mut self, mut e: CompilationError, name: &'static str) {
+        debug_assert!(annotations::WARN_VALUES.contains(&name));
+
+        if self.mod_local.allowed_warnings.contains(&name) {
+            return;
+        }
+
+        if self.mod_local.denied_warnings.contains(&name) {
+            e.severity = Severity::Error;
+        } else {
+            e.severity = Severity::Warning;
+        }
+
         self.global.errors.push(e);
     }
 
@@ -492,6 +506,8 @@ impl ModuleState {
                 kcl_version: "0.1".to_owned(),
             },
             artifacts: Default::default(),
+            allowed_warnings: Vec::new(),
+            denied_warnings: Vec::new(),
         }
     }
 

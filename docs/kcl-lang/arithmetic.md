@@ -15,7 +15,7 @@ KCL supports the usual arithmetic operators on numbers and logic operators on bo
 | `%` | Modulus aka remainder |
 | `^` | Power, e.g., `x ^ 2` means `x` squared |
 | `&` | Logical 'and' |
-| `|` | Logical 'or' |
+| `\|` | Logical 'or' |
 | `!` | Unary logical 'not' |
 
 KCL also supports comparsion operators which operate on numbers and produce booleans:

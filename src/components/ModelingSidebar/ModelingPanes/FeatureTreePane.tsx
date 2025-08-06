@@ -25,6 +25,7 @@ import {
   stdLibMap,
 } from '@src/lib/operations'
 import {
+  codeManager,
   commandBarActor,
   editorManager,
   kclManager,
@@ -173,6 +174,10 @@ export const FeatureTreePane = () => {
       ? kclManager.execState.operations
       : longestErrorOperationList
     : kclManager.lastSuccessfulOperations
+  // We use the code that corresponds to the operations. In case this is an
+  // error on the first run, fall back to whatever is currently in the code
+  // editor.
+  const operationsCode = kclManager.lastSuccessfulCode || codeManager.code
 
   // We filter out operations that are not useful to show in the feature tree
   const operationList = filterOperations(unfilteredOperationList)
@@ -183,11 +188,13 @@ export const FeatureTreePane = () => {
     if (codeOpen && isEditorMounted) {
       featureTreeSend({ type: 'codePaneOpened' })
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [modelingState.context.store.openPanes, isEditorMounted])
 
   // Watch for changes in the selection and send an event to the feature tree machine
   useEffect(() => {
     featureTreeSend({ type: 'selected' })
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [lastSelectionEvent])
 
   function goToError() {
@@ -240,6 +247,7 @@ export const FeatureTreePane = () => {
                 <OperationItem
                   key={key}
                   item={operation}
+                  code={operationsCode}
                   send={featureTreeSend}
                   sketchNoFace={sketchNoFace}
                 />
@@ -266,6 +274,7 @@ const VisibilityToggle = (props: VisibilityToggleProps) => {
   const visible = props.visible
   const handleToggleVisible = useCallback(() => {
     props.onVisibilityChange()
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [props.onVisibilityChange])
 
   return (
@@ -336,7 +345,10 @@ const OperationItemWrapper = ({
             {customSuffix && customSuffix}
           </div>
           {valueDetail && (
-            <code className="px-1 text-right text-chalkboard-70 dark:text-chalkboard-40 text-xs">
+            <code
+              data-testid="value-detail"
+              className="px-1 text-right text-chalkboard-70 dark:text-chalkboard-40 text-xs"
+            >
               {valueDetail.display}
             </code>
           )}
@@ -359,6 +371,7 @@ const OperationItemWrapper = ({
  */
 const OperationItem = (props: {
   item: Operation
+  code: string
   send: Prop<Actor<typeof featureTreeMachine>, 'send'>
   sketchNoFace: boolean
 }) => {
@@ -368,14 +381,14 @@ const OperationItem = (props: {
     () =>
       props.item.type === 'VariableDeclaration'
         ? {
-            display: kclContext.code.slice(
+            display: props.code.slice(
               props.item.sourceRange[0],
               props.item.sourceRange[1]
             ),
             calculated: props.item.value,
           }
         : undefined,
-    [props.item, kclContext.code]
+    [props.item, props.code]
   )
 
   const variableName = useMemo(() => {
@@ -390,6 +403,7 @@ const OperationItem = (props: {
         diag.from >= props.item.sourceRange[0] &&
         diag.to <= props.item.sourceRange[1]
     )
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [kclContext.diagnostics.length])
 
   async function selectOperation() {
@@ -662,6 +676,7 @@ const OperationItem = (props: {
           ]
         : []),
     ],
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
     [props.item, props.send]
   )
 
@@ -713,6 +728,7 @@ const DefaultPlanes = () => {
         }
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
     [sketchNoFace]
   )
 

@@ -308,7 +308,8 @@ description: Variables in memory after executing subtract_regression08.kcl
       "originalId": "[uuid]",
       "units": {
         "type": "Inches"
-      }
+      },
+      "isClosed": false
     }
   },
   "sketch002": {
@@ -616,7 +617,8 @@ description: Variables in memory after executing subtract_regression08.kcl
       "originalId": "[uuid]",
       "units": {
         "type": "Inches"
-      }
+      },
+      "isClosed": false
     }
   },
   "sweepCut000": {
