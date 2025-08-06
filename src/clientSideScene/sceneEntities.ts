@@ -541,6 +541,7 @@ export class SceneEntities {
     this.intersectionPlane.position.copy(
       new Vector3(...(sketchDetails?.origin || [0, 0, 0]))
     )
+    let hasClickedAlready = false
     this.sceneInfra.setCallbacks({
       onMove: (args) => {
         if (!args.intersects.length) return
@@ -603,6 +604,12 @@ export class SceneEntities {
         this.removeDraftPoint()
       },
       onClick: async (args) => {
+        if (hasClickedAlready) {
+          // we only expect one click, and than to be transitioned to the next state.
+          // if the user spams clicks, this handler races itself and causes problems
+          return
+        }
+        hasClickedAlready = true
         this.removeDraftPoint()
         if (!args) return
         // If there is a valid camera interaction that matches, do that instead
@@ -972,10 +979,13 @@ export class SceneEntities {
     if (trap(_node1)) return Promise.reject(_node1)
     const variableDeclarationName = _node1.node?.declaration.id?.name || ''
 
-    const sg = sketchFromKclValue(
-      this.kclManager.variables[variableDeclarationName],
-      variableDeclarationName
-    )
+    const profileVar = this.kclManager.variables[variableDeclarationName]
+    if (!profileVar) {
+      const msg = `No variable found for ${variableDeclarationName} in ${sketchEntryNodePath}`
+      return Promise.reject(new Error(msg))
+    }
+
+    const sg = sketchFromKclValue(profileVar, variableDeclarationName)
     if (err(sg)) return Promise.reject(sg)
     const lastSeg = sg?.paths?.slice(-1)[0] || sg.start
 
