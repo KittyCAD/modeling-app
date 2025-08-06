@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useRef, useEffect } from 'react'
 
 import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
 import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
@@ -158,19 +158,41 @@ export function createSettings() {
         defaultValue: '264.5',
         description: 'The hue of the primary theme color for the app',
         validate: (v) => Number(v) >= 0 && Number(v) < 360,
+
+        // The same component instance is used across settings panes / tabs.
         Component: ({ value, updateValue }) => {
+          const refInput = useRef<HTMLInputElement>(null)
+
+          const updateColorDot = (value: string) => {
+            document.documentElement.style.setProperty(
+              `--primary-hue`,
+              String(value)
+            )
+          }
+
+          useEffect(() => {
+            if (refInput.current === null) return
+            refInput.current.value = value
+            updateColorDot(value)
+          }, [value])
+
           const preview = (e: React.SyntheticEvent) =>
             e.isTrusted &&
             'value' in e.currentTarget &&
-            document.documentElement.style.setProperty(
-              `--primary-hue`,
-              String(e.currentTarget.value)
-            )
-          const save = (e: React.SyntheticEvent) =>
-            e.isTrusted &&
-            'value' in e.currentTarget &&
-            e.currentTarget.value &&
-            updateValue(String(e.currentTarget.value))
+            updateColorDot(String(e.currentTarget.value))
+
+          const save = (e: React.SyntheticEvent) => {
+            if (
+              e.isTrusted &&
+              'value' in e.currentTarget &&
+              e.currentTarget.value
+            ) {
+              const valueNext = String(e.currentTarget.value)
+              updateValue(valueNext)
+              updateColorDot(valueNext)
+            }
+          }
+
           return (
             <div className="flex item-center gap-4 px-2 m-0 py-0">
               <div
@@ -181,11 +203,11 @@ export function createSettings() {
               />
               <input
                 type="range"
+                ref={refInput}
                 onInput={preview}
                 onMouseUp={save}
                 onKeyUp={save}
                 onPointerUp={save}
-                defaultValue={value}
                 min={0}
                 max={259}
                 step={1}
