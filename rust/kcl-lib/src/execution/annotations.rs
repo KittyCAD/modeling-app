@@ -33,6 +33,25 @@ pub(crate) const IMPL_PRIMITIVE: &str = "primitive";
 pub(super) const IMPL_VALUES: [&str; 3] = [IMPL_RUST, IMPL_KCL, IMPL_PRIMITIVE];
 
 pub(crate) const DEPRECATED: &str = "deprecated";
+pub(crate) const WARNINGS: &str = "warnings";
+pub(crate) const WARN_ALLOW: &str = "allow";
+pub(crate) const WARN_DENY: &str = "deny";
+pub(crate) const WARN_UNKNOWN_UNITS: &str = "unknownUnits";
+pub(crate) const WARN_UNKNOWN_ATTR: &str = "unknownAttribute";
+pub(crate) const WARN_MOD_RETURN_VALUE: &str = "moduleReturnValue";
+pub(crate) const WARN_DEPRECATED: &str = "deprecated";
+pub(crate) const WARN_EXPERIMENTAL: &str = "experimental";
+pub(crate) const WARN_IGNORED_Z_AXIS: &str = "ignoredZAxis";
+pub(crate) const WARN_UNNECESSARY_CLOSE: &str = "unnecessaryClose";
+pub(super) const WARN_VALUES: [&str; 7] = [
+    WARN_UNKNOWN_UNITS,
+    WARN_UNKNOWN_ATTR,
+    WARN_MOD_RETURN_VALUE,
+    WARN_DEPRECATED,
+    WARN_EXPERIMENTAL,
+    WARN_IGNORED_Z_AXIS,
+    WARN_UNNECESSARY_CLOSE,
+];
 
 #[derive(Clone, Copy, Eq, PartialEq, Debug, Default)]
 pub enum Impl {
@@ -90,6 +109,64 @@ pub(super) fn expect_ident(expr: &Expr) -> Result<&str, KclError> {
         "Unexpected settings value, expected a simple name, e.g., `mm`".to_owned(),
         vec![expr.into()],
     )))
+}
+
+pub(super) fn many_of(
+    expr: &Expr,
+    of: &[&'static str],
+    source_range: SourceRange,
+) -> Result<Vec<&'static str>, KclError> {
+    const UNEXPECTED_MSG: &str = "Unexpected warnings value, expected a name or array of names, e.g., `unknownUnits` or `[unknownUnits, deprecated]`";
+
+    let values = match expr {
+        Expr::Name(name) => {
+            if let Some(name) = name.local_ident() {
+                vec![*name]
+            } else {
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    UNEXPECTED_MSG.to_owned(),
+                    vec![expr.into()],
+                )));
+            }
+        }
+        Expr::ArrayExpression(e) => {
+            let mut result = Vec::new();
+            for e in &e.elements {
+                if let Expr::Name(name) = e {
+                    if let Some(name) = name.local_ident() {
+                        result.push(*name);
+                        continue;
+                    }
+                }
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    UNEXPECTED_MSG.to_owned(),
+                    vec![e.into()],
+                )));
+            }
+            result
+        }
+        _ => {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                UNEXPECTED_MSG.to_owned(),
+                vec![expr.into()],
+            )));
+        }
+    };
+
+    values
+        .into_iter()
+        .map(|v| {
+            of.iter()
+                .find(|vv| **vv == v)
+                .ok_or_else(|| {
+                    KclError::new_semantic(KclErrorDetails::new(
+                        format!("Unexpected warning value: `{v}`; accepted values: {}", of.join(", "),),
+                        vec![source_range],
+                    ))
+                })
+                .copied()
+        })
+        .collect::<Result<Vec<&str>, KclError>>()
 }
 
 // Returns the unparsed number literal.

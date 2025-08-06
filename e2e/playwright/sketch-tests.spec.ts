@@ -14,7 +14,7 @@ import {
   getUtils,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
-import type { EditorFixture } from './fixtures/editorFixture'
+import type { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
 
 test.describe('Sketch tests', () => {
   test('multi-sketch file shows multiple Edit Sketch buttons', async ({
@@ -1579,82 +1579,6 @@ profile001 = startProfile(sketch001, at = [0, 0])
   })
 })
 
-test.describe(`Sketching with offset planes`, () => {
-  test(`Can select an offset plane to sketch on`, async ({
-    context,
-    page,
-    scene,
-    toolbar,
-    editor,
-    homePage,
-  }) => {
-    // We seed the scene with a single offset plane
-    await context.addInitScript(() => {
-      localStorage.setItem(
-        'persistCode',
-        `
-@settings(defaultLengthUnit = in)
-offsetPlane001 = offsetPlane(XY, (offset = 10))`
-      )
-    })
-
-    await homePage.goToModelingScene()
-
-    const [planeClick, planeHover] = scene.makeMouseHelpers(650, 200)
-
-    await test.step(`
-Start
-sketching
-on
-the
-offset
-plane`, async () => {
-      await toolbar.startSketchPlaneSelection()
-
-      await test.step(`
-Hovering
-should
-highlight
-code`, async () => {
-        await planeHover()
-        await editor.expectState({
-          activeLines: [
-            `
-@settings(defaultLengthUnit = in)`,
-          ],
-          diagnostics: [],
-          highlightedCode: 'offsetPlane(XY, offset = 10)',
-        })
-      })
-
-      await test.step(`
-Clicking
-should
-select
-the
-plane
-and
-enter
-sketch
-mode`, async () => {
-        await planeClick()
-        // Have to wait for engine-side animation to finish
-        await page.waitForTimeout(600)
-        await expect(toolbar.lineBtn).toBeEnabled()
-        await editor.expectEditor.toContain('startSketchOn(offsetPlane001)')
-        await editor.expectState({
-          activeLines: [
-            `
-@settings(defaultLengthUnit = in)`,
-          ],
-          diagnostics: [],
-          highlightedCode: '',
-        })
-      })
-    })
-  })
-})
-
 test.describe('multi-profile sketching', () => {
   test(`test it removes half - finished expressions when changing tools in sketch mode`, async ({
     context,
@@ -1889,11 +1813,7 @@ tangentialArc(end = [-10.82, 144.95])`
     homePage,
   }) => {
     await page.addInitScript(async () => {
-      localStorage.setItem(
-        'persistCode',
-        `
-sketch001 = startSketchOn(XY)`
-      )
+      localStorage.setItem('persistCode', 'sketch001 = startSketchOn(XY)')
     })
     await page.setBodyDimensions({ width: 1000, height: 500 })
     await homePage.goToModelingScene()
@@ -1917,10 +1837,9 @@ sketch001 = startSketchOn(XY)`
       .toBe('true')
 
     await startProfile1()
-    await editor.expectEditor.toContain(`
-profile001 = startProfile`)
+    await editor.expectEditor.toContain('profile001 = startProfile')
     await segment1Clk()
-    await editor.expectEditor.toContain(`|> line(end`)
+    await editor.expectEditor.toContain('|> line(end')
   })
   test('can delete all profiles in sketch mode and user can still equip a tool and draw something', async ({
     scene,

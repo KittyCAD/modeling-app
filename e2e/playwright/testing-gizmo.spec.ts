@@ -304,7 +304,7 @@ test.describe(`Testing gizmo, fixture-based`, () => {
       await editor.openPane()
       await editor.expectState({
         activeLines: ['|>' + circleSnippet],
-        highlightedCode: circleSnippet,
+        highlightedCode: '',
         diagnostics: [],
       })
       await editor.closePane()

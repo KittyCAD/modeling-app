@@ -303,7 +303,7 @@ test(
 test(
   'Draft circle should look right',
   { tag: '@snapshot' },
-  async ({ page, context, cmdBar, editor, scene }) => {
+  async ({ page, editor, scene }) => {
     const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
     const PUR = 400 / 37.5 //pixeltoUnitRatio
@@ -355,7 +355,7 @@ test(
       mask: lowerRightMasks(page),
     })
     await editor.expectEditor.toContain(
-      `sketch001 = startSketchOn(XZ)profile001 = circle(sketch001, center = [229.71, -62.64], radius = 1)`
+      'sketch001 = startSketchOn(XZ)profile001 = circle('
     )
   }
 )

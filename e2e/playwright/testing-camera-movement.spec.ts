@@ -110,11 +110,13 @@ test.describe('Testing Camera Movement', () => {
       await test.step('Pan', async () => {
         await bakeInRetries({
           mouseActions: async () => {
+            const dragStart = await scene.convertPagePositionToStream(600, 200)
+            const dragEnd = await scene.convertPagePositionToStream(700, 200)
             await page.keyboard.down('Shift')
-            await page.mouse.move(600, 200)
+            await page.mouse.move(dragStart.x, dragStart.y)
             await page.mouse.down({ button: 'right' })
             // Gotcha: remove steps:2 from this 700,200 mouse move. This bricked the test on local host engine.
-            await page.mouse.move(700, 200)
+            await page.mouse.move(dragEnd.x, dragEnd.y)
             await page.mouse.up({ button: 'right' })
             await page.keyboard.up('Shift')
             await page.waitForTimeout(200)
@@ -129,10 +131,12 @@ test.describe('Testing Camera Movement', () => {
       await test.step('Zoom with click and drag', async () => {
         await bakeInRetries({
           mouseActions: async () => {
+            const dragStart = await scene.convertPagePositionToStream(700, 400)
+            const dragEnd = await scene.convertPagePositionToStream(700, 300)
             await page.keyboard.down('Control')
-            await page.mouse.move(700, 400)
+            await page.mouse.move(dragStart.x, dragStart.y)
             await page.mouse.down({ button: 'right' })
-            await page.mouse.move(700, 300)
+            await page.mouse.move(dragEnd.x, dragEnd.y)
             await page.mouse.up({ button: 'right' })
             await page.keyboard.up('Control')
           },
@@ -153,7 +157,8 @@ test.describe('Testing Camera Movement', () => {
         }
         await bakeInRetries({
           mouseActions: async () => {
-            await page.mouse.move(700, 400)
+            const scrollPos = await scene.convertPagePositionToStream(700, 400)
+            await page.mouse.move(scrollPos.x, scrollPos.y)
             await page.mouse.wheel(0, -150)
 
             // Scroll zooming doesn't update the debug pane's cam position values,

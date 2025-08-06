@@ -11,7 +11,7 @@ import { expect, test } from '@e2e/playwright/zoo-test'
 test(
   'export works on the first try',
   { tag: ['@desktop', '@macos', '@windows', '@skipLocalEngine'] },
-  async ({ page, context, scene, tronApp, cmdBar }, testInfo) => {
+  async ({ page, context, scene, tronApp, cmdBar, toolbar }, testInfo) => {
     if (!tronApp) {
       fail()
     }
@@ -95,8 +95,7 @@ test(
       await u.openFilePanel()
 
       // Click on the other file
-      const otherKclButton = page.getByRole('button', { name: 'other.kcl' })
-      await otherKclButton.click()
+      await toolbar.openFile('other.kcl')
 
       // Close the file pane
       await u.closeFilePanel()

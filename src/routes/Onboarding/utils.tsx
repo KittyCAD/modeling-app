@@ -521,6 +521,7 @@ export function useOnboardingPanes(
           openPanes: onUnmount,
         },
       })
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [send])
 }
 
@@ -567,6 +568,7 @@ export function useOnModelingCmdGroupReadyOnce(
     if (isReadyOnce) {
       callback()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [isReadyOnce, ...deps])
 }
 

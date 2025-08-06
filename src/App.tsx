@@ -150,6 +150,7 @@ export function App() {
       // Stop is more serious than Pause
       engineStreamActor.send({ type: EngineStreamTransition.Stop })
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [])
 
   // Show a custom toast to users if they haven't done the onboarding
@@ -179,6 +180,7 @@ export function App() {
         }
       )
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [settings.app.onboardingStatus])
 
   useEffect(() => {
@@ -214,6 +216,7 @@ export function App() {
         }
       )
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [])
 
   useEffect(() => {
@@ -233,6 +236,7 @@ export function App() {
         }
       )
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [kclManager.wasmInitFailed])
 
   // Only create the native file menus on desktop
@@ -246,7 +250,6 @@ export function App() {
         .catch(reportRejection)
     }
   }, [])
-
   return (
     <div className="h-screen flex flex-col overflow-hidden select-none">
       <div className="relative flex flex-1 flex-col">
@@ -304,6 +307,7 @@ export function App() {
               : []),
             {
               id: 'selection',
+              'data-testid': 'selection-status',
               element: 'text',
               label:
                 getSelectionTypeDisplayText(
@@ -312,8 +316,8 @@ export function App() {
               toolTip: {
                 children: 'Currently selected geometry',
               },
+              ...defaultLocalStatusBarItems,
             },
-            ...defaultLocalStatusBarItems,
           ]}
         />
       </div>

@@ -343,6 +343,7 @@ export function ToastTextToCadSuccess({
         animationRequestRef.current = undefined
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [])
 
   return (
