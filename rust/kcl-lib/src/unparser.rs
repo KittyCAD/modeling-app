@@ -2452,6 +2452,30 @@ fn ghi(part001) {
     }
 
     #[test]
+    fn test_recast_array_no_trailing_comma_with_comments() {
+        let some_program_string = r#"[
+  1, // one
+  2, // two
+  3  // three
+]"#;
+        let program = crate::parsing::top_level_parse(some_program_string).unwrap();
+
+        let recasted = program.recast_top(&Default::default(), 0);
+        assert_eq!(
+            recasted,
+            r#"[
+  1,
+  // one
+  2,
+  // two
+  3,
+  // three
+]
+"#
+        );
+    }
+
+    #[test]
     fn test_recast_negative_var() {
         let some_program_string = r#"w = 20
 l = 8
