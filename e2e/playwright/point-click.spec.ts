@@ -865,11 +865,11 @@ openSketch = startSketchOn(XY)
     )
 
     // Colors
-    const edgeColorWhite: [number, number, number] = [220, 220, 220]
+    const edgeColorUnconstrained: [number, number, number] = [52, 93, 198]
     const edgeColorBlue: [number, number, number] = [20, 20, 200]
     const backgroundColor: [number, number, number] = [30, 30, 30]
     const tolerance = 40
-    const timeout = 150
+    const timeout = 250
 
     // Setup
     await test.step(`Initial test setup`, async () => {
@@ -891,7 +891,7 @@ openSketch = startSketchOn(XY)
         await page.getByRole('button', { name: 'Start Sketch' }).click()
         await page.waitForTimeout(timeout)
         await clickPlane()
-        await page.waitForTimeout(1000)
+        await page.waitForTimeout(1500)
       })
       await test.step('Draw sketch', async () => {
         await clickFirstPoint()
@@ -907,7 +907,7 @@ openSketch = startSketchOn(XY)
         if (btnLineAriaPressed === 'true') {
           await btnLine.click()
         }
-        await page.waitForTimeout(timeout)
+        await expect(btnLine).not.toHaveAttribute('aria-pressed', 'true')
       })
       await test.step('Select the first segment', async () => {
         await page.waitForTimeout(timeout)
@@ -919,7 +919,7 @@ openSketch = startSketchOn(XY)
           tolerance
         )
         await scene.expectPixelColor(
-          edgeColorWhite,
+          edgeColorUnconstrained,
           secondSegmentLocation,
           tolerance
         )
@@ -948,7 +948,7 @@ openSketch = startSketchOn(XY)
         await page.waitForTimeout(timeout)
         await page.keyboard.up('Shift')
         await scene.expectPixelColor(
-          edgeColorWhite,
+          edgeColorUnconstrained,
           firstSegmentLocation,
           tolerance
         )
@@ -965,12 +965,12 @@ openSketch = startSketchOn(XY)
         await page.waitForTimeout(timeout)
         await page.keyboard.up('Shift')
         await scene.expectPixelColor(
-          edgeColorWhite,
+          edgeColorUnconstrained,
           firstSegmentLocation,
           tolerance
         )
         await scene.expectPixelColor(
-          edgeColorWhite,
+          edgeColorUnconstrained,
           secondSegmentLocation,
           tolerance
         )
