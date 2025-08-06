@@ -100,6 +100,7 @@ export const EngineStream = (props: {
       type: EngineStreamTransition.SetContainerElementRef,
       containerElementRef: { current: videoWrapperRef.current },
     })
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [videoWrapperRef.current, engineStreamState])
 
   useEffect(() => {
