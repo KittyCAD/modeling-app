@@ -38,14 +38,14 @@ angledLineThatIntersects(
 
 ```kcl
 exampleSketch = startSketchOn(XZ)
-  |> startProfile(at = [0, 0])
+exampleProfile = startProfile(exampleSketch, at = [0, 0])
   |> line(endAbsolute = [5, 10])
   |> line(endAbsolute = [-10, 10], tag = $lineToIntersect)
   |> line(endAbsolute = [0, 20])
   |> angledLineThatIntersects(angle = 80deg, intersectTag = lineToIntersect, offset = 10)
   |> close()
 
-example = extrude(exampleSketch, length = 10)
+example = extrude(exampleProfile, length = 10)
 
 ```
 

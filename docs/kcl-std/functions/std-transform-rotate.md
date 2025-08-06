@@ -78,11 +78,10 @@ sweepPath = startSketchOn(XZ)
   |> line(end = [0, 7])
 
 // Create a hole for the pipe.
-pipeHole = startSketchOn(XY)
-  |> circle(center = [0, 0], radius = 1.5)
+pipeSketch = startSketchOn(XY)
+pipeHole = circle(pipeSketch, center = [0, 0], radius = 1.5)
 
-sweepSketch = startSketchOn(XY)
-  |> circle(center = [0, 0], radius = 2)
+pipe = circle(pipeSketch, center = [0, 0], radius = 2)
   |> subtract2d(tool = pipeHole)
   |> sweep(path = sweepPath)
   |> rotate(roll = 10, pitch = 10, yaw = 90)
@@ -104,11 +103,10 @@ sweepPath = startSketchOn(XZ)
   |> line(end = [0, 7])
 
 // Create a hole for the pipe.
-pipeHole = startSketchOn(XY)
-  |> circle(center = [0, 0], radius = 1.5)
+pipeSketch = startSketchOn(XY)
+pipeHole = circle(pipeSketch, center = [0, 0], radius = 1.5)
 
-sweepSketch = startSketchOn(XY)
-  |> circle(center = [0, 0], radius = 2)
+pipe = circle(pipeSketch, center = [0, 0], radius = 2)
   |> subtract2d(tool = pipeHole)
   |> sweep(path = sweepPath)
   |> rotate(roll = 10)
@@ -130,11 +128,10 @@ sweepPath = startSketchOn(XZ)
   |> line(end = [0, 7])
 
 // Create a hole for the pipe.
-pipeHole = startSketchOn(XY)
-  |> circle(center = [0, 0], radius = 1.5)
+pipeSketch = startSketchOn(XY)
+pipeHole = circle(pipeSketch, center = [0, 0], radius = 1.5)
 
-sweepSketch = startSketchOn(XY)
-  |> circle(center = [0, 0], radius = 2)
+pipe = circle(pipeSketch, center = [0, 0], radius = 2)
   |> subtract2d(tool = pipeHole)
   |> sweep(path = sweepPath)
   |> rotate(axis = Z, angle = 90deg)
@@ -169,11 +166,10 @@ sweepPath = startSketchOn(XZ)
   |> line(end = [0, 7])
 
 // Create a hole for the pipe.
-pipeHole = startSketchOn(XY)
-  |> circle(center = [0, 0], radius = 1.5)
+pipeSketch = startSketchOn(XY)
+pipeHole = circle(pipeSketch, center = [0, 0], radius = 1.5)
 
-sweepSketch = startSketchOn(XY)
-  |> circle(center = [0, 0], radius = 2)
+pipe = circle(pipeSketch, center = [0, 0], radius = 2)
   |> subtract2d(tool = pipeHole)
   |> sweep(path = sweepPath)
   |> rotate(axis = [0, 0, 1.0], angle = 90deg)

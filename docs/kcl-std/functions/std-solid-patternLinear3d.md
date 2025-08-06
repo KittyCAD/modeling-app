@@ -41,13 +41,13 @@ patternLinear3d(
 
 
 exampleSketch = startSketchOn(XZ)
-  |> startProfile(at = [0, 0])
+exampleProfile = startProfile(exampleSketch, at = [0, 0])
   |> line(end = [0, 2])
   |> line(end = [3, 1])
   |> line(end = [0, -4])
   |> close()
 
-example = extrude(exampleSketch, length = 1)
+example = extrude(exampleProfile, length = 1)
   |> patternLinear3d(axis = X, instances = 7, distance = 6)
 
 ```
@@ -59,13 +59,13 @@ example = extrude(exampleSketch, length = 1)
 
 
 exampleSketch = startSketchOn(XZ)
-  |> startProfile(at = [0, 0])
+exampleProfile = startProfile(exampleSketch, at = [0, 0])
   |> line(end = [0, 2])
   |> line(end = [3, 1])
   |> line(end = [0, -4])
   |> close()
 
-example = extrude(exampleSketch, length = 1)
+example = extrude(exampleProfile, length = 1)
   |> patternLinear3d(axis = [1, 0, 1], instances = 7, distance = 6)
 
 ```
@@ -75,8 +75,8 @@ example = extrude(exampleSketch, length = 1)
 ```kcl
 // Pattern a whole sketch on face.
 size = 100
-case = startSketchOn(XY)
-  |> startProfile(at = [-size, -size])
+caseSketch = startSketchOn(XY)
+case = startProfile(caseSketch, at = [-size, -size])
   |> line(end = [2 * size, 0])
   |> line(end = [0, 2 * size])
   |> tangentialArc(endAbsolute = [-size, size])
@@ -107,8 +107,8 @@ patternLinear3d(
 ```kcl
 // Pattern an object on a face.
 size = 100
-case = startSketchOn(XY)
-  |> startProfile(at = [-size, -size])
+caseSketch = startSketchOn(XY)
+case = startProfile(caseSketch, at = [-size, -size])
   |> line(end = [2 * size, 0])
   |> line(end = [0, 2 * size])
   |> tangentialArc(endAbsolute = [-size, size])
