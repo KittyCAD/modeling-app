@@ -2398,23 +2398,21 @@ impl Name {
 
 impl Name {
     /// Write the full name to the given string.
-    pub fn write_to(&self, buf: &mut String) {
+    pub fn write_to<W: std::fmt::Write>(&self, buf: &mut W) -> std::fmt::Result {
         if self.abs_path {
-            buf.push_str("::");
+            buf.write_str("::")?;
         };
         for p in &self.path {
-            buf.push_str(&p.name);
-            buf.push_str("::");
+            buf.write_str(&p.name)?;
+            buf.write_str("::")?;
         }
-        buf.push_str(&self.name.name);
+        buf.write_str(&self.name.name)
     }
 }
 
 impl fmt::Display for Name {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let mut buf = String::new();
-        self.write_to(&mut buf);
-        buf.fmt(f)
+        self.write_to(f)
     }
 }
 

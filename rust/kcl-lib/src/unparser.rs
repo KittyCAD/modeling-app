@@ -349,7 +349,7 @@ impl BinaryPart {
             }
             BinaryPart::Name(name) => match deprecation(&name.inner.name.inner.name, DeprecationKind::Const) {
                 Some(suggestion) => write!(buf, "{suggestion}").no_fail(),
-                None => name.write_to(buf),
+                None => name.write_to(buf).no_fail(),
             },
             BinaryPart::BinaryExpression(binary_expression) => {
                 binary_expression.recast(buf, options, indentation_level, ctxt)
@@ -423,7 +423,7 @@ impl CallExpressionKw {
                 options.get_indentation(indentation_level)
             };
             options.write_indentation(buf, smart_indent_level);
-            name.write_to(buf);
+            name.write_to(buf).no_fail();
             buf.push('(');
             buf.push('\n');
             write!(buf, "{inner_indentation}").no_fail();
@@ -433,7 +433,7 @@ impl CallExpressionKw {
             buf.push(')');
         } else {
             options.write_indentation(buf, smart_indent_level);
-            name.write_to(buf);
+            name.write_to(buf).no_fail();
             buf.push('(');
             write!(buf, "{args}").no_fail();
             buf.push(')');
