@@ -51,6 +51,8 @@ export class ToolbarFixture {
   /** User button for the user sidebar menu */
   userSidebarButton!: Locator
   signOutButton!: Locator
+  /** Selection indicator text in the status bar */
+  selectionStatus!: Locator
 
   constructor(page: Page) {
     this.page = page
@@ -92,6 +94,8 @@ export class ToolbarFixture {
 
     this.userSidebarButton = page.getByTestId('user-sidebar-toggle')
     this.signOutButton = page.getByTestId('user-sidebar-sign-out')
+
+    this.selectionStatus = page.getByTestId('selection-status')
   }
 
   get logoLink() {
