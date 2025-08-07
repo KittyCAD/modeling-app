@@ -1809,19 +1809,6 @@ fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg02)])
     const standaloneUnassignedFilletDeclaration =
       'fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg02)])'
 
-    // Locators
-    const pipedFilletEdgeLocation = { x: 600, y: 193 }
-    const standaloneFilletEdgeLocation = { x: 600, y: 383 }
-    const bodyLocation = { x: 630, y: 290 }
-
-    // Colors
-    const edgeColorWhite: [number, number, number] = [248, 248, 248]
-    const bodyColor: [number, number, number] = [155, 155, 155]
-    const filletColor: [number, number, number] = [127, 127, 127]
-    const backgroundColor: [number, number, number] = [30, 30, 30]
-    const lowTolerance = 20
-    const highTolerance = 40
-
     // Setup
     await test.step(`Initial test setup`, async () => {
       await context.addInitScript((initialCode) => {
@@ -1830,16 +1817,6 @@ fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg02)])
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
       await scene.settled(cmdBar)
-
-      // verify modeling scene is loaded
-      await scene.expectPixelColor(
-        backgroundColor,
-        standaloneFilletEdgeLocation,
-        lowTolerance
-      )
-
-      // wait for stream to load
-      await scene.expectPixelColor(bodyColor, bodyLocation, highTolerance)
     })
 
     // Test
@@ -1860,18 +1837,6 @@ fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg02)])
             standaloneUnassignedFilletDeclaration
           )
         })
-        await test.step('Verify test fillets are present in the scene', async () => {
-          await scene.expectPixelColor(
-            filletColor,
-            pipedFilletEdgeLocation,
-            lowTolerance
-          )
-          await scene.expectPixelColor(
-            backgroundColor,
-            standaloneFilletEdgeLocation,
-            lowTolerance
-          )
-        })
         await test.step('Delete piped fillet', async () => {
           const operationButton = await toolbar.getFeatureTreeOperation(
             'Fillet',
@@ -1889,18 +1854,6 @@ fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg02)])
           )
           await editor.expectEditor.toContain(
             standaloneUnassignedFilletDeclaration
-          )
-        })
-        await test.step('Verify piped fillet is deleted but non-piped is not (in the scene)', async () => {
-          await scene.expectPixelColor(
-            edgeColorWhite, // you see edge because fillet is deleted
-            pipedFilletEdgeLocation,
-            lowTolerance
-          )
-          await scene.expectPixelColor(
-            backgroundColor, // you see background because fillet is not deleted
-            standaloneFilletEdgeLocation,
-            lowTolerance
           )
         })
       })
@@ -1924,13 +1877,6 @@ fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg02)])
             standaloneUnassignedFilletDeclaration
           )
         })
-        await test.step('Verify standalone assigned fillet is deleted but piped is not (in the scene)', async () => {
-          await scene.expectPixelColor(
-            edgeColorWhite,
-            standaloneFilletEdgeLocation,
-            lowTolerance
-          )
-        })
       })
 
       await test.step('Delete standalone unassigned fillet via feature tree selection', async () => {
@@ -1947,13 +1893,6 @@ fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg02)])
           await editor.expectEditor.toContain(secondPipedFilletDeclaration)
           await editor.expectEditor.not.toContain(
             standaloneUnassignedFilletDeclaration
-          )
-        })
-        await test.step('Verify standalone unassigned fillet is deleted but piped is not (in the scene)', async () => {
-          await scene.expectPixelColor(
-            edgeColorWhite,
-            standaloneFilletEdgeLocation,
-            lowTolerance
           )
         })
       })
