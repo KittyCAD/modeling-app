@@ -343,7 +343,6 @@ color = 1567.4"#;
         };
         let serialized = toml::to_string(&conf).unwrap();
         let old_project_file = r#"[settings.meta]
-id = "00000000-0000-0000-0000-000000000000"
 
 [settings.app]
 show_debug_panel = true
