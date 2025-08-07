@@ -17,7 +17,7 @@ sketch000Profile003 = startProfile(sketch000, at = [90.65875528983305, 60.855170
        center = [0, 60.855171],
        angleStart = 0deg,
        angleEnd = 180deg,
-       majorRadius = 90.658755,
+       majorAxis = [90.658755, 0],
        minorRadius = 16.805477,
      )
   |> bezierCurve(end = [50.20468, -26.67249], control1 = [15.007446, -25.538491], control2 = [32.368565, -29.659071])

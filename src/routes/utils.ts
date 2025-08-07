@@ -50,6 +50,8 @@ export const IS_STAGING = PACKAGE_NAME.indexOf('-staging') > -1
 export const IS_STAGING_OR_DEBUG =
   IS_STAGING || APP_VERSION === '0.0.0' || APP_VERSION === 'dev'
 
+export const APP_DOWNLOAD_PATH = `design-studio/download${IS_STAGING_OR_DEBUG ? '/staging' : ''}`
+
 export function getRefFromVersion(version: string) {
   const hash = version.split('.').pop()
   if (hash && hash.length === 7) {
