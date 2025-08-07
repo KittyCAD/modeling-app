@@ -363,8 +363,8 @@ impl KclValue {
         match literal.inner.value {
             LiteralValue::Number { value, suffix } => {
                 let ty = NumericType::from_parsed(suffix, &exec_state.mod_local.settings);
-                if let NumericType::Default { len, .. } = &ty {
-                    if !exec_state.mod_local.explicit_length_units && *len != UnitLen::Mm {
+                if let NumericType::Default { len, .. } = &ty
+                    && !exec_state.mod_local.explicit_length_units && *len != UnitLen::Mm {
                         exec_state.warn(
                             CompilationError::err(
                                 literal.as_source_range(),
@@ -380,7 +380,6 @@ impl KclValue {
                             annotations::WARN_DEPRECATED,
                         );
                     }
-                }
                 KclValue::Number { value, meta, ty }
             }
             LiteralValue::String(value) => KclValue::String { value, meta },

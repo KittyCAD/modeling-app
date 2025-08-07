@@ -94,8 +94,8 @@ pub async fn import_foreign(
 
             // Read the gltf file and check if there is a bin file.
             for buffer in json.buffers.iter() {
-                if let Some(uri) = &buffer.uri {
-                    if !uri.starts_with("data:") {
+                if let Some(uri) = &buffer.uri
+                    && !uri.starts_with("data:") {
                         // We want this path relative to the file_path given.
                         let bin_path = file_path.parent().map(|p| p.join(uri)).ok_or_else(|| {
                             KclError::new_semantic(KclErrorDetails::new(
@@ -113,7 +113,6 @@ pub async fn import_foreign(
                             data: bin_contents,
                         });
                     }
-                }
             }
         }
     }
@@ -331,23 +330,20 @@ fn get_import_format_from_extension(ext: &str) -> Result<InputFormat3d> {
 }
 
 fn validate_extension_format(ext: InputFormat3d, given: InputFormat3d) -> Result<()> {
-    if let InputFormat3d::Stl(_) = ext {
-        if let InputFormat3d::Stl(_) = given {
+    if let InputFormat3d::Stl(_) = ext
+        && let InputFormat3d::Stl(_) = given {
             return Ok(());
         }
-    }
 
-    if let InputFormat3d::Obj(_) = ext {
-        if let InputFormat3d::Obj(_) = given {
+    if let InputFormat3d::Obj(_) = ext
+        && let InputFormat3d::Obj(_) = given {
             return Ok(());
         }
-    }
 
-    if let InputFormat3d::Ply(_) = ext {
-        if let InputFormat3d::Ply(_) = given {
+    if let InputFormat3d::Ply(_) = ext
+        && let InputFormat3d::Ply(_) = given {
             return Ok(());
         }
-    }
 
     if ext == given {
         return Ok(());

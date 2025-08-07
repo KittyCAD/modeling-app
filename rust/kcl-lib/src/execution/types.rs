@@ -1137,8 +1137,8 @@ impl KclValue {
                 // If the user is explicitly specifying units, treat the value
                 // as having had its units erased, rather than forcing the user
                 // to explicitly erase them.
-                if let KclValue::Number { value: n, meta, .. } = &self {
-                    if ty.is_fully_specified() {
+                if let KclValue::Number { value: n, meta, .. } = &self
+                    && ty.is_fully_specified() {
                         let value = KclValue::Number {
                             ty: NumericType::Any,
                             value: *n,
@@ -1146,7 +1146,6 @@ impl KclValue {
                         };
                         return ty.coerce(&value);
                     }
-                }
                 ty.coerce(self)
             }
             PrimitiveType::String => match self {

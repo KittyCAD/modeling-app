@@ -588,11 +588,10 @@ pub(super) fn build_artifact_graph(
         // current plane ID.
         // THIS IS THE ONLY THING WE CAN ASSUME IS ALWAYS SEQUENTIAL SINCE ITS PART OF THE
         // SAME ATOMIC COMMANDS BATCHING.
-        if let ModelingCmd::StartPath(_) = artifact_command.command {
-            if let Some(plane_id) = current_plane_id {
+        if let ModelingCmd::StartPath(_) = artifact_command.command
+            && let Some(plane_id) = current_plane_id {
                 path_to_plane_id_map.insert(artifact_command.cmd_id, plane_id);
             }
-        }
         if let ModelingCmd::SketchModeDisable(_) = artifact_command.command {
             current_plane_id = None;
         }

@@ -64,11 +64,10 @@ where
         // Check if the document is in the current code map and if it is the same as what we have
         // stored.
         let filename = params.uri.to_string();
-        if let Some(current_code) = self.code_map().get(&filename) {
-            if *current_code == params.text.as_bytes() && !self.has_diagnostics(&filename).await {
+        if let Some(current_code) = self.code_map().get(&filename)
+            && *current_code == params.text.as_bytes() && !self.has_diagnostics(&filename).await {
                 return;
             }
-        }
 
         self.insert_code_map(params.uri.to_string(), params.text.as_bytes().to_vec())
             .await;

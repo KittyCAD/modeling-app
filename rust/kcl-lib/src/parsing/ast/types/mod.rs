@@ -464,14 +464,13 @@ impl Node<Program> {
                 crate::walk::Node::CallExpressionKw(call) => {
                     if call.inner.callee.inner.name.inner.name == "appearance" {
                         for arg in &call.arguments {
-                            if let Some(l) = &arg.label {
-                                if l.inner.name == "color" {
+                            if let Some(l) = &arg.label
+                                && l.inner.name == "color" {
                                     // Get the value of the argument.
                                     if let Expr::Literal(literal) = &arg.arg {
                                         add_color(literal);
                                     }
                                 }
-                            }
                         }
                     }
                 }
@@ -633,13 +632,11 @@ impl Program {
         };
 
         // Check if the expr's non code meta contains the position.
-        if let Some(expr) = expr {
-            if let Some(non_code_meta) = expr.get_non_code_meta() {
-                if non_code_meta.in_comment(pos) {
+        if let Some(expr) = expr
+            && let Some(non_code_meta) = expr.get_non_code_meta()
+                && non_code_meta.in_comment(pos) {
                     return true;
                 }
-            }
-        }
 
         false
     }
@@ -2388,11 +2385,10 @@ impl Name {
 
     /// Rename all identifiers that have the old name to the new given name.
     fn rename(&mut self, old_name: &str, new_name: &str) {
-        if let Some(n) = self.local_ident() {
-            if n.inner == old_name {
+        if let Some(n) = self.local_ident()
+            && n.inner == old_name {
                 self.name.name = new_name.to_owned();
             }
-        }
     }
 }
 

@@ -1198,8 +1198,8 @@ impl Node<BinaryExpression> {
         meta.extend(right_value.metadata());
 
         // First check if we are doing string concatenation.
-        if self.operator == BinaryOperator::Add {
-            if let (KclValue::String { value: left, meta: _ }, KclValue::String { value: right, meta: _ }) =
+        if self.operator == BinaryOperator::Add
+            && let (KclValue::String { value: left, meta: _ }, KclValue::String { value: right, meta: _ }) =
                 (&left_value, &right_value)
             {
                 return Ok(KclValue::String {
@@ -1207,7 +1207,6 @@ impl Node<BinaryExpression> {
                     meta,
                 });
             }
-        }
 
         // Then check if we have solids.
         if self.operator == BinaryOperator::Add || self.operator == BinaryOperator::Or {

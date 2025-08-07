@@ -295,40 +295,36 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
     }
 
     // Validate the roll, pitch, and yaw values.
-    if let Some(roll) = &roll {
-        if !(-360.0..=360.0).contains(&roll.n) {
+    if let Some(roll) = &roll
+        && !(-360.0..=360.0).contains(&roll.n) {
             return Err(KclError::new_semantic(KclErrorDetails::new(
                 format!("Expected roll to be between -360 and 360, found `{}`", roll.n),
                 vec![args.source_range],
             )));
         }
-    }
-    if let Some(pitch) = &pitch {
-        if !(-360.0..=360.0).contains(&pitch.n) {
+    if let Some(pitch) = &pitch
+        && !(-360.0..=360.0).contains(&pitch.n) {
             return Err(KclError::new_semantic(KclErrorDetails::new(
                 format!("Expected pitch to be between -360 and 360, found `{}`", pitch.n),
                 vec![args.source_range],
             )));
         }
-    }
-    if let Some(yaw) = &yaw {
-        if !(-360.0..=360.0).contains(&yaw.n) {
+    if let Some(yaw) = &yaw
+        && !(-360.0..=360.0).contains(&yaw.n) {
             return Err(KclError::new_semantic(KclErrorDetails::new(
                 format!("Expected yaw to be between -360 and 360, found `{}`", yaw.n),
                 vec![args.source_range],
             )));
         }
-    }
 
     // Validate the axis and angle values.
-    if let Some(angle) = &angle {
-        if !(-360.0..=360.0).contains(&angle.n) {
+    if let Some(angle) = &angle
+        && !(-360.0..=360.0).contains(&angle.n) {
             return Err(KclError::new_semantic(KclErrorDetails::new(
                 format!("Expected angle to be between -360 and 360, found `{}`", angle.n),
                 vec![args.source_range],
             )));
         }
-    }
 
     let objects = inner_rotate(
         objects,

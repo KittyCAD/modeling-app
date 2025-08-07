@@ -109,12 +109,11 @@ impl NodePath {
                                 path.push(Step::ImportStatementItemName);
                                 return Some(path);
                             }
-                            if let Some(alias) = &item.alias {
-                                if alias.contains_range(&range) {
+                            if let Some(alias) = &item.alias
+                                && alias.contains_range(&range) {
                                     path.push(Step::ImportStatementItemAlias);
                                     return Some(path);
                                 }
-                            }
                             return Some(path);
                         }
                     }
@@ -203,12 +202,11 @@ impl NodePath {
                     path.push(Step::CallKwCallee);
                     return Some(path);
                 }
-                if let Some(unlabeled) = &node.unlabeled {
-                    if unlabeled.contains_range(&range) {
+                if let Some(unlabeled) = &node.unlabeled
+                    && unlabeled.contains_range(&range) {
                         path.push(Step::CallKwUnlabeledArg);
                         return Self::from_expr(unlabeled, range, path);
                     }
-                }
                 for (i, arg) in node.arguments.iter().enumerate() {
                     if arg.arg.contains_range(&range) {
                         path.push(Step::CallKwArg { index: i });
