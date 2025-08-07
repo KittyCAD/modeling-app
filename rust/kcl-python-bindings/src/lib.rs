@@ -6,10 +6,7 @@ use kcl_lib::{
 };
 use kittycad_modeling_cmds::{self as kcmc, format::InputFormat3d, ImportFile};
 use pyo3::{
-    exceptions::PyException,
-    prelude::PyModuleMethods,
-    pyclass, pyfunction, pymethods, pymodule,
-    types::{PyAnyMethods, PyModule, PyTypeMethods},
+    exceptions::PyException, prelude::PyModuleMethods, pyclass, pyfunction, pymethods, pymodule, types::PyModule,
     wrap_pyfunction, Bound, PyErr, PyResult, Python,
 };
 use serde::{Deserialize, Serialize};
@@ -721,24 +718,16 @@ fn lint(code: String) -> PyResult<Vec<Discovered>> {
 /// The kcl python module.
 #[pymodule]
 fn kcl(py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
-    // List every class you want “hoisted”
-    for cls in [
-        py.get_type::<ImageFormat>(),
-        py.get_type::<ExportFile>(),
-        py.get_type::<FileExportFormat>(),
-        py.get_type::<UnitLength>(),
-        py.get_type::<Discovered>(),
-        py.get_type::<SnapshotOptions>(),
-        py.get_type::<bridge::Point3d>(),
-        py.get_type::<bridge::CameraLookAt>(),
-        py.get_type::<kcmc::format::InputFormat3d>(),
-    ] {
-        // 1) Put it in our module namespace so users can `import zoo_common`
-        m.add(cls.name()?, cls.clone())?;
-
-        // 2) Patch __module__ so stub generators & reprs think it's top-level
-        cls.setattr("__module__", "kcl")?;
-    }
+    // Add our types to the module.
+    m.add_class::<ImageFormat>()?;
+    m.add_class::<ExportFile>()?;
+    m.add_class::<FileExportFormat>()?;
+    m.add_class::<UnitLength>()?;
+    m.add_class::<Discovered>()?;
+    m.add_class::<SnapshotOptions>()?;
+    m.add_class::<bridge::Point3d>()?;
+    m.add_class::<bridge::CameraLookAt>()?;
+    m.add_class::<kcmc::format::InputFormat3d>()?;
 
     let step_import = PyModule::new(py, "step_import")?;
     step_import.add_class::<kcmc::format::step::import::Options>()?;
