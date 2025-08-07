@@ -26,7 +26,6 @@ import {
   SKETCH_LAYER,
   X_AXIS,
   Y_AXIS,
-  getSceneScale,
 } from '@src/clientSideScene/sceneUtils'
 import type { useModelingContext } from '@src/hooks/useModelingContext'
 import type { EngineCommandManager } from '@src/lang/std/engineConnection'
@@ -41,7 +40,6 @@ import type {
   SegmentOverlayPayload,
 } from '@src/machines/modelingMachine'
 import { PROFILE_START } from '@src/clientSideScene/sceneConstants'
-import { GridHelperInfinite } from '@src/clientSideScene/GridHelperInfinite'
 
 type SendType = ReturnType<typeof useModelingContext>['send']
 
@@ -288,7 +286,6 @@ export class SceneInfra {
       engineCommandManager,
       false
     )
-    this.camControls.subscribeToCamChange(() => this.onCameraChange())
     this.camControls.camera.layers.enable(SKETCH_LAYER)
     if (DEBUG_SHOW_INTERSECTION_PLANE)
       this.camControls.camera.layers.enable(INTERSECTION_PLANE_LAYER)
@@ -317,20 +314,6 @@ export class SceneInfra {
     this.scene.add(light)
 
     SceneInfra.instance = this
-  }
-
-  onCameraChange = () => {
-    const gridHelper = this.scene
-      .getObjectByName(AXIS_GROUP)
-      ?.getObjectByName('gridHelper')
-    if (gridHelper instanceof GridHelperInfinite) {
-      gridHelper.update(this.camControls.camera, 1, 4)
-      // const scale = getSceneScale(
-      //     this.camControls.camera,
-      //     this.camControls.target
-      // )
-      //  axisGroup.scale.set(scale, scale, scale)
-    }
   }
 
   // Called after canvas is attached to the DOM and on each resize.

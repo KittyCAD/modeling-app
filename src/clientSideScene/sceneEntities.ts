@@ -38,7 +38,6 @@ import type { SafeArray } from '@src/lib/utils'
 import { getAngle, getLength, uuidv4 } from '@src/lib/utils'
 
 import {
-  createGridHelper,
   isQuaternionVertical,
   orthoScale,
   perspScale,
@@ -87,7 +86,6 @@ import {
   SKETCH_LAYER,
   X_AXIS,
   Y_AXIS,
-  getSceneScale,
 } from '@src/clientSideScene/sceneUtils'
 import type { SegmentUtils } from '@src/clientSideScene/segments'
 import { createLineShape } from '@src/clientSideScene/segments'
@@ -180,7 +178,7 @@ import type {
 } from '@src/machines/modelingMachine'
 import { calculateIntersectionOfTwoLines } from 'sketch-helpers'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
-import { GridHelperInfinite } from '@src/clientSideScene/GridHelperInfinite'
+import { InfiniteGridRenderer } from '@src/clientSideScene/InfiniteGridRenderer'
 
 type DraftSegment = 'line' | 'tangentialArc'
 
@@ -421,8 +419,8 @@ export class SceneEntities {
     yAxisMesh.name = Y_AXIS
 
     this.axisGroup = new Group()
-    const gridHelper = this.createGrid()
-    this.updateGrid()
+    const gridHelper = new InfiniteGridRenderer()
+    gridHelper.name = 'gridHelper'
 
     const factor =
       this.sceneInfra.camControls.camera instanceof OrthographicCamera
@@ -449,26 +447,8 @@ export class SceneEntities {
     this.axisGroup.setRotationFromQuaternion(quat)
     sketchPosition && this.axisGroup.position.set(...sketchPosition)
     this.sceneInfra.scene.add(this.axisGroup)
-  }
 
-  createGrid() {
-    // new grid
-    const grid = new GridHelperInfinite()
-    grid.name = 'gridHelper'
-
-    return grid
-
-    // const gridHelper = createGridHelper({ size: 100, divisions: 10 })
-    // gridHelper.position.z = -0.01
-    // gridHelper.renderOrder = -3 // is this working?
-    // gridHelper.name = 'gridHelper'
-    // const sceneScale = getSceneScale(
-    //     this.sceneInfra.camControls.camera,
-    //     this.sceneInfra.camControls.target
-    // )
-    // gridHelper.scale.set(sceneScale, sceneScale, sceneScale)
-    //
-    // return gridHelper;
+    this.updateGrid()
   }
 
   updateGrid() {
@@ -477,14 +457,20 @@ export class SceneEntities {
       const gridHelper = this.sceneInfra.scene
         .getObjectByName(AXIS_GROUP)
         ?.getObjectByName('gridHelper')
-      if (gridHelper instanceof GridHelperInfinite) {
+      if (gridHelper instanceof InfiniteGridRenderer) {
         const majorGridSpacing = settings.modeling.majorGridSpacing.current ?? 1
         const minorGridsPerMajor =
           settings.modeling.minorGridsPerMajor.current ?? 4
+
+        const viewportSize = this.sceneInfra.renderer.getDrawingBufferSize(
+          new Vector2()
+        )
         gridHelper.update(
           this.sceneInfra.camControls.camera,
           majorGridSpacing,
-          minorGridsPerMajor
+          minorGridsPerMajor,
+          viewportSize.x,
+          viewportSize.y
         )
       }
     } else {
