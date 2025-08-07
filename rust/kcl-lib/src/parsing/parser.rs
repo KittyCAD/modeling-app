@@ -48,6 +48,8 @@ const IF_ELSE_CANNOT_BE_EMPTY: &str = "`if` and `else` blocks cannot be empty";
 const ELSE_STRUCTURE: &str = "This `else` should be followed by a {, then a block of code, then a }";
 const ELSE_MUST_END_IN_EXPR: &str = "This `else` block needs to end in an expression, which will be the value if no preceding `if` condition was matched";
 
+const KEYWORD_EXPECTING_IDENTIFIER: &str = "Expected an identifier, but found a reserved keyword.";
+
 pub fn run_parser(i: TokenSlice) -> super::ParseResult {
     let _stats = crate::log::LogPerfStats::new("Parsing");
     ParseContext::init();
@@ -930,7 +932,7 @@ fn object_property_same_key_and_val(i: &mut TokenSlice) -> ModalResult<Node<Obje
 }
 
 fn object_property(i: &mut TokenSlice) -> ModalResult<Node<ObjectProperty>> {
-    let key = identifier.context(expected("the property's key (the name or identifier of the property), e.g. in 'height = 4', 'height' is the property key")).parse_next(i)?;
+    let key_token = identifier_or_keyword.context(expected("the property's key (the name or identifier of the property), e.g. in 'height = 4', 'height' is the property key")).parse_next(i)?;
     ignore_whitespace(i);
     // Temporarily accept both `:` and `=` for compatibility.
     let sep = alt((colon, equals))
@@ -956,6 +958,18 @@ fn object_property(i: &mut TokenSlice) -> ModalResult<Node<ObjectProperty>> {
             ));
         }
     };
+
+    // Now that we've verified that we can parse everything, ensure that the key
+    // is valid.  If not, we can cut.
+    let key = Node::<Identifier>::try_from(key_token).map_err(|comp_err| {
+        ErrMode::Cut(ContextError {
+            context: Default::default(),
+            cause: Some(CompilationError::err(
+                comp_err.source_range,
+                KEYWORD_EXPECTING_IDENTIFIER,
+            )),
+        })
+    })?;
 
     let result = Node::new_node(
         key.start,
@@ -2424,6 +2438,12 @@ impl TryFrom<Token> for Node<Identifier> {
 fn identifier(i: &mut TokenSlice) -> ModalResult<Node<Identifier>> {
     any.try_map(Node::<Identifier>::try_from)
         .context(expected("an identifier, e.g. 'width' or 'myPart'"))
+        .parse_next(i)
+}
+
+fn identifier_or_keyword(i: &mut TokenSlice) -> ModalResult<Token> {
+    any.verify(|token: &Token| token.token_type == TokenType::Word || token.token_type == TokenType::Keyword)
+        .context(expected("an identifier or keyword"))
         .parse_next(i)
 }
 
@@ -5393,6 +5413,18 @@ bar = 1
         let cause = must_fail_compilation(program_source);
         assert!(!cause.was_fatal);
         assert_eq!(cause.err.message, MISSING_ELSE);
+        assert_eq!(cause.err.source_range.start(), expected_src_start);
+    }
+
+    #[test]
+    fn test_sensible_error_when_using_keyword_as_object_key() {
+        let source = r#"material = {
+  type = "Steel 45"
+}"#;
+        let expected_src_start = source.find("type").unwrap();
+        let cause = must_fail_compilation(source);
+        assert!(cause.was_fatal);
+        assert_eq!(cause.err.message, KEYWORD_EXPECTING_IDENTIFIER);
         assert_eq!(cause.err.source_range.start(), expected_src_start);
     }
 
