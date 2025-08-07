@@ -17,7 +17,7 @@ test = ["pytest", "pytest-asyncio"]
 
 [tool.maturin]
 features = ["pyo3/extension-module"]
-include = ["stubs/kcl.pyi"]
+include = ["stubs/*.pyi"]
 
 [tool.setuptools]
 include-package-data = false
