@@ -476,14 +476,6 @@ part001 = startSketchOn(XZ)
     ).not.toBeDisabled()
   })
 
-  const removeAfterFirstParenthesis = (inputString: string) => {
-    const index = inputString.indexOf('(')
-    if (index !== -1) {
-      return inputString.substring(0, index)
-    }
-    return inputString // return the original string if '(' is not found
-  }
-
   test('Testing selections (and hovers) work on sketches when NOT in sketch mode', async ({
     page,
     homePage,
