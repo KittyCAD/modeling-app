@@ -1,10 +1,6 @@
-import type {Camera} from 'three';
-import { GLSL3} from 'three'
-import {
-	BufferGeometry,
-	RawShaderMaterial,
-	Mesh,
-} from 'three'
+import type { Camera } from 'three'
+import { GLSL3 } from 'three'
+import { BufferGeometry, RawShaderMaterial, Mesh } from 'three'
 
 const vertexShader = `precision highp float;
 
@@ -59,52 +55,56 @@ void main() {
 }`
 
 export class GridHelperInfinite extends Mesh {
-	constructor() {
-		const geometry = new BufferGeometry()
-		
-		const material = new RawShaderMaterial({
-			glslVersion: GLSL3,
-			vertexShader,
-			fragmentShader,
-			uniforms: {
-				lineCount: { value: 100 },
-				spacing: { value: 1.0 },
-				offset: { value: [0.0, 0.0] },
-				modelViewMatrix: { value: null },
-				projectionMatrix: { value: null },
-			},
-			transparent: true,
-			depthTest: false,
-			depthWrite: false,
-		})
+  constructor() {
+    const geometry = new BufferGeometry()
 
-		super(geometry, material)
-		
-		this.renderOrder = -10
-		this.frustumCulled = false
-	}
+    const material = new RawShaderMaterial({
+      glslVersion: GLSL3,
+      vertexShader,
+      fragmentShader,
+      uniforms: {
+        lineCount: { value: 100 },
+        spacing: { value: 1.0 },
+        offset: { value: [0.0, 0.0] },
+        modelViewMatrix: { value: null },
+        projectionMatrix: { value: null },
+      },
+      transparent: true,
+      depthTest: false,
+      depthWrite: false,
+    })
 
-	update(camera: Camera, majorSpacing: number, minorPerMajor: number) {
-		const material = this.material as RawShaderMaterial
-		
-		const cameraPos = camera.position
-		const zoom = 'zoom' in camera ? (camera as any).zoom : 1
-		const worldSize = 50 / zoom
-		
-		const minorSpacing = majorSpacing / minorPerMajor
-		
-		const linesPerSide = Math.ceil(worldSize / minorSpacing) + 10
-		const totalLines = linesPerSide * 2
-		
-		const offsetX = Math.floor(cameraPos.x / minorSpacing) * minorSpacing - (linesPerSide / 2) * minorSpacing
-		const offsetY = Math.floor(cameraPos.y / minorSpacing) * minorSpacing - (linesPerSide / 2) * minorSpacing
-		
-		material.uniforms.lineCount.value = totalLines
-		material.uniforms.spacing.value = minorSpacing
-		material.uniforms.offset.value = [offsetX, offsetY]
-		material.uniforms.modelViewMatrix.value = this.modelViewMatrix
-		material.uniforms.projectionMatrix.value = camera.projectionMatrix
-		
-		this.geometry.setDrawRange(0, totalLines * 2)
-	}
-} 
+    super(geometry, material)
+
+    this.renderOrder = -10
+    this.frustumCulled = false
+  }
+
+  update(camera: Camera, majorSpacing: number, minorPerMajor: number) {
+    const material = this.material as RawShaderMaterial
+
+    const cameraPos = camera.position
+    const zoom = 'zoom' in camera ? (camera as any).zoom : 1
+    const worldSize = 50 / zoom
+
+    const minorSpacing = majorSpacing / minorPerMajor
+
+    const linesPerSide = Math.ceil(worldSize / minorSpacing) + 10
+    const totalLines = linesPerSide * 2
+
+    const offsetX =
+      Math.floor(cameraPos.x / minorSpacing) * minorSpacing -
+      (linesPerSide / 2) * minorSpacing
+    const offsetY =
+      Math.floor(cameraPos.y / minorSpacing) * minorSpacing -
+      (linesPerSide / 2) * minorSpacing
+
+    material.uniforms.lineCount.value = totalLines
+    material.uniforms.spacing.value = minorSpacing
+    material.uniforms.offset.value = [offsetX, offsetY]
+    material.uniforms.modelViewMatrix.value = this.modelViewMatrix
+    material.uniforms.projectionMatrix.value = camera.projectionMatrix
+
+    this.geometry.setDrawRange(0, totalLines * 2)
+  }
+}

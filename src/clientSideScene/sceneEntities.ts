@@ -180,7 +180,7 @@ import type {
 } from '@src/machines/modelingMachine'
 import { calculateIntersectionOfTwoLines } from 'sketch-helpers'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
-import {GridHelperInfinite} from "@src/clientSideScene/GridHelperInfinite"
+import { GridHelperInfinite } from '@src/clientSideScene/GridHelperInfinite'
 
 type DraftSegment = 'line' | 'tangentialArc'
 
@@ -451,7 +451,6 @@ export class SceneEntities {
   }
 
   createGrid() {
-
     // new grid
     const grid = new GridHelperInfinite()
     grid.name = 'gridHelper'

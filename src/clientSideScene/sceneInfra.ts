@@ -46,7 +46,7 @@ import type {
   SegmentOverlayPayload,
 } from '@src/machines/modelingMachine'
 import { PROFILE_START } from '@src/clientSideScene/sceneConstants'
-import {GridHelperInfinite} from "@src/clientSideScene/GridHelperInfinite"
+import { GridHelperInfinite } from '@src/clientSideScene/GridHelperInfinite'
 
 type SendType = ReturnType<typeof useModelingContext>['send']
 
