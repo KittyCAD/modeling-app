@@ -2779,11 +2779,15 @@ export class SceneEntities {
       ]
 
       // Not snapping to any axis, snap to default unit grid, ie. round it.
-      if (this.getSettings) {
-        if (this.getSettings().modeling.snapToGrid.current) {
+      const settings = this.getSettings?.();
+      if (settings) {
+        if (settings.modeling.snapToGrid.current) {
+          const snapsPerMinor = settings.modeling.snapsPerMinor.current;
+          const minorsPerMajor = settings.modeling.minorGridsPerMajor.current;
+          const multiplier = minorsPerMajor * snapsPerMinor;
           snappedPoint = [
-            Math.round(snappedPoint[0]),
-            Math.round(snappedPoint[1]),
+            Math.round(snappedPoint[0] * multiplier) / multiplier,
+            Math.round(snappedPoint[1] * multiplier) / multiplier,
           ]
         }
       } else {
