@@ -47,11 +47,11 @@ import { DownloadAppToast } from '@src/components/DownloadAppToast'
 import { WasmErrToast } from '@src/components/WasmErrToast'
 import openWindow from '@src/lib/openWindow'
 import {
-  APP_DOWNLOAD_PATH,
   DOWNLOAD_APP_TOAST_ID,
   ONBOARDING_TOAST_ID,
   WASM_INIT_FAILED_TOAST_ID,
 } from '@src/lib/constants'
+import { APP_DOWNLOAD_PATH } from '@src/routes/utils'
 import { isPlaywright } from '@src/lib/isPlaywright'
 import { useNetworkHealthStatus } from '@src/components/NetworkHealthIndicator'
 import { useNetworkMachineStatus } from '@src/components/NetworkMachineIndicator'
@@ -304,6 +304,7 @@ export function App() {
             : []),
           {
             id: 'selection',
+            'data-testid': 'selection-status',
             element: 'text',
             label:
               getSelectionTypeDisplayText(
