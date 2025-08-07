@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 use crate::{
     CompilationError, SourceRange,
     execution::{
-        ExecState, Plane, PlaneInfo, Point3d,
+        ExecState, Plane, PlaneInfo, Point3d, annotations,
         kcl_value::{KclValue, TypeDef},
         memory::{self},
     },
@@ -1165,56 +1165,58 @@ impl KclValue {
                 KclValue::Solid { .. } => Ok(self.clone()),
                 _ => Err(self.into()),
             },
-            PrimitiveType::Plane => match self {
-                KclValue::String { value: s, .. }
-                    if [
-                        "xy", "xz", "yz", "-xy", "-xz", "-yz", "XY", "XZ", "YZ", "-XY", "-XZ", "-YZ",
-                    ]
-                    .contains(&&**s) =>
-                {
-                    Ok(self.clone())
-                }
-                KclValue::Plane { .. } => Ok(self.clone()),
-                KclValue::Object { value, meta } => {
-                    let origin = value
-                        .get("origin")
-                        .and_then(Point3d::from_kcl_val)
-                        .ok_or(CoercionError::from(self))?;
-                    let x_axis = value
-                        .get("xAxis")
-                        .and_then(Point3d::from_kcl_val)
-                        .ok_or(CoercionError::from(self))?;
-                    let y_axis = value
-                        .get("yAxis")
-                        .and_then(Point3d::from_kcl_val)
-                        .ok_or(CoercionError::from(self))?;
-                    let z_axis = x_axis.axes_cross_product(&y_axis);
+            PrimitiveType::Plane => {
+                match self {
+                    KclValue::String { value: s, .. }
+                        if [
+                            "xy", "xz", "yz", "-xy", "-xz", "-yz", "XY", "XZ", "YZ", "-XY", "-XZ", "-YZ",
+                        ]
+                        .contains(&&**s) =>
+                    {
+                        Ok(self.clone())
+                    }
+                    KclValue::Plane { .. } => Ok(self.clone()),
+                    KclValue::Object { value, meta } => {
+                        let origin = value
+                            .get("origin")
+                            .and_then(Point3d::from_kcl_val)
+                            .ok_or(CoercionError::from(self))?;
+                        let x_axis = value
+                            .get("xAxis")
+                            .and_then(Point3d::from_kcl_val)
+                            .ok_or(CoercionError::from(self))?;
+                        let y_axis = value
+                            .get("yAxis")
+                            .and_then(Point3d::from_kcl_val)
+                            .ok_or(CoercionError::from(self))?;
+                        let z_axis = x_axis.axes_cross_product(&y_axis);
 
-                    if value.get("zAxis").is_some() {
-                        exec_state.warn(CompilationError::err(
+                        if value.get("zAxis").is_some() {
+                            exec_state.warn(CompilationError::err(
                             self.into(),
                             "Object with a zAxis field is being coerced into a plane, but the zAxis is ignored.",
-                        ));
+                        ), annotations::WARN_IGNORED_Z_AXIS);
+                        }
+
+                        let id = exec_state.mod_local.id_generator.next_uuid();
+                        let plane = Plane {
+                            id,
+                            artifact_id: id.into(),
+                            info: PlaneInfo {
+                                origin,
+                                x_axis: x_axis.normalize(),
+                                y_axis: y_axis.normalize(),
+                                z_axis: z_axis.normalize(),
+                            },
+                            value: super::PlaneType::Uninit,
+                            meta: meta.clone(),
+                        };
+
+                        Ok(KclValue::Plane { value: Box::new(plane) })
                     }
-
-                    let id = exec_state.mod_local.id_generator.next_uuid();
-                    let plane = Plane {
-                        id,
-                        artifact_id: id.into(),
-                        info: PlaneInfo {
-                            origin,
-                            x_axis: x_axis.normalize(),
-                            y_axis: y_axis.normalize(),
-                            z_axis: z_axis.normalize(),
-                        },
-                        value: super::PlaneType::Uninit,
-                        meta: meta.clone(),
-                    };
-
-                    Ok(KclValue::Plane { value: Box::new(plane) })
+                    _ => Err(self.into()),
                 }
-                _ => Err(self.into()),
-            },
+            }
             PrimitiveType::Face => match self {
                 KclValue::Face { .. } => Ok(self.clone()),
                 _ => Err(self.into()),

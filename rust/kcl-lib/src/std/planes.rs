@@ -25,7 +25,7 @@ pub async fn plane_of(exec_state: &mut ExecState, args: Args) -> Result<KclValue
         .map(|value| KclValue::Plane { value })
 }
 
-async fn inner_plane_of(
+pub(crate) async fn inner_plane_of(
     solid: crate::execution::Solid,
     face: FaceTag,
     exec_state: &mut ExecState,

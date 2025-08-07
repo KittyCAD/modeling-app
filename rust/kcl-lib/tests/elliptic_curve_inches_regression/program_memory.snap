@@ -200,7 +200,10 @@ description: Variables in memory after executing elliptic_curve_inches_regressio
             90.65875528983305,
             60.85517063645204
           ],
-          "major_radius": 2302.732377,
+          "major_axis": [
+            2302.732377,
+            0.0
+          ],
           "minor_radius": 426.8591158,
           "tag": null,
           "to": [

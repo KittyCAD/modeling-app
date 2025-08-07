@@ -26,6 +26,7 @@ export function usePreviousVariables() {
       selectionRange
     )
     setPreviousVariablesInfo(varInfo)
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [kclManager.ast, kclManager.variables, selectionRange])
 
   return previousVariablesInfo

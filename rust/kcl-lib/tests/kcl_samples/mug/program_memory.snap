@@ -427,7 +427,8 @@ description: Variables in memory after executing mug.kcl
       "originalId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "isClosed": false
     }
   },
   "handleThickness": {

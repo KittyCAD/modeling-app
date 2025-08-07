@@ -1,4 +1,4 @@
-use std::ops::{Add, AddAssign, Mul};
+use std::ops::{Add, AddAssign, Mul, Sub, SubAssign};
 
 use anyhow::Result;
 use indexmap::IndexMap;
@@ -561,6 +561,15 @@ impl Plane {
     pub fn is_standard(&self) -> bool {
         !matches!(self.value, PlaneType::Custom | PlaneType::Uninit)
     }
+
+    /// Project a point onto a plane by calculating how far away it is and moving it along the
+    /// normal of the plane so that it now lies on the plane.
+    pub fn project(&self, point: Point3d) -> Point3d {
+        let v = point - self.info.origin;
+        let dot = v.axes_dot_product(&self.info.z_axis);
+
+        point - self.info.z_axis * dot
+    }
 }
 
 /// A face.
@@ -639,6 +648,17 @@ pub struct Sketch {
     /// Metadata.
     #[serde(skip)]
     pub meta: Vec<Metadata>,
+    /// If not given, defaults to true.
+    #[serde(default = "very_true", skip_serializing_if = "is_true")]
+    pub is_closed: bool,
+}
+
+fn very_true() -> bool {
+    true
+}
+
+fn is_true(b: &bool) -> bool {
+    *b
 }
 
 impl Sketch {
@@ -722,7 +742,7 @@ pub(crate) enum GetTangentialInfoFromPathsResult {
     Ellipse {
         center: [f64; 2],
         ccw: bool,
-        major_radius: f64,
+        major_axis: [f64; 2],
         _minor_radius: f64,
     },
 }
@@ -741,10 +761,10 @@ impl GetTangentialInfoFromPathsResult {
             } => [center[0] + radius, center[1] + if *ccw { -1.0 } else { 1.0 }],
             GetTangentialInfoFromPathsResult::Ellipse {
                 center,
-                major_radius,
+                major_axis,
                 ccw,
                 ..
-            } => [center[0] + major_radius, center[1] + if *ccw { -1.0 } else { 1.0 }],
+            } => [center[0] + major_axis[0], center[1] + if *ccw { -1.0 } else { 1.0 }],
         }
     }
 }
@@ -1062,6 +1082,34 @@ impl AddAssign for Point3d {
     }
 }
 
+impl Sub for Point3d {
+    type Output = Point3d;
+
+    fn sub(self, rhs: Self) -> Self::Output {
+        let (x, y, z) = if rhs.units != self.units {
+            (
+                rhs.units.adjust_to(rhs.x, self.units).0,
+                rhs.units.adjust_to(rhs.y, self.units).0,
+                rhs.units.adjust_to(rhs.z, self.units).0,
+            )
+        } else {
+            (rhs.x, rhs.y, rhs.z)
+        };
+        Point3d {
+            x: self.x - x,
+            y: self.y - y,
+            z: self.z - z,
+            units: self.units,
+        }
+    }
+}
+
+impl SubAssign for Point3d {
+    fn sub_assign(&mut self, rhs: Self) {
+        *self = *self - rhs
+    }
+}
+
 impl Mul<f64> for Point3d {
     type Output = Point3d;
 
@@ -1224,7 +1272,7 @@ pub enum Path {
         #[serde(flatten)]
         base: BasePath,
         center: [f64; 2],
-        major_radius: f64,
+        major_axis: [f64; 2],
         minor_radius: f64,
         ccw: bool,
     },
@@ -1476,13 +1524,13 @@ impl Path {
             // TODO: (bc) fix me
             Path::Ellipse {
                 center,
-                major_radius,
+                major_axis,
                 minor_radius,
                 ccw,
                 ..
             } => GetTangentialInfoFromPathsResult::Ellipse {
                 center: *center,
-                major_radius: *major_radius,
+                major_axis: *major_axis,
                 _minor_radius: *minor_radius,
                 ccw: *ccw,
             },

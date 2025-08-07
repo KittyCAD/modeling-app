@@ -825,7 +825,8 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
       "originalId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "isClosed": false
     }
   },
   "hookRadius": {

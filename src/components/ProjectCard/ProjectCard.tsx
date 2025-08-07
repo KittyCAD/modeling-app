@@ -79,6 +79,7 @@ function ProjectCard({
 
     void getNumberOfFiles()
     void setupImageUrl()
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [project.kcl_file_count, project.directory_count])
 
   useEffect(() => {
@@ -86,7 +87,10 @@ function ProjectCard({
       inputRef.current.focus()
       inputRef.current.select()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [isEditing, inputRef.current])
+
+  const projectName = project.name?.replace(FILE_EXT, '')
 
   return (
     <li
@@ -127,10 +131,11 @@ function ProjectCard({
             />
           ) : (
             <h3
-              className="font-sans relative z-0 p-2"
+              className="font-sans relative z-0 p-2 truncate"
               data-testid="project-title"
+              title={projectName}
             >
-              {project.name?.replace(FILE_EXT, '')}
+              {projectName}
             </h3>
           )}
           {project.readWriteAccess && (
@@ -208,11 +213,11 @@ function ProjectCard({
           }, reportRejection)}
           onDismiss={() => setIsConfirmingDelete(false)}
         >
-          <p className="my-4">
+          <p className="my-4 text-wrap break-words">
             This will permanently delete "{project.name || 'this file'}
             ".
           </p>
-          <p className="my-4">
+          <p className="my-4 text-wrap break-words">
             Are you sure you want to delete "{project.name || 'this file'}
             "? This action cannot be undone.
           </p>

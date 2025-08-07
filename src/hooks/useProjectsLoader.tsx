@@ -34,6 +34,7 @@ export const useProjectsLoader = (deps?: [number]) => {
         setProjectPaths(_projectPaths)
       }
     })().catch(trap)
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, deps ?? [])
 
   return {

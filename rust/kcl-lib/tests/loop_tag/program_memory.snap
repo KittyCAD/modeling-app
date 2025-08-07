@@ -4812,7 +4812,8 @@ description: Variables in memory after executing loop_tag.kcl
       "originalId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "isClosed": false
     }
   },
   "height": {
@@ -4900,7 +4901,8 @@ description: Variables in memory after executing loop_tag.kcl
       "originalId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "isClosed": false
     }
   },
   "numSides": {
