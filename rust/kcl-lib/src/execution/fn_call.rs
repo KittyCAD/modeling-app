@@ -384,9 +384,10 @@ impl FunctionDefinition<'_> {
         }
 
         if self.is_std
-            && let Ok(Some(result)) = &mut result {
-                update_memory_for_tags_of_geometry(result, exec_state)?;
-            }
+            && let Ok(Some(result)) = &mut result
+        {
+            update_memory_for_tags_of_geometry(result, exec_state)?;
+        }
 
         coerce_result_type(result, self, exec_state)
     }
@@ -582,22 +583,23 @@ fn type_check_params_kw(
     // it as the input arg, then treat it as labelled.
     if let Some((Some(label), _)) = &args.unlabeled
         && (fn_def.input_arg.is_none() || exec_state.pipe_value().is_some())
-            && fn_def.named_args.iter().any(|p| p.0 == label)
-            && !args.labeled.contains_key(label)
-        {
-            let (label, arg) = args.unlabeled.take().unwrap();
-            args.labeled.insert(label.unwrap(), arg);
-        }
+        && fn_def.named_args.iter().any(|p| p.0 == label)
+        && !args.labeled.contains_key(label)
+    {
+        let (label, arg) = args.unlabeled.take().unwrap();
+        args.labeled.insert(label.unwrap(), arg);
+    }
 
     for (label, arg) in &mut args.labeled {
         match fn_def.named_args.get(label) {
             Some((def, ty)) => {
                 // For optional args, passing None should be the same as not passing an arg.
                 if !(def.is_some() && matches!(arg.value, KclValue::KclNone { .. }))
-                    && let Some(ty) = ty {
-                        let rty = RuntimeType::from_parsed(ty.clone(), exec_state, arg.source_range)
-                            .map_err(|e| KclError::new_semantic(e.into()))?;
-                        arg.value = arg
+                    && let Some(ty) = ty
+                {
+                    let rty = RuntimeType::from_parsed(ty.clone(), exec_state, arg.source_range)
+                        .map_err(|e| KclError::new_semantic(e.into()))?;
+                    arg.value = arg
                             .value
                             .coerce(
                                 &rty,
@@ -618,7 +620,7 @@ fn type_check_params_kw(
                                     vec![arg.source_range],
                                 ))
                             })?;
-                    }
+                }
             }
             None => {
                 exec_state.err(CompilationError::err(
@@ -685,17 +687,18 @@ fn type_check_params_kw(
             })?;
         }
     } else if let Some((name, _)) = &fn_def.input_arg
-        && let Some(arg) = args.labeled.get(name) {
-            exec_state.err(CompilationError::err(
-                arg.source_range,
-                format!(
-                    "{} expects an unlabeled first argument (`@{name}`), but it is labelled in the call",
-                    fn_name
-                        .map(|n| format!("The function `{n}`"))
-                        .unwrap_or_else(|| "This function".to_owned()),
-                ),
-            ));
-        }
+        && let Some(arg) = args.labeled.get(name)
+    {
+        exec_state.err(CompilationError::err(
+            arg.source_range,
+            format!(
+                "{} expects an unlabeled first argument (`@{name}`), but it is labelled in the call",
+                fn_name
+                    .map(|n| format!("The function `{n}`"))
+                    .unwrap_or_else(|| "This function".to_owned()),
+            ),
+        ));
+    }
 
     Ok(())
 }

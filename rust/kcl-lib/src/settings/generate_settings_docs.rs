@@ -56,16 +56,17 @@ fn init_handlebars() -> handlebars::Handlebars<'static> {
              out: &mut dyn handlebars::Output|
              -> handlebars::HelperResult {
                 if let Some(enum_value) = h.param(0)
-                    && let Some(array) = enum_value.value().as_array() {
-                        let pretty_options = array
-                            .iter()
-                            .filter_map(|v| v.as_str())
-                            .map(|s| format!("`{s}`"))
-                            .collect::<Vec<_>>()
-                            .join(", ");
-                        out.write(&pretty_options)?;
-                        return Ok(());
-                    }
+                    && let Some(array) = enum_value.value().as_array()
+                {
+                    let pretty_options = array
+                        .iter()
+                        .filter_map(|v| v.as_str())
+                        .map(|s| format!("`{s}`"))
+                        .collect::<Vec<_>>()
+                        .join(", ");
+                    out.write(&pretty_options)?;
+                    return Ok(());
+                }
                 out.write("No options available")?;
                 Ok(())
             },

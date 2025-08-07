@@ -465,12 +465,13 @@ impl Node<Program> {
                     if call.inner.callee.inner.name.inner.name == "appearance" {
                         for arg in &call.arguments {
                             if let Some(l) = &arg.label
-                                && l.inner.name == "color" {
-                                    // Get the value of the argument.
-                                    if let Expr::Literal(literal) = &arg.arg {
-                                        add_color(literal);
-                                    }
+                                && l.inner.name == "color"
+                            {
+                                // Get the value of the argument.
+                                if let Expr::Literal(literal) = &arg.arg {
+                                    add_color(literal);
                                 }
+                            }
                         }
                     }
                 }
@@ -634,9 +635,10 @@ impl Program {
         // Check if the expr's non code meta contains the position.
         if let Some(expr) = expr
             && let Some(non_code_meta) = expr.get_non_code_meta()
-                && non_code_meta.in_comment(pos) {
-                    return true;
-                }
+            && non_code_meta.in_comment(pos)
+        {
+            return true;
+        }
 
         false
     }
@@ -2386,9 +2388,10 @@ impl Name {
     /// Rename all identifiers that have the old name to the new given name.
     fn rename(&mut self, old_name: &str, new_name: &str) {
         if let Some(n) = self.local_ident()
-            && n.inner == old_name {
-                self.name.name = new_name.to_owned();
-            }
+            && n.inner == old_name
+        {
+            self.name.name = new_name.to_owned();
+        }
     }
 }
 

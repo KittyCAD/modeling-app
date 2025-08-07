@@ -65,9 +65,11 @@ where
         // stored.
         let filename = params.uri.to_string();
         if let Some(current_code) = self.code_map().get(&filename)
-            && *current_code == params.text.as_bytes() && !self.has_diagnostics(&filename).await {
-                return;
-            }
+            && *current_code == params.text.as_bytes()
+            && !self.has_diagnostics(&filename).await
+        {
+            return;
+        }
 
         self.insert_code_map(params.uri.to_string(), params.text.as_bytes().to_vec())
             .await;

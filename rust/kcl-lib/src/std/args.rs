@@ -325,9 +325,10 @@ impl Args {
         'e: 'a,
     {
         if let Some(info) = tag.get_cur_info()
-            && info.surface.is_some() {
-                return Ok(info);
-            }
+            && info.surface.is_some()
+        {
+            return Ok(info);
+        }
 
         self.get_tag_info_from_memory(exec_state, tag)
     }

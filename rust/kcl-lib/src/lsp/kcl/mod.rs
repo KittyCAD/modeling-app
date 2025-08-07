@@ -556,22 +556,23 @@ impl Backend {
             // If we are starting from the end of the last line just add 1 to the line.
             // Check if we are on the last token of the line.
             if let Some(line) = params.text.lines().nth(position.line as usize)
-                && line.len() == position.character as usize {
-                    // We are on the last token of the line.
-                    // We need to add a new line.
-                    let semantic_token = SemanticToken {
-                        delta_line: position.line - last_position.line + 1,
-                        delta_start: 0,
-                        length: (token.end - token.start) as u32,
-                        token_type: token_type_index,
-                        token_modifiers_bitset,
-                    };
+                && line.len() == position.character as usize
+            {
+                // We are on the last token of the line.
+                // We need to add a new line.
+                let semantic_token = SemanticToken {
+                    delta_line: position.line - last_position.line + 1,
+                    delta_start: 0,
+                    length: (token.end - token.start) as u32,
+                    token_type: token_type_index,
+                    token_modifiers_bitset,
+                };
 
-                    semantic_tokens.push(semantic_token);
+                semantic_tokens.push(semantic_token);
 
-                    last_position = Position::new(position.line + 1, 0);
-                    continue;
-                }
+                last_position = Position::new(position.line + 1, 0);
+                continue;
+            }
 
             let semantic_token = SemanticToken {
                 delta_line: position.line - last_position.line,
@@ -1375,15 +1376,17 @@ impl LanguageServer for Backend {
 
         // Check if we have context.
         if let Some(context) = params.context
-            && let Some(character) = context.trigger_character {
-                for character in character.chars() {
-                    // Check if we are on a ( or a ,.
-                    if (character == '(' || character == ',')
-                        && let Some(signature) = check_char(character) {
-                            return Ok(Some(signature.clone()));
-                        }
+            && let Some(character) = context.trigger_character
+        {
+            for character in character.chars() {
+                // Check if we are on a ( or a ,.
+                if (character == '(' || character == ',')
+                    && let Some(signature) = check_char(character)
+                {
+                    return Ok(Some(signature.clone()));
                 }
             }
+        }
 
         // Let's iterate over the AST and find the node that contains the cursor.
         let Some(ast) = self.ast_map.get(&filename) else {

@@ -1599,17 +1599,18 @@ fn function_body(i: &mut TokenSlice) -> ModalResult<Node<Program>> {
         // if it has an empty line, it should be considered a noncode token, because the user
         // deliberately put an empty line there. We should track this and preserve it.
         if let Ok(ref ws_token) = found_ws
-            && (ws_token.value.contains("\n\n") || ws_token.value.contains("\n\r\n")) {
-                things_within_body.push(WithinFunction::NonCode(Node::new(
-                    NonCodeNode {
-                        value: NonCodeValue::NewLine,
-                        digest: None,
-                    },
-                    ws_token.start,
-                    ws_token.end,
-                    ws_token.module_id,
-                )));
-            }
+            && (ws_token.value.contains("\n\n") || ws_token.value.contains("\n\r\n"))
+        {
+            things_within_body.push(WithinFunction::NonCode(Node::new(
+                NonCodeNode {
+                    value: NonCodeValue::NewLine,
+                    digest: None,
+                },
+                ws_token.start,
+                ws_token.end,
+                ws_token.module_id,
+            )));
+        }
 
         match (found_ws, last_match_was_empty_line) {
             (Ok(_), _) | (_, true) => {
@@ -1867,10 +1868,10 @@ pub(super) fn import_stmt(i: &mut TokenSlice) -> ModalResult<BoxNode<ImportState
             identifier.context(expected("an identifier to alias the import")),
         ))
         .parse_next(i)?
-        {
-            end = alias.end;
-            *selector_alias = Some(alias);
-        }
+    {
+        end = alias.end;
+        *selector_alias = Some(alias);
+    }
 
     let path_string = match path.inner.value {
         LiteralValue::String(s) => s,

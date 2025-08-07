@@ -893,13 +893,14 @@ pub fn new_zoo_client(token: Option<String>, engine_addr: Option<String>) -> any
         token
     } else if let Ok(token) = std::env::var("KITTYCAD_API_TOKEN") {
         if let Ok(zoo_token) = zoo_token_env
-            && zoo_token != token {
-                return Err(anyhow::anyhow!(
-                    "Both environment variables KITTYCAD_API_TOKEN=`{}` and ZOO_API_TOKEN=`{}` are set. Use only one.",
-                    token,
-                    zoo_token
-                ));
-            }
+            && zoo_token != token
+        {
+            return Err(anyhow::anyhow!(
+                "Both environment variables KITTYCAD_API_TOKEN=`{}` and ZOO_API_TOKEN=`{}` are set. Use only one.",
+                token,
+                zoo_token
+            ));
+        }
         token
     } else if let Ok(token) = zoo_token_env {
         token
@@ -917,13 +918,14 @@ pub fn new_zoo_client(token: Option<String>, engine_addr: Option<String>) -> any
         client.set_base_url(addr);
     } else if let Ok(addr) = std::env::var("ZOO_HOST") {
         if let Ok(kittycad_host) = kittycad_host_env
-            && kittycad_host != addr {
-                return Err(anyhow::anyhow!(
-                    "Both environment variables KITTYCAD_HOST=`{}` and ZOO_HOST=`{}` are set. Use only one.",
-                    kittycad_host,
-                    addr
-                ));
-            }
+            && kittycad_host != addr
+        {
+            return Err(anyhow::anyhow!(
+                "Both environment variables KITTYCAD_HOST=`{}` and ZOO_HOST=`{}` are set. Use only one.",
+                kittycad_host,
+                addr
+            ));
+        }
         client.set_base_url(addr);
     } else if let Ok(addr) = kittycad_host_env {
         client.set_base_url(addr);

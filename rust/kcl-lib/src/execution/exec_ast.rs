@@ -1201,12 +1201,12 @@ impl Node<BinaryExpression> {
         if self.operator == BinaryOperator::Add
             && let (KclValue::String { value: left, meta: _ }, KclValue::String { value: right, meta: _ }) =
                 (&left_value, &right_value)
-            {
-                return Ok(KclValue::String {
-                    value: format!("{left}{right}"),
-                    meta,
-                });
-            }
+        {
+            return Ok(KclValue::String {
+                value: format!("{left}{right}"),
+                meta,
+            });
+        }
 
         // Then check if we have solids.
         if self.operator == BinaryOperator::Add || self.operator == BinaryOperator::Or {

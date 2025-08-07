@@ -577,9 +577,10 @@ impl ArrayExpression {
 
         // Format these items into a one-line array.
         if let Some(item) = format_items.last_mut()
-            && let Some(norm) = item.strip_suffix(", ") {
-                *item = norm.to_owned();
-            }
+            && let Some(norm) = item.strip_suffix(", ")
+        {
+            *item = norm.to_owned();
+        }
         let mut flat_recast = String::with_capacity(256);
         flat_recast.push('[');
         for fi in &format_items {

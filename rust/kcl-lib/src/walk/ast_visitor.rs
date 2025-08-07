@@ -180,9 +180,10 @@ fn crow3() {
 
             fn visit_node(&self, node: Node<'tree>) -> Result<bool, Self::Error> {
                 if let Node::VariableDeclarator(vd) = node
-                    && vd.id.name.starts_with("crow") {
-                        *self.n.lock().unwrap() += 1;
-                    }
+                    && vd.id.name.starts_with("crow")
+                {
+                    *self.n.lock().unwrap() += 1;
+                }
 
                 for child in node.children().iter() {
                     if !child.visit(*self)? {
