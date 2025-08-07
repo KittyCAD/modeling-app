@@ -45,6 +45,18 @@ jobs:
         run: |
           mkdir -p rust/kcl-python-bindings/stubs
           pyo3-stubgen kcl stubs
+          pyo3-stubgen kcl.step_import stubs
+          pyo3-stubgen kcl.step_export stubs
+          pyo3-stubgen kcl.gltf_import stubs
+          pyo3-stubgen kcl.gltf_export stubs
+          pyo3-stubgen kcl.obj_import stubs
+          pyo3-stubgen kcl.obj_export stubs
+          pyo3-stubgen kcl.ply_import stubs
+          pyo3-stubgen kcl.ply_export stubs
+          pyo3-stubgen kcl.stl_import stubs
+          pyo3-stubgen kcl.stl_export stubs
+          pyo3-stubgen kcl.sldprt_import stubs
+
           ls -la
           cp stubs/* rust/kcl-python-bindings/stubs/
       # ------------------------------------------------------------
