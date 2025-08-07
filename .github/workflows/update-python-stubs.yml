@@ -45,7 +45,7 @@ jobs:
         run: |
           mkdir -p rust/kcl-python-bindings/stubs
           pyo3-stubgen kcl stubs
-          ls -la
+          ls -la stubs
           cp stubs/* rust/kcl-python-bindings/stubs/
       # ------------------------------------------------------------
       # 3. Commit & push if anything changed
