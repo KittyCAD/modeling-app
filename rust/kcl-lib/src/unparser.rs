@@ -2477,6 +2477,33 @@ fn ghi(part001) {
     }
 
     #[test]
+    fn test_recast_object_no_trailing_comma_with_comments() {
+        let some_program_string = r#"{
+  x=1, // one
+  y=2, // two
+  z=3  // three
+}"#;
+        let program = crate::parsing::top_level_parse(some_program_string).unwrap();
+
+        let recasted = program.recast_top(&Default::default(), 0);
+        // TODO: We should probably not add an extra new line after the last
+        // comment.
+        assert_eq!(
+            recasted,
+            r#"{
+  x = 1,
+  // one
+  y = 2,
+  // two
+  z = 3,
+  // three
+
+}
+"#
+        );
+    }
+
+    #[test]
     fn test_recast_negative_var() {
         let some_program_string = r#"w = 20
 l = 8
