@@ -316,8 +316,8 @@ export function App() {
               toolTip: {
                 children: 'Currently selected geometry',
               },
-              ...defaultLocalStatusBarItems,
             },
+            ...defaultLocalStatusBarItems,
           ]}
         />
       </div>
