@@ -1,4 +1,4 @@
-cnr := "cargo nextest run"
+cnr := "cargo nextest run --no-fail-fast"
 cita := "cargo insta test --accept"
 kcl_lib_flags := "-p kcl-lib --features artifact-graph"
 
