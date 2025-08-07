@@ -670,17 +670,6 @@ openSketch = startSketchOn(XY)
       await scene.settled(cmdBar)
     })
 
-    // Setup
-    await test.step(`Initial test setup`, async () => {
-      await context.addInitScript((initialCode) => {
-        localStorage.setItem('persistCode', initialCode)
-      }, initialCode)
-      await page.setBodyDimensions({ width: 1000, height: 500 })
-      await homePage.goToModelingScene()
-      await toolbar.closePane('code')
-      await scene.settled(cmdBar)
-    })
-
     // Click helpers
     const [clickOnUpperEdge] = scene.makeMouseHelpers(
       upperEdgeLocation.x,
