@@ -625,6 +625,11 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
 
     await scene.connectionEstablished()
 
+    // Wait for highlighting to kick in, a good proxy that the LSP is ready.
+    await expect
+      .poll(() => page.evaluate(() => document.querySelector('.ͼu') !== null))
+      .toBe(true)
+
     // Expect the signature help to NOT be visible
     await expect(page.locator('.cm-signature-tooltip')).not.toBeVisible()
 
