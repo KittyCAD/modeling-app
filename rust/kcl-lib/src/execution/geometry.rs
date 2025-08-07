@@ -742,7 +742,7 @@ pub(crate) enum GetTangentialInfoFromPathsResult {
     Ellipse {
         center: [f64; 2],
         ccw: bool,
-        major_radius: f64,
+        major_axis: [f64; 2],
         _minor_radius: f64,
     },
 }
@@ -761,10 +761,10 @@ impl GetTangentialInfoFromPathsResult {
             } => [center[0] + radius, center[1] + if *ccw { -1.0 } else { 1.0 }],
             GetTangentialInfoFromPathsResult::Ellipse {
                 center,
-                major_radius,
+                major_axis,
                 ccw,
                 ..
-            } => [center[0] + major_radius, center[1] + if *ccw { -1.0 } else { 1.0 }],
+            } => [center[0] + major_axis[0], center[1] + if *ccw { -1.0 } else { 1.0 }],
         }
     }
 }
@@ -1272,7 +1272,7 @@ pub enum Path {
         #[serde(flatten)]
         base: BasePath,
         center: [f64; 2],
-        major_radius: f64,
+        major_axis: [f64; 2],
         minor_radius: f64,
         ccw: bool,
     },
@@ -1524,13 +1524,13 @@ impl Path {
             // TODO: (bc) fix me
             Path::Ellipse {
                 center,
-                major_radius,
+                major_axis,
                 minor_radius,
                 ccw,
                 ..
             } => GetTangentialInfoFromPathsResult::Ellipse {
                 center: *center,
-                major_radius: *major_radius,
+                major_axis: *major_axis,
                 _minor_radius: *minor_radius,
                 ccw: *ccw,
             },
