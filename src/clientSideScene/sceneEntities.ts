@@ -357,6 +357,7 @@ export class SceneEntities {
       x?.scale.set(1, factor / this.sceneInfra._baseUnitMultiplier, 1)
       const y = this.axisGroup.getObjectByName(Y_AXIS)
       y?.scale.set(factor / this.sceneInfra._baseUnitMultiplier, 1, 1)
+      this.updateGrid()
     }
     this.sceneInfra.overlayCallbacks(callbacks)
   }
@@ -421,7 +422,7 @@ export class SceneEntities {
 
     this.axisGroup = new Group()
     const gridHelper = this.createGrid()
-    gridHelper.update(this.sceneInfra.camControls.camera, 1, 4)
+    this.updateGrid()
 
     const factor =
       this.sceneInfra.camControls.camera instanceof OrthographicCamera
@@ -468,6 +469,27 @@ export class SceneEntities {
     // gridHelper.scale.set(sceneScale, sceneScale, sceneScale)
     //
     // return gridHelper;
+  }
+
+  updateGrid() {
+    const settings = this.getSettings?.()
+    if (settings) {
+      const gridHelper = this.sceneInfra.scene
+        .getObjectByName(AXIS_GROUP)
+        ?.getObjectByName('gridHelper')
+      if (gridHelper instanceof GridHelperInfinite) {
+        const majorGridSpacing = settings.modeling.majorGridSpacing.current ?? 1
+        const minorGridsPerMajor =
+          settings.modeling.minorGridsPerMajor.current ?? 4
+        gridHelper.update(
+          this.sceneInfra.camControls.camera,
+          majorGridSpacing,
+          minorGridsPerMajor
+        )
+      }
+    } else {
+      console.error('Settings not available for grid update')
+    }
   }
 
   getDraftPoint() {

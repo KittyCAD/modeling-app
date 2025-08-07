@@ -1,17 +1,12 @@
 import * as TWEEN from '@tweenjs/tween.js'
-import type {
-  Group,
-  Intersection,
-  MeshBasicMaterial,
-  Object3D,
-  Object3DEventMap,
-} from 'three'
+import type { Group, Intersection, Object3D, Object3DEventMap } from 'three'
 import {
   AmbientLight,
   Color,
   GridHelper,
   LineBasicMaterial,
   Mesh,
+  MeshBasicMaterial,
   OrthographicCamera,
   Raycaster,
   Scene,
@@ -325,15 +320,15 @@ export class SceneInfra {
   }
 
   onCameraChange = () => {
-    const scale = getSceneScale(
-      this.camControls.camera,
-      this.camControls.target
-    )
     const gridHelper = this.scene
       .getObjectByName(AXIS_GROUP)
       ?.getObjectByName('gridHelper')
     if (gridHelper instanceof GridHelperInfinite) {
       gridHelper.update(this.camControls.camera, 1, 4)
+      // const scale = getSceneScale(
+      //     this.camControls.camera,
+      //     this.camControls.target
+      // )
       //  axisGroup.scale.set(scale, scale, scale)
     }
   }
@@ -720,14 +715,16 @@ export class SceneInfra {
     }
     axisGroup?.children.forEach((_mesh) => {
       const mesh = _mesh as Mesh
-      const mat = mesh.material as MeshBasicMaterial
-      if (otherSelections.includes(axisMap[mesh.userData?.type])) {
-        mat.color.set(mesh?.userData?.baseColor)
-        mat.color.offsetHSL(0, 0, 0.2)
-        mesh.userData.isSelected = true
-      } else {
-        mat.color.set(mesh?.userData?.baseColor)
-        mesh.userData.isSelected = false
+      const mat = mesh.material
+      if (mat instanceof MeshBasicMaterial) {
+        if (otherSelections.includes(axisMap[mesh.userData?.type])) {
+          mat.color.set(mesh?.userData?.baseColor)
+          mat.color.offsetHSL(0, 0, 0.2)
+          mesh.userData.isSelected = true
+        } else {
+          mat.color.set(mesh?.userData?.baseColor)
+          mesh.userData.isSelected = false
+        }
       }
     })
   }

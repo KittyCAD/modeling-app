@@ -1,39 +1,62 @@
-import type { Camera } from 'three'
-import { GLSL3 } from 'three'
-import { BufferGeometry, RawShaderMaterial, Mesh } from 'three'
+import { Camera, OrthographicCamera } from 'three'
+import { GLSL3, LineSegments } from 'three'
+import { BufferGeometry, RawShaderMaterial } from 'three'
 
 const vertexShader = `precision highp float;
 
-uniform int lineCount;
-uniform float spacing;
-uniform vec2 offset;
-uniform mat4 modelViewMatrix;
-uniform mat4 projectionMatrix;
+uniform int verticalLines;
+uniform int horizontalLines;
+uniform vec2 cameraPos;
+uniform float worldToScreenX;
+uniform float worldToScreenY;
+uniform float minorSpacing;
+uniform float majorSpacing;
 
 out float vLineType;
 
 void main() {
-	int lineIndex = gl_VertexID / 2;
-	int vertIndex = gl_VertexID % 2;
+	int totalVerticalVerts = verticalLines * 2;
+	bool isVertical = gl_VertexID < totalVerticalVerts;
 	
-	bool isVertical = lineIndex < (lineCount / 2);
+	vec2 screenPos;
 	
-	vec3 pos;
 	if (isVertical) {
-		int vLineIndex = lineIndex;
-		float x = offset.x + float(vLineIndex) * spacing;
-		float y = (vertIndex == 0) ? offset.y - 1000.0 : offset.y + 1000.0;
-		pos = vec3(x, y, 0.0);
+		int lineIndex = gl_VertexID / 2;
+		int vertIndex = gl_VertexID % 2;
+		
+		// Calculate world X position for this vertical line
+		float startWorldX = floor(cameraPos.x / minorSpacing) * minorSpacing - float(verticalLines / 2) * minorSpacing;
+		float worldX = startWorldX + float(lineIndex) * minorSpacing;
+		
+		// Convert to screen space
+		float screenX = (worldX - cameraPos.x) * worldToScreenX;
+		float screenY = (vertIndex == 0) ? -1.0 : 1.0;
+		
+		screenPos = vec2(screenX, screenY);
+		
+		// Check if this is a major line (every majorSpacing/minorSpacing lines)
+		float majorInterval = majorSpacing / minorSpacing;
+		vLineType = mod(abs(worldX), majorSpacing) < 0.001 ? 1.0 : 0.0;
+		
 	} else {
-		int hLineIndex = lineIndex - (lineCount / 2);
-		float x = (vertIndex == 0) ? offset.x - 1000.0 : offset.x + 1000.0;
-		float y = offset.y + float(hLineIndex) * spacing;
-		pos = vec3(x, y, 0.0);
+		int lineIndex = (gl_VertexID - totalVerticalVerts) / 2;
+		int vertIndex = (gl_VertexID - totalVerticalVerts) % 2;
+		
+		// Calculate world Y position for this horizontal line  
+		float startWorldY = floor(cameraPos.y / minorSpacing) * minorSpacing - float(horizontalLines / 2) * minorSpacing;
+		float worldY = startWorldY + float(lineIndex) * minorSpacing;
+		
+		// Convert to screen space
+		float screenX = (vertIndex == 0) ? -1.0 : 1.0;
+		float screenY = (worldY - cameraPos.y) * worldToScreenY;
+		
+		screenPos = vec2(screenX, screenY);
+		
+		// Check if this is a major line
+		vLineType = mod(abs(worldY), majorSpacing) < 0.001 ? 1.0 : 0.0;
 	}
 	
-	vLineType = mod(float(lineIndex), 4.0) == 0.0 ? 1.0 : 0.0;
-	
-	gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+	gl_Position = vec4(screenPos, 0.0, 1.0);
 }`
 
 const fragmentShader = `precision highp float;
@@ -42,7 +65,7 @@ in float vLineType;
 out vec4 fragColor;
 
 void main() {
-	vec3 majorColor = vec3(0.5, 0.5, 0.5);
+	vec3 majorColor = vec3(0.9, 0.9, 0.9);
 	vec3 minorColor = vec3(0.3, 0.3, 0.3);
 	
 	float majorAlpha = 0.8;
@@ -54,7 +77,7 @@ void main() {
 	fragColor = vec4(color, alpha);
 }`
 
-export class GridHelperInfinite extends Mesh {
+export class GridHelperInfinite extends LineSegments {
   constructor() {
     const geometry = new BufferGeometry()
 
@@ -63,13 +86,15 @@ export class GridHelperInfinite extends Mesh {
       vertexShader,
       fragmentShader,
       uniforms: {
-        lineCount: { value: 100 },
-        spacing: { value: 1.0 },
-        offset: { value: [0.0, 0.0] },
-        modelViewMatrix: { value: null },
-        projectionMatrix: { value: null },
+        verticalLines: { value: 50 },
+        horizontalLines: { value: 50 },
+        cameraPos: { value: [0.0, 0.0] },
+        worldToScreenX: { value: 0.1 },
+        worldToScreenY: { value: 0.1 },
+        minorSpacing: { value: 1.0 },
+        majorSpacing: { value: 4.0 },
       },
-      transparent: true,
+      transparent: false,
       depthTest: false,
       depthWrite: false,
     })
@@ -81,30 +106,42 @@ export class GridHelperInfinite extends Mesh {
   }
 
   update(camera: Camera, majorSpacing: number, minorPerMajor: number) {
+    if (!(camera instanceof OrthographicCamera)) {
+      console.log(
+        'Only orthographic cameras are supported for GridHelperInfinite'
+      )
+      return
+    }
     const material = this.material as RawShaderMaterial
 
     const cameraPos = camera.position
-    const zoom = 'zoom' in camera ? (camera as any).zoom : 1
-    const worldSize = 50 / zoom
+    const zoom = camera.zoom
 
     const minorSpacing = majorSpacing / minorPerMajor
 
-    const linesPerSide = Math.ceil(worldSize / minorSpacing) + 10
-    const totalLines = linesPerSide * 2
+    // Calculate world viewport size
+    const worldViewportWidth = (camera.right - camera.left) / zoom
+    const worldViewportHeight = (camera.top - camera.bottom) / zoom
 
-    const offsetX =
-      Math.floor(cameraPos.x / minorSpacing) * minorSpacing -
-      (linesPerSide / 2) * minorSpacing
-    const offsetY =
-      Math.floor(cameraPos.y / minorSpacing) * minorSpacing -
-      (linesPerSide / 2) * minorSpacing
+    // Calculate world-to-screen conversion separately for X and Y
+    const worldToScreenX = 2 / worldViewportWidth
+    const worldToScreenY = 2 / worldViewportHeight
 
-    material.uniforms.lineCount.value = totalLines
-    material.uniforms.spacing.value = minorSpacing
-    material.uniforms.offset.value = [offsetX, offsetY]
-    material.uniforms.modelViewMatrix.value = this.modelViewMatrix
-    material.uniforms.projectionMatrix.value = camera.projectionMatrix
+    // Calculate how many lines we need to fill the screen (with padding)
+    const verticalLines = Math.ceil(worldViewportWidth / minorSpacing) + 4
+    const horizontalLines = Math.ceil(worldViewportHeight / minorSpacing) + 4
 
-    this.geometry.setDrawRange(0, totalLines * 2)
+    // Update uniforms
+    material.uniforms.verticalLines.value = verticalLines
+    material.uniforms.horizontalLines.value = horizontalLines
+    material.uniforms.cameraPos.value = [cameraPos.x, cameraPos.y]
+    material.uniforms.worldToScreenX.value = worldToScreenX
+    material.uniforms.worldToScreenY.value = worldToScreenY
+    material.uniforms.minorSpacing.value = minorSpacing
+    material.uniforms.majorSpacing.value = majorSpacing
+
+    // Set draw range for total vertices needed
+    const totalVertices = verticalLines * 2 + horizontalLines * 2
+    this.geometry.setDrawRange(0, totalVertices)
   }
 }
