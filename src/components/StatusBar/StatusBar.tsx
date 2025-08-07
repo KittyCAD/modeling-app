@@ -111,6 +111,7 @@ function StatusBarItem(
         <div
           role="tooltip"
           className={`${defaultClassNames} ${props.className}`}
+          data-testid={props['data-testid']}
         >
           {'icon' in props && props.icon && (
             <ActionIcon

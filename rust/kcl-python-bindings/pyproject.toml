@@ -6,20 +6,18 @@ build-backend = "maturin"
 name = "zoo-kcl"
 requires-python = ">=3.8"
 classifiers = [
-    "Programming Language :: Rust",
-    "Programming Language :: Python :: Implementation :: CPython",
-    "Programming Language :: Python :: Implementation :: PyPy",
+  "Programming Language :: Rust",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Programming Language :: Python :: Implementation :: PyPy",
 ]
 dynamic = ["version"]
 
 [project.optional-dependencies]
-test = [
-    "pytest",
-    "pytest-asyncio",
-]
+test = ["pytest", "pytest-asyncio"]
 
 [tool.maturin]
 features = ["pyo3/extension-module"]
+include = ["stubs/kcl.pyi"]
 
 [tool.setuptools]
 include-package-data = false
