@@ -58,8 +58,8 @@ export const PERSIST_MODELING_CONTEXT = 'persistModelingContext'
 export const deg = (Math.PI * 2) / 360
 
 export const commonPoints = {
-  startAt: '[7.19, -9.7]',
-  num1: 7.25,
+  startAt: '[-12.99, -10.63]',
+  num1: 8.2,
   num2: 14.44,
   /** The Y-value of a common lineTo move we perform in tests */
   num3: -2.44,
