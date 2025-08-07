@@ -4,12 +4,12 @@ use kcl_lib::{
     lint::{checks, Discovered},
     ExecutorContext, UnitLength,
 };
-use kittycad_modeling_cmds::{self as kcmc, format::InputFormat3d, ImageFormat, ImportFile};
+use kittycad_modeling_cmds::{self as kcmc, format::InputFormat3d, ImportFile};
 use pyo3::{
     exceptions::PyException,
     prelude::PyModuleMethods,
     pyclass, pyfunction, pymethods, pymodule,
-    types::{PyAnyMethods, PyModule},
+    types::{PyAnyMethods, PyModule, PyTypeMethods},
     wrap_pyfunction, Bound, PyErr, PyResult, Python,
 };
 use serde::{Deserialize, Serialize};
@@ -734,7 +734,7 @@ fn kcl(py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
         py.get_type::<kcmc::format::InputFormat3d>(),
     ] {
         // 1) Put it in our module namespace so users can `import zoo_common`
-        m.add(cls.name()?, cls)?;
+        m.add(cls.name()?, &cls)?;
 
         // 2) Patch __module__ so stub generators & reprs think it's top-level
         cls.setattr("__module__", "kcl")?;
