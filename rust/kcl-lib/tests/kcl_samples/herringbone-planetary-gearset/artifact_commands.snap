@@ -122,7 +122,7 @@ description: Artifact commands herringbone-planetary-gearset.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -2.9769208657835278,
+            "x": -2.9769208657835176,
             "y": 44.901424723040385,
             "z": 0.0
           },
@@ -157,7 +157,7 @@ description: Artifact commands herringbone-planetary-gearset.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -4.563472835506928,
+            "x": -4.563472835506937,
             "y": 41.96043978526968,
             "z": 0.0
           },
@@ -454,7 +454,7 @@ description: Artifact commands herringbone-planetary-gearset.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -5.765843883743658,
+            "x": -5.765843883743648,
             "y": 44.62908294272128,
             "z": 0.0
           },
@@ -489,7 +489,7 @@ description: Artifact commands herringbone-planetary-gearset.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -7.166270925682343,
+            "x": -7.166270925682353,
             "y": 41.595052017197574,
             "z": 0.0
           },
@@ -1172,7 +1172,7 @@ description: Artifact commands herringbone-planetary-gearset.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.49017318473970817,
+            "x": 0.4901731847397115,
             "y": 14.991988869024754,
             "z": 0.0
           },
@@ -1207,7 +1207,7 @@ description: Artifact commands herringbone-planetary-gearset.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -2.1029602755543437,
+            "x": -2.102960275554341,
             "y": 12.92908184979545,
             "z": 0.0
           },
