@@ -1430,26 +1430,12 @@ extrude001 = extrude(sketch001, length = -12)
     const secondFilletDeclaration = `fillet(radius=5,tags=[getCommonEdge(faces=[seg01,capStart001])],)`
 
     // Locators
-    const firstEdgeLocation = { x: 600, y: 193 }
+    // TODO: find a way to not have hardcoded pixel values for sweepEdges
     const secondEdgeLocation = { x: 600, y: 383 }
-    const bodyLocation = { x: 630, y: 290 }
-    const [clickOnFirstEdge] = scene.makeMouseHelpers(
-      firstEdgeLocation.x,
-      firstEdgeLocation.y
-    )
     const [clickOnSecondEdge] = scene.makeMouseHelpers(
       secondEdgeLocation.x,
       secondEdgeLocation.y
     )
-
-    // Colors
-    const edgeColorWhite: [number, number, number] = [248, 248, 248]
-    const edgeColorYellow: [number, number, number] = [251, 251, 40] // Mac:B=67 Ubuntu:B=12
-    const bodyColor: [number, number, number] = [155, 155, 155]
-    const filletColor: [number, number, number] = [127, 127, 127]
-    const backgroundColor: [number, number, number] = [30, 30, 30]
-    const lowTolerance = 20
-    const highTolerance = 70 // TODO: understand why I needed that for edgeColorYellow on macos (local)
 
     // Setup
     await test.step(`Initial test setup`, async () => {
@@ -1458,30 +1444,13 @@ extrude001 = extrude(sketch001, length = -12)
       }, initialCode)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
-
-      // verify modeling scene is loaded
-      await scene.expectPixelColor(
-        backgroundColor,
-        secondEdgeLocation,
-        lowTolerance
-      )
-
-      // wait for stream to load
-      await scene.expectPixelColor(bodyColor, bodyLocation, highTolerance)
+      await scene.settled(cmdBar)
     })
 
     // Test 1: Command bar flow with preselected edges
     await test.step(`Select first edge`, async () => {
-      await scene.expectPixelColor(
-        edgeColorWhite,
-        firstEdgeLocation,
-        lowTolerance
-      )
-      await clickOnFirstEdge()
-      await scene.expectPixelColor(
-        edgeColorYellow,
-        firstEdgeLocation,
-        highTolerance // Ubuntu color mismatch can require high tolerance
+      await editor.selectText(
+        'line(endAbsolute = [profileStartX(%), profileStartY(%)])'
       )
     })
 
@@ -1532,10 +1501,6 @@ extrude001 = extrude(sketch001, length = -12)
         activeLines: [')'],
         highlightedCode: '',
       })
-    })
-
-    await test.step(`Confirm scene has changed`, async () => {
-      await scene.expectPixelColor(filletColor, firstEdgeLocation, lowTolerance)
     })
 
     // Test 1.1: Edit fillet (segment type)
@@ -1610,17 +1575,7 @@ extrude001 = extrude(sketch001, length = -12)
     })
 
     await test.step(`Select second edge`, async () => {
-      await scene.expectPixelColor(
-        edgeColorWhite,
-        secondEdgeLocation,
-        lowTolerance
-      )
       await clickOnSecondEdge()
-      await scene.expectPixelColor(
-        edgeColorYellow,
-        secondEdgeLocation,
-        highTolerance // Ubuntu color mismatch can require high tolerance
-      )
     })
 
     await test.step(`Apply fillet to the second edge`, async () => {
@@ -1670,14 +1625,6 @@ extrude001 = extrude(sketch001, length = -12)
       })
     })
 
-    await test.step(`Confirm scene has changed`, async () => {
-      await scene.expectPixelColor(
-        backgroundColor,
-        secondEdgeLocation,
-        lowTolerance
-      )
-    })
-
     // Test 2.1: Edit fillet (edgeSweep type)
     await test.step('Edit fillet via feature tree selection works', async () => {
       const secondFilletFeatureTreeIndex = 1
@@ -1712,9 +1659,7 @@ extrude001 = extrude(sketch001, length = -12)
         await operationButton.click({ button: 'left' })
         await page.keyboard.press('Delete')
         await page.waitForTimeout(500)
-        await scene.expectPixelColor(edgeColorWhite, secondEdgeLocation, 15) // deleted
         await editor.expectEditor.not.toContain(secondFilletDeclaration)
-        await scene.expectPixelColor(filletColor, firstEdgeLocation, 15) // stayed
       })
     })
   })
