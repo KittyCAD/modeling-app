@@ -124,6 +124,7 @@ const Loading = ({
     return () => {
       clearTimeout(timeoutIdCountdown)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [countdown])
 
   useEffect(() => {
@@ -176,6 +177,7 @@ const Loading = ({
         onConnectionStateChange as EventListener
       )
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [engineCommandManager, engineCommandManager.engineConnection])
 
   useEffect(() => {

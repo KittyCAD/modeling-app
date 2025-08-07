@@ -1344,7 +1344,7 @@ mod test {
             if i != number {
                 continue;
             }
-            let result = match crate::test_server::execute_and_snapshot(&eg.0, None).await {
+            let result = match crate::test_server::execute_and_snapshot_3d(&eg.0, None).await {
                 Err(crate::errors::ExecError::Kcl(e)) => {
                     panic!("Error testing example {}{i}: {}", d.name, e.error.message());
                 }
@@ -1359,9 +1359,18 @@ mod test {
                     "tests/outputs/serial_test_example_fn_{}{i}.png",
                     qualname.replace("::", "-")
                 ),
-                &result,
+                &result.image,
                 0.99,
             );
+            for gltf_file in result.gltf {
+                let path = format!(
+                    "tests/outputs/models/serial_test_example_fn_{}{i}_{}",
+                    qualname.replace("::", "-"),
+                    gltf_file.name,
+                );
+                let mut f = std::fs::File::create(path).expect("could not create file");
+                std::io::Write::write_all(&mut f, &gltf_file.contents).expect("could not write to file");
+            }
             return;
         }
 

@@ -13,8 +13,9 @@ elliptic(
   center: Point2d,
   angleStart: number(Angle),
   angleEnd: number(Angle),
-  majorRadius: number(Length),
   minorRadius: number(Length),
+  majorRadius?: number(Length),
+  majorAxis?: Point2d,
   tag?: tag,
 ): Sketch
 ```
@@ -29,8 +30,9 @@ elliptic(
 | `center` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | The center of the ellipse. | Yes |
 | `angleStart` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | Where along the ellptic should this segment start? | Yes |
 | `angleEnd` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | Where along the ellptic should this segment end? | Yes |
-| `majorRadius` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The major radius, a, of the elliptic equation x^2 / a^2 + y^2 / b^2 = 1. | Yes |
 | `minorRadius` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The minor radius, b, of the elliptic equation x^2 / a^2 + y^2 / b^2 = 1. | Yes |
+| `majorRadius` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The major radius, a, of the elliptic equation x^2 / a^2 + y^2 / b^2 = 1. Equivalent to majorAxis = [majorRadius, 0]. | No |
+| `majorAxis` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | The major axis of the elliptic. | No |
 | `tag` | `tag` | Create a new tag which refers to this arc. | No |
 
 ### Returns

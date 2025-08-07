@@ -125,7 +125,7 @@ impl<T> Node<T> {
         }
     }
 
-    pub fn boxed(inner: T, start: usize, end: usize, module_id: ModuleId) -> BoxNode<T> {
+    pub fn boxed(start: usize, end: usize, module_id: ModuleId, inner: T) -> BoxNode<T> {
         Box::new(Node {
             inner,
             start,
@@ -2396,6 +2396,26 @@ impl Name {
     }
 }
 
+impl Name {
+    /// Write the full name to the given string.
+    pub fn write_to<W: std::fmt::Write>(&self, buf: &mut W) -> std::fmt::Result {
+        if self.abs_path {
+            buf.write_str("::")?;
+        };
+        for p in &self.path {
+            buf.write_str(&p.name)?;
+            buf.write_str("::")?;
+        }
+        buf.write_str(&self.name.name)
+    }
+}
+
+impl fmt::Display for Name {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        self.write_to(f)
+    }
+}
+
 impl From<Node<Identifier>> for Node<Name> {
     fn from(value: Node<Identifier>) -> Self {
         let start = value.start;
@@ -2413,19 +2433,6 @@ impl From<Node<Identifier>> for Node<Name> {
             end,
             mod_id,
         )
-    }
-}
-
-impl fmt::Display for Name {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        if self.abs_path {
-            f.write_str("::")?;
-        }
-        for p in &self.path {
-            f.write_str(&p.name)?;
-            f.write_str("::")?;
-        }
-        f.write_str(&self.name.name)
     }
 }
 

@@ -134,6 +134,7 @@ export function SystemIOMachineLogicListenerDesktop() {
         requestedFilePathWithExtension: null,
         requestedProjectDirectory: projectPathWithoutSpecificKCLFile,
       })
+      // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
     }, [requestedProjectName])
   }
 
@@ -168,6 +169,7 @@ export function SystemIOMachineLogicListenerDesktop() {
         requestedFilePathWithExtension: filePath,
         requestedProjectDirectory: projectPathWithoutSpecificKCLFile,
       })
+      // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
     }, [requestedFileName])
   }
 
@@ -180,6 +182,7 @@ export function SystemIOMachineLogicListenerDesktop() {
             settings.app.projectDirectory.current || '',
         },
       })
+      // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
     }, [settings.app.projectDirectory.current])
   }
 
@@ -192,6 +195,7 @@ export function SystemIOMachineLogicListenerDesktop() {
             settings.projects.defaultProjectName.current || '',
         },
       })
+      // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
     }, [settings.projects.defaultProjectName.current])
   }
 
@@ -256,6 +260,7 @@ export function SystemIOMachineLogicListenerDesktop() {
           })
         })
         .catch(reportRejection)
+      // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
     }, [requestedTextToCadGeneration])
   }
 

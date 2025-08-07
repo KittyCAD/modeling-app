@@ -1,0 +1,8 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing double_close.kcl
+---
+shape = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> rectangle(center = [0, 0], width = 10, height = 10)
+  |> close()

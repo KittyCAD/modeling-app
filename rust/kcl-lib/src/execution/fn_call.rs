@@ -6,7 +6,7 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
         BodyType, EnvironmentRef, ExecState, ExecutorContext, KclValue, Metadata, StatementKind, TagEngineInfo,
-        TagIdentifier,
+        TagIdentifier, annotations,
         cad_op::{Group, OpArg, OpKclValue, Operation},
         kcl_value::FunctionSource,
         memory,
@@ -290,16 +290,19 @@ impl FunctionDefinition<'_> {
         callsite: SourceRange,
     ) -> Result<Option<KclValue>, KclError> {
         if self.deprecated {
-            exec_state.warn(CompilationError::err(
-                callsite,
-                format!(
-                    "{} is deprecated, see the docs for a recommended replacement",
-                    match &fn_name {
-                        Some(n) => format!("`{n}`"),
-                        None => "This function".to_owned(),
-                    }
+            exec_state.warn(
+                CompilationError::err(
+                    callsite,
+                    format!(
+                        "{} is deprecated, see the docs for a recommended replacement",
+                        match &fn_name {
+                            Some(n) => format!("`{n}`"),
+                            None => "This function".to_owned(),
+                        }
+                    ),
                 ),
-            ));
+                annotations::WARN_DEPRECATED,
+            );
         }
 
         type_check_params_kw(fn_name.as_deref(), self, &mut args.kw_args, exec_state)?;

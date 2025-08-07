@@ -183,6 +183,7 @@ export const KclEditorPane = () => {
     if (textWrapping.current) extensions.push(EditorView.lineWrapping)
 
     return extensions
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [kclLSP, copilotLSP, textWrapping.current, cursorBlinking.current])
 
   const initialCode = useRef(codeManager.code)
