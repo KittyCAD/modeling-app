@@ -116,6 +116,10 @@ where
 }
 
 #[derive(Debug, Clone, PartialEq, Default)]
+// If you try to compare two `crate::std::StdFn` the results will be meaningless and arbitrary,
+// because they're just function pointers.
+// TODO: Add a newtype around crate::std::StdFn which manually impls PartialEq and sets it to false.
+#[allow(unpredictable_function_pointer_comparisons)]
 pub enum FunctionSource {
     #[default]
     None,
@@ -364,22 +368,24 @@ impl KclValue {
             LiteralValue::Number { value, suffix } => {
                 let ty = NumericType::from_parsed(suffix, &exec_state.mod_local.settings);
                 if let NumericType::Default { len, .. } = &ty
-                    && !exec_state.mod_local.explicit_length_units && *len != UnitLen::Mm {
-                        exec_state.warn(
-                            CompilationError::err(
-                                literal.as_source_range(),
-                                "Project-wide units are deprecated. Prefer to use per-file default units.",
-                            )
-                            .with_suggestion(
-                                "Fix by adding per-file settings",
-                                format!("@{SETTINGS}({SETTINGS_UNIT_LENGTH} = {len})\n"),
-                                // Insert at the start of the file.
-                                Some(SourceRange::new(0, 0, literal.module_id)),
-                                crate::errors::Tag::Deprecated,
-                            ),
-                            annotations::WARN_DEPRECATED,
-                        );
-                    }
+                    && !exec_state.mod_local.explicit_length_units
+                    && *len != UnitLen::Mm
+                {
+                    exec_state.warn(
+                        CompilationError::err(
+                            literal.as_source_range(),
+                            "Project-wide units are deprecated. Prefer to use per-file default units.",
+                        )
+                        .with_suggestion(
+                            "Fix by adding per-file settings",
+                            format!("@{SETTINGS}({SETTINGS_UNIT_LENGTH} = {len})\n"),
+                            // Insert at the start of the file.
+                            Some(SourceRange::new(0, 0, literal.module_id)),
+                            crate::errors::Tag::Deprecated,
+                        ),
+                        annotations::WARN_DEPRECATED,
+                    );
+                }
                 KclValue::Number { value, meta, ty }
             }
             LiteralValue::String(value) => KclValue::String { value, meta },
