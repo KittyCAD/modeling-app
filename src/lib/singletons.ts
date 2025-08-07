@@ -50,7 +50,6 @@ declare global {
 window.engineCommandManager = engineCommandManager
 
 export const sceneInfra = new SceneInfra(engineCommandManager)
-engineCommandManager.camControlsCameraChange = sceneInfra.onCameraChange
 
 // This needs to be after sceneInfra and engineCommandManager are is created.
 export const editorManager = new EditorManager(engineCommandManager)

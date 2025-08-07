@@ -3,8 +3,6 @@ import type { Group, Intersection, Object3D, Object3DEventMap } from 'three'
 import {
   AmbientLight,
   Color,
-  GridHelper,
-  LineBasicMaterial,
   Mesh,
   MeshBasicMaterial,
   OrthographicCamera,
@@ -295,20 +293,20 @@ export class SceneInfra {
     this.raycaster.layers.disable(0)
     this.planeRaycaster.layers.enable(INTERSECTION_PLANE_LAYER)
 
-    // GRID
-    const size = 100
-    const divisions = 10
-    const gridHelperMaterial = new LineBasicMaterial({
-      color: 0x0000ff,
-      transparent: true,
-      opacity: 0.5,
-    })
-
+    // GRID - more of a debug thing, but maybe useful
+    // const size = 100
+    // const divisions = 10
+    // const gridHelperMaterial = new LineBasicMaterial({
+    //   color: 0x0000ff,
+    //   transparent: true,
+    //   opacity: 0.5,
+    // })
+    //
     // This is the GridHelper in the 3D scene, the one in sketching is in sceneEntities.ts
-    const gridHelper = new GridHelper(size, divisions, 0x0000ff, 0xffffff)
-    gridHelper.material = gridHelperMaterial
-    gridHelper.rotation.x = Math.PI / 2
-    // this.scene.add(gridHelper) // more of a debug thing, but maybe useful
+    // const gridHelper = new GridHelper(size, divisions, 0x0000ff, 0xffffff)
+    // gridHelper.material = gridHelperMaterial
+    // gridHelper.rotation.x = Math.PI / 2
+    // this.scene.add(gridHelper)
 
     const light = new AmbientLight(0x505050) // soft white light
     this.scene.add(light)
