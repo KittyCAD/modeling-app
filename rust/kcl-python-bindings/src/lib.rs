@@ -734,7 +734,7 @@ fn kcl(py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
         py.get_type::<kcmc::format::InputFormat3d>(),
     ] {
         // 1) Put it in our module namespace so users can `import zoo_common`
-        m.add(cls.name()?, &cls)?;
+        m.add(cls.name()?, cls.clone())?;
 
         // 2) Patch __module__ so stub generators & reprs think it's top-level
         cls.setattr("__module__", "kcl")?;
