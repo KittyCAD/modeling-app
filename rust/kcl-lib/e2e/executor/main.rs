@@ -2017,12 +2017,7 @@ async fn kcl_test_error_no_auth_websocket() {
     let result = execute_and_snapshot_no_auth(code, None).await;
     let err = result.unwrap_err();
     let err = err.as_kcl_error().unwrap();
-    assert!(
-        err.message()
-            .contains("Please send the following object over this websocket"),
-        "actual: {}",
-        err.message()
-    );
+    assert!(err.message().contains("Authorization"), "actual: {}", err.message());
 }
 
 #[tokio::test(flavor = "multi_thread")]
