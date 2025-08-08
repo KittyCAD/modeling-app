@@ -1199,11 +1199,7 @@ profile001 = startProfile(sketch001, at = [0, 0])
     await scene.settled(cmdBar)
 
     let prevContent = await editor.getCurrentCode()
-
-    // enter sketch mode
-    const op = await toolbar.getFeatureTreeOperation('Sketch', 0)
-    await op.dblclick()
-    await expect(page.getByTestId('segment-overlay')).toHaveCount(5)
+    await toolbar.editSketch()
 
     // first sketch modification
     await editor.selectText(

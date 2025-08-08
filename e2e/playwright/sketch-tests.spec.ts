@@ -1459,12 +1459,8 @@ sketch001 = startSketchOn(XZ)
     homePage,
     cmdBar,
     editor,
+    toolbar,
   }) => {
-    const u = await getUtils(page)
-
-    const viewportSize = { width: 1100, height: 750 }
-    await page.setBodyDimensions(viewportSize)
-
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
@@ -1482,20 +1478,14 @@ profile001 = startProfile(sketch001, at = [0, 0])
     await homePage.goToModelingScene()
     await scene.settled(cmdBar)
 
-    // Enter sketch mode
-    await page.mouse.dblclick(654, 450)
-    await page.waitForTimeout(1000)
+    await toolbar.editSketch()
 
     // Select the third line
-    await page.mouse.click(918, 90)
-    await page.waitForTimeout(1000)
+    await editor.selectText('line(end = [-22.0, 12.0])')
+    await editor.closePane()
 
     // Delete with backspace
     await page.keyboard.press('Delete')
-
-    // Wait for engine re-execution to complete
-    await u.openDebugPanel()
-    await u.expectCmdLog('[data-message-type="execution-done"]', 10_000)
 
     // Validate the editor code no longer contains the deleted line
     await editor.expectEditor.toContain(
