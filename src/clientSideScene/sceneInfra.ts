@@ -93,7 +93,7 @@ export class SceneInfra {
   readonly camControls: CameraControls
   isFovAnimationInProgress = false
   _baseUnitMultiplier = 1
-  _theme: Themes = Themes.System
+  private _theme: Themes = Themes.System
   lastMouseState: MouseState = { type: 'idle' }
   onDragStartCallback: (arg: OnDragCallbackArgs) => Voidish = () => {}
   onDragEndCallback: (arg: OnDragCallbackArgs) => Voidish = () => {}
@@ -132,6 +132,10 @@ export class SceneInfra {
 
   set theme(theme: Themes) {
     this._theme = theme
+  }
+
+  get theme() {
+    return this._theme
   }
 
   resetMouseListeners = () => {

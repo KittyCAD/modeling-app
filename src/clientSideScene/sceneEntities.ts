@@ -160,7 +160,7 @@ import type RustContext from '@src/lib/rustContext'
 import { updateExtraSegments } from '@src/lib/selections'
 import type { Selections } from '@src/lib/selections'
 import { getEventForSegmentSelection } from '@src/lib/selections'
-import type { Themes } from '@src/lib/theme'
+import { getResolvedTheme, Themes } from '@src/lib/theme'
 import { getThemeColorForThreeJs } from '@src/lib/theme'
 import { err, reportRejection, trap } from '@src/lib/trap'
 import { isArray, isOverlap, roundOff } from '@src/lib/utils'
@@ -465,12 +465,22 @@ export class SceneEntities {
         const viewportSize = this.sceneInfra.renderer.getDrawingBufferSize(
           new Vector2()
         )
+        // Choose grid colors based on app theme: dark = existing colors, light = subtle gray
+        const isLight = getResolvedTheme(this.sceneInfra.theme) === Themes.Light
+        const majorColor: [number, number, number, number] = isLight
+          ? [0.3, 0.3, 0.3, 1.0]
+          : [0.7, 0.7, 0.7, 1.0]
+        const minorColor: [number, number, number, number] = isLight
+          ? [0.2, 0.2, 0.2, 1.0]
+          : [0.9, 0.9, 0.9, 1.0]
+
         gridHelper.update(
           this.sceneInfra.camControls.camera,
           majorGridSpacing,
           minorGridsPerMajor,
           viewportSize.x,
-          viewportSize.y
+          viewportSize.y,
+          { majorColor, minorColor }
         )
       }
     } else {
@@ -515,7 +525,7 @@ export class SceneEntities {
       isDraft: true,
       from: [point.x, point.y],
       scale,
-      theme: this.sceneInfra._theme,
+      theme: this.sceneInfra.theme,
       // default is 12, this makes the draft point pop a bit more,
       // especially when snapping to the startProfile handle as it's it was the exact same size
       size: 16,
@@ -779,7 +789,7 @@ export class SceneEntities {
           id: sketch.start.__geoMeta.id,
           pathToNode: segPathToNode,
           scale,
-          theme: this.sceneInfra._theme,
+          theme: this.sceneInfra.theme,
           isDraft: false,
         })
         _profileStart.layers.set(SKETCH_LAYER)
@@ -913,7 +923,7 @@ export class SceneEntities {
           pathToNode: segPathToNode,
           isDraftSegment,
           scale,
-          theme: this.sceneInfra._theme,
+          theme: this.sceneInfra.theme,
           isSelected,
           sceneInfra: this.sceneInfra,
           selection,
@@ -3556,7 +3566,7 @@ export class SceneEntities {
           isSelected
             ? SEGMENT_BLUE
             : parent?.userData?.baseColor ||
-                getThemeColorForThreeJs(this.sceneInfra._theme)
+                getThemeColorForThreeJs(this.sceneInfra.theme)
         )
         updateExtraSegments(parent, 'hoveringLine', false)
         updateExtraSegments(parent, 'selected', isSelected)
@@ -3672,7 +3682,7 @@ export class SceneEntities {
   }
 
   drawDashedLine({ from, to }: { from: Coords2d; to: Coords2d }) {
-    const baseColor = getThemeColorForThreeJs(this.sceneInfra._theme)
+    const baseColor = getThemeColorForThreeJs(this.sceneInfra.theme)
     const color = baseColor
     const meshType = STRAIGHT_SEGMENT_DASH
 

@@ -80,16 +80,15 @@ const fragmentShader = `precision highp float;
 in float vLineType;
 out vec4 fragColor;
 
+uniform vec4 uMajorColor;
+uniform vec4 uMinorColor;
+
 void main()
 {
-	vec4 majorColor = vec4(0.3, 0.3, 0.3, 1.0);
-	vec4 minorColor = vec4(0.2, 0.2, 0.2, 1.0);
-
-	fragColor = vLineType > 0.5 ? majorColor : minorColor;
+	fragColor = vLineType > 0.5 ? uMajorColor : uMinorColor;
 }`
 
 export class InfiniteGridRenderer extends LineSegments {
-
   private minMinorGridPixelSpacing = 10
   private minMajorGridPixelSpacing = 10
 
@@ -109,6 +108,8 @@ export class InfiniteGridRenderer extends LineSegments {
         minorSpacing: { value: 1.0 },
         majorSpacing: { value: 4.0 },
         viewportPx: { value: [1.0, 1.0] }, // set real size in update()
+        uMajorColor: { value: [0.3, 0.3, 0.3, 1.0] },
+        uMinorColor: { value: [0.2, 0.2, 0.2, 1.0] },
       },
       transparent: false,
       depthTest: false,
@@ -126,7 +127,11 @@ export class InfiniteGridRenderer extends LineSegments {
     majorSpacing: number,
     minorPerMajor: number,
     viewportWidthPx: number,
-    viewportHeightPx: number
+    viewportHeightPx: number,
+    options?: {
+      majorColor?: [number, number, number, number]
+      minorColor?: [number, number, number, number]
+    }
   ) {
     if (!(camera instanceof OrthographicCamera)) {
       console.log(
@@ -148,8 +153,14 @@ export class InfiniteGridRenderer extends LineSegments {
 
     const pxPerWorldX = viewportWidthPx / worldViewportWidth
     const pxPerWorldY = viewportHeightPx / worldViewportHeight
-    const minorSpacingPx = Math.min(minorSpacing * pxPerWorldX, minorSpacing * pxPerWorldY)
-    const majorSpacingPx = Math.min(majorSpacing * pxPerWorldX, majorSpacing * pxPerWorldY)
+    const minorSpacingPx = Math.min(
+      minorSpacing * pxPerWorldX,
+      minorSpacing * pxPerWorldY
+    )
+    const majorSpacingPx = Math.min(
+      majorSpacing * pxPerWorldX,
+      majorSpacing * pxPerWorldY
+    )
 
     // If major grid would be too dense on screen, hide the grid entirely
     if (majorSpacingPx < this.minMajorGridPixelSpacing) {
@@ -159,12 +170,15 @@ export class InfiniteGridRenderer extends LineSegments {
     this.visible = true
 
     // If minors are too small, collapse to majors only by using major spacing
-    const effectiveMinorSpacing = minorSpacingPx < this.minMinorGridPixelSpacing
-      ? majorSpacing
-      : minorSpacing
+    const effectiveMinorSpacing =
+      minorSpacingPx < this.minMinorGridPixelSpacing
+        ? majorSpacing
+        : minorSpacing
 
-    const verticalLines = Math.ceil(worldViewportWidth / effectiveMinorSpacing) + 2
-    const horizontalLines = Math.ceil(worldViewportHeight / effectiveMinorSpacing) + 2
+    const verticalLines =
+      Math.ceil(worldViewportWidth / effectiveMinorSpacing) + 2
+    const horizontalLines =
+      Math.ceil(worldViewportHeight / effectiveMinorSpacing) + 2
 
     material.uniforms.verticalLines.value = verticalLines
     material.uniforms.horizontalLines.value = horizontalLines
@@ -174,6 +188,12 @@ export class InfiniteGridRenderer extends LineSegments {
     material.uniforms.minorSpacing.value = effectiveMinorSpacing
     material.uniforms.majorSpacing.value = majorSpacing
     material.uniforms.viewportPx.value = [viewportWidthPx, viewportHeightPx]
+
+    // Optional theme-based colors
+    if (options?.majorColor)
+      material.uniforms.uMajorColor.value = options.majorColor
+    if (options?.minorColor)
+      material.uniforms.uMinorColor.value = options.minorColor
 
     const totalVertices = verticalLines * 2 + horizontalLines * 2
     this.geometry.setDrawRange(0, totalVertices)
