@@ -234,8 +234,20 @@ export class KclManager extends EventTarget {
   }
 
   setDiagnosticsForCurrentErrors() {
-    this.singletons.editorManager?.setDiagnostics(this.diagnostics)
-    this._diagnosticsCallback(this.diagnostics)
+    let diagnostics = this.diagnostics
+    const codeIsEmptyString = this.singletons.codeManager.code.trim() === ''
+    if (codeIsEmptyString && diagnostics.length > 0) {
+      /**
+       * If the current code is the empty string, why would there be diagnostics on an empty string?
+       * The entire editor should be cleared. It cannot have diagnostics for '' since we do not
+       * tell the user if the editor is completely blank.
+       */
+      console.error('attempted diagnostics:', this.diagnostics)
+      diagnostics = []
+    }
+
+    this.singletons.editorManager?.setDiagnostics(diagnostics)
+    this._diagnosticsCallback(diagnostics)
   }
 
   get isExecuting() {
