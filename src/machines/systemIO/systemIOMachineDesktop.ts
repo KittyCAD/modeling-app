@@ -632,10 +632,13 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           target: string
         }
       }) => {
-        await window.electron.copy(input.src, input.target, { recursive: true, force: false })
+        await window.electron.copy(input.src, input.target, {
+          recursive: true,
+          force: false,
+        })
         return {
           message: `Folder copied successfully`,
-          requestedAbsolutePath: ''
+          requestedAbsolutePath: '',
         }
       }
     ),

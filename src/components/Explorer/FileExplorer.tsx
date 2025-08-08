@@ -62,7 +62,7 @@ export const FileExplorer = ({
   selectedRow,
   contextMenuRow,
   isRenaming,
-  isCopying
+  isCopying,
 }: {
   rowsToRender: FileExplorerRow[]
   selectedRow: FileExplorerEntry | null
@@ -105,7 +105,7 @@ function FileExplorerRowContextMenu({
   onOpenInNewWindow,
   callback,
   onPaste,
-  isCopying
+  isCopying,
 }: FileExplorerRowContextMenuProps) {
   return (
     <ContextMenu
@@ -121,7 +121,11 @@ function FileExplorerRowContextMenu({
         <ContextMenuItem data-testid="context-menu-delete" onClick={onCopy}>
           Copy
         </ContextMenuItem>,
-          <ContextMenuItem disabled={!isCopying} data-testid="context-menu-delete" onClick={onPaste}>
+        <ContextMenuItem
+          disabled={!isCopying}
+          data-testid="context-menu-delete"
+          onClick={onPaste}
+        >
           Paste
         </ContextMenuItem>,
         <ContextMenuItem
@@ -320,13 +324,13 @@ export const FileExplorerRowElement = ({
         onOpenInNewWindow={() => {
           row.onOpenInNewWindow()
         }}
-        onCopy={()=>{
+        onCopy={() => {
           row.onCopy()
         }}
         callback={() => {
           row.onContextMenuOpen(row.domIndex)
         }}
-        onPaste={()=>{
+        onPaste={() => {
           row.onPaste()
         }}
         isCopying={isCopying}

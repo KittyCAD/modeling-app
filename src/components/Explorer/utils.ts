@@ -203,24 +203,27 @@ export const isRowFake = (
 
 export const getUniqueCopyPasteMaxIndex = (rows: FileEntry[]) => {
   const matches = rows.map((row) => row.path?.match(/-copy-(?:\d+)?$/i))
-  const indices = matches
-    .filter(Boolean)
-    .map((match) => {
-      // remove the start and then index it?
-      console.log(match.input[match.index])
-      return (match.input[match.index])
-      // return parseInt(maybeMatchIndex || '0', 10)
-    })
+  const indices = matches.filter(Boolean).map((match) => {
+    // remove the start and then index it?
+    console.log(match.input[match.index])
+    return match.input[match.index]
+    // return parseInt(maybeMatchIndex || '0', 10)
+  })
   const maxIndex = Math.max(...indices, -1) + 1
   console.log(maxIndex)
   return maxIndex
 }
 
-export const copyPasteSourceAndTarget = (possibleCollisions: string[], src: FileEntry, target: FileEntry, identifier: string) : {src: string, target: string}=> {
+export const copyPasteSourceAndTarget = (
+  possibleCollisions: string[],
+  src: FileEntry,
+  target: FileEntry,
+  identifier: string
+): { src: string; target: string } => {
   if (possibleCollisions.length === 0) {
     return {
       src,
-      target
+      target,
     }
   }
 }

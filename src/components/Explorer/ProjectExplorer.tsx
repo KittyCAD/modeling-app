@@ -112,7 +112,7 @@ export const ProjectExplorer = ({
   const lastIndexBeforeNothing = useRef<number>(-2)
 
   // Store a path to copy and paste! Works for folders and files
-  const copyToClipBoard = useRef<{path: string, name: string} | null>(null)
+  const copyToClipBoard = useRef<{ path: string; name: string } | null>(null)
 
   const fileExplorerContainer = useRef<HTMLDivElement | null>(null)
   const projectExplorerRef = useRef<HTMLDivElement | null>(null)
@@ -336,16 +336,25 @@ export const ProjectExplorer = ({
           onCopy: () => {
             copyToClipBoard.current = {
               path: row.path,
-              name: row.name
+              name: row.name,
             }
             setIsCopying(true)
           },
           onPaste: async () => {
             if (copyToClipBoard.current) {
               const src = copyToClipBoard.current.path
-              const possibleTarget = joinOSPaths(row.path, copyToClipBoard.current.name + '-copy-1')
+              const possibleTarget = joinOSPaths(
+                row.path,
+                copyToClipBoard.current.name + '-copy-1'
+              )
               const maxIndex = getUniqueCopyPasteMaxIndex(row.children)
-              const target = maxIndex === 0 ? possibleTarget : joinOSPaths(row.path, copyToClipBoard.current.name + '-copy-' + (maxIndex + 1))
+              const target =
+                maxIndex === 0
+                  ? possibleTarget
+                  : joinOSPaths(
+                      row.path,
+                      copyToClipBoard.current.name + '-copy-' + (maxIndex + 1)
+                    )
               // systemIOActor.send({
               //   type: SystemIOMachineEvents.copyRecursive,
               //   data: {

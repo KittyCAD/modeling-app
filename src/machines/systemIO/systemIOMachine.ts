@@ -203,14 +203,14 @@ export const systemIOMachine = setup({
             requestedPath: string
             requestedProjectName: string
           }
-      }
+        }
       | {
           type: SystemIOMachineEvents.copyRecursive
           data: {
             src: string
             target: string
           }
-        }
+        },
   },
   guards: {
     [SystemIOMachineGuards.projectNameIsValidLength]: ({
@@ -1261,10 +1261,7 @@ export const systemIOMachine = setup({
         id: SystemIOMachineActors.copyRecursive,
         src: SystemIOMachineActors.copyRecursive,
         input: ({ context, event, self }) => {
-          assertEvent(
-            event,
-            SystemIOMachineEvents.copyRecursive
-          )
+          assertEvent(event, SystemIOMachineEvents.copyRecursive)
           return {
             context,
             src: event.data.src,
@@ -1274,9 +1271,7 @@ export const systemIOMachine = setup({
         },
         onDone: {
           target: SystemIOMachineStates.readingFolders,
-          actions: [
-            SystemIOMachineActions.toastSuccess,
-          ],
+          actions: [SystemIOMachineActions.toastSuccess],
         },
         onError: {
           target: SystemIOMachineStates.idle,

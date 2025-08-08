@@ -314,5 +314,5 @@ contextBridge.exposeInMainWorld('electron', {
   disableMenu,
   menuOn,
   canReadWriteDirectory,
-  copy
+  copy,
 })
