@@ -184,7 +184,7 @@ export class FileSystemManager {
 
 export const fsManager = new FileSystemManager(
   nodePath,
-  window.electron ?? testNodeFs
+  window?.electron ?? testNodeFs
 )
 
 /**
@@ -192,5 +192,5 @@ export const fsManager = new FileSystemManager(
  */
 export const projectFsManager = new FileSystemManager(
   nodePath,
-  window.electron ?? testNodeFs
+  window?.electron ?? testNodeFs
 )
