@@ -132,6 +132,19 @@ export const ClientSideScene = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [])
 
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const observer = new ResizeObserver(() => {
+      sceneInfra.onWindowResize()
+      sceneInfra.camControls.onWindowResize()
+    })
+    observer.observe(canvas)
+    return () => {
+      observer.disconnect()
+    }
+  }, [])
+
   let cursor = 'default'
   if (state.matches('Sketch')) {
     if (

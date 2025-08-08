@@ -242,8 +242,9 @@ test.describe('Test network related behaviors', () => {
 
 
 sketch001 = startSketchOn(XZ)
-profile001 = startProfile(sketch001, at = [12.34, -12.34])
+profile001 = startProfile(sketch001, at = [-12.34, -12.34])
   |> xLine(length = 12.34)
+profile002 = startProfile(sketch001, at = [12.34, -12.34])
   |> line(end = [-12.34, 12.34])
 
 `)
@@ -256,8 +257,9 @@ profile001 = startProfile(sketch001, at = [12.34, -12.34])
 
 
 sketch001 = startSketchOn(XZ)
-profile001 = startProfile(sketch001, at = [12.34, -12.34])
+profile001 = startProfile(sketch001, at = [-12.34, -12.34])
   |> xLine(length = 12.34)
+profile002 = startProfile(sketch001, at = [12.34, -12.34])
   |> line(end = [-12.34, 12.34])
   |> xLine(length = -12.34)
 

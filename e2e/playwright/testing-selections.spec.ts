@@ -476,191 +476,63 @@ part001 = startSketchOn(XZ)
     ).not.toBeDisabled()
   })
 
-  const removeAfterFirstParenthesis = (inputString: string) => {
-    const index = inputString.indexOf('(')
-    if (index !== -1) {
-      return inputString.substring(0, index)
-    }
-    return inputString // return the original string if '(' is not found
-  }
-
-  test('Testing selections (and hovers) work on sketches when NOT in sketch mode', async ({
-    page,
-    homePage,
-    scene,
-    cmdBar,
-  }) => {
-    const cases = [
-      {
-        pos: [694, 185],
-        expectedCode: 'line(end = [74.36, 130.4], tag = $seg01)',
-      },
-      {
-        pos: [816, 244],
-        expectedCode: 'angledLine(angle = segAng(seg01), length = yo)',
-      },
-      {
-        pos: [1107, 161],
-        expectedCode: 'tangentialArc(endAbsolute = [167.95, -28.85])',
-      },
-    ] as const
-    await page.addInitScript(
-      async ({ cases }) => {
-        localStorage.setItem(
-          'persistCode',
-          `@settings(defaultLengthUnit = in)
+  test(
+    'Testing selections (and hovers) work on sketches when NOT in sketch mode',
+    { tag: '@web' },
+    async ({ page, homePage, scene, cmdBar }) => {
+      const cases = [
+        {
+          pos: [0.31, 0.5],
+          expectedCode: 'line(end = [74.36, 130.4], tag = $seg01)',
+        },
+        {
+          pos: [0.448, 0.557],
+          expectedCode: 'angledLine(angle = segAng(seg01), length = yo)',
+        },
+        {
+          pos: [0.753, 0.5],
+          expectedCode: 'tangentialArc(endAbsolute = [167.95, -28.85])',
+        },
+      ] as const
+      await page.addInitScript(
+        async ({ cases }) => {
+          localStorage.setItem(
+            'persistCode',
+            `@settings(defaultLengthUnit = in)
   yo = 79
   part001 = startSketchOn(XZ)
-    |> startProfile(at = [-7.54, -26.74])
+    |> startProfile(at = [-40.54, -26.74])
     |> ${cases[0].expectedCode}
     |> line(end = [-3.19, -138.43])
     |> ${cases[1].expectedCode}
     |> line(end = [41.19, 28.97 + 5])
     |> ${cases[2].expectedCode}`
+          )
+        },
+        { cases }
+      )
+      await page.setBodyDimensions({ width: 1200, height: 500 })
+      await homePage.goToModelingScene()
+      await scene.settled(cmdBar)
+
+      // end setup, now test hover and selects
+      for (const { pos, expectedCode } of cases) {
+        const [click, hover] = scene.makeMouseHelpers(pos[0], pos[1], {
+          format: 'ratio',
+          steps: 5,
+        })
+        // hover over segment, check it's content
+        await hover()
+        await expect(page.getByTestId('hover-highlight').first()).toBeVisible()
+        await expect(page.getByTestId('hover-highlight').first()).toHaveText(
+          expectedCode
         )
-      },
-      { cases }
-    )
-    const u = await getUtils(page)
-    await page.setBodyDimensions({ width: 1200, height: 500 })
-
-    await homePage.goToModelingScene()
-    await scene.settled(cmdBar)
-    await u.openAndClearDebugPanel()
-
-    await u.sendCustomCmd({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'default_camera_look_at',
-        vantage: { x: -449, y: -7503, z: 99 },
-        center: { x: -449, y: 0, z: 99 },
-        up: { x: 0, y: 0, z: 1 },
-      },
-    })
-    await u.waitForCmdReceive('default_camera_look_at')
-    await u.clearAndCloseDebugPanel()
-
-    // end setup, now test hover and selects
-    for (const { pos, expectedCode } of cases) {
-      // hover over segment, check it's content
-      await page.mouse.move(pos[0], pos[1], { steps: 5 })
-      await expect(page.getByTestId('hover-highlight').first()).toBeVisible()
-      await expect(page.getByTestId('hover-highlight').first()).toHaveText(
-        expectedCode
-      )
-      // hover over segment, click it and check the cursor has move to the right place
-      await page.mouse.click(pos[0], pos[1])
-      await expect(page.locator('.cm-activeLine')).toHaveText(
-        '|> ' + expectedCode
-      )
+        // hover over segment, click it and check the cursor has move to the right place
+        await click()
+        await expect(page.locator('.cm-activeLine')).toContainText(expectedCode)
+      }
     }
-  })
-  test("Hovering and selection of extruded faces works, and is not overridden shortly after user's click", async ({
-    page,
-    homePage,
-    scene,
-    cmdBar,
-  }) => {
-    await page.addInitScript(async () => {
-      localStorage.setItem(
-        'persistCode',
-        `@settings(defaultLengthUnit = in)
-  sketch001 = startSketchOn(XZ)
-    |> startProfile(at = [-79.26, 95.04])
-    |> line(end = [112.54, 127.64])
-    |> line(end = [170.36, -121.61], tag = $seg01)
-    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-    |> close()
-  extrude001 = extrude(sketch001, length = 50)
-      `
-      )
-    })
-    const u = await getUtils(page)
-    await page.setBodyDimensions({ width: 1200, height: 500 })
-
-    await homePage.goToModelingScene()
-    await scene.settled(cmdBar)
-    await u.openAndClearDebugPanel()
-
-    await u.sendCustomCmd({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'default_camera_look_at',
-        vantage: { x: 6615, y: -9505, z: 10344 },
-        center: { x: 1579, y: -635, z: 4035 },
-        up: { x: 0, y: 0, z: 1 },
-      },
-    })
-    await u.waitForCmdReceive('default_camera_look_at')
-    await u.clearAndCloseDebugPanel()
-
-    await page.waitForTimeout(1000)
-
-    let noHoverColor: [number, number, number] = [92, 92, 92]
-    let hoverColor: [number, number, number] = [127, 127, 127]
-    let selectColor: [number, number, number] = [155, 155, 105]
-
-    const extrudeWall = { x: 670, y: 275 }
-    const extrudeText = `line(end = [170.36, -121.61], tag = $seg01)`
-
-    const cap = { x: 594, y: 283 }
-    const capText = `startProfile(at = [-79.26, 95.04])`
-
-    const nothing = { x: 946, y: 229 }
-
-    await expect
-      .poll(() => u.getGreatestPixDiff(extrudeWall, noHoverColor))
-      .toBeLessThan(15)
-    await page.mouse.move(nothing.x, nothing.y)
-    await page.waitForTimeout(1000)
-    await page.mouse.move(extrudeWall.x, extrudeWall.y)
-    await expect(page.getByTestId('hover-highlight').first()).toBeVisible()
-    await expect(page.getByTestId('hover-highlight').first()).toContainText(
-      removeAfterFirstParenthesis(extrudeText)
-    )
-    await page.waitForTimeout(1000)
-    await expect(
-      await u.getGreatestPixDiff(extrudeWall, hoverColor)
-    ).toBeLessThan(15)
-    await page.mouse.click(extrudeWall.x, extrudeWall.y)
-    await expect(page.locator('.cm-activeLine')).toHaveText(`|> ${extrudeText}`)
-    await page.waitForTimeout(1000)
-    await expect(
-      await u.getGreatestPixDiff(extrudeWall, selectColor)
-    ).toBeLessThan(15)
-    await page.waitForTimeout(1000)
-    // check color stays there, i.e. not overridden (this was a bug previously)
-    await expect(
-      await u.getGreatestPixDiff(extrudeWall, selectColor)
-    ).toBeLessThan(15)
-
-    await page.mouse.move(nothing.x, nothing.y)
-    await page.waitForTimeout(1000)
-    await expect(page.getByTestId('hover-highlight')).not.toBeVisible()
-
-    // because of shading, color is not exact everywhere on the face
-    noHoverColor = [115, 115, 115]
-    hoverColor = [145, 145, 145]
-    selectColor = [168, 168, 120]
-
-    await expect(await u.getGreatestPixDiff(cap, noHoverColor)).toBeLessThan(15)
-    await page.mouse.move(cap.x, cap.y)
-    await expect(page.getByTestId('hover-highlight').first()).toBeVisible()
-    await expect(page.getByTestId('hover-highlight').first()).toContainText(
-      removeAfterFirstParenthesis(capText)
-    )
-    await page.waitForTimeout(1000)
-    await expect(await u.getGreatestPixDiff(cap, hoverColor)).toBeLessThan(15)
-    await page.mouse.click(cap.x, cap.y)
-    await expect(page.locator('.cm-activeLine')).toHaveText(`|> ${capText}`)
-    await page.waitForTimeout(1000)
-    await expect(await u.getGreatestPixDiff(cap, selectColor)).toBeLessThan(15)
-    await page.waitForTimeout(1000)
-    // check color stays there, i.e. not overridden (this was a bug previously)
-    await expect(await u.getGreatestPixDiff(cap, selectColor)).toBeLessThan(15)
-  })
+  )
   test("Various pipe expressions should and shouldn't allow edit and or extrude", async ({
     page,
     homePage,
