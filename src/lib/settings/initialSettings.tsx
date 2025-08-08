@@ -5,6 +5,8 @@ import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjecti
 import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
 import type { OnboardingStatus } from '@rust/kcl-lib/bindings/OnboardingStatus'
 
+import { NIL as uuidNIL } from 'uuid'
+
 import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
 import type { CameraSystem } from '@src/lib/cameraControls'
@@ -12,6 +14,7 @@ import { cameraMouseDragGuards, cameraSystems } from '@src/lib/cameraControls'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
   DEFAULT_PROJECT_NAME,
+  REGEXP_UUIDV4,
 } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import type {
@@ -129,9 +132,6 @@ const MS_IN_MINUTE = 1000 * 60
 
 export function createSettings() {
   return {
-    /** Settings that affect the behavior of the entire app,
-     *  beyond just modeling or navigating, for example
-     */
     app: {
       /**
        * The overall appearance of the app: light, dark, or system
@@ -690,6 +690,32 @@ export function createSettings() {
         validate: (v) => typeof v === 'boolean',
         commandConfig: {
           inputType: 'boolean',
+        },
+      }),
+    },
+    /** Settings that affect the behavior of the entire app,
+     *  beyond just modeling or navigating, for example
+     *  NOTE: before using the project id for anything, check it isn't the
+     *  NIL uuid, which is the default value.
+     */
+    meta: {
+      id: new Setting<string>({
+        hideOnLevel: 'user',
+        defaultValue: uuidNIL,
+        description: 'The unique project identifier',
+        // Never allow the user to change the id, only view it.
+        validate: (v) => REGEXP_UUIDV4.test(v),
+        Component: ({ value }) => {
+          return (
+            <div className="flex gap-4 p-1 border rounded-sm border-chalkboard-30">
+              <input
+                className="flex-grow text-xs px-2 bg-chalkboard-30 dark:bg-chalkboard-80 cursor-not-allowed"
+                value={value}
+                disabled
+                data-testid="project-id"
+              />
+            </div>
+          )
         },
       }),
     },

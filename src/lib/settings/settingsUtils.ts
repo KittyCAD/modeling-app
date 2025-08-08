@@ -1,3 +1,4 @@
+import { v4, NIL as uuidNIL } from 'uuid'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
 import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
@@ -190,6 +191,9 @@ export function projectConfigurationToSettingsPayload(
   configuration: DeepPartial<ProjectConfiguration>
 ): DeepPartial<SaveSettingsPayload> {
   return {
+    meta: {
+      id: configuration?.settings?.meta?.id,
+    },
     app: {
       // do not read in `theme`, because it is blocked on the project level
       themeColor: configuration?.settings?.app?.appearance?.color
@@ -230,6 +234,9 @@ export function settingsPayloadToProjectConfiguration(
 ): DeepPartial<ProjectConfiguration> {
   return {
     settings: {
+      meta: {
+        id: configuration?.meta?.id,
+      },
       app: {
         appearance: {
           color: configuration?.app?.themeColor
@@ -359,12 +366,48 @@ export async function loadAndValidateSettings(
 
   // Load the project settings if they exist
   if (projectPath) {
-    const projectSettings = onDesktop
+    let projectSettings = onDesktop
       ? await readProjectSettingsFile(projectPath)
       : readLocalStorageProjectSettingsFile()
 
     if (err(projectSettings))
       return Promise.reject(new Error('Invalid project settings'))
+
+    // An id was missing. Create one and write it to disk immediately.
+    if (
+      !projectSettings.settings?.meta?.id ||
+      projectSettings.settings.meta.id === uuidNIL
+    ) {
+      const projectSettingsParsed =
+        projectConfigurationToSettingsPayload(projectSettings)
+      const projectSettingsNew = {
+        ...projectSettingsParsed,
+        meta: {
+          id: v4(),
+        },
+      }
+
+      // Duplicated from settingsUtils.ts
+      const projectTomlString = serializeProjectConfiguration(
+        settingsPayloadToProjectConfiguration(projectSettingsNew)
+      )
+
+      if (err(projectTomlString))
+        return Promise.reject(
+          new Error('Could not serialize project configuration')
+        )
+      if (onDesktop) {
+        await writeProjectSettingsFile(projectPath, projectTomlString)
+      } else {
+        localStorage.setItem(
+          localStorageProjectSettingsPath(),
+          projectTomlString
+        )
+      }
+
+      projectSettings =
+        settingsPayloadToProjectConfiguration(projectSettingsNew)
+    }
 
     const projectSettingsPayload = projectSettings
     settingsNext = setSettingsAtLevel(
