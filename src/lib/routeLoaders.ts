@@ -46,7 +46,7 @@ export const fileLoader: LoaderFunction = async (
           .join(window.electron.sep)
       : undefined
 
-  let settings = await loadAndValidateSettings(heuristicProjectFilePath)
+  let settings = await loadAndValidateSettings()
 
   const projectPathData = await getProjectMetaByRouteId(
     readAppSettingsFile,
@@ -54,6 +54,11 @@ export const fileLoader: LoaderFunction = async (
     params.id,
     settings.configuration
   )
+
+  settings = await loadAndValidateSettings(
+    projectPathData?.projectPath ?? heuristicProjectFilePath
+  )
+
   let code = ''
 
   if (!isBrowserProject && projectPathData) {
