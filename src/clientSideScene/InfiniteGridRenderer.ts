@@ -89,6 +89,10 @@ void main()
 }`
 
 export class InfiniteGridRenderer extends LineSegments {
+
+  private minMinorGridPixelSpacing = 10
+  private minMajorGridPixelSpacing = 10
+
   constructor() {
     const geometry = new BufferGeometry()
 
@@ -139,19 +143,35 @@ export class InfiniteGridRenderer extends LineSegments {
     const worldViewportWidth = (camera.right - camera.left) / zoom
     const worldViewportHeight = (camera.top - camera.bottom) / zoom
 
-    // World -> NDC scales
     const worldToScreenX = 2 / worldViewportWidth
     const worldToScreenY = 2 / worldViewportHeight
 
-    const verticalLines = Math.ceil(worldViewportWidth / minorSpacing) + 2
-    const horizontalLines = Math.ceil(worldViewportHeight / minorSpacing) + 2
+    const pxPerWorldX = viewportWidthPx / worldViewportWidth
+    const pxPerWorldY = viewportHeightPx / worldViewportHeight
+    const minorSpacingPx = Math.min(minorSpacing * pxPerWorldX, minorSpacing * pxPerWorldY)
+    const majorSpacingPx = Math.min(majorSpacing * pxPerWorldX, majorSpacing * pxPerWorldY)
+
+    // If major grid would be too dense on screen, hide the grid entirely
+    if (majorSpacingPx < this.minMajorGridPixelSpacing) {
+      this.visible = false
+      return
+    }
+    this.visible = true
+
+    // If minors are too small, collapse to majors only by using major spacing
+    const effectiveMinorSpacing = minorSpacingPx < this.minMinorGridPixelSpacing
+      ? majorSpacing
+      : minorSpacing
+
+    const verticalLines = Math.ceil(worldViewportWidth / effectiveMinorSpacing) + 2
+    const horizontalLines = Math.ceil(worldViewportHeight / effectiveMinorSpacing) + 2
 
     material.uniforms.verticalLines.value = verticalLines
     material.uniforms.horizontalLines.value = horizontalLines
     material.uniforms.cameraPos.value = [camera.position.y, camera.position.z]
     material.uniforms.worldToScreenX.value = worldToScreenX
     material.uniforms.worldToScreenY.value = worldToScreenY
-    material.uniforms.minorSpacing.value = minorSpacing
+    material.uniforms.minorSpacing.value = effectiveMinorSpacing
     material.uniforms.majorSpacing.value = majorSpacing
     material.uniforms.viewportPx.value = [viewportWidthPx, viewportHeightPx]
 
