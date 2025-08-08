@@ -218,14 +218,18 @@ export const getUniqueCopyPath = (
   identifer: string,
   isFile: boolean
 ) => {
-  const formattedPossibleCollisions = possibleCollisions.map((path)=>{
+  const formattedPossibleCollisions = possibleCollisions.map((path) => {
     const hasPeriodIndex = path.lastIndexOf('.')
-    const formattedPath = hasPeriodIndex !== -1 ? path.slice(0, hasPeriodIndex) : path
+    const formattedPath =
+      hasPeriodIndex !== -1 ? path.slice(0, hasPeriodIndex) : path
     return formattedPath
   })
 
   const hasPeriodIndex = possibleCopyPath.lastIndexOf('.')
-  const formattedPossibleCopyPath = hasPeriodIndex !== -1 ? possibleCopyPath.slice(0, hasPeriodIndex) : possibleCopyPath
+  const formattedPossibleCopyPath =
+    hasPeriodIndex !== -1
+      ? possibleCopyPath.slice(0, hasPeriodIndex)
+      : possibleCopyPath
 
   const startingCopyIndex = 1
   const matches = formattedPossibleCollisions.filter((path) => {
@@ -235,16 +239,29 @@ export const getUniqueCopyPath = (
   if (matches.length === 0) {
     if (isFile) {
       const fileNameAndExtension = getStringAfterLastSeparator(possibleCopyPath)
-      const fileName = fileNameAndExtension.slice(0, fileNameAndExtension.lastIndexOf('.'))
+      const fileName = fileNameAndExtension.slice(
+        0,
+        fileNameAndExtension.lastIndexOf('.')
+      )
       const extWithPeriod = getEXTWithPeriod(possibleCopyPath) || ''
-      return joinOSPaths(getParentAbsolutePath(possibleCopyPath), fileName + identifer + startingCopyIndex + extWithPeriod)
+      return joinOSPaths(
+        getParentAbsolutePath(possibleCopyPath),
+        fileName + identifer + startingCopyIndex + extWithPeriod
+      )
     }
     return possibleCopyPath + identifer + startingCopyIndex
   }
 
   const takenNumberHash = new Map()
+  const fileNameAndExtension = getStringAfterLastSeparator(possibleCopyPath)
+  const fileName = fileNameAndExtension.slice(
+    0,
+    fileNameAndExtension.lastIndexOf('.')
+  )
   const takenNumbers = matches
     .map((matchedPath) => {
+      matchedPath = matchedPath.replace(fileName,'')
+      // need to do regex matching... this is gonna be bricked otherwise
       const split = matchedPath.split(identifer)
       const last = split.pop() || ''
       return last
@@ -271,11 +288,20 @@ export const getUniqueCopyPath = (
     }
   }
 
+  console.log(matches)
+  console.log('possible number', possibleNumber)
+
   if (isFile) {
     const fileNameAndExtension = getStringAfterLastSeparator(possibleCopyPath)
-    const fileName = fileNameAndExtension.slice(0, fileNameAndExtension.lastIndexOf('.'))
+    const fileName = fileNameAndExtension.slice(
+      0,
+      fileNameAndExtension.lastIndexOf('.')
+    )
     const extWithPeriod = getEXTWithPeriod(possibleCopyPath) || ''
-    return joinOSPaths(getParentAbsolutePath(possibleCopyPath), fileName + identifer + possibleNumber + extWithPeriod)
+    return joinOSPaths(
+      getParentAbsolutePath(possibleCopyPath),
+      fileName + identifer + possibleNumber + extWithPeriod
+    )
   }
 
   return possibleCopyPath + identifer + possibleNumber
