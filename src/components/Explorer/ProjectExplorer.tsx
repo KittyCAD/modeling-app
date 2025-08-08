@@ -338,30 +338,38 @@ export const ProjectExplorer = ({
             copyToClipBoard.current = {
               path: row.path,
               name: row.name,
-              children: row.children
+              children: row.children,
             }
             setIsCopying(true)
           },
           onPaste: async () => {
             if (copyToClipBoard.current) {
-              const {src, target} = copyPasteSourceAndTarget(
-                row.children?.map((child)=>child.path) || [],
+              const absoluteParentPath = getParentAbsolutePath(row.path)
+              const parentIndex = flattenedData.findIndex((entry)=>{
+                return entry.path === absoluteParentPath
+              })
+              const parent = parentIndex >= 0 ? flattenedData[parentIndex] : project
+              const { src, target } = copyPasteSourceAndTarget(
+                row.children?.map((child) => child.path) || [],
+                parent.children?.map((child) => child.path) || [],
                 copyToClipBoard.current,
                 {
                   path: row.path,
                   name: row.name,
-                  children: row.children
+                  children: row.children,
                 },
                 '-copy-'
               )
+              console.log(src, target)
               systemIOActor.send({
                 type: SystemIOMachineEvents.copyRecursive,
                 data: {
                   src,
-                  target
+                  target,
                 },
               })
             }
+
 
             // clear the path
             copyToClipBoard.current = null

@@ -2,7 +2,7 @@ import type { ReactNode } from 'react'
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { sortFilesAndDirectories } from '@src/lib/desktopFS'
 import type { FileEntry } from '@src/lib/project'
-import { desktopSafePathJoin, joinOSPaths } from '@src/lib/paths'
+import { desktopSafePathJoin, getParentAbsolutePath, joinOSPaths } from '@src/lib/paths'
 import type { SubmitByPressOrBlur } from '@src/lib/types'
 
 /**
@@ -217,9 +217,13 @@ export const getUniqueCopyPasteMaxIndex = (rows: FileEntry[]) => {
 /**
  * Assumes possibleCollisions is sorted
  */
-export const getUniqueCopyPath = (possibleCollisions: string[], possibleCopyPath: string, identifer: string) => {
+export const getUniqueCopyPath = (
+  possibleCollisions: string[],
+  possibleCopyPath: string,
+  identifer: string
+) => {
   const startingCopyIndex = 1
-  const matches = possibleCollisions.filter((path)=>{
+  const matches = possibleCollisions.filter((path) => {
     return path.startsWith(possibleCopyPath)
   })
 
@@ -228,21 +232,24 @@ export const getUniqueCopyPath = (possibleCollisions: string[], possibleCopyPath
   }
 
   const takenNumberHash = new Map()
-  const takenNumbers = matches.map((matchedPath)=>{
-    const split = matchedPath.split(identifer)
-    const last = split.pop() || ''
-    return last
-  }).filter((last)=>{
-    if (!last) {
-      return false
-    }
-    const number = parseInt(last,10)
-    return last.length === number.toString().length
-  }).map((takenNumberString)=>{
-    return parseInt(takenNumberString, 10)
-  })
+  const takenNumbers = matches
+    .map((matchedPath) => {
+      const split = matchedPath.split(identifer)
+      const last = split.pop() || ''
+      return last
+    })
+    .filter((last) => {
+      if (!last) {
+        return false
+      }
+      const number = parseInt(last, 10)
+      return last.length === number.toString().length
+    })
+    .map((takenNumberString) => {
+      return parseInt(takenNumberString, 10)
+    })
 
-  takenNumbers.forEach((takenNumber)=>{
+  takenNumbers.forEach((takenNumber) => {
     takenNumberHash.set(takenNumber, true)
   })
 
@@ -258,21 +265,36 @@ export const getUniqueCopyPath = (possibleCollisions: string[], possibleCopyPath
 
 export const copyPasteSourceAndTarget = (
   possibleCollisions: string[],
+  possibleParentCollisions: string[],
   src: FileEntry,
   target: FileEntry,
   identifier: string
-): { src: string; target: string } => {
-
-  if (src.children && target.children) {
+): { src: string; target: string } | null => {
+  let possibleCopyPath = ''
+  let collisionsToCheck = possibleCollisions
+  // folder folder but same src and target
+  if (src.children && target.children && src.path === target.path) {
+    // parent folder of the target aka they will be siblings not nested
+    possibleCopyPath = joinOSPaths(getParentAbsolutePath(src.path), src.name)
+    collisionsToCheck = possibleParentCollisions
+  } else if (src.children && target.children) {
     // folder copying into folder
-    const possibleCopyPath = joinOSPaths(target.path, src.name)
-    const uniquePath = getUniqueCopyPath(possibleCollisions, possibleCopyPath, identifier)
-    return {
-      src: src.path,
-      target: uniquePath
-    }
+    possibleCopyPath = joinOSPaths(target.path, src.name)
   }
 
+  if (possibleCopyPath === '') {
+    return null
+  }
+
+  const uniquePath = getUniqueCopyPath(
+    collisionsToCheck,
+    possibleCopyPath,
+    identifier
+  )
+  return {
+    src: src.path,
+    target: uniquePath,
+  }
 }
 
 // Used for focused which is different from the selection when you mouse click.
