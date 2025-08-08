@@ -458,24 +458,28 @@ test.describe('Testing constraints', () => {
         testName: 'Add variable',
         addVariable: true,
         axisSelect: false,
-        value: 'segAng(seg01) + angle001',
+        /** must be a regex-escaped string */
+        value: 'segAng\\(seg01\\) \\+ angle001',
       },
       {
         testName: 'No variable',
         addVariable: false,
         axisSelect: false,
-        value: 'segAng(seg01) + 22.69',
+        /** must be a regex-escaped string */
+        value: `segAng\\(seg01\\) \\+ ${NUMBER_REGEXP}`,
       },
       {
         testName: 'Add variable, selecting axis',
         addVariable: true,
         axisSelect: true,
+        /** must be a regex-escaped string */
         value: 'turns::QUARTER_TURN - angle001',
       },
       {
         testName: 'No variable, selecting axis',
         addVariable: false,
         axisSelect: true,
+        /** must be a regex-escaped string */
         value: 'turns::QUARTER_TURN - 7',
       },
     ] as const
@@ -541,7 +545,7 @@ profile001 = startProfile(sketch001, at = [-70, -10])
         const codeAfter = [
           '|> line(end = [75, 50], tag = $seg01)',
           new RegExp(
-            `\|> angledLine\(angle = ${value}, length = ${NUMBER_REGEXP}\)`
+            `\\|> angledLine\\(angle = ${value}, length = ${NUMBER_REGEXP}\\)`
           ),
         ]
         if (axisSelect) codeAfter.shift()
