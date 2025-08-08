@@ -248,3 +248,6 @@ export type EnvironmentConfigurationRuntime = {
 export const ENVIRONMENT_CONFIGURATION_FOLDER = 'envs'
 
 export const MAX_PROJECT_NAME_LENGTH = 240
+
+// It's so ugh that `uuid` package doesn't export this.
+export const REGEXP_UUIDV4 = /^[0-9A-F]{8}(-[0-9A-F]{4}){3}-[0-9A-F]{12}$/i
