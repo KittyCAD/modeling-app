@@ -23,12 +23,7 @@ import { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 import { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
 
 import { TEST_SETTINGS } from '@e2e/playwright/storageStates'
-import {
-  assertElectron,
-  getUtils,
-  settingsToToml,
-  setup,
-} from '@e2e/playwright/test-utils'
+import { getUtils, settingsToToml, setup } from '@e2e/playwright/test-utils'
 
 export class AuthenticatedApp {
   public readonly page: Page
@@ -233,7 +228,9 @@ export class ElectronZoo {
       }, dims)
 
       return this.evaluate(async (dims: { width: number; height: number }) => {
-        assertElectron()
+        if (!window.electron) {
+          throw new Error('Electron not defined')
+        }
         await window.electron?.resizeWindow(dims.width, dims.height)
         window.document.body.style.width = dims.width + 'px'
         window.document.body.style.height = dims.height + 'px'
