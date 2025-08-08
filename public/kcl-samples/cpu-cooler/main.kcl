@@ -31,14 +31,14 @@ mountingWire
        instances = 2,
        axis = [0, 1, 0],
        center = [0, 0, 40 + fanSize / 2],
-       arcDegrees = 360,
+       arcDegrees = 360deg,
        rotateDuplicates = true,
      )
   |> patternCircular3d(
        instances = 2,
        axis = [0, 0, 1],
        center = [0, 0, 0],
-       arcDegrees = 360,
+       arcDegrees = 360deg,
        rotateDuplicates = true,
      )
 removableSticker
