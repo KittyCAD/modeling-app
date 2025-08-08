@@ -1845,49 +1845,53 @@ tangentialArc(end = [-10.82, 144.95])`
     scene,
     toolbar,
     editor,
+    cmdBar,
     page,
     homePage,
   }) => {
-    await page.setBodyDimensions({ width: 1000, height: 500 })
-    await homePage.goToModelingScene()
-    await scene.connectionEstablished()
-    await expect(
-      page.getByRole('button', { name: 'Start Sketch' })
-    ).not.toBeDisabled()
-
-    const [selectXZPlane] = scene.makeMouseHelpers(650, 150)
-
-    await toolbar.startSketchPlaneSelection()
-    await selectXZPlane()
-    // timeout wait for engine animation is unavoidable
-    await page.waitForTimeout(600)
-    await editor.expectEditor.toContain(`sketch001 = startSketchOn(XZ)`)
-
-    const [startProfile1] = scene.makeMouseHelpers(568, 110)
-    const [segment1Clk] = scene.makeMouseHelpers(701, 118)
-    const [segment2Clk] = scene.makeMouseHelpers(745, 189)
-
-    await test.step('add two segments', async () => {
-      await startProfile1()
-      await editor.expectEditor.toContain(
-        `profile001 = startProfile(sketch001, at = [4.61, 9.49])`
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at=[0, 0])
+  |> angledLine(angle=45deg, length=1in)
+  |> angledLine(angle=180deg, length=0.5in)
+`
       )
-      await segment1Clk()
-      await editor.expectEditor.toContain(`|> line(end`)
-      await segment2Clk()
-      await editor.expectEditor.toContain(`|> line(end = [2.98, -4.81])`)
     })
+    await homePage.goToModelingScene()
+    await scene.settled(cmdBar)
+    await toolbar.editSketch(0)
 
     await test.step('delete all profiles', async () => {
       await editor.replaceCode('', 'sketch001 = startSketchOn(XZ)\n')
-      await page.waitForTimeout(600) // wait for deferred execution
+    })
+
+    await test.step('wait for execution', async () => {
+      // TODO: there is a gap between deleting the code and the re-execution during which
+      // there seems to be no signal to the system that we are in a "dirty" state awaiting re-execution.
+      // Need a better signal to the system (and by extension Playwright) that a re-execution is coming,
+      // because if the user (or test) equips a new tool and draws with it in this state, the tool will
+      // be unequipped and the code will be half-reset when execution completes.
+      await expect(toolbar.exitSketchBtn).toBeDisabled()
+      await expect(toolbar.exitSketchBtn).toBeEnabled()
     })
 
     await test.step('equip circle and draw it', async () => {
       await toolbar.circleBtn.click()
-      await page.mouse.click(700, 200)
-      await page.mouse.click(750, 200)
-      await editor.expectEditor.toContain('circle(sketch001, center = [')
+      const [circleCenterClick] = scene.makeMouseHelpers(0.5, 0.5, {
+        format: 'ratio',
+      })
+      const [circlePerimeterClick] = scene.makeMouseHelpers(0.75, 0.75, {
+        format: 'ratio',
+      })
+      await expect(toolbar.circleBtn).toHaveAttribute('aria-pressed', 'true')
+      await circleCenterClick()
+      await circlePerimeterClick()
+      await editor.expectEditor.not.toContain('profile001 = angledLine(')
+      await editor.expectEditor.toContain(
+        'profile001 = circle(sketch001, center = ['
+      )
     })
   })
   test('Can add multiple profiles to a sketch (all tool types)', async ({
