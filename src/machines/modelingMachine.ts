@@ -1088,7 +1088,7 @@ export const modelingMachine = setup({
         isDraft: true,
         from: event.data,
         scale,
-        theme: sceneInfra._theme,
+        theme: sceneInfra.theme,
       })
       draftPoint.position.copy(position)
       sceneInfra.scene.add(draftPoint)

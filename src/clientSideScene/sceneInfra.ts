@@ -1,17 +1,10 @@
 import * as TWEEN from '@tweenjs/tween.js'
-import type {
-  Group,
-  Intersection,
-  MeshBasicMaterial,
-  Object3D,
-  Object3DEventMap,
-} from 'three'
+import type { Group, Intersection, Object3D, Object3DEventMap } from 'three'
 import {
   AmbientLight,
   Color,
-  GridHelper,
-  LineBasicMaterial,
   Mesh,
+  MeshBasicMaterial,
   OrthographicCamera,
   Raycaster,
   Scene,
@@ -31,7 +24,6 @@ import {
   SKETCH_LAYER,
   X_AXIS,
   Y_AXIS,
-  getSceneScale,
 } from '@src/clientSideScene/sceneUtils'
 import type { useModelingContext } from '@src/hooks/useModelingContext'
 import type { EngineCommandManager } from '@src/lang/std/engineConnection'
@@ -101,7 +93,7 @@ export class SceneInfra {
   readonly camControls: CameraControls
   isFovAnimationInProgress = false
   _baseUnitMultiplier = 1
-  _theme: Themes = Themes.System
+  private _theme: Themes = Themes.System
   lastMouseState: MouseState = { type: 'idle' }
   onDragStartCallback: (arg: OnDragCallbackArgs) => Voidish = () => {}
   onDragEndCallback: (arg: OnDragCallbackArgs) => Voidish = () => {}
@@ -140,6 +132,10 @@ export class SceneInfra {
 
   set theme(theme: Themes) {
     this._theme = theme
+  }
+
+  get theme() {
+    return this._theme
   }
 
   resetMouseListeners = () => {
@@ -292,7 +288,6 @@ export class SceneInfra {
       engineCommandManager,
       false
     )
-    this.camControls.subscribeToCamChange(() => this.onCameraChange())
     this.camControls.camera.layers.enable(SKETCH_LAYER)
     if (DEBUG_SHOW_INTERSECTION_PLANE)
       this.camControls.camera.layers.enable(INTERSECTION_PLANE_LAYER)
@@ -302,35 +297,25 @@ export class SceneInfra {
     this.raycaster.layers.disable(0)
     this.planeRaycaster.layers.enable(INTERSECTION_PLANE_LAYER)
 
-    // GRID
-    const size = 100
-    const divisions = 10
-    const gridHelperMaterial = new LineBasicMaterial({
-      color: 0x0000ff,
-      transparent: true,
-      opacity: 0.5,
-    })
-
-    const gridHelper = new GridHelper(size, divisions, 0x0000ff, 0xffffff)
-    gridHelper.material = gridHelperMaterial
-    gridHelper.rotation.x = Math.PI / 2
-    // this.scene.add(gridHelper) // more of a debug thing, but maybe useful
+    // GRID - more of a debug thing, but maybe useful
+    // const size = 100
+    // const divisions = 10
+    // const gridHelperMaterial = new LineBasicMaterial({
+    //   color: 0x0000ff,
+    //   transparent: true,
+    //   opacity: 0.5,
+    // })
+    //
+    // This is the GridHelper in the 3D scene, the one in sketching is in sceneEntities.ts
+    // const gridHelper = new GridHelper(size, divisions, 0x0000ff, 0xffffff)
+    // gridHelper.material = gridHelperMaterial
+    // gridHelper.rotation.x = Math.PI / 2
+    // this.scene.add(gridHelper)
 
     const light = new AmbientLight(0x505050) // soft white light
     this.scene.add(light)
 
     SceneInfra.instance = this
-  }
-
-  onCameraChange = () => {
-    const scale = getSceneScale(
-      this.camControls.camera,
-      this.camControls.target
-    )
-    const axisGroup = this.scene
-      .getObjectByName(AXIS_GROUP)
-      ?.getObjectByName('gridHelper')
-    axisGroup?.name === 'gridHelper' && axisGroup.scale.set(scale, scale, scale)
   }
 
   // Called after canvas is attached to the DOM and on each resize.
@@ -715,14 +700,16 @@ export class SceneInfra {
     }
     axisGroup?.children.forEach((_mesh) => {
       const mesh = _mesh as Mesh
-      const mat = mesh.material as MeshBasicMaterial
-      if (otherSelections.includes(axisMap[mesh.userData?.type])) {
-        mat.color.set(mesh?.userData?.baseColor)
-        mat.color.offsetHSL(0, 0, 0.2)
-        mesh.userData.isSelected = true
-      } else {
-        mat.color.set(mesh?.userData?.baseColor)
-        mesh.userData.isSelected = false
+      const mat = mesh.material
+      if (mat instanceof MeshBasicMaterial) {
+        if (otherSelections.includes(axisMap[mesh.userData?.type])) {
+          mat.color.set(mesh?.userData?.baseColor)
+          mat.color.offsetHSL(0, 0, 0.2)
+          mesh.userData.isSelected = true
+        } else {
+          mat.color.set(mesh?.userData?.baseColor)
+          mesh.userData.isSelected = false
+        }
       }
     })
   }

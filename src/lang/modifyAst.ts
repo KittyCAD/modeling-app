@@ -70,6 +70,7 @@ import { err, trap } from '@src/lib/trap'
 import { isArray, isOverlap, roundOff } from '@src/lib/utils'
 import type { ExtrudeFacePlane } from '@src/machines/modelingMachine'
 import { ARG_AT } from '@src/lang/constants'
+import type { Coords2d } from '@src/lang/std/sketch'
 
 export function startSketchOnDefault(
   node: Node<Program>,
@@ -108,7 +109,7 @@ export function insertNewStartProfileAt(
   node: Node<Program>,
   sketchNodePaths: PathToNode[],
   planeNodePath: PathToNode,
-  at: [number, number],
+  at: Coords2d,
   insertType: 'start' | 'end' = 'end'
 ):
   | {
