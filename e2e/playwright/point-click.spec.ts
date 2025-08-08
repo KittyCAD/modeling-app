@@ -1874,7 +1874,6 @@ extrude001 = extrude(profile001, length = 5)
     await test.step('Select edges and apply oversized fillet', async () => {
       await test.step(`Select the edge`, async () => {
         await toolbar.closePane('code')
-        await page.waitForTimeout(10000)
         const [clickOnTheEdge] = scene.makeMouseHelpers(
           edgeLocation.x,
           edgeLocation.y
