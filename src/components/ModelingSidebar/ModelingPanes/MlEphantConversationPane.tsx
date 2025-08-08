@@ -1,6 +1,7 @@
-import { useSettings } from '@src/lib/singletons'
+import { useEffect, useState } from 'react'
+import { useSettings, systemIOActor } from '@src/lib/singletons'
+import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { useLoaderData } from 'react-router-dom'
-import { useFileContext } from '@src/hooks/useFileContext'
 import { useSelector } from '@xstate/react'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { MlEphantConversation } from '@src/components/MlEphantConversation'
@@ -24,9 +25,10 @@ const hasPromptsPending = (promptsPool: Prompt[]) => {
 
 export const MlEphantConversationPane = () => {
   const settings = useSettings()
-  const { context: contextModeling } = useModelingContext()
-  const { context: contextFile } = useFileContext()
+  const { context: contextModeling, theProject } = useModelingContext()
   const { file: loaderFile } = useLoaderData() as IndexLoaderData
+
+  const [hasCheckedForMlConversations, setHasCheckedForMlConversations] = useState(false)
 
   const actor = mlEphantManagerActor.getSnapshot()
   const promptsBelongingToProject = useSelector(mlEphantManagerActor, () => {
@@ -43,7 +45,7 @@ export const MlEphantConversationPane = () => {
     const projectFiles = await collectProjectFiles({
       selectedFileContents: codeManager.code,
       fileNames: kclManager.execState.filenames,
-      projectContext: contextFile,
+      projectContext: theProject,
       targetFile: loaderFile,
     })
 
@@ -52,7 +54,7 @@ export const MlEphantConversationPane = () => {
     mlEphantManagerActor.send({
       type: MlEphantManagerTransitions.PromptEditModel,
       prompt: requestedPrompt,
-      projectForPromptOutput: contextFile?.project,
+      projectForPromptOutput: theProject?.project,
       fileSelectedDuringPrompting: loaderFile,
       projectFiles,
       selections: contextModeling.selectionRanges,
@@ -61,18 +63,34 @@ export const MlEphantConversationPane = () => {
   }
 
   useEffect(() => {
-    const subscription = systemIOActor.subscribe((actor) => {
-      console.log(actor)
-      console.log(actor.value)
-      console.log(actor.context)
-    })
-    systemIOActor.send({
-      type: SystemIOMachineEvents.getMlEphantConversations,
+    const subscription = systemIOActor.subscribe((snapshot) => {
+      if (snapshot.value === 'idle' && !hasCheckedForMlConversations) {
+        setHasCheckedForMlConversations(true)
+        systemIOActor.send({
+          type: SystemIOMachineEvents.getMlEphantConversations,
+        })
+        return
+      }
+
+      // We can now reliably use the mlConversations data.
+      if (snapshot.value === 'idle' && hasCheckedForMlConversations) {
+        debugger
+        const conversationId = snapshot.context.mlConversations.get(settings.meta.id.project)
+        if (!conversationId) {
+          console.warn('There was no conversation id associated with this project')
+          return
+        }
+
+        mlEphantManagerActor.send({
+          type: MlEphantManagerTransitions.GetConversationBelongingToProject,
+          conversationId,
+        })
+      }
     })
     return () => {
       subscription.unsubscribe()
     }
-  }, [])
+  }, [hasCheckedForMlConversations])
 
   return (
     <MlEphantConversation

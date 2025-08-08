@@ -592,6 +592,7 @@ export const systemIOMachine = setup({
     lastProjectDeleteRequest: {
       project: NO_PROJECT_DIRECTORY,
     },
+    mlConversations: new Map(),
   }),
   states: {
     [SystemIOMachineStates.idle]: {

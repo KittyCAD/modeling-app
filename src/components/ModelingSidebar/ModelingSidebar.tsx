@@ -176,11 +176,11 @@ export function ModelingSidebar(props: ModelingSidebarProps) {
   const paneCallbackProps = useMemo(
     () => ({
       kclContext,
-      settings,
+      settings: props.settings,
       platform: getPlatformString(),
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-    [kclContext.diagnostics, settings]
+    [kclContext.diagnostics, props.settings]
   )
 
   const filteredActions: SidebarAction[] = props.sidebarActions.filter(

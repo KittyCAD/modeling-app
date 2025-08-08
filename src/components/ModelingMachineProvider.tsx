@@ -1466,6 +1466,7 @@ export const ModelingMachineProvider = ({
         state: modelingState,
         context: modelingState.context,
         send: modelingSend,
+        theProject,
       }}
     >
       {/* TODO #818: maybe pass reff down to children/app.ts or render app.tsx directly?
