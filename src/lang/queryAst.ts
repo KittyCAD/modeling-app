@@ -907,6 +907,7 @@ export function isCursorInFunctionDefinition(
   ast: Node<Program>,
   selectionRanges: Selection
 ): boolean {
+  if (ast.body.length === 0) return false
   if (!selectionRanges?.codeRef?.pathToNode) return false
   const node = getNodeFromPath<FunctionExpression>(
     ast,
