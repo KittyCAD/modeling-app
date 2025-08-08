@@ -358,7 +358,10 @@ export async function loadAndValidateSettings(
       !projectSettings.settings?.meta?.id ||
       projectSettings.settings.meta.id === uuidNIL
     ) {
+      const projectSettingsParsed =
+        projectConfigurationToSettingsPayload(projectSettings)
       const projectSettingsNew = {
+        ...projectSettingsParsed,
         meta: {
           id: v4(),
         },
@@ -368,6 +371,7 @@ export async function loadAndValidateSettings(
       const projectTomlString = serializeProjectConfiguration(
         settingsPayloadToProjectConfiguration(projectSettingsNew)
       )
+
       if (err(projectTomlString))
         return Promise.reject(
           new Error('Could not serialize project configuration')
@@ -381,9 +385,8 @@ export async function loadAndValidateSettings(
         )
       }
 
-      projectSettings = {
-        settings: projectSettingsNew,
-      }
+      projectSettings =
+        settingsPayloadToProjectConfiguration(projectSettingsNew)
     }
 
     // An id was missing. Create one and write it to disk immediately.
