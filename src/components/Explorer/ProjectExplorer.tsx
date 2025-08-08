@@ -11,6 +11,7 @@ import {
   FILE_PLACEHOLDER_NAME,
   FOLDER_PLACEHOLDER_NAME,
   getUniqueCopyPasteMaxIndex,
+  copyPasteSourceAndTarget,
 } from '@src/components/Explorer/utils'
 import type {
   FileExplorerEntry,
@@ -112,7 +113,7 @@ export const ProjectExplorer = ({
   const lastIndexBeforeNothing = useRef<number>(-2)
 
   // Store a path to copy and paste! Works for folders and files
-  const copyToClipBoard = useRef<{ path: string; name: string } | null>(null)
+  const copyToClipBoard = useRef<FileEntry | null>(null)
 
   const fileExplorerContainer = useRef<HTMLDivElement | null>(null)
   const projectExplorerRef = useRef<HTMLDivElement | null>(null)
@@ -337,31 +338,29 @@ export const ProjectExplorer = ({
             copyToClipBoard.current = {
               path: row.path,
               name: row.name,
+              children: row.children
             }
             setIsCopying(true)
           },
           onPaste: async () => {
             if (copyToClipBoard.current) {
-              const src = copyToClipBoard.current.path
-              const possibleTarget = joinOSPaths(
-                row.path,
-                copyToClipBoard.current.name + '-copy-1'
+              const {src, target} = copyPasteSourceAndTarget(
+                row.children?.map((child)=>child.path) || [],
+                copyToClipBoard.current,
+                {
+                  path: row.path,
+                  name: row.name,
+                  children: row.children
+                },
+                '-copy-'
               )
-              const maxIndex = getUniqueCopyPasteMaxIndex(row.children)
-              const target =
-                maxIndex === 0
-                  ? possibleTarget
-                  : joinOSPaths(
-                      row.path,
-                      copyToClipBoard.current.name + '-copy-' + (maxIndex + 1)
-                    )
-              // systemIOActor.send({
-              //   type: SystemIOMachineEvents.copyRecursive,
-              //   data: {
-              //     src,
-              //     target
-              //   },
-              // })
+              systemIOActor.send({
+                type: SystemIOMachineEvents.copyRecursive,
+                data: {
+                  src,
+                  target
+                },
+              })
             }
 
             // clear the path

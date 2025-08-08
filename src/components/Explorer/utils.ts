@@ -214,18 +214,65 @@ export const getUniqueCopyPasteMaxIndex = (rows: FileEntry[]) => {
   return maxIndex
 }
 
+/**
+ * Assumes possibleCollisions is sorted
+ */
+export const getUniqueCopyPath = (possibleCollisions: string[], possibleCopyPath: string, identifer: string) => {
+  const startingCopyIndex = 1
+  const matches = possibleCollisions.filter((path)=>{
+    return path.startsWith(possibleCopyPath)
+  })
+
+  if (matches.length === 0) {
+    return possibleCopyPath + identifer + startingCopyIndex
+  }
+
+  const takenNumberHash = new Map()
+  const takenNumbers = matches.map((matchedPath)=>{
+    const split = matchedPath.split(identifer)
+    const last = split.pop() || ''
+    return last
+  }).filter((last)=>{
+    if (!last) {
+      return false
+    }
+    const number = parseInt(last,10)
+    return last.length === number.toString().length
+  }).map((takenNumberString)=>{
+    return parseInt(takenNumberString, 10)
+  })
+
+  takenNumbers.forEach((takenNumber)=>{
+    takenNumberHash.set(takenNumber, true)
+  })
+
+  let possibleNumber = 1
+  for (; possibleNumber <= takenNumbers.length; possibleNumber++) {
+    if (!takenNumberHash.has(possibleNumber)) {
+      break
+    }
+  }
+
+  return possibleCopyPath + identifer + possibleNumber
+}
+
 export const copyPasteSourceAndTarget = (
   possibleCollisions: string[],
   src: FileEntry,
   target: FileEntry,
   identifier: string
 ): { src: string; target: string } => {
-  if (possibleCollisions.length === 0) {
+
+  if (src.children && target.children) {
+    // folder copying into folder
+    const possibleCopyPath = joinOSPaths(target.path, src.name)
+    const uniquePath = getUniqueCopyPath(possibleCollisions, possibleCopyPath, identifier)
     return {
-      src,
-      target,
+      src: src.path,
+      target: uniquePath
     }
   }
+
 }
 
 // Used for focused which is different from the selection when you mouse click.

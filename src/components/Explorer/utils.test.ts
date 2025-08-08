@@ -1,5 +1,6 @@
 import {
   addPlaceHoldersForNewFileAndFolder,
+  getUniqueCopyPath,
   isRowFake,
 } from '@src/components/Explorer/utils'
 import type { FileExplorerEntry } from '@src/components/Explorer/utils'
@@ -165,13 +166,69 @@ describe('Explorer utils.ts', () => {
           },
         ]
         const actual = addPlaceHoldersForNewFileAndFolder(children, parentPath)
-        console.log(children)
         expect(actual).toBe(expectedResult)
         expect(children).toStrictEqual(expectedList)
       })
     })
   })
   describe('copyPasteSourceAndTarget', () => {
-    it('should src and target if there are no possible collisions', () => {})
+    // it('testing', () => {
+    //   const identifier = '-copy-'
+    //   const expected = '/my/really/cool/path/project-001/parts-copy-2'
+    //   const actual = getUniqueCopyPath([
+    //     '/my/really/cool/path/project-001/parts',
+    //     '/my/really/cool/path/project-001/parts-copy-1',
+    //     '/my/really/cool/path/project-001/parts-old',
+    //     '/my/really/cool/path/project-001/parts-new'
+    //   ], '/my/really/cool/path/project-001/parts-copy-1', identifier)
+    //   expect(actual).toBe(expected)
+    // })
+    it('should copy folder to folder without collision as -copy-1', () => {
+      const identifier = '-copy-'
+      const expected = '/my/really/cool/path/project-001/parts-copy-1'
+      const actual = getUniqueCopyPath([
+        '/my/really/cool/path/project-001/parts',
+        '/my/really/cool/path/project-001/parts-old',
+        '/my/really/cool/path/project-001/parts-new'
+      ], '/my/really/cool/path/project-001/parts', identifier)
+      expect(actual).toBe(expected)
+    })
+    it('should copy folder to folder without collision as -copy-2', () => {
+      const identifier = '-copy-'
+      const expected = '/my/really/cool/path/project-001/parts-copy-2'
+      const actual = getUniqueCopyPath([
+        '/my/really/cool/path/project-001/parts',
+        '/my/really/cool/path/project-001/parts-copy-1',
+        '/my/really/cool/path/project-001/parts-old',
+        '/my/really/cool/path/project-001/parts-new'
+      ], '/my/really/cool/path/project-001/parts', identifier)
+      expect(actual).toBe(expected)
+    })
+    it('should copy folder to folder without collision as -copy-3', () => {
+      const identifier = '-copy-'
+      const expected = '/my/really/cool/path/project-001/parts-copy-3'
+      const actual = getUniqueCopyPath([
+        '/my/really/cool/path/project-001/parts',
+        '/my/really/cool/path/project-001/parts-copy-1',
+        '/my/really/cool/path/project-001/parts-copy-2',
+        '/my/really/cool/path/project-001/parts-copy-5',
+        '/my/really/cool/path/project-001/parts-old',
+        '/my/really/cool/path/project-001/parts-new'
+      ], '/my/really/cool/path/project-001/parts', identifier)
+      expect(actual).toBe(expected)
+    })
+    it('should copy folder to folder without collisions but you have -copy-1 at the end do not get tricked', () => {
+      const identifier = '-copy-'
+      const expected = '/my/really/cool/path/project-001/parts-copy-1-copy-1'
+      const actual = getUniqueCopyPath([
+        '/my/really/cool/path/project-001/parts',
+        '/my/really/cool/path/project-001/parts-copy-1',
+        '/my/really/cool/path/project-001/parts-copy-2',
+        '/my/really/cool/path/project-001/parts-copy-5',
+        '/my/really/cool/path/project-001/parts-old',
+        '/my/really/cool/path/project-001/parts-new'
+      ], '/my/really/cool/path/project-001/parts-copy-1-copy-1', identifier)
+      expect(actual).toBe(expected)
+    })
   })
 })
