@@ -2,8 +2,16 @@ import type { ReactNode } from 'react'
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { sortFilesAndDirectories } from '@src/lib/desktopFS'
 import type { FileEntry } from '@src/lib/project'
-import { desktopSafePathJoin, getParentAbsolutePath, joinOSPaths } from '@src/lib/paths'
+import {
+  desktopSafePathJoin,
+  getEXTNoPeriod,
+  getEXTWithPeriod,
+  getParentAbsolutePath,
+  getStringAfterLastSeparator,
+  joinOSPaths,
+} from '@src/lib/paths'
 import type { SubmitByPressOrBlur } from '@src/lib/types'
+import { getAbsoluteValue } from 'html2canvas-pro/dist/types/css/types/length-percentage'
 
 /**
  * Remap FileEntry data into another data structure for the Project Explorer
@@ -201,33 +209,36 @@ export const isRowFake = (
   )
 }
 
-export const getUniqueCopyPasteMaxIndex = (rows: FileEntry[]) => {
-  const matches = rows.map((row) => row.path?.match(/-copy-(?:\d+)?$/i))
-  const indices = matches.filter(Boolean).map((match) => {
-    // remove the start and then index it?
-    console.log(match.input[match.index])
-    return match.input[match.index]
-    // return parseInt(maybeMatchIndex || '0', 10)
-  })
-  const maxIndex = Math.max(...indices, -1) + 1
-  console.log(maxIndex)
-  return maxIndex
-}
-
 /**
  * Assumes possibleCollisions is sorted
  */
 export const getUniqueCopyPath = (
   possibleCollisions: string[],
   possibleCopyPath: string,
-  identifer: string
+  identifer: string,
+  isFile: boolean
 ) => {
+  const formattedPossibleCollisions = possibleCollisions.map((path)=>{
+    const hasPeriodIndex = path.lastIndexOf('.')
+    const formattedPath = hasPeriodIndex !== -1 ? path.slice(0, hasPeriodIndex) : path
+    return formattedPath
+  })
+
+  const hasPeriodIndex = possibleCopyPath.lastIndexOf('.')
+  const formattedPossibleCopyPath = hasPeriodIndex !== -1 ? possibleCopyPath.slice(0, hasPeriodIndex) : possibleCopyPath
+
   const startingCopyIndex = 1
-  const matches = possibleCollisions.filter((path) => {
-    return path.startsWith(possibleCopyPath)
+  const matches = formattedPossibleCollisions.filter((path) => {
+    return path.startsWith(formattedPossibleCopyPath)
   })
 
   if (matches.length === 0) {
+    if (isFile) {
+      const fileNameAndExtension = getStringAfterLastSeparator(possibleCopyPath)
+      const fileName = fileNameAndExtension.slice(0, fileNameAndExtension.lastIndexOf('.'))
+      const extWithPeriod = getEXTWithPeriod(possibleCopyPath) || ''
+      return joinOSPaths(getParentAbsolutePath(possibleCopyPath), fileName + identifer + startingCopyIndex + extWithPeriod)
+    }
     return possibleCopyPath + identifer + startingCopyIndex
   }
 
@@ -260,6 +271,13 @@ export const getUniqueCopyPath = (
     }
   }
 
+  if (isFile) {
+    const fileNameAndExtension = getStringAfterLastSeparator(possibleCopyPath)
+    const fileName = fileNameAndExtension.slice(0, fileNameAndExtension.lastIndexOf('.'))
+    const extWithPeriod = getEXTWithPeriod(possibleCopyPath) || ''
+    return joinOSPaths(getParentAbsolutePath(possibleCopyPath), fileName + identifer + possibleNumber + extWithPeriod)
+  }
+
   return possibleCopyPath + identifer + possibleNumber
 }
 
@@ -280,17 +298,30 @@ export const copyPasteSourceAndTarget = (
   } else if (src.children && target.children) {
     // folder copying into folder
     possibleCopyPath = joinOSPaths(target.path, src.name)
+  } else if (src.children && target.children === null) {
+    // folder to file
+    possibleCopyPath = joinOSPaths(getParentAbsolutePath(src.path), src.name)
+    collisionsToCheck = possibleParentCollisions
+  } else if (src.children === null && target.children) {
+    // File into folder
+    possibleCopyPath = joinOSPaths(target.path, src.name)
+  } else if (src.children === null && target.children === null) {
+    possibleCopyPath = joinOSPaths(getParentAbsolutePath(src.path), src.name)
+    collisionsToCheck = possibleParentCollisions
   }
 
   if (possibleCopyPath === '') {
     return null
   }
 
-  const uniquePath = getUniqueCopyPath(
+  const isFile = src.children === null
+  let uniquePath = getUniqueCopyPath(
     collisionsToCheck,
     possibleCopyPath,
-    identifier
+    identifier,
+    isFile
   )
+
   return {
     src: src.path,
     target: uniquePath,

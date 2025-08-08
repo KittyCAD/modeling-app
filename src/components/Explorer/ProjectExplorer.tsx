@@ -345,10 +345,11 @@ export const ProjectExplorer = ({
           onPaste: async () => {
             if (copyToClipBoard.current) {
               const absoluteParentPath = getParentAbsolutePath(row.path)
-              const parentIndex = flattenedData.findIndex((entry)=>{
+              const parentIndex = flattenedData.findIndex((entry) => {
                 return entry.path === absoluteParentPath
               })
-              const parent = parentIndex >= 0 ? flattenedData[parentIndex] : project
+              const parent =
+                parentIndex >= 0 ? flattenedData[parentIndex] : project
               const { src, target } = copyPasteSourceAndTarget(
                 row.children?.map((child) => child.path) || [],
                 parent.children?.map((child) => child.path) || [],
@@ -360,7 +361,6 @@ export const ProjectExplorer = ({
                 },
                 '-copy-'
               )
-              console.log(src, target)
               systemIOActor.send({
                 type: SystemIOMachineEvents.copyRecursive,
                 data: {
@@ -369,7 +369,6 @@ export const ProjectExplorer = ({
                 },
               })
             }
-
 
             // clear the path
             copyToClipBoard.current = null
