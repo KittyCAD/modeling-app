@@ -82,7 +82,7 @@ out vec4 fragColor;
 
 void main()
 {
-	vec4 majorColor = vec4(0.4, 0.4, 0.4, 1.0);
+	vec4 majorColor = vec4(0.3, 0.3, 0.3, 1.0);
 	vec4 minorColor = vec4(0.2, 0.2, 0.2, 1.0);
 
 	fragColor = vLineType > 0.5 ? majorColor : minorColor;
