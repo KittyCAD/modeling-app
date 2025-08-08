@@ -10,7 +10,7 @@ import {
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import type { AxisNames } from '@src/lib/constants'
 import { VIEW_NAMES_SEMANTIC } from '@src/lib/constants'
-import { kclManager, sceneInfra } from '@src/lib/singletons'
+import { kclManager, sceneInfra, settingsActor } from '@src/lib/singletons'
 import { err, reportRejection } from '@src/lib/trap'
 import { useSettings } from '@src/lib/singletons'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
@@ -30,6 +30,9 @@ export function useViewControlMenuItems() {
   const shouldLockView =
     modelingState.matches('Sketch') &&
     !settings.app.allowOrbitInSketchMode.current
+    const snapToGrid = settings.modeling.snapToGrid.current
+
+
   const menuItems = useMemo(
     () => [
       ...Object.entries(VIEW_NAMES_SEMANTIC).map(([axisName, axisSemantic]) => (
@@ -91,10 +94,26 @@ export function useViewControlMenuItems() {
         Start sketch on selection
       </ContextMenuItem>,
       <ContextMenuDivider />,
+        <ContextMenuItem
+            icon={snapToGrid ? "checkmark" : undefined}
+            hotkey="mod+g"
+            onClick={() => {
+              settingsActor.send({
+                type: 'set.modeling.snapToGrid',
+                data: {
+                  level: 'project',
+                  value: !snapToGrid,
+                },
+              })
+            }}
+        >
+           Snap to grid
+        </ContextMenuItem>,
+        <ContextMenuDivider />,
       <ContextMenuItemRefresh />,
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-    [VIEW_NAMES_SEMANTIC, shouldLockView, selectedPlaneId]
+    [VIEW_NAMES_SEMANTIC, shouldLockView, selectedPlaneId, snapToGrid]
   )
   return menuItems
 }
