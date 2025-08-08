@@ -529,6 +529,28 @@ export class SceneEntities {
     if (draftPoint) draftPoint.removeFromParent()
   }
 
+  private snapToGrid(point: Coords2d, event: MouseEvent): Coords2d {
+    if (event.ctrlKey || event.metaKey) {
+      // disable snapping with ctrl
+      return point
+    }
+
+    const settings = this.getSettings?.()
+    if (!settings) {
+      console.error('getSettings not injected!')
+      return point
+    }
+    if (!settings.modeling.snapToGrid.current) return point
+
+    const snapsPerMinor = settings.modeling.snapsPerMinor.current
+    const minorsPerMajor = settings.modeling.minorGridsPerMajor.current
+    const multiplier = minorsPerMajor * snapsPerMinor
+    return [
+      Math.round(point[0] * multiplier) / multiplier,
+      Math.round(point[1] * multiplier) / multiplier,
+    ]
+  }
+
   setupNoPointsListener({
     sketchDetails,
     afterClick,
@@ -661,16 +683,19 @@ export class SceneEntities {
           (sceneObject) => sceneObject.object.name === X_AXIS
         )
 
-        const snappedClickPoint = {
-          x: yAxisIntersection ? 0 : intersectionPoint.twoD.x,
-          y: xAxisIntersection ? 0 : intersectionPoint.twoD.y,
+        let startPoint: Coords2d = [
+          yAxisIntersection ? 0 : intersectionPoint.twoD.x,
+          xAxisIntersection ? 0 : intersectionPoint.twoD.y,
+        ]
+        if (!xAxisIntersection && !yAxisIntersection) {
+          startPoint = this.snapToGrid(startPoint, args.mouseEvent)
         }
 
         const inserted = insertNewStartProfileAt(
           this.kclManager.ast,
           sketchDetails.sketchNodePaths,
           sketchDetails.planeNodePath,
-          [snappedClickPoint.x, snappedClickPoint.y],
+          startPoint,
           'end'
         )
 
@@ -2776,22 +2801,10 @@ export class SceneEntities {
       snappedPoint = [
         intersectsYAxis ? 0 : snappedPoint[0],
         intersectsXAxis ? 0 : snappedPoint[1],
-      ]
+      ] as const
 
-      // Not snapping to any axis, snap to default unit grid, ie. round it.
-      const settings = this.getSettings?.()
-      if (settings) {
-        if (settings.modeling.snapToGrid.current) {
-          const snapsPerMinor = settings.modeling.snapsPerMinor.current
-          const minorsPerMajor = settings.modeling.minorGridsPerMajor.current
-          const multiplier = minorsPerMajor * snapsPerMinor
-          snappedPoint = [
-            Math.round(snappedPoint[0] * multiplier) / multiplier,
-            Math.round(snappedPoint[1] * multiplier) / multiplier,
-          ]
-        }
-      } else {
-        console.error('getSettings not injected!')
+      if (!intersectsXAxis && !intersectsYAxis) {
+        snappedPoint = this.snapToGrid(snappedPoint, mouseEvent)
       }
     }
 
