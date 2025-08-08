@@ -145,7 +145,7 @@ impl TokenStream {
         self.tokens.is_empty()
     }
 
-    pub fn as_slice(&self) -> TokenSlice {
+    pub fn as_slice(&self) -> TokenSlice<'_> {
         TokenSlice::from(self)
     }
 }

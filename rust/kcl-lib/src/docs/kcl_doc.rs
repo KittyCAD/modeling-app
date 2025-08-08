@@ -476,10 +476,10 @@ impl ModData {
 
         #[allow(clippy::iter_over_hash_type)]
         for (k, v) in &self.children {
-            if k.starts_with("M:") {
-                if let Some(result) = v.expect_mod().find_by_name(name) {
-                    return Some(result);
-                }
+            if k.starts_with("M:")
+                && let Some(result) = v.expect_mod().find_by_name(name)
+            {
+                return Some(result);
             }
         }
 
@@ -1069,10 +1069,10 @@ trait ApplyMeta {
             }
         }
         assert!(example.is_none());
-        if let Some(d) = &mut description {
-            if d.is_empty() {
-                description = None;
-            }
+        if let Some(d) = &mut description
+            && d.is_empty()
+        {
+            description = None;
         }
 
         self.apply_docs(
@@ -1251,15 +1251,15 @@ mod test {
     #[test]
     fn smoke() {
         let result = walk_prelude();
-        if let DocData::Const(d) = result.find_by_name("PI").unwrap() {
-            if d.name == "PI" {
-                assert!(d.value.as_ref().unwrap().starts_with('3'));
-                assert_eq!(d.ty, Some("number(_?)".to_owned()));
-                assert_eq!(d.qual_name, "std::math::PI");
-                assert!(d.summary.is_some());
-                assert!(!d.examples.is_empty());
-                return;
-            }
+        if let DocData::Const(d) = result.find_by_name("PI").unwrap()
+            && d.name == "PI"
+        {
+            assert!(d.value.as_ref().unwrap().starts_with('3'));
+            assert_eq!(d.ty, Some("number(_?)".to_owned()));
+            assert_eq!(d.qual_name, "std::math::PI");
+            assert!(d.summary.is_some());
+            assert!(!d.examples.is_empty());
+            return;
         }
         panic!("didn't find PI");
     }
