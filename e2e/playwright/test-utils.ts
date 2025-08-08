@@ -68,6 +68,10 @@ export const commonPoints = {
 export const editorSelector = '[role="textbox"][data-language="kcl"]'
 type PaneId = 'variables' | 'code' | 'files' | 'logs'
 
+export function assertElectron() {
+  expect(window.electron).toBeDefined()
+}
+
 export function runningOnLinux() {
   return process.platform === 'linux'
 }

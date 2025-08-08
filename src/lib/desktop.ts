@@ -10,6 +10,7 @@ import {
   parseProjectSettings,
 } from '@src/lang/wasm'
 import { initPromise, relevantFileExtensions } from '@src/lang/wasmUtils'
+import { fsManager } from '@src/lang/std/fileSystemManager'
 import type { EnvironmentConfiguration } from '@src/lib/constants'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
@@ -29,6 +30,7 @@ import type { DeepPartial } from '@src/lib/types'
 import { getInVariableCase } from '@src/lib/utils'
 import { IS_STAGING } from '@src/routes/utils'
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
+import type { IElectronAPI } from '@root/interface'
 
 export async function renameProjectDirectory(
   projectPath: string,
@@ -39,7 +41,7 @@ export async function renameProjectDirectory(
   }
 
   try {
-    await window.electron.stat(projectPath)
+    await fsManager.stat(projectPath)
   } catch (e) {
     if (e === 'ENOENT') {
       return Promise.reject(new Error(`Path ${projectPath} is not a directory`))
@@ -47,12 +49,9 @@ export async function renameProjectDirectory(
   }
 
   // Make sure the new name does not exist.
-  const newPath = window.electron.path.join(
-    window.electron.path.dirname(projectPath),
-    newName
-  )
+  const newPath = fsManager.path.join(fsManager.path.dirname(projectPath), newName)
   try {
-    await window.electron.stat(newPath)
+    await fsManager.stat(newPath)
     // If we get here it means the stat succeeded and there's a file already
     // with the same name...
     return Promise.reject(
@@ -63,7 +62,7 @@ export async function renameProjectDirectory(
   } catch (e) {
     // Otherwise if it failed and the failure is "it doesn't exist" then rename it!
     if (e === 'ENOENT') {
-      await window.electron.rename(projectPath, newPath)
+      await fsManager.rename(projectPath, newPath)
       return newPath
     }
   }
@@ -79,10 +78,10 @@ export async function ensureProjectDirectoryExists(
     return Promise.reject(new Error('projectDir is falsey'))
   }
   try {
-    await window.electron.stat(projectDir)
+    await fsManager.stat(projectDir)
   } catch (e) {
     if (e === 'ENOENT') {
-      await window.electron.mkdir(projectDir, { recursive: true })
+      await fsManager.mkdir(projectDir, { recursive: true })
     }
   }
 
@@ -91,10 +90,10 @@ export async function ensureProjectDirectoryExists(
 
 export async function mkdirOrNOOP(directoryPath: string) {
   try {
-    await window.electron.stat(directoryPath)
+    await fsManager.stat(directoryPath)
   } catch (e) {
     if (e === 'ENOENT') {
-      await window.electron.mkdir(directoryPath, { recursive: true })
+      await fsManager.mkdir(directoryPath, { recursive: true })
     }
   }
 
@@ -102,13 +101,14 @@ export async function mkdirOrNOOP(directoryPath: string) {
 }
 
 export async function createNewProjectDirectory(
+  electron: IElectronAPI,
   projectName: string,
   initialCode?: string,
   configuration?: DeepPartial<Configuration> | Error,
   initialFileName?: string
 ): Promise<Project> {
   if (!configuration) {
-    configuration = await readAppSettingsFile()
+    configuration = await readAppSettingsFile(electron)
   }
 
   if (err(configuration)) return Promise.reject(configuration)
@@ -121,18 +121,18 @@ export async function createNewProjectDirectory(
   if (!mainDir) {
     return Promise.reject(new Error('mainDir is falsey'))
   }
-  const projectDir = window.electron.path.join(mainDir, projectName)
+  const projectDir = fsManager.path.join(mainDir, projectName)
 
   try {
-    await window.electron.stat(projectDir)
+    await fsManager.stat(projectDir)
   } catch (e) {
     if (e === 'ENOENT') {
-      await window.electron.mkdir(projectDir, { recursive: true })
+      await fsManager.mkdir(projectDir, { recursive: true })
     }
   }
 
   const kclFileName = initialFileName || PROJECT_ENTRYPOINT
-  const projectFile = window.electron.path.join(projectDir, kclFileName)
+  const projectFile = fsManager.path.join(projectDir, kclFileName)
   // When initialCode is present, we're loading existing code.  If it's not
   // present, we're creating a new project, and we want to incorporate the
   // user's settings.
@@ -141,10 +141,10 @@ export async function createNewProjectDirectory(
     configuration?.settings?.modeling?.base_unit ?? DEFAULT_DEFAULT_LENGTH_UNIT
   )
   if (err(codeToWrite)) return Promise.reject(codeToWrite)
-  await window.electron.writeFile(projectFile, codeToWrite)
+  await fsManager.writeFile(projectFile, codeToWrite)
   let metadata: FileMetadata | null = null
   try {
-    metadata = await window.electron.stat(projectFile)
+    metadata = await fsManager.stat(projectFile)
   } catch (e) {
     if (e === 'ENOENT') {
       console.error('File does not exist')
@@ -168,6 +168,7 @@ export async function createNewProjectDirectory(
 }
 
 export async function listProjects(
+  electron: IElectronAPI,
   configuration?: DeepPartial<Configuration> | Error
 ): Promise<Project[]> {
   // Make sure we have wasm initialized.
@@ -177,7 +178,7 @@ export async function listProjects(
   }
 
   if (configuration === undefined) {
-    configuration = await readAppSettingsFile().catch((e) => {
+    configuration = await readAppSettingsFile(electron).catch((e) => {
       console.error(e)
       return e
     })
@@ -189,10 +190,10 @@ export async function listProjects(
   if (!projectDir) return Promise.reject(new Error('projectDir was falsey'))
 
   // Gotcha: readdir will list all folders at this project directory even if you do not have readwrite access on the directory path
-  const entries = await window.electron.readdir(projectDir)
+  const entries = await electron.readdir(projectDir)
 
   const { value: canReadWriteProjectDirectory } =
-    await window.electron.canReadWriteDirectory(projectDir)
+    await electron.canReadWriteDirectory(projectDir)
 
   for (let entry of entries) {
     // Skip directories that start with a dot
@@ -200,11 +201,11 @@ export async function listProjects(
       continue
     }
 
-    const projectPath = window.electron.path.join(projectDir, entry)
+    const projectPath = electron.path.join(projectDir, entry)
 
     // if it's not a directory ignore.
     // Gotcha: statIsDirectory will work even if you do not have read write permissions on the project path
-    const isDirectory = await window.electron.statIsDirectory(projectPath)
+    const isDirectory = await electron.statIsDirectory(projectPath)
     if (!isDirectory) {
       continue
     }
@@ -233,6 +234,10 @@ const collectAllFilesRecursiveFrom = async (
 ) => {
   const isRelevantFile = (filename: string): boolean =>
     fileExtensionsForFilter.some((ext) => filename.endsWith('.' + ext))
+  if (!window?.electron) {
+    return Promise.reject(new Error('No filesystem found'))
+  }
+
   // Make sure the filesystem object exists.
   try {
     await window.electron.stat(path)
@@ -317,6 +322,10 @@ export async function getDefaultKclFileForDir(
   projectDir: string,
   file: FileEntry
 ) {
+  if (!window?.electron) {
+    return Promise.reject(new Error('No filesystem found'))
+  }
+
   // Make sure the dir is a directory.
   const isFileEntryDir = await window.electron.statIsDirectory(projectDir)
   if (!isFileEntryDir) {
@@ -387,6 +396,10 @@ const directoryCount = (file: FileEntry) => {
 }
 
 export async function getProjectInfo(projectPath: string): Promise<Project> {
+  if (!window?.electron) {
+    return Promise.reject(new Error('No filesystem found'))
+  }
+
   // Check the directory.
   let metadata
   try {
@@ -457,12 +470,13 @@ export async function getProjectInfo(projectPath: string): Promise<Project> {
 
 // Write project settings file.
 export async function writeProjectSettingsFile(
+  _electron: IElectronAPI,
   projectPath: string,
   tomlStr: string
 ): Promise<void> {
   const projectSettingsFilePath = await getProjectSettingsFilePath(projectPath)
   if (err(tomlStr)) return Promise.reject(tomlStr)
-  return window.electron.writeFile(projectSettingsFilePath, tomlStr)
+  return fsManager.writeFile(projectSettingsFilePath, tomlStr)
 }
 
 // Important for saving settings.
@@ -471,170 +485,171 @@ const APP_ID = IS_STAGING
   ? 'dev.zoo.modeling-app-staging'
   : 'dev.zoo.modeling-app'
 
-const getAppFolderName = () => {
-  if (window.electron.os.isMac || window.electron.os.isWindows) {
+const getAppFolderName = (electron: IElectronAPI) => {
+  if (electron.os.isMac || electron.os.isWindows) {
     return APP_ID
   }
   // TODO: we need to make linux use the same convention this is weird
   // This variable below gets the -staging suffix on staging too thru scripts/flip-files-to-staging.sh
   // But it should be consistent with the reserve domain app id we use on Windows and Linux
-  return window.electron.packageJson.name
+  return electron.packageJson.name
 }
 
-export const getAppSettingsFilePath = async () => {
-  const isTestEnv = window.electron.process.env.NODE_ENV === 'test'
-  const testSettingsPath = await window.electron.getAppTestProperty(
+export const getAppSettingsFilePath = async (electron: IElectronAPI) => {
+  const isTestEnv = electron.process.env.NODE_ENV === 'test'
+  const testSettingsPath = await electron.getAppTestProperty(
     'TEST_SETTINGS_FILE_KEY'
   )
 
-  const appConfig = await window.electron.getPath('appData')
+  const appConfig = await electron.getPath('appData')
 
   const fullPath = isTestEnv
-    ? window.electron.path.resolve(testSettingsPath, '..')
-    : window.electron.path.resolve(appConfig, getAppFolderName())
+    ? fsManager.path.resolve(testSettingsPath, '..')
+    : fsManager.path.resolve(appConfig, getAppFolderName(electron))
 
   try {
-    await window.electron.stat(fullPath)
+    await fsManager.stat(fullPath)
   } catch (e) {
     // File/path doesn't exist
     if (e === 'ENOENT') {
-      await window.electron.mkdir(fullPath, { recursive: true })
+      await fsManager.mkdir(fullPath, { recursive: true })
     }
   }
-  return window.electron.path.join(fullPath, SETTINGS_FILE_NAME)
+  return fsManager.path.join(fullPath, SETTINGS_FILE_NAME)
 }
 
-export const getEnvironmentConfigurationFolderPath = async () => {
-  const isTestEnv = window.electron.process.env.NODE_ENV === 'test'
-  const testSettingsPath = await window.electron.getAppTestProperty(
+export const getEnvironmentConfigurationFolderPath = async (
+  electron: IElectronAPI
+) => {
+  const isTestEnv = electron.process.env.NODE_ENV === 'test'
+  const testSettingsPath = await electron.getAppTestProperty(
     'TEST_SETTINGS_FILE_KEY'
   )
 
-  const appConfig = await window.electron.getPath('appData')
+  const appConfig = await electron.getPath('appData')
   const fullPath = isTestEnv
-    ? window.electron.path.resolve(testSettingsPath, '..')
-    : window.electron.path.join(
+    ? electron.path.resolve(testSettingsPath, '..')
+    : electron.path.join(
         appConfig,
-        getAppFolderName(),
+        getAppFolderName(electron),
         ENVIRONMENT_CONFIGURATION_FOLDER
       )
   return fullPath
 }
 
 export const getEnvironmentConfigurationPath = async (
+  electron: IElectronAPI,
   environmentName: string
 ) => {
-  const fullPath = await getEnvironmentConfigurationFolderPath()
+  const fullPath = await getEnvironmentConfigurationFolderPath(electron)
   try {
-    await window.electron.stat(fullPath)
+    await electron.stat(fullPath)
   } catch (e) {
     // File/path doesn't exist
     if (e === 'ENOENT') {
-      await window.electron.mkdir(fullPath, { recursive: true })
+      await electron.mkdir(fullPath, { recursive: true })
     }
   }
   // /envs/<subdomain>.json e.g. /envs/dev.zoo.dev.json
-  return window.electron.path.join(fullPath, environmentName + '.json')
+  return electron.path.join(fullPath, environmentName + '.json')
 }
 
-export const getEnvironmentFilePath = async () => {
-  const isTestEnv = window.electron.process.env.NODE_ENV === 'test'
-  const testSettingsPath = await window.electron.getAppTestProperty(
+export const getEnvironmentFilePath = async (electron: IElectronAPI) => {
+  const isTestEnv = electron.process.env.NODE_ENV === 'test'
+  const testSettingsPath = await electron.getAppTestProperty(
     'TEST_SETTINGS_FILE_KEY'
   )
 
-  const appConfig = await window.electron.getPath('appData')
+  const appConfig = await electron.getPath('appData')
   const fullPath = isTestEnv
-    ? window.electron.path.resolve(testSettingsPath, '..')
-    : window.electron.path.join(appConfig, getAppFolderName())
+    ? electron.path.resolve(testSettingsPath, '..')
+    : electron.path.join(appConfig, getAppFolderName(electron))
   try {
-    await window.electron.stat(fullPath)
+    await electron.stat(fullPath)
   } catch (e) {
     // File/path doesn't exist
     if (e === 'ENOENT') {
-      await window.electron.mkdir(fullPath, { recursive: true })
+      await electron.mkdir(fullPath, { recursive: true })
     }
   }
-  return window.electron.path.join(fullPath, ENVIRONMENT_FILE_NAME)
+  return electron.path.join(fullPath, ENVIRONMENT_FILE_NAME)
 }
 
-const getTelemetryFilePath = async () => {
-  const isTestEnv = window.electron.process.env.NODE_ENV === 'test'
-  const testSettingsPath = await window.electron.getAppTestProperty(
+const getTelemetryFilePath = async (electron: IElectronAPI) => {
+  const isTestEnv = electron.process.env.NODE_ENV === 'test'
+  const testSettingsPath = await electron.getAppTestProperty(
     'TEST_SETTINGS_FILE_KEY'
   )
 
-  const appConfig = await window.electron.getPath('appData')
+  const appConfig = await electron.getPath('appData')
   const fullPath = isTestEnv
-    ? window.electron.path.resolve(testSettingsPath, '..')
-    : window.electron.path.join(appConfig, getAppFolderName())
+    ? electron.path.resolve(testSettingsPath, '..')
+    : electron.path.join(appConfig, getAppFolderName(electron))
   try {
-    await window.electron.stat(fullPath)
+    await electron.stat(fullPath)
   } catch (e) {
     // File/path doesn't exist
     if (e === 'ENOENT') {
-      await window.electron.mkdir(fullPath, { recursive: true })
+      await electron.mkdir(fullPath, { recursive: true })
     }
   }
-  return window.electron.path.join(fullPath, TELEMETRY_FILE_NAME)
+  return electron.path.join(fullPath, TELEMETRY_FILE_NAME)
 }
 
-const getRawTelemetryFilePath = async () => {
-  const isTestEnv = window.electron.process.env.NODE_ENV === 'test'
-  const testSettingsPath = await window.electron.getAppTestProperty(
+const getRawTelemetryFilePath = async (electron: IElectronAPI) => {
+  const isTestEnv = electron.process.env.NODE_ENV === 'test'
+  const testSettingsPath = await electron.getAppTestProperty(
     'TEST_SETTINGS_FILE_KEY'
   )
 
-  const appConfig = await window.electron.getPath('appData')
+  const appConfig = await electron.getPath('appData')
   const fullPath = isTestEnv
-    ? window.electron.path.resolve(testSettingsPath, '..')
-    : window.electron.path.join(appConfig, getAppFolderName())
+    ? electron.path.resolve(testSettingsPath, '..')
+    : electron.path.join(appConfig, getAppFolderName(electron))
   try {
-    await window.electron.stat(fullPath)
+    await electron.stat(fullPath)
   } catch (e) {
     // File/path doesn't exist
     if (e === 'ENOENT') {
-      await window.electron.mkdir(fullPath, { recursive: true })
+      await electron.mkdir(fullPath, { recursive: true })
     }
   }
-  return window.electron.path.join(fullPath, TELEMETRY_RAW_FILE_NAME)
+  return electron.path.join(fullPath, TELEMETRY_RAW_FILE_NAME)
 }
 
 const getProjectSettingsFilePath = async (projectPath: string) => {
   try {
-    await window.electron.stat(projectPath)
+    await fsManager.stat(projectPath)
   } catch (e) {
     if (e === 'ENOENT') {
-      await window.electron.mkdir(projectPath, { recursive: true })
+      await fsManager.mkdir(projectPath, { recursive: true })
     }
   }
-  return window.electron.path.join(projectPath, PROJECT_SETTINGS_FILE_NAME)
+  return fsManager.path.join(projectPath, PROJECT_SETTINGS_FILE_NAME)
 }
 
-export const getInitialDefaultDir = async () => {
-  const isTestEnv = window.electron.process.env.NODE_ENV === 'test'
-  const testSettingsPath = await window.electron.getAppTestProperty(
+export const getInitialDefaultDir = async (electron: IElectronAPI) => {
+  const isTestEnv = electron.process.env.NODE_ENV === 'test'
+  const testSettingsPath = await electron.getAppTestProperty(
     'TEST_SETTINGS_FILE_KEY'
   )
 
-  if (!window.electron) {
-    return ''
-  }
   if (isTestEnv) {
     return testSettingsPath
   }
-  const dir = await window.electron.getPath('documents')
-  return window.electron.path.join(dir, PROJECT_FOLDER)
+  const dir = await electron.getPath('documents')
+  return electron.path.join(dir, PROJECT_FOLDER)
 }
 
 export const readProjectSettingsFile = async (
+  _electron: IElectronAPI,
   projectPath: string
 ): Promise<DeepPartial<ProjectConfiguration>> => {
   let settingsPath = await getProjectSettingsFilePath(projectPath)
 
   // Check if this file exists.
   try {
-    await window.electron.stat(settingsPath)
+    await fsManager.stat(settingsPath)
   } catch (e) {
     if (e === 'ENOENT') {
       // Return the default configuration.
@@ -642,7 +657,7 @@ export const readProjectSettingsFile = async (
     }
   }
 
-  const configToml = await window.electron.readFile(settingsPath, {
+  const configToml = await fsManager.readFile(settingsPath, {
     encoding: 'utf-8',
   })
   const configObj = parseProjectSettings(configToml)
@@ -655,15 +670,15 @@ export const readProjectSettingsFile = async (
 /**
  * Read the app settings file, or creates an initial one if it doesn't exist.
  */
-export const readAppSettingsFile = async () => {
-  let settingsPath = await getAppSettingsFilePath()
+export const readAppSettingsFile = async (electron: IElectronAPI) => {
+  let settingsPath = await getAppSettingsFilePath(electron)
   const initialProjectDirConfig: DeepPartial<
     NonNullable<Required<Configuration>['settings']['project']>
-  > = { directory: await getInitialDefaultDir() }
+  > = { directory: await getInitialDefaultDir(electron) }
 
   // The file exists, read it and parse it.
-  if (window.electron.exists(settingsPath)) {
-    const configToml = await window.electron.readFile(settingsPath, {
+  if (await fsManager.exists(settingsPath)) {
+    const configToml = await fsManager.readFile(settingsPath, {
       encoding: 'utf-8',
     })
     const parsedAppConfig = parseAppSettings(configToml)
@@ -714,18 +729,22 @@ export const readAppSettingsFile = async () => {
   return mergedDefaultConfig
 }
 
-export const writeAppSettingsFile = async (tomlStr: string) => {
-  const appSettingsFilePath = await getAppSettingsFilePath()
+export const writeAppSettingsFile = async (
+  electron: IElectronAPI,
+  tomlStr: string
+) => {
+  const appSettingsFilePath = await getAppSettingsFilePath(electron)
   if (err(tomlStr)) return Promise.reject(tomlStr)
-  return window.electron.writeFile(appSettingsFilePath, tomlStr)
+  return fsManager.writeFile(appSettingsFilePath, tomlStr)
 }
 
 export const readEnvironmentConfigurationFile = async (
+  electron: IElectronAPI,
   environmentName: string
 ): Promise<EnvironmentConfiguration | null> => {
-  const path = await getEnvironmentConfigurationPath(environmentName)
-  if (window.electron.exists(path)) {
-    const configurationJSON: string = await window.electron.readFile(path, {
+  const path = await getEnvironmentConfigurationPath(electron, environmentName)
+  if (electron.exists(path)) {
+    const configurationJSON: string = await electron.readFile(path, {
       encoding: 'utf-8',
     })
     if (!configurationJSON) return null
@@ -735,40 +754,49 @@ export const readEnvironmentConfigurationFile = async (
 }
 
 export const writeEnvironmentConfigurationToken = async (
+  electron: IElectronAPI,
   environmentName: string,
   token: string
 ) => {
   environmentName = environmentName.trim()
-  const path = await getEnvironmentConfigurationPath(environmentName)
-  const environmentConfiguration =
-    await getEnvironmentConfigurationObject(environmentName)
+  const path = await getEnvironmentConfigurationPath(electron, environmentName)
+  const environmentConfiguration = await getEnvironmentConfigurationObject(
+    electron,
+    environmentName
+  )
   environmentConfiguration.token = token
   const requestedConfiguration = JSON.stringify(environmentConfiguration)
-  const result = await window.electron.writeFile(path, requestedConfiguration)
+  const result = await electron.writeFile(path, requestedConfiguration)
   console.log(`wrote ${environmentName}.json to disk`)
   return result
 }
 
 export const writeEnvironmentConfigurationPool = async (
+  electron: IElectronAPI,
   environmentName: string,
   pool: string
 ) => {
   pool = pool.trim()
-  const path = await getEnvironmentConfigurationPath(environmentName)
-  const environmentConfiguration =
-    await getEnvironmentConfigurationObject(environmentName)
+  const path = await getEnvironmentConfigurationPath(electron, environmentName)
+  const environmentConfiguration = await getEnvironmentConfigurationObject(
+    electron,
+    environmentName
+  )
   environmentConfiguration.pool = pool
   const requestedConfiguration = JSON.stringify(environmentConfiguration)
-  const result = await window.electron.writeFile(path, requestedConfiguration)
+  const result = await electron.writeFile(path, requestedConfiguration)
   console.log(`wrote ${environmentName}.json to disk`)
   return result
 }
 
 export const getEnvironmentConfigurationObject = async (
+  electron: IElectronAPI,
   environmentName: string
 ) => {
-  let environmentConfiguration =
-    await readEnvironmentConfigurationFile(environmentName)
+  let environmentConfiguration = await readEnvironmentConfigurationFile(
+    electron,
+    environmentName
+  )
   if (environmentConfiguration === null) {
     const initialConfiguration: EnvironmentConfiguration = {
       token: '',
@@ -781,33 +809,36 @@ export const getEnvironmentConfigurationObject = async (
 }
 
 export const readEnvironmentConfigurationPool = async (
+  electron: IElectronAPI,
   environmentName: string
 ) => {
-  const environmentConfiguration =
-    await readEnvironmentConfigurationFile(environmentName)
+  const environmentConfiguration = await readEnvironmentConfigurationFile(
+    electron,
+    environmentName
+  )
   if (!environmentConfiguration?.pool) return ''
   return environmentConfiguration.pool.trim()
 }
 
 export const readEnvironmentConfigurationToken = async (
+  electron: IElectronAPI,
   environmentName: string
 ) => {
-  const environmentConfiguration =
-    await readEnvironmentConfigurationFile(environmentName)
+  const environmentConfiguration = await readEnvironmentConfigurationFile(
+    electron,
+    environmentName
+  )
   if (!environmentConfiguration?.token) return ''
   return environmentConfiguration.token.trim()
 }
 
-export const readEnvironmentFile = async () => {
-  let environmentFilePath = await getEnvironmentFilePath()
+export const readEnvironmentFile = async (electron: IElectronAPI) => {
+  let environmentFilePath = await getEnvironmentFilePath(electron)
 
-  if (window.electron.exists(environmentFilePath)) {
-    const environment: string = await window.electron.readFile(
-      environmentFilePath,
-      {
-        encoding: 'utf-8',
-      }
-    )
+  if (electron.exists(environmentFilePath)) {
+    const environment: string = await electron.readFile(environmentFilePath, {
+      encoding: 'utf-8',
+    })
     if (!environment) return ''
     return environment.trim()
   }
@@ -818,18 +849,22 @@ export const readEnvironmentFile = async () => {
  * Store the last selected environment on disk to allow us to sign back into the correct
  * environment when they refresh the application or update the application.
  */
-export const writeEnvironmentFile = async (environment: string) => {
+export const writeEnvironmentFile = async (
+  electron: IElectronAPI,
+  environment: string
+) => {
   environment = environment.trim()
-  const environmentFilePath = await getEnvironmentFilePath()
+  const environmentFilePath = await getEnvironmentFilePath(electron)
   if (err(environment)) return Promise.reject(environment)
-  const result = window.electron.writeFile(environmentFilePath, environment)
+  const result = electron.writeFile(environmentFilePath, environment)
   console.log('environment written to disk')
   return result
 }
 
-export const listAllEnvironments = async () => {
-  const environmentFolder = await getEnvironmentConfigurationFolderPath()
-  const files = await window.electron.readdir(environmentFolder)
+export const listAllEnvironments = async (electron: IElectronAPI) => {
+  const environmentFolder =
+    await getEnvironmentConfigurationFolderPath(electron)
+  const files = await electron.readdir(environmentFolder)
   const suffix = '.json'
   return files
     .filter((fileName: string) => {
@@ -840,12 +875,12 @@ export const listAllEnvironments = async () => {
     })
 }
 
-export const listAllEnvironmentsWithTokens = async () => {
-  const environments = await listAllEnvironments()
+export const listAllEnvironmentsWithTokens = async (electron: IElectronAPI) => {
+  const environments = await listAllEnvironments(electron)
   const environmentsWithTokens = []
   for (let i = 0; i < environments.length; i++) {
     const environment = environments[i]
-    const token = await readEnvironmentConfigurationToken(environment)
+    const token = await readEnvironmentConfigurationToken(electron, environment)
     if (token) {
       environmentsWithTokens.push(environment)
     }
@@ -853,16 +888,22 @@ export const listAllEnvironmentsWithTokens = async () => {
   return environmentsWithTokens
 }
 
-export const writeTelemetryFile = async (content: string) => {
-  const telemetryFilePath = await getTelemetryFilePath()
+export const writeTelemetryFile = async (
+  electron: IElectronAPI,
+  content: string
+) => {
+  const telemetryFilePath = await getTelemetryFilePath(electron)
   if (err(content)) return Promise.reject(content)
-  return window.electron.writeFile(telemetryFilePath, content)
+  return electron.writeFile(telemetryFilePath, content)
 }
 
-export const writeRawTelemetryFile = async (content: string) => {
-  const rawTelemetryFilePath = await getRawTelemetryFilePath()
+export const writeRawTelemetryFile = async (
+  electron: IElectronAPI,
+  content: string
+) => {
+  const rawTelemetryFilePath = await getRawTelemetryFilePath(electron)
   if (err(content)) return Promise.reject(content)
-  return window.electron.writeFile(rawTelemetryFilePath, content)
+  return electron.writeFile(rawTelemetryFilePath, content)
 }
 
 let appStateStore: Project | undefined = undefined
@@ -890,26 +931,24 @@ export const getUser = async (token: string): Promise<Models['User_type']> => {
 }
 
 export const writeProjectThumbnailFile = async (
+  electron: IElectronAPI,
   dataUrl: string,
   projectDirectoryPath: string
 ) => {
-  const filePath = window.electron.path.join(
-    projectDirectoryPath,
-    PROJECT_IMAGE_NAME
-  )
+  const filePath = electron.path.join(projectDirectoryPath, PROJECT_IMAGE_NAME)
   const data = atob(dataUrl.substring('data:image/png;base64,'.length))
   const asArray = new Uint8Array(data.length)
   for (let i = 0, len = data.length; i < len; ++i) {
     asArray[i] = data.charCodeAt(i)
   }
-  return window.electron.writeFile(filePath, asArray)
+  return electron.writeFile(filePath, asArray)
 }
 
 export function getPathFilenameInVariableCase(path: string) {
   // from https://nodejs.org/en/learn/manipulating-files/nodejs-file-paths#example
-  const basenameNoExt = window.electron.path.basename(
+  const basenameNoExt = fsManager.path.basename(
     path,
-    window.electron.path.extname(path)
+    fsManager.path.extname(path)
   )
   return getInVariableCase(basenameNoExt)
 }

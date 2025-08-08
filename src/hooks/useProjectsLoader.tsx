@@ -29,8 +29,8 @@ export const useProjectsLoader = (deps?: [number]) => {
       const _projectsDir = await ensureProjectDirectoryExists(configuration)
       setProjectsDir(_projectsDir)
 
-      if (projectsDir) {
-        const _projectPaths = await listProjects(configuration)
+      if (window.electron && projectsDir) {
+        const _projectPaths = await listProjects(window.electron, configuration)
         setProjectPaths(_projectPaths)
       }
     })().catch(trap)

@@ -214,13 +214,18 @@ export const sidebarPanes: SidebarPane[] = [
               requestedFileName: requestedFileName,
             },
           })
-        } else if (isRelevantFile(entry.path) && projectRef.current?.path) {
+        } else if (
+          window.electron &&
+          isRelevantFile(entry.path) &&
+          projectRef.current?.path
+        ) {
           // Allow insert if it is a importable file
+          const electron = window.electron
           toast.custom(
             ToastInsert({
               onInsert: () => {
                 const relativeFilePath = entry.path.replace(
-                  projectRef.current?.path + window.electron.sep,
+                  projectRef.current?.path + electron.path.sep,
                   ''
                 )
                 commandBarActor.send({
