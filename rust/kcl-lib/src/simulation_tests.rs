@@ -3686,7 +3686,6 @@ mod user_reported_union_2_bug {
     }
 
     /// Test that KCL is executed correctly.
-    #[ignore]
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
         super::execute(TEST_NAME, false).await
