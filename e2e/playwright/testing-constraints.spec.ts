@@ -920,34 +920,33 @@ part002 = startSketchOn(XZ)
   test.describe('Axis & segment - no modal constraints', () => {
     const cases = [
       {
-        codeAfter: `|> line(endAbsolute = [154.9, turns::ZERO])`,
-        axisClick: { x: 950, y: 250 },
+        codeAfter: /\|> line\(endAbsolute = \[\d+(\.\d+)?, turns::ZERO/,
+        axisClick: { x: 0.75, y: 0.5 },
         constraintName: 'Snap To X',
       },
       {
-        codeAfter: `|> line(endAbsolute = [turns::ZERO, 61.34])`,
-        axisClick: { x: 600, y: 150 },
+        codeAfter: /\|> line\(endAbsolute = \[turns::ZERO/,
+        axisClick: { x: 0.5, y: 0.75 },
         constraintName: 'Snap To Y',
       },
     ] as const
     for (const { codeAfter, constraintName, axisClick } of cases) {
-      test(`${constraintName}`, async ({ page, homePage, scene, cmdBar }) => {
+      test(`${constraintName}`, async ({
+        page,
+        homePage,
+        scene,
+        cmdBar,
+        toolbar,
+      }) => {
         await page.addInitScript(async () => {
           localStorage.setItem(
             'persistCode',
             `@settings(defaultLengthUnit = in)
-      yo = 5
-      part001 = startSketchOn(XZ)
-        |> startProfile(at = [-7.54, -26.74])
-        |> line(end = [74.36, 130.4])
-        |> line(end = [78.92, -120.11])
-        |> line(end = [9.16, 77.79])
-      part002 = startSketchOn(XZ)
-        |> startProfile(at = [299.05, 231.45])
-        |> xLine(length = -425.34, tag = $seg_what)
-        |> yLine(length = -264.06)
-        |> xLine(length = segLen(seg_what))
-        |> line(endAbsolute = [profileStartX(%), profileStartY(%)])`
+sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [-47.54, -26.74])
+  |> line(end = [74.36, 100.4])
+  |> line(end = [78.92, -100.11])
+  |> line(end = [9.16, 77.79])`
           )
         })
         const u = await getUtils(page)
@@ -955,13 +954,13 @@ part002 = startSketchOn(XZ)
 
         await homePage.goToModelingScene()
         await scene.settled(cmdBar)
+        await toolbar.editSketch(0)
 
-        await page.getByText('line(end = [74.36, 130.4])').click()
-        await page.getByRole('button', { name: 'Edit Sketch' }).click()
-
-        // Wait for overlays to populate
-        await page.waitForTimeout(1000)
-
+        const [convertedAxisClick] = scene.makeMouseHelpers(
+          axisClick.x,
+          axisClick.y,
+          { format: 'ratio' }
+        )
         const line3 = await u.getBoundingBox(`[data-overlay-index="${3}"]`)
 
         // select segment and axis by holding down shift
@@ -969,7 +968,7 @@ part002 = startSketchOn(XZ)
         await page.waitForTimeout(100)
         await page.keyboard.down('Shift')
         await page.waitForTimeout(100)
-        await page.mouse.click(axisClick.x, axisClick.y)
+        await convertedAxisClick()
         await page.waitForTimeout(100)
         await page.keyboard.up('Shift')
         await page.waitForTimeout(100)
