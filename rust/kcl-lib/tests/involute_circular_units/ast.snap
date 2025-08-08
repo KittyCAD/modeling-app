@@ -534,13 +534,13 @@ description: Result of parsing involute_circular_units.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "raw": "6",
+            "raw": "6deg",
             "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
               "value": 6.0,
-              "suffix": "None"
+              "suffix": "Deg"
             }
           },
           "moduleId": 0,
@@ -1156,13 +1156,13 @@ description: Result of parsing involute_circular_units.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "raw": "9",
+                      "raw": "9deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 9.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -1382,13 +1382,13 @@ description: Result of parsing involute_circular_units.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "12",
+                        "raw": "12deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 12.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "commentStart": 0,
@@ -1595,13 +1595,13 @@ description: Result of parsing involute_circular_units.kcl
                               "commentStart": 0,
                               "end": 0,
                               "moduleId": 0,
-                              "raw": "360",
+                              "raw": "360deg",
                               "start": 0,
                               "type": "Literal",
                               "type": "Literal",
                               "value": {
                                 "value": 360.0,
-                                "suffix": "None"
+                                "suffix": "Deg"
                               }
                             },
                             "moduleId": 0,
@@ -1825,13 +1825,13 @@ description: Result of parsing involute_circular_units.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "raw": "360",
+                      "raw": "360deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 360.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
