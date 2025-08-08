@@ -669,7 +669,7 @@ export function createSettings() {
           return (
             <div className="flex gap-4 p-1 border rounded-sm border-chalkboard-30">
               <input
-                className="flex-grow text-xs px-2 bg-transparent"
+                className="flex-grow text-xs px-2 bg-chalkboard-30 dark:bg-chalkboard-80 cursor-not-allowed"
                 value={value}
                 disabled
                 data-testid="project-id"
