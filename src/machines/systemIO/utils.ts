@@ -29,6 +29,7 @@ export enum SystemIOMachineActors {
   renameFileAndNavigateToFile = 'rename file and navigate to file',
   renameFolderAndNavigateToFile = 'rename folder and navigate to file',
   deleteFileOrFolderAndNavigate = 'delete file or folder and navigate',
+  getMlEphantConversations = 'get Ml-ephant conversations',
 }
 
 export enum SystemIOMachineStates {
@@ -54,6 +55,7 @@ export enum SystemIOMachineStates {
   renamingFileAndNavigateToFile = 'renamingFileAndNavigateToFile',
   renamingFolderAndNavigateToFile = 'renamingFolderAndNavigateToFile',
   deletingFileOrFolderAndNavigate = 'delete file or folder and navigate',
+  gettingMlEphantConversations = 'getting Ml-ephant conversations',
 }
 
 const donePrefix = 'xstate.done.actor.'
@@ -96,6 +98,8 @@ export enum SystemIOMachineEvents {
   deleteFileOrFolderAndNavigate = 'delete file or folder and navigate',
   done_deleteFileOrFolderAndNavigate = donePrefix +
     'delete file or folder and navigate',
+  getMlEphantConversations = 'get ml-ephant conversations',
+  done_getMlEphantConversations = donePrefix + 'get ml-ephant conversations',
 }
 
 export enum SystemIOMachineActions {
@@ -110,6 +114,7 @@ export enum SystemIOMachineActions {
   setRequestedTextToCadGeneration = 'set requested text to cad generation',
   setLastProjectDeleteRequest = 'set last project delete request',
   toastProjectNameTooLong = 'toast project name too long',
+  setMlEphantConversations = 'set Ml-ephant conversations',
 }
 
 export enum SystemIOMachineGuards {
@@ -145,6 +150,9 @@ export type SystemIOContext = {
   lastProjectDeleteRequest: {
     project: string
   }
+
+  // A mapping between project id and conversation ids.
+  mlEphantConversations: Map<string, string>
 }
 
 export type RequestedKCLFile = {
@@ -301,4 +309,23 @@ export const collectProjectFiles = async (args: {
   }
 
   return projectFiles
+}
+
+export const jsonToMlConversations = (json) => {
+  const mlConversations = new Map<string, string>()
+  const untypedObject = JSON.parse(json)
+  for (let entry of Object.entries(untypedObject)) {
+    if (!REGEXP_UUIDV4.test(entry[0])) {
+      console.warn(
+        'Expected a project id string as a key (potentially bad format)'
+      )
+      continue
+    }
+    if (!REGEXP_UUIDV4.test(entry[1])) {
+      console.warn('Expected a conversation id string (potentially bad format)')
+      continue
+    }
+    mlConversations.set(entry[0], entry[1])
+  }
+  return mlConversations
 }

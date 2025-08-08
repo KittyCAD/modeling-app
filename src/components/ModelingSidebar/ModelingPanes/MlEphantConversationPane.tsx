@@ -60,6 +60,20 @@ export const MlEphantConversationPane = () => {
     })
   }
 
+  useEffect(() => {
+    const subscription = systemIOActor.subscribe((actor) => {
+      console.log(actor)
+      console.log(actor.value)
+      console.log(actor.context)
+    })
+    systemIOActor.send({
+      type: SystemIOMachineEvents.getMlEphantConversations,
+    })
+    return () => {
+      subscription.unsubscribe()
+    }
+  }, [])
+
   return (
     <MlEphantConversation
       prompts={prompts}

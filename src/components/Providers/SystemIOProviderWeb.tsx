@@ -34,6 +34,7 @@ export function SystemIOMachineLogicListenerWeb() {
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
     }, [clearURLParams])
+  }
   
   useClearQueryParams()
   return null
