@@ -181,15 +181,11 @@ export class FileSystemManager {
   }
 }
 
-export const fsManager = new FileSystemManager(
-  nodePath,
-  window?.electron ?? testNodeFs
-)
+const fsInstance =
+  (typeof window !== 'undefined' ? window.electron : undefined) ?? testNodeFs
+export const fsManager = new FileSystemManager(nodePath, fsInstance)
 
 /**
  * The project directory is set on this.
  */
-export const projectFsManager = new FileSystemManager(
-  nodePath,
-  window?.electron ?? testNodeFs
-)
+export const projectFsManager = new FileSystemManager(nodePath, fsInstance)
