@@ -45,7 +45,6 @@ import {
 import { angleLengthInfo } from '@src/components/Toolbar/angleLengthInfo'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
 import {
-  addOffsetPlane,
   insertNamedConstant,
   replaceValueAtNodePath,
 } from '@src/lang/modifyAst'
@@ -87,7 +86,6 @@ import {
   updatePathToNodesAfterEdit,
   artifactIsPlaneWithPaths,
   isCursorInFunctionDefinition,
-  getSelectedPlaneAsNode,
 } from '@src/lang/queryAst'
 import {
   getFaceCodeRef,
@@ -138,7 +136,7 @@ import type { Plane } from '@rust/kcl-lib/bindings/Plane'
 import type { Point3d } from '@rust/kcl-lib/bindings/ModelingCmd'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import { letEngineAnimateAndSyncCamAfter } from '@src/clientSideScene/CameraControls'
-import { addShell } from '@src/lang/modifyAst/faces'
+import { addShell, addOffsetPlane } from '@src/lang/modifyAst/faces'
 import { intersectInfo } from '@src/components/Toolbar/Intersect'
 import { addHelix } from '@src/lang/modifyAst/geometry'
 
@@ -2556,72 +2554,20 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        // Extract inputs
-        const ast = kclManager.ast
-        const { plane: selection, distance, nodeToEdit } = input
-
-        let insertIndex: number | undefined = undefined
-        let planeName: string | undefined = undefined
-
-        // If this is an edit flow, first we're going to remove the old plane
-        if (nodeToEdit && typeof nodeToEdit[1][0] === 'number') {
-          // Extract the plane name from the node to edit
-          const planeNameNode = getNodeFromPath<VariableDeclaration>(
-            ast,
-            nodeToEdit,
-            'VariableDeclaration'
-          )
-          if (err(planeNameNode)) {
-            console.error('Error extracting plane name')
-          } else {
-            planeName = planeNameNode.node.declaration.id.name
-          }
-
-          const newBody = [...ast.body]
-          newBody.splice(nodeToEdit[1][0], 1)
-          ast.body = newBody
-          insertIndex = nodeToEdit[1][0]
-        }
-
-        const selectedPlane = getSelectedPlaneAsNode(
-          selection,
-          kclManager.variables
-        )
-        if (!selectedPlane) {
-          return trap('No plane selected')
-        }
-
-        // Get the default plane name from the selection
-        const offsetPlaneResult = addOffsetPlane({
-          node: ast,
-          plane: selectedPlane,
-          offset:
-            'variableName' in distance
-              ? distance.variableIdentifierAst
-              : distance.valueAst,
-          insertIndex,
-          planeName,
+        const { ast, artifactGraph, variables } = kclManager
+        const astResult = addOffsetPlane({
+          ...input,
+          ast,
+          artifactGraph,
+          variables,
         })
-
-        // Insert the distance variable if the user has provided a variable name
-        if (
-          'variableName' in distance &&
-          distance.variableName &&
-          typeof offsetPlaneResult.pathToNode[1][0] === 'number'
-        ) {
-          const insertIndex = Math.min(
-            offsetPlaneResult.pathToNode[1][0],
-            distance.insertIndex
-          )
-          const newBody = [...offsetPlaneResult.modifiedAst.body]
-          newBody.splice(insertIndex, 0, distance.variableDeclarationAst)
-          offsetPlaneResult.modifiedAst.body = newBody
-          // Since we inserted a new variable, we need to update the path to the extrude argument
-          offsetPlaneResult.pathToNode[1][0]++
+        if (err(astResult)) {
+          return Promise.reject(astResult)
         }
 
+        const { modifiedAst, pathToNode } = astResult
         await updateModelingState(
-          offsetPlaneResult.modifiedAst,
+          modifiedAst,
           EXECUTION_TYPE_REAL,
           {
             kclManager,
@@ -2629,7 +2575,7 @@ export const modelingMachine = setup({
             codeManager,
           },
           {
-            focusPath: [offsetPlaneResult.pathToNode],
+            focusPath: [pathToNode],
           }
         )
       }
