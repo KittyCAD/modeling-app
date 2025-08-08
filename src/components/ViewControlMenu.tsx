@@ -30,8 +30,9 @@ export function useViewControlMenuItems() {
   const shouldLockView =
     modelingState.matches('Sketch') &&
     !settings.app.allowOrbitInSketchMode.current
-    const snapToGrid = settings.modeling.snapToGrid.current
 
+  const sketching = modelingState.matches('Sketch')
+  const snapToGrid = settings.modeling.snapToGrid.current
 
   const menuItems = useMemo(
     () => [
@@ -93,27 +94,37 @@ export function useViewControlMenuItems() {
       >
         Start sketch on selection
       </ContextMenuItem>,
+      ...(sketching
+        ? [
+            <ContextMenuDivider />,
+            <ContextMenuItem
+              icon={snapToGrid ? 'checkmark' : undefined}
+              hotkey="mod+g"
+              onClick={() => {
+                settingsActor.send({
+                  type: 'set.modeling.snapToGrid',
+                  data: {
+                    level: 'project',
+                    value: !snapToGrid,
+                  },
+                })
+              }}
+            >
+              Snap to grid
+            </ContextMenuItem>,
+          ]
+        : []),
       <ContextMenuDivider />,
-        <ContextMenuItem
-            icon={snapToGrid ? "checkmark" : undefined}
-            hotkey="mod+g"
-            onClick={() => {
-              settingsActor.send({
-                type: 'set.modeling.snapToGrid',
-                data: {
-                  level: 'project',
-                  value: !snapToGrid,
-                },
-              })
-            }}
-        >
-           Snap to grid
-        </ContextMenuItem>,
-        <ContextMenuDivider />,
       <ContextMenuItemRefresh />,
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-    [VIEW_NAMES_SEMANTIC, shouldLockView, selectedPlaneId, snapToGrid]
+    [
+      VIEW_NAMES_SEMANTIC,
+      shouldLockView,
+      selectedPlaneId,
+      sketching,
+      snapToGrid,
+    ]
   )
   return menuItems
 }
