@@ -42,6 +42,8 @@ export interface FileExplorerRow extends FileExplorerEntry {
   onContextMenuOpen: (domIndex: number) => void
   onOpenInNewWindow: () => void
   onDelete: () => void
+  onCopy: () => void
+  onPaste: () => void
   onRenameStart: () => void
   onRenameEnd: SubmitByPressOrBlur
 }
@@ -60,6 +62,9 @@ export interface FileExplorerRowContextMenuProps {
   onDelete: () => void
   onOpenInNewWindow: () => void
   callback: () => void
+  onCopy: () => void
+  onPaste: () => void
+  isCopying: boolean
 }
 
 /**
@@ -194,6 +199,30 @@ export const isRowFake = (
   return (
     row.name === FOLDER_PLACEHOLDER_NAME || row.name === FILE_PLACEHOLDER_NAME
   )
+}
+
+export const getUniqueCopyPasteMaxIndex = (rows: FileEntry[]) => {
+  const matches = rows.map((row) => row.path?.match(/-copy-(?:\d+)?$/i))
+  const indices = matches
+    .filter(Boolean)
+    .map((match) => {
+      // remove the start and then index it?
+      console.log(match.input[match.index])
+      return (match.input[match.index])
+      // return parseInt(maybeMatchIndex || '0', 10)
+    })
+  const maxIndex = Math.max(...indices, -1) + 1
+  console.log(maxIndex)
+  return maxIndex
+}
+
+export const copyPasteSourceAndTarget = (possibleCollisions: string[], src: FileEntry, target: FileEntry, identifier: string) : {src: string, target: string}=> {
+  if (possibleCollisions.length === 0) {
+    return {
+      src,
+      target
+    }
+  }
 }
 
 // Used for focused which is different from the selection when you mouse click.

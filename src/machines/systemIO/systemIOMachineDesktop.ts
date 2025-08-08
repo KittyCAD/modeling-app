@@ -621,5 +621,23 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
         }
       }
     ),
+    [SystemIOMachineActors.copyRecursive]: fromPromise(
+      async ({
+        input,
+      }: {
+        input: {
+          context: SystemIOContext
+          rootContext: AppMachineContext
+          src: string
+          target: string
+        }
+      }) => {
+        await window.electron.copy(input.src, input.target, { recursive: true, force: false })
+        return {
+          message: `Folder copied successfully`,
+          requestedAbsolutePath: ''
+        }
+      }
+    ),
   },
 })

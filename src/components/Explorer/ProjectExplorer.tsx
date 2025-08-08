@@ -10,6 +10,7 @@ import {
   STARTING_INDEX_TO_SELECT,
   FILE_PLACEHOLDER_NAME,
   FOLDER_PLACEHOLDER_NAME,
+  getUniqueCopyPasteMaxIndex,
 } from '@src/components/Explorer/utils'
 import type {
   FileExplorerEntry,
@@ -107,7 +108,11 @@ export const ProjectExplorer = ({
   const [contextMenuRow, setContextMenuRow] =
     useState<FileExplorerEntry | null>(null)
   const [isRenaming, setIsRenaming] = useState<boolean>(false)
+  const [isCopying, setIsCopying] = useState<boolean>(false)
   const lastIndexBeforeNothing = useRef<number>(-2)
+
+  // Store a path to copy and paste! Works for folders and files
+  const copyToClipBoard = useRef<{path: string, name: string} | null>(null)
 
   const fileExplorerContainer = useRef<HTMLDivElement | null>(null)
   const projectExplorerRef = useRef<HTMLDivElement | null>(null)
@@ -327,6 +332,32 @@ export const ProjectExplorer = ({
           },
           onOpenInNewWindow: () => {
             window.electron.openInNewWindow(row.path)
+          },
+          onCopy: () => {
+            copyToClipBoard.current = {
+              path: row.path,
+              name: row.name
+            }
+            setIsCopying(true)
+          },
+          onPaste: async () => {
+            if (copyToClipBoard.current) {
+              const src = copyToClipBoard.current.path
+              const possibleTarget = joinOSPaths(row.path, copyToClipBoard.current.name + '-copy-1')
+              const maxIndex = getUniqueCopyPasteMaxIndex(row.children)
+              const target = maxIndex === 0 ? possibleTarget : joinOSPaths(row.path, copyToClipBoard.current.name + '-copy-' + (maxIndex + 1))
+              // systemIOActor.send({
+              //   type: SystemIOMachineEvents.copyRecursive,
+              //   data: {
+              //     src,
+              //     target
+              //   },
+              // })
+            }
+
+            // clear the path
+            copyToClipBoard.current = null
+            setIsCopying(false)
           },
           onRenameStart: () => {
             if (readOnly) {
@@ -711,6 +742,7 @@ export const ProjectExplorer = ({
             selectedRow={selectedRow}
             contextMenuRow={contextMenuRow}
             isRenaming={isRenaming}
+            isCopying={isCopying}
           ></FileExplorer>
         )}
       </div>

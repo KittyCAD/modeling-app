@@ -171,4 +171,8 @@ describe('Explorer utils.ts', () => {
       })
     })
   })
+  describe('copyPasteSourceAndTarget', () => {
+    it('should src and target if there are no possible collisions', () => {
+    })
+  })
 })

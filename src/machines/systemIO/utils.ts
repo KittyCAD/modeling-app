@@ -24,6 +24,7 @@ export enum SystemIOMachineActors {
   renameFileAndNavigateToFile = 'rename file and navigate to file',
   renameFolderAndNavigateToFile = 'rename folder and navigate to file',
   deleteFileOrFolderAndNavigate = 'delete file or folder and navigate',
+  copyRecursive = 'copy recursive'
 }
 
 export enum SystemIOMachineStates {
@@ -49,6 +50,7 @@ export enum SystemIOMachineStates {
   renamingFileAndNavigateToFile = 'renamingFileAndNavigateToFile',
   renamingFolderAndNavigateToFile = 'renamingFolderAndNavigateToFile',
   deletingFileOrFolderAndNavigate = 'delete file or folder and navigate',
+  copyingRecursive = 'copying recursive'
 }
 
 const donePrefix = 'xstate.done.actor.'
@@ -91,6 +93,7 @@ export enum SystemIOMachineEvents {
   deleteFileOrFolderAndNavigate = 'delete file or folder and navigate',
   done_deleteFileOrFolderAndNavigate = donePrefix +
     'delete file or folder and navigate',
+  copyRecursive = 'copy recursive'
 }
 
 export enum SystemIOMachineActions {

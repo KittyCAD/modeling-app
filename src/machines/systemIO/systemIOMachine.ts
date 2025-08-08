@@ -203,7 +203,14 @@ export const systemIOMachine = setup({
             requestedPath: string
             requestedProjectName: string
           }
-        },
+      }
+      | {
+          type: SystemIOMachineEvents.copyRecursive
+          data: {
+            src: string
+            target: string
+          }
+        }
   },
   guards: {
     [SystemIOMachineGuards.projectNameIsValidLength]: ({
@@ -543,6 +550,23 @@ export const systemIOMachine = setup({
         }
       }
     ),
+    [SystemIOMachineActors.copyRecursive]: fromPromise(
+      async ({
+        input,
+      }: {
+        input: {
+          context: SystemIOContext
+          rootContext: AppMachineContext
+          src: string
+          target: string
+        }
+      }) => {
+        return {
+          message: '',
+          requestedAbsolutePath: '',
+        }
+      }
+    ),
   },
 }).createMachine({
   initial: SystemIOMachineStates.idle,
@@ -656,6 +680,9 @@ export const systemIOMachine = setup({
         },
         [SystemIOMachineEvents.deleteFileOrFolderAndNavigate]: {
           target: SystemIOMachineStates.deletingFileOrFolderAndNavigate,
+        },
+        [SystemIOMachineEvents.copyRecursive]: {
+          target: SystemIOMachineStates.copyingRecursive,
         },
       },
     },
@@ -1220,6 +1247,34 @@ export const systemIOMachine = setup({
                 }
               },
             }),
+            SystemIOMachineActions.toastSuccess,
+          ],
+        },
+        onError: {
+          target: SystemIOMachineStates.idle,
+          actions: [SystemIOMachineActions.toastError],
+        },
+      },
+    },
+    [SystemIOMachineStates.copyingRecursive]: {
+      invoke: {
+        id: SystemIOMachineActors.copyRecursive,
+        src: SystemIOMachineActors.copyRecursive,
+        input: ({ context, event, self }) => {
+          assertEvent(
+            event,
+            SystemIOMachineEvents.copyRecursive
+          )
+          return {
+            context,
+            src: event.data.src,
+            target: event.data.target,
+            rootContext: self.system.get('root').getSnapshot().context,
+          }
+        },
+        onDone: {
+          target: SystemIOMachineStates.readingFolders,
+          actions: [
             SystemIOMachineActions.toastSuccess,
           ],
         },
