@@ -19,6 +19,7 @@ import {
   selectOffsetSketchPlane,
 } from '@src/lib/selections'
 import { getSelectedPlaneId } from '@src/lang/queryAst'
+import { SNAP_TO_GRID_HOTKEY } from '@src/lib/hotkeys'
 
 export function useViewControlMenuItems() {
   const { state: modelingState, send: modelingSend } = useModelingContext()
@@ -99,7 +100,7 @@ export function useViewControlMenuItems() {
             <ContextMenuDivider />,
             <ContextMenuItem
               icon={snapToGrid ? 'checkmark' : undefined}
-              hotkey="mod+g"
+              hotkey={SNAP_TO_GRID_HOTKEY}
               onClick={() => {
                 settingsActor.send({
                   type: 'set.modeling.snapToGrid',
