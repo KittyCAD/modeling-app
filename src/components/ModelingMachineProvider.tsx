@@ -1183,111 +1183,7 @@ export const ModelingMachineProvider = ({
             }
           }
         ),
-        'submit-prompt-edit': fromPromise(async ({ input }) => {
-          let projectFiles: FileMeta[] = [
-            {
-              type: 'kcl',
-              relPath: 'main.kcl',
-              absPath: 'main.kcl',
-              fileContents: codeManager.code,
-              execStateFileNamesIndex: 0,
-            },
-          ]
-          const execStateNameToIndexMap: { [fileName: string]: number } = {}
-          Object.entries(kclManager.execState.filenames).forEach(
-            ([index, val]) => {
-              if (val?.type === 'Local') {
-                execStateNameToIndexMap[val.value] = Number(index)
-              }
-            }
-          )
-          let basePath = ''
-          if (isDesktop() && theProject?.current?.children) {
-            // Use the entire project directory as the basePath for prompt to edit, do not use relative subdir paths
-            basePath = theProject?.current?.path
-            const filePromises: Promise<FileMeta | null>[] = []
-            let uploadSize = 0
-            const recursivelyPushFilePromises = (files: FileEntry[]) => {
-              // mutates filePromises declared above, so this function definition should stay here
-              // if pulled out, it would need to be refactored.
-              for (const file of files) {
-                if (file.children !== null) {
-                  // is directory
-                  recursivelyPushFilePromises(file.children)
-                  continue
-                }
-
-                const absolutePathToFileNameWithExtension = file.path
-                const fileNameWithExtension = window.electron.path.relative(
-                  basePath,
-                  absolutePathToFileNameWithExtension
-                )
-
-                const filePromise = window.electron
-                  .readFile(absolutePathToFileNameWithExtension)
-                  .then((file): FileMeta => {
-                    uploadSize += file.byteLength
-                    const decoder = new TextDecoder('utf-8')
-                    const fileType = window.electron.path.extname(
-                      absolutePathToFileNameWithExtension
-                    )
-                    if (fileType === FILE_EXT) {
-                      return {
-                        type: 'kcl',
-                        absPath: absolutePathToFileNameWithExtension,
-                        relPath: fileNameWithExtension,
-                        fileContents: decoder.decode(file),
-                        execStateFileNamesIndex:
-                          execStateNameToIndexMap[
-                            absolutePathToFileNameWithExtension
-                          ],
-                      }
-                    }
-                    const blob = new Blob([file], {
-                      type: 'application/octet-stream',
-                    })
-                    return {
-                      type: 'other',
-                      relPath: fileNameWithExtension,
-                      data: blob,
-                    }
-                  })
-                  .catch((e) => {
-                    console.error('error reading file', e)
-                    return null
-                  })
-
-                filePromises.push(filePromise)
-              }
-            }
-            recursivelyPushFilePromises(theProject?.current?.children)
-            projectFiles = (await Promise.all(filePromises)).filter(
-              isNonNullable
-            )
-            const MB20 = 2 ** 20 * 20
-            if (uploadSize > MB20) {
-              toast.error(
-                'Your project exceeds 20Mb, this will slow down Text-to-CAD\nPlease remove any unnecessary files'
-              )
-            }
-          }
-          // route to main.kcl by default for web and desktop
-          let filePath: string = PROJECT_ENTRYPOINT
-          const possibleFileName = file?.path
-          if (possibleFileName && isDesktop()) {
-            // When prompt to edit finishes, try to route to the file they were in otherwise go to main.kcl
-            filePath = window.electron.path.relative(basePath, possibleFileName)
-          }
-          return await promptToEditFlow({
-            projectFiles,
-            prompt: input.prompt,
-            selections: input.selection,
-            token,
-            artifactGraph: kclManager.artifactGraph,
-            projectName: theProject?.current?.name || '',
-            filePath,
-          })
-        }),
+        'submit-prompt-edit': fromPromise(async ({ input }) => {}),
       },
     }),
     {
@@ -1570,6 +1466,7 @@ export const ModelingMachineProvider = ({
         state: modelingState,
         context: modelingState.context,
         send: modelingSend,
+        theProject,
       }}
     >
       {/* TODO #818: maybe pass reff down to children/app.ts or render app.tsx directly?

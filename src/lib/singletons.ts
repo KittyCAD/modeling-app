@@ -26,6 +26,10 @@ import {
   engineStreamContextCreate,
   engineStreamMachine,
 } from '@src/machines/engineStreamMachine'
+import {
+  mlEphantDefaultContext,
+  mlEphantManagerMachine,
+} from '@src/machines/mlEphantManagerMachine'
 import { ACTOR_IDS } from '@src/machines/machineConstants'
 import { settingsMachine } from '@src/machines/settingsMachine'
 import { systemIOMachineDesktop } from '@src/machines/systemIO/systemIOMachineDesktop'
@@ -118,13 +122,21 @@ if (typeof window !== 'undefined') {
       },
     })
 }
-const { AUTH, SETTINGS, SYSTEM_IO, ENGINE_STREAM, COMMAND_BAR, BILLING } =
-  ACTOR_IDS
+const {
+  AUTH,
+  SETTINGS,
+  SYSTEM_IO,
+  ENGINE_STREAM,
+  MLEPHANT_MANAGER,
+  COMMAND_BAR,
+  BILLING,
+} = ACTOR_IDS
 const appMachineActors = {
   [AUTH]: authMachine,
   [SETTINGS]: settingsMachine,
   [SYSTEM_IO]: isDesktop() ? systemIOMachineDesktop : systemIOMachineWeb,
   [ENGINE_STREAM]: engineStreamMachine,
+  [MLEPHANT_MANAGER]: mlEphantManagerMachine,
   [COMMAND_BAR]: commandBarMachine,
   [BILLING]: billingMachine,
 } as const
@@ -157,6 +169,10 @@ const appMachine = setup({
     spawnChild(appMachineActors[ENGINE_STREAM], {
       systemId: ENGINE_STREAM,
       input: engineStreamContextCreate(),
+    }),
+    spawnChild(appMachineActors[MLEPHANT_MANAGER], {
+      systemId: MLEPHANT_MANAGER,
+      input: mlEphantDefaultContext(),
     }),
     spawnChild(appMachineActors[SYSTEM_IO], {
       systemId: SYSTEM_IO,
@@ -226,6 +242,12 @@ export const systemIOActor = appActor.system.get(SYSTEM_IO) as ActorRefFrom<
 export const engineStreamActor = appActor.system.get(
   ENGINE_STREAM
 ) as ActorRefFrom<(typeof appMachineActors)[typeof ENGINE_STREAM]>
+
+export const mlEphantManagerActor = appActor.system.get(
+  MLEPHANT_MANAGER
+) as ActorRefFrom<(typeof appMachineActors)[typeof MLEPHANT_MANAGER]>
+
+window.mlEphantManagerActor = mlEphantManagerActor
 
 export const commandBarActor = appActor.system.get(COMMAND_BAR) as ActorRefFrom<
   (typeof appMachineActors)[typeof COMMAND_BAR]
