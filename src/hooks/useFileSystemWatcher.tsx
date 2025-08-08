@@ -36,7 +36,7 @@ export const useFileSystemWatcher = (
   // On component teardown obliterate all watchers.
   useEffect(() => {
     // The hook is useless on web.
-    if (!isDesktop()) return
+    if (!window.electron) return
 
     const cbWatcher = (eventType: string, path: string) => {
       setOutput({ eventType, path })
@@ -53,10 +53,11 @@ export const useFileSystemWatcher = (
       window.electron.watchFileOn(path, key.current, cbWatcher)
     }
 
+    const electron = window.electron
     return () => {
       for (let path of pathsTracked) {
         // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-        window.electron.watchFileOff(path, key.current)
+        electron.watchFileOff(path, key.current)
       }
     }
   }, [pathsTracked])
