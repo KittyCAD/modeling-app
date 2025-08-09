@@ -596,7 +596,8 @@ const OperationItem = (props: {
             </ContextMenuItem>,
           ]
         : []),
-      ...(props.item.type === 'StdLibCall' && props.item.name === 'startSketchOn'
+      ...(props.item.type === 'StdLibCall' &&
+      props.item.name === 'startSketchOn'
         ? [
             <ContextMenuItem
               onClick={() => {
@@ -609,15 +610,22 @@ const OperationItem = (props: {
                     )
 
                     if (!planeArtifact || planeArtifact.type !== 'plane') {
-                      console.error('Could not find plane artifact for DXF export')
+                      console.error(
+                        'Could not find plane artifact for DXF export'
+                      )
                       toast.error('Could not find sketch for DXF export')
                       return
                     }
 
                     // Check if the plane has sketch paths
-                    if (!('pathIds' in planeArtifact) || !planeArtifact.pathIds?.length) {
+                    if (
+                      !('pathIds' in planeArtifact) ||
+                      !planeArtifact.pathIds?.length
+                    ) {
                       console.error('Could not find path IDs for DXF export')
-                      toast.error('Could not find sketch entities for DXF export')
+                      toast.error(
+                        'Could not find sketch entities for DXF export'
+                      )
                       return
                     }
 
@@ -626,7 +634,10 @@ const OperationItem = (props: {
                     for (const pathId of planeArtifact.pathIds) {
                       const pathArtifact = kclManager.artifactGraph.get(pathId)
                       if (pathArtifact) {
-                        if ('compositeSolidId' in pathArtifact && pathArtifact.compositeSolidId) {
+                        if (
+                          'compositeSolidId' in pathArtifact &&
+                          pathArtifact.compositeSolidId
+                        ) {
                           // Sketch has been extruded - use the composite solid ID
                           entityIds.push(pathArtifact.compositeSolidId)
                         } else {
@@ -637,37 +648,52 @@ const OperationItem = (props: {
                     }
 
                     if (entityIds.length === 0) {
-                      console.error('Could not find any sketch entities for DXF export')
-                      toast.error('Could not find sketch entities for DXF export')
+                      console.error(
+                        'Could not find any sketch entities for DXF export'
+                      )
+                      toast.error(
+                        'Could not find sketch entities for DXF export'
+                      )
                       return
                     }
 
                     const toastId = toast.loading('Exporting sketch to DXF...')
 
                     // Use the export2d command for DXF export
-                    const response = await engineCommandManager.sendSceneCommand({
-                      type: 'modeling_cmd_req',
-                      cmd_id: uuidv4(),
-                      cmd: {
-                        type: 'export2d',
-                        entity_ids: entityIds,
-                        format: {
-                          type: 'dxf',
-                          storage: 'ascii',
-                        }
-                      }
-                    }, true)
+                    const response =
+                      await engineCommandManager.sendSceneCommand(
+                        {
+                          type: 'modeling_cmd_req',
+                          cmd_id: uuidv4(),
+                          cmd: {
+                            type: 'export2d',
+                            entity_ids: entityIds,
+                            format: {
+                              type: 'dxf',
+                              storage: 'ascii',
+                            },
+                          },
+                        },
+                        true
+                      )
 
-                    if (response && !isArray(response) && response.success &&
-                        'resp' in response && response.resp &&
-                        'data' in response.resp && response.resp.data &&
-                        'modeling_response' in response.resp.data &&
-                        response.resp.data.modeling_response.type === 'export2d' &&
-                        'data' in response.resp.data.modeling_response &&
-                        'files' in response.resp.data.modeling_response.data) {
-
+                    if (
+                      response &&
+                      !isArray(response) &&
+                      response.success &&
+                      'resp' in response &&
+                      response.resp &&
+                      'data' in response.resp &&
+                      response.resp.data &&
+                      'modeling_response' in response.resp.data &&
+                      response.resp.data.modeling_response.type ===
+                        'export2d' &&
+                      'data' in response.resp.data.modeling_response &&
+                      'files' in response.resp.data.modeling_response.data
+                    ) {
                       const fileName = 'sketch.dxf'
-                      const exportFiles = response.resp.data.modeling_response.data.files
+                      const exportFiles =
+                        response.resp.data.modeling_response.data.files
 
                       // Save file directly without unnecessary conversions
                       const exportFile = exportFiles[0]
@@ -675,7 +701,9 @@ const OperationItem = (props: {
 
                       if (decoded instanceof Error) {
                         console.error('Base64 decode failed:', decoded)
-                        toast.error('Failed to decode DXF file data', { id: toastId })
+                        toast.error('Failed to decode DXF file data', {
+                          id: toastId,
+                        })
                         return
                       }
 
@@ -695,19 +723,26 @@ const OperationItem = (props: {
                         })
 
                         if (!filePathMeta.canceled) {
-                          await window.electron.writeFile(filePathMeta.filePath, uint8Array)
+                          await window.electron.writeFile(
+                            filePathMeta.filePath,
+                            uint8Array
+                          )
                           toast.success('DXF export completed', { id: toastId })
                         } else {
                           toast.dismiss(toastId)
                         }
                       } else {
                         // Browser: download file
-                        const blob = new Blob([uint8Array], { type: 'application/dxf' })
+                        const blob = new Blob([uint8Array], {
+                          type: 'application/dxf',
+                        })
                         await browserSaveFile(blob, fileName, toastId)
                       }
                     } else {
                       console.error('DXF export failed:', response)
-                      toast.error('Failed to export sketch to DXF', { id: toastId })
+                      toast.error('Failed to export sketch to DXF', {
+                        id: toastId,
+                      })
                     }
                   } catch (error) {
                     console.error('DXF export error:', error)
