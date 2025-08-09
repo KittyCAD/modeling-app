@@ -128,9 +128,11 @@ export class InfiniteGridRenderer extends LineSegments {
     minorPerMajor: number,
     viewportWidthPx: number,
     viewportHeightPx: number,
-    options?: {
-      majorColor?: [number, number, number, number]
-      minorColor?: [number, number, number, number]
+    options: {
+      majorColor: [number, number, number, number]
+      minorColor: [number, number, number, number]
+      fixedSizeGrid?: boolean
+      majorPxRange?: [number, number]
     }
   ) {
     if (!(camera instanceof OrthographicCamera)) {
@@ -143,7 +145,8 @@ export class InfiniteGridRenderer extends LineSegments {
     const material = this.material as RawShaderMaterial
 
     const zoom = camera.zoom
-    const minorSpacing = majorSpacing / Math.max(1, minorPerMajor)
+    let effectiveMajorSpacing = majorSpacing
+    let minorSpacing = effectiveMajorSpacing / minorPerMajor
 
     const worldViewportWidth = (camera.right - camera.left) / zoom
     const worldViewportHeight = (camera.top - camera.bottom) / zoom
@@ -153,27 +156,47 @@ export class InfiniteGridRenderer extends LineSegments {
 
     const pxPerWorldX = viewportWidthPx / worldViewportWidth
     const pxPerWorldY = viewportHeightPx / worldViewportHeight
+
+    if (!options.fixedSizeGrid) {
+      const desiredMin = options.majorPxRange?.[0] ?? 40
+      const desiredMax = options.majorPxRange?.[1] ?? 120
+      const pxPerWorld = Math.min(pxPerWorldX, pxPerWorldY)
+      let majorPx = effectiveMajorSpacing * pxPerWorld
+
+      while (majorPx < desiredMin) {
+        effectiveMajorSpacing *= 10
+        majorPx *= 10
+      }
+      while (majorPx > desiredMax) {
+        effectiveMajorSpacing /= 10
+        majorPx /= 10
+      }
+      minorSpacing = effectiveMajorSpacing / Math.max(1, minorPerMajor)
+    }
+
     const minorSpacingPx = Math.min(
       minorSpacing * pxPerWorldX,
       minorSpacing * pxPerWorldY
     )
     const majorSpacingPx = Math.min(
-      majorSpacing * pxPerWorldX,
-      majorSpacing * pxPerWorldY
+      effectiveMajorSpacing * pxPerWorldX,
+      effectiveMajorSpacing * pxPerWorldY
     )
 
-    // If major grid would be too dense on screen, hide the grid entirely
-    if (majorSpacingPx < this.minMajorGridPixelSpacing) {
-      this.visible = false
-      return
-    }
+    let effectiveMinorSpacing = minorSpacing
     this.visible = true
+    if (options.fixedSizeGrid) {
+      // If major grid would be too dense on screen, hide the grid entirely
+      if (majorSpacingPx < this.minMajorGridPixelSpacing) {
+        this.visible = false
+        return
+      }
 
-    // If minors are too small, collapse to majors only by using major spacing
-    const effectiveMinorSpacing =
-      minorSpacingPx < this.minMinorGridPixelSpacing
-        ? majorSpacing
-        : minorSpacing
+      // If minors are too small, collapse to majors only by using major spacing
+      if (minorSpacingPx < this.minMinorGridPixelSpacing) {
+        effectiveMinorSpacing = effectiveMajorSpacing
+      }
+    }
 
     const verticalLines =
       Math.ceil(worldViewportWidth / effectiveMinorSpacing) + 2
@@ -186,7 +209,7 @@ export class InfiniteGridRenderer extends LineSegments {
     material.uniforms.worldToScreenX.value = worldToScreenX
     material.uniforms.worldToScreenY.value = worldToScreenY
     material.uniforms.minorSpacing.value = effectiveMinorSpacing
-    material.uniforms.majorSpacing.value = majorSpacing
+    material.uniforms.majorSpacing.value = effectiveMajorSpacing
     material.uniforms.viewportPx.value = [viewportWidthPx, viewportHeightPx]
 
     // Optional theme-based colors

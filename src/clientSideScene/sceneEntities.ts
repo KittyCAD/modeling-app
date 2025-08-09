@@ -480,7 +480,12 @@ export class SceneEntities {
           minorGridsPerMajor,
           viewportSize.x,
           viewportSize.y,
-          { majorColor, minorColor }
+          {
+            majorColor,
+            minorColor,
+            fixedSizeGrid: settings.modeling.fixedSizeGrid.current,
+            majorPxRange: [40, 120],
+          }
         )
       }
     } else {
