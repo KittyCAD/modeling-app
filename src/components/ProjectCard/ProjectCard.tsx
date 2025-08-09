@@ -12,6 +12,7 @@ import { PATHS } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
 import { reportRejection } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
+import { fsManager } from '@src/lang/std/fileSystemManager'
 
 function ProjectCard({
   project,
@@ -58,12 +59,12 @@ function ProjectCard({
     }
 
     async function setupImageUrl() {
-      const projectImagePath = window.electron.path.join(
+      const projectImagePath = fsManager.path.join(
         project.path,
         PROJECT_IMAGE_NAME
       )
-      if (await window.electron.exists(projectImagePath)) {
-        const imageData = await window.electron.readFile(projectImagePath)
+      if (await fsManager.exists(projectImagePath)) {
+        const imageData = await fsManager.readFile(projectImagePath)
         const blob = new Blob([imageData], { type: 'image/png' })
         const imageUrl = URL.createObjectURL(blob)
 

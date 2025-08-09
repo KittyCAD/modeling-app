@@ -1,6 +1,7 @@
+import type { IElectronAPI } from '@root/interface'
+import { fsManager } from '@src/lang/std/fileSystemManager'
 import { relevantFileExtensions } from '@src/lang/wasmUtils'
 import { FILE_EXT, INDEX_IDENTIFIER, MAX_PADDING } from '@src/lib/constants'
-import { isDesktop } from '@src/lib/isDesktop'
 import type { FileEntry } from '@src/lib/project'
 
 export const isHidden = (fileOrDir: FileEntry) =>
@@ -111,7 +112,7 @@ function getPaddedIdentifierRegExp() {
 }
 
 export async function getSettingsFolderPaths(projectPath?: string) {
-  const user = isDesktop() ? await window.electron.getPath('appData') : '/'
+  const user = window.electron ? await window.electron.getPath('appData') : '/'
   const project = projectPath !== undefined ? projectPath : undefined
 
   return {
@@ -123,28 +124,30 @@ export async function getSettingsFolderPaths(projectPath?: string) {
 /**
  * Get the next available file name by appending a hyphen and number to the end of the name
  */
-export function getNextFileName({
+export async function getNextFileName({
+  electron: _electron,
   entryName,
   baseDir,
 }: {
+  electron: IElectronAPI
   entryName: string
   baseDir: string
 }) {
   // Preserve the extension in case of a relevant but foreign file
-  let extension = window.electron.path.extname(entryName)
+  let extension = fsManager.path.extname(entryName)
   if (!relevantFileExtensions().includes(extension.replace('.', ''))) {
     extension = FILE_EXT
   }
 
   // Remove any existing index from the name before adding a new one
   let createdName = entryName.replace(extension, '') + extension
-  let createdPath = window.electron.path.join(baseDir, createdName)
+  let createdPath = fsManager.path.join(baseDir, createdName)
   let i = 1
-  while (window.electron.exists(createdPath)) {
+  while (await fsManager.exists(createdPath)) {
     const matchOnIndexAndExtension = new RegExp(`(-\\d+)?(${extension})?$`)
     createdName =
       entryName.replace(matchOnIndexAndExtension, '') + `-${i}` + extension
-    createdPath = window.electron.path.join(baseDir, createdName)
+    createdPath = fsManager.path.join(baseDir, createdName)
     i++
   }
   return {
@@ -157,18 +160,20 @@ export function getNextFileName({
  * Get the next available directory name by appending a hyphen and number to the end of the name
  */
 export function getNextDirName({
+  electron,
   entryName,
   baseDir,
 }: {
+  electron: IElectronAPI
   entryName: string
   baseDir: string
 }) {
   let createdName = entryName
-  let createdPath = window.electron.path.join(baseDir, createdName)
+  let createdPath = electron.path.join(baseDir, createdName)
   let i = 1
-  while (window.electron.exists(createdPath)) {
+  while (electron.exists(createdPath)) {
     createdName = entryName.replace(/-\d+$/, '') + `-${i}`
-    createdPath = window.electron.path.join(baseDir, createdName)
+    createdPath = electron.path.join(baseDir, createdName)
     i++
   }
   return {

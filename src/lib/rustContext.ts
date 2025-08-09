@@ -11,7 +11,7 @@ import { BSON } from 'bson'
 
 import type { Models } from '@kittycad/lib/dist/types/src'
 import type { EngineCommandManager } from '@src/lang/std/engineConnection'
-import { fileSystemManager } from '@src/lang/std/fileSystemManager'
+import { projectFsManager } from '@src/lang/std/fileSystemManager'
 import type { ExecState } from '@src/lang/wasm'
 import { errFromErrWithOutputs, execStateFromRust } from '@src/lang/wasm'
 import { initPromise } from '@src/lang/wasmUtils'
@@ -62,7 +62,7 @@ export default class RustContext {
     // resolve if you don't await it.
     const ctxInstance = await new this.rustInstance.Context(
       this.engineCommandManager,
-      fileSystemManager
+      projectFsManager
     )
 
     return ctxInstance

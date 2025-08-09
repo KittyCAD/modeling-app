@@ -78,7 +78,7 @@ export class CoreDumpManager {
 
   // Get the os information.
   getOsInfo(): string {
-    if (this.isDesktop()) {
+    if (window.electron) {
       const osinfo: OsInfo = {
         platform: window.electron.platform ?? null,
         arch: window.electron.arch ?? null,

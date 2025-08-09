@@ -162,13 +162,18 @@ export const authMachine = setup({
 })
 
 async function getUser(input: { token?: string }) {
-  if (isDesktop()) {
+  if (window.electron) {
     const environment =
-      (await readEnvironmentFile()) || env().VITE_KITTYCAD_BASE_DOMAIN || ''
+      (await readEnvironmentFile(window.electron)) ||
+      env().VITE_KITTYCAD_BASE_DOMAIN ||
+      ''
     updateEnvironment(environment)
 
     // Update the pool
-    const cachedPool = await readEnvironmentConfigurationPool(environment)
+    const cachedPool = await readEnvironmentConfigurationPool(
+      window.electron,
+      environment
+    )
     updateEnvironmentPool(environment, cachedPool)
   }
 
@@ -260,8 +265,11 @@ async function getAndSyncStoredToken(input: {
   const inputToken = input.token && input.token !== '' ? input.token : ''
   const cookieToken = getCookie(COOKIE_NAME)
   const fileToken =
-    isDesktop() && environmentName
-      ? await readEnvironmentConfigurationToken(environmentName)
+    window.electron && environmentName
+      ? await readEnvironmentConfigurationToken(
+          window.electron,
+          environmentName
+        )
       : ''
   const token = inputToken || cookieToken || fileToken
 
@@ -277,10 +285,14 @@ async function getAndSyncStoredToken(input: {
   // If you found a token
   if (token) {
     // Write it to disk to sync it for desktop!
-    if (isDesktop()) {
+    if (window.electron) {
       // has just logged in, update storage
       if (environmentName)
-        await writeEnvironmentConfigurationToken(environmentName, token)
+        await writeEnvironmentConfigurationToken(
+          window.electron,
+          environmentName,
+          token
+        )
     }
     return token
   }
@@ -306,12 +318,12 @@ async function logout() {
 async function logoutEnvironment(requestedDomain?: string) {
   // TODO: 7/10/2025 Remove this months from now, we want to clear the localStorage of the key.
   localStorage.removeItem(TOKEN_PERSIST_KEY)
-  if (isDesktop()) {
+  if (window.electron) {
     try {
       const domain = requestedDomain || env().VITE_KITTYCAD_BASE_DOMAIN
       let token = ''
       if (domain) {
-        token = await readEnvironmentConfigurationToken(domain)
+        token = await readEnvironmentConfigurationToken(window.electron, domain)
       } else {
         return new Error('Unable to logout, cannot find domain')
       }
@@ -334,9 +346,9 @@ async function logoutEnvironment(requestedDomain?: string) {
         }
 
         if (domain) {
-          await writeEnvironmentConfigurationToken(domain, '')
+          await writeEnvironmentConfigurationToken(window.electron, domain, '')
         }
-        await writeEnvironmentFile('')
+        await writeEnvironmentFile(window.electron, '')
         return Promise.resolve(null)
       }
     } catch (e) {
@@ -355,10 +367,10 @@ async function logoutEnvironment(requestedDomain?: string) {
  * will not be sufficient.
  */
 async function logoutAllEnvironments() {
-  if (!isDesktop()) {
+  if (!window.electron) {
     return new Error('unimplemented for web')
   }
-  const environments = await listAllEnvironments()
+  const environments = await listAllEnvironments(window.electron)
   for (let i = 0; i < environments.length; i++) {
     const environmentName = environments[i]
     // Make the oauth2/token/revoke request per environment
