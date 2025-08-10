@@ -112,7 +112,7 @@ export class FileSystemManager {
   /**
    * Called from WASM.
    */
-  async getAllFiles(path: string): Promise<string[] | void> {
+  async getAllFiles(path: string): Promise<string[]> {
     // Using local file system only works from desktop.
     if (!this._fs) {
       return Promise.reject(new Error('No polyfill found for this function'))
