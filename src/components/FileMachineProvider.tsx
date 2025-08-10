@@ -24,7 +24,6 @@ import {
 } from '@src/lib/constants'
 import { getProjectInfo } from '@src/lib/desktop'
 import { getNextDirName, getNextFileName } from '@src/lib/desktopFS'
-import { isDesktop } from '@src/lib/isDesktop'
 import { kclCommands } from '@src/lib/kclCommands'
 import { BROWSER_PATH, PATHS } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
@@ -154,8 +153,9 @@ export const FileMachineProvider = ({
       actors: {
         readFiles: fromPromise(async ({ input }) => {
           const newFiles =
-            (isDesktop() ? (await getProjectInfo(input.path)).children : []) ??
-            []
+            (window.electron
+              ? (await getProjectInfo(window.electron, input.path)).children
+              : []) ?? []
           return {
             ...input,
             children: newFiles,

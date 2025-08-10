@@ -118,7 +118,7 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
         if (projectDirectoryPath === NO_PROJECT_DIRECTORY) {
           return []
         }
-        await mkdirOrNOOP(projectDirectoryPath)
+        await mkdirOrNOOP(window.electron, projectDirectoryPath)
         // Gotcha: readdir will list all folders at this project directory even if you do not have readwrite access on the directory path
         const entries = await window.electron.readdir(projectDirectoryPath)
         const { value: canReadWriteProjectDirectory } =
@@ -140,7 +140,10 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           if (!isDirectory) {
             continue
           }
-          const project: Project = await getProjectInfo(projectPath)
+          const project: Project = await getProjectInfo(
+            window.electron,
+            projectPath
+          )
           if (
             project.kcl_file_count === 0 &&
             project.readWriteAccess &&
@@ -205,6 +208,7 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
         }
 
         await renameProjectDirectory(
+          window.electron,
           window.electron.path.join(
             input.context.projectDirectoryPath,
             projectName

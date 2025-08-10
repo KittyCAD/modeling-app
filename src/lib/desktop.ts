@@ -33,6 +33,7 @@ import { withAPIBaseURL } from '@src/lib/withBaseURL'
 import type { IElectronAPI } from '@root/interface'
 
 export async function renameProjectDirectory(
+  _electron: IElectronAPI,
   projectPath: string,
   newName: string
 ): Promise<string> {
@@ -49,7 +50,10 @@ export async function renameProjectDirectory(
   }
 
   // Make sure the new name does not exist.
-  const newPath = fsManager.path.join(fsManager.path.dirname(projectPath), newName)
+  const newPath = fsManager.path.join(
+    fsManager.path.dirname(projectPath),
+    newName
+  )
   try {
     await fsManager.stat(newPath)
     // If we get here it means the stat succeeded and there's a file already
@@ -70,6 +74,7 @@ export async function renameProjectDirectory(
 }
 
 export async function ensureProjectDirectoryExists(
+  _electron: IElectronAPI,
   config: DeepPartial<Configuration>
 ): Promise<string | undefined> {
   const projectDir = config.settings?.project?.directory
@@ -88,7 +93,10 @@ export async function ensureProjectDirectoryExists(
   return projectDir
 }
 
-export async function mkdirOrNOOP(directoryPath: string) {
+export async function mkdirOrNOOP(
+  _electron: IElectronAPI,
+  directoryPath: string
+) {
   try {
     await fsManager.stat(directoryPath)
   } catch (e) {
@@ -112,7 +120,7 @@ export async function createNewProjectDirectory(
   }
 
   if (err(configuration)) return Promise.reject(configuration)
-  const mainDir = await ensureProjectDirectoryExists(configuration)
+  const mainDir = await ensureProjectDirectoryExists(electron, configuration)
 
   if (!projectName) {
     return Promise.reject('Project name cannot be empty.')
@@ -185,7 +193,7 @@ export async function listProjects(
   }
 
   if (err(configuration) || !configuration) return Promise.reject(configuration)
-  const projectDir = await ensureProjectDirectoryExists(configuration)
+  const projectDir = await ensureProjectDirectoryExists(electron, configuration)
   const projects = []
   if (!projectDir) return Promise.reject(new Error('projectDir was falsey'))
 
@@ -210,7 +218,7 @@ export async function listProjects(
       continue
     }
 
-    const project = await getProjectInfo(projectPath)
+    const project = await getProjectInfo(electron, projectPath)
 
     if (
       project.kcl_file_count === 0 &&
@@ -228,19 +236,17 @@ export async function listProjects(
 }
 
 const collectAllFilesRecursiveFrom = async (
+  electron: IElectronAPI,
   path: string,
   canReadWritePath: boolean,
   fileExtensionsForFilter: string[]
 ) => {
   const isRelevantFile = (filename: string): boolean =>
     fileExtensionsForFilter.some((ext) => filename.endsWith('.' + ext))
-  if (!window?.electron) {
-    return Promise.reject(new Error('No filesystem found'))
-  }
 
   // Make sure the filesystem object exists.
   try {
-    await window.electron.stat(path)
+    await electron.stat(path)
   } catch (e) {
     if (e === 'ENOENT') {
       return Promise.reject(new Error(`Directory ${path} does not exist`))
@@ -248,12 +254,12 @@ const collectAllFilesRecursiveFrom = async (
   }
 
   // Make sure the path is a directory.
-  const isPathDir = await window.electron.statIsDirectory(path)
+  const isPathDir = await electron.statIsDirectory(path)
   if (!isPathDir) {
     return Promise.reject(new Error(`Path ${path} is not a directory`))
   }
 
-  const name = window.electron.path.basename(path)
+  const name = electron.path.basename(path)
 
   let entry: FileEntry = {
     name: name,
@@ -268,7 +274,7 @@ const collectAllFilesRecursiveFrom = async (
 
   const children = []
 
-  const entries = await window.electron.readdir(path)
+  const entries = await electron.readdir(path)
 
   // Sort all entries so files come first and directories last
   // so a top-most KCL file is returned first.
@@ -288,11 +294,12 @@ const collectAllFilesRecursiveFrom = async (
       continue
     }
 
-    const ePath = window.electron.path.join(path, e)
-    const isEDir = await window.electron.statIsDirectory(ePath)
+    const ePath = electron.path.join(path, e)
+    const isEDir = await electron.statIsDirectory(ePath)
 
     if (isEDir) {
       const subChildren = await collectAllFilesRecursiveFrom(
+        electron,
         ePath,
         canReadWritePath,
         fileExtensionsForFilter
@@ -319,39 +326,33 @@ const collectAllFilesRecursiveFrom = async (
 }
 
 export async function getDefaultKclFileForDir(
+  electron: IElectronAPI,
   projectDir: string,
   file: FileEntry
 ) {
-  if (!window?.electron) {
-    return Promise.reject(new Error('No filesystem found'))
-  }
-
   // Make sure the dir is a directory.
-  const isFileEntryDir = await window.electron.statIsDirectory(projectDir)
+  const isFileEntryDir = await electron.statIsDirectory(projectDir)
   if (!isFileEntryDir) {
     return Promise.reject(new Error(`Path ${projectDir} is not a directory`))
   }
 
-  let defaultFilePath = window.electron.path.join(
-    projectDir,
-    PROJECT_ENTRYPOINT
-  )
+  let defaultFilePath = electron.path.join(projectDir, PROJECT_ENTRYPOINT)
   try {
-    await window.electron.stat(defaultFilePath)
+    await electron.stat(defaultFilePath)
   } catch (e) {
     if (e === 'ENOENT') {
       // Find a kcl file in the directory.
       if (file.children) {
         for (let entry of file.children) {
           if (entry.name.endsWith('.kcl')) {
-            return window.electron.path.join(projectDir, entry.name)
+            return electron.path.join(projectDir, entry.name)
           } else if ((entry.children?.length ?? 0) > 0) {
             // Recursively find a kcl file in the directory.
-            return getDefaultKclFileForDir(entry.path, entry)
+            return getDefaultKclFileForDir(electron, entry.path, entry)
           }
         }
         // If we didn't find a kcl file, create one.
-        await window.electron.writeFile(defaultFilePath, '')
+        await electron.writeFile(defaultFilePath, '')
         return defaultFilePath
       }
     }
@@ -395,15 +396,14 @@ const directoryCount = (file: FileEntry) => {
   return count
 }
 
-export async function getProjectInfo(projectPath: string): Promise<Project> {
-  if (!window?.electron) {
-    return Promise.reject(new Error('No filesystem found'))
-  }
-
+export async function getProjectInfo(
+  electron: IElectronAPI,
+  projectPath: string
+): Promise<Project> {
   // Check the directory.
   let metadata
   try {
-    metadata = await window.electron.stat(projectPath)
+    metadata = await electron.stat(projectPath)
   } catch (e) {
     if (e === 'ENOENT') {
       return Promise.reject(
@@ -413,7 +413,7 @@ export async function getProjectInfo(projectPath: string): Promise<Project> {
   }
 
   // Make sure it is a directory.
-  const projectPathIsDir = await window.electron.statIsDirectory(projectPath)
+  const projectPathIsDir = await electron.statIsDirectory(projectPath)
 
   if (!projectPathIsDir) {
     return Promise.reject(
@@ -423,11 +423,12 @@ export async function getProjectInfo(projectPath: string): Promise<Project> {
 
   // Detect the projectPath has read write permission
   const { value: canReadWriteProjectPath } =
-    await window.electron.canReadWriteDirectory(projectPath)
+    await electron.canReadWriteDirectory(projectPath)
 
   const fileExtensionsForFilter = relevantFileExtensions()
   // Return walked early if canReadWriteProjectPath is false
   let walked = await collectAllFilesRecursiveFrom(
+    electron,
     projectPath,
     canReadWriteProjectPath,
     fileExtensionsForFilter
@@ -437,7 +438,7 @@ export async function getProjectInfo(projectPath: string): Promise<Project> {
   let default_file = ''
   if (canReadWriteProjectPath) {
     // Create the default main.kcl file only if the project path has read write permissions
-    default_file = await getDefaultKclFileForDir(projectPath, walked)
+    default_file = await getDefaultKclFileForDir(electron, projectPath, walked)
   }
 
   let project = {
