@@ -1,4 +1,5 @@
 // Polyfill window.electron fs functions as needed when in a nodejs context
+// (INTENDED FOR VITEST SHENANIGANS.)
 
 import type { IElectronAPI } from '@root/interface'
 import type {
@@ -20,7 +21,6 @@ export interface IFs {
   writeFile: IElectronAPI['writeFile']
 }
 
-// (INTENDED FOR VITEST SHENANIGANS.)
 let testNodeFs
 if (process.env.NODE_ENV === 'test' && process.env.VITEST) {
   const fs = require('node:fs/promises')
