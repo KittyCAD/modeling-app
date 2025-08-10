@@ -33,7 +33,7 @@ import { withAPIBaseURL } from '@src/lib/withBaseURL'
 import type { IElectronAPI } from '@root/interface'
 
 export async function renameProjectDirectory(
-  _electron: IElectronAPI,
+  electron: IElectronAPI,
   projectPath: string,
   newName: string
 ): Promise<string> {
@@ -66,7 +66,7 @@ export async function renameProjectDirectory(
   } catch (e) {
     // Otherwise if it failed and the failure is "it doesn't exist" then rename it!
     if (e === 'ENOENT') {
-      await fsManager.rename(projectPath, newPath)
+      await electron.rename(projectPath, newPath)
       return newPath
     }
   }

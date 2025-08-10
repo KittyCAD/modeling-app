@@ -16,7 +16,6 @@ export interface IFs {
   mkdir: IElectronAPI['mkdir']
   readdir: (path: string) => Promise<string[]>
   readFile: IElectronAPI['readFile']
-  rename: (oldPath: string, newPath: string) => Promise<void>
   stat: (path: string) => Promise<ReturnType<IElectronAPI['stat']>>
   writeFile: IElectronAPI['writeFile']
 }
@@ -148,17 +147,6 @@ export class FileSystemManager {
 
     const filePath = this.join(this.dir, path)
     return this._fs.mkdir(filePath, options)
-  }
-
-  async rename(oldPath: string, newPath: string): Promise<void> {
-    // Using local file system only works from desktop and nodejs
-    if (!this._fs) {
-      return Promise.reject(new Error('No polyfill found for this function'))
-    }
-
-    const oldFilePath = this.join(this.dir, oldPath)
-    const newFilePath = this.join(this.dir, newPath)
-    return this._fs.rename(oldFilePath, newFilePath)
   }
 
   async stat(path: string): Promise<ReturnType<IElectronAPI['stat']>> {
