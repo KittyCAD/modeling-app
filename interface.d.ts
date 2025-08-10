@@ -47,12 +47,14 @@ export interface IElectronAPI {
   writeFile: (
     path: string,
     data: string | Uint8Array
-  ) => ReturnType<fs.writeFile>
-  readdir: (path: string) => ReturnType<fs.readdir>
-  exists: (path: string) => ReturnType<fs.exists>
+  ) => ReturnType<typeof fs.writeFile>
+  readdir: (path: string) => Promise<string[]>
+  // This is synchronous.
+  exists: (path: string) => boolean
   getPath: (name: string) => Promise<string>
   rm: typeof fs.rm
-  stat: (path: string) => ReturnType<fs.stat>
+  // TODO: Use a real return type.
+  stat: (path: string) => Promise<any>
   statIsDirectory: (path: string) => Promise<boolean>
   canReadWriteDirectory: (
     path: string
