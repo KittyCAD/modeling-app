@@ -42,7 +42,7 @@ export async function renameProjectDirectory(
   }
 
   try {
-    await fsManager.stat(projectPath)
+    await electron.stat(projectPath)
   } catch (e) {
     if (e === 'ENOENT') {
       return Promise.reject(new Error(`Path ${projectPath} is not a directory`))
@@ -55,7 +55,7 @@ export async function renameProjectDirectory(
     newName
   )
   try {
-    await fsManager.stat(newPath)
+    await electron.stat(newPath)
     // If we get here it means the stat succeeded and there's a file already
     // with the same name...
     return Promise.reject(
@@ -83,7 +83,7 @@ export async function ensureProjectDirectoryExists(
     return Promise.reject(new Error('projectDir is falsey'))
   }
   try {
-    await fsManager.stat(projectDir)
+    await electron.stat(projectDir)
   } catch (e) {
     if (e === 'ENOENT') {
       await electron.mkdir(projectDir, { recursive: true })
@@ -98,7 +98,7 @@ export async function mkdirOrNOOP(
   directoryPath: string
 ) {
   try {
-    await fsManager.stat(directoryPath)
+    await electron.stat(directoryPath)
   } catch (e) {
     if (e === 'ENOENT') {
       await electron.mkdir(directoryPath, { recursive: true })
@@ -132,7 +132,7 @@ export async function createNewProjectDirectory(
   const projectDir = fsManager.path.join(mainDir, projectName)
 
   try {
-    await fsManager.stat(projectDir)
+    await electron.stat(projectDir)
   } catch (e) {
     if (e === 'ENOENT') {
       await electron.mkdir(projectDir, { recursive: true })
@@ -152,7 +152,7 @@ export async function createNewProjectDirectory(
   await fsManager.writeFile(projectFile, codeToWrite)
   let metadata: FileMetadata | null = null
   try {
-    metadata = await fsManager.stat(projectFile)
+    metadata = await electron.stat(projectFile)
   } catch (e) {
     if (e === 'ENOENT') {
       console.error('File does not exist')
@@ -512,7 +512,7 @@ export const getAppSettingsFilePath = async (electron: IElectronAPI) => {
     : fsManager.path.resolve(appConfig, getAppFolderName(electron))
 
   try {
-    await fsManager.stat(fullPath)
+    await electron.stat(fullPath)
   } catch (e) {
     // File/path doesn't exist
     if (e === 'ENOENT') {
@@ -626,7 +626,7 @@ const getProjectSettingsFilePath = async (
   projectPath: string
 ) => {
   try {
-    await fsManager.stat(projectPath)
+    await electron.stat(projectPath)
   } catch (e) {
     if (e === 'ENOENT') {
       await electron.mkdir(projectPath, { recursive: true })
@@ -656,7 +656,7 @@ export const readProjectSettingsFile = async (
 
   // Check if this file exists.
   try {
-    await fsManager.stat(settingsPath)
+    await electron.stat(settingsPath)
   } catch (e) {
     if (e === 'ENOENT') {
       // Return the default configuration.

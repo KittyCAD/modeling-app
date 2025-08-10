@@ -130,15 +130,6 @@ export class FileSystemManager {
       })
   }
 
-  async stat(path: string): Promise<ReturnType<IElectronAPI['stat']>> {
-    // Using local file system only works from desktop.
-    if (!this._fs) {
-      return Promise.reject(new Error('No polyfill found for this function'))
-    }
-
-    return await this._fs.stat(this.join(this.dir, path))
-  }
-
   async writeFile(path: string, data: string | Uint8Array): Promise<void> {
     // Using local file system only works from desktop and nodejs
     if (!this._fs) {
