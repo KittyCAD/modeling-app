@@ -11,7 +11,6 @@ export interface IFs {
   readdir: (path: string) => Promise<string[]>
   readFile: IElectronAPI['readFile']
   stat: (path: string) => Promise<ReturnType<IElectronAPI['stat']>>
-  writeFile: IElectronAPI['writeFile']
 }
 
 let testNodeFs
@@ -128,16 +127,6 @@ export class FileSystemManager {
       .then((files: string[]) => {
         return files.map((filePath) => filePath)
       })
-  }
-
-  async writeFile(path: string, data: string | Uint8Array): Promise<void> {
-    // Using local file system only works from desktop and nodejs
-    if (!this._fs) {
-      return Promise.reject(new Error('No polyfill found for this function'))
-    }
-
-    const filePath = this.join(this.dir, path)
-    await this._fs.writeFile(filePath, data)
   }
 }
 

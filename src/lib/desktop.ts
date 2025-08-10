@@ -149,7 +149,7 @@ export async function createNewProjectDirectory(
     configuration?.settings?.modeling?.base_unit ?? DEFAULT_DEFAULT_LENGTH_UNIT
   )
   if (err(codeToWrite)) return Promise.reject(codeToWrite)
-  await fsManager.writeFile(projectFile, codeToWrite)
+  await electron.writeFile(projectFile, codeToWrite)
   let metadata: FileMetadata | null = null
   try {
     metadata = await electron.stat(projectFile)
@@ -480,7 +480,7 @@ export async function writeProjectSettingsFile(
     projectPath
   )
   if (err(tomlStr)) return Promise.reject(tomlStr)
-  return fsManager.writeFile(projectSettingsFilePath, tomlStr)
+  return electron.writeFile(projectSettingsFilePath, tomlStr)
 }
 
 // Important for saving settings.
@@ -742,7 +742,7 @@ export const writeAppSettingsFile = async (
 ) => {
   const appSettingsFilePath = await getAppSettingsFilePath(electron)
   if (err(tomlStr)) return Promise.reject(tomlStr)
-  return fsManager.writeFile(appSettingsFilePath, tomlStr)
+  return electron.writeFile(appSettingsFilePath, tomlStr)
 }
 
 export const readEnvironmentConfigurationFile = async (
