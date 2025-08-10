@@ -2,18 +2,12 @@
 // (INTENDED FOR VITEST SHENANIGANS.)
 
 import type { IElectronAPI } from '@root/interface'
-import type {
-  MakeDirectoryOptions,
-  Mode,
-  ObjectEncodingOptions,
-  OpenMode,
-} from 'fs'
+import type { ObjectEncodingOptions, OpenMode } from 'fs'
 import type { Abortable } from 'events'
 // @ts-ignore This lib doesn't have types.
 import * as nodePath from '@chainner/node-path'
 
 export interface IFs {
-  mkdir: IElectronAPI['mkdir']
   readdir: (path: string) => Promise<string[]>
   readFile: IElectronAPI['readFile']
   stat: (path: string) => Promise<ReturnType<IElectronAPI['stat']>>
@@ -134,19 +128,6 @@ export class FileSystemManager {
       .then((files: string[]) => {
         return files.map((filePath) => filePath)
       })
-  }
-
-  async mkdir(
-    path: string,
-    options?: Mode | MakeDirectoryOptions | null
-  ): Promise<string | undefined> {
-    // Using local file system only works from desktop and nodejs
-    if (!this._fs) {
-      return Promise.reject(new Error('No polyfill found for this function'))
-    }
-
-    const filePath = this.join(this.dir, path)
-    return this._fs.mkdir(filePath, options)
   }
 
   async stat(path: string): Promise<ReturnType<IElectronAPI['stat']>> {

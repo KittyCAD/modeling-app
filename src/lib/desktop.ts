@@ -74,7 +74,7 @@ export async function renameProjectDirectory(
 }
 
 export async function ensureProjectDirectoryExists(
-  _electron: IElectronAPI,
+  electron: IElectronAPI,
   config: DeepPartial<Configuration>
 ): Promise<string | undefined> {
   const projectDir = config.settings?.project?.directory
@@ -86,7 +86,7 @@ export async function ensureProjectDirectoryExists(
     await fsManager.stat(projectDir)
   } catch (e) {
     if (e === 'ENOENT') {
-      await fsManager.mkdir(projectDir, { recursive: true })
+      await electron.mkdir(projectDir, { recursive: true })
     }
   }
 
@@ -94,14 +94,14 @@ export async function ensureProjectDirectoryExists(
 }
 
 export async function mkdirOrNOOP(
-  _electron: IElectronAPI,
+  electron: IElectronAPI,
   directoryPath: string
 ) {
   try {
     await fsManager.stat(directoryPath)
   } catch (e) {
     if (e === 'ENOENT') {
-      await fsManager.mkdir(directoryPath, { recursive: true })
+      await electron.mkdir(directoryPath, { recursive: true })
     }
   }
 
@@ -135,7 +135,7 @@ export async function createNewProjectDirectory(
     await fsManager.stat(projectDir)
   } catch (e) {
     if (e === 'ENOENT') {
-      await fsManager.mkdir(projectDir, { recursive: true })
+      await electron.mkdir(projectDir, { recursive: true })
     }
   }
 
@@ -471,11 +471,14 @@ export async function getProjectInfo(
 
 // Write project settings file.
 export async function writeProjectSettingsFile(
-  _electron: IElectronAPI,
+  electron: IElectronAPI,
   projectPath: string,
   tomlStr: string
 ): Promise<void> {
-  const projectSettingsFilePath = await getProjectSettingsFilePath(projectPath)
+  const projectSettingsFilePath = await getProjectSettingsFilePath(
+    electron,
+    projectPath
+  )
   if (err(tomlStr)) return Promise.reject(tomlStr)
   return fsManager.writeFile(projectSettingsFilePath, tomlStr)
 }
@@ -513,7 +516,7 @@ export const getAppSettingsFilePath = async (electron: IElectronAPI) => {
   } catch (e) {
     // File/path doesn't exist
     if (e === 'ENOENT') {
-      await fsManager.mkdir(fullPath, { recursive: true })
+      await electron.mkdir(fullPath, { recursive: true })
     }
   }
   return fsManager.path.join(fullPath, SETTINGS_FILE_NAME)
@@ -618,12 +621,15 @@ const getRawTelemetryFilePath = async (electron: IElectronAPI) => {
   return electron.path.join(fullPath, TELEMETRY_RAW_FILE_NAME)
 }
 
-const getProjectSettingsFilePath = async (projectPath: string) => {
+const getProjectSettingsFilePath = async (
+  electron: IElectronAPI,
+  projectPath: string
+) => {
   try {
     await fsManager.stat(projectPath)
   } catch (e) {
     if (e === 'ENOENT') {
-      await fsManager.mkdir(projectPath, { recursive: true })
+      await electron.mkdir(projectPath, { recursive: true })
     }
   }
   return fsManager.path.join(projectPath, PROJECT_SETTINGS_FILE_NAME)
@@ -643,10 +649,10 @@ export const getInitialDefaultDir = async (electron: IElectronAPI) => {
 }
 
 export const readProjectSettingsFile = async (
-  _electron: IElectronAPI,
+  electron: IElectronAPI,
   projectPath: string
 ): Promise<DeepPartial<ProjectConfiguration>> => {
-  let settingsPath = await getProjectSettingsFilePath(projectPath)
+  let settingsPath = await getProjectSettingsFilePath(electron, projectPath)
 
   // Check if this file exists.
   try {
