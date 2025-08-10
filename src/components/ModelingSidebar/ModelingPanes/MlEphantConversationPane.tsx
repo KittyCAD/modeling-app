@@ -28,7 +28,8 @@ export const MlEphantConversationPane = () => {
   const { context: contextModeling, theProject } = useModelingContext()
   const { file: loaderFile } = useLoaderData() as IndexLoaderData
 
-  const [hasCheckedForMlConversations, setHasCheckedForMlConversations] = useState(false)
+  const [hasCheckedForMlConversations, setHasCheckedForMlConversations] =
+    useState(false)
 
   const actor = mlEphantManagerActor.getSnapshot()
   const promptsBelongingToProject = useSelector(mlEphantManagerActor, () => {
@@ -73,16 +74,21 @@ export const MlEphantConversationPane = () => {
       }
 
       // We can now reliably use the mlConversations data.
+      // THIS IS WHERE PROJECT IDS ARE MAPPED TO CONVERSATION IDS.
       if (snapshot.value === 'idle' && hasCheckedForMlConversations) {
-        debugger
-        const conversationId = snapshot.context.mlConversations.get(settings.meta.id.project)
+        // debugger
+        const conversationId = snapshot.context.mlConversations.get(
+          settings.meta.id.project
+        )
         if (!conversationId) {
-          console.warn('There was no conversation id associated with this project')
+          console.warn(
+            'There was no conversation id associated with this project'
+          )
           return
         }
 
         mlEphantManagerActor.send({
-          type: MlEphantManagerTransitions.GetConversationBelongingToProject,
+          type: MlEphantManagerTransitions.GetPromptsBelongingToConversation,
           conversationId,
         })
       }

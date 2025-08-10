@@ -26,7 +26,7 @@ export enum MlEphantManagerStates {
 export enum MlEphantManagerTransitions {
   SetApiToken = 'set-api-token',
   GetConversationsThatCreatedProjects = 'get-conversations-that-created-projects',
-  GetConversationBelongingToProject = 'get-prompts-belonging-to-project',
+  GetPromptsBelongingToProject = 'get-prompts-belonging-to-project',
   GetPromptsPendingStatuses = 'get-prompts-pending-statuses',
   PromptEditModel = 'prompt-edit-model',
   PromptCreateModel = 'prompt-create-model',
@@ -44,7 +44,7 @@ export type MlEphantManagerEvents =
       type: MlEphantManagerTransitions.GetConversationsThatCreatedProjects
     }
   | {
-      type: MlEphantManagerTransitions.GetConversationBelongingToProject
+      type: MlEphantManagerTransitions.GetPromptsBelongingToProject
       conversationId: string
     }
   | {
@@ -78,7 +78,7 @@ export interface MlEphantManagerContext {
 
   conversations: IResponseMlConversations
 
-  // A cache of prompts
+  // The full prompt information that ids map to.
   promptsPool: Map<Prompt['id'], Prompt>
 
   // Project related data is reset on project changes.
@@ -93,6 +93,9 @@ export interface MlEphantManagerContext {
   promptsInProgressToCompleted: {
     promptsBelongingToProject: Set<Prompt['id']>
   }
+
+  // The current conversation being interacted with.
+  conversationId?: string
 
   // Metadata per prompt that needs to be kept track separately.
   promptsMeta: Map<
@@ -160,10 +163,10 @@ export const mlEphantManagerMachine = setup({
           },
         }
       }),
-    [MlEphantManagerTransitions.GetConversationBelongingToProject]:
-      fromPromise(async function (args: {
+    [MlEphantManagerTransitions.GetPromptsBelongingToProject]: fromPromise(
+      async function (args: {
         input: {
-          event: XSEvent<MlEphantManagerTransitions.GetConversationBelongingToProject>
+          event: XSEvent<MlEphantManagerTransitions.GetPromptsBelongingToProject>
           context: MlEphantManagerContext
         }
       }): Promise<Partial<MlEphantManagerContext>> {
@@ -172,10 +175,11 @@ export const mlEphantManagerMachine = setup({
           return Promise.reject('missing api token')
 
         // fetch(somes hit here) and we're almost there
-        console.log("HI", args)
+        console.log('HI', args)
 
-        return { }
-      }),
+        return {}
+      }
+    ),
     [MlEphantManagerTransitions.PromptCreateModel]: fromPromise(
       async function (args: {
         system: any
@@ -188,40 +192,30 @@ export const mlEphantManagerMachine = setup({
         if (context.apiTokenMlephant === undefined)
           return Promise.reject('missing api token')
 
-        return new Promise((resolve) => {
-          setTimeout(() => {
-            // const response = await submitTextToCadCreateRequest(
-            // prompt,
-            // projectName,
-            // token
-            // )
-            // project.conversationId = response.conversationId
-            // writeToFile(project)
+        const response = await submitTextToCadCreateRequest(
+          args.input.event.prompt,
+          args.input.event.projectName,
+          context.apiTokenMlephant,
+        )
 
-            const result = generateFakeSubmittedPrompt({
-              prompt: args.input.event.prompt,
-            })
-            result.status = 'in_progress'
+        const promptsPool = context.promptsPool
+        const promptsBelongingToProject = new Set(
+          context.promptsBelongingToProject
+        )
+        const promptsMeta = new Map(context.promptsMeta)
 
-            const promptsPool = context.promptsPool
-            const promptsBelongingToProject = new Set(
-              context.promptsBelongingToProject
-            )
-            const promptsMeta = new Map(context.promptsMeta)
-
-            promptsPool.set(result.id, result)
-            promptsBelongingToProject.add(result.id)
-            promptsMeta.set(result.id, {
-              type: PromptType.Create,
-              project: args.input.event.projectForPromptOutput,
-            })
-
-            resolve({
-              promptsBelongingToProject,
-              promptsMeta,
-            })
-          }, 1000)
+        promptsPool.set(result.id, result)
+        promptsBelongingToProject.add(result.id)
+        promptsMeta.set(result.id, {
+          type: PromptType.Create,
+          project: args.input.event.projectForPromptOutput,
         })
+
+        return {
+          conversationId: response.conversation_id,
+          promptsBelongingToProject,
+          promptsMeta,
+        }
       }
     ),
     [MlEphantManagerTransitions.PromptEditModel]: fromPromise(
@@ -382,7 +376,7 @@ export const mlEphantManagerMachine = setup({
               // states of the same name.
               on: transitions([
                 MlEphantManagerTransitions.GetConversationsThatCreatedProjects,
-                MlEphantManagerTransitions.GetConversationBelongingToProject,
+                MlEphantManagerTransitions.GetPromptsBelongingToProject,
                 MlEphantManagerTransitions.PromptCreateModel,
                 MlEphantManagerTransitions.PromptEditModel,
               ]),
@@ -400,14 +394,14 @@ export const mlEphantManagerMachine = setup({
                 onError: { target: S.Await },
               },
             },
-            [MlEphantManagerTransitions.GetConversationBelongingToProject]: {
+            [MlEphantManagerTransitions.GetPromptsBelongingToProject]: {
               invoke: {
                 input: (args) => ({
                   event:
-                    args.event as XSEvent<MlEphantManagerTransitions.GetConversationBelongingToProject>,
+                    args.event as XSEvent<MlEphantManagerTransitions.GetPromptsBelongingToProject>,
                   context: args.context,
                 }),
-                src: MlEphantManagerTransitions.GetConversationBelongingToProject,
+                src: MlEphantManagerTransitions.GetPromptsBelongingToProject,
                 onDone: {
                   target: S.Await,
                   actions: assign(({ event }) => event.output),

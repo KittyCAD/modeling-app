@@ -243,6 +243,7 @@ export function SystemIOMachineLogicListenerDesktop() {
     )
   }
 
+  // Watch MlEphant for any responses that require files to be created.
   useEffect(() => {
     const subscription = mlEphantManagerActor.subscribe((next) => {
       if (
@@ -321,6 +322,20 @@ export function SystemIOMachineLogicListenerDesktop() {
       subscription.unsubscribe()
     }
   }, [])
+
+
+  // Save the conversation id for the project id if necessary.
+  useEffect(() => {
+    const subscription = mlEphantManagerActor.subscribe((next) => {
+      // TODO CONTINUE HERE CHECK IF ML CONVO IS RECORDED
+      console.log(settings)
+      console.log(next)
+    })
+
+    return () => {
+      subscription.unsubscribe()
+    }
+  }, [settings])
 
   useGlobalProjectNavigation()
   useGlobalFileNavigation()
