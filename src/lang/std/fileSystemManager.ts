@@ -146,7 +146,7 @@ export class FileSystemManager {
     }
 
     const filePath = this.join(this.dir, path)
-    this._fs.writeFile(filePath, data)
+    await this._fs.writeFile(filePath, data)
   }
 }
 
