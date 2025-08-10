@@ -61,7 +61,7 @@ export interface IElectronAPI {
   mkdir: typeof fs.mkdir
   join: typeof path.join
   sep: typeof path.sep
-  rename: (prev: string, next: string) => ReturnType<fs.rename>
+  rename: (prev: string, next: string) => ReturnType<typeof fs.rename>
   packageJson: {
     name: string
   }

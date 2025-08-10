@@ -508,7 +508,7 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           }
         }
 
-        window.electron.rename(oldPath, newPath)
+        await window.electron.rename(oldPath, newPath)
 
         return {
           message: `Successfully renamed folder "${folderName}" to "${requestedFolderName}"`,
@@ -577,7 +577,7 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           }
         }
 
-        window.electron.rename(oldPath, newPath)
+        await window.electron.rename(oldPath, newPath)
 
         return {
           message: `Successfully renamed file "${fileNameWithExtension}" to "${requestedFileNameWithExtension}"`,
