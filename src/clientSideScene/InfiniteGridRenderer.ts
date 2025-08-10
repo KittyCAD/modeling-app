@@ -94,6 +94,7 @@ export class InfiniteGridRenderer extends LineSegments {
 
   constructor() {
     const geometry = new BufferGeometry()
+    geometry.name = 'InfiniteGridGeometry'
 
     const material = new RawShaderMaterial({
       glslVersion: GLSL3,
@@ -117,9 +118,13 @@ export class InfiniteGridRenderer extends LineSegments {
     })
 
     super(geometry, material)
+    this.name = 'InfiniteGridRenderer'
 
     this.renderOrder = -10
     this.frustumCulled = false
+    this.raycast = () => {
+      // Disable raycasting: there are no vertices so it wouldn't work anyway, we also don't want to pick the grid
+    }
   }
 
   update(
