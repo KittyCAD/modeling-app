@@ -43,14 +43,14 @@ fn init_handlebars() -> Result<handlebars::Handlebars<'static>> {
              _: &mut handlebars::RenderContext,
              out: &mut dyn handlebars::Output|
              -> handlebars::HelperResult {
-                if let Some(param) = h.param(0) {
-                    if let Some(string) = param.value().as_str() {
-                        // Only get the first part before the newline.
-                        // This is to prevent the YAML from breaking.
-                        let string = string.split('\n').next().unwrap_or("");
-                        out.write(string)?;
-                        return Ok(());
-                    }
+                if let Some(param) = h.param(0)
+                    && let Some(string) = param.value().as_str()
+                {
+                    // Only get the first part before the newline.
+                    // This is to prevent the YAML from breaking.
+                    let string = string.split('\n').next().unwrap_or("");
+                    out.write(string)?;
+                    return Ok(());
                 }
                 out.write("")?;
                 Ok(())
@@ -362,10 +362,11 @@ fn generate_function_from_kcl(
 fn docs_for_type(ty: &str, kcl_std: &ModData) -> Option<String> {
     let key = if ty.starts_with("number") { "number" } else { ty };
 
-    if !key.contains('|') && !key.contains('[') {
-        if let Some(data) = kcl_std.find_by_name(key) {
-            return data.summary().cloned();
-        }
+    if !key.contains('|')
+        && !key.contains('[')
+        && let Some(data) = kcl_std.find_by_name(key)
+    {
+        return data.summary().cloned();
     }
 
     None

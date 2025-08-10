@@ -1283,41 +1283,6 @@ pub enum Path {
     },
 }
 
-/// What kind of path is this?
-#[derive(Display)]
-enum PathType {
-    ToPoint,
-    Base,
-    TangentialArc,
-    TangentialArcTo,
-    Circle,
-    CircleThreePoint,
-    Horizontal,
-    AngledLineTo,
-    Arc,
-    Ellipse,
-    Conic,
-}
-
-impl From<&Path> for PathType {
-    fn from(value: &Path) -> Self {
-        match value {
-            Path::ToPoint { .. } => Self::ToPoint,
-            Path::TangentialArcTo { .. } => Self::TangentialArcTo,
-            Path::TangentialArc { .. } => Self::TangentialArc,
-            Path::Circle { .. } => Self::Circle,
-            Path::CircleThreePoint { .. } => Self::CircleThreePoint,
-            Path::Horizontal { .. } => Self::Horizontal,
-            Path::AngledLineTo { .. } => Self::AngledLineTo,
-            Path::Base { .. } => Self::Base,
-            Path::Arc { .. } => Self::Arc,
-            Path::ArcThreePoint { .. } => Self::Arc,
-            Path::Ellipse { .. } => Self::Ellipse,
-            Path::Conic { .. } => Self::Conic,
-        }
-    }
-}
-
 impl Path {
     pub fn get_id(&self) -> uuid::Uuid {
         match self {

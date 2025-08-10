@@ -1598,18 +1598,18 @@ fn function_body(i: &mut TokenSlice) -> ModalResult<Node<Program>> {
         // The separator whitespace might be important:
         // if it has an empty line, it should be considered a noncode token, because the user
         // deliberately put an empty line there. We should track this and preserve it.
-        if let Ok(ref ws_token) = found_ws {
-            if ws_token.value.contains("\n\n") || ws_token.value.contains("\n\r\n") {
-                things_within_body.push(WithinFunction::NonCode(Node::new(
-                    NonCodeNode {
-                        value: NonCodeValue::NewLine,
-                        digest: None,
-                    },
-                    ws_token.start,
-                    ws_token.end,
-                    ws_token.module_id,
-                )));
-            }
+        if let Ok(ref ws_token) = found_ws
+            && (ws_token.value.contains("\n\n") || ws_token.value.contains("\n\r\n"))
+        {
+            things_within_body.push(WithinFunction::NonCode(Node::new(
+                NonCodeNode {
+                    value: NonCodeValue::NewLine,
+                    digest: None,
+                },
+                ws_token.start,
+                ws_token.end,
+                ws_token.module_id,
+            )));
         }
 
         match (found_ws, last_match_was_empty_line) {
@@ -1863,16 +1863,14 @@ pub(super) fn import_stmt(i: &mut TokenSlice) -> ModalResult<BoxNode<ImportState
     if let ImportSelector::None {
         alias: ref mut selector_alias,
     } = selector
-    {
-        if let Some(alias) = opt(preceded(
+        && let Some(alias) = opt(preceded(
             (whitespace, import_as_keyword, whitespace),
             identifier.context(expected("an identifier to alias the import")),
         ))
         .parse_next(i)?
-        {
-            end = alias.end;
-            *selector_alias = Some(alias);
-        }
+    {
+        end = alias.end;
+        *selector_alias = Some(alias);
     }
 
     let path_string = match path.inner.value {
