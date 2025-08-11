@@ -253,7 +253,7 @@ describe('Explorer utils.ts', () => {
           '/my/really/cool/path/project-001/parts-old',
           '/my/really/cool/path/project-001/parts-new',
         ],
-        // Attemping this file path
+        // attempting this file path
         '/my/really/cool/path/project-001/parts-copy-1-copy-1',
         identifier,
         false

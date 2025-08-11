@@ -321,7 +321,7 @@ export const getUniqueCopyPath = (
 /**
  * Give two file entries of a src and a target and the children within those locations
  * this will generate a new src and target for the SystemIO otherwise it will be null
- * Handles the logic for determing folder into folder etc... and the unique make collision
+ * Handles the logic for determining folder into folder etc... and the unique make collision
  * detection based on the array of possible collisions
  */
 export const copyPasteSourceAndTarget = (
