@@ -187,7 +187,6 @@ test.describe('Testing segment overlays', () => {
           shouldNormalise: true,
         })
       }
-    test.setTimeout(120000)
     test('for a line segment', async ({
       page,
       editor,
@@ -361,7 +360,7 @@ part001 = startSketchOn(XZ)
         localStorage.setItem('disableAxis', 'true')
       })
       const u = await getUtils(page)
-      await page.setBodyDimensions({ width: 1200, height: 500 })
+      await page.setBodyDimensions({ width: 1500, height: 500 })
 
       await homePage.goToModelingScene()
       await scene.connectionEstablished()
