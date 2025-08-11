@@ -9,12 +9,12 @@ rust-version = "1.88"
 authors = ["Jess Frazelle", "Adam Chalmers", "KittyCAD, Inc"]
 keywords = ["kcl", "KittyCAD", "CAD"]
 exclude = [
-    "tests/*",
-    "benches/*",
-    "examples/*",
-    "e2e/*",
-    "bindings/*",
-    "fuzz/*",
+  "tests/*",
+  "benches/*",
+  "examples/*",
+  "e2e/*",
+  "bindings/*",
+  "fuzz/*",
 ]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -36,7 +36,7 @@ dhat-heap = ["dep:dhat"]
 # This is used for editor extensions that use the lsp server.
 disable-println = []
 engine = []
-pyo3 = ["dep:pyo3"]
+pyo3 = ["dep:pyo3", "dep:pyo3-stub-gen"]
 # Helper functions also used in benchmarks.
 lsp-test-util = []
 tabled = ["dep:tabled"]

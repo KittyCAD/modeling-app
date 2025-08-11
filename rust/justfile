@@ -77,7 +77,6 @@ publish-kcl version:
 [working-directory: 'kcl-python-bindings']
 python-install-deps:
     @echo "🔧 Installing Python dependencies..."
-    uv sync --extra test --extra dev
     uv sync --extra test
     @echo "✅ Python dependencies installed successfully"
 
