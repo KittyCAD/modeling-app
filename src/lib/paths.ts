@@ -169,7 +169,9 @@ export function safeEncodeForRouterPaths(dynamicValue: string): string {
  * Works on all OS!
  */
 export function getStringAfterLastSeparator(path: string): string {
-  return path.split(window.electron.sep).pop() || ''
+  // Supports web and desktop runtime
+  const sep = window.electron?.sep || '/'
+  return path.split(sep).pop() || ''
 }
 
 /**

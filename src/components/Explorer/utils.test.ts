@@ -172,17 +172,6 @@ describe('Explorer utils.ts', () => {
     })
   })
   describe('copyPasteSourceAndTarget', () => {
-    // it('testing', () => {
-    //   const identifier = '-copy-'
-    //   const expected = '/my/really/cool/path/project-001/parts-copy-2'
-    //   const actual = getUniqueCopyPath([
-    //     '/my/really/cool/path/project-001/parts',
-    //     '/my/really/cool/path/project-001/parts-copy-1',
-    //     '/my/really/cool/path/project-001/parts-old',
-    //     '/my/really/cool/path/project-001/parts-new'
-    //   ], '/my/really/cool/path/project-001/parts-copy-1', identifier)
-    //   expect(actual).toBe(expected)
-    // })
     it('should copy folder to folder without collision as -copy-1', () => {
       const identifier = '-copy-'
       const expected = '/my/really/cool/path/project-001/parts-copy-1'
@@ -193,7 +182,8 @@ describe('Explorer utils.ts', () => {
           '/my/really/cool/path/project-001/parts-new',
         ],
         '/my/really/cool/path/project-001/parts',
-        identifier
+        identifier,
+        false
       )
       expect(actual).toBe(expected)
     })
@@ -208,7 +198,8 @@ describe('Explorer utils.ts', () => {
           '/my/really/cool/path/project-001/parts-new',
         ],
         '/my/really/cool/path/project-001/parts',
-        identifier
+        identifier,
+        false
       )
       expect(actual).toBe(expected)
     })
@@ -225,7 +216,8 @@ describe('Explorer utils.ts', () => {
           '/my/really/cool/path/project-001/parts-new',
         ],
         '/my/really/cool/path/project-001/parts',
-        identifier
+        identifier,
+        false
       )
       expect(actual).toBe(expected)
     })
@@ -242,9 +234,54 @@ describe('Explorer utils.ts', () => {
           '/my/really/cool/path/project-001/parts-new',
         ],
         '/my/really/cool/path/project-001/parts-copy-1-copy-1',
-        identifier
+        identifier,
+        false
       )
       expect(actual).toBe(expected)
+    })
+    it('should copy folder into folder with multiple -copy-1 prefixes but it is properly labelled', () => {
+      const identifier = '-copy-'
+      const expected = '/my/really/cool/path/project-001/parts-copy-1-copy-1-copy-1'
+      const actual = getUniqueCopyPath(
+        [
+          '/my/really/cool/path/project-001/parts',
+          // It is duplicated here thus adding the -copy-1 to the end
+          '/my/really/cool/path/project-001/parts-copy-1-copy-1',
+          '/my/really/cool/path/project-001/parts-copy-2',
+          '/my/really/cool/path/project-001/parts-copy-5',
+          '/my/really/cool/path/project-001/parts-old',
+          '/my/really/cool/path/project-001/parts-new',
+        ],
+        // Attemping this file path
+        '/my/really/cool/path/project-001/parts-copy-1-copy-1',
+        identifier,
+        false
+      )
+      expect(actual).toBe(expected)
+    })
+    describe('File and folder combinations no collisions', () => {
+      it('should copy folder into folder', () => {
+        const identifier = '-copy-'
+        const expected = '/root/project-001/parts'
+        const actual = getUniqueCopyPath(
+          [],
+          '/root/project-001/parts',
+          identifier,
+          false
+        )
+        expect(actual).toBe(expected)
+      })
+      it('should copy file into folder', () => {
+        const identifier = '-copy-'
+        const expected = '/root/project-001/parts/main.kcl'
+        const actual = getUniqueCopyPath(
+          [],
+          '/root/project-001/parts/main.kcl',
+          identifier,
+          false
+        )
+        expect(actual).toBe(expected)
+      })
     })
   })
 })

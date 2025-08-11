@@ -303,6 +303,12 @@ export const getUniqueCopyPath = (
   return possibleCopyPath + identifer + possibleNumber
 }
 
+/**
+ * Give two file entries of a src and a target and the children within those locations
+ * this will generate a new src and target for the SystemIO otherwise it will be null
+ * Handles the logic for determing folder into folder etc... and the unique make collision
+ * detection based on the array of possible collisions
+ */
 export const copyPasteSourceAndTarget = (
   possibleCollisions: string[],
   possibleParentCollisions: string[],
@@ -310,24 +316,26 @@ export const copyPasteSourceAndTarget = (
   target: FileEntry,
   identifier: string
 ): { src: string; target: string } | null => {
+
   let possibleCopyPath = ''
   let collisionsToCheck = possibleCollisions
-  // folder folder but same src and target
+  // Copy a folder to the same folder
   if (src.children && target.children && src.path === target.path) {
-    // parent folder of the target aka they will be siblings not nested
+    // Make them siblings, copy itself to the same level
     possibleCopyPath = joinOSPaths(getParentAbsolutePath(src.path), src.name)
     collisionsToCheck = possibleParentCollisions
   } else if (src.children && target.children) {
-    // folder copying into folder
+    // Copy a folder into another folder
     possibleCopyPath = joinOSPaths(target.path, src.name)
   } else if (src.children && target.children === null) {
-    // folder to file
+    // Copying a folder to a file would make them siblings
     possibleCopyPath = joinOSPaths(getParentAbsolutePath(src.path), src.name)
     collisionsToCheck = possibleParentCollisions
   } else if (src.children === null && target.children) {
-    // File into folder
+    // Copying a file into a folder
     possibleCopyPath = joinOSPaths(target.path, src.name)
   } else if (src.children === null && target.children === null) {
+    // Copying a file into a file would make them siblings
     possibleCopyPath = joinOSPaths(getParentAbsolutePath(src.path), src.name)
     collisionsToCheck = possibleParentCollisions
   }
