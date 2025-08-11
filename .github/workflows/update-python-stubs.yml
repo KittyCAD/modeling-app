@@ -33,7 +33,7 @@ jobs:
       - name: Install toolchain + maturin
         uses: PyO3/maturin-action@v1 # Rust + Python + maturin
         with:
-          working-directory: rust
+          working-directory: rust/kcl-python-bindings
       - uses: taiki-e/install-action@just
       - name: Generate stubs
         run: |
