@@ -213,7 +213,7 @@ export const isRowFake = (
 export const getUniqueCopyPath = (
   possibleCollisions: string[],
   possibleCopyPath: string,
-  identifer: string,
+  identifier: string,
   isFile: boolean
 ) => {
   const formattedPossibleCollisions = possibleCollisions.map((path) => {
@@ -260,7 +260,7 @@ export const getUniqueCopyPath = (
       const folderOrFileName = getStringAfterLastSeparator(matchedPath)
       matchedPath = matchedPath.replace(fileName, '')
       // need to do regex matching... this is gonna be bricked otherwise
-      const split = matchedPath.split(identifer)
+      const split = matchedPath.split(identifier)
       if (split.length === 1) {
         if (folderOrFileName === fileName) {
           return '0'
@@ -301,12 +301,12 @@ export const getUniqueCopyPath = (
     /**
      * Just because a name will start with the same name like
      * rigg.kcl and you are trying to copy rig.kcl into that folder it should not become
-     * rig<identifer>1.kcl
+     * rig<identifier>1.kcl
      */
     const uniqueBits =
       takenNumbers.length === 0 && possibleNumber === 1
         ? ''
-        : identifer + possibleNumber
+        : identifier + possibleNumber
     return joinOSPaths(
       getParentAbsolutePath(possibleCopyPath),
       fileName + uniqueBits + extWithPeriod
@@ -315,7 +315,7 @@ export const getUniqueCopyPath = (
 
   return takenNumbers.length === 0
     ? possibleCopyPath
-    : possibleCopyPath + identifer + possibleNumber
+    : possibleCopyPath + identifier + possibleNumber
 }
 
 /**
