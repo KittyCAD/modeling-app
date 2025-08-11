@@ -294,12 +294,17 @@ export const getUniqueCopyPath = (
       fileNameAndExtension.lastIndexOf('.')
     )
     const extWithPeriod = getEXTWithPeriod(possibleCopyPath) || ''
+    /**
+     * Just because a name will start with the same name like
+     * rigg.kcl and you are trying to copy rig.kcl into that folder it should not become
+     * rig<identifer>1.kcl
+     */
+    const uniqueBits = takenNumbers.length === 0 && possibleNumber === 1 ? '' : identifer + possibleNumber
     return joinOSPaths(
       getParentAbsolutePath(possibleCopyPath),
-      fileName + identifer + possibleNumber + extWithPeriod
+      fileName + uniqueBits + extWithPeriod
     )
   }
-
   return possibleCopyPath + identifer + possibleNumber
 }
 
@@ -316,7 +321,6 @@ export const copyPasteSourceAndTarget = (
   target: FileEntry,
   identifier: string
 ): { src: string; target: string } | null => {
-
   let possibleCopyPath = ''
   let collisionsToCheck = possibleCollisions
   // Copy a folder to the same folder

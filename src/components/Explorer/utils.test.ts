@@ -259,7 +259,7 @@ describe('Explorer utils.ts', () => {
       )
       expect(actual).toBe(expected)
     })
-    describe('File and folder combinations no collisions', () => {
+    describe('extra scenarios', () => {
       it('should copy folder into folder', () => {
         const identifier = '-copy-'
         const expected = '/root/project-001/parts'
@@ -278,7 +278,43 @@ describe('Explorer utils.ts', () => {
           [],
           '/root/project-001/parts/main.kcl',
           identifier,
-          false
+          true
+        )
+        expect(actual).toBe(expected)
+      })
+      it('should copy file into folder with many files but no collision', () => {
+        const identifier = '-copy-'
+        const expected = '/root/project-001/parts/main.kcl'
+        const actual = getUniqueCopyPath(
+          [
+            '/root/project-001/parts/a.kcl',
+            '/root/project-001/parts/b.kcl',
+            '/root/project-001/parts/c.kcl',
+            '/root/project-001/parts/d.kcl',
+          ],
+          '/root/project-001/parts/main.kcl',
+          identifier,
+          true
+        )
+        expect(actual).toBe(expected)
+      })
+      it('should copy file into folder and they have similar name but no collision', () => {
+        const identifier = '-copy-'
+        const expected = '/root/project-001/parts/rig.kcl'
+        const actual = getUniqueCopyPath(
+          [
+            '/root/project-001/parts/r.kcl',
+            '/root/project-001/parts/ri.kcl',
+            '/root/project-001/parts/rigg.kcl',
+            '/root/project-001/parts/riggg.kcl',
+            '/root/project-001/parts/r',
+            '/root/project-001/parts/ri',
+            '/root/project-001/parts/rigg',
+            '/root/project-001/parts/riggg',
+          ],
+          '/root/project-001/parts/rig.kcl',
+          identifier,
+          true
         )
         expect(actual).toBe(expected)
       })
