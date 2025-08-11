@@ -353,14 +353,12 @@ part001 = startSketchOn(XZ)
   |> angledLineThatIntersects(angle = 4.14, intersectTag = a, offset = 9)
   |> tangentialArc(endAbsolute = [3.14 + 13, 1.14])
   |> arc(interiorAbsolute = [16.25, 5.12], endAbsolute = [21.61, 4.15])
-  |> arc(angleStart = 40.27, angleEnd = -38.05, radius = 9.03)
-
-      `
+  |> arc(angleStart = 40.27, angleEnd = -38.05, radius = 9.03)`
         )
         localStorage.setItem('disableAxis', 'true')
       })
       const u = await getUtils(page)
-      await page.setBodyDimensions({ width: 1500, height: 500 })
+      await page.setBodyDimensions({ width: 1500, height: 800 })
 
       await homePage.goToModelingScene()
       await scene.connectionEstablished()
