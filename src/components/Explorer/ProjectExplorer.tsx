@@ -10,7 +10,6 @@ import {
   STARTING_INDEX_TO_SELECT,
   FILE_PLACEHOLDER_NAME,
   FOLDER_PLACEHOLDER_NAME,
-  getUniqueCopyPasteMaxIndex,
   copyPasteSourceAndTarget,
 } from '@src/components/Explorer/utils'
 import type {
@@ -342,7 +341,7 @@ export const ProjectExplorer = ({
             }
             setIsCopying(true)
           },
-          onPaste: async () => {
+          onPaste: () => {
             if (copyToClipBoard.current) {
               const absoluteParentPath = getParentAbsolutePath(row.path)
               const parentIndex = flattenedData.findIndex((entry) => {
@@ -350,7 +349,7 @@ export const ProjectExplorer = ({
               })
               const parent =
                 parentIndex >= 0 ? flattenedData[parentIndex] : project
-              const { src, target } = copyPasteSourceAndTarget(
+              const result = copyPasteSourceAndTarget(
                 row.children?.map((child) => child.path) || [],
                 parent.children?.map((child) => child.path) || [],
                 copyToClipBoard.current,
@@ -361,13 +360,17 @@ export const ProjectExplorer = ({
                 },
                 '-copy-'
               )
-              systemIOActor.send({
-                type: SystemIOMachineEvents.copyRecursive,
-                data: {
-                  src,
-                  target,
-                },
-              })
+              if (result && result.src && result.target) {
+                systemIOActor.send({
+                  type: SystemIOMachineEvents.copyRecursive,
+                  data: {
+                    src: result.src,
+                    target: result.target,
+                  },
+                })
+              } else {
+                console.error('failed to copy and paste the result is null')
+              }
             }
 
             // clear the path

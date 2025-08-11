@@ -4,14 +4,12 @@ import { sortFilesAndDirectories } from '@src/lib/desktopFS'
 import type { FileEntry } from '@src/lib/project'
 import {
   desktopSafePathJoin,
-  getEXTNoPeriod,
   getEXTWithPeriod,
   getParentAbsolutePath,
   getStringAfterLastSeparator,
   joinOSPaths,
 } from '@src/lib/paths'
 import type { SubmitByPressOrBlur } from '@src/lib/types'
-import { getAbsoluteValue } from 'html2canvas-pro/dist/types/css/types/length-percentage'
 
 /**
  * Remap FileEntry data into another data structure for the Project Explorer
