@@ -152,7 +152,18 @@ export class CameraControls {
   private _lastWheelEvent: WheelEvent | null = null
 
   // Converts a screen space coordinate to world space
-  private screenToWorld(x: number, y: number): Vector3 {
+  private screenToWorld(event: WheelEvent): Vector3 {
+    let x = event.offsetX
+    let y = event.offsetY
+    if (event.target !== this.domElement) {
+      // There are some divs over the canvas that change event.offsetX, so manually calculate it
+      // We could just do this by default but the getBoundingClientRect() can be expensive
+      const rect = this.domElement.getBoundingClientRect()
+      // CSS pixels relative to the canvas box:
+      x = event.clientX - rect.left
+      y = event.clientY - rect.top
+    }
+
     // Ideally we would have access to renderer drawingbuffer size
     const width = this.domElement.clientWidth
     const height = this.domElement.clientHeight
@@ -600,7 +611,7 @@ export class CameraControls {
       this.pendingZoom = 1 + (deltaY / window.devicePixelRatio) * 0.001
 
       // Record the world point under the mouse so we can keep it anchored during zoom
-      this._zoomFocus = this.screenToWorld(event.offsetX, event.offsetY)
+      this._zoomFocus = this.screenToWorld(event)
       this._lastWheelEvent = event
     } else {
       // This case will get handled when we add pan and rotate using Apple trackpad.
@@ -825,10 +836,7 @@ export class CameraControls {
         if (this._zoomFocus && this._lastWheelEvent) {
           this.camera.updateProjectionMatrix()
           // The new focused point in world space after zooming
-          const newFocus = this.screenToWorld(
-            this._lastWheelEvent.offsetX,
-            this._lastWheelEvent.offsetY
-          )
+          const newFocus = this.screenToWorld(this._lastWheelEvent)
           const diff = this._zoomFocus.clone().sub(newFocus)
           this.camera.position.add(diff)
           this.target.add(diff)
