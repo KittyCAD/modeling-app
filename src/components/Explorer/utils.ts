@@ -253,17 +253,25 @@ export const getUniqueCopyPath = (
 
   const takenNumberHash = new Map()
   const fileNameAndExtension = getStringAfterLastSeparator(possibleCopyPath)
+  const indexOfFileExt = fileNameAndExtension.lastIndexOf('.')
+  const endingSliceIndex = indexOfFileExt === -1 ? fileNameAndExtension.length : indexOfFileExt
   const fileName = fileNameAndExtension.slice(
     0,
-    fileNameAndExtension.lastIndexOf('.')
+    endingSliceIndex
   )
   const takenNumbers = matches
     .map((matchedPath) => {
+      const folderOrFileName = getStringAfterLastSeparator(matchedPath)
       matchedPath = matchedPath.replace(fileName, '')
       // need to do regex matching... this is gonna be bricked otherwise
       const split = matchedPath.split(identifer)
-      const last = split.pop() || ''
-      return last
+      if (split.length === 1) {
+        if (folderOrFileName === fileName) {
+          return '0'
+        }
+        return ''
+      }
+      return split[split.length-1]
     })
     .filter((last) => {
       if (!last) {
@@ -299,13 +307,17 @@ export const getUniqueCopyPath = (
      * rigg.kcl and you are trying to copy rig.kcl into that folder it should not become
      * rig<identifer>1.kcl
      */
-    const uniqueBits = takenNumbers.length === 0 && possibleNumber === 1 ? '' : identifer + possibleNumber
+    const uniqueBits =
+      takenNumbers.length === 0 && possibleNumber === 1
+        ? ''
+        : identifer + possibleNumber
     return joinOSPaths(
       getParentAbsolutePath(possibleCopyPath),
       fileName + uniqueBits + extWithPeriod
     )
   }
-  return possibleCopyPath + identifer + possibleNumber
+
+  return takenNumbers.length === 0  ? possibleCopyPath : possibleCopyPath + identifer + possibleNumber
 }
 
 /**

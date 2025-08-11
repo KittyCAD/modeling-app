@@ -241,7 +241,8 @@ describe('Explorer utils.ts', () => {
     })
     it('should copy folder into folder with multiple -copy-1 prefixes but it is properly labelled', () => {
       const identifier = '-copy-'
-      const expected = '/my/really/cool/path/project-001/parts-copy-1-copy-1-copy-1'
+      const expected =
+        '/my/really/cool/path/project-001/parts-copy-1-copy-1-copy-1'
       const actual = getUniqueCopyPath(
         [
           '/my/really/cool/path/project-001/parts',
@@ -315,6 +316,26 @@ describe('Explorer utils.ts', () => {
           '/root/project-001/parts/rig.kcl',
           identifier,
           true
+        )
+        expect(actual).toBe(expected)
+      })
+      it('should copy folder into folder and they have similar name but no collision', () => {
+        const identifier = '-copy-'
+        const expected = '/root/project-001/parts/rig'
+        const actual = getUniqueCopyPath(
+          [
+            '/root/project-001/parts/r',
+            '/root/project-001/parts/ri',
+            '/root/project-001/parts/rigg',
+            '/root/project-001/parts/riggg',
+            '/root/project-001/parts/r.kcl',
+            '/root/project-001/parts/ri.kcl',
+            '/root/project-001/parts/rigg.kcl',
+            '/root/project-001/parts/riggg.kcl',
+          ],
+          '/root/project-001/parts/rig',
+          identifier,
+          false
         )
         expect(actual).toBe(expected)
       })
