@@ -2085,8 +2085,6 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds"
 version = "0.2.130"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "363432fd3dafb83a2560d82fb13b56157f9fae732d20a281821e5e5324e6d9a7"
 dependencies = [
  "anyhow",
  "chrono",
@@ -2101,6 +2099,7 @@ dependencies = [
  "parse-display 0.9.1",
  "parse-display-derive 0.9.1",
  "pyo3",
+ "pyo3-stub-gen",
  "schemars",
  "serde",
  "serde_bytes",
@@ -2112,8 +2111,6 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds-macros"
 version = "0.1.12"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fb9bb1a594541b878adc1c8dcb821328774bf7aa09b65b104a206b1291a5235c"
 dependencies = [
  "kittycad-modeling-cmds-macros-impl",
  "proc-macro2",
@@ -2124,8 +2121,6 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds-macros-impl"
 version = "0.1.13"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fdb4ee23cc996aa2dca7584d410e8826e08161e1ac4335bb646d5ede33f37cb3"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -5426,3 +5421,7 @@ dependencies = [
  "cc",
  "pkg-config",
 ]
+
+[[patch.unused]]
+name = "kittycad-modeling-session"
+version = "0.1.5"

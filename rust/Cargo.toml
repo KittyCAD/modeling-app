@@ -1,16 +1,16 @@
 [workspace]
 resolver = "2"
 members = [
-    "kcl-bumper",
-    "kcl-derive-docs",
-    "kcl-directory-test-macro",
-    "kcl-language-server",
-    "kcl-language-server-release",
-    "kcl-lib",
-    "kcl-python-bindings",
-    "kcl-test-server",
-    "kcl-to-core",
-    "kcl-wasm-lib",
+  "kcl-bumper",
+  "kcl-derive-docs",
+  "kcl-directory-test-macro",
+  "kcl-language-server",
+  "kcl-language-server-release",
+  "kcl-lib",
+  "kcl-python-bindings",
+  "kcl-test-server",
+  "kcl-to-core",
+  "kcl-wasm-lib",
 ]
 
 [workspace.dependencies]
@@ -77,4 +77,4 @@ debug = "line-tables-only"
 #Example: how to point modeling-app at a different repo (e.g. a branch or a local clone)
 #[patch.crates-io]
 #kittycad-modeling-cmds = { path = "../../modeling-api/modeling-cmds" }
-#kittycad-modeling-session = { path = "../../../modeling-api/modeling-session" }
+#kittycad-modeling-session = { path = "../../modeling-api/modeling-session" }
