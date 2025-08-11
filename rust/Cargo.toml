@@ -1,16 +1,16 @@
 [workspace]
 resolver = "2"
 members = [
-  "kcl-bumper",
-  "kcl-derive-docs",
-  "kcl-directory-test-macro",
-  "kcl-language-server",
-  "kcl-language-server-release",
-  "kcl-lib",
-  "kcl-python-bindings",
-  "kcl-test-server",
-  "kcl-to-core",
-  "kcl-wasm-lib",
+    "kcl-bumper",
+    "kcl-derive-docs",
+    "kcl-directory-test-macro",
+    "kcl-language-server",
+    "kcl-language-server-release",
+    "kcl-lib",
+    "kcl-python-bindings",
+    "kcl-test-server",
+    "kcl-to-core",
+    "kcl-wasm-lib",
 ]
 
 [workspace.dependencies]
@@ -26,7 +26,7 @@ kittycad = { version = "0.3.37", default-features = false, features = [
   "js",
   "requests",
 ] }
-kittycad-modeling-cmds = { version = "0.2.130", features = [
+kittycad-modeling-cmds = { version = "0.2.131", features = [
   "ts-rs",
   "websocket",
 ] }
