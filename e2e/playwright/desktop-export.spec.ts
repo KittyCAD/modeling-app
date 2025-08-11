@@ -160,3 +160,102 @@ test(
     })
   }
 )
+
+test(
+  'DXF export works from feature tree sketch context menu',
+  { tag: ['@desktop', '@macos', '@windows', '@skipLocalEngine'] },
+  async ({ page, context, scene, tronApp, cmdBar, toolbar }, testInfo) => {
+    if (!tronApp) {
+      fail()
+    }
+
+    await context.folderSetupFn(async (dir) => {
+      const sketchDir = path.join(dir, 'sketch-project')
+      await fsp.mkdir(sketchDir, { recursive: true })
+      await fsp.writeFile(
+        path.join(sketchDir, 'main.kcl'),
+        `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [-18.26, 13.11])
+  |> line(end = [9.86, -32.02])
+  |> xLine(length = 18.11)
+  |> line(end = [11.44, 33.04])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = 5)`
+      )
+    })
+    await page.setBodyDimensions({ width: 1200, height: 500 })
+
+    // Open the project
+    const projectName = page.getByText(`sketch-project`)
+    await expect(projectName).toBeVisible()
+    await projectName.click()
+    await scene.settled(cmdBar)
+
+    // Expect zero errors in gutter
+    await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
+
+    // Close other panes and ensure only feature tree is open
+    const u = await getUtils(page)
+    await u.closeFilePanel()
+    await u.closeDebugPanel()
+    await u.closeKclCodePanel()
+
+    // Open the feature tree pane
+    await toolbar.openFeatureTreePane()
+
+    // Find the sketch operation in the feature tree
+    const sketchNode = page.getByText('sketch001').first()
+    await expect(sketchNode).toBeVisible()
+
+    // Right-click to open context menu
+    await sketchNode.click({ button: 'right' })
+
+    // Verify that "Export to DXF" option is present and click it
+    const dxfExportOption = page.getByTestId('context-menu-export-dxf')
+    await expect(dxfExportOption).toBeVisible()
+    await dxfExportOption.click()
+
+    // Look out for the loading toast message
+    const exportingToastMessage = page.getByText('Exporting sketch to DXF...')
+    await expect(exportingToastMessage).toBeVisible()
+
+    // Expect it to succeed - check for various error types
+    const errorToastMessage = page.getByText('Failed to export sketch to DXF')
+    const generalErrorToastMessage = page.getByText('Error while exporting')
+    const engineErrorToastMessage = page.getByText('Nothing to export')
+    await expect(errorToastMessage).not.toBeVisible()
+    await expect(generalErrorToastMessage).not.toBeVisible()
+    await expect(engineErrorToastMessage).not.toBeVisible()
+
+    const successToastMessage = page.getByText('DXF export completed [TEST]')
+    await page.waitForTimeout(1_000)
+    const count = await successToastMessage.count()
+    await expect(count).toBeGreaterThanOrEqual(1)
+    await expect(exportingToastMessage).not.toBeVisible()
+
+    // Check for the exported DXF file
+    const exportFileName = 'sketch.dxf'
+    const dxfFileFullPath = path.resolve(
+      getPlaywrightDownloadDir(tronApp.projectDirName),
+      exportFileName
+    )
+
+    await test.step('Check the DXF export size', async () => {
+      await expect
+        .poll(
+          async () => {
+            try {
+              const outputDxf = await fsp.readFile(dxfFileFullPath)
+              return outputDxf.byteLength
+            } catch (error: unknown) {
+              void error
+              return 0
+            }
+          },
+          { timeout: 15_000 }
+        )
+        .toBeGreaterThan(500) // DXF files should have meaningful content
+    })
+  }
+)
