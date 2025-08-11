@@ -29,15 +29,12 @@ class Discovered:
 
 class ExportFile:
     r"""
-    A file that was exported from the engine.
-    """
-    ...
-
-class ExportFile:
-    r"""
     A file to be exported to the client.
     """
-    ...
+    @property
+    def contents(self) -> builtins.list[builtins.int]: ...
+    @property
+    def name(self) -> builtins.str: ...
 
 class Finding:
     r"""
@@ -134,67 +131,100 @@ class Options:
     r"""
     Options for exporting glTF 2.0.
     """
-    ...
+    def __new__(cls) -> Options:
+        r"""
+        Set the options to their defaults.
+        """
 
 class Options:
     r"""
     Options for exporting PLY.
     """
-    ...
+    def __new__(cls) -> Options:
+        r"""
+        Set the options to their defaults.
+        """
 
 class Options:
     r"""
     Options for exporting FBX.
     """
-    ...
+    def __new__(cls) -> Options:
+        r"""
+        Set the options to their defaults.
+        """
 
 class Options:
     r"""
     Options for importing FBX.
     """
-    ...
+    def __new__(cls) -> Options:
+        r"""
+        Set the options to their defaults.
+        """
 
 class Options:
     r"""
     Options for importing glTF 2.0.
     """
-    ...
+    def __new__(cls) -> Options:
+        r"""
+        Set the options to their defaults.
+        """
 
 class Options:
     r"""
     Options for exporting STL.
     """
-    ...
+    def __new__(cls) -> Options:
+        r"""
+        Set the options to their defaults.
+        """
 
 class Options:
     r"""
     Options for importing OBJ.
     """
-    ...
+    def __new__(cls) -> Options:
+        r"""
+        Set the options to their defaults.
+        """
 
 class Options:
     r"""
     Options for importing PLY.
     """
-    ...
+    def __new__(cls) -> Options:
+        r"""
+        Set the options to their defaults.
+        """
 
 class Options:
     r"""
     Options for importing SolidWorks parts.
     """
-    ...
+    def __new__(cls) -> Options:
+        r"""
+        Set the options to their defaults.
+        """
 
 class Options:
     r"""
     Options for importing STEP format.
     """
-    ...
+    def __new__(cls) -> Options:
+        r"""
+        Set the options to their defaults.
+        """
 
 class Options:
     r"""
     Options for exporting OBJ.
     """
-    ...
+    def __new__(cls) -> Options:
+        r"""
+        Set the options to their defaults.
+        """
 
 class Options:
     r"""
@@ -206,16 +236,32 @@ class Options:
     r"""
     Options for exporting STEP format.
     """
-    ...
+    def __new__(cls) -> Options:
+        r"""
+        Set the options to their defaults.
+        """
 
 class Options:
     r"""
     Options for exporting DXF format.
     """
-    ...
+    def __new__(cls) -> Options:
+        r"""
+        Set the options to their defaults.
+        """
 
 class Point3d:
     ...
+
+class RawFile:
+    r"""
+    A raw file with unencoded contents to be passed over binary websockets.
+    When raw files come back for exports it is sent as binary/bson, not text/json.
+    """
+    @property
+    def contents(self) -> builtins.list[builtins.int]: ...
+    @property
+    def name(self) -> builtins.str: ...
 
 class SnapshotOptions:
     r"""
@@ -279,53 +325,6 @@ class FileExportFormat(Enum):
     
     This is a single binary with .glb extension.
     
-    This is better if you want a compressed format as opposed to the human readable glTF that lacks
-    compression.
-    """
-    Gltf = ...
-    r"""
-    glTF 2.0. Embedded glTF 2.0 (pretty printed).
-    
-    Single JSON file with .gltf extension binary data encoded as base64 data URIs.
-    
-    The JSON contents are pretty printed.
-    
-    It is human readable, single file, and you can view the diff easily in a
-    git commit.
-    """
-    Obj = ...
-    r"""
-    The OBJ file format. <https://en.wikipedia.org/wiki/Wavefront_.obj_file> It may or
-    may not have an an attached material (mtl // mtllib) within the file, but we
-    interact with it as if it does not.
-    """
-    Ply = ...
-    r"""
-    The PLY file format. <https://en.wikipedia.org/wiki/PLY_(file_format)>
-    """
-    Step = ...
-    r"""
-    The STEP file format. <https://en.wikipedia.org/wiki/ISO_10303-21>
-    """
-    Stl = ...
-    r"""
-    The STL file format. <https://en.wikipedia.org/wiki/STL_(file_format)>
-    """
-
-class FileExportFormat(Enum):
-    r"""
-    The valid types of output file formats.
-    """
-    Fbx = ...
-    r"""
-    Autodesk Filmbox (FBX) format. <https://en.wikipedia.org/wiki/FBX>
-    """
-    Glb = ...
-    r"""
-    Binary glTF 2.0.
-    
-    This is a single binary with .glb extension.
-    
     This is better if you want a compressed format as opposed to the human readable
     glTF that lacks compression.
     """
@@ -359,19 +358,6 @@ class FileExportFormat(Enum):
     Stl = ...
     r"""
     The STL file format. <https://en.wikipedia.org/wiki/STL_(file_format)>
-    """
-
-class ImageFormat(Enum):
-    r"""
-    The variety of image formats snapshots may be exported to.
-    """
-    Png = ...
-    r"""
-    .png format
-    """
-    Jpeg = ...
-    r"""
-    .jpeg format
     """
 
 class ImageFormat(Enum):
@@ -641,7 +627,7 @@ async def execute(path:builtins.str) -> None:
     Execute the kcl code from a file path.
     """
 
-async def execute_and_export(path:builtins.str, export_format:FileExportFormat) -> builtins.list[ExportFile]:
+async def execute_and_export(path:builtins.str, export_format:FileExportFormat) -> builtins.list[RawFile]:
     r"""
     Execute a kcl file and export it to a specific file format.
     """
@@ -658,7 +644,7 @@ async def execute_code(code:builtins.str) -> None:
     Execute the kcl code.
     """
 
-async def execute_code_and_export(code:builtins.str, export_format:FileExportFormat) -> builtins.list[ExportFile]:
+async def execute_code_and_export(code:builtins.str, export_format:FileExportFormat) -> builtins.list[RawFile]:
     r"""
     Execute the kcl code and export it to a specific file format.
     """
