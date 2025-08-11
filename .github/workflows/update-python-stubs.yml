@@ -37,6 +37,7 @@ jobs:
       - uses: taiki-e/install-action@just
       - name: Generate stubs
         run: |
+          cd rust
           just python-stubs
       - name: Check for diff
         id: git-status
