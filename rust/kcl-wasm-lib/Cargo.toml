@@ -10,6 +10,12 @@ publish = false
 crate-type = ["cdylib"]
 bench = false
 
+[features]
+dhat-heap = ["kcl-lib/dhat-heap"]
+
+[dependencies]
+typed-path = "0.11.0"
+
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 bson = { workspace = true, features = ["uuid-1", "chrono"] }
 console_error_panic_hook = { workspace = true }
@@ -35,22 +41,16 @@ wasm-streams = "0.4.2"
 [target.'cfg(target_arch = "wasm32")'.dependencies.web-sys]
 version = "0.3.76"
 features = [
-  "console",
-  "HtmlTextAreaElement",
-  "ReadableStream",
-  "WritableStream",
+    "console",
+    "HtmlTextAreaElement",
+    "ReadableStream",
+    "WritableStream",
 ]
-
-[features]
-dhat-heap = ["kcl-lib/dhat-heap"]
 
 [dev-dependencies]
 anyhow.workspace = true
 pretty_assertions = "1.4.1"
 wasm-bindgen-test = "0.3.50"
-
-[dependencies]
-typed-path = "0.11.0"
 
 # Local development only. Placeholder to speed up development cycle
 #[package.metadata.wasm-pack.profile.release]
