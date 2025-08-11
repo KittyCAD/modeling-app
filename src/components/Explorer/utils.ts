@@ -254,11 +254,9 @@ export const getUniqueCopyPath = (
   const takenNumberHash = new Map()
   const fileNameAndExtension = getStringAfterLastSeparator(possibleCopyPath)
   const indexOfFileExt = fileNameAndExtension.lastIndexOf('.')
-  const endingSliceIndex = indexOfFileExt === -1 ? fileNameAndExtension.length : indexOfFileExt
-  const fileName = fileNameAndExtension.slice(
-    0,
-    endingSliceIndex
-  )
+  const endingSliceIndex =
+    indexOfFileExt === -1 ? fileNameAndExtension.length : indexOfFileExt
+  const fileName = fileNameAndExtension.slice(0, endingSliceIndex)
   const takenNumbers = matches
     .map((matchedPath) => {
       const folderOrFileName = getStringAfterLastSeparator(matchedPath)
@@ -271,7 +269,7 @@ export const getUniqueCopyPath = (
         }
         return ''
       }
-      return split[split.length-1]
+      return split[split.length - 1]
     })
     .filter((last) => {
       if (!last) {
@@ -317,7 +315,9 @@ export const getUniqueCopyPath = (
     )
   }
 
-  return takenNumbers.length === 0  ? possibleCopyPath : possibleCopyPath + identifer + possibleNumber
+  return takenNumbers.length === 0
+    ? possibleCopyPath
+    : possibleCopyPath + identifer + possibleNumber
 }
 
 /**

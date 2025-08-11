@@ -379,6 +379,26 @@ describe('Explorer utils.ts', () => {
         )
         expect(actual).toBe(expected)
       })
+      it('should copy folder into folder and the folder name shows up in the path but no collision', () => {
+        const identifier = '-copy-'
+        const expected = '/root/project-001/dog/dog'
+        const actual = getUniqueCopyPath(
+          [
+            '/root/project-001/dog/d',
+            '/root/project-001/dog/do',
+            '/root/project-001/dog/dogg',
+            '/root/project-001/dog/doggg',
+            '/root/project-001/dog/d.kcl',
+            '/root/project-001/dog/do.kcl',
+            '/root/project-001/dog/dogg.kcl',
+            '/root/project-001/dog/doggg.kcl',
+          ],
+          '/root/project-001/dog/dog',
+          identifier,
+          false
+        )
+        expect(actual).toBe(expected)
+      })
     })
   })
 })
