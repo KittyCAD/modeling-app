@@ -12,6 +12,7 @@ pub struct Point3d {
     pub z: f32,
 }
 
+#[pyo3_stub_gen::derive::gen_stub_pymethods]
 #[pymethods]
 impl Point3d {
     #[new]
@@ -31,6 +32,7 @@ pub struct CameraLookAt {
     pub up: Point3d,
 }
 
+#[pyo3_stub_gen::derive::gen_stub_pymethods]
 #[pymethods]
 impl CameraLookAt {
     #[new]

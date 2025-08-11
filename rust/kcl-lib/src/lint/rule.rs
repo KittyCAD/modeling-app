@@ -65,6 +65,7 @@ impl Discovered {
 }
 
 #[cfg(feature = "pyo3")]
+#[pyo3_stub_gen::derive::gen_stub_pymethods]
 #[pyo3::pymethods]
 impl Discovered {
     #[getter]
@@ -156,6 +157,7 @@ impl Finding {
 }
 
 #[cfg(feature = "pyo3")]
+#[pyo3_stub_gen::derive::gen_stub_pymethods]
 #[pyo3::pymethods]
 impl Finding {
     #[getter]

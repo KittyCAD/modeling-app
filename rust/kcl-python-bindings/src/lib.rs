@@ -393,6 +393,7 @@ pub struct SnapshotOptions {
     pub padding: f32,
 }
 
+#[pyo3_stub_gen::derive::gen_stub_pymethods]
 #[pymethods]
 impl SnapshotOptions {
     #[new]
