@@ -400,5 +400,91 @@ describe('Explorer utils.ts', () => {
         expect(actual).toBe(expected)
       })
     })
+    describe('Files with different extensions', () => {
+      it('should copy file with .kcl without collision', () => {
+        const identifier = '-copy-'
+        const expected = '/root/project-001/parts/dog.kcl'
+        const actual = getUniqueCopyPath(
+          ['/root/project-001/parts/main.kcl'],
+          '/root/project-001/parts/dog.kcl',
+          identifier,
+          true
+        )
+        expect(actual).toBe(expected)
+      })
+      it('should copy file with .kcl with collision', () => {
+        const identifier = '-copy-'
+        const expected = '/root/project-001/parts/dog-copy-1.kcl'
+        const actual = getUniqueCopyPath(
+          ['/root/project-001/parts/dog.kcl'],
+          '/root/project-001/parts/dog-copy-1.kcl',
+          identifier,
+          true
+        )
+        expect(actual).toBe(expected)
+      })
+      it('should copy file with .gltf without collision', () => {
+        const identifier = '-copy-'
+        const expected = '/root/project-001/parts/dog.gltf'
+        const actual = getUniqueCopyPath(
+          ['/root/project-001/parts/main.gltf'],
+          '/root/project-001/parts/dog.gltf',
+          identifier,
+          true
+        )
+        expect(actual).toBe(expected)
+      })
+      it('should copy file with .gltf with collision', () => {
+        const identifier = '-copy-'
+        const expected = '/root/project-001/parts/dog-copy-1.gltf'
+        const actual = getUniqueCopyPath(
+          ['/root/project-001/parts/dog.gltf'],
+          '/root/project-001/parts/dog-copy-1.gltf',
+          identifier,
+          true
+        )
+        expect(actual).toBe(expected)
+      })
+    })
+    describe('with another identifier than -copy-', () => {
+      it('should copy file with .kcl without collision', () => {
+        const identifier = 'areallysmalldog'
+        const expected = '/root/project-001/parts/dog.kcl'
+        const actual = getUniqueCopyPath(
+          ['/root/project-001/parts/main.kcl'],
+          '/root/project-001/parts/dog.kcl',
+          identifier,
+          true
+        )
+        expect(actual).toBe(expected)
+      })
+      it('should copy file with .kcl with collision', () => {
+        const identifier = 'areallysmalldog'
+        const expected = '/root/project-001/parts/dog-copy-1.kcl'
+        const actual = getUniqueCopyPath(
+          ['/root/project-001/parts/dog.kcl'],
+          '/root/project-001/parts/dog-copy-1.kcl',
+          identifier,
+          true
+        )
+        expect(actual).toBe(expected)
+      })
+    })
+    describe('repeated file extensions', () => {
+      it('should copy file with .kcl without collision', () => {
+        const identifier = '-copy-'
+        const expected = '/root/project-001/parts/dog.kcl'
+        const actual = getUniqueCopyPath(
+          [
+            '/root/project-001/parts/dog.kcl.kcl.kcl.kcl.kcl.kcl',
+            '/root/project-001/parts/dog.kcl.kcl',
+          ],
+          '/root/project-001/parts/dog.kcl',
+          identifier,
+          true
+        )
+        expect(actual).toBe(expected)
+      })
+    })
   })
 })
