@@ -9,6 +9,7 @@ class AxisDirectionPair:
     r"""
     An [`Axis`] paired with a [`Direction`].
     """
+
     ...
 
 class Base64Data:
@@ -16,16 +17,26 @@ class Base64Data:
     A container for binary that should be base64 encoded in serialisation. In reverse
     when deserializing, will decode from many different types of base64 possible.
     """
+
     ...
 
 class CameraLookAt:
-    ...
+    def __new__(
+        cls, vantage: Point3d, center: Point3d, up: Point3d
+    ) -> CameraLookAt: ...
 
 class Discovered:
     r"""
     Specific discovered lint rule Violation of a particular Finding.
     """
-    ...
+    @property
+    def finding(self) -> Finding: ...
+    @property
+    def description(self) -> builtins.str: ...
+    @property
+    def pos(self) -> tuple[builtins.int, builtins.int]: ...
+    @property
+    def overridden(self) -> builtins.bool: ...
 
 class ExportFile:
     r"""
@@ -40,7 +51,14 @@ class Finding:
     r"""
     Abstract lint problem type.
     """
-    ...
+    @property
+    def code(self) -> builtins.str: ...
+    @property
+    def title(self) -> builtins.str: ...
+    @property
+    def description(self) -> builtins.str: ...
+    @property
+    def experimental(self) -> builtins.bool: ...
 
 class InputFormat3d:
     r"""
@@ -50,81 +68,88 @@ class InputFormat3d:
         r"""
         Autodesk Filmbox (FBX) format.
         """
+
         __match_args__ = ("_0",)
         @property
         def _0(self) -> Options: ...
-        def __new__(cls, _0:Options) -> InputFormat3d.Fbx: ...
+        def __new__(cls, _0: Options) -> InputFormat3d.Fbx: ...
         def __len__(self) -> builtins.int: ...
-        def __getitem__(self, key:builtins.int) -> typing.Any: ...
-    
+        def __getitem__(self, key: builtins.int) -> typing.Any: ...
+
     class Gltf(InputFormat3d):
         r"""
         Binary glTF 2.0.
         We refer to this as glTF since that is how our customers refer to it,
         but this can also import binary glTF (glb).
         """
+
         __match_args__ = ("_0",)
         @property
         def _0(self) -> Options: ...
-        def __new__(cls, _0:Options) -> InputFormat3d.Gltf: ...
+        def __new__(cls, _0: Options) -> InputFormat3d.Gltf: ...
         def __len__(self) -> builtins.int: ...
-        def __getitem__(self, key:builtins.int) -> typing.Any: ...
-    
+        def __getitem__(self, key: builtins.int) -> typing.Any: ...
+
     class Obj(InputFormat3d):
         r"""
         Wavefront OBJ format.
         """
+
         __match_args__ = ("_0",)
         @property
         def _0(self) -> Options: ...
-        def __new__(cls, _0:Options) -> InputFormat3d.Obj: ...
+        def __new__(cls, _0: Options) -> InputFormat3d.Obj: ...
         def __len__(self) -> builtins.int: ...
-        def __getitem__(self, key:builtins.int) -> typing.Any: ...
-    
+        def __getitem__(self, key: builtins.int) -> typing.Any: ...
+
     class Ply(InputFormat3d):
         r"""
         The PLY Polygon File Format.
         """
+
         __match_args__ = ("_0",)
         @property
         def _0(self) -> Options: ...
-        def __new__(cls, _0:Options) -> InputFormat3d.Ply: ...
+        def __new__(cls, _0: Options) -> InputFormat3d.Ply: ...
         def __len__(self) -> builtins.int: ...
-        def __getitem__(self, key:builtins.int) -> typing.Any: ...
-    
+        def __getitem__(self, key: builtins.int) -> typing.Any: ...
+
     class Sldprt(InputFormat3d):
         r"""
         SolidWorks part (SLDPRT) format.
         """
+
         __match_args__ = ("_0",)
         @property
         def _0(self) -> Options: ...
-        def __new__(cls, _0:Options) -> InputFormat3d.Sldprt: ...
+        def __new__(cls, _0: Options) -> InputFormat3d.Sldprt: ...
         def __len__(self) -> builtins.int: ...
-        def __getitem__(self, key:builtins.int) -> typing.Any: ...
-    
+        def __getitem__(self, key: builtins.int) -> typing.Any: ...
+
     class Step(InputFormat3d):
         r"""
         ISO 10303-21 (STEP) format.
         """
+
         __match_args__ = ("_0",)
         @property
         def _0(self) -> Options: ...
-        def __new__(cls, _0:Options) -> InputFormat3d.Step: ...
+        def __new__(cls, _0: Options) -> InputFormat3d.Step: ...
         def __len__(self) -> builtins.int: ...
-        def __getitem__(self, key:builtins.int) -> typing.Any: ...
-    
+        def __getitem__(self, key: builtins.int) -> typing.Any: ...
+
     class Stl(InputFormat3d):
         r"""
         **ST**ereo**L**ithography format.
         """
+
         __match_args__ = ("_0",)
         @property
         def _0(self) -> Options: ...
-        def __new__(cls, _0:Options) -> InputFormat3d.Stl: ...
+        def __new__(cls, _0: Options) -> InputFormat3d.Stl: ...
         def __len__(self) -> builtins.int: ...
-        def __getitem__(self, key:builtins.int) -> typing.Any: ...
-    
+        def __getitem__(self, key: builtins.int) -> typing.Any: ...
+
     ...
 
 class Options:
@@ -230,6 +255,7 @@ class Options:
     r"""
     Options for importing STL.
     """
+
     ...
 
 class Options:
@@ -251,7 +277,13 @@ class Options:
         """
 
 class Point3d:
-    ...
+    def __new__(
+        cls, x: builtins.float, y: builtins.float, z: builtins.float
+    ) -> Point3d:
+        r"""
+        Create a new point from its 3 components x, y and z
+        All of them take floating point values.
+        """
 
 class RawFile:
     r"""
@@ -267,28 +299,40 @@ class SnapshotOptions:
     r"""
     Customize a snapshot.
     """
-    ...
+    def __new__(
+        cls, camera: typing.Optional[CameraLookAt], padding: builtins.float
+    ) -> SnapshotOptions:
+        r"""
+        Takes a kcl.CameraLookAt, and a padding number.
+        """
+    @staticmethod
+    def isometric_view(padding: builtins.float) -> SnapshotOptions:
+        r"""
+        Takes a padding number.
+        """
 
 class System:
     r"""
     Co-ordinate system definition.
-    
+
     The `up` axis must be orthogonal to the `forward` axis.
-    
+
     See [cglearn.eu] for background reading.
-    
+
     [cglearn.eu](https://cglearn.eu/pub/computer-graphics/introduction-to-geometry#material-coordinate-systems-1)
     """
+
     ...
 
 class Axis(Enum):
     r"""
     Co-ordinate axis specifier.
-    
+
     See [cglearn.eu] for background reading.
-    
+
     [cglearn.eu]: https://cglearn.eu/pub/computer-graphics/introduction-to-geometry#material-coordinate-systems-1
     """
+
     Y = ...
     r"""
     'Y' axis.
@@ -302,6 +346,7 @@ class Direction(Enum):
     r"""
     Specifies the sign of a co-ordinate axis.
     """
+
     Positive = ...
     r"""
     Increasing numbers.
@@ -315,6 +360,7 @@ class FileExportFormat(Enum):
     r"""
     The valid types of output file formats.
     """
+
     Fbx = ...
     r"""
     Autodesk Filmbox (FBX) format. <https://en.wikipedia.org/wiki/FBX>
@@ -364,6 +410,7 @@ class ImageFormat(Enum):
     r"""
     Enum containing the variety of image formats snapshots may be exported to.
     """
+
     Png = ...
     r"""
     .png format
@@ -377,6 +424,7 @@ class Storage(Enum):
     r"""
     Export storage.
     """
+
     Ascii = ...
     r"""
     Plaintext encoding.
@@ -392,6 +440,7 @@ class Storage(Enum):
     r"""
     Export storage.
     """
+
     Ascii = ...
     r"""
     Plaintext encoding.
@@ -407,6 +456,7 @@ class Storage(Enum):
     r"""
     Describes the storage format of a glTF 2.0 scene.
     """
+
     Binary = ...
     r"""
     Binary glTF 2.0.
@@ -434,6 +484,7 @@ class Storage(Enum):
     r"""
     Describes the storage format of an FBX file.
     """
+
     Ascii = ...
     r"""
     ASCII FBX encoding.
@@ -447,6 +498,7 @@ class UnitAngle(Enum):
     r"""
     The valid types of angle formats.
     """
+
     Degrees = ...
     r"""
     Degrees <https://en.wikipedia.org/wiki/Degree_(angle)>
@@ -460,6 +512,7 @@ class UnitArea(Enum):
     r"""
     The valid types of area units.
     """
+
     SquareCentimeters = ...
     r"""
     Square centimeters <https://en.wikipedia.org/wiki/Square_centimeter>
@@ -497,6 +550,7 @@ class UnitDensity(Enum):
     r"""
     The valid types for density units.
     """
+
     PoundsPerCubicFeet = ...
     r"""
     Pounds per cubic feet.
@@ -510,6 +564,7 @@ class UnitLength(Enum):
     r"""
     The valid types of length units.
     """
+
     Cm = ...
     r"""
     Centimeters <https://en.wikipedia.org/wiki/Centimeter>
@@ -539,6 +594,7 @@ class UnitLength(Enum):
     r"""
     The valid types of length units.
     """
+
     Centimeters = ...
     r"""
     Centimeters <https://en.wikipedia.org/wiki/Centimeter>
@@ -568,6 +624,7 @@ class UnitMass(Enum):
     r"""
     The valid types of mass units.
     """
+
     Grams = ...
     r"""
     Grams <https://en.wikipedia.org/wiki/Gram>
@@ -585,6 +642,7 @@ class UnitVolume(Enum):
     r"""
     The valid types of volume units.
     """
+
     CubicCentimeters = ...
     r"""
     Cubic centimeters (cc or cm³) <https://en.wikipedia.org/wiki/Cubic_centimeter>
@@ -622,81 +680,102 @@ class UnitVolume(Enum):
     Milliliters (ml) <https://en.wikipedia.org/wiki/Litre>
     """
 
-async def execute(path:builtins.str) -> None:
+async def execute(path: builtins.str) -> None:
     r"""
     Execute the kcl code from a file path.
     """
 
-async def execute_and_export(path:builtins.str, export_format:FileExportFormat) -> builtins.list[RawFile]:
+async def execute_and_export(
+    path: builtins.str, export_format: FileExportFormat
+) -> builtins.list[RawFile]:
     r"""
     Execute a kcl file and export it to a specific file format.
     """
 
-async def execute_and_snapshot(path:builtins.str, image_format:ImageFormat) -> builtins.list[builtins.int]:
+async def execute_and_snapshot(
+    path: builtins.str, image_format: ImageFormat
+) -> builtins.list[builtins.int]:
     r"""
     Execute a kcl file and snapshot it in a specific format.
     """
 
-async def execute_and_snapshot_views(path:builtins.str, image_format:ImageFormat, snapshot_options:typing.Sequence[SnapshotOptions]) -> builtins.list[builtins.list[builtins.int]]: ...
-
-async def execute_code(code:builtins.str) -> None:
+async def execute_and_snapshot_views(
+    path: builtins.str,
+    image_format: ImageFormat,
+    snapshot_options: typing.Sequence[SnapshotOptions],
+) -> builtins.list[builtins.list[builtins.int]]: ...
+async def execute_code(code: builtins.str) -> None:
     r"""
     Execute the kcl code.
     """
 
-async def execute_code_and_export(code:builtins.str, export_format:FileExportFormat) -> builtins.list[RawFile]:
+async def execute_code_and_export(
+    code: builtins.str, export_format: FileExportFormat
+) -> builtins.list[RawFile]:
     r"""
     Execute the kcl code and export it to a specific file format.
     """
 
-async def execute_code_and_snapshot(code:builtins.str, image_format:ImageFormat) -> builtins.list[builtins.int]:
+async def execute_code_and_snapshot(
+    code: builtins.str, image_format: ImageFormat
+) -> builtins.list[builtins.int]:
     r"""
     Execute the kcl code and snapshot it in a specific format.
     """
 
-async def execute_code_and_snapshot_views(code:builtins.str, image_format:ImageFormat, snapshot_options:typing.Sequence[SnapshotOptions]) -> builtins.list[builtins.list[builtins.int]]:
+async def execute_code_and_snapshot_views(
+    code: builtins.str,
+    image_format: ImageFormat,
+    snapshot_options: typing.Sequence[SnapshotOptions],
+) -> builtins.list[builtins.list[builtins.int]]:
     r"""
     Execute the kcl code and snapshot it in a specific format.
     Returns one image for each camera angle you provide.
     If you don't provide any camera angles, a default head-on camera angle will be used.
     """
 
-def format(code:builtins.str) -> builtins.str:
+def format(code: builtins.str) -> builtins.str:
     r"""
     Format the kcl code. This will return the formatted code.
     """
 
-async def format_dir(dir:builtins.str) -> None:
+async def format_dir(dir: builtins.str) -> None:
     r"""
     Format a whole directory of kcl code.
     """
 
-async def import_and_snapshot(filepaths:typing.Sequence[builtins.str], format:InputFormat3d, image_format:ImageFormat) -> builtins.list[builtins.int]: ...
-
-async def import_and_snapshot_views(filepaths:typing.Sequence[builtins.str], format:InputFormat3d, image_format:ImageFormat, snapshot_options:typing.Sequence[SnapshotOptions]) -> builtins.list[builtins.list[builtins.int]]: ...
-
-def lint(code:builtins.str) -> builtins.list[Discovered]:
+async def import_and_snapshot(
+    filepaths: typing.Sequence[builtins.str],
+    format: InputFormat3d,
+    image_format: ImageFormat,
+) -> builtins.list[builtins.int]: ...
+async def import_and_snapshot_views(
+    filepaths: typing.Sequence[builtins.str],
+    format: InputFormat3d,
+    image_format: ImageFormat,
+    snapshot_options: typing.Sequence[SnapshotOptions],
+) -> builtins.list[builtins.list[builtins.int]]: ...
+def lint(code: builtins.str) -> builtins.list[Discovered]:
     r"""
     Lint the kcl code.
     """
 
-async def mock_execute(path:builtins.str) -> builtins.bool:
+async def mock_execute(path: builtins.str) -> builtins.bool:
     r"""
     Mock execute the kcl code from a file path.
     """
 
-async def mock_execute_code(code:builtins.str) -> builtins.bool:
+async def mock_execute_code(code: builtins.str) -> builtins.bool:
     r"""
     Mock execute the kcl code.
     """
 
-async def parse(path:builtins.str) -> builtins.bool:
+async def parse(path: builtins.str) -> builtins.bool:
     r"""
     Parse the kcl code from a file path.
     """
 
-def parse_code(code:builtins.str) -> builtins.bool:
+def parse_code(code: builtins.str) -> builtins.bool:
     r"""
     Parse the kcl code.
     """
-
