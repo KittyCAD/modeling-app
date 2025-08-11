@@ -67,7 +67,7 @@ export const AdvancedSignInOptions = ({
                   onChange={setSelectedEnvironment}
                 >
                   <Combobox.Input
-                    className="gap-1 rounded h-9 mr-auto max-h-min min-w-max border py-1 flex items-center dark:hover:bg-chalkboard-90 text-xs text-chalkboard-70 dark:text-chalkboard-30"
+                    className="gap-1 rounded h-9 mr-auto max-h-min min-w-max border py-1 flex items-center dark:hover:bg-chalkboard-80 text-xs text-chalkboard-70 dark:text-chalkboard-30 dark:bg-chalkboard-90"
                     placeholder="auto"
                     onChange={(event) =>
                       setSelectedEnvironment(event.target.value)
@@ -82,7 +82,7 @@ export const AdvancedSignInOptions = ({
                 <Combobox value={pool} onChange={setPool}>
                   <Combobox.Input
                     className="
-            gap-1 rounded h-9 mr-auto max-h-min min-w-max border py-1 flex items-center dark:hover:bg-chalkboard-90 text-xs text-chalkboard-70 dark:text-chalkboard-30"
+            gap-1 rounded h-9 mr-auto max-h-min min-w-max border py-1 flex items-center dark:hover:bg-chalkboard-80 text-xs text-chalkboard-70 dark:text-chalkboard-30 dark:bg-chalkboard-90"
                     placeholder="auto"
                     onChange={(event) => setPool(event.target.value)}
                   />
