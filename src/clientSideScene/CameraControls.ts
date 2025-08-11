@@ -148,6 +148,22 @@ export class CameraControls {
     return this.camera instanceof PerspectiveCamera
   }
 
+  private _zoomFocus: Vector3 | null = null // the position under the mouse when zooming, in world space
+  private _lastWheelEvent: WheelEvent | null = null
+
+  // Converts a screen space coordinate to world space
+  private screenToWorld(x: number, y: number): Vector3 {
+    // Ideally we would have access to renderer drawingbuffer size
+    const width = this.domElement.clientWidth
+    const height = this.domElement.clientHeight
+    const ndc = new Vector3(
+      (x / width) * 2 - 1,
+      -(y / height) * 2 + 1,
+      0 // NDC z: 0 (halfway between camera near and far)
+    )
+    return ndc.unproject(this.camera)
+  }
+
   setEngineCameraProjection(projection: CameraProjectionType) {
     if (projection === 'orthographic') {
       this.useOrthographicCamera()
@@ -582,6 +598,10 @@ export class CameraControls {
     this.handleStart()
     if (interaction === 'zoom') {
       this.pendingZoom = 1 + (deltaY / window.devicePixelRatio) * 0.001
+
+      // Record the world point under the mouse so we can keep it anchored during zoom
+      this._zoomFocus = this.screenToWorld(event.offsetX, event.offsetY)
+      this._lastWheelEvent = event
     } else {
       // This case will get handled when we add pan and rotate using Apple trackpad.
       console.error(
@@ -799,6 +819,23 @@ export class CameraControls {
         // TODO change ortho zoom
         this.camera.zoom = this.camera.zoom / this.pendingZoom
         this.pendingZoom = null
+
+        // Keep mouse world point fixed during zoom (without this zooming is pivoted around the camera position,
+        // regardless of current mouse position)
+        if (this._zoomFocus && this._lastWheelEvent) {
+          this.camera.updateProjectionMatrix()
+          // The new focused point in world space after zooming
+          const newFocus = this.screenToWorld(
+            this._lastWheelEvent.offsetX,
+            this._lastWheelEvent.offsetY
+          )
+          const diff = this._zoomFocus.clone().sub(newFocus)
+          this.camera.position.add(diff)
+          this.target.add(diff)
+
+          this._zoomFocus = null
+          this._lastWheelEvent = null
+        }
       }
       didChange = true
     }
