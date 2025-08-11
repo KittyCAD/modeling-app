@@ -1,4 +1,5 @@
 import { isArray } from '@src/lib/utils'
+import { getOperationVariableName } from '@src/lib/operations'
 import type { EngineCommandManager } from '@src/lang/std/engineConnection'
 import type { KclManager } from '@src/lang/KclSingleton'
 import {
@@ -142,7 +143,10 @@ export async function exportSketchToDxf(
       }
 
       const uint8Array = new Uint8Array(decodedBuf)
-      const fileName = 'sketch.dxf'
+
+      // Generate meaningful filename from sketch name
+      const sketchName = getOperationVariableName(operation, kclManager.ast)
+      const fileName = `${sketchName || 'sketch'}.dxf`
 
       if (isDesktop()) {
         // Early validation for desktop operations
