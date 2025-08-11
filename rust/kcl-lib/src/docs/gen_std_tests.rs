@@ -43,14 +43,14 @@ fn init_handlebars() -> Result<handlebars::Handlebars<'static>> {
              _: &mut handlebars::RenderContext,
              out: &mut dyn handlebars::Output|
              -> handlebars::HelperResult {
-                if let Some(param) = h.param(0) {
-                    if let Some(string) = param.value().as_str() {
-                        // Only get the first part before the newline.
-                        // This is to prevent the YAML from breaking.
-                        let string = string.split('\n').next().unwrap_or("");
-                        out.write(string)?;
-                        return Ok(());
-                    }
+                if let Some(param) = h.param(0)
+                    && let Some(string) = param.value().as_str()
+                {
+                    // Only get the first part before the newline.
+                    // This is to prevent the YAML from breaking.
+                    let string = string.split('\n').next().unwrap_or("");
+                    out.write(string)?;
+                    return Ok(());
                 }
                 out.write("")?;
                 Ok(())
@@ -193,8 +193,28 @@ fn generate_example(index: usize, src: &str, props: &ExampleProperties, file_nam
         base64::engine::general_purpose::STANDARD.encode(&image_data)
     };
 
+    let gltf_path = if props.norun {
+        String::new()
+    } else {
+        // Refers to the specific path of zoo.dev that assets are served under.
+        // Look in website repo's ContentLayer configuration to find how this is set.
+        // Right now, we assume the GLTF export is called 'output' but in the future, we should
+        // pass its name in from the process which ran the export.
+        format!("/kcl-test-outputs/models/serial_test_example_{file_name}{index}_output.gltf")
+    };
+
+    let image_path = if props.norun {
+        String::new()
+    } else {
+        // Refers to the specific path of zoo.dev that assets are served under.
+        // Look in website repo's ContentLayer configuration to find how this is set.
+        format!("/kcl-test-outputs/serial_test_example_{file_name}{index}.png")
+    };
+
     Some(json!({
         "content": content,
+        "gltf_path": gltf_path,
+        "image_path": image_path,
         "image_base64": image_base64,
     }))
 }
@@ -342,10 +362,11 @@ fn generate_function_from_kcl(
 fn docs_for_type(ty: &str, kcl_std: &ModData) -> Option<String> {
     let key = if ty.starts_with("number") { "number" } else { ty };
 
-    if !key.contains('|') && !key.contains('[') {
-        if let Some(data) = kcl_std.find_by_name(key) {
-            return data.summary().cloned();
-        }
+    if !key.contains('|')
+        && !key.contains('[')
+        && let Some(data) = kcl_std.find_by_name(key)
+    {
+        return data.summary().cloned();
     }
 
     None
