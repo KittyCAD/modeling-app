@@ -1,7 +1,66 @@
-import { Popover, Transition, Combobox } from '@headlessui/react'
+import { Popover, Transition, Combobox, RadioGroup } from '@headlessui/react'
 import { CustomIcon } from '@src/components/CustomIcon'
-import { Fragment } from 'react'
+import { Fragment, useState } from 'react'
 import { isDesktop } from '@src/lib/isDesktop'
+import { ActionButton } from '@src/components/ActionButton'
+
+function SupportedDomainsRadioGroup ({
+  selected,
+  setSelected,
+  domains
+}) {
+return (<div className="w-full py-4">
+      <div className="mx-auto w-full max-w-md">
+        <RadioGroup value={selected} onChange={setSelected}>
+          <div className="space-y-2">
+            {domains.map((domain) => (
+              <RadioGroup.Option
+                key={domain.name}
+                value={domain.name}
+                className={({ active, checked }) =>
+                  `${
+                    active
+                      ? 'ring-1 ring-white/60 ring-offset-1 ring-offset-chalkboard-300'
+                      : ''
+                  }
+                  ${checked ? 'bg-primary' : 'bg-chalkboard-10 text-chalkboard-70'}
+                    relative flex cursor-pointer rounded-lg px-2 py-1 shadow-md focus:outline-none`
+                }
+              >
+                {({ active, checked }) => (
+                  <>
+                    <div className="flex w-full items-center justify-between">
+                      <div className="flex items-center">
+                        <div className="text-sm">
+                          <RadioGroup.Label
+                            as="p"
+                            className={`text-xs ${
+                              checked ? 'text-white' : 'text-gray-900'
+                            }`}
+                          >
+                            {domain.name}
+                          </RadioGroup.Label>
+                        </div>
+                      </div>
+                      {checked && (
+                        <div className="shrink-0 text-white">
+
+                          <CustomIcon
+                            name="checkmark"
+                            className="w-4 h-4 text-chalkboard-70 dark:text-chalkboard-40"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
+              </RadioGroup.Option>
+            ))}
+          </div>
+        </RadioGroup>
+      </div>
+    </div>)
+}
 
 export const AdvancedSignInOptions = ({
   pool,
@@ -14,6 +73,17 @@ export const AdvancedSignInOptions = ({
   selectedEnvironment: string
   setSelectedEnvironment: (environment: string) => void
 }) => {
+  const domains = [{
+                      name:'zoo.dev',
+                    },
+                    {
+                      name:'zoogov.dev',
+                    },
+                    {
+                      name:'dev.zoo.dev'
+                    }]
+  const [showCustomInput, setShowCustomInput ] = useState(false)
+
   return isDesktop() ? (
     <div className="flex flex-row items-center">
       <span className="text-xs text-chalkboard-70 dark:text-chalkboard-30 w-64 h-8">
@@ -57,35 +127,60 @@ export const AdvancedSignInOptions = ({
           >
             {() => (
               <>
-                <div className="flex flex-col items-start py-0.5">
+                <span className="text-xs text-chalkboard-70 dark:text-chalkboard-30">
+                  Supported Domains
+                </span>
+                <SupportedDomainsRadioGroup
+                  selected={selectedEnvironment}
+                  setSelected={setSelectedEnvironment}
+                  domains={domains}
+                />
+                <ActionButton
+                  Element="button"
+                  className={'text-xs border-none pl-0'}
+                  onClick={() => setShowCustomInput(show => !show)}
+                >
+                  show advanced options
+                  <CustomIcon
+                    name="caretDown"
+                    className={`w-4 h-4 ${!showCustomInput ? '' : 'ui-open:rotate-180' } `}
+                  />
+                </ActionButton>
+                { showCustomInput && (<div className="flex flex-col items-start py-0.5">
                   <span className="text-xs text-chalkboard-70 dark:text-chalkboard-30">
                     Domain
                   </span>
-                </div>
+                </div>)}
+
                 <Combobox
                   value={selectedEnvironment}
                   onChange={setSelectedEnvironment}
                 >
-                  <Combobox.Input
-                    className="gap-1 rounded h-9 mr-auto max-h-min min-w-max border py-1 flex items-center dark:hover:bg-chalkboard-80 text-xs text-chalkboard-70 dark:text-chalkboard-30 dark:bg-chalkboard-90"
-                    placeholder="auto"
-                    onChange={(event) =>
-                      setSelectedEnvironment(event.target.value)
-                    }
-                  />
+                  {showCustomInput && (
+                    <Combobox.Input
+                      className="gap-1 rounded h-9 mr-auto max-h-min min-w-max border py-1 flex items-center dark:hover:bg-chalkboard-80 text-xs text-chalkboard-70 dark:text-chalkboard-30 dark:bg-chalkboard-90"
+                      placeholder="auto"
+                      onChange={(event) =>
+                        setSelectedEnvironment(event.target.value)
+                      }
+                    />
+                  )}
                 </Combobox>
-                <div className="flex flex-col items-start py-0.5">
+                { showCustomInput && (<div className="flex flex-col items-start py-0.5">
                   <span className="text-xs text-chalkboard-70 dark:text-chalkboard-30">
                     Connection pool
                   </span>
-                </div>
+                </div>) }
                 <Combobox value={pool} onChange={setPool}>
+
+                  { showCustomInput && (
                   <Combobox.Input
                     className="
             gap-1 rounded h-9 mr-auto max-h-min min-w-max border py-1 flex items-center dark:hover:bg-chalkboard-80 text-xs text-chalkboard-70 dark:text-chalkboard-30 dark:bg-chalkboard-90"
                     placeholder="auto"
                     onChange={(event) => setPool(event.target.value)}
                   />
+                  )}
                 </Combobox>
               </>
             )}
