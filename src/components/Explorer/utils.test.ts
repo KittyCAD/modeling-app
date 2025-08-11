@@ -301,19 +301,19 @@ describe('Explorer utils.ts', () => {
       })
       it('should copy file into folder and they have similar name but no collision', () => {
         const identifier = '-copy-'
-        const expected = '/root/project-001/parts/rig.kcl'
+        const expected = '/root/project-001/parts/dog.kcl'
         const actual = getUniqueCopyPath(
           [
-            '/root/project-001/parts/r.kcl',
-            '/root/project-001/parts/ri.kcl',
-            '/root/project-001/parts/rigg.kcl',
-            '/root/project-001/parts/riggg.kcl',
-            '/root/project-001/parts/r',
-            '/root/project-001/parts/ri',
-            '/root/project-001/parts/rigg',
-            '/root/project-001/parts/riggg',
+            '/root/project-001/parts/do.kcl',
+            '/root/project-001/parts/do.kcl',
+            '/root/project-001/parts/dogg.kcl',
+            '/root/project-001/parts/doggg.kcl',
+            '/root/project-001/parts/d',
+            '/root/project-001/parts/do',
+            '/root/project-001/parts/dogg',
+            '/root/project-001/parts/doggg',
           ],
-          '/root/project-001/parts/rig.kcl',
+          '/root/project-001/parts/dog.kcl',
           identifier,
           true
         )
@@ -321,19 +321,59 @@ describe('Explorer utils.ts', () => {
       })
       it('should copy folder into folder and they have similar name but no collision', () => {
         const identifier = '-copy-'
-        const expected = '/root/project-001/parts/rig'
+        const expected = '/root/project-001/parts/dog'
         const actual = getUniqueCopyPath(
           [
-            '/root/project-001/parts/r',
-            '/root/project-001/parts/ri',
-            '/root/project-001/parts/rigg',
-            '/root/project-001/parts/riggg',
-            '/root/project-001/parts/r.kcl',
-            '/root/project-001/parts/ri.kcl',
-            '/root/project-001/parts/rigg.kcl',
-            '/root/project-001/parts/riggg.kcl',
+            '/root/project-001/parts/d',
+            '/root/project-001/parts/do',
+            '/root/project-001/parts/dogg',
+            '/root/project-001/parts/doggg',
+            '/root/project-001/parts/d.kcl',
+            '/root/project-001/parts/do.kcl',
+            '/root/project-001/parts/dogg.kcl',
+            '/root/project-001/parts/doggg.kcl',
           ],
-          '/root/project-001/parts/rig',
+          '/root/project-001/parts/dog',
+          identifier,
+          false
+        )
+        expect(actual).toBe(expected)
+      })
+      it('should copy folder into folder and they have similar absolute path names but no collision', () => {
+        const identifier = '-copy-'
+        const expected = '/root/project-001/dogg/dog'
+        const actual = getUniqueCopyPath(
+          [
+            '/root/project-001/dog/d',
+            '/root/project-001/dog/do',
+            '/root/project-001/dog/dogg',
+            '/root/project-001/dog/doggg',
+            '/root/project-001/dog/d.kcl',
+            '/root/project-001/dog/do.kcl',
+            '/root/project-001/dog/dogg.kcl',
+            '/root/project-001/dog/doggg.kcl',
+          ],
+          '/root/project-001/dogg/dog',
+          identifier,
+          false
+        )
+        expect(actual).toBe(expected)
+      })
+      it('should copy folder into folder and they have similar absolute path names but no collision', () => {
+        const identifier = '-copy-'
+        const expected = '/root/project-001/dogg/dog'
+        const actual = getUniqueCopyPath(
+          [
+            '/root/project-001/dogg/d',
+            '/root/project-001/dogg/do',
+            '/root/project-001/dogg/dogg',
+            '/root/project-001/dogg/doggg',
+            '/root/project-001/dogg/d.kcl',
+            '/root/project-001/dogg/do.kcl',
+            '/root/project-001/dogg/dogg.kcl',
+            '/root/project-001/dogg/doggg.kcl',
+          ],
+          '/root/project-001/dogg/dog',
           identifier,
           false
         )
