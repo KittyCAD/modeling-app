@@ -9,6 +9,7 @@ use pyo3::{
     exceptions::PyException, prelude::PyModuleMethods, pyclass, pyfunction, pymethods, pymodule, types::PyModule,
     wrap_pyfunction, Bound, PyErr, PyResult, Python,
 };
+use pyo3_stub_gen::define_stub_info_gatherer;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
@@ -788,3 +789,6 @@ fn kcl(py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(lint, m)?)?;
     Ok(())
 }
+
+// Define a function to gather stub information.
+define_stub_info_gatherer!(stub_info);
