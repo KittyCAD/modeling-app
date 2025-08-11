@@ -24,7 +24,7 @@ import {
   getOperationVariableName,
   stdLibMap,
 } from '@src/lib/operations'
-import { uuidv4, isArray } from '@src/lib/utils'
+import { uuidv4 } from '@src/lib/utils'
 import {
   codeManager,
   commandBarActor,
@@ -54,6 +54,7 @@ import toast from 'react-hot-toast'
 import { base64Decode } from '@src/lang/wasm'
 import { browserSaveFile } from '@src/lib/browserSaveFile'
 import { isDesktop } from '@src/lib/isDesktop'
+import { exportSketchToDxf } from '@src/lib/exportDxf'
 
 export const FeatureTreePane = () => {
   const isEditorMounted = useSelector(kclEditorActor, editorIsMountedSelector)
@@ -602,155 +603,22 @@ const OperationItem = (props: {
             <ContextMenuItem
               onClick={() => {
                 const exportDxf = async () => {
-                  try {
-                    // Get the plane artifact associated with this sketch operation
-                    const planeArtifact = findOperationPlaneArtifact(
-                      props.item as any,
-                      kclManager.artifactGraph
-                    )
-
-                    if (!planeArtifact || planeArtifact.type !== 'plane') {
-                      console.error(
-                        'Could not find plane artifact for DXF export'
-                      )
-                      toast.error('Could not find sketch for DXF export')
-                      return
-                    }
-
-                    // Check if the plane has sketch paths
-                    if (
-                      !('pathIds' in planeArtifact) ||
-                      !planeArtifact.pathIds?.length
-                    ) {
-                      console.error('Could not find path IDs for DXF export')
-                      toast.error(
-                        'Could not find sketch entities for DXF export'
-                      )
-                      return
-                    }
-
-                    // Get all entity IDs from the plane's paths
-                    const entityIds: string[] = []
-                    for (const pathId of planeArtifact.pathIds) {
-                      const pathArtifact = kclManager.artifactGraph.get(pathId)
-                      if (pathArtifact) {
-                        if (
-                          'compositeSolidId' in pathArtifact &&
-                          pathArtifact.compositeSolidId
-                        ) {
-                          // Sketch has been extruded - use the composite solid ID
-                          entityIds.push(pathArtifact.compositeSolidId)
-                        } else {
-                          // Sketch hasn't been extruded - use the path ID
-                          entityIds.push(pathId)
-                        }
-                      }
-                    }
-
-                    if (entityIds.length === 0) {
-                      console.error(
-                        'Could not find any sketch entities for DXF export'
-                      )
-                      toast.error(
-                        'Could not find sketch entities for DXF export'
-                      )
-                      return
-                    }
-
-                    const toastId = toast.loading('Exporting sketch to DXF...')
-
-                    // Use the export2d command for DXF export
-                    const response =
-                      await engineCommandManager.sendSceneCommand(
-                        {
-                          type: 'modeling_cmd_req',
-                          cmd_id: uuidv4(),
-                          cmd: {
-                            type: 'export2d',
-                            entity_ids: entityIds,
-                            format: {
-                              type: 'dxf',
-                              storage: 'ascii',
-                            },
-                          },
-                        },
-                        true
-                      )
-
-                    if (
-                      response &&
-                      !isArray(response) &&
-                      response.success &&
-                      'resp' in response &&
-                      response.resp &&
-                      'data' in response.resp &&
-                      response.resp.data &&
-                      'modeling_response' in response.resp.data &&
-                      response.resp.data.modeling_response.type ===
-                        'export2d' &&
-                      'data' in response.resp.data.modeling_response &&
-                      'files' in response.resp.data.modeling_response.data
-                    ) {
-                      const fileName = 'sketch.dxf'
-                      const exportFiles =
-                        response.resp.data.modeling_response.data.files
-
-                      // Save file directly without unnecessary conversions
-                      const exportFile = exportFiles[0]
-                      const decoded = base64Decode(exportFile.contents)
-
-                      if (decoded instanceof Error) {
-                        console.error('Base64 decode failed:', decoded)
-                        toast.error('Failed to decode DXF file data', {
-                          id: toastId,
-                        })
-                        return
-                      }
-
-                      // Save directly as binary data without conversion to number array
-                      const uint8Array = new Uint8Array(decoded)
-
-                      if (isDesktop()) {
-                        // Desktop: use electron file dialog
-                        const filePathMeta = await window.electron.save({
-                          defaultPath: fileName,
-                          filters: [
-                            {
-                              name: 'DXF files',
-                              extensions: ['dxf'],
-                            },
-                          ],
-                        })
-
-                        if (!filePathMeta.canceled) {
-                          await window.electron.writeFile(
-                            filePathMeta.filePath,
-                            uint8Array
-                          )
-                          toast.success('DXF export completed', { id: toastId })
-                        } else {
-                          toast.dismiss(toastId)
-                        }
-                      } else {
-                        // Browser: download file
-                        const blob = new Blob([uint8Array], {
-                          type: 'application/dxf',
-                        })
-                        await browserSaveFile(blob, fileName, toastId)
-                      }
-                    } else {
-                      console.error('DXF export failed:', response)
-                      toast.error('Failed to export sketch to DXF', {
-                        id: toastId,
-                      })
-                    }
-                  } catch (error) {
-                    console.error('DXF export error:', error)
-                    toast.error('Failed to export sketch to DXF')
-                  }
+                  if (props.item.type !== 'StdLibCall') return
+                  await exportSketchToDxf(props.item, {
+                    engineCommandManager,
+                    kclManager,
+                    toast,
+                    uuidv4,
+                    base64Decode,
+                    isDesktop,
+                    browserSaveFile,
+                    writeFile: window.electron?.writeFile,
+                    showSaveDialog: window.electron?.save,
+                  })
                 }
                 void exportDxf()
               }}
+              data-testid="context-menu-export-dxf"
             >
               Export to DXF
             </ContextMenuItem>,
