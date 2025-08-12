@@ -123,38 +123,51 @@ export type CspMode =
   | 'local'
 
 export function indexHtmlCsp(mode: CspMode): Plugin {
-  let csp =
-    [
-      //  By default, only allow same origin.
-      "default-src 'self'",
-      // Allow inline styles and styles from the same origin. This is how we use CSS rightnow.
-      "style-src 'self' 'unsafe-inline'",
-      // Allow images from any source and inline images. We fetch user profile images from any origin.
-      "img-src * blob: 'unsafe-inline'",
-      // Allow scripts from the same origin and from Plausible Analytics. Allow WASM execution.
-      `script-src 'self' 'wasm-unsafe-eval' https://plausible.corp.zoo.dev/js/script.tagged-events.js${mode === 'vercel-preview' ? " https://vercel.live 'unsafe-eval'" : ''}`,
-      // vercel.live is used for feedback scripts in preview deployments.
-      ...(mode === 'vercel-preview'
-        ? ["frame-src 'self' https://vercel.live"]
-        : []),
-      // Allow WebSocket connections and fetches to our API.
-      "connect-src 'self' https://plausible.corp.zoo.dev https://api.zoo.dev wss://api.zoo.dev https://api.dev.zoo.dev wss://api.dev.zoo.dev",
-      // Disallow legacy stuff
-      "object-src 'none'",
-      // frame ancestors can only be blocked using HTTP headers (see vercel.json)
-      // "frame-ancestors 'none'",
-      ...(mode === 'vercel-preview' || mode == 'vercel-production'
-        ? [
-            "frame-ancestors 'none'",
-            'report-uri https://csp-logger.vercel.app/csp-report',
-            'report-to csp-reporting-endpoint',
-          ]
-        : []),
-    ].join(';') + ';'
+  const csp = [
+    //  By default, only allow same origin.
+    "default-src 'self'",
+    // Allow inline styles and styles from the same origin. This is how we use CSS rightnow.
+    "style-src 'self' 'unsafe-inline'",
+    // Allow images from any source and inline images. We fetch user profile images from any origin.
+    "img-src * blob: 'unsafe-inline'",
+    // Allow WebSocket connections and fetches to our API.
+    "connect-src 'self' https://plausible.corp.zoo.dev https://api.zoo.dev wss://api.zoo.dev https://api.dev.zoo.dev wss://api.dev.zoo.dev",
+    // Disallow legacy stuff
+    "object-src 'none'",
+  ]
+
+  // Allow scripts from the same origin and from Plausible Analytics. Allow WASM execution.
+  const cspScriptBase = `script-src 'self' 'wasm-unsafe-eval' https://plausible.corp.zoo.dev/js/script.tagged-events.js`
+  const vercelCspBase = ["frame-ancestors 'none'"]
+
+  const vercelCsp =
+    csp
+      .concat(vercelCspBase)
+      .concat(
+        // frame ancestors can only be blocked using HTTP headers (see vercel.json)
+        [
+          cspScriptBase,
+          'report-uri https://csp-logger.vercel.app/csp-report',
+          'report-to csp-reporting-endpoint',
+        ]
+      )
+      .join(';') + ';'
 
   console.log(
-    'CSP: Production build using the Content-Security-Policy (you may copy this to vercel.json when running npx vite build): ',
+    'Content-Security-Policy for Vercel (prod) (vercel.json): ',
+    vercelCsp
+  )
+
+  console.log(
+    'Content-Security-Policy for Vercel (preview) (vercel.json): ',
+    // vercel.live is used for feedback scripts in preview deployments.
     csp
+      .concat(vercelCspBase)
+      .concat([
+        "frame-src 'self' https://vercel.live",
+        `${cspScriptBase} https://vercel.live 'unsafe-eval'`,
+      ])
+      .join(';') + ';'
   )
 
   return {
@@ -169,7 +182,9 @@ export function indexHtmlCsp(mode: CspMode): Plugin {
       } else {
         return html.replace(
           indexHtmlRegex,
-          `<meta http-equiv="Content-Security-Policy" content="${csp}">`
+          `<meta http-equiv="Content-Security-Policy" content="${
+            csp.concat([cspScriptBase]).join(';') + ';'
+          }">`
         )
       }
     },
