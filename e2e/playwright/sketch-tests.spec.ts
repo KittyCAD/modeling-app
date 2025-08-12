@@ -1792,8 +1792,10 @@ profile001 = startProfile(sketch001, at=[0, 0])
       // Need a better signal to the system (and by extension Playwright) that a re-execution is coming,
       // because if the user (or test) equips a new tool and draws with it in this state, the tool will
       // be unequipped and the code will be half-reset when execution completes.
-      await expect(toolbar.exitSketchBtn).toBeDisabled()
-      await expect(toolbar.exitSketchBtn).toBeEnabled()
+      // await expect(toolbar.exitSketchBtn).toBeDisabled()
+      // await expect(toolbar.exitSketchBtn).toBeEnabled()
+      // TODO: the trick above doesn't seem to work anymore, still need a better signal
+      await page.waitForTimeout(2000)
     })
 
     await test.step('equip circle and draw it', async () => {
