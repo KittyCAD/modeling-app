@@ -25,7 +25,7 @@ export async function exportSketchToDxf(
     browserSaveFile: (
       blob: Blob,
       filename: string,
-      toastId?: string
+      toastId: string
     ) => Promise<void>
     writeFile?: (path: string, data: Uint8Array) => Promise<void>
     showSaveDialog?: (
@@ -45,7 +45,7 @@ export async function exportSketchToDxf(
     showSaveDialog,
   } = dependencies
 
-  let toastId: string | undefined
+  let toastId: string
 
   try {
     // Get the plane artifact associated with this sketch operation
