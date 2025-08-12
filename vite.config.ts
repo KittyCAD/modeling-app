@@ -12,8 +12,7 @@ import { csp } from './vite.base.config'
 export default defineConfig(({ command, mode }) => {
   const runMillion = process.env.RUN_MILLION
 
-  console.error(mode)
-  console.error("XXXXXXXXX")
+  console.log(`Vite running in ${mode} mode.`)
 
   return {
     server: {
