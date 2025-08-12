@@ -116,11 +116,7 @@ export function pluginHotRestart(command: 'reload' | 'restart'): Plugin {
   }
 }
 
-export type CspMode =
-  | 'electron'
-  | 'vercel-preview'
-  | 'vercel-production'
-  | 'local'
+export type CspMode = 'electron' | 'vercel' | 'local'
 
 export function indexHtmlCsp(mode: CspMode): Plugin {
   const csp = [
@@ -175,7 +171,7 @@ export function indexHtmlCsp(mode: CspMode): Plugin {
     transformIndexHtml(html: string) {
       let indexHtmlRegex =
         /<meta\shttp-equiv="Content-Security-Policy"\scontent="(.*?)">/
-      if (mode === 'vercel-production' || mode == 'vercel-preview') {
+      if (mode == 'vercel') {
         // Web deployments that are deployed to vercel don't need a CSP in the indexHTML.
         // They get it through vercel.json.
         return html.replace(indexHtmlRegex, '')

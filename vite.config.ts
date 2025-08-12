@@ -78,14 +78,7 @@ export default defineConfig(({ command, mode }) => {
     },
     plugins: [
       react(),
-      indexHtmlCsp(
-        // production means it was build using `vite build`
-        mode == 'production'
-          ? process.env.VITE_KITTYCAD_BASE_DOMAIN === 'dev.zoo.dev'
-            ? 'vercel-preview'
-            : 'vercel-production'
-          : 'local'
-      ),
+      indexHtmlCsp(mode == process.env.VERCEL ? 'vercel' : 'local'),
       viteTsconfigPaths(),
       eslint(),
       version(),
