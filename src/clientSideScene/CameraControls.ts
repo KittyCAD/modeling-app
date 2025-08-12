@@ -498,7 +498,6 @@ export class CameraControls {
 
       if (this.syncDirection === 'engineToClient') {
         this.moveSender.send(() => {
-          console.log('move', event.clientX)
           this.doMove(interaction, [event.clientX, event.clientY])
         })
         return
