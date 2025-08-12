@@ -45,7 +45,7 @@ export async function exportSketchToDxf(
     showSaveDialog,
   } = dependencies
 
-  let toastId: string
+  let toastId: string | undefined = undefined
 
   try {
     // Get the plane artifact associated with this sketch operation
