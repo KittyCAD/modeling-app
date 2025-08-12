@@ -19,6 +19,7 @@ import { PATHS } from '@src/lib/paths'
 import { engineCommandManager, kclManager } from '@src/lib/singletons'
 import type { IndexLoaderData } from '@src/lib/types'
 import { commandBarActor } from '@src/lib/singletons'
+import env from '@src/env'
 
 interface ProjectSidebarMenuProps extends React.PropsWithChildren {
   enableMenu?: boolean
@@ -62,8 +63,15 @@ function AppLogoLink({
   file?: IndexLoaderData['file']
 }) {
   const { onProjectClose } = useLspContext()
+  const baseDomain = env().VITE_KITTYCAD_BASE_DOMAIN
+  let backgroundLogoCSS = 'bg-gradient-to-b from-primary to-chalkboard-90'
+  if (baseDomain === 'zoo.dev') {
+    backgroundLogoCSS = ''
+  } else if (baseDomain === 'zoogov.dev') {
+    backgroundLogoCSS = `bg-[url('/flag.svg')] bg-cover bg-no-repeat bg-chalkboard-80`
+  }
   const wrapperClassName =
-    "relative h-full grid flex-none place-content-center group p-1.5 before:block before:content-[''] before:absolute before:inset-0 before:bottom-1 before:z-[-1] before:bg-primary before:rounded-b-sm"
+    `relative h-full grid flex-none place-content-center group p-1.5 before:block before:content-[''] before:absolute before:inset-0 before:bottom-1 before:z-[-1] before:bg-primary before:rounded-b-sm ${backgroundLogoCSS}`
   const logoClassName = 'w-auto h-4 text-chalkboard-10'
 
   return isDesktop() ? (
