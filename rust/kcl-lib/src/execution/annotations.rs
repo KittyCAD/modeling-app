@@ -63,7 +63,7 @@ pub enum WarningLevel {
 }
 
 impl WarningLevel {
-    pub(super) fn severity(self) -> Option<Severity> {
+    pub(crate) fn severity(self) -> Option<Severity> {
         match self {
             WarningLevel::Allow => None,
             WarningLevel::Warn => Some(Severity::Warning),
