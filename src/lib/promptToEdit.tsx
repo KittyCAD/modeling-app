@@ -99,7 +99,7 @@ async function submitTextToCadRequest(
     return new Error(errorData.message || 'Unknown error')
   }
 
-  connectReasoningStream(data.id)
+  connectReasoningStream(token, data.id)
 
   return data as TextToCadMultiFileIteration_type
 }

@@ -1,10 +1,9 @@
 // wsReasoning.ts
 // Logs every frame with the async-op `id`, closes on {"type":"end_of_stream"}
 
-import env from '@src/env'
 import { withWebSocketURL } from '@src/lib/withBaseURL'
 
-export function connectReasoningStream(id: string): void {
+export function connectReasoningStream(token: string, id: string): void {
   const url = withWebSocketURL('').replace(
     '/ws/modeling/commands',
     `/ws/ml/reasoning/${id}`
@@ -16,7 +15,7 @@ export function connectReasoningStream(id: string): void {
     const authMessage = {
       type: 'headers',
       headers: {
-        Authorization: `Bearer ${env().VITE_KITTYCAD_API_TOKEN}`,
+        Authorization: `Bearer ${token}`,
       },
     }
     ws.send(JSON.stringify(authMessage)) // 🔸 send immediately

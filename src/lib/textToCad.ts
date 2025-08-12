@@ -52,7 +52,9 @@ export async function submitTextToCadPrompt(
     return new Error('No id returned from Text-to-CAD API')
   }
 
-  connectReasoningStream(data.id)
+  if (token) {
+    connectReasoningStream(token, data.id)
+  }
 
   return data
 }
