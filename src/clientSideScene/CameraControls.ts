@@ -7,6 +7,8 @@ import { isArray } from '@src/lib/utils'
 import type { EngineStreamActor } from '@src/machines/engineStreamMachine'
 import * as TWEEN from '@tweenjs/tween.js'
 import Hammer from 'hammerjs'
+import type {
+  Camera} from 'three';
 import {
   Euler,
   MathUtils,
@@ -123,6 +125,8 @@ export class CameraControls {
   wasDragging: boolean
   mouseDownPosition: Vector2
   mouseNewPosition: Vector2
+  worldDownPosition: Vector3
+  cameraDown: Camera
   oldCameraState: undefined | CameraViewState_type
   rotationSpeed = 0.3
   enableRotate = true
@@ -133,7 +137,7 @@ export class CameraControls {
   lastPerspectiveFov = 45
   pendingZoom: number | null = null
   pendingRotation: Vector2 | null = null
-  pendingPan: Vector2 | null = null
+  pendingPan: Vector3 | null = null
   interactionGuards: MouseGuard = cameraMouseDragGuards.Zoo
   isFovAnimationInProgress = false
   perspectiveFovBeforeOrtho = 45
@@ -152,19 +156,21 @@ export class CameraControls {
   private _lastWheelEvent: WheelEvent | null = null
 
   // Converts a screen space coordinate to world space
-  private screenToWorld(event: WheelEvent): Vector3 {
+  private screenToWorld(
+    event: WheelEvent | PointerEvent,
+    camera?: Camera
+  ): Vector3 {
     let x = event.offsetX
     let y = event.offsetY
     if (event.target !== this.domElement) {
       // There are some divs over the canvas that change event.offsetX, so manually calculate it
       // We could just do this by default but the getBoundingClientRect() can be expensive
       const rect = this.domElement.getBoundingClientRect()
-      // CSS pixels relative to the canvas box:
       x = event.clientX - rect.left
       y = event.clientY - rect.top
     }
 
-    // Ideally we would have access to renderer drawingbuffer size
+    // Ideally we would have access to renderer drawing buffer size
     const width = this.domElement.clientWidth
     const height = this.domElement.clientHeight
     const ndc = new Vector3(
@@ -172,7 +178,7 @@ export class CameraControls {
       -(y / height) * 2 + 1,
       0 // NDC z: 0 (halfway between camera near and far)
     )
-    return ndc.unproject(this.camera)
+    return ndc.unproject(camera || this.camera)
   }
 
   setEngineCameraProjection(projection: CameraProjectionType) {
@@ -302,6 +308,8 @@ export class CameraControls {
     this.wasDragging = false
     this.mouseDownPosition = new Vector2()
     this.mouseNewPosition = new Vector2()
+    this.worldDownPosition = new Vector3()
+    this.cameraDown = this.camera.clone()
 
     this.domElement.addEventListener('pointerdown', this.onMouseDown)
     this.domElement.addEventListener('pointermove', this.onMouseMove)
@@ -449,6 +457,8 @@ export class CameraControls {
     // Reset the wasDragging flag to false when starting a new drag
     this.wasDragging = false
     this.mouseDownPosition.set(event.clientX, event.clientY)
+    this.worldDownPosition = this.screenToWorld(event).clone()
+    this.cameraDown = this.camera.clone()
     let interaction = this.getInteractionType(event)
     if (interaction === 'none') return
     this.handleStart()
@@ -489,6 +499,7 @@ export class CameraControls {
 
       if (this.syncDirection === 'engineToClient') {
         this.moveSender.send(() => {
+          console.log('move', event.clientX)
           this.doMove(interaction, [event.clientX, event.clientY])
         })
         return
@@ -507,15 +518,21 @@ export class CameraControls {
         this.pendingZoom = this.pendingZoom ? this.pendingZoom : 1
         this.pendingZoom *= 1 + deltaMove.y * 0.01
       } else if (interaction === 'pan') {
-        this.pendingPan = this.pendingPan ? this.pendingPan : new Vector2()
-        let distance = this.camera.position.distanceTo(this.target)
-        if (this.camera instanceof OrthographicCamera) {
-          const zoomFudgeFactor = 2280
-          distance = zoomFudgeFactor / (this.camera.zoom * 45)
+        this.pendingPan = this.pendingPan ?? new Vector3()
+        if (this.camera instanceof PerspectiveCamera) {
+          const distance = this.camera.position.distanceTo(this.target)
+          // if (this.camera instanceof OrthographicCamera) {
+          //   const zoomFudgeFactor = 2280
+          //   distance = zoomFudgeFactor / (this.camera.zoom * 45)
+          // }
+          const panSpeed =
+            (distance / 1000 / 45) * this.perspectiveFovBeforeOrtho
+          this.pendingPan.x += -deltaMove.x * panSpeed
+          this.pendingPan.y += deltaMove.y * panSpeed
+        } else {
+          const newPosition = this.screenToWorld(event, this.cameraDown)
+          this.pendingPan = newPosition.sub(this.worldDownPosition)
         }
-        const panSpeed = (distance / 1000 / 45) * this.perspectiveFovBeforeOrtho
-        this.pendingPan.x += -deltaMove.x * panSpeed
-        this.pendingPan.y += deltaMove.y * panSpeed
       }
     } else {
       /**
@@ -849,18 +866,27 @@ export class CameraControls {
     }
 
     if (this.pendingPan) {
-      // move camera left/right and up/down
-      const offset = this.camera.position.clone().sub(this.target)
-      const direction = offset.clone().normalize()
-      const cameraQuaternion = this.camera.quaternion
-      const up = new Vector3(0, 1, 0).applyQuaternion(cameraQuaternion)
-      const right = new Vector3().crossVectors(up, direction)
-      right.multiplyScalar(this.pendingPan.x)
-      up.multiplyScalar(this.pendingPan.y)
-      const newPosition = this.camera.position.clone().add(right).add(up)
-      this.target.add(right)
-      this.target.add(up)
-      this.camera.position.copy(newPosition)
+      if (this.camera instanceof PerspectiveCamera) {
+        // move camera left/right and up/down
+        const forward = this.camera.position
+          .clone()
+          .sub(this.target)
+          .normalize()
+        const cameraQuaternion = this.camera.quaternion
+        const up = new Vector3(0, 1, 0).applyQuaternion(cameraQuaternion)
+        const right = new Vector3().crossVectors(up, forward)
+        right.multiplyScalar(this.pendingPan.x)
+        up.multiplyScalar(this.pendingPan.y)
+        const newPosition = this.camera.position.clone().add(right).add(up)
+        this.target.add(right)
+        this.target.add(up)
+        this.camera.position.copy(newPosition)
+      } else {
+        const newPos = this.cameraDown.position.clone().sub(this.pendingPan)
+        const oldPos = this.camera.position.clone()
+        this.camera.position.copy(newPos)
+        this.target.add(this.camera.position.clone().sub(oldPos))
+      }
       this.pendingPan = null
       didChange = true
     }
