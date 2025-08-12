@@ -4,12 +4,21 @@ import { Fragment, useState } from 'react'
 import { isDesktop } from '@src/lib/isDesktop'
 import { ActionButton } from '@src/components/ActionButton'
 
-function SupportedDomainsRadioGroup ({
+interface Domain {
+  name: string
+}
+
+function SupportedDomainsRadioGroup({
   selected,
   setSelected,
-  domains
+  domains,
+}: {
+  selected: string
+  setSelected: (environment: string) => void
+  domains: Domain[]
 }) {
-return (<div className="w-full py-4">
+  return (
+    <div className="w-full py-4">
       <div className="mx-auto w-full max-w-md">
         <RadioGroup value={selected} onChange={setSelected}>
           <div className="space-y-2">
@@ -27,7 +36,7 @@ return (<div className="w-full py-4">
                     relative flex cursor-pointer rounded-lg px-2 py-1 shadow-md focus:outline-none`
                 }
               >
-                {({ active, checked }) => (
+                {({ checked }) => (
                   <>
                     <div className="flex w-full items-center justify-between">
                       <div className="flex items-center">
@@ -44,7 +53,6 @@ return (<div className="w-full py-4">
                       </div>
                       {checked && (
                         <div className="shrink-0 text-white">
-
                           <CustomIcon
                             name="checkmark"
                             className="w-4 h-4 text-chalkboard-70 dark:text-chalkboard-40"
@@ -59,7 +67,8 @@ return (<div className="w-full py-4">
           </div>
         </RadioGroup>
       </div>
-    </div>)
+    </div>
+  )
 }
 
 export const AdvancedSignInOptions = ({
@@ -73,16 +82,18 @@ export const AdvancedSignInOptions = ({
   selectedEnvironment: string
   setSelectedEnvironment: (environment: string) => void
 }) => {
-  const domains = [{
-                      name:'zoo.dev',
-                    },
-                    {
-                      name:'zoogov.dev',
-                    },
-                    {
-                      name:'dev.zoo.dev'
-                    }]
-  const [showCustomInput, setShowCustomInput ] = useState(false)
+  const domains: Domain[] = [
+    {
+      name: 'zoo.dev',
+    },
+    {
+      name: 'zoogov.dev',
+    },
+    {
+      name: 'dev.zoo.dev',
+    },
+  ]
+  const [showCustomInput, setShowCustomInput] = useState(false)
 
   return isDesktop() ? (
     <div className="flex flex-row items-center">
@@ -138,19 +149,21 @@ export const AdvancedSignInOptions = ({
                 <ActionButton
                   Element="button"
                   className={'text-xs border-none pl-0'}
-                  onClick={() => setShowCustomInput(show => !show)}
+                  onClick={() => setShowCustomInput((show) => !show)}
                 >
                   show advanced options
                   <CustomIcon
                     name="caretDown"
-                    className={`w-4 h-4 ${!showCustomInput ? '' : 'ui-open:rotate-180' } `}
+                    className={`w-4 h-4 ${!showCustomInput ? '' : 'ui-open:rotate-180'} `}
                   />
                 </ActionButton>
-                { showCustomInput && (<div className="flex flex-col items-start py-0.5">
-                  <span className="text-xs text-chalkboard-70 dark:text-chalkboard-30">
-                    Domain
-                  </span>
-                </div>)}
+                {showCustomInput && (
+                  <div className="flex flex-col items-start py-0.5">
+                    <span className="text-xs text-chalkboard-70 dark:text-chalkboard-30">
+                      Domain
+                    </span>
+                  </div>
+                )}
 
                 <Combobox
                   value={selectedEnvironment}
@@ -166,20 +179,21 @@ export const AdvancedSignInOptions = ({
                     />
                   )}
                 </Combobox>
-                { showCustomInput && (<div className="flex flex-col items-start py-0.5">
-                  <span className="text-xs text-chalkboard-70 dark:text-chalkboard-30">
-                    Connection pool
-                  </span>
-                </div>) }
+                {showCustomInput && (
+                  <div className="flex flex-col items-start py-0.5">
+                    <span className="text-xs text-chalkboard-70 dark:text-chalkboard-30">
+                      Connection pool
+                    </span>
+                  </div>
+                )}
                 <Combobox value={pool} onChange={setPool}>
-
-                  { showCustomInput && (
-                  <Combobox.Input
-                    className="
+                  {showCustomInput && (
+                    <Combobox.Input
+                      className="
             gap-1 rounded h-9 mr-auto max-h-min min-w-max border py-1 flex items-center dark:hover:bg-chalkboard-80 text-xs text-chalkboard-70 dark:text-chalkboard-30 dark:bg-chalkboard-90"
-                    placeholder="auto"
-                    onChange={(event) => setPool(event.target.value)}
-                  />
+                      placeholder="auto"
+                      onChange={(event) => setPool(event.target.value)}
+                    />
                   )}
                 </Combobox>
               </>
