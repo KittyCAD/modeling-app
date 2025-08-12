@@ -7,8 +7,7 @@ import { isArray } from '@src/lib/utils'
 import type { EngineStreamActor } from '@src/machines/engineStreamMachine'
 import * as TWEEN from '@tweenjs/tween.js'
 import Hammer from 'hammerjs'
-import type {
-  Camera} from 'three';
+import type { Camera } from 'three'
 import {
   Euler,
   MathUtils,
