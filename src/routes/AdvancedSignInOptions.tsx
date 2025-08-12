@@ -39,7 +39,9 @@ function SupportedDomainsRadioGroup({
                           <RadioGroup.Label
                             as="p"
                             className={`text-xs px-1 ${
-                              checked ? 'text-white' : 'text-white'
+                              checked
+                                ? 'text-chalkboard-30'
+                                : 'text-chalkboard-70 dark:text-chalkboard-30'
                             }`}
                           >
                             {domain.name}
@@ -50,7 +52,7 @@ function SupportedDomainsRadioGroup({
                         <div className="shrink-0 text-white">
                           <CustomIcon
                             name="checkmark"
-                            className="w-4 h-4 text-chalkboard-70 dark:text-chalkboard-40"
+                            className="w-4 h-4 text-chalkboard-10 dark:text-chalkboard-40"
                           />
                         </div>
                       )}
@@ -143,7 +145,9 @@ export const AdvancedSignInOptions = ({
                 />
                 <ActionButton
                   Element="button"
-                  className={'text-xs border-none pl-0  pb-2'}
+                  className={
+                    'text-xs text-chalkboard-70 dark:text-chalkboard-30 border-none pl-0  pb-2'
+                  }
                   onClick={() => setShowCustomInput((show) => !show)}
                 >
                   Advanced options
