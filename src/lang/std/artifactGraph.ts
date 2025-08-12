@@ -166,7 +166,7 @@ export function getArtifactOfTypes<T extends Artifact['type'][]>(
   if (!artifact) return new Error(`No artifact found with key ${key}`)
   if (!types.includes(artifact?.type))
     return new Error(`Expected ${types} but got ${artifact?.type}`)
-  return artifact
+  return artifact as Extract<Artifact, { type: T[number] }>
 }
 
 export function expandPlane(
