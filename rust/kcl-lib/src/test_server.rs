@@ -2,6 +2,8 @@
 
 use std::path::PathBuf;
 
+use kittycad_modeling_cmds::websocket::RawFile;
+
 use crate::{
     ConnectionError, ExecError, KclError, KclErrorWithOutputs, Program,
     engine::new_zoo_client,
@@ -29,6 +31,35 @@ pub async fn execute_and_snapshot(code: &str, current_file: Option<PathBuf>) -> 
     res
 }
 
+pub struct Snapshot3d {
+    /// Bytes of the snapshot.
+    pub image: image::DynamicImage,
+    /// Various GLTF files for the resulting export.
+    pub gltf: Vec<RawFile>,
+}
+
+/// Executes a kcl program and takes a snapshot of the result.
+pub async fn execute_and_snapshot_3d(code: &str, current_file: Option<PathBuf>) -> Result<Snapshot3d, ExecError> {
+    let ctx = new_context(true, current_file).await?;
+    let program = Program::parse_no_errs(code).map_err(KclErrorWithOutputs::no_outputs)?;
+    let image = do_execute_and_snapshot(&ctx, program)
+        .await
+        .map(|(_, _, snap)| snap)
+        .map_err(|err| err.error)?;
+    let gltf_res = ctx
+        .export(kittycad_modeling_cmds::format::OutputFormat3d::Gltf(Default::default()))
+        .await;
+    let gltf = match gltf_res {
+        Err(err) if err.message() == "Nothing to export" => Vec::new(),
+        Err(err) => {
+            eprintln!("Error exporting: {}", err.message());
+            Vec::new()
+        }
+        Ok(x) => x,
+    };
+    ctx.close().await;
+    Ok(Snapshot3d { image, gltf })
+}
 /// Executes a kcl program and takes a snapshot of the result.
 /// This returns the bytes of the snapshot.
 #[cfg(test)]

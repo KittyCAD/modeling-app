@@ -48,6 +48,8 @@ const IF_ELSE_CANNOT_BE_EMPTY: &str = "`if` and `else` blocks cannot be empty";
 const ELSE_STRUCTURE: &str = "This `else` should be followed by a {, then a block of code, then a }";
 const ELSE_MUST_END_IN_EXPR: &str = "This `else` block needs to end in an expression, which will be the value if no preceding `if` condition was matched";
 
+const KEYWORD_EXPECTING_IDENTIFIER: &str = "Expected an identifier, but found a reserved keyword.";
+
 pub fn run_parser(i: TokenSlice) -> super::ParseResult {
     let _stats = crate::log::LogPerfStats::new("Parsing");
     ParseContext::init();
@@ -787,7 +789,7 @@ fn array_separator(i: &mut TokenSlice) -> ModalResult<()> {
         // Normally you need a comma.
         comma_sep,
         // But, if the array is ending, no need for a comma.
-        peek(preceded(opt(whitespace), close_bracket)).void(),
+        peek(preceded((opt(non_code_node), opt(whitespace)), close_bracket)).void(),
     ))
     .parse_next(i)
 }
@@ -800,7 +802,7 @@ pub(crate) fn array_elem_by_elem(i: &mut TokenSlice) -> ModalResult<Node<ArrayEx
         0..,
         alt((
             terminated(expression.map(NonCodeOr::Code), array_separator),
-            terminated(non_code_node.map(NonCodeOr::NonCode), whitespace),
+            terminated(non_code_node.map(NonCodeOr::NonCode), opt(whitespace)),
         )),
     )
     .context(expected("array contents, a list of elements (like [1, 2, 3])"))
@@ -930,7 +932,7 @@ fn object_property_same_key_and_val(i: &mut TokenSlice) -> ModalResult<Node<Obje
 }
 
 fn object_property(i: &mut TokenSlice) -> ModalResult<Node<ObjectProperty>> {
-    let key = identifier.context(expected("the property's key (the name or identifier of the property), e.g. in 'height = 4', 'height' is the property key")).parse_next(i)?;
+    let key_token = identifier_or_keyword.context(expected("the property's key (the name or identifier of the property), e.g. in 'height = 4', 'height' is the property key")).parse_next(i)?;
     ignore_whitespace(i);
     // Temporarily accept both `:` and `=` for compatibility.
     let sep = alt((colon, equals))
@@ -956,6 +958,18 @@ fn object_property(i: &mut TokenSlice) -> ModalResult<Node<ObjectProperty>> {
             ));
         }
     };
+
+    // Now that we've verified that we can parse everything, ensure that the key
+    // is valid.  If not, we can cut.
+    let key = Node::<Identifier>::try_from(key_token).map_err(|comp_err| {
+        ErrMode::Cut(ContextError {
+            context: Default::default(),
+            cause: Some(CompilationError::err(
+                comp_err.source_range,
+                KEYWORD_EXPECTING_IDENTIFIER,
+            )),
+        })
+    })?;
 
     let result = Node::new_node(
         key.start,
@@ -987,7 +1001,7 @@ fn property_separator(i: &mut TokenSlice) -> ModalResult<()> {
         // Normally you need a comma.
         comma_sep,
         // But, if the object is ending, no need for a comma.
-        peek(preceded(opt(whitespace), close_brace)).void(),
+        peek(preceded((opt(non_code_node), opt(whitespace)), close_brace)).void(),
     ))
     .parse_next(i)
 }
@@ -1017,7 +1031,7 @@ pub(crate) fn object(i: &mut TokenSlice) -> ModalResult<Node<ObjectExpression>> 
     let properties: Vec<_> = repeat(
         0..,
         alt((
-            terminated(non_code_node.map(NonCodeOr::NonCode), whitespace),
+            terminated(non_code_node.map(NonCodeOr::NonCode), opt(whitespace)),
             terminated(
                 alt((object_property, object_property_same_key_and_val)),
                 property_separator,
@@ -1584,18 +1598,18 @@ fn function_body(i: &mut TokenSlice) -> ModalResult<Node<Program>> {
         // The separator whitespace might be important:
         // if it has an empty line, it should be considered a noncode token, because the user
         // deliberately put an empty line there. We should track this and preserve it.
-        if let Ok(ref ws_token) = found_ws {
-            if ws_token.value.contains("\n\n") || ws_token.value.contains("\n\r\n") {
-                things_within_body.push(WithinFunction::NonCode(Node::new(
-                    NonCodeNode {
-                        value: NonCodeValue::NewLine,
-                        digest: None,
-                    },
-                    ws_token.start,
-                    ws_token.end,
-                    ws_token.module_id,
-                )));
-            }
+        if let Ok(ref ws_token) = found_ws
+            && (ws_token.value.contains("\n\n") || ws_token.value.contains("\n\r\n"))
+        {
+            things_within_body.push(WithinFunction::NonCode(Node::new(
+                NonCodeNode {
+                    value: NonCodeValue::NewLine,
+                    digest: None,
+                },
+                ws_token.start,
+                ws_token.end,
+                ws_token.module_id,
+            )));
         }
 
         match (found_ws, last_match_was_empty_line) {
@@ -1849,16 +1863,14 @@ pub(super) fn import_stmt(i: &mut TokenSlice) -> ModalResult<BoxNode<ImportState
     if let ImportSelector::None {
         alias: ref mut selector_alias,
     } = selector
-    {
-        if let Some(alias) = opt(preceded(
+        && let Some(alias) = opt(preceded(
             (whitespace, import_as_keyword, whitespace),
             identifier.context(expected("an identifier to alias the import")),
         ))
         .parse_next(i)?
-        {
-            end = alias.end;
-            *selector_alias = Some(alias);
-        }
+    {
+        end = alias.end;
+        *selector_alias = Some(alias);
     }
 
     let path_string = match path.inner.value {
@@ -2424,6 +2436,12 @@ impl TryFrom<Token> for Node<Identifier> {
 fn identifier(i: &mut TokenSlice) -> ModalResult<Node<Identifier>> {
     any.try_map(Node::<Identifier>::try_from)
         .context(expected("an identifier, e.g. 'width' or 'myPart'"))
+        .parse_next(i)
+}
+
+fn identifier_or_keyword(i: &mut TokenSlice) -> ModalResult<Token> {
+    any.verify(|token: &Token| token.token_type == TokenType::Word || token.token_type == TokenType::Keyword)
+        .context(expected("an identifier or keyword"))
         .parse_next(i)
 }
 
@@ -4842,6 +4860,46 @@ export fn cos(num: number(rad)): number(_) {}"#;
     }
 
     #[test]
+    fn array_no_trailing_comma_with_comment() {
+        let program = r#"[
+            1, // one
+            2, // two
+            3  // three
+        ]"#;
+        let module_id = ModuleId::default();
+        let tokens = crate::parsing::token::lex(program, module_id).unwrap();
+        let _arr = array_elem_by_elem(&mut tokens.as_slice()).unwrap();
+    }
+
+    #[test]
+    fn array_block_comment_no_whitespace() {
+        let program = r#"[1/* comment*/]"#;
+        let module_id = ModuleId::default();
+        let tokens = crate::parsing::token::lex(program, module_id).unwrap();
+        let _arr = array_elem_by_elem(&mut tokens.as_slice()).unwrap();
+    }
+
+    #[test]
+    fn object_no_trailing_comma_with_comment() {
+        let program = r#"{
+            x=1, // one
+            y=2, // two
+            z=3  // three
+        }"#;
+        let module_id = ModuleId::default();
+        let tokens = crate::parsing::token::lex(program, module_id).unwrap();
+        let _arr = object(&mut tokens.as_slice()).unwrap();
+    }
+
+    #[test]
+    fn object_block_comment_no_whitespace() {
+        let program = r#"{x=1/* comment*/}"#;
+        let module_id = ModuleId::default();
+        let tokens = crate::parsing::token::lex(program, module_id).unwrap();
+        let _arr = object(&mut tokens.as_slice()).unwrap();
+    }
+
+    #[test]
     fn basic_if_else() {
         let some_program_string = "if true {
             3
@@ -5353,6 +5411,18 @@ bar = 1
         let cause = must_fail_compilation(program_source);
         assert!(!cause.was_fatal);
         assert_eq!(cause.err.message, MISSING_ELSE);
+        assert_eq!(cause.err.source_range.start(), expected_src_start);
+    }
+
+    #[test]
+    fn test_sensible_error_when_using_keyword_as_object_key() {
+        let source = r#"material = {
+  type = "Steel 45"
+}"#;
+        let expected_src_start = source.find("type").unwrap();
+        let cause = must_fail_compilation(source);
+        assert!(cause.was_fatal);
+        assert_eq!(cause.err.message, KEYWORD_EXPECTING_IDENTIFIER);
         assert_eq!(cause.err.source_range.start(), expected_src_start);
     }
 

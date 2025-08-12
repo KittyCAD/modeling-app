@@ -476,10 +476,10 @@ impl ModData {
 
         #[allow(clippy::iter_over_hash_type)]
         for (k, v) in &self.children {
-            if k.starts_with("M:") {
-                if let Some(result) = v.expect_mod().find_by_name(name) {
-                    return Some(result);
-                }
+            if k.starts_with("M:")
+                && let Some(result) = v.expect_mod().find_by_name(name)
+            {
+                return Some(result);
             }
         }
 
@@ -814,7 +814,16 @@ impl ArgData {
         }
         match self.ty.as_deref() {
             Some("Sketch") if self.kind == ArgKind::Special => None,
-            Some(s) if s.starts_with("number") => Some((index, format!(r#"{label}${{{index}:10}}"#))),
+            Some(s) if s.starts_with("number") => {
+                let value = match &*self.name {
+                    "angleStart" => "0",
+                    "angleEnd" => "180deg",
+                    "angle" => "180deg",
+                    "arcDegrees" => "360deg",
+                    _ => "10",
+                };
+                Some((index, format!(r#"{label}${{{index}:{value}}}"#)))
+            }
             Some("Point2d") => Some((index + 1, format!(r#"{label}[${{{}:0}}, ${{{}:0}}]"#, index, index + 1))),
             Some("Point3d") => Some((
                 index + 2,
@@ -1069,10 +1078,10 @@ trait ApplyMeta {
             }
         }
         assert!(example.is_none());
-        if let Some(d) = &mut description {
-            if d.is_empty() {
-                description = None;
-            }
+        if let Some(d) = &mut description
+            && d.is_empty()
+        {
+            description = None;
         }
 
         self.apply_docs(
@@ -1251,15 +1260,15 @@ mod test {
     #[test]
     fn smoke() {
         let result = walk_prelude();
-        if let DocData::Const(d) = result.find_by_name("PI").unwrap() {
-            if d.name == "PI" {
-                assert!(d.value.as_ref().unwrap().starts_with('3'));
-                assert_eq!(d.ty, Some("number(_?)".to_owned()));
-                assert_eq!(d.qual_name, "std::math::PI");
-                assert!(d.summary.is_some());
-                assert!(!d.examples.is_empty());
-                return;
-            }
+        if let DocData::Const(d) = result.find_by_name("PI").unwrap()
+            && d.name == "PI"
+        {
+            assert!(d.value.as_ref().unwrap().starts_with('3'));
+            assert_eq!(d.ty, Some("number(_?)".to_owned()));
+            assert_eq!(d.qual_name, "std::math::PI");
+            assert!(d.summary.is_some());
+            assert!(!d.examples.is_empty());
+            return;
         }
         panic!("didn't find PI");
     }
@@ -1344,7 +1353,7 @@ mod test {
             if i != number {
                 continue;
             }
-            let result = match crate::test_server::execute_and_snapshot(&eg.0, None).await {
+            let result = match crate::test_server::execute_and_snapshot_3d(&eg.0, None).await {
                 Err(crate::errors::ExecError::Kcl(e)) => {
                     panic!("Error testing example {}{i}: {}", d.name, e.error.message());
                 }
@@ -1359,9 +1368,18 @@ mod test {
                     "tests/outputs/serial_test_example_fn_{}{i}.png",
                     qualname.replace("::", "-")
                 ),
-                &result,
+                &result.image,
                 0.99,
             );
+            for gltf_file in result.gltf {
+                let path = format!(
+                    "tests/outputs/models/serial_test_example_fn_{}{i}_{}",
+                    qualname.replace("::", "-"),
+                    gltf_file.name,
+                );
+                let mut f = std::fs::File::create(path).expect("could not create file");
+                std::io::Write::write_all(&mut f, &gltf_file.contents).expect("could not write to file");
+            }
             return;
         }
 
