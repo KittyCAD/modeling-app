@@ -5,7 +5,7 @@ import { defineConfig } from 'vite'
 import topLevelAwait from 'vite-plugin-top-level-await'
 import viteTsconfigPaths from 'vite-tsconfig-paths'
 
-import { pluginExposeRenderer, csp } from './vite.base.config'
+import { pluginExposeRenderer, indexHtmlCsp } from './vite.base.config'
 
 // https://vitejs.dev/config
 export default defineConfig((env) => {
@@ -23,7 +23,7 @@ export default defineConfig((env) => {
     // Needed for electron-forge (in npm run tron:start)
     optimizeDeps: { esbuildOptions: { target: 'es2022' } },
     plugins: [
-      csp(),
+      indexHtmlCsp('electron'),
       pluginExposeRenderer(name),
       viteTsconfigPaths(),
       lezer(),

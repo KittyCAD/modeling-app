@@ -7,12 +7,10 @@ import version from 'vite-plugin-package-version'
 import topLevelAwait from 'vite-plugin-top-level-await'
 import viteTsconfigPaths from 'vite-tsconfig-paths'
 import { configDefaults, defineConfig } from 'vitest/config'
-import { csp } from './vite.base.config'
+import { indexHtmlCsp } from './vite.base.config'
 
 export default defineConfig(({ command, mode }) => {
   const runMillion = process.env.RUN_MILLION
-
-  console.log(`Vite running in ${mode} mode.`)
 
   return {
     server: {
@@ -80,9 +78,14 @@ export default defineConfig(({ command, mode }) => {
     },
     plugins: [
       react(),
-      // Web deployments that are deployed to production don't need a CSP in the indexHTML.
-      // They get it through vercel.json.
-      csp(mode == 'production'),
+      indexHtmlCsp(
+        // production means it was build using `vite build`
+        mode == 'production'
+          ? process.env.VITE_KITTYCAD_BASE_DOMAIN === 'dev.zoo.dev'
+            ? 'vercel-preview'
+            : 'vercel-production'
+          : 'local'
+      ),
       viteTsconfigPaths(),
       eslint(),
       version(),
