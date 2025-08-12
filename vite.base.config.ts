@@ -115,3 +115,55 @@ export function pluginHotRestart(command: 'reload' | 'restart'): Plugin {
     },
   }
 }
+
+export function csp(disable?: boolean): Plugin {
+  /*
+    1. By default, only allow scripts from the same origin.
+    2. Allow inline styles and styles from the same origin. This is how we use CSS rightnow.
+    3. Allow images from any source and inline images. We fetch user profile images from any origin.
+    4. Allow scripts from the same origin and from Plausible Analytics. Allow WASM execution.
+    5. Allow WebSocket connections and fetches to our API.
+     */
+  let csp = `
+        default-src 'self';
+        style-src 'self' 'unsafe-inline';
+        img-src * 'unsafe-inline';
+        script-src 'self' https://plausible.corp.zoo.dev/js/script.tagged-events.js 'wasm-unsafe-eval';
+        connect-src 'self' https://plausible.corp.zoo.dev https://api.zoo.dev wss://api.zoo.dev https://api.dev.zoo.dev wss://api.dev.zoo.dev;
+        object-src 'none';
+        frame-ancestors 'none'
+    `
+
+  /*
+
+            'Reporting-Endpoints':
+          'csp-reporting-endpoint="https://csp-logger.vercel.app/csp-report"',
+        'Content-Security-Policy-Report-Only':
+          "default-src 'self'; " +
+          "style-src 'self' 'unsafe-inline'; " +
+          "img-src * 'unsafe-inline'; " +
+          "script-src 'self' https://plausible.corp.zoo.dev/js/script.tagged-events.js 'wasm-unsafe-eval'; " +
+          "connect-src 'self' https://api.zoo.dev wss://api.zoo.dev https://api.dev.zoo.dev wss://api.dev.zoo.dev; " +
+          "object-src 'none'; " +
+          "frame-ancestors 'none'; " +
+          'report-uri https://csp-logger.vercel.app/csp-report;' +
+          'report-to csp-reporting-endpoint',
+
+     */
+
+  return {
+    name: 'html-transform',
+    transformIndexHtml(html: string) {
+      let indexHtmlRegex =
+        /<meta\shttp-equiv="Content-Security-Policy"\scontent="(.*?)">/
+      if (disable) {
+        return html.replace(indexHtmlRegex, '')
+      } else {
+        return html.replace(
+          indexHtmlRegex,
+          `<meta http-equiv="Content-Security-Policy" content="${csp}">`
+        )
+      }
+    },
+  }
+}

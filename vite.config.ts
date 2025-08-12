@@ -7,6 +7,7 @@ import version from 'vite-plugin-package-version'
 import topLevelAwait from 'vite-plugin-top-level-await'
 import viteTsconfigPaths from 'vite-tsconfig-paths'
 import { configDefaults, defineConfig } from 'vitest/config'
+import { csp } from './vite.base.config'
 
 export default defineConfig(({ command, mode }) => {
   const runMillion = process.env.RUN_MILLION
@@ -77,6 +78,9 @@ export default defineConfig(({ command, mode }) => {
     },
     plugins: [
       react(),
+      // Web deployments that are deployed to production don't need a CSP in the indexHTML.
+      // They get it through vercel.json.
+      csp(mode == 'production'),
       viteTsconfigPaths(),
       eslint(),
       version(),
