@@ -235,7 +235,7 @@ extrude001 = extrude(profile001, length = 5)`
     await expect(exportingToastMessage).not.toBeVisible()
 
     // Check for the exported DXF file
-    const exportFileName = 'sketch.dxf'
+    const exportFileName = 'sketch001.dxf'
     const dxfFileFullPath = path.resolve(
       getPlaywrightDownloadDir(tronApp.projectDirName),
       exportFileName
