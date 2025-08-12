@@ -12,7 +12,7 @@ import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { Themes, getSystemTheme } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
 import { returnSelfOrGetHostNameFromURL, toSync } from '@src/lib/utils'
-import { authActor, useSettings } from '@src/lib/singletons'
+import { authActor, useSettings, settingsActor } from '@src/lib/singletons'
 import { APP_VERSION, generateSignInUrl } from '@src/routes/utils'
 import { withAPIBaseURL, withSiteBaseURL } from '@src/lib/withBaseURL'
 import { updateEnvironment, updateEnvironmentPool } from '@src/env'
@@ -24,6 +24,7 @@ import {
   writeEnvironmentFile,
 } from '@src/lib/desktop'
 import { AdvancedSignInOptions } from '@src/routes/AdvancedSignInOptions'
+import { LightDarkToggle } from '@src/components/LightDarkMode'
 
 const subtleBorder =
   'border border-solid border-chalkboard-30 dark:border-chalkboard-80'
@@ -388,8 +389,17 @@ const SignIn = () => {
                 </ActionButton>
               </div>
             </div>
+            <div>
+            </div>
           </div>
+
         </div>
+
+              <LightDarkToggle
+                settingsActor={settingsActor}
+                settingsTheme={theme.current === Themes.System ? getSystemTheme() : theme.current}
+              >
+              </LightDarkToggle>
       </div>
     </main>
   )
