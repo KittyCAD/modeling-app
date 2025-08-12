@@ -29,6 +29,7 @@ import type { File as KittyCadLibFile } from '@kittycad/lib/dist/types/src/model
 import type { FileMeta } from '@src/lib/types'
 import type { RequestedKCLFile } from '@src/machines/systemIO/utils'
 import { withAPIBaseURL, withSiteBaseURL } from '@src/lib/withBaseURL'
+import { connectReasoningStream } from '@src/lib/reasoningWs'
 
 type KclFileMetaMap = {
   [execStateFileNamesIndex: number]: Extract<FileMeta, { type: 'kcl' }>
@@ -97,6 +98,8 @@ async function submitTextToCadRequest(
     const errorData = data as TextToCadErrorResponse
     return new Error(errorData.message || 'Unknown error')
   }
+
+  connectReasoningStream(data.id)
 
   return data as TextToCadMultiFileIteration_type
 }
