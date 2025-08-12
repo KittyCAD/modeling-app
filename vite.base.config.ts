@@ -116,9 +116,7 @@ export function pluginHotRestart(command: 'reload' | 'restart'): Plugin {
   }
 }
 
-export type CspMode = 'electron' | 'vercel' | 'local'
-
-export function indexHtmlCsp(mode: CspMode): Plugin {
+export function indexHtmlCsp(enabled: boolean): Plugin {
   const csp = [
     //  By default, only allow same origin.
     "default-src 'self'",
@@ -127,7 +125,7 @@ export function indexHtmlCsp(mode: CspMode): Plugin {
     // Allow images from any source and inline images. We fetch user profile images from any origin.
     "img-src * blob: 'unsafe-inline'",
     // Allow WebSocket connections and fetches to our API.
-    "connect-src 'self' https://plausible.corp.zoo.dev https://api.zoo.dev wss://api.zoo.dev https://api.dev.zoo.dev wss://api.dev.zoo.dev",
+    "connect-src 'self' https://plausible.corp.zoo.dev https://api.zoo.dev wss://api.zoo.dev https://api.dev.zoo.dev wss://api.dev.zoo.dev https://api.zoogov.dev wss://api.zoogov.dev",
     // Disallow legacy stuff
     "object-src 'none'",
   ]
@@ -171,7 +169,7 @@ export function indexHtmlCsp(mode: CspMode): Plugin {
     transformIndexHtml(html: string) {
       let indexHtmlRegex =
         /<meta\shttp-equiv="Content-Security-Policy"\scontent="(.*?)">/
-      if (mode == 'vercel') {
+      if (!enabled) {
         // Web deployments that are deployed to vercel don't need a CSP in the indexHTML.
         // They get it through vercel.json.
         return html.replace(indexHtmlRegex, '')
