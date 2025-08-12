@@ -389,17 +389,16 @@ const SignIn = () => {
                 </ActionButton>
               </div>
             </div>
-            <div>
-            </div>
+            <div></div>
           </div>
-
         </div>
 
-              <LightDarkToggle
-                settingsActor={settingsActor}
-                settingsTheme={theme.current === Themes.System ? getSystemTheme() : theme.current}
-              >
-              </LightDarkToggle>
+        <LightDarkToggle
+          settingsActor={settingsActor}
+          settingsTheme={
+            theme.current === Themes.System ? getSystemTheme() : theme.current
+          }
+        ></LightDarkToggle>
       </div>
     </main>
   )
