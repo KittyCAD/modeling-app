@@ -446,72 +446,43 @@ test.describe('Sketch tests', () => {
     homePage,
     scene,
     cmdBar,
+    toolbar,
   }) => {
     const u = await getUtils(page)
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `@settings(defaultLengthUnit=in)
-sketch001 = startSketchOn(XZ)
-    |> circle(center = [4.61, -5.01], radius = 8)`
+        `sketch001 = startSketchOn(XZ)
+  |> circle(center = [4.61, -5.01], radius = 8)`
       )
     })
 
     await homePage.goToModelingScene()
-    await scene.connectionEstablished()
     await scene.settled(cmdBar)
 
-    await expect(
-      page.getByRole('button', { name: 'Start Sketch' })
-    ).not.toBeDisabled()
-
-    await page.waitForTimeout(100)
-    await u.openAndClearDebugPanel()
-    await u.sendCustomCmd({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'default_camera_look_at',
-        vantage: { x: 0, y: -1250, z: 580 },
-        center: { x: 0, y: 0, z: 0 },
-        up: { x: 0, y: 0, z: 1 },
-      },
-    })
-    await page.waitForTimeout(100)
-    await u.sendCustomCmd({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'default_camera_get_settings',
-      },
-    })
-    await page.waitForTimeout(100)
-
-    const startPX = [667, 325]
-
+    const startPX = [987, 376]
     const dragPX = 40
 
-    await page.getByText('circle(center = [4.61, -5.01], radius = 8)').click()
-    await expect(
-      page.getByRole('button', { name: 'Edit Sketch' })
-    ).toBeVisible()
-    await page.getByRole('button', { name: 'Edit Sketch' }).click()
-    await page.waitForTimeout(400)
-
-    let prevContent = await page.locator('.cm-content').innerText()
-
+    let prevContent = await editor.getCurrentCode()
+    console.log('prevContent', prevContent)
+    await toolbar.editSketch()
     await expect(page.getByTestId('segment-overlay')).toHaveCount(1)
 
     await test.step('drag circle center handle', async () => {
-      await page.dragAndDrop('#stream', '#stream', {
-        sourcePosition: { x: startPX[0], y: startPX[1] },
-        targetPosition: { x: startPX[0] + dragPX, y: startPX[1] - dragPX },
+      await page.waitForTimeout(10000)
+      const sourcePosition = [startPX[0], startPX[1]] as const
+      const targetPosition = [startPX[0] + dragPX, startPX[1] - dragPX] as const
+      const [dragHandle] = scene.makeDragHelpers(...targetPosition, {
+        debug: true,
+      })
+      await dragHandle({
+        fromPoint: { x: sourcePosition[0], y: sourcePosition[1] },
       })
       await page.waitForTimeout(100)
 
       await editor.expectEditor.not.toContain(prevContent)
-
-      prevContent = await page.locator('.cm-content').innerText()
+      prevContent = await editor.getCurrentCode()
+      console.log('prevContent', prevContent)
     })
 
     await test.step('drag circle radius handle', async () => {
@@ -519,20 +490,29 @@ sketch001 = startSketchOn(XZ)
 
       const lineEnd = await u.getBoundingBox('[data-overlay-index="0"]')
       await page.waitForTimeout(100)
-      await page.dragAndDrop('#stream', '#stream', {
-        sourcePosition: { x: lineEnd.x - 5, y: lineEnd.y },
-        targetPosition: { x: lineEnd.x + dragPX * 2, y: lineEnd.y + dragPX },
+      const sourcePosition = [lineEnd.x - 5, lineEnd.y] as const
+      const targetPosition = [
+        lineEnd.x + dragPX * 2,
+        lineEnd.y + dragPX,
+      ] as const
+      const [dragHandle] = scene.makeDragHelpers(...targetPosition, {
+        debug: true,
+      })
+      await dragHandle({
+        fromPoint: { x: sourcePosition[0], y: sourcePosition[1] },
       })
       await editor.expectEditor.not.toContain(prevContent)
-      prevContent = await page.locator('.cm-content').innerText()
+      prevContent = await editor.getCurrentCode()
+      console.log('prevContent', prevContent)
     })
 
-    // expect the code to have changed
-    await editor.expectEditor.toContain(
-      `sketch001 = startSketchOn(XZ)
+    await test.step('expect the code to have changed', async () => {
+      await editor.expectEditor.toContain(
+        `sketch001 = startSketchOn(XZ)
     |> circle(center = [7.26, -2.37], radius = 11.44)`,
-      { shouldNormalise: true }
-    )
+        { shouldNormalise: true }
+      )
+    })
   })
   test('Can edit a sketch that has been extruded in the same pipe', async ({
     page,
