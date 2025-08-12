@@ -1435,20 +1435,17 @@ sketch001 = startSketchOn(XZ)
     await homePage.goToModelingScene()
     await toolbar.waitForFeatureTreeToBeBuilt()
     await scene.settled(cmdBar)
-
-    await (await toolbar.getFeatureTreeOperation('Sketch', 0)).dblclick()
-
-    await page.waitForTimeout(1000)
-
-    await page.mouse.move(1200, 139)
-    await page.mouse.down()
-    await page.mouse.move(870, 250)
-    await page.mouse.up()
+    await toolbar.editSketch()
+    const [dragToDifferentPoint] = scene.makeDragHelpers(1000, 177, {
+      debug: true,
+    })
+    await dragToDifferentPoint({
+      fromPoint: { x: 1400, y: 177 },
+    })
 
     await page.waitForTimeout(200)
-
     await editor.expectEditor.toContain(
-      `tangentialArc(angle = 234.01deg, radius = 4.08)`,
+      `tangentialArc(angle = 187.46deg, radius = 3.97)`,
       { shouldNormalise: true }
     )
   })
