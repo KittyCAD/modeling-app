@@ -70,8 +70,7 @@ function AppLogoLink({
   } else if (baseDomain === 'zoogov.dev') {
     backgroundLogoCSS = `bg-[url('/flag.svg')] bg-cover bg-no-repeat bg-chalkboard-80`
   }
-  const wrapperClassName =
-    `relative h-full grid flex-none place-content-center group p-1.5 before:block before:content-[''] before:absolute before:inset-0 before:bottom-1 before:z-[-1] before:bg-primary before:rounded-b-sm ${backgroundLogoCSS}`
+  const wrapperClassName = `relative h-full grid flex-none place-content-center group p-1.5 before:block before:content-[''] before:absolute before:inset-0 before:bottom-1 before:z-[-1] before:bg-primary before:rounded-b-sm ${backgroundLogoCSS}`
   const logoClassName = 'w-auto h-4 text-chalkboard-10'
 
   return isDesktop() ? (
@@ -82,7 +81,7 @@ function AppLogoLink({
         kclManager.switchedFiles = true
       }}
       to={PATHS.HOME}
-      className={wrapperClassName + ' hover:before:brightness-110'}
+      className={wrapperClassName}
     >
       <Logo data-onboarding-id="app-logo" className={logoClassName} />
       <span className="sr-only">{APP_NAME}</span>

@@ -26,14 +26,9 @@ function SupportedDomainsRadioGroup({
               <RadioGroup.Option
                 key={domain.name}
                 value={domain.name}
-                className={({ active, checked }) =>
-                  `${
-                    active
-                      ? 'ring-1 ring-white/60 ring-offset-1 ring-offset-chalkboard-300'
-                      : ''
-                  }
-                  ${checked ? 'bg-primary' : 'bg-chalkboard-10 text-chalkboard-70'}
-                    relative flex cursor-pointer rounded-lg px-2 py-1 shadow-md focus:outline-none`
+                className={({ checked }) =>
+                  `${checked ? 'bg-primary' : 'text-chalkboard-70'}
+                    relative flex cursor-pointer rounded py-1 focus:outline-none`
                 }
               >
                 {({ checked }) => (
@@ -43,8 +38,8 @@ function SupportedDomainsRadioGroup({
                         <div className="text-sm">
                           <RadioGroup.Label
                             as="p"
-                            className={`text-xs ${
-                              checked ? 'text-white' : 'text-gray-900'
+                            className={`text-xs px-1 ${
+                              checked ? 'text-white' : 'text-white'
                             }`}
                           >
                             {domain.name}
@@ -132,7 +127,7 @@ export const AdvancedSignInOptions = ({
           as={Fragment}
         >
           <Popover.Panel
-            className={`z-10 absolute top-full left-0 mt-1 p-2 w-52 bg-chalkboard-10 dark:bg-chalkboard-90
+            className={`z-10 flex flex-col absolute top-full left-0 mt-1 p-2 w-52 bg-chalkboard-10 dark:bg-chalkboard-90
           border border-solid border-chalkboard-20 dark:border-chalkboard-90 rounded
           shadow-lg`}
           >
@@ -148,10 +143,10 @@ export const AdvancedSignInOptions = ({
                 />
                 <ActionButton
                   Element="button"
-                  className={'text-xs border-none pl-0'}
+                  className={'text-xs border-none pl-0  pb-2'}
                   onClick={() => setShowCustomInput((show) => !show)}
                 >
-                  show advanced options
+                  Advanced options
                   <CustomIcon
                     name="caretDown"
                     className={`w-4 h-4 ${!showCustomInput ? '' : 'ui-open:rotate-180'} `}
@@ -171,7 +166,7 @@ export const AdvancedSignInOptions = ({
                 >
                   {showCustomInput && (
                     <Combobox.Input
-                      className="gap-1 rounded h-9 mr-auto max-h-min min-w-max border py-1 flex items-center dark:hover:bg-chalkboard-80 text-xs text-chalkboard-70 dark:text-chalkboard-30 dark:bg-chalkboard-90"
+                      className="gap-1 rounded h-6 border px-2 flex items-center dark:hover:bg-chalkboard-80 text-xs text-chalkboard-70 dark:text-chalkboard-30 dark:bg-chalkboard-90"
                       placeholder="auto"
                       onChange={(event) =>
                         setSelectedEnvironment(event.target.value)
@@ -180,7 +175,7 @@ export const AdvancedSignInOptions = ({
                   )}
                 </Combobox>
                 {showCustomInput && (
-                  <div className="flex flex-col items-start py-0.5">
+                  <div className="flex flex-col items-start py-1">
                     <span className="text-xs text-chalkboard-70 dark:text-chalkboard-30">
                       Connection pool
                     </span>
@@ -189,8 +184,7 @@ export const AdvancedSignInOptions = ({
                 <Combobox value={pool} onChange={setPool}>
                   {showCustomInput && (
                     <Combobox.Input
-                      className="
-            gap-1 rounded h-9 mr-auto max-h-min min-w-max border py-1 flex items-center dark:hover:bg-chalkboard-80 text-xs text-chalkboard-70 dark:text-chalkboard-30 dark:bg-chalkboard-90"
+                      className="gap-1 rounded h-6 border px-2 flex items-center dark:hover:bg-chalkboard-80 text-xs text-chalkboard-70 dark:text-chalkboard-30 dark:bg-chalkboard-90"
                       placeholder="auto"
                       onChange={(event) => setPool(event.target.value)}
                     />
