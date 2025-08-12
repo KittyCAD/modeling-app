@@ -469,7 +469,6 @@ test.describe('Sketch tests', () => {
     await expect(page.getByTestId('segment-overlay')).toHaveCount(1)
 
     await test.step('drag circle center handle', async () => {
-      await page.waitForTimeout(10000)
       const sourcePosition = [startPX[0], startPX[1]] as const
       const targetPosition = [startPX[0] + dragPX, startPX[1] - dragPX] as const
       const [dragHandle] = scene.makeDragHelpers(...targetPosition, {
