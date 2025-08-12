@@ -4,11 +4,14 @@ use kcl_lib::{
     lint::{checks, Discovered},
     ExecutorContext, UnitLength,
 };
-use kittycad_modeling_cmds::{self as kcmc, format::InputFormat3d, ImportFile};
+use kittycad_modeling_cmds::{
+    self as kcmc, format::InputFormat3d, shared::FileExportFormat, websocket::RawFile, ImageFormat, ImportFile,
+};
 use pyo3::{
     exceptions::PyException, prelude::PyModuleMethods, pyclass, pyfunction, pymethods, pymodule, types::PyModule,
     wrap_pyfunction, Bound, PyErr, PyResult, Python,
 };
+use pyo3_stub_gen::define_stub_info_gatherer;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
@@ -34,102 +37,6 @@ fn into_miette_for_parse(filename: &str, input: &str, error: kcl_lib::KclError) 
     };
     let report = miette::Report::new(report);
     pyo3::exceptions::PyException::new_err(format!("{report:?}"))
-}
-
-/// The variety of image formats snapshots may be exported to.
-#[derive(Serialize, Deserialize, PartialEq, Hash, Debug, Clone, Copy)]
-#[pyclass(eq, eq_int)]
-#[serde(rename_all = "lowercase")]
-pub enum ImageFormat {
-    /// .png format
-    Png,
-    /// .jpeg format
-    Jpeg,
-}
-
-impl From<ImageFormat> for kittycad_modeling_cmds::ImageFormat {
-    fn from(format: ImageFormat) -> Self {
-        match format {
-            ImageFormat::Png => kittycad_modeling_cmds::ImageFormat::Png,
-            ImageFormat::Jpeg => kittycad_modeling_cmds::ImageFormat::Jpeg,
-        }
-    }
-}
-
-/// A file that was exported from the engine.
-#[derive(Serialize, Deserialize, PartialEq, Debug, Clone)]
-#[pyclass]
-pub struct ExportFile {
-    /// Binary contents of the file.
-    pub contents: Vec<u8>,
-    /// Name of the file.
-    pub name: String,
-}
-
-impl From<kittycad_modeling_cmds::shared::ExportFile> for ExportFile {
-    fn from(file: kittycad_modeling_cmds::shared::ExportFile) -> Self {
-        ExportFile {
-            contents: file.contents.0,
-            name: file.name,
-        }
-    }
-}
-
-impl From<kittycad_modeling_cmds::websocket::RawFile> for ExportFile {
-    fn from(file: kittycad_modeling_cmds::websocket::RawFile) -> Self {
-        ExportFile {
-            contents: file.contents,
-            name: file.name,
-        }
-    }
-}
-
-#[pymethods]
-impl ExportFile {
-    #[getter]
-    fn contents(&self) -> Vec<u8> {
-        self.contents.clone()
-    }
-
-    #[getter]
-    fn name(&self) -> String {
-        self.name.clone()
-    }
-}
-
-/// The valid types of output file formats.
-#[derive(Serialize, Deserialize, PartialEq, Hash, Debug, Clone)]
-#[pyclass(eq, eq_int)]
-#[serde(rename_all = "lowercase")]
-pub enum FileExportFormat {
-    /// Autodesk Filmbox (FBX) format. <https://en.wikipedia.org/wiki/FBX>
-    Fbx,
-    /// Binary glTF 2.0.
-    ///
-    /// This is a single binary with .glb extension.
-    ///
-    /// This is better if you want a compressed format as opposed to the human readable glTF that lacks
-    /// compression.
-    Glb,
-    /// glTF 2.0. Embedded glTF 2.0 (pretty printed).
-    ///
-    /// Single JSON file with .gltf extension binary data encoded as base64 data URIs.
-    ///
-    /// The JSON contents are pretty printed.
-    ///
-    /// It is human readable, single file, and you can view the diff easily in a
-    /// git commit.
-    Gltf,
-    /// The OBJ file format. <https://en.wikipedia.org/wiki/Wavefront_.obj_file> It may or
-    /// may not have an an attached material (mtl // mtllib) within the file, but we
-    /// interact with it as if it does not.
-    Obj,
-    /// The PLY file format. <https://en.wikipedia.org/wiki/PLY_(file_format)>
-    Ply,
-    /// The STEP file format. <https://en.wikipedia.org/wiki/ISO_10303-21>
-    Step,
-    /// The STL file format. <https://en.wikipedia.org/wiki/STL_(file_format)>
-    Stl,
 }
 
 fn get_output_format(
@@ -239,6 +146,7 @@ async fn new_context_state(
 }
 
 /// Parse the kcl code from a file path.
+#[pyo3_stub_gen::derive::gen_stub_pyfunction]
 #[pyfunction]
 async fn parse(path: String) -> PyResult<bool> {
     tokio()
@@ -256,6 +164,7 @@ async fn parse(path: String) -> PyResult<bool> {
 }
 
 /// Parse the kcl code.
+#[pyo3_stub_gen::derive::gen_stub_pyfunction]
 #[pyfunction]
 fn parse_code(code: String) -> PyResult<bool> {
     let _program = kcl_lib::Program::parse_no_errs(&code).map_err(|err| into_miette_for_parse("", &code, err))?;
@@ -264,6 +173,7 @@ fn parse_code(code: String) -> PyResult<bool> {
 }
 
 /// Execute the kcl code from a file path.
+#[pyo3_stub_gen::derive::gen_stub_pyfunction]
 #[pyfunction]
 async fn execute(path: String) -> PyResult<()> {
     tokio()
@@ -289,6 +199,7 @@ async fn execute(path: String) -> PyResult<()> {
 }
 
 /// Execute the kcl code.
+#[pyo3_stub_gen::derive::gen_stub_pyfunction]
 #[pyfunction]
 async fn execute_code(code: String) -> PyResult<()> {
     tokio()
@@ -311,6 +222,7 @@ async fn execute_code(code: String) -> PyResult<()> {
 }
 
 /// Mock execute the kcl code.
+#[pyo3_stub_gen::derive::gen_stub_pyfunction]
 #[pyfunction]
 async fn mock_execute_code(code: String) -> PyResult<bool> {
     tokio()
@@ -333,6 +245,7 @@ async fn mock_execute_code(code: String) -> PyResult<bool> {
 }
 
 /// Mock execute the kcl code from a file path.
+#[pyo3_stub_gen::derive::gen_stub_pyfunction]
 #[pyfunction]
 async fn mock_execute(path: String) -> PyResult<bool> {
     tokio()
@@ -357,6 +270,7 @@ async fn mock_execute(path: String) -> PyResult<bool> {
         .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?
 }
 
+#[pyo3_stub_gen::derive::gen_stub_pyfunction]
 #[pyfunction]
 async fn import_and_snapshot(
     filepaths: Vec<String>,
@@ -373,6 +287,7 @@ fn to_py_exception(err: impl std::fmt::Display) -> PyErr {
     PyException::new_err(err.to_string())
 }
 
+#[pyo3_stub_gen::derive::gen_stub_pyfunction]
 #[pyfunction]
 async fn import_and_snapshot_views(
     filepaths: Vec<String>,
@@ -420,12 +335,14 @@ async fn import(ctx: &ExecutorContext, filepaths: Vec<String>, format: InputForm
 }
 
 /// Execute a kcl file and snapshot it in a specific format.
+#[pyo3_stub_gen::derive::gen_stub_pyfunction]
 #[pyfunction]
 async fn execute_and_snapshot(path: String, image_format: ImageFormat) -> PyResult<Vec<u8>> {
     let img = execute_and_snapshot_views(path, image_format, Vec::new()).await?.pop();
     Ok(img.unwrap())
 }
 
+#[pyo3_stub_gen::derive::gen_stub_pyfunction]
 #[pyfunction]
 async fn execute_and_snapshot_views(
     path: String,
@@ -455,6 +372,7 @@ async fn execute_and_snapshot_views(
 }
 
 /// Execute the kcl code and snapshot it in a specific format.
+#[pyo3_stub_gen::derive::gen_stub_pyfunction]
 #[pyfunction]
 async fn execute_code_and_snapshot(code: String, image_format: ImageFormat) -> PyResult<Vec<u8>> {
     let mut snaps = execute_code_and_snapshot_views(code, image_format, Vec::new()).await?;
@@ -463,6 +381,7 @@ async fn execute_code_and_snapshot(code: String, image_format: ImageFormat) -> P
 
 /// Customize a snapshot.
 #[derive(Serialize, Deserialize, PartialEq, Debug, Clone)]
+#[pyo3_stub_gen::derive::gen_stub_pyclass]
 #[pyclass]
 pub struct SnapshotOptions {
     /// If none, will use isometric view.
@@ -474,6 +393,7 @@ pub struct SnapshotOptions {
     pub padding: f32,
 }
 
+#[pyo3_stub_gen::derive::gen_stub_pymethods]
 #[pymethods]
 impl SnapshotOptions {
     #[new]
@@ -492,6 +412,7 @@ impl SnapshotOptions {
 /// Execute the kcl code and snapshot it in a specific format.
 /// Returns one image for each camera angle you provide.
 /// If you don't provide any camera angles, a default head-on camera angle will be used.
+#[pyo3_stub_gen::derive::gen_stub_pyfunction]
 #[pyfunction]
 async fn execute_code_and_snapshot_views(
     code: String,
@@ -586,8 +507,9 @@ async fn snapshot(ctx: &ExecutorContext, image_format: ImageFormat, padding: f32
 }
 
 /// Execute a kcl file and export it to a specific file format.
+#[pyo3_stub_gen::derive::gen_stub_pyfunction]
 #[pyfunction]
-async fn execute_and_export(path: String, export_format: FileExportFormat) -> PyResult<Vec<ExportFile>> {
+async fn execute_and_export(path: String, export_format: FileExportFormat) -> PyResult<Vec<RawFile>> {
     tokio()
         .spawn(async move {
             let (code, path) = get_code_and_file_path(&path)
@@ -629,15 +551,16 @@ async fn execute_and_export(path: String, export_format: FileExportFormat) -> Py
                 )));
             };
 
-            Ok(files.into_iter().map(ExportFile::from).collect())
+            Ok(files)
         })
         .await
         .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?
 }
 
 /// Execute the kcl code and export it to a specific file format.
+#[pyo3_stub_gen::derive::gen_stub_pyfunction]
 #[pyfunction]
-async fn execute_code_and_export(code: String, export_format: FileExportFormat) -> PyResult<Vec<ExportFile>> {
+async fn execute_code_and_export(code: String, export_format: FileExportFormat) -> PyResult<Vec<RawFile>> {
     tokio()
         .spawn(async move {
             let program =
@@ -676,13 +599,14 @@ async fn execute_code_and_export(code: String, export_format: FileExportFormat) 
                 )));
             };
 
-            Ok(files.into_iter().map(ExportFile::from).collect())
+            Ok(files)
         })
         .await
         .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?
 }
 
 /// Format the kcl code. This will return the formatted code.
+#[pyo3_stub_gen::derive::gen_stub_pyfunction]
 #[pyfunction]
 fn format(code: String) -> PyResult<String> {
     let program = kcl_lib::Program::parse_no_errs(&code).map_err(|err| into_miette_for_parse("", &code, err))?;
@@ -692,6 +616,7 @@ fn format(code: String) -> PyResult<String> {
 }
 
 /// Format a whole directory of kcl code.
+#[pyo3_stub_gen::derive::gen_stub_pyfunction]
 #[pyfunction]
 async fn format_dir(dir: String) -> PyResult<()> {
     tokio()
@@ -705,6 +630,7 @@ async fn format_dir(dir: String) -> PyResult<()> {
 }
 
 /// Lint the kcl code.
+#[pyo3_stub_gen::derive::gen_stub_pyfunction]
 #[pyfunction]
 fn lint(code: String) -> PyResult<Vec<Discovered>> {
     let program = kcl_lib::Program::parse_no_errs(&code).map_err(|err| into_miette_for_parse("", &code, err))?;
@@ -720,7 +646,7 @@ fn lint(code: String) -> PyResult<Vec<Discovered>> {
 fn kcl(py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     // Add our types to the module.
     m.add_class::<ImageFormat>()?;
-    m.add_class::<ExportFile>()?;
+    m.add_class::<RawFile>()?;
     m.add_class::<FileExportFormat>()?;
     m.add_class::<UnitLength>()?;
     m.add_class::<Discovered>()?;
@@ -788,3 +714,6 @@ fn kcl(py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(lint, m)?)?;
     Ok(())
 }
+
+// Define a function to gather stub information.
+define_stub_info_gatherer!(stub_info);
