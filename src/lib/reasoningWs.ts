@@ -9,15 +9,15 @@ export function connectReasoningStream(token: string, id: string): void {
     `/ws/ml/reasoning/${id}`
   )
   const ws = new WebSocket(url)
+  const authMessage = {
+    type: 'headers',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }
 
   ws.addEventListener('open', () => {
     console.log(`[${id}] open ${url}`)
-    const authMessage = {
-      type: 'headers',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
     ws.send(JSON.stringify(authMessage)) // 🔸 send immediately
     console.log(`[${id}] →`, authMessage)
   })
@@ -28,17 +28,17 @@ export function connectReasoningStream(token: string, id: string): void {
     let msg: unknown
     try {
       msg = JSON.parse(ev.data as string)
-      const extra =
-        typeof msg === 'object' && msg !== null && 'id' in msg
-          ? ` (msg.id=${(msg as any).id})`
-          : ''
-      console.dir(msg, { depth: null })
-      console.log(`[${id}] parsed${extra}`)
     } catch {
+      console.error(`[${id}] JSON parse error`, ev.data)
       return // non-JSON frame
     }
 
-    if ((msg as any)?.type === 'end_of_stream') {
+    if ('error' in (msg as any)) {
+      ws.send(JSON.stringify(authMessage)) // 🔸 send immediately
+      console.log(`[${id}] →`, authMessage)
+    }
+
+    if ('end_of_stream' in (msg as any)) {
       console.log(`[${id}] end_of_stream → closing`)
       ws.close(1000, 'done')
     }
