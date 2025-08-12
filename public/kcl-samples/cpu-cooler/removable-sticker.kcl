@@ -8,7 +8,7 @@
 removableSticker = startSketchOn(-XY)
   |> startProfile(at = [-12, -12])
   |> angledLine(angle = 0, length = 24, tag = $rectangleSegmentA001)
-  |> angledLine(angle = segAng(rectangleSegmentA001) + 90, length = 24, tag = $rectangleSegmentB001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) + 90deg, length = 24, tag = $rectangleSegmentB001)
   |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $rectangleSegmentD001)
   |> close()

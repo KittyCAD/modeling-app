@@ -1,9 +1,11 @@
-import { useRef } from 'react'
+import { useRef, useEffect } from 'react'
 
 import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
 import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
 import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
 import type { OnboardingStatus } from '@rust/kcl-lib/bindings/OnboardingStatus'
+
+import { NIL as uuidNIL } from 'uuid'
 
 import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
@@ -12,6 +14,7 @@ import { cameraMouseDragGuards, cameraSystems } from '@src/lib/cameraControls'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
   DEFAULT_PROJECT_NAME,
+  REGEXP_UUIDV4,
 } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import type {
@@ -127,9 +130,6 @@ const MS_IN_MINUTE = 1000 * 60
 
 export function createSettings() {
   return {
-    /** Settings that affect the behavior of the entire app,
-     *  beyond just modeling or navigating, for example
-     */
     app: {
       /**
        * The overall appearance of the app: light, dark, or system
@@ -158,19 +158,41 @@ export function createSettings() {
         defaultValue: '264.5',
         description: 'The hue of the primary theme color for the app',
         validate: (v) => Number(v) >= 0 && Number(v) < 360,
+
+        // The same component instance is used across settings panes / tabs.
         Component: ({ value, updateValue }) => {
+          const refInput = useRef<HTMLInputElement>(null)
+
+          const updateColorDot = (value: string) => {
+            document.documentElement.style.setProperty(
+              `--primary-hue`,
+              String(value)
+            )
+          }
+
+          useEffect(() => {
+            if (refInput.current === null) return
+            refInput.current.value = value
+            updateColorDot(value)
+          }, [value])
+
           const preview = (e: React.SyntheticEvent) =>
             e.isTrusted &&
             'value' in e.currentTarget &&
-            document.documentElement.style.setProperty(
-              `--primary-hue`,
-              String(e.currentTarget.value)
-            )
-          const save = (e: React.SyntheticEvent) =>
-            e.isTrusted &&
-            'value' in e.currentTarget &&
-            e.currentTarget.value &&
-            updateValue(String(e.currentTarget.value))
+            updateColorDot(String(e.currentTarget.value))
+
+          const save = (e: React.SyntheticEvent) => {
+            if (
+              e.isTrusted &&
+              'value' in e.currentTarget &&
+              e.currentTarget.value
+            ) {
+              const valueNext = String(e.currentTarget.value)
+              updateValue(valueNext)
+              updateColorDot(valueNext)
+            }
+          }
+
           return (
             <div className="flex item-center gap-4 px-2 m-0 py-0">
               <div
@@ -181,11 +203,11 @@ export function createSettings() {
               />
               <input
                 type="range"
+                ref={refInput}
                 onInput={preview}
                 onMouseUp={save}
                 onKeyUp={save}
                 onPointerUp={save}
-                defaultValue={value}
                 min={0}
                 max={259}
                 step={1}
@@ -628,6 +650,32 @@ export function createSettings() {
         validate: (v) => typeof v === 'boolean',
         commandConfig: {
           inputType: 'boolean',
+        },
+      }),
+    },
+    /** Settings that affect the behavior of the entire app,
+     *  beyond just modeling or navigating, for example
+     *  NOTE: before using the project id for anything, check it isn't the
+     *  NIL uuid, which is the default value.
+     */
+    meta: {
+      id: new Setting<string>({
+        hideOnLevel: 'user',
+        defaultValue: uuidNIL,
+        description: 'The unique project identifier',
+        // Never allow the user to change the id, only view it.
+        validate: (v) => REGEXP_UUIDV4.test(v),
+        Component: ({ value }) => {
+          return (
+            <div className="flex gap-4 p-1 border rounded-sm border-chalkboard-30">
+              <input
+                className="flex-grow text-xs px-2 bg-chalkboard-30 dark:bg-chalkboard-80 cursor-not-allowed"
+                value={value}
+                disabled
+                data-testid="project-id"
+              />
+            </div>
+          )
         },
       }),
     },

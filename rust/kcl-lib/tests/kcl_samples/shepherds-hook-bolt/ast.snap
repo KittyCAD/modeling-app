@@ -210,13 +210,13 @@ description: Result of parsing shepherds-hook-bolt.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "raw": "290",
+            "raw": "290deg",
             "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
               "value": 290.0,
-              "suffix": "None"
+              "suffix": "Deg"
             }
           },
           "moduleId": 0,
@@ -247,13 +247,13 @@ description: Result of parsing shepherds-hook-bolt.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "raw": "150",
+            "raw": "150deg",
             "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
               "value": 150.0,
-              "suffix": "None"
+              "suffix": "Deg"
             }
           },
           "moduleId": 0,
@@ -643,13 +643,13 @@ description: Result of parsing shepherds-hook-bolt.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "raw": "270",
+                  "raw": "270deg",
                   "start": 0,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
                     "value": 270.0,
-                    "suffix": "None"
+                    "suffix": "Deg"
                   }
                 },
                 "start": 0,
@@ -3950,13 +3950,13 @@ description: Result of parsing shepherds-hook-bolt.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "raw": "360",
+                  "raw": "360deg",
                   "start": 0,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
                     "value": 360.0,
-                    "suffix": "None"
+                    "suffix": "Deg"
                   }
                 }
               },

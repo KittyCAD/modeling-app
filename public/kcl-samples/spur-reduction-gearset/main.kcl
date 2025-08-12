@@ -22,20 +22,20 @@ fn spurGear(nTeeth, module, pressureAngle, gearHeight) {
          angle = 0,
          tag = $seg01,
        )
-    |> line(endAbsolute = polar(angle = 160 / nTeeth, length = tipDiameter / 2))
+    |> line(endAbsolute = polar(angle = 160deg / nTeeth, length = tipDiameter / 2))
     |> involuteCircular(
          startRadius = baseDiameter / 2,
          endRadius = tipDiameter / 2,
-         angle = -atan(segEndY(seg01) / segEndX(seg01)) - (180 / nTeeth),
+         angle = -atan(segEndY(seg01) / segEndX(seg01)) - (180deg / nTeeth),
          reverse = true,
        )
     // Position the end line of the sketch at the start of the next tooth
-    |> line(endAbsolute = polar(angle = 360 / nTeeth, length = baseDiameter / 2))
+    |> line(endAbsolute = polar(angle = 360deg / nTeeth, length = baseDiameter / 2))
     // Pattern the sketch about the center by the specified number of teeth, then close the sketch
     |> patternCircular2d(
          instances = nTeeth,
          center = [0, 0],
-         arcDegrees = 360,
+         arcDegrees = 360deg,
          rotateDuplicates = true,
        )
     |> close()
@@ -51,7 +51,7 @@ fn spurGear(nTeeth, module, pressureAngle, gearHeight) {
 spurGear(
   nTeeth = 17,
   module = 1.5,
-  pressureAngle = 14,
+  pressureAngle = 14deg,
   gearHeight = 9,
 )
 
@@ -59,7 +59,7 @@ spurGear(
 spurGear(
        nTeeth = 51,
        module = 1.5,
-       pressureAngle = 14,
+       pressureAngle = 14deg,
        gearHeight = 7,
      )
   // Translate the larger gear by the combined pitch radius of both gears, plus a small gap

@@ -31,6 +31,23 @@ base_unit = "in"
 
 
 
+#### meta
+
+Information about the project itself. Choices about how settings are merged have prevent me (lee) from easily moving this out of the settings structure.
+
+
+**Default:** None
+
+This setting has the following nested options:
+
+##### id
+
+
+
+
+**Default:** None
+
+
 #### app
 
 The settings for the Design Studio.

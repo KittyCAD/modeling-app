@@ -99,10 +99,10 @@ pub(super) fn expect_properties<'a>(
 }
 
 pub(super) fn expect_ident(expr: &Expr) -> Result<&str, KclError> {
-    if let Expr::Name(name) = expr {
-        if let Some(name) = name.local_ident() {
-            return Ok(*name);
-        }
+    if let Expr::Name(name) = expr
+        && let Some(name) = name.local_ident()
+    {
+        return Ok(*name);
     }
 
     Err(KclError::new_semantic(KclErrorDetails::new(
@@ -132,11 +132,11 @@ pub(super) fn many_of(
         Expr::ArrayExpression(e) => {
             let mut result = Vec::new();
             for e in &e.elements {
-                if let Expr::Name(name) = e {
-                    if let Some(name) = name.local_ident() {
-                        result.push(*name);
-                        continue;
-                    }
+                if let Expr::Name(name) = e
+                    && let Some(name) = name.local_ident()
+                {
+                    result.push(*name);
+                    continue;
                 }
                 return Err(KclError::new_semantic(KclErrorDetails::new(
                     UNEXPECTED_MSG.to_owned(),
@@ -171,10 +171,10 @@ pub(super) fn many_of(
 
 // Returns the unparsed number literal.
 pub(super) fn expect_number(expr: &Expr) -> Result<String, KclError> {
-    if let Expr::Literal(lit) = expr {
-        if let LiteralValue::Number { .. } = &lit.value {
-            return Ok(lit.raw.clone());
-        }
+    if let Expr::Literal(lit) = expr
+        && let LiteralValue::Number { .. } = &lit.value
+    {
+        return Ok(lit.raw.clone());
     }
 
     Err(KclError::new_semantic(KclErrorDetails::new(
@@ -189,19 +189,19 @@ pub(super) fn get_impl(annotations: &[Node<Annotation>], source_range: SourceRan
             continue;
         }
         for p in attr.properties.as_ref().unwrap() {
-            if &*p.key.name == IMPL {
-                if let Some(s) = p.value.ident_name() {
-                    return Impl::from_str(s).map(Some).map_err(|_| {
-                        KclError::new_semantic(KclErrorDetails::new(
-                            format!(
-                                "Invalid value for {} attribute, expected one of: {}",
-                                IMPL,
-                                IMPL_VALUES.join(", ")
-                            ),
-                            vec![source_range],
-                        ))
-                    });
-                }
+            if &*p.key.name == IMPL
+                && let Some(s) = p.value.ident_name()
+            {
+                return Impl::from_str(s).map(Some).map_err(|_| {
+                    KclError::new_semantic(KclErrorDetails::new(
+                        format!(
+                            "Invalid value for {} attribute, expected one of: {}",
+                            IMPL,
+                            IMPL_VALUES.join(", ")
+                        ),
+                        vec![source_range],
+                    ))
+                });
             }
         }
     }
