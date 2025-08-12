@@ -2,6 +2,26 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { exportSketchToDxf } from '@src/lib/exportDxf'
 import type { StdLibCallOp } from '@src/lang/queryAst'
 
+// Mock window.electron for desktop environment tests
+const mockElectron = {
+  process: {
+    env: {
+      NODE_ENV: 'development',
+    },
+  },
+  getAppTestProperty: vi.fn(),
+  join: vi.fn(),
+  mkdir: vi.fn(),
+}
+
+// Setup global window.electron mock
+Object.defineProperty(globalThis, 'window', {
+  value: {
+    electron: mockElectron,
+  },
+  writable: true,
+})
+
 // Mock dependencies
 const createMockDependencies = (): Parameters<typeof exportSketchToDxf>[1] => ({
   engineCommandManager: {
@@ -42,6 +62,11 @@ describe('DXF Export', () => {
     mockDeps = createMockDependencies()
     mockOperation = createMockOperation()
     vi.clearAllMocks()
+
+    // Reset electron mock
+    vi.mocked(mockElectron.getAppTestProperty).mockReset()
+    vi.mocked(mockElectron.join).mockReset()
+    vi.mocked(mockElectron.mkdir).mockReset()
   })
 
   describe('exportSketchToDxf', () => {
@@ -220,7 +245,7 @@ describe('DXF Export', () => {
       expect(result.success).toBe(false)
       expect(result.error).toBe('Could not find path IDs')
       expect(mockDeps.toast.error).toHaveBeenCalledWith(
-        'Could not find sketch entities for DXF export'
+        'Could not find sketch profiles for DXF export'
       )
 
       // Test case 2: plane artifact with pathIds but no path artifacts in graph
@@ -292,7 +317,8 @@ describe('DXF Export', () => {
       expect(result.success).toBe(false)
       expect(result.error).toBe('Network error')
       expect(mockDeps.toast.error).toHaveBeenCalledWith(
-        'Failed to export sketch to DXF'
+        'Failed to export sketch to DXF',
+        { id: 'toast-id' }
       )
     })
 
