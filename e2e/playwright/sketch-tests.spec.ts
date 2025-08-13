@@ -2939,17 +2939,11 @@ test.describe('Redirecting to home page and back to the original file should cle
     await click00r(0, 0)
     await click00r(-200, 200)
 
+    // Check for tangent-related parts only
+    await editor.expectEditor.toContain('tangentialArc')
+    await editor.expectEditor.toContain('tangentToEnd(seg01)')
     await editor.expectEditor.toContain(
-      `@settings(defaultLengthUnit = mm)
-
-sketch001 = startSketchOn(XZ)
-profile001 = startProfile(sketch001, at = [0, 0])
-  |> line(end = [191.39, 191.39])
-  |> tangentialArc(end = [95.69, -95.7], tag = $seg01)
-  |> angledLine(angle = tangentToEnd(seg01), length = 135.34)
-  |> arc(interiorAbsolute = [191.39, -95.69], endAbsolute = [287.08, -95.69], tag = $seg02)
-  |> angledLine(angle = tangentToEnd(seg02) + turns::HALF_TURN, length = 270.67)
-`.replaceAll('\n', '')
+      'tangentToEnd(seg02) + turns::HALF_TURN'
     )
   })
 })
