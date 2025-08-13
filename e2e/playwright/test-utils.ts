@@ -475,7 +475,7 @@ export async function getUtils(page: Page, test_?: typeof test) {
       page
         .locator(locator)
         .boundingBox({ timeout: 5_000 })
-        .then((box: any) => ({ ...box, x: box?.x || 0, y: box?.y || 0 })),
+        .then((box) => ({ ...box, x: box?.x || 0, y: box?.y || 0 })),
     codeLocator: page.locator('.cm-content'),
     crushKclCodeIntoOneLineAndThenMaybeSome: async () => {
       const code = await page.locator('.cm-content').innerText()
