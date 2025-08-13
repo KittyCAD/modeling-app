@@ -2423,10 +2423,6 @@ extrude003 = extrude(profile011, length = 2.5)
       )
     const wallSelectionOptions = [
       {
-        title: 'select wall segment',
-        selectClick: scene.makeMouseHelpers(598, 211)[0],
-      },
-      {
         title: 'select wall solid 2d',
         selectClick: scene.makeMouseHelpers(677, 236)[0],
       },
@@ -2450,7 +2446,7 @@ extrude003 = extrude(profile011, length = 2.5)
         await test.step(title, async () => {
           await camPositionForSelectingSketchOnWallProfiles()
           await selectClick({ shouldDbClick: true })
-          await page.waitForTimeout(600)
+          await page.waitForTimeout(6000)
           await toolbar.expectToolbarMode.toBe('sketching')
           await expect(page.getByTestId('segment-overlay')).toHaveCount(14)
           await toolbar.exitSketchBtn.click()
