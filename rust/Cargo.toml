@@ -11,6 +11,7 @@ members = [
     "kcl-test-server",
     "kcl-to-core",
     "kcl-wasm-lib",
+    "ezpz",
 ]
 
 [workspace.dependencies]

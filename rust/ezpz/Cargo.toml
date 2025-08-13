@@ -1,0 +1,23 @@
+[package]
+name = "kcl-ezpz"
+version = "0.1.0"
+edition = "2024"
+description = "A constraint solver for KCL and Zoo Design Studio"
+
+[dependencies]
+faer = "0.22.6"
+indexmap.workspace = true
+kittycad-modeling-cmds = { workspace = true }
+libm = "0.2.15"
+newton_faer = "0.1.2"
+thiserror = "2.0.14"
+
+[dev-dependencies]
+divan = "0.1.21"
+
+[lints]
+workspace = true
+
+[[bench]]
+name = "equations"
+harness = false
