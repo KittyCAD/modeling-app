@@ -2267,7 +2267,7 @@ export fn elliptic(
 export fn ellipticPoint(
   /// The major radius, a, of the elliptic equation x^2 / a ^ 2 + y^2 / b^2 = 1. Incompatible with `majorDiameter`.
   majorRadius?: number,
-  /// Them major diameter of the elliptic equation. Incompatible with `majorRadius`.
+  /// The major diameter of the elliptic equation. Incompatible with `majorRadius`.
   majorDiameter?: number,
   ///  The minor radius, b, of the elliptic equation x^2 / a ^ 2 + y^2 / b^2 = 1. Incompatible with `minorDiameter`.
   minorRadius?: number,
