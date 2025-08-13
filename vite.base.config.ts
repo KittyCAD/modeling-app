@@ -131,7 +131,7 @@ export function indexHtmlCsp(enabled: boolean): Plugin {
   ]
 
   // Allow scripts from the same origin and from Plausible Analytics. Allow WASM execution.
-  const cspScriptBase = `script-src 'self' 'wasm-unsafe-eval' https://plausible.corp.zoo.dev/js/script.tagged-events.js`
+  const cspScriptBase = "script-src 'self' 'wasm-unsafe-eval' https://plausible.corp.zoo.dev/js/script.tagged-events.js"
   const vercelCspBase = ["frame-ancestors 'none'"]
 
   const vercelCsp =
@@ -145,7 +145,7 @@ export function indexHtmlCsp(enabled: boolean): Plugin {
           'report-to csp-reporting-endpoint',
         ]
       )
-      .join(';') + ';'
+      .join('; ') + ';'
 
   console.log(
     'Content-Security-Policy for Vercel (prod) (vercel.json): ',
@@ -159,9 +159,9 @@ export function indexHtmlCsp(enabled: boolean): Plugin {
       .concat(vercelCspBase)
       .concat([
         "frame-src 'self' https://vercel.live",
-        `${cspScriptBase} https://vercel.live 'unsafe-eval'`,
+        `${cspScriptBase} https://vercel.live/_next-live/feedback/feedback.js 'unsafe-eval'`,
       ])
-      .join(';') + ';'
+      .join('; ') + ';'
   )
 
   return {
@@ -177,7 +177,7 @@ export function indexHtmlCsp(enabled: boolean): Plugin {
         return html.replace(
           indexHtmlRegex,
           `<meta http-equiv="Content-Security-Policy" content="${
-            csp.concat([cspScriptBase]).join(';') + ';'
+            csp.concat([cspScriptBase]).join('; ') + ';'
           }">`
         )
       }
