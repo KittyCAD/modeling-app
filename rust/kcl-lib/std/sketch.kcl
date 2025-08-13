@@ -2242,7 +2242,7 @@ export fn elliptic(
   /// The minor radius, b, of the elliptic equation x^2 / a^2 + y^2 / b^2 = 1. Incompatible with `minorDiameter`.
   @(includeInSnippet = true)
   minorRadius?: number(Length),
-  /// Them minor diameter of the elliptic equation. Incompatible with `minorRadius`.
+  /// The minor diameter of the elliptic equation. Incompatible with `minorRadius`.
   minorDiameter?: number(Length),
   /// The major radius, a, of the elliptic equation x^2 / a^2 + y^2 / b^2 = 1. Equivalent to majorAxis = [majorRadius, 0]. Incompatible with `majorDiameter`.
   majorRadius?: number(Length),

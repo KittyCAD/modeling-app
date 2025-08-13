@@ -541,7 +541,7 @@ pub async fn ellipse(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     let major_radius = args.get_kw_arg_opt("majorRadius", &RuntimeType::length(), exec_state)?;
     let major_diameter: Option<TyF64> = args.get_kw_arg_opt("majorDiameter", &RuntimeType::length(), exec_state)?;
     let major_axis = args.get_kw_arg_opt("majorAxis", &RuntimeType::point2d(), exec_state)?;
-    let minor_radius = args.get_kw_arg("minorRadius", &RuntimeType::length(), exec_state)?;
+    let minor_radius = args.get_kw_arg_opt("minorRadius", &RuntimeType::length(), exec_state)?;
     let minor_diameter: Option<TyF64> = args.get_kw_arg_opt("minorDiameter", &RuntimeType::length(), exec_state)?;
     let tag = args.get_kw_arg_opt("tag", &RuntimeType::tag_decl(), exec_state)?;
 
