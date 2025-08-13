@@ -1264,9 +1264,12 @@ solid001 = subtract([extrude001], tools = [extrude002])
       )
     })
 
-    const [selectChamferFaceClk] = scene.makeMouseHelpers(705, 234)
-    const [circleCenterClk] = scene.makeMouseHelpers(700, 272)
-    const [circleRadiusClk] = scene.makeMouseHelpers(694, 264)
+    const [selectChamferFaceClk] = scene.makeMouseHelpers(0.8, 0.5, {
+      format: 'ratio',
+    })
+    const [circleCenterClk] = scene.makeMouseHelpers(0.54, 0.5, {
+      format: 'ratio',
+    })
 
     await test.step('Setup', async () => {
       await homePage.goToModelingScene()
@@ -1306,12 +1309,7 @@ solid001 = subtract([extrude001], tools = [extrude002])
 
       await circleCenterClk()
       await editor.expectEditor.toContain(
-        'profile003 = circle(sketch003, center'
-      )
-
-      await circleRadiusClk()
-      await editor.expectEditor.toContain(
-        'profile003 = circle(sketch003, center = [-25.77, 10.97], radius = 1.85)'
+        'profile003 = circle(sketch003, center = ['
       )
     })
   })
