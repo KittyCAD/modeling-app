@@ -525,8 +525,6 @@ async fn inner_polygon(
 
 /// Sketch an ellipse.
 pub async fn ellipse(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    exec_state.experimental("ellipse", args.source_range);
-
     let sketch_or_surface =
         args.get_unlabeled_kw_arg("sketchOrSurface", &RuntimeType::sketch_or_surface(), exec_state)?;
     let center = args.get_kw_arg("center", &RuntimeType::point2d(), exec_state)?;

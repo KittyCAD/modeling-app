@@ -404,8 +404,8 @@ impl ExecutorContext {
                 }
                 BodyItem::TypeDeclaration(ty) => {
                     let metadata = Metadata::from(&**ty);
-                    let impl_kind = annotations::get_impl(&ty.outer_attrs, metadata.source_range)?.unwrap_or_default();
-                    match impl_kind {
+                    let attrs = annotations::get_fn_attrs(&ty.outer_attrs, metadata.source_range)?.unwrap_or_default();
+                    match attrs.impl_ {
                         annotations::Impl::Rust => {
                             let std_path = match &exec_state.mod_local.path {
                                 ModulePath::Std { value } => value,
@@ -743,17 +743,17 @@ impl ExecutorContext {
             }
             Expr::BinaryExpression(binary_expression) => binary_expression.get_result(exec_state, self).await?,
             Expr::FunctionExpression(function_expression) => {
-                let rust_impl = annotations::get_impl(annotations, metadata.source_range)?
-                    .map(|s| s == annotations::Impl::Rust)
-                    .unwrap_or(false);
-
-                if rust_impl {
+                let attrs = annotations::get_fn_attrs(annotations, metadata.source_range)?;
+                if let Some(attrs) = attrs
+                    && attrs.impl_ == annotations::Impl::Rust
+                {
                     if let ModulePath::Std { value: std_path } = &exec_state.mod_local.path {
                         let (func, props) = crate::std::std_fn(std_path, statement_kind.expect_name());
                         KclValue::Function {
                             value: FunctionSource::Std {
                                 func,
                                 props,
+                                attrs,
                                 ast: function_expression.clone(),
                             },
                             meta: vec![metadata.to_owned()],

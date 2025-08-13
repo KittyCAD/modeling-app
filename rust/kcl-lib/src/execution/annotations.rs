@@ -13,14 +13,17 @@ use crate::{
 };
 
 /// Annotations which should cause re-execution if they change.
-pub(super) const SIGNIFICANT_ATTRS: [&str; 2] = [SETTINGS, NO_PRELUDE];
+pub(super) const SIGNIFICANT_ATTRS: [&str; 3] = [SETTINGS, NO_PRELUDE, WARNINGS];
 
 pub(crate) const SETTINGS: &str = "settings";
 pub(crate) const SETTINGS_UNIT_LENGTH: &str = "defaultLengthUnit";
 pub(crate) const SETTINGS_UNIT_ANGLE: &str = "defaultAngleUnit";
 pub(crate) const SETTINGS_VERSION: &str = "kclVersion";
 pub(crate) const SETTINGS_EXPERIMENTAL_FEATURES: &str = "experimentalFeatures";
+
 pub(super) const NO_PRELUDE: &str = "no_std";
+pub(crate) const DEPRECATED: &str = "deprecated";
+pub(crate) const EXPERIMENTAL: &str = "experimental";
 
 pub(super) const IMPORT_FORMAT: &str = "format";
 pub(super) const IMPORT_COORDS: &str = "coords";
@@ -34,7 +37,6 @@ pub(crate) const IMPL_KCL: &str = "kcl";
 pub(crate) const IMPL_PRIMITIVE: &str = "primitive";
 pub(super) const IMPL_VALUES: [&str; 3] = [IMPL_RUST, IMPL_KCL, IMPL_PRIMITIVE];
 
-pub(crate) const DEPRECATED: &str = "deprecated";
 pub(crate) const WARNINGS: &str = "warnings";
 pub(crate) const WARN_ALLOW: &str = "allow";
 pub(crate) const WARN_DENY: &str = "deny";
@@ -67,7 +69,7 @@ impl WarningLevel {
         match self {
             WarningLevel::Allow => None,
             WarningLevel::Warn => Some(Severity::Warning),
-            WarningLevel::Deny => Some(Severity::Fatal),
+            WarningLevel::Deny => Some(Severity::Error),
         }
     }
 }
@@ -215,7 +217,18 @@ pub(super) fn expect_number(expr: &Expr) -> Result<String, KclError> {
     )))
 }
 
-pub(super) fn get_impl(annotations: &[Node<Annotation>], source_range: SourceRange) -> Result<Option<Impl>, KclError> {
+#[derive(Debug, Clone, Copy, Eq, PartialEq, Default)]
+pub struct FnAttrs {
+    pub impl_: Impl,
+    pub deprecated: bool,
+    pub experimental: bool,
+}
+
+pub(super) fn get_fn_attrs(
+    annotations: &[Node<Annotation>],
+    source_range: SourceRange,
+) -> Result<Option<FnAttrs>, KclError> {
+    let mut result = None;
     for attr in annotations {
         if attr.name.is_some() || attr.properties.is_none() {
             continue;
@@ -224,7 +237,11 @@ pub(super) fn get_impl(annotations: &[Node<Annotation>], source_range: SourceRan
             if &*p.key.name == IMPL
                 && let Some(s) = p.value.ident_name()
             {
-                return Impl::from_str(s).map(Some).map_err(|_| {
+                if result.is_none() {
+                    result = Some(FnAttrs::default());
+                }
+
+                result.as_mut().unwrap().impl_ = Impl::from_str(s).map_err(|_| {
                     KclError::new_semantic(KclErrorDetails::new(
                         format!(
                             "Invalid value for {} attribute, expected one of: {}",
@@ -233,12 +250,41 @@ pub(super) fn get_impl(annotations: &[Node<Annotation>], source_range: SourceRan
                         ),
                         vec![source_range],
                     ))
-                });
+                })?;
+                continue;
             }
+
+            if &*p.key.name == DEPRECATED
+                && let Some(b) = p.value.literal_bool()
+            {
+                if result.is_none() {
+                    result = Some(FnAttrs::default());
+                }
+                result.as_mut().unwrap().deprecated = b;
+                continue;
+            }
+
+            if &*p.key.name == EXPERIMENTAL
+                && let Some(b) = p.value.literal_bool()
+            {
+                if result.is_none() {
+                    result = Some(FnAttrs::default());
+                }
+                result.as_mut().unwrap().experimental = b;
+                continue;
+            }
+
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                format!(
+                    "Invalid attribute, expected one of: {IMPL}, {DEPRECATED}, {EXPERIMENTAL}, found `{}`",
+                    &*p.key.name,
+                ),
+                vec![source_range],
+            )));
         }
     }
 
-    Ok(None)
+    Ok(result)
 }
 
 impl UnitLen {

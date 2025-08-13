@@ -127,6 +127,7 @@ pub enum FunctionSource {
         func: crate::std::StdFn,
         ast: crate::parsing::ast::types::BoxNode<FunctionExpression>,
         props: StdFnProps,
+        attrs: crate::execution::annotations::FnAttrs,
     },
     User {
         ast: crate::parsing::ast::types::BoxNode<FunctionExpression>,

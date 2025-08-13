@@ -2019,7 +2019,7 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
         ImportPath::Kcl {
             filename: TypedPath::new(&path_string),
         }
-    } else if path_string.starts_with("std::") {
+    } else if path_string.starts_with("std") {
         ParseContext::experimental("explicit imports from the standard library", path_range);
 
         let segments: Vec<String> = path_string.split("::").map(str::to_owned).collect();
@@ -2033,7 +2033,7 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
         }
 
         // For now we only support importing from singly-nested modules inside std.
-        if segments.len() != 2 {
+        if segments.len() > 2 {
             return Err(ErrMode::Cut(
                 CompilationError::fatal(
                     path_range,
@@ -5122,7 +5122,8 @@ let myBox = box(p=[0,0], h=-3, l=-16, w=-10)
 
     #[test]
     fn parse_function_types() {
-        let code = r#"foo = x: fn
+        let code = r#"@settings(experimentalFeatures = allow)
+foo = x: fn
 foo = x: fn(number)
 fn foo(x: fn(): number): fn { return 0 }
 fn foo(x: fn(a, b: number(mm), c: d): number(Angle)): fn { return 0 }
@@ -5136,6 +5137,24 @@ type foo = fn(fn, f: fn(number(_))): [fn([any]): string]
     "#;
         assert_no_err(code);
     }
+
+    #[test]
+    fn experimental() {
+        let code = r#"4 as foo"#;
+        assert_err(code, "Use of `as` for tagging expressions is experimental", [5, 8]);
+
+        let code = r#"@settings(experimentalFeatures = allow)
+4 as foo
+    "#;
+        assert_no_err(code);
+
+        let code = r#"@settings(experimentalFeatures = warn)
+4 as foo
+    "#;
+        let (_, errs) = assert_no_err(code);
+        assert_eq!(errs.len(), 1);
+    }
+
     #[test]
     fn test_parse_tag_starting_with_bang() {
         let some_program_string = r#"startSketchOn(XY)

@@ -150,7 +150,7 @@ impl ExecState {
         self.global.errors.push(e);
     }
 
-    pub fn experimental(&mut self, feature_name: &str, source_range: SourceRange) {
+    pub fn warn_experimental(&mut self, feature_name: &str, source_range: SourceRange) {
         let Some(severity) = self.mod_local.settings.experimental_features.severity() else {
             return;
         };
@@ -545,7 +545,7 @@ impl Default for MetaSettings {
             default_length_units: Default::default(),
             default_angle_units: Default::default(),
             experimental_features: annotations::WarningLevel::Deny,
-            kcl_version: "0.1".to_owned(),
+            kcl_version: "1.0".to_owned(),
         }
     }
 }
@@ -580,7 +580,7 @@ impl MetaSettings {
                     let value = annotations::WarningLevel::from_str(value).map_err(|_| {
                         KclError::new_semantic(KclErrorDetails::new(
                             format!(
-                                "Invalid value for {} settings propert, expected one of: {}",
+                                "Invalid value for {} settings property, expected one of: {}",
                                 annotations::SETTINGS_EXPERIMENTAL_FEATURES,
                                 annotations::WARN_LEVELS.join(", ")
                             ),
