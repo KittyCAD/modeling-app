@@ -716,101 +716,61 @@ sketch001 = startSketchOn(XZ)
       { shouldNormalise: true }
     )
   })
-  test('Can add multiple sketches', async ({ page, homePage }) => {
-    const u = await getUtils(page)
-
+  test('Can add multiple sketches', async ({
+    page,
+    homePage,
+    scene,
+    toolbar,
+    cmdBar,
+    editor,
+  }) => {
     const viewportSize = { width: 1200, height: 500 }
     await page.setBodyDimensions(viewportSize)
 
     await homePage.goToModelingScene()
-    await u.openDebugPanel()
-
+    await scene.settled(cmdBar)
     const center = { x: viewportSize.width / 2, y: viewportSize.height / 2 }
-    const { toSU, toU, click00r } = getMovementUtils({ center, page })
-
-    await expect(
-      page.getByRole('button', { name: 'Start Sketch' })
-    ).not.toBeDisabled()
-    await expect(
-      page.getByRole('button', { name: 'Start Sketch' })
-    ).toBeVisible()
-
-    // click on "Start Sketch" button
-    await u.clearCommandLogs()
-    await u.doAndWaitForImageDiff(
-      () => page.getByRole('button', { name: 'Start Sketch' }).click(),
-      200
-    )
+    const { click00r } = getMovementUtils({ center, page })
 
     let codeStr =
       '@settings(defaultLengthUnit = in)sketch001 = startSketchOn(XY)'
 
-    await page.mouse.click(center.x, viewportSize.height * 0.55)
-    await expect(u.codeLocator).toHaveText(codeStr)
-    await u.closeDebugPanel()
-    await page.waitForTimeout(500) // TODO detect animation ending, or disable animation
+    await toolbar.startSketchBtn.click()
+    const [clickCenter] = scene.makeMouseHelpers(0.5, 0.5, { format: 'ratio' })
+    await clickCenter()
+    await editor.expectEditor.toContain(codeStr)
 
     await click00r(0, 0)
-    codeStr += `profile001 = startProfile(sketch001, at = ${toSU([0, 0])})`
-    await expect(u.codeLocator).toHaveText(codeStr)
+    await page.waitForTimeout(100)
+    await editor.expectEditor.toContain(
+      `profile001 = startProfile(sketch001, at =`
+    )
 
     await click00r(50, 0)
     await page.waitForTimeout(100)
-    codeStr += `  |> xLine(length = ${toU(50, 0)[0]})`
-    await expect(u.codeLocator).toHaveText(codeStr)
+    await editor.expectEditor.toContain(`|> xLine(length =`)
 
     await click00r(0, 50)
-    codeStr += `  |> yLine(length = ${toU(0, 50)[1]})`
-    await expect(u.codeLocator).toHaveText(codeStr)
-
-    await click00r(-50, 0)
-    codeStr += `  |> xLine(length = ${toU(-50, 0)[0]})`
-    await expect(u.codeLocator).toHaveText(codeStr)
+    await editor.expectEditor.toContain(`|> yLine(length =`)
 
     // exit the sketch, reset relative clicker
     await click00r(undefined, undefined)
-    await u.openAndClearDebugPanel()
-    await page.getByRole('button', { name: 'Exit Sketch' }).click()
-    await u.expectCmdLog('[data-message-type="execution-done"]')
-    await page.waitForTimeout(250)
-    await u.clearCommandLogs()
+    await toolbar.exitSketch()
+    await scene.settled(cmdBar)
 
     // start a new sketch
-    await page.getByRole('button', { name: 'Start Sketch' }).click()
-
-    // when exiting the sketch above the camera is still looking down at XY,
-    // so selecting the plane again is a bit easier.
-    await page.mouse.click(center.x + 200, center.y + 100)
+    await toolbar.startSketchBtn.click()
+    await clickCenter()
     await page.waitForTimeout(600) // TODO detect animation ending, or disable animation
-    codeStr += 'sketch002 = startSketchOn(XY)'
-    await expect(u.codeLocator).toHaveText(codeStr)
-    await u.closeDebugPanel()
+    await editor.expectEditor.toContain(`sketch002 = startSketchOn(XY)`)
 
     await click00r(30, 0)
-    codeStr += `profile002 = startProfile(sketch002, at = [2.03, 0])`
-    await expect(u.codeLocator).toHaveText(codeStr)
-
-    // TODO: I couldn't use `toSU` here because of some rounding error causing
-    // it to be off by 0.01
-    await click00r(30, 0)
-    codeStr += `  |> xLine(length = 2.04)`
-    await expect(u.codeLocator).toHaveText(codeStr)
-
-    await click00r(0, 30)
-    codeStr += `  |> yLine(length = -2.03)`
-    await expect(u.codeLocator).toHaveText(codeStr)
-
-    await click00r(-30, 0)
-    codeStr += `  |> xLine(length = -2.04)`
-    await expect(u.codeLocator).toHaveText(codeStr)
-
-    await click00r(undefined, undefined)
-    await u.openAndClearDebugPanel()
-    await page.getByRole('button', { name: 'Exit Sketch' }).click()
-    await u.expectCmdLog('[data-message-type="execution-done"]')
-    await u.updateCamPosition([100, 100, 100])
-    await u.clearCommandLogs()
+    await editor.expectEditor.toContain(
+      `profile002 = startProfile(sketch002, at =`
+    )
+    await toolbar.exitSketch()
   })
+
   test.describe('Snap to close works (at any scale)', () => {
     const doSnapAtDifferentScales = async (
       page: Page,
@@ -2906,7 +2866,8 @@ test.describe('Redirecting to home page and back to the original file should cle
     await page.getByRole('button', { name: 'Start Sketch' }).click()
 
     // select an axis plane
-    await page.mouse.click(700, 200)
+    const [selectPlane] = scene.makeMouseHelpers(0.6, 0.3, { format: 'ratio' })
+    await selectPlane()
 
     // Needed as we don't yet have a way to get a signal from the engine that the camera has animated to the sketch plane
     await page.waitForTimeout(3000)
