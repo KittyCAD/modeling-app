@@ -448,67 +448,52 @@ test.describe('Sketch tests', () => {
     cmdBar,
     toolbar,
   }) => {
-    const u = await getUtils(page)
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
         `sketch001 = startSketchOn(XZ)
-  |> circle(center = [4.61, -5.01], radius = 8)`
+  |> circle(center = [0, 0], radius = 0.5)`
       )
     })
 
     await homePage.goToModelingScene()
     await scene.settled(cmdBar)
-
-    const startPX = [987, 376]
-    const dragPX = 40
-
     let prevContent = await editor.getCurrentCode()
-    console.log('prevContent', prevContent)
-    await toolbar.editSketch()
-    await expect(page.getByTestId('segment-overlay')).toHaveCount(1)
+
+    await test.step('enter sketch and expect circle', async () => {
+      await toolbar.editSketch()
+      await expect(page.getByTestId('segment-overlay')).toHaveCount(1)
+    })
 
     await test.step('drag circle center handle', async () => {
-      const sourcePosition = [startPX[0], startPX[1]] as const
-      const targetPosition = [startPX[0] + dragPX, startPX[1] - dragPX] as const
-      const [dragHandle] = scene.makeDragHelpers(...targetPosition, {
+      const fromPoint = { x: 0.5, y: 0.5 }
+      const toPoint = [fromPoint.x - 0.1, fromPoint.y - 0.1] as const
+      const [dragCenterHandle] = scene.makeDragHelpers(...toPoint, {
         debug: true,
+        format: 'ratio',
       })
-      await dragHandle({
-        fromPoint: { x: sourcePosition[0], y: sourcePosition[1] },
-      })
-      await page.waitForTimeout(100)
-
+      await dragCenterHandle({ fromPoint })
       await editor.expectEditor.not.toContain(prevContent)
       prevContent = await editor.getCurrentCode()
-      console.log('prevContent', prevContent)
     })
 
     await test.step('drag circle radius handle', async () => {
-      await page.waitForTimeout(100)
-
-      const lineEnd = await u.getBoundingBox('[data-overlay-index="0"]')
-      await page.waitForTimeout(100)
-      const sourcePosition = [lineEnd.x - 5, lineEnd.y] as const
-      const targetPosition = [
-        lineEnd.x + dragPX * 2,
-        lineEnd.y + dragPX,
-      ] as const
-      const [dragHandle] = scene.makeDragHelpers(...targetPosition, {
+      const magicYOnCircle = 0.8
+      const fromPoint = { x: 0.5, y: magicYOnCircle }
+      const toPoint = [fromPoint.x / 2, magicYOnCircle] as const
+      const [dragRadiusHandle] = scene.makeDragHelpers(...toPoint, {
         debug: true,
+        format: 'ratio',
       })
-      await dragHandle({
-        fromPoint: { x: sourcePosition[0], y: sourcePosition[1] },
-      })
+      await dragRadiusHandle({ fromPoint })
       await editor.expectEditor.not.toContain(prevContent)
       prevContent = await editor.getCurrentCode()
-      console.log('prevContent', prevContent)
     })
 
     await test.step('expect the code to have changed', async () => {
       await editor.expectEditor.toContain(
         `sketch001 = startSketchOn(XZ)
-    |> circle(center = [7.26, -2.37], radius = 11.44)`,
+    |> circle(center = [-0.18, 0.12], radius = 0.54)`,
         { shouldNormalise: true }
       )
     })
