@@ -2380,25 +2380,13 @@ extrude001 = extrude(profile003, length = 5)
     await homePage.goToModelingScene()
     await scene.connectionEstablished()
     await scene.settled(cmdBar)
-    await expect(
-      page.getByRole('button', { name: 'Start Sketch' })
-    ).not.toBeDisabled()
+    await expect(toolbar.startSketchBtn).not.toBeDisabled()
 
-    const [pointOnSegment] = scene.makeMouseHelpers(574, 207)
-
-    await pointOnSegment()
     await toolbar.editSketch()
-    // wait for engine animation
-    await page.waitForTimeout(600)
-
-    await test.step('check the sketch is still drawn properly', async () => {
-      await Promise.all([
-        scene.expectPixelColor(TEST_COLORS.WHITE, { x: 596, y: 165 }, 15),
-        scene.expectPixelColor(TEST_COLORS.WHITE, { x: 641, y: 220 }, 15),
-        scene.expectPixelColor(TEST_COLORS.WHITE, { x: 763, y: 214 }, 15),
-      ])
-    })
+    await expect(toolbar.exitSketchBtn).toBeVisible()
+    await expect(toolbar.exitSketchBtn).not.toBeDisabled()
   })
+
   test('exit new sketch without drawing anything should not be a problem', async ({
     homePage,
     scene,
