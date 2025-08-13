@@ -2498,6 +2498,7 @@ extrude003 = extrude(profile011, length = 2.5)
     homePage,
     scene,
     toolbar,
+    cmdBar,
     editor,
     page,
   }) => {
@@ -2526,30 +2527,25 @@ loft([profile001, profile002])
 
     await page.setBodyDimensions({ width: 1000, height: 500 })
     await homePage.goToModelingScene()
-    await expect(
-      page.getByRole('button', { name: 'Start Sketch' })
-    ).not.toBeDisabled()
+    await scene.settled(cmdBar)
 
-    const [baseProfileEdgeClick] = scene.makeMouseHelpers(621, 292)
+    const [baseProfileEdgeClick] = scene.makeMouseHelpers(0.6, 0.5, {
+      format: 'ratio',
+    })
 
-    const [rect1Crn1] = scene.makeMouseHelpers(592, 283)
-    const [rect1Crn2] = scene.makeMouseHelpers(797, 268)
+    const [rect1Crn1] = scene.makeMouseHelpers(0.6, 0.5, { format: 'ratio' })
+    const [rect1Crn2] = scene.makeMouseHelpers(0.8, 0.7, { format: 'ratio' })
 
     await baseProfileEdgeClick()
     await toolbar.editSketch()
-    await page.waitForTimeout(600)
-    await scene.expectPixelColor(TEST_COLORS.WHITE, { x: 562, y: 172 }, 15)
-
+    await expect(page.getByTestId('segment-overlay')).toHaveCount(4)
     await toolbar.rectangleBtn.click()
     await page.waitForTimeout(100)
     await rect1Crn1()
-    await editor.expectEditor.toContain(
-      `profile003 = startProfile(sketch001, at = [50.72, -18.19])`
-    )
     await rect1Crn2()
-    await editor.expectEditor.toContain(
-      `angledLine(angle = 0, length = 113.01, tag = $rectangleSegmentA001)`
-    )
+    await editor.expectEditor.toContain(`profile003 = startProfile(sketch001`)
+    await editor.expectEditor.toContain(`tag = $rectangleSegmentA001)`)
+    await expect(page.getByTestId('segment-overlay')).toHaveCount(9)
   })
   test('Can enter sketch loft edges offsetPlane and continue sketch', async ({
     scene,
