@@ -519,10 +519,6 @@ export class CameraControls {
         this.pendingPan = this.pendingPan ?? new Vector3()
         if (this.camera instanceof PerspectiveCamera) {
           const distance = this.camera.position.distanceTo(this.target)
-          // if (this.camera instanceof OrthographicCamera) {
-          //   const zoomFudgeFactor = 2280
-          //   distance = zoomFudgeFactor / (this.camera.zoom * 45)
-          // }
           const panSpeed =
             (distance / 1000 / 45) * this.perspectiveFovBeforeOrtho
           this.pendingPan.x += -deltaMove.x * panSpeed
