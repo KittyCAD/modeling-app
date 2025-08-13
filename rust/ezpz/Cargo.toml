@@ -1,0 +1,10 @@
+[package]
+name = "kcl-ezpz"
+version = "0.1.0"
+edition = "2024"
+description = "A constraint solver for KCL and Zoo Design Studio"
+
+[dependencies]
+
+[lints]
+workspace = true
