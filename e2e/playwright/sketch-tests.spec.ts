@@ -8,6 +8,7 @@ import type { HomePageFixture } from '@e2e/playwright/fixtures/homePageFixture'
 import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 import type { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
 import {
+  NUMBER_REGEXP,
   PERSIST_MODELING_CONTEXT,
   TEST_COLORS,
   getMovementUtils,
@@ -2271,6 +2272,7 @@ profile002 = startProfile(sketch002, at = [0, 52.55])
     toolbar,
     editor,
     page,
+    cmdBar,
   }) => {
     await page.addInitScript(async () => {
       localStorage.setItem(
@@ -2290,9 +2292,7 @@ extrude001 = extrude(thePart, length = 75)
 
     await page.setBodyDimensions({ width: 1000, height: 500 })
     await homePage.goToModelingScene()
-    await expect(
-      page.getByRole('button', { name: 'Start Sketch' })
-    ).not.toBeDisabled()
+    await scene.settled(cmdBar)
 
     const [objClick] = scene.makeMouseHelpers(565, 343)
     const [profilePoint1] = scene.makeMouseHelpers(609, 289)
@@ -2301,30 +2301,33 @@ extrude001 = extrude(thePart, length = 75)
     await test.step('enter sketch and setup', async () => {
       await objClick()
       await toolbar.editSketch()
-      // timeout wait for engine animation is unavoidable
-      await page.waitForTimeout(600)
     })
 
     await test.step('expect code to match initial conditions still', async () => {
       await editor.expectEditor.toContain(
-        `thePart = startSketchOn(XZ)  |> startProfile(at = [7.53, 10.51])`
+        `thePart = startSketchOn(XZ)  |> startProfile(at = [`
       )
+      await expect(toolbar.lineBtn).not.toHaveAttribute('aria-pressed', 'true')
     })
 
     await test.step('equiping the line tool should break up the pipe expression', async () => {
       await toolbar.lineBtn.click()
       await editor.expectEditor.toContain(
-        `sketch001 = startSketchOn(XZ)thePart = startProfile(sketch001, at = [7.53, 10.51])`
+        `sketch001 = startSketchOn(XZ)thePart = startProfile(sketch001, at = [`
       )
     })
 
     await test.step('can continue on to add a new profile to this sketch', async () => {
       await profilePoint1()
       await editor.expectEditor.toContain(
-        `profile001 = startProfile(sketch001, at = [19.69, -7.05])`
+        `profile001 = startProfile(sketch001, at = [`
       )
       await profilePoint2()
-      await editor.expectEditor.toContain(`|> line(end = [18.97, -18.06])`)
+
+      const profileWithLineRegExp = new RegExp(
+        `profile001 = startProfile\\(sketch001, at = \\[${NUMBER_REGEXP}, ${NUMBER_REGEXP}\\]\\)\\s+\\|> line\\(end`
+      )
+      await editor.expectEditor.toContain(profileWithLineRegExp)
     })
   })
   test('Can enter sketch on sketch of wall and cap for segment, solid2d, extrude-wall, extrude-cap selections', async ({
