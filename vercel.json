@@ -3,14 +3,21 @@
   "headers": [
     {
       "source": "/(.*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "app.zoo.dev"
+        }
+      ],
       "headers": [
         {
           "key": "Reporting-Endpoints",
           "value": "csp-reporting-endpoint=\"https://csp-logger.vercel.app/csp-report\""
         },
+        // Copy this CSP from the `npx vite build` output. This is the production CSP.
         {
           "key": "Content-Security-Policy-Report-Only",
-          "value": "default-src 'self';style-src 'self' 'unsafe-inline';img-src * blob: 'unsafe-inline';connect-src 'self' https://plausible.corp.zoo.dev https://api.zoo.dev wss://api.zoo.dev https://api.dev.zoo.dev wss://api.dev.zoo.dev;object-src 'none';frame-ancestors 'none';script-src 'self' 'wasm-unsafe-eval' https://plausible.corp.zoo.dev/js/script.tagged-events.js;report-uri https://csp-logger.vercel.app/csp-report;report-to csp-reporting-endpoint;"       }
+          "value": "default-src 'self';style-src 'self' 'unsafe-inline';img-src * blob: 'unsafe-inline';connect-src 'self' https://plausible.corp.zoo.dev https://api.zoo.dev wss://api.zoo.dev https://api.dev.zoo.dev wss://api.dev.zoo.dev;object-src 'none';frame-ancestors 'none';script-src 'self' 'wasm-unsafe-eval' https://plausible.corp.zoo.dev/js/script.tagged-events.js;report-uri https://csp-logger.vercel.app/csp-report;report-to csp-reporting-endpoint;"
         }
       ]
     },
@@ -27,6 +34,7 @@
           "key": "X-Robots-Tag",
           "value": "noindex"
         },
+        // Copy this CSP from the `npx vite build` output. This is the preview CSP.
         {
           "key": "Content-Security-Policy-Report-Only",
           "value": "default-src 'self';style-src 'self' 'unsafe-inline';img-src * blob: 'unsafe-inline';connect-src 'self' https://plausible.corp.zoo.dev https://api.zoo.dev wss://api.zoo.dev https://api.dev.zoo.dev wss://api.dev.zoo.dev;object-src 'none';frame-ancestors 'none';frame-src 'self' https://vercel.live;script-src 'self' 'wasm-unsafe-eval' https://plausible.corp.zoo.dev/js/script.tagged-events.js https://vercel.live 'unsafe-eval';"
