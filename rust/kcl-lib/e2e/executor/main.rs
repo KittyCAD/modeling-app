@@ -181,13 +181,13 @@ wallMountL = 8
 bracket = startSketchOn(XY)
   |> startProfile(at = [0, 0])
   |> line(end = [0, wallMountL])
-  |> tangentialArc(radius = filletR, angle = 90 )
+  |> tangentialArc(radius = filletR, angle = 90deg )
   |> line(end = [-shelfMountL, 0])
   |> line(end = [0, -thickness])
   |> line(end = [shelfMountL, 0])
   |> tangentialArc(
        radius = filletR - thickness,
-       angle = -90,
+       angle = -90deg,
      )
   |> line(end = [0, -wallMountL])
   |> close()
@@ -2017,12 +2017,7 @@ async fn kcl_test_error_no_auth_websocket() {
     let result = execute_and_snapshot_no_auth(code, None).await;
     let err = result.unwrap_err();
     let err = err.as_kcl_error().unwrap();
-    assert!(
-        err.message()
-            .contains("Please send the following object over this websocket"),
-        "actual: {}",
-        err.message()
-    );
+    assert!(err.message().contains("Authorization"), "actual: {}", err.message());
 }
 
 #[tokio::test(flavor = "multi_thread")]

@@ -899,13 +899,13 @@ description: Result of parsing clock.kcl
               "commentStart": 0,
               "end": 0,
               "moduleId": 0,
-              "raw": "90",
+              "raw": "90deg",
               "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
                 "value": 90.0,
-                "suffix": "None"
+                "suffix": "Deg"
               }
             },
             "moduleId": 0,
@@ -937,13 +937,13 @@ description: Result of parsing clock.kcl
                 "commentStart": 0,
                 "end": 0,
                 "moduleId": 0,
-                "raw": "30",
+                "raw": "30deg",
                 "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
                   "value": 30.0,
-                  "suffix": "None"
+                  "suffix": "Deg"
                 }
               },
               "start": 0,
@@ -990,13 +990,13 @@ description: Result of parsing clock.kcl
               "commentStart": 0,
               "end": 0,
               "moduleId": 0,
-              "raw": "90",
+              "raw": "90deg",
               "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
                 "value": 90.0,
-                "suffix": "None"
+                "suffix": "Deg"
               }
             },
             "moduleId": 0,
@@ -1028,13 +1028,13 @@ description: Result of parsing clock.kcl
                 "commentStart": 0,
                 "end": 0,
                 "moduleId": 0,
-                "raw": "6",
+                "raw": "6deg",
                 "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
                   "value": 6.0,
-                  "suffix": "None"
+                  "suffix": "Deg"
                 }
               },
               "start": 0,
@@ -2644,13 +2644,13 @@ description: Result of parsing clock.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "moduleId": 0,
-                                "raw": "60",
+                                "raw": "60deg",
                                 "start": 0,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
                                   "value": 60.0,
-                                  "suffix": "None"
+                                  "suffix": "Deg"
                                 }
                               }
                             },
@@ -2776,13 +2776,13 @@ description: Result of parsing clock.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "moduleId": 0,
-                                "raw": "60",
+                                "raw": "60deg",
                                 "start": 0,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
                                   "value": 60.0,
-                                  "suffix": "None"
+                                  "suffix": "Deg"
                                 }
                               }
                             },
@@ -2961,13 +2961,13 @@ description: Result of parsing clock.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "30",
+                                  "raw": "30deg",
                                   "start": 0,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
                                     "value": 30.0,
-                                    "suffix": "None"
+                                    "suffix": "Deg"
                                   }
                                 }
                               },
@@ -3112,13 +3112,13 @@ description: Result of parsing clock.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "moduleId": 0,
-                                "raw": "30",
+                                "raw": "30deg",
                                 "start": 0,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
                                   "value": 30.0,
-                                  "suffix": "None"
+                                  "suffix": "Deg"
                                 }
                               }
                             },
@@ -3272,13 +3272,13 @@ description: Result of parsing clock.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "30",
+                                  "raw": "30deg",
                                   "start": 0,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
                                     "value": 30.0,
-                                    "suffix": "None"
+                                    "suffix": "Deg"
                                   }
                                 }
                               },
@@ -3423,13 +3423,13 @@ description: Result of parsing clock.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "moduleId": 0,
-                                "raw": "30",
+                                "raw": "30deg",
                                 "start": 0,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
                                   "value": 30.0,
-                                  "suffix": "None"
+                                  "suffix": "Deg"
                                 }
                               }
                             },
@@ -4545,13 +4545,13 @@ description: Result of parsing clock.kcl
                                     "commentStart": 0,
                                     "end": 0,
                                     "moduleId": 0,
-                                    "raw": "30",
+                                    "raw": "30deg",
                                     "start": 0,
                                     "type": "Literal",
                                     "type": "Literal",
                                     "value": {
                                       "value": 30.0,
-                                      "suffix": "None"
+                                      "suffix": "Deg"
                                     }
                                   },
                                   "commentStart": 0,
@@ -4705,13 +4705,13 @@ description: Result of parsing clock.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "30",
+                                  "raw": "30deg",
                                   "start": 0,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
                                     "value": 30.0,
-                                    "suffix": "None"
+                                    "suffix": "Deg"
                                   }
                                 },
                                 "commentStart": 0,
@@ -4874,13 +4874,13 @@ description: Result of parsing clock.kcl
                                     "commentStart": 0,
                                     "end": 0,
                                     "moduleId": 0,
-                                    "raw": "30",
+                                    "raw": "30deg",
                                     "start": 0,
                                     "type": "Literal",
                                     "type": "Literal",
                                     "value": {
                                       "value": 30.0,
-                                      "suffix": "None"
+                                      "suffix": "Deg"
                                     }
                                   },
                                   "commentStart": 0,
@@ -5034,13 +5034,13 @@ description: Result of parsing clock.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "30",
+                                  "raw": "30deg",
                                   "start": 0,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
                                     "value": 30.0,
-                                    "suffix": "None"
+                                    "suffix": "Deg"
                                   }
                                 },
                                 "commentStart": 0,
@@ -5225,13 +5225,13 @@ description: Result of parsing clock.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "60",
+                                  "raw": "60deg",
                                   "start": 0,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
                                     "value": 60.0,
-                                    "suffix": "None"
+                                    "suffix": "Deg"
                                   }
                                 },
                                 "commentStart": 0,
@@ -5366,13 +5366,13 @@ description: Result of parsing clock.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "60",
+                                  "raw": "60deg",
                                   "start": 0,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
                                     "value": 60.0,
-                                    "suffix": "None"
+                                    "suffix": "Deg"
                                   }
                                 },
                                 "commentStart": 0,
@@ -5560,13 +5560,13 @@ description: Result of parsing clock.kcl
                                     "commentStart": 0,
                                     "end": 0,
                                     "moduleId": 0,
-                                    "raw": "90",
+                                    "raw": "90deg",
                                     "start": 0,
                                     "type": "Literal",
                                     "type": "Literal",
                                     "value": {
                                       "value": 90.0,
-                                      "suffix": "None"
+                                      "suffix": "Deg"
                                     }
                                   },
                                   "commentStart": 0,
@@ -5720,13 +5720,13 @@ description: Result of parsing clock.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "90",
+                                  "raw": "90deg",
                                   "start": 0,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
                                     "value": 90.0,
-                                    "suffix": "None"
+                                    "suffix": "Deg"
                                   }
                                 },
                                 "commentStart": 0,
@@ -5889,13 +5889,13 @@ description: Result of parsing clock.kcl
                                     "commentStart": 0,
                                     "end": 0,
                                     "moduleId": 0,
-                                    "raw": "90",
+                                    "raw": "90deg",
                                     "start": 0,
                                     "type": "Literal",
                                     "type": "Literal",
                                     "value": {
                                       "value": 90.0,
-                                      "suffix": "None"
+                                      "suffix": "Deg"
                                     }
                                   },
                                   "commentStart": 0,
@@ -6049,13 +6049,13 @@ description: Result of parsing clock.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "90",
+                                  "raw": "90deg",
                                   "start": 0,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
                                     "value": 90.0,
-                                    "suffix": "None"
+                                    "suffix": "Deg"
                                   }
                                 },
                                 "commentStart": 0,
@@ -6243,13 +6243,13 @@ description: Result of parsing clock.kcl
                                     "commentStart": 0,
                                     "end": 0,
                                     "moduleId": 0,
-                                    "raw": "120",
+                                    "raw": "120deg",
                                     "start": 0,
                                     "type": "Literal",
                                     "type": "Literal",
                                     "value": {
                                       "value": 120.0,
-                                      "suffix": "None"
+                                      "suffix": "Deg"
                                     }
                                   },
                                   "commentStart": 0,
@@ -6403,13 +6403,13 @@ description: Result of parsing clock.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "120",
+                                  "raw": "120deg",
                                   "start": 0,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
                                     "value": 120.0,
-                                    "suffix": "None"
+                                    "suffix": "Deg"
                                   }
                                 },
                                 "commentStart": 0,
@@ -6572,13 +6572,13 @@ description: Result of parsing clock.kcl
                                     "commentStart": 0,
                                     "end": 0,
                                     "moduleId": 0,
-                                    "raw": "120",
+                                    "raw": "120deg",
                                     "start": 0,
                                     "type": "Literal",
                                     "type": "Literal",
                                     "value": {
                                       "value": 120.0,
-                                      "suffix": "None"
+                                      "suffix": "Deg"
                                     }
                                   },
                                   "commentStart": 0,
@@ -6732,13 +6732,13 @@ description: Result of parsing clock.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "120",
+                                  "raw": "120deg",
                                   "start": 0,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
                                     "value": 120.0,
-                                    "suffix": "None"
+                                    "suffix": "Deg"
                                   }
                                 },
                                 "commentStart": 0,
@@ -6901,13 +6901,13 @@ description: Result of parsing clock.kcl
                                     "commentStart": 0,
                                     "end": 0,
                                     "moduleId": 0,
-                                    "raw": "120",
+                                    "raw": "120deg",
                                     "start": 0,
                                     "type": "Literal",
                                     "type": "Literal",
                                     "value": {
                                       "value": 120.0,
-                                      "suffix": "None"
+                                      "suffix": "Deg"
                                     }
                                   },
                                   "commentStart": 0,
@@ -7061,13 +7061,13 @@ description: Result of parsing clock.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "120",
+                                  "raw": "120deg",
                                   "start": 0,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
                                     "value": 120.0,
-                                    "suffix": "None"
+                                    "suffix": "Deg"
                                   }
                                 },
                                 "commentStart": 0,
@@ -7255,13 +7255,13 @@ description: Result of parsing clock.kcl
                                     "commentStart": 0,
                                     "end": 0,
                                     "moduleId": 0,
-                                    "raw": "150",
+                                    "raw": "150deg",
                                     "start": 0,
                                     "type": "Literal",
                                     "type": "Literal",
                                     "value": {
                                       "value": 150.0,
-                                      "suffix": "None"
+                                      "suffix": "Deg"
                                     }
                                   },
                                   "commentStart": 0,
@@ -7415,13 +7415,13 @@ description: Result of parsing clock.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "150",
+                                  "raw": "150deg",
                                   "start": 0,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
                                     "value": 150.0,
-                                    "suffix": "None"
+                                    "suffix": "Deg"
                                   }
                                 },
                                 "commentStart": 0,
@@ -7584,13 +7584,13 @@ description: Result of parsing clock.kcl
                                     "commentStart": 0,
                                     "end": 0,
                                     "moduleId": 0,
-                                    "raw": "150",
+                                    "raw": "150deg",
                                     "start": 0,
                                     "type": "Literal",
                                     "type": "Literal",
                                     "value": {
                                       "value": 150.0,
-                                      "suffix": "None"
+                                      "suffix": "Deg"
                                     }
                                   },
                                   "commentStart": 0,
@@ -7744,13 +7744,13 @@ description: Result of parsing clock.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "150",
+                                  "raw": "150deg",
                                   "start": 0,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
                                     "value": 150.0,
-                                    "suffix": "None"
+                                    "suffix": "Deg"
                                   }
                                 },
                                 "commentStart": 0,
@@ -7913,13 +7913,13 @@ description: Result of parsing clock.kcl
                                     "commentStart": 0,
                                     "end": 0,
                                     "moduleId": 0,
-                                    "raw": "150",
+                                    "raw": "150deg",
                                     "start": 0,
                                     "type": "Literal",
                                     "type": "Literal",
                                     "value": {
                                       "value": 150.0,
-                                      "suffix": "None"
+                                      "suffix": "Deg"
                                     }
                                   },
                                   "commentStart": 0,
@@ -8073,13 +8073,13 @@ description: Result of parsing clock.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "150",
+                                  "raw": "150deg",
                                   "start": 0,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
                                     "value": 150.0,
-                                    "suffix": "None"
+                                    "suffix": "Deg"
                                   }
                                 },
                                 "commentStart": 0,
@@ -8242,13 +8242,13 @@ description: Result of parsing clock.kcl
                                     "commentStart": 0,
                                     "end": 0,
                                     "moduleId": 0,
-                                    "raw": "150",
+                                    "raw": "150deg",
                                     "start": 0,
                                     "type": "Literal",
                                     "type": "Literal",
                                     "value": {
                                       "value": 150.0,
-                                      "suffix": "None"
+                                      "suffix": "Deg"
                                     }
                                   },
                                   "commentStart": 0,
@@ -8402,13 +8402,13 @@ description: Result of parsing clock.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "150",
+                                  "raw": "150deg",
                                   "start": 0,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
                                     "value": 150.0,
-                                    "suffix": "None"
+                                    "suffix": "Deg"
                                   }
                                 },
                                 "commentStart": 0,
@@ -8595,13 +8595,13 @@ description: Result of parsing clock.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "180",
+                                  "raw": "180deg",
                                   "start": 0,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
                                     "value": 180.0,
-                                    "suffix": "None"
+                                    "suffix": "Deg"
                                   }
                                 }
                               },
@@ -8746,13 +8746,13 @@ description: Result of parsing clock.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "moduleId": 0,
-                                "raw": "180",
+                                "raw": "180deg",
                                 "start": 0,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
                                   "value": 180.0,
-                                  "suffix": "None"
+                                  "suffix": "Deg"
                                 }
                               }
                             },
@@ -8906,13 +8906,13 @@ description: Result of parsing clock.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "180",
+                                  "raw": "180deg",
                                   "start": 0,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
                                     "value": 180.0,
-                                    "suffix": "None"
+                                    "suffix": "Deg"
                                   }
                                 }
                               },
@@ -9057,13 +9057,13 @@ description: Result of parsing clock.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "moduleId": 0,
-                                "raw": "180",
+                                "raw": "180deg",
                                 "start": 0,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
                                   "value": 180.0,
-                                  "suffix": "None"
+                                  "suffix": "Deg"
                                 }
                               }
                             },
@@ -9242,13 +9242,13 @@ description: Result of parsing clock.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "150",
+                                  "raw": "150deg",
                                   "start": 0,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
                                     "value": 150.0,
-                                    "suffix": "None"
+                                    "suffix": "Deg"
                                   }
                                 }
                               },
@@ -9393,13 +9393,13 @@ description: Result of parsing clock.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "moduleId": 0,
-                                "raw": "150",
+                                "raw": "150deg",
                                 "start": 0,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
                                   "value": 150.0,
-                                  "suffix": "None"
+                                  "suffix": "Deg"
                                 }
                               }
                             },
@@ -9575,13 +9575,13 @@ description: Result of parsing clock.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "moduleId": 0,
-                                "raw": "120",
+                                "raw": "120deg",
                                 "start": 0,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
                                   "value": 120.0,
-                                  "suffix": "None"
+                                  "suffix": "Deg"
                                 }
                               }
                             },
@@ -9707,13 +9707,13 @@ description: Result of parsing clock.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "moduleId": 0,
-                                "raw": "120",
+                                "raw": "120deg",
                                 "start": 0,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
                                   "value": 120.0,
-                                  "suffix": "None"
+                                  "suffix": "Deg"
                                 }
                               }
                             },
@@ -9867,13 +9867,13 @@ description: Result of parsing clock.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "120",
+                                  "raw": "120deg",
                                   "start": 0,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
                                     "value": 120.0,
-                                    "suffix": "None"
+                                    "suffix": "Deg"
                                   }
                                 }
                               },
@@ -10018,13 +10018,13 @@ description: Result of parsing clock.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "moduleId": 0,
-                                "raw": "120",
+                                "raw": "120deg",
                                 "start": 0,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
                                   "value": 120.0,
-                                  "suffix": "None"
+                                  "suffix": "Deg"
                                 }
                               }
                             },
@@ -10203,13 +10203,13 @@ description: Result of parsing clock.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "90",
+                                  "raw": "90deg",
                                   "start": 0,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
                                     "value": 90.0,
-                                    "suffix": "None"
+                                    "suffix": "Deg"
                                   }
                                 }
                               },
@@ -10354,13 +10354,13 @@ description: Result of parsing clock.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "moduleId": 0,
-                                "raw": "90",
+                                "raw": "90deg",
                                 "start": 0,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
                                   "value": 90.0,
-                                  "suffix": "None"
+                                  "suffix": "Deg"
                                 }
                               }
                             },
@@ -10514,13 +10514,13 @@ description: Result of parsing clock.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "90",
+                                  "raw": "90deg",
                                   "start": 0,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
                                     "value": 90.0,
-                                    "suffix": "None"
+                                    "suffix": "Deg"
                                   }
                                 }
                               },
@@ -10665,13 +10665,13 @@ description: Result of parsing clock.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "moduleId": 0,
-                                "raw": "90",
+                                "raw": "90deg",
                                 "start": 0,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
                                   "value": 90.0,
-                                  "suffix": "None"
+                                  "suffix": "Deg"
                                 }
                               }
                             },
@@ -10825,13 +10825,13 @@ description: Result of parsing clock.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "90",
+                                  "raw": "90deg",
                                   "start": 0,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
                                     "value": 90.0,
-                                    "suffix": "None"
+                                    "suffix": "Deg"
                                   }
                                 }
                               },
@@ -10976,13 +10976,13 @@ description: Result of parsing clock.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "moduleId": 0,
-                                "raw": "90",
+                                "raw": "90deg",
                                 "start": 0,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
                                   "value": 90.0,
-                                  "suffix": "None"
+                                  "suffix": "Deg"
                                 }
                               }
                             },
@@ -12248,13 +12248,13 @@ description: Result of parsing clock.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "moduleId": 0,
-                                "raw": "70",
+                                "raw": "70deg",
                                 "start": 0,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
                                   "value": 70.0,
-                                  "suffix": "None"
+                                  "suffix": "Deg"
                                 }
                               },
                               "commentStart": 0,
@@ -12363,7 +12363,14 @@ description: Result of parsing clock.kcl
                         "start": 0,
                         "type": "CallExpressionKw",
                         "type": "CallExpressionKw",
-                        "unlabeled": null
+                        "unlabeled": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "start": 0,
+                          "type": "PipeSubstitution",
+                          "type": "PipeSubstitution"
+                        }
                       },
                       {
                         "arguments": [
@@ -12381,13 +12388,13 @@ description: Result of parsing clock.kcl
                               "commentStart": 0,
                               "end": 0,
                               "moduleId": 0,
-                              "raw": "70",
+                              "raw": "70deg",
                               "start": 0,
                               "type": "Literal",
                               "type": "Literal",
                               "value": {
                                 "value": 70.0,
-                                "suffix": "None"
+                                "suffix": "Deg"
                               }
                             }
                           },
@@ -12488,7 +12495,14 @@ description: Result of parsing clock.kcl
                         "start": 0,
                         "type": "CallExpressionKw",
                         "type": "CallExpressionKw",
-                        "unlabeled": null
+                        "unlabeled": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "start": 0,
+                          "type": "PipeSubstitution",
+                          "type": "PipeSubstitution"
+                        }
                       },
                       {
                         "arguments": [
@@ -12567,7 +12581,14 @@ description: Result of parsing clock.kcl
                         "start": 0,
                         "type": "CallExpressionKw",
                         "type": "CallExpressionKw",
-                        "unlabeled": null
+                        "unlabeled": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "start": 0,
+                          "type": "PipeSubstitution",
+                          "type": "PipeSubstitution"
+                        }
                       },
                       {
                         "arguments": [
@@ -12588,13 +12609,13 @@ description: Result of parsing clock.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "moduleId": 0,
-                                "raw": "70",
+                                "raw": "70deg",
                                 "start": 0,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
                                   "value": 70.0,
-                                  "suffix": "None"
+                                  "suffix": "Deg"
                                 }
                               },
                               "moduleId": 0,
@@ -12603,13 +12624,13 @@ description: Result of parsing clock.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "moduleId": 0,
-                                "raw": "180",
+                                "raw": "180deg",
                                 "start": 0,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
                                   "value": 180.0,
-                                  "suffix": "None"
+                                  "suffix": "Deg"
                                 }
                               },
                               "start": 0,
@@ -12714,7 +12735,14 @@ description: Result of parsing clock.kcl
                         "start": 0,
                         "type": "CallExpressionKw",
                         "type": "CallExpressionKw",
-                        "unlabeled": null
+                        "unlabeled": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "start": 0,
+                          "type": "PipeSubstitution",
+                          "type": "PipeSubstitution"
+                        }
                       },
                       {
                         "arguments": [
@@ -12733,13 +12761,13 @@ description: Result of parsing clock.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "moduleId": 0,
-                                "raw": "70",
+                                "raw": "70deg",
                                 "start": 0,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
                                   "value": 70.0,
-                                  "suffix": "None"
+                                  "suffix": "Deg"
                                 }
                               },
                               "commentStart": 0,
@@ -12848,7 +12876,14 @@ description: Result of parsing clock.kcl
                         "start": 0,
                         "type": "CallExpressionKw",
                         "type": "CallExpressionKw",
-                        "unlabeled": null
+                        "unlabeled": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "start": 0,
+                          "type": "PipeSubstitution",
+                          "type": "PipeSubstitution"
+                        }
                       },
                       {
                         "arguments": [
@@ -12936,7 +12971,14 @@ description: Result of parsing clock.kcl
                         "start": 0,
                         "type": "CallExpressionKw",
                         "type": "CallExpressionKw",
-                        "unlabeled": null
+                        "unlabeled": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "start": 0,
+                          "type": "PipeSubstitution",
+                          "type": "PipeSubstitution"
+                        }
                       },
                       {
                         "arguments": [
@@ -12958,13 +13000,13 @@ description: Result of parsing clock.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "70",
+                                  "raw": "70deg",
                                   "start": 0,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
                                     "value": 70.0,
-                                    "suffix": "None"
+                                    "suffix": "Deg"
                                   }
                                 },
                                 "commentStart": 0,
@@ -12981,13 +13023,13 @@ description: Result of parsing clock.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "moduleId": 0,
-                                "raw": "180",
+                                "raw": "180deg",
                                 "start": 0,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
                                   "value": 180.0,
-                                  "suffix": "None"
+                                  "suffix": "Deg"
                                 }
                               },
                               "start": 0,
@@ -13092,7 +13134,14 @@ description: Result of parsing clock.kcl
                         "start": 0,
                         "type": "CallExpressionKw",
                         "type": "CallExpressionKw",
-                        "unlabeled": null
+                        "unlabeled": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "start": 0,
+                          "type": "PipeSubstitution",
+                          "type": "PipeSubstitution"
+                        }
                       },
                       {
                         "arguments": [
@@ -13113,13 +13162,13 @@ description: Result of parsing clock.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "moduleId": 0,
-                                "raw": "70",
+                                "raw": "70deg",
                                 "start": 0,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
                                   "value": 70.0,
-                                  "suffix": "None"
+                                  "suffix": "Deg"
                                 }
                               },
                               "moduleId": 0,
@@ -13128,13 +13177,13 @@ description: Result of parsing clock.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "moduleId": 0,
-                                "raw": "180",
+                                "raw": "180deg",
                                 "start": 0,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
                                   "value": 180.0,
-                                  "suffix": "None"
+                                  "suffix": "Deg"
                                 }
                               },
                               "start": 0,
@@ -13239,7 +13288,14 @@ description: Result of parsing clock.kcl
                         "start": 0,
                         "type": "CallExpressionKw",
                         "type": "CallExpressionKw",
-                        "unlabeled": null
+                        "unlabeled": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "start": 0,
+                          "type": "PipeSubstitution",
+                          "type": "PipeSubstitution"
+                        }
                       },
                       {
                         "arguments": [
@@ -13327,7 +13383,14 @@ description: Result of parsing clock.kcl
                         "start": 0,
                         "type": "CallExpressionKw",
                         "type": "CallExpressionKw",
-                        "unlabeled": null
+                        "unlabeled": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "start": 0,
+                          "type": "PipeSubstitution",
+                          "type": "PipeSubstitution"
+                        }
                       },
                       {
                         "arguments": [
@@ -13345,13 +13408,13 @@ description: Result of parsing clock.kcl
                               "commentStart": 0,
                               "end": 0,
                               "moduleId": 0,
-                              "raw": "70",
+                              "raw": "70deg",
                               "start": 0,
                               "type": "Literal",
                               "type": "Literal",
                               "value": {
                                 "value": 70.0,
-                                "suffix": "None"
+                                "suffix": "Deg"
                               }
                             }
                           },
@@ -13452,7 +13515,14 @@ description: Result of parsing clock.kcl
                         "start": 0,
                         "type": "CallExpressionKw",
                         "type": "CallExpressionKw",
-                        "unlabeled": null
+                        "unlabeled": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "start": 0,
+                          "type": "PipeSubstitution",
+                          "type": "PipeSubstitution"
+                        }
                       },
                       {
                         "arguments": [],
@@ -13479,7 +13549,14 @@ description: Result of parsing clock.kcl
                         "start": 0,
                         "type": "CallExpressionKw",
                         "type": "CallExpressionKw",
-                        "unlabeled": null
+                        "unlabeled": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "start": 0,
+                          "type": "PipeSubstitution",
+                          "type": "PipeSubstitution"
+                        }
                       },
                       {
                         "arguments": [
@@ -13536,7 +13613,14 @@ description: Result of parsing clock.kcl
                         "start": 0,
                         "type": "CallExpressionKw",
                         "type": "CallExpressionKw",
-                        "unlabeled": null
+                        "unlabeled": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "start": 0,
+                          "type": "PipeSubstitution",
+                          "type": "PipeSubstitution"
+                        }
                       },
                       {
                         "arguments": [
@@ -13585,7 +13669,14 @@ description: Result of parsing clock.kcl
                         "start": 0,
                         "type": "CallExpressionKw",
                         "type": "CallExpressionKw",
-                        "unlabeled": null
+                        "unlabeled": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "start": 0,
+                          "type": "PipeSubstitution",
+                          "type": "PipeSubstitution"
+                        }
                       }
                     ],
                     "commentStart": 0,
@@ -21864,13 +21955,13 @@ description: Result of parsing clock.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "moduleId": 0,
-                                "raw": "20",
+                                "raw": "20deg",
                                 "start": 0,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
                                   "value": 20.0,
-                                  "suffix": "None"
+                                  "suffix": "Deg"
                                 }
                               },
                               "start": 0,
@@ -22001,13 +22092,13 @@ description: Result of parsing clock.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "moduleId": 0,
-                                "raw": "20",
+                                "raw": "20deg",
                                 "start": 0,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
                                   "value": 20.0,
-                                  "suffix": "None"
+                                  "suffix": "Deg"
                                 }
                               },
                               "start": 0,
@@ -22204,13 +22295,13 @@ description: Result of parsing clock.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "moduleId": 0,
-                                "raw": "180",
+                                "raw": "180deg",
                                 "start": 0,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
                                   "value": 180.0,
-                                  "suffix": "None"
+                                  "suffix": "Deg"
                                 }
                               },
                               "start": 0,
@@ -22341,13 +22432,13 @@ description: Result of parsing clock.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "moduleId": 0,
-                                "raw": "180",
+                                "raw": "180deg",
                                 "start": 0,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
                                   "value": 180.0,
-                                  "suffix": "None"
+                                  "suffix": "Deg"
                                 }
                               },
                               "start": 0,
@@ -22499,13 +22590,13 @@ description: Result of parsing clock.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "moduleId": 0,
-                                "raw": "340",
+                                "raw": "340deg",
                                 "start": 0,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
                                   "value": 340.0,
-                                  "suffix": "None"
+                                  "suffix": "Deg"
                                 }
                               },
                               "start": 0,
@@ -22636,13 +22727,13 @@ description: Result of parsing clock.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "moduleId": 0,
-                                "raw": "340",
+                                "raw": "340deg",
                                 "start": 0,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
                                   "value": 340.0,
-                                  "suffix": "None"
+                                  "suffix": "Deg"
                                 }
                               },
                               "start": 0,
@@ -22813,13 +22904,13 @@ description: Result of parsing clock.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "90",
+                        "raw": "90deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 90.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "start": 0,
@@ -23244,13 +23335,13 @@ description: Result of parsing clock.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "120",
+                        "raw": "120deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 120.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "start": 0,
@@ -23378,13 +23469,13 @@ description: Result of parsing clock.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "90",
+                        "raw": "90deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 90.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "start": 0,
@@ -23632,7 +23723,7 @@ description: Result of parsing clock.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "blockComment",
-                      "value": "|> angledLineThatIntersects(angle = segAng(seg002) + hourHandAngle - 90, intersectTag = seg004)",
+                      "value": "|> angledLineThatIntersects(angle = segAng(seg002) + hourHandAngle - 90deg, intersectTag = seg004)",
                       "style": "line"
                     }
                   }
@@ -24280,13 +24371,13 @@ description: Result of parsing clock.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "moduleId": 0,
-                                "raw": "20",
+                                "raw": "20deg",
                                 "start": 0,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
                                   "value": 20.0,
-                                  "suffix": "None"
+                                  "suffix": "Deg"
                                 }
                               },
                               "start": 0,
@@ -24417,13 +24508,13 @@ description: Result of parsing clock.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "moduleId": 0,
-                                "raw": "20",
+                                "raw": "20deg",
                                 "start": 0,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
                                   "value": 20.0,
-                                  "suffix": "None"
+                                  "suffix": "Deg"
                                 }
                               },
                               "start": 0,
@@ -24620,13 +24711,13 @@ description: Result of parsing clock.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "moduleId": 0,
-                                "raw": "180",
+                                "raw": "180deg",
                                 "start": 0,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
                                   "value": 180.0,
-                                  "suffix": "None"
+                                  "suffix": "Deg"
                                 }
                               },
                               "start": 0,
@@ -24757,13 +24848,13 @@ description: Result of parsing clock.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "moduleId": 0,
-                                "raw": "180",
+                                "raw": "180deg",
                                 "start": 0,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
                                   "value": 180.0,
-                                  "suffix": "None"
+                                  "suffix": "Deg"
                                 }
                               },
                               "start": 0,
@@ -24915,13 +25006,13 @@ description: Result of parsing clock.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "moduleId": 0,
-                                "raw": "340",
+                                "raw": "340deg",
                                 "start": 0,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
                                   "value": 340.0,
-                                  "suffix": "None"
+                                  "suffix": "Deg"
                                 }
                               },
                               "start": 0,
@@ -25052,13 +25143,13 @@ description: Result of parsing clock.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "moduleId": 0,
-                                "raw": "340",
+                                "raw": "340deg",
                                 "start": 0,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
                                   "value": 340.0,
-                                  "suffix": "None"
+                                  "suffix": "Deg"
                                 }
                               },
                               "start": 0,
@@ -25229,13 +25320,13 @@ description: Result of parsing clock.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "90",
+                        "raw": "90deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 90.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "start": 0,
@@ -25660,13 +25751,13 @@ description: Result of parsing clock.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "120",
+                        "raw": "120deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 120.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "start": 0,
@@ -25794,13 +25885,13 @@ description: Result of parsing clock.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "90",
+                        "raw": "90deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 90.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "start": 0,
@@ -27012,13 +27103,13 @@ description: Result of parsing clock.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "raw": "120",
+                      "raw": "120deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 120.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -27036,13 +27127,13 @@ description: Result of parsing clock.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "raw": "420",
+                      "raw": "420deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 420.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   }
@@ -27127,7 +27218,14 @@ description: Result of parsing clock.kcl
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
-                "unlabeled": null
+                "unlabeled": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "PipeSubstitution",
+                  "type": "PipeSubstitution"
+                }
               },
               {
                 "arguments": [
