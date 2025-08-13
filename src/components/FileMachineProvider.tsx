@@ -294,7 +294,7 @@ export const FileMachineProvider = ({
             }
           }
 
-          window.electron.rename(oldPath, newPath)
+          await window.electron.rename(oldPath, newPath)
 
           if (!file) {
             return Promise.reject(new Error('file is not defined'))
@@ -433,13 +433,7 @@ export const FileMachineProvider = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [location])
 
-  const cb = modelingMenuCallbackMostActions(
-    settings,
-    navigate,
-    filePath,
-    project,
-    token
-  )
+  const cb = modelingMenuCallbackMostActions(settings, navigate, filePath)
   useMenuListener(cb)
 
   const kclCommandMemo = useMemo(() => {
