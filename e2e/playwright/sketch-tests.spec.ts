@@ -2511,14 +2511,9 @@ loft([profile001, profile002])
     await homePage.goToModelingScene()
     await scene.settled(cmdBar)
 
-    const [baseProfileEdgeClick] = scene.makeMouseHelpers(0.6, 0.5, {
-      format: 'ratio',
-    })
-
     const [rect1Crn1] = scene.makeMouseHelpers(0.6, 0.5, { format: 'ratio' })
     const [rect1Crn2] = scene.makeMouseHelpers(0.8, 0.7, { format: 'ratio' })
 
-    await baseProfileEdgeClick()
     await toolbar.editSketch()
     await expect(page.getByTestId('segment-overlay')).toHaveCount(4)
     await toolbar.rectangleBtn.click()
