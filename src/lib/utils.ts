@@ -38,6 +38,19 @@ export async function refreshPage(method = 'UI button') {
   window?.location.reload()
 }
 
+export function activeFocusIsInput() {
+  return document.activeElement && isInputElement(document.activeElement)
+}
+
+function isInputElement(
+  element: EventTarget
+): element is HTMLInputElement | HTMLTextAreaElement {
+  return (
+    element instanceof HTMLInputElement ||
+    element instanceof HTMLTextAreaElement
+  )
+}
+
 /**
  * Get all labels for a keyword call expression.
  */
