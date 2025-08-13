@@ -355,6 +355,11 @@ export fn circle(
 /// exampleSketch = startSketchOn(XY)
 ///   |> ellipse(center = [0, 0], majorRadius = 50, minorRadius = 20)
 /// ```
+///
+/// ```
+/// exampleSketch = startSketchOn(YZ)
+///   |> ellipse(center = [10, 10], majorDiameter = 40, minorRadius = 10)
+/// ```
 @(impl = std_rust)
 export fn ellipse(
   /// Sketch to extend, or plane or surface to sketch on.
@@ -362,10 +367,14 @@ export fn ellipse(
   /// The center of the ellipse.
   @(snippetArray = ["0", "0"])
   center: Point2d,
-  /// The minor radius of the ellipse.
-  minorRadius: number(Length),
-  /// The major radius of the ellipse. Equivalent to majorAxis = [majorRadius, 0].
+  /// The minor radius of the ellipse. Incompatible with `minorDiameter`.
+  minorRadius?: number(Length),
+  /// The minor diameter of the ellipse. Incompatible with `minorRadius`.
+  minorDiameter?: number(Length),
+  /// The major radius of the ellipse. Equivalent to majorAxis = [majorRadius, 0]. Incompatible with `majorDiameter`.
   majorRadius?: number(Length),
+  /// The major diameter of the ellipse. Equivalent to 2.0 * majorRadius. Incompatible with `majorRadius`.
+  majorDiameter?: number(Length),
   /// The major axis of the ellipse.
   majorAxis?: Point2d,
   /// Create a new tag which refers to this ellipse.
@@ -2230,11 +2239,15 @@ export fn elliptic(
   /// Where along the ellptic should this segment end?
   @(includeInSnippet = true)
   angleEnd: number(Angle),
-  /// The minor radius, b, of the elliptic equation x^2 / a^2 + y^2 / b^2 = 1.
+  /// The minor radius, b, of the elliptic equation x^2 / a^2 + y^2 / b^2 = 1. Incompatible with `minorDiameter`.
   @(includeInSnippet = true)
-  minorRadius: number(Length),
-  /// The major radius, a, of the elliptic equation x^2 / a^2 + y^2 / b^2 = 1. Equivalent to majorAxis = [majorRadius, 0].
+  minorRadius?: number(Length),
+  /// Them minor diameter of the elliptic equation. Incompatible with `minorRadius`.
+  minorDiameter?: number(Length),
+  /// The major radius, a, of the elliptic equation x^2 / a^2 + y^2 / b^2 = 1. Equivalent to majorAxis = [majorRadius, 0]. Incompatible with `majorDiameter`.
   majorRadius?: number(Length),
+  /// The major diameter of the elliptic equation. Incompatible with `majorRadius`.
+  majorDiameter?: number(Length),
   /// The major axis of the elliptic.
   @(includeInSnippet = true)
   majorAxis?: Point2d,
@@ -2252,8 +2265,10 @@ export fn elliptic(
 ///```
 @(impl = std_rust)
 export fn ellipticPoint(
-  /// The major radius, a, of the elliptic equation x^2 / a ^ 2 + y^2 / b^2 = 1.
-  majorRadius: number,
+  /// The major radius, a, of the elliptic equation x^2 / a ^ 2 + y^2 / b^2 = 1. Incompatible with `majorDiameter`.
+  majorRadius?: number,
+  /// Them major diameter of the elliptic equation. Incompatible with `majorRadius`.
+  majorDiameter?: number,
   ///  The minor radius, b, of the hyperbolic equation x^2 / a ^ 2 + y^2 / b^2 = 1.
   minorRadius: number,
   /// The x value. Calculates y and returns (x, y). Incompatible with `y`.
