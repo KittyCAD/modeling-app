@@ -970,6 +970,10 @@ profile001 = startProfile(sketch001, at = [${roundOff(scale * 77.11)}, ${roundOf
   test("Existing sketch with bad code delete user's code", async ({
     page,
     homePage,
+    scene,
+    cmdBar,
+    toolbar,
+    editor,
   }) => {
     // this was a regression https://github.com/KittyCAD/modeling-app/issues/2832
     await page.addInitScript(async () => {
@@ -986,20 +990,16 @@ profile001 = startProfile(sketch001, at = [${roundOff(scale * 77.11)}, ${roundOf
   `
       )
     })
-
-    const u = await getUtils(page)
-    await page.setBodyDimensions({ width: 1200, height: 500 })
-
     await homePage.goToModelingScene()
-
-    await u.openDebugPanel()
-    await u.expectCmdLog('[data-message-type="execution-done"]')
-    await u.closeDebugPanel()
-
-    await page.getByRole('button', { name: 'Start Sketch' }).click()
+    await scene.settled(cmdBar)
+    await toolbar.startSketchBtn.click()
 
     // Click the end face of extrude001
-    await page.mouse.click(622, 355)
+    // await page.mouse.click(622, 355)
+    const [clickOnEndFace] = scene.makeMouseHelpers(0.5, 0.7, {
+      format: 'ratio',
+    })
+    await clickOnEndFace()
 
     // The click should generate a new sketch starting on the end face of extrude001
     // signified by the implicit 'END' tag for that solid.
@@ -1017,7 +1017,7 @@ profile001 = startProfile(sketch001, at = [${roundOff(scale * 77.11)}, ${roundOf
       page.getByRole('button', { name: 'Start Sketch' })
     ).toBeVisible()
 
-    await expect((await u.codeLocator.innerText()).replace(/\s/g, '')).toBe(
+    expect((await editor.getCurrentCode()).replace(/\s/g, '')).toBe(
       `sketch001 = startSketchOn(XZ)
     |> startProfile(at = [-0.45, 0.87])
     |> line(end = [1.32, 0.38])
