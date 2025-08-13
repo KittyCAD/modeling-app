@@ -131,37 +131,72 @@ export function indexHtmlCsp(enabled: boolean): Plugin {
   ]
 
   // Allow scripts from the same origin and from Plausible Analytics. Allow WASM execution.
-  const cspScriptBase = "script-src 'self' 'wasm-unsafe-eval' https://plausible.corp.zoo.dev/js/script.tagged-events.js"
+  const cspScriptBase =
+    "script-src 'self' 'wasm-unsafe-eval' https://plausible.corp.zoo.dev/js/script.tagged-events.js"
+
+  // frame ancestors can only be blocked using HTTP headers (see vercel.json)
   const vercelCspBase = ["frame-ancestors 'none'"]
+
+  const cspReporting = [
+    'report-uri https://csp-logger.vercel.app/csp-report',
+    'report-to csp-reporting-endpoint',
+  ]
 
   const vercelCsp =
     csp
       .concat(vercelCspBase)
-      .concat(
-        // frame ancestors can only be blocked using HTTP headers (see vercel.json)
-        [
-          cspScriptBase,
-          'report-uri https://csp-logger.vercel.app/csp-report',
-          'report-to csp-reporting-endpoint',
-        ]
-      )
+      .concat([cspScriptBase])
+      .concat(cspReporting)
       .join('; ') + ';'
 
+  const reportingEndpoints = {
+    key: 'Reporting-Endpoints',
+    value: 'csp-reporting-endpoint="https://csp-logger.vercel.app/csp-report"',
+  }
+
   console.log(
-    'Content-Security-Policy for Vercel (prod) (vercel.json): ',
+    'Content-Security-Policy for Vercel (prod) (vercel.json):',
     vercelCsp
   )
 
   console.log(
-    'Content-Security-Policy for Vercel (preview) (vercel.json): ',
-    // vercel.live is used for feedback scripts in preview deployments.
-    csp
-      .concat(vercelCspBase)
-      .concat([
-        "frame-src 'self' https://vercel.live",
-        `${cspScriptBase} https://vercel.live/_next-live/feedback/feedback.js 'unsafe-eval'`,
-      ])
-      .join('; ') + ';'
+    JSON.stringify(
+      [
+        reportingEndpoints,
+        {
+          key: 'Content-Security-Policy-Report-Only',
+          value: vercelCsp,
+        },
+      ],
+      null,
+      2
+    )
+  )
+
+  console.log('Content-Security-Policy for Vercel (preview) (vercel.json):')
+
+  console.log(
+    JSON.stringify(
+      [
+        reportingEndpoints,
+        {
+          key: 'Content-Security-Policy-Report-Only',
+          value:
+            csp
+              .concat(vercelCspBase)
+              .concat([
+                // vercel.live is used for feedback scripts in preview deployments.
+                "frame-src 'self' https://vercel.live",
+                `${cspScriptBase} https://vercel.live/_next-live/feedback/feedback.js 'unsafe-eval'`,
+              ])
+              .concat(cspReporting)
+              .join('; ') + ';',
+        },
+      ],
+
+      null,
+      2
+    )
   )
 
   return {
