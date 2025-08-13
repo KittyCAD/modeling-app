@@ -469,9 +469,8 @@ export async function writeProjectSettingsFile(
 let APP_ID = 'dev.zoo.modeling-app'
 if (IS_STAGING) {
   APP_ID = `${APP_ID}-staging`
-}
-if (IS_STAGING_OR_DEBUG) {
-  APP_ID = `${APP_ID}-debug`
+} else if (IS_STAGING_OR_DEBUG) {
+  APP_ID = `${APP_ID}-local`
 }
 
 const getAppFolderName = () => {
