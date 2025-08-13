@@ -2269,8 +2269,10 @@ export fn ellipticPoint(
   majorRadius?: number,
   /// Them major diameter of the elliptic equation. Incompatible with `majorRadius`.
   majorDiameter?: number,
-  ///  The minor radius, b, of the hyperbolic equation x^2 / a ^ 2 + y^2 / b^2 = 1.
-  minorRadius: number,
+  ///  The minor radius, b, of the elliptic equation x^2 / a ^ 2 + y^2 / b^2 = 1. Incompatible with `minorDiameter`.
+  minorRadius?: number,
+  /// The minor diameter of the elliptic equation. Incompatible with `minorRadius`.
+  minorDiameter?: number,
   /// The x value. Calculates y and returns (x, y). Incompatible with `y`.
   x?: number(Length),
   /// The y value. Calculates x and returns (x, y). Incompatible with `x`.
