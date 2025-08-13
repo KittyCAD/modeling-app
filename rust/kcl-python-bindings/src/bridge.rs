@@ -4,6 +4,7 @@ use pyo3::{pyclass, pymethods};
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, PartialEq, Debug, Clone, Copy)]
+#[pyo3_stub_gen::derive::gen_stub_pyclass]
 #[pyclass]
 pub struct Point3d {
     pub x: f32,
@@ -11,6 +12,7 @@ pub struct Point3d {
     pub z: f32,
 }
 
+#[pyo3_stub_gen::derive::gen_stub_pymethods]
 #[pymethods]
 impl Point3d {
     #[new]
@@ -22,6 +24,7 @@ impl Point3d {
 }
 
 #[derive(Serialize, Deserialize, PartialEq, Debug, Clone, Copy)]
+#[pyo3_stub_gen::derive::gen_stub_pyclass]
 #[pyclass]
 pub struct CameraLookAt {
     pub vantage: Point3d,
@@ -29,6 +32,7 @@ pub struct CameraLookAt {
     pub up: Point3d,
 }
 
+#[pyo3_stub_gen::derive::gen_stub_pymethods]
 #[pymethods]
 impl CameraLookAt {
     #[new]

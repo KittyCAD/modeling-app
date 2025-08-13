@@ -34,26 +34,15 @@ jobs:
         uses: PyO3/maturin-action@v1 # Rust + Python + maturin
         with:
           working-directory: rust/kcl-python-bindings
-      - name: Install deps & dev-install the crate
-        run: |
-          pip install pyo3-stubgen
-          pip install --no-cache-dir --editable ./rust/kcl-python-bindings
-      # ------------------------------------------------------------
-      # 2. Re-generate the .pyi
-      # ------------------------------------------------------------
+      - uses: taiki-e/install-action@just
       - name: Generate stubs
         run: |
-          mkdir -p rust/kcl-python-bindings/stubs
-          pyo3-stubgen kcl stubs
-          ls -la stubs
-          cp stubs/* rust/kcl-python-bindings/stubs/
-      # ------------------------------------------------------------
-      # 3. Commit & push if anything changed
-      # ------------------------------------------------------------
+          cd rust
+          just python-stubs
       - name: Check for diff
         id: git-status
         run: |
-          git add rust/kcl-python-bindings/stubs/*.pyi
+          git add rust/kcl-python-bindings/*.pyi
           if git diff --cached --quiet; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
           else
