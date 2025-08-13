@@ -19,6 +19,9 @@ const NODE_ENV = process.env.NODE_ENV || 'development'
 dotenv.config({ path: [`.env.${NODE_ENV}.local`, `.env.${NODE_ENV}`] })
 export const token = process.env.VITE_KITTYCAD_API_TOKEN || ''
 
+/** A string version of a RegExp to get a number that may include a decimal point */
+export const NUMBER_REGEXP = '((-)?\\d+(\\.\\d+)?)'
+
 import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
 
 import type { ElectronZoo } from '@e2e/playwright/fixtures/fixtureSetup'
@@ -58,8 +61,8 @@ export const PERSIST_MODELING_CONTEXT = 'persistModelingContext'
 export const deg = (Math.PI * 2) / 360
 
 export const commonPoints = {
-  startAt: '[7.19, -9.7]',
-  num1: 7.25,
+  startAt: '[-12.99, -10.63]',
+  num1: 8.2,
   num2: 14.44,
   /** The Y-value of a common lineTo move we perform in tests */
   num3: -2.44,
@@ -472,7 +475,7 @@ export async function getUtils(page: Page, test_?: typeof test) {
       page
         .locator(locator)
         .boundingBox({ timeout: 5_000 })
-        .then((box: any) => ({ ...box, x: box?.x || 0, y: box?.y || 0 })),
+        .then((box) => ({ ...box, x: box?.x || 0, y: box?.y || 0 })),
     codeLocator: page.locator('.cm-content'),
     crushKclCodeIntoOneLineAndThenMaybeSome: async () => {
       const code = await page.locator('.cm-content').innerText()
