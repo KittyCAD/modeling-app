@@ -4,6 +4,7 @@ import {
   mkdirOrNOOP,
   readAppSettingsFile,
   renameProjectDirectory,
+  getAppSettingsFilePath,
 } from '@src/lib/desktop'
 import {
   doesProjectNameNeedInterpolated,
@@ -29,6 +30,8 @@ import {
   getStringAfterLastSeparator,
   parentPathRelativeToProject,
 } from '@src/lib/paths'
+
+const ML_CONVERSATIONS_FILE_NAME = 'ml-conversations.json'
 
 const sharedBulkCreateWorkflow = async ({
   input,
@@ -619,6 +622,22 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           message: `Folder ${folderName} written successfully`,
           requestedAbsolutePath: input.requestedAbsolutePath,
         }
+      }
+    ),
+    [SystemIOMachineActors.getMlEphantConversations]: fromPromise(
+      async ({}: {}) => {
+        // In the future we can add cache behavior but it's really pointless
+        // for the amount of data and frequency we're dealing with.
+
+        // We need the settings path to find the sibling `ml-conversations.json`
+        const json = await window.electron.readFile(
+          window.electron.path.join(
+            window.electron.path.dirname(await getAppSettingsFilePath()),
+            ML_CONVERSATIONS_FILE_NAME
+          ),
+          'utf-8'
+        )
+        return jsonToMlConversations(json)
       }
     ),
   },

@@ -3,7 +3,7 @@
 use anyhow::Result;
 use indexmap::IndexMap;
 use schemars::JsonSchema;
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Deserializer, Serialize};
 use validator::Validate;
 
 use crate::settings::types::{

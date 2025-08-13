@@ -87,6 +87,7 @@ export const systemIOMachine = setup({
           type: SystemIOMachineEvents.createKCLFile
           data: {
             requestedProjectName: string
+            requestedSubDirectory?: string
             requestedFileNameWithExtension: string
             requestedCode: string
           }
@@ -203,6 +204,9 @@ export const systemIOMachine = setup({
             requestedPath: string
             requestedProjectName: string
           }
+        }
+      | {
+          type: SystemIOMachineEvents.getMlEphantConversations
         },
   },
   guards: {
@@ -303,6 +307,12 @@ export const systemIOMachine = setup({
         `Project name is too long, must be less than or equal to ${MAX_PROJECT_NAME_LENGTH} characters`
       )
     },
+    [SystemIOMachineActions.setMlEphantConversations]: assign({
+      mlConversations: ({ event }) => {
+        assertEvent(event, SystemIOMachineEvents.done_getMlEphantConversations)
+        return event.output
+      },
+    }),
   },
   actors: {
     [SystemIOMachineActors.readFoldersFromProjectDirectory]: fromPromise(
@@ -349,6 +359,7 @@ export const systemIOMachine = setup({
         input: {
           context: SystemIOContext
           requestedProjectName: string
+          requestedSubDirectory?: string
           requestedFileNameWithExtension: string
           requestedCode: string
           rootContext: AppMachineContext
@@ -543,6 +554,18 @@ export const systemIOMachine = setup({
         }
       }
     ),
+    [SystemIOMachineActors.getMlEphantConversations]: fromPromise(
+      async ({
+        input,
+      }: {
+        input: {
+          context: SystemIOContext
+          rootContext: AppMachineContext
+        }
+      }) => {
+        return new Map()
+      }
+    ),
   },
 }).createMachine({
   initial: SystemIOMachineStates.idle,
@@ -569,6 +592,7 @@ export const systemIOMachine = setup({
     lastProjectDeleteRequest: {
       project: NO_PROJECT_DIRECTORY,
     },
+    mlConversations: new Map(),
   }),
   states: {
     [SystemIOMachineStates.idle]: {
@@ -656,6 +680,9 @@ export const systemIOMachine = setup({
         },
         [SystemIOMachineEvents.deleteFileOrFolderAndNavigate]: {
           target: SystemIOMachineStates.deletingFileOrFolderAndNavigate,
+        },
+        [SystemIOMachineEvents.getMlEphantConversations]: {
+          target: SystemIOMachineStates.gettingMlEphantConversations,
         },
       },
     },
@@ -1226,6 +1253,23 @@ export const systemIOMachine = setup({
         onError: {
           target: SystemIOMachineStates.idle,
           actions: [SystemIOMachineActions.toastError],
+        },
+      },
+    },
+    [SystemIOMachineStates.gettingMlEphantConversations]: {
+      invoke: {
+        id: SystemIOMachineActors.getMlEphantConversations,
+        src: SystemIOMachineActors.getMlEphantConversations,
+        // No input required.
+        // Implicit input is settings path, which comes from a function
+        // we call internally.
+        input: () => {},
+        onDone: {
+          target: SystemIOMachineStates.idle,
+          actions: [SystemIOMachineActions.setMlEphantConversations],
+        },
+        onError: {
+          target: SystemIOMachineStates.idle,
         },
       },
     },

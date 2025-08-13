@@ -5,7 +5,6 @@ import {
 } from '@src/machines/systemIO/hooks'
 import { useSearchParams } from 'react-router-dom'
 import { CREATE_FILE_URL_PARAM } from '@src/lib/constants'
-import { submitAndAwaitTextToKclSystemIO } from '@src/lib/textToCad'
 import { reportRejection } from '@src/lib/trap'
 import { useNavigate } from 'react-router-dom'
 import { billingActor, useSettings, useToken } from '@src/lib/singletons'
@@ -36,31 +35,6 @@ export function SystemIOMachineLogicListenerWeb() {
       // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
     }, [clearURLParams])
   }
-
-  // TODO: Move this generateTextToCAD to another machine in the future and make a whole machine out of it.
-  useEffect(() => {
-    const requestedPromptTrimmed =
-      requestedTextToCadGeneration.requestedPrompt.trim()
-    const requestedProjectName =
-      requestedTextToCadGeneration.requestedProjectName
-    const isProjectNew = requestedTextToCadGeneration.isProjectNew
-    if (!requestedPromptTrimmed || !requestedProjectName) return
-    // Gotcha: web has no project name.
-    const uniqueNameIfNeeded = requestedProjectName
-    submitAndAwaitTextToKclSystemIO({
-      trimmedPrompt: requestedPromptTrimmed,
-      projectName: uniqueNameIfNeeded,
-      navigate,
-      token,
-      isProjectNew,
-      settings: { highlightEdges: settings.modeling.highlightEdges.current },
-    })
-      .then(() => {
-        billingActor.send({ type: BillingTransition.Update, apiToken: token })
-      })
-      .catch(reportRejection)
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [requestedTextToCadGeneration])
 
   useClearQueryParams()
   return null
