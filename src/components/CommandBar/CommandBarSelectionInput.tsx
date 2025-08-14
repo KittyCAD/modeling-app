@@ -53,10 +53,7 @@ function CommandBarSelectionInput({
   useEffect(() => {
     if (arg.selectionTypes.includes('plane') && !canSubmitSelection) {
       toSync(() => {
-        return Promise.all([
-          kclManager.showPlanes(),
-          kclManager.setSelectionFilter(['plane', 'object']),
-        ])
+        return kclManager.showPlanes()
       }, reportRejection)()
     }
 
