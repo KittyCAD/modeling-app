@@ -7,11 +7,6 @@ pub type Vars = IndexMap<Label, f64>;
 
 type Result<T> = std::result::Result<T, Error>;
 
-pub trait Equation {
-    /// You can evaluate an equation by supplying the value of each variable.
-    fn evaluate(&self, vars: Vars) -> Result<Eval>;
-}
-
 #[derive(Debug, PartialEq)]
 pub struct Eval {
     /// The value of the equation.
@@ -20,10 +15,9 @@ pub struct Eval {
     derivatives: Vars,
 }
 
-/// The simplest kind of equation, a single variable.
-/// E.g. `x`.
-struct SingleVar {
-    label: Label,
+/// Symbolic equation that can be evaluated.
+pub struct Equation {
+    eval: Box<dyn Fn(Vars) -> Result<Eval>>,
 }
 
 /// Errors that could occur.
@@ -32,23 +26,31 @@ pub enum Error {
     MissingVariable(Label),
 }
 
-impl Equation for SingleVar {
-    fn evaluate(&self, vars: Vars) -> Result<Eval> {
-        // Evaluate the single variable by just looking up its value.
-        let Some(var_value) = vars.get(&self.label) else {
-            return Err(Error::MissingVariable(self.label.clone()));
+impl Equation {
+    /// The simplest kind of equation, a single variable.
+    /// E.g. `x`.
+    pub fn single_variable(label: Label) -> Self {
+        let eval = move |vars: Vars| {
+            let Some(var_value) = vars.get(&label) else {
+                return Err(Error::MissingVariable(label.clone()));
+            };
+
+            // Reuse the input variables map as the output derivatives map.
+            let var_value = *var_value;
+            let mut derivatives = vars;
+            derivatives[&label] = 1.0;
+
+            // All done.
+            Ok(Eval {
+                value: var_value,
+                derivatives,
+            })
         };
+        Self { eval: Box::new(eval) }
+    }
 
-        // Reuse the input variables map as the output derivatives map.
-        let var_value = *var_value;
-        let mut derivatives = vars;
-        derivatives[&self.label] = 1.0;
-
-        // All done.
-        Ok(Eval {
-            value: var_value,
-            derivatives,
-        })
+    pub fn evaluate(&self, vars: Vars) -> Result<Eval> {
+        (self.eval)(vars)
     }
 }
 
@@ -58,7 +60,9 @@ mod tests {
 
     #[test]
     fn test_basics() {
-        let actual = SingleVar { label: 'a' }.evaluate(Vars::from([('a', 14.0)])).unwrap();
+        let actual = Equation::single_variable('a')
+            .evaluate(Vars::from([('a', 14.0)]))
+            .unwrap();
         let expected = Eval {
             value: 14.0,
             derivatives: IndexMap::from([('a', 1.0)]),
