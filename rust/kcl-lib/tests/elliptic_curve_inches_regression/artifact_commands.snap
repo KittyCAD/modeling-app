@@ -93,7 +93,10 @@ description: Artifact commands elliptic_curve_inches_regression.kcl
             "x": 0.0,
             "y": 1545.7213433999998
           },
-          "major_radius": 2302.732377,
+          "major_axis": {
+            "x": 2302.732377,
+            "y": 0.0
+          },
           "minor_radius": 426.8591158,
           "start_angle": {
             "unit": "degrees",

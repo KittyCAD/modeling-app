@@ -1,0 +1,57 @@
+name: Auto-update PyO3 stubs
+on:
+  pull_request:
+    branches: [main] # PRs _into_ main
+    paths:
+      - "rust/kcl-python-bindings/**" # run only when Rust/Python code changes
+      - ".github/workflows/update-python-stubs.yml"
+permissions:
+  contents: write # allow committing back to the PR branch
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+jobs:
+  build-and-stub:
+    runs-on: namespace-profile-ubuntu-2-cores
+    defaults:
+      run:
+        shell: bash -eux {0}
+    steps:
+      - uses: actions/create-github-app-token@v2
+        id: app-token
+        with:
+          # required
+          app-id: ${{ secrets.GH_ORG_APP_ID }}
+          private-key: ${{ secrets.GH_ORG_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+      - name: Checkout the repo
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          token: ${{ steps.app-token.outputs.token }}
+          ref: ${{ github.head_ref }}
+      - name: Install toolchain + maturin
+        uses: PyO3/maturin-action@v1 # Rust + Python + maturin
+        with:
+          working-directory: rust/kcl-python-bindings
+      - uses: taiki-e/install-action@just
+      - name: Generate stubs
+        run: |
+          cd rust
+          just python-stubs
+      - name: Check for diff
+        id: git-status
+        run: |
+          git add rust/kcl-python-bindings/*.pyi
+          if git diff --cached --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Commit & push
+        if: steps.git-status.outputs.changed == 'true'
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git commit -m "chore(stubs): auto-update PyO3 .pyi"
+          git push --force-with-lease

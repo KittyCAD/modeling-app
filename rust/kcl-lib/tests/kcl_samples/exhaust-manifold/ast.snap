@@ -855,13 +855,13 @@ description: Result of parsing exhaust-manifold.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "80",
+                                  "raw": "80deg",
                                   "start": 0,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
                                     "value": 80.0,
-                                    "suffix": "None"
+                                    "suffix": "Deg"
                                   }
                                 },
                                 "commentStart": 0,
@@ -1076,13 +1076,13 @@ description: Result of parsing exhaust-manifold.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "moduleId": 0,
-                                "raw": "85",
+                                "raw": "85deg",
                                 "start": 0,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
                                   "value": 85.0,
-                                  "suffix": "None"
+                                  "suffix": "Deg"
                                 }
                               }
                             },
@@ -2103,13 +2103,13 @@ description: Result of parsing exhaust-manifold.kcl
                 "commentStart": 0,
                 "end": 0,
                 "moduleId": 0,
-                "raw": "1",
+                "raw": "1deg",
                 "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
                   "value": 1.0,
-                  "suffix": "None"
+                  "suffix": "Deg"
                 }
               }
             },
@@ -2259,13 +2259,13 @@ description: Result of parsing exhaust-manifold.kcl
                 "commentStart": 0,
                 "end": 0,
                 "moduleId": 0,
-                "raw": "24.3",
+                "raw": "24.3deg",
                 "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
                   "value": 24.3,
-                  "suffix": "None"
+                  "suffix": "Deg"
                 }
               }
             },
@@ -2415,13 +2415,13 @@ description: Result of parsing exhaust-manifold.kcl
                 "commentStart": 0,
                 "end": 0,
                 "moduleId": 0,
-                "raw": "25.2",
+                "raw": "25.2deg",
                 "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
                   "value": 25.2,
-                  "suffix": "None"
+                  "suffix": "Deg"
                 }
               }
             },
@@ -2815,13 +2815,13 @@ description: Result of parsing exhaust-manifold.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "40",
+                        "raw": "40deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 40.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "commentStart": 0,
@@ -2899,13 +2899,13 @@ description: Result of parsing exhaust-manifold.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "raw": "80",
+                      "raw": "80deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 80.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   }
@@ -2976,13 +2976,13 @@ description: Result of parsing exhaust-manifold.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "40",
+                        "raw": "40deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 40.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "commentStart": 0,
@@ -3317,13 +3317,13 @@ description: Result of parsing exhaust-manifold.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "40",
+                        "raw": "40deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 40.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "commentStart": 0,
@@ -3401,13 +3401,13 @@ description: Result of parsing exhaust-manifold.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "raw": "80",
+                      "raw": "80deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 80.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   }
@@ -3478,13 +3478,13 @@ description: Result of parsing exhaust-manifold.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "40",
+                        "raw": "40deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 40.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "commentStart": 0,
@@ -3871,13 +3871,13 @@ description: Result of parsing exhaust-manifold.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "40",
+                        "raw": "40deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 40.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "commentStart": 0,
@@ -3955,13 +3955,13 @@ description: Result of parsing exhaust-manifold.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "raw": "80",
+                      "raw": "80deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 80.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   }

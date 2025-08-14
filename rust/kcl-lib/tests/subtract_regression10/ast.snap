@@ -1004,13 +1004,13 @@ description: Result of parsing subtract_regression10.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "raw": "90",
+                      "raw": "90deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 90.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     },
                     "start": 0,
@@ -2687,13 +2687,13 @@ description: Result of parsing subtract_regression10.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "raw": "90",
+                      "raw": "90deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 90.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -4284,13 +4284,13 @@ description: Result of parsing subtract_regression10.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "raw": "360",
+                  "raw": "360deg",
                   "start": 0,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
                     "value": 360.0,
-                    "suffix": "None"
+                    "suffix": "Deg"
                   }
                 }
               },
@@ -7230,13 +7230,13 @@ description: Result of parsing subtract_regression10.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "90",
+                        "raw": "90deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 90.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "start": 0,
@@ -7337,13 +7337,13 @@ description: Result of parsing subtract_regression10.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "raw": "45",
+                      "raw": "45deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 45.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -7462,13 +7462,13 @@ description: Result of parsing subtract_regression10.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "45",
+                        "raw": "45deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 45.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "start": 0,
@@ -7570,13 +7570,13 @@ description: Result of parsing subtract_regression10.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "45",
+                        "raw": "45deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 45.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "commentStart": 0,
@@ -7703,13 +7703,13 @@ description: Result of parsing subtract_regression10.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "90",
+                        "raw": "90deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 90.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "start": 0,
@@ -7993,13 +7993,13 @@ description: Result of parsing subtract_regression10.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "90",
+                        "raw": "90deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 90.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "start": 0,
@@ -8101,13 +8101,13 @@ description: Result of parsing subtract_regression10.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "45",
+                        "raw": "45deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 45.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "commentStart": 0,
@@ -8234,13 +8234,13 @@ description: Result of parsing subtract_regression10.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "45",
+                        "raw": "45deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 45.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "start": 0,
@@ -8342,13 +8342,13 @@ description: Result of parsing subtract_regression10.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "45",
+                        "raw": "45deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 45.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "commentStart": 0,
@@ -8604,13 +8604,13 @@ description: Result of parsing subtract_regression10.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "45",
+                        "raw": "45deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 45.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "commentStart": 0,
@@ -8737,13 +8737,13 @@ description: Result of parsing subtract_regression10.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "45",
+                        "raw": "45deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 45.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "start": 0,
@@ -8845,13 +8845,13 @@ description: Result of parsing subtract_regression10.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "45",
+                        "raw": "45deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 45.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "commentStart": 0,
@@ -8978,13 +8978,13 @@ description: Result of parsing subtract_regression10.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "90",
+                        "raw": "90deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 90.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "start": 0,
@@ -9297,13 +9297,13 @@ description: Result of parsing subtract_regression10.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "45",
+                        "raw": "45deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 45.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "start": 0,
@@ -9482,13 +9482,13 @@ description: Result of parsing subtract_regression10.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "90",
+                        "raw": "90deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 90.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "start": 0,
@@ -10659,13 +10659,13 @@ description: Result of parsing subtract_regression10.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "raw": "80",
+                      "raw": "80deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 80.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -10861,13 +10861,13 @@ description: Result of parsing subtract_regression10.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "raw": "80",
+                      "raw": "80deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 80.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -12600,13 +12600,13 @@ description: Result of parsing subtract_regression10.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "raw": "360",
+                      "raw": "360deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 360.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },

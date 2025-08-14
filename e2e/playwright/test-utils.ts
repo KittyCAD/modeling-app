@@ -19,6 +19,9 @@ const NODE_ENV = process.env.NODE_ENV || 'development'
 dotenv.config({ path: [`.env.${NODE_ENV}.local`, `.env.${NODE_ENV}`] })
 export const token = process.env.VITE_KITTYCAD_API_TOKEN || ''
 
+/** A string version of a RegExp to get a number that may include a decimal point */
+export const NUMBER_REGEXP = '((-)?\\d+(\\.\\d+)?)'
+
 import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
 
 import type { ElectronZoo } from '@e2e/playwright/fixtures/fixtureSetup'
@@ -58,8 +61,8 @@ export const PERSIST_MODELING_CONTEXT = 'persistModelingContext'
 export const deg = (Math.PI * 2) / 360
 
 export const commonPoints = {
-  startAt: '[7.19, -9.7]',
-  num1: 7.25,
+  startAt: '[-12.99, -10.63]',
+  num1: 8.2,
   num2: 14.44,
   /** The Y-value of a common lineTo move we perform in tests */
   num3: -2.44,
@@ -370,6 +373,46 @@ export function normaliseKclNumbers(code: string, ignoreZero = true): string {
   return replaceNumbers(code)
 }
 
+/**
+ * We've written a lot of tests using hard-coded pixel coordinates.
+ * This function translates those to stream-relative ones,
+ * or can be used to get stream coordinates by ratio.
+ *
+ * This is a duplicate impl to the one in sceneFixture.ts, for use in util functions
+ * which predate the fixture-based test system.
+ */
+async function convertPagePositionToStream(
+  x: number,
+  y: number,
+  page: Page,
+  format: 'pixels' | 'ratio' | undefined = 'pixels'
+) {
+  const viewportSize = page.viewportSize()
+  const streamBoundingBox = await page.getByTestId('stream').boundingBox()
+  if (viewportSize === null) {
+    throw Error('No viewport')
+  }
+  if (streamBoundingBox === null) {
+    throw Error('No stream to click')
+  }
+
+  const resolvedX =
+    (x / (format === 'pixels' ? viewportSize.width : 1)) *
+      streamBoundingBox.width +
+    streamBoundingBox.x
+  const resolvedY =
+    (y / (format === 'pixels' ? viewportSize.height : 1)) *
+      streamBoundingBox.height +
+    streamBoundingBox.y
+
+  const resolvedPoint = {
+    x: Math.round(resolvedX),
+    y: Math.round(resolvedY),
+  }
+
+  return resolvedPoint
+}
+
 export async function getUtils(page: Page, test_?: typeof test) {
   if (!test) {
     console.warn(
@@ -432,7 +475,7 @@ export async function getUtils(page: Page, test_?: typeof test) {
       page
         .locator(locator)
         .boundingBox({ timeout: 5_000 })
-        .then((box: any) => ({ ...box, x: box?.x || 0, y: box?.y || 0 })),
+        .then((box) => ({ ...box, x: box?.x || 0, y: box?.y || 0 })),
     codeLocator: page.locator('.cm-content'),
     crushKclCodeIntoOneLineAndThenMaybeSome: async () => {
       const code = await page.locator('.cm-content').innerText()
@@ -466,6 +509,11 @@ export async function getUtils(page: Page, test_?: typeof test) {
       coords: { x: number; y: number },
       expected: [number, number, number]
     ): Promise<number> => {
+      const transformedCoords = await convertPagePositionToStream(
+        coords.x,
+        coords.y,
+        page
+      )
       const buffer = await page.screenshot({
         fullPage: true,
       })
@@ -474,8 +522,8 @@ export async function getUtils(page: Page, test_?: typeof test) {
         'window.devicePixelRatio'
       )
       const index =
-        (screenshot.width * coords.y * pixMultiplier +
-          coords.x * pixMultiplier) *
+        (screenshot.width * transformedCoords.y * pixMultiplier +
+          transformedCoords.x * pixMultiplier) *
         4 // rbga is 4 channels
       const maxDiff = Math.max(
         Math.abs(screenshot.data[index] - expected[0]),
@@ -1402,4 +1450,95 @@ export async function pinchFromCenter(
   }
 
   await locator.dispatchEvent('touchend')
+}
+
+// Primarily machinery to click and drag a slider.
+// THIS ASSUMES THE SLIDER IS ALWAYS HORIZONTAL.
+export const inputRangeValueToCoordinate = async function (
+  locator: Locator,
+  valueTargetStr: string
+): Promise<{
+  startPoint: { x: number; y: number }
+  offsetFromStartPoint: { x: number; y: number }
+}> {
+  const bb = await locator.boundingBox()
+  if (bb === null)
+    throw new Error("Bounding box is null, can't do fucking shit")
+  const editable = await locator.isEditable()
+  if (!editable) throw new Error('Cannot slide range, element is not editable')
+  const visible = await locator.isVisible()
+  if (!visible) throw new Error('Cannot slide range, element is not visible')
+  await locator.scrollIntoViewIfNeeded()
+  const maybeMin = await locator.getAttribute('min')
+  const maybeMax = await locator.getAttribute('max')
+  const maybeStep = await locator.getAttribute('step')
+
+  let low = maybeMin ? Number(maybeMin) : 0
+  low = Number.isNaN(low) ? 0 : low
+
+  let upp = maybeMax ? Number(maybeMax) : 10
+  upp = Number.isNaN(upp) ? 10 : upp
+
+  let step = maybeMax ? Number(maybeStep) : 1
+  step = Number.isNaN(step) ? 1 : step
+
+  let value = Number(valueTargetStr)
+  if (Number.isNaN(value)) throw new Error('value must be a number')
+
+  // into step
+  value = value - (value % step)
+
+  // half step down
+  value -= Math.trunc(step / 2)
+
+  const scale = await locator.page().evaluate(() => window.devicePixelRatio)
+  // measured this value in gimp
+  const nub = { width: 14 * scale }
+
+  // 4 is the internal border + padding of the slider
+  let offsetX = (bb.width - 4 - nub.width / 2) * (value / (upp + low))
+
+  // map to coordinate
+  // relative to element
+  const offsetFromStartPoint = {
+    x: Math.trunc(offsetX + 0.5),
+    // need to land on the scroll nub
+    y: bb.height * 0.5,
+  }
+
+  const startPoint = {
+    x: bb.x + nub.width / 2,
+    y: bb.y,
+  }
+
+  return {
+    startPoint,
+    offsetFromStartPoint,
+  }
+}
+
+export const inputRangeSlideFromCurrentTo = async function (
+  locator: Locator,
+  valueNext: string
+) {
+  const valueCurrent = await locator.inputValue()
+  // Can't click it if the computer can't see it!
+  await locator.scrollIntoViewIfNeeded()
+  const from = await inputRangeValueToCoordinate(locator, valueCurrent)
+  const to = await inputRangeValueToCoordinate(locator, valueNext)
+  // I (lee) want to force the mouse to be up, but who knows who needs otherwise.
+  // await locator.page.mouse.up()
+  const page = locator.page()
+  await page.mouse.move(
+    from.startPoint.x + from.offsetFromStartPoint.x,
+    from.startPoint.y + from.offsetFromStartPoint.y,
+    { steps: 10 }
+  )
+  await page.mouse.down()
+  await page.mouse.move(
+    to.startPoint.x + to.offsetFromStartPoint.x,
+    to.startPoint.y + to.offsetFromStartPoint.y,
+    { steps: 10 }
+  )
+  await page.mouse.up()
 }

@@ -25,6 +25,7 @@ export function SettingsSection({
 }: SettingsSectionProps) {
   return (
     <section
+      data-testid={id}
       id={id}
       className={
         'group p-2 pl-0 grid grid-cols-2 gap-6 items-start ' +

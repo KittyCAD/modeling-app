@@ -123,7 +123,9 @@ function ProjectMenuPopover({
           Element: 'button',
           children: (
             <>
-              <span className="flex-1">Project settings</span>
+              <span className="flex-1" data-testid="project-settings">
+                Project settings
+              </span>
               <kbd className="hotkey">{`${platform === 'macos' ? '⌘' : 'Ctrl'}${
                 isDesktop() ? '' : '⬆'
               },`}</kbd>

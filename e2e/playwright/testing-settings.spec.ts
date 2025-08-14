@@ -22,13 +22,33 @@ import {
   lowerRightMasks,
   settingsToToml,
   tomlToSettings,
+  inputRangeSlideFromCurrentTo,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
+import type { Page } from '@playwright/test'
+
+const settingsSwitchTab = (page: Page) => async (tab: 'user' | 'proj') => {
+  const projectSettingsTab = page.getByRole('radio', { name: 'Project' })
+  const userSettingsTab = page.getByRole('radio', { name: 'User' })
+  const settingTheme = page.getByTestId('theme')
+  switch (tab) {
+    case 'user':
+      await userSettingsTab.click()
+      await expect(settingTheme).toBeVisible()
+      break
+    case 'proj':
+      await projectSettingsTab.click()
+      await expect(settingTheme).not.toBeVisible()
+      break
+    default:
+      const _: never = tab
+  }
+}
 
 test.describe(
   'Testing settings',
   {
-    tag: ['@macos', '@windows'],
+    tag: ['@linux', '@macos', '@windows'],
   },
   () => {
     test('Stored settings are validated and fall back to defaults', async ({
@@ -199,17 +219,18 @@ test.describe(
       })
 
       // Selectors and constants
-      const projectSettingsTab = page.getByRole('radio', { name: 'Project' })
-      const userSettingsTab = page.getByRole('radio', { name: 'User' })
       const resetButton = (level: SettingsLevel) =>
         page.getByRole('button', {
           name: `Reset ${level}-level settings`,
         })
       const themeColorSetting = page.locator('#themeColor').getByRole('slider')
+
       const settingValues = {
         default: '259',
-        user: '120',
-        project: '50',
+        // Because it's a slider, sometimes the values cannot physically be
+        // dragged to. You need to adjust this until it works.
+        user: '48',
+        project: '77',
       }
       const resetToast = (level: SettingsLevel) =>
         page.getByText(`${level}-level settings were reset`)
@@ -222,21 +243,31 @@ test.describe(
       })
 
       await test.step('Set up theme color', async () => {
-        // Verify we're looking at the project-level settings,
-        // and it's set to default value
-        await expect(projectSettingsTab).toBeChecked()
-        await expect(themeColorSetting).toHaveValue(settingValues.default)
+        // Verify we're looking at the project-level settings
+        await settingsSwitchTab(page)('proj')
+        await themeColorSetting.fill(settingValues.default)
 
-        // Set project-level value to 50
-        await themeColorSetting.fill(settingValues.project)
+        // Set project-level value
+        await inputRangeSlideFromCurrentTo(
+          themeColorSetting,
+          settingValues.project
+        )
+        await expect(themeColorSetting).toHaveValue(settingValues.project)
 
-        // Set user-level value to 120
-        await userSettingsTab.click()
-        await themeColorSetting.fill(settingValues.user)
-        await projectSettingsTab.click()
+        // Set user-level value
+        // It's the same component so this could fill too soon.
+        // We need to confirm to wait the user settings tab is loaded.
+        await settingsSwitchTab(page)('user')
+        await inputRangeSlideFromCurrentTo(
+          themeColorSetting,
+          settingValues.user
+        )
+        await expect(themeColorSetting).toHaveValue(settingValues.user)
       })
 
       await test.step('Reset project settings', async () => {
+        await settingsSwitchTab(page)('proj')
+
         // Click the reset settings button.
         await resetButton('project').click()
 
@@ -247,14 +278,17 @@ test.describe(
         await expect(themeColorSetting).toHaveValue(settingValues.user)
 
         await test.step(`Check that the user settings did not change`, async () => {
-          await userSettingsTab.click()
+          await settingsSwitchTab(page)('user')
           await expect(themeColorSetting).toHaveValue(settingValues.user)
         })
 
         await test.step(`Set project-level again to test the user-level reset`, async () => {
-          await projectSettingsTab.click()
-          await themeColorSetting.fill(settingValues.project)
-          await userSettingsTab.click()
+          await settingsSwitchTab(page)('proj')
+          await inputRangeSlideFromCurrentTo(
+            themeColorSetting,
+            settingValues.project
+          )
+          await settingsSwitchTab(page)('user')
         })
       })
 
@@ -269,7 +303,7 @@ test.describe(
         await expect(themeColorSetting).toHaveValue(settingValues.default)
 
         await test.step(`Check that the project settings did not change`, async () => {
-          await projectSettingsTab.click()
+          await settingsSwitchTab(page)('proj')
           await expect(themeColorSetting).toHaveValue(settingValues.project)
         })
       })
@@ -303,7 +337,7 @@ test.describe(
           projectDirName,
           SETTINGS_FILE_NAME
         )
-        const userThemeColor = '120'
+        const userThemeColor = '175'
         const projectThemeColor = '50'
         const settingsOpenButton = page.getByRole('link', {
           name: 'settings Settings',
@@ -322,7 +356,7 @@ test.describe(
           await settingsOpenButton.click()
           // The user tab should be selected by default on home
           await expect(userSettingsTab).toBeChecked()
-          await themeColorSetting.fill(userThemeColor)
+          await inputRangeSlideFromCurrentTo(themeColorSetting, userThemeColor)
           await expect(logoLink).toHaveCSS('--primary-hue', userThemeColor)
           await settingsCloseButton.click()
           await expect
@@ -339,7 +373,10 @@ test.describe(
           await settingsOpenButton.click()
           // The project tab should be selected by default within a project
           await expect(projectSettingsTab).toBeChecked()
-          await themeColorSetting.fill(projectThemeColor)
+          await inputRangeSlideFromCurrentTo(
+            themeColorSetting,
+            projectThemeColor
+          )
           await expect(logoLink).toHaveCSS('--primary-hue', projectThemeColor)
           await settingsCloseButton.click()
           // Make sure that the project settings file has been written to before continuing
@@ -631,7 +668,7 @@ test.describe(
       })
 
       await test.step(`Reset unit setting`, async () => {
-        await userSettingsTab.click()
+        await settingsSwitchTab(page)('user')
         await defaultUnitSection.hover()
         await defaultUnitRollbackButton.click()
         await projectSettingsTab.hover()
@@ -666,7 +703,7 @@ test.describe(
 
       // Go to the user tab
       await userSettingsTab.hover()
-      await userSettingsTab.click()
+      await settingsSwitchTab(page)('user')
       await page.waitForTimeout(1000)
 
       await test.step('Change modeling default unit within user tab', async () => {

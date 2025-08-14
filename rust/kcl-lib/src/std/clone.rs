@@ -64,7 +64,7 @@ async fn inner_clone(
         GeometryWithImportedGeometry::Solid(solid) => {
             // We flush before the clone so all the shit exists.
             exec_state
-                .flush_batch_for_solids((&args).into(), &[solid.clone()])
+                .flush_batch_for_solids((&args).into(), std::slice::from_ref(solid))
                 .await?;
 
             let mut new_solid = solid.clone();

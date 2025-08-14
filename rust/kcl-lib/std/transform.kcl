@@ -1,7 +1,7 @@
 /// This module contains functions for transforming sketches and solids.
 
 @no_std
-@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+@settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
 
 import Axis3d from "std::types"
 

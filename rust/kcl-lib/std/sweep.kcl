@@ -1,3 +1,6 @@
+@no_std
+@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+
 /// Local/relative to the trajectory curve
 export TRAJECTORY = 'trajectoryCurve'
 

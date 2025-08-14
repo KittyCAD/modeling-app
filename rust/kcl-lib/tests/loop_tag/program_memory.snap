@@ -7,13 +7,9 @@ description: Variables in memory after executing loop_tag.kcl
     "type": "Number",
     "value": 7.2,
     "ty": {
-      "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "type": "Known",
+      "type": "Angle",
+      "type": "Degrees"
     }
   },
   "calculatePoint": {
@@ -36,10 +32,10 @@ description: Variables in memory after executing loop_tag.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -62,10 +58,10 @@ description: Variables in memory after executing loop_tag.kcl
             1.2533323356430426
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -88,10 +84,10 @@ description: Variables in memory after executing loop_tag.kcl
             3.7402312072915906
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -114,10 +110,10 @@ description: Variables in memory after executing loop_tag.kcl
             7.42147673413837
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -140,10 +136,10 @@ description: Variables in memory after executing loop_tag.kcl
             12.239013475155524
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -166,10 +162,10 @@ description: Variables in memory after executing loop_tag.kcl
             18.116865998080257
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -192,10 +188,10 @@ description: Variables in memory after executing loop_tag.kcl
             24.962337057367144
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -218,10 +214,10 @@ description: Variables in memory after executing loop_tag.kcl
             32.66746948512503
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -244,10 +240,10 @@ description: Variables in memory after executing loop_tag.kcl
             41.11074874014518
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -270,10 +266,10 @@ description: Variables in memory after executing loop_tag.kcl
             50.15901926480538
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -296,10 +292,10 @@ description: Variables in memory after executing loop_tag.kcl
             59.66958442775692
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -322,10 +318,10 @@ description: Variables in memory after executing loop_tag.kcl
             69.4924569350438
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -348,10 +344,10 @@ description: Variables in memory after executing loop_tag.kcl
             79.47272421932652
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -374,10 +370,10 @@ description: Variables in memory after executing loop_tag.kcl
             89.45299150360924
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -400,10 +396,10 @@ description: Variables in memory after executing loop_tag.kcl
             99.27586401089613
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -426,10 +422,10 @@ description: Variables in memory after executing loop_tag.kcl
             108.78642917384767
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -452,10 +448,10 @@ description: Variables in memory after executing loop_tag.kcl
             117.83469969850786
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -478,10 +474,10 @@ description: Variables in memory after executing loop_tag.kcl
             126.277978953528
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -504,10 +500,10 @@ description: Variables in memory after executing loop_tag.kcl
             133.9831113812859
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -530,10 +526,10 @@ description: Variables in memory after executing loop_tag.kcl
             140.8285824405728
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -556,10 +552,10 @@ description: Variables in memory after executing loop_tag.kcl
             146.70643496349754
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -582,10 +578,10 @@ description: Variables in memory after executing loop_tag.kcl
             151.5239717045147
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -608,10 +604,10 @@ description: Variables in memory after executing loop_tag.kcl
             155.2052172313615
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -634,10 +630,10 @@ description: Variables in memory after executing loop_tag.kcl
             157.69211610301005
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -660,10 +656,10 @@ description: Variables in memory after executing loop_tag.kcl
             158.9454484386531
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -686,10 +682,10 @@ description: Variables in memory after executing loop_tag.kcl
             158.9454484386531
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -712,10 +708,10 @@ description: Variables in memory after executing loop_tag.kcl
             157.69211610301005
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -738,10 +734,10 @@ description: Variables in memory after executing loop_tag.kcl
             155.2052172313615
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -764,10 +760,10 @@ description: Variables in memory after executing loop_tag.kcl
             151.52397170451474
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -790,10 +786,10 @@ description: Variables in memory after executing loop_tag.kcl
             146.70643496349757
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -816,10 +812,10 @@ description: Variables in memory after executing loop_tag.kcl
             140.82858244057283
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -842,10 +838,10 @@ description: Variables in memory after executing loop_tag.kcl
             133.98311138128594
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -868,10 +864,10 @@ description: Variables in memory after executing loop_tag.kcl
             126.27797895352805
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -894,10 +890,10 @@ description: Variables in memory after executing loop_tag.kcl
             117.83469969850789
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -920,10 +916,10 @@ description: Variables in memory after executing loop_tag.kcl
             108.7864291738477
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -946,10 +942,10 @@ description: Variables in memory after executing loop_tag.kcl
             99.27586401089616
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -972,10 +968,10 @@ description: Variables in memory after executing loop_tag.kcl
             89.45299150360927
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -998,10 +994,10 @@ description: Variables in memory after executing loop_tag.kcl
             79.47272421932655
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1024,10 +1020,10 @@ description: Variables in memory after executing loop_tag.kcl
             69.49245693504383
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1050,10 +1046,10 @@ description: Variables in memory after executing loop_tag.kcl
             59.669584427756945
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1076,10 +1072,10 @@ description: Variables in memory after executing loop_tag.kcl
             50.15901926480541
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1102,10 +1098,10 @@ description: Variables in memory after executing loop_tag.kcl
             41.11074874014521
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1128,10 +1124,10 @@ description: Variables in memory after executing loop_tag.kcl
             32.66746948512506
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1154,10 +1150,10 @@ description: Variables in memory after executing loop_tag.kcl
             24.962337057367172
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1180,10 +1176,10 @@ description: Variables in memory after executing loop_tag.kcl
             18.116865998080282
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1206,10 +1202,10 @@ description: Variables in memory after executing loop_tag.kcl
             12.239013475155549
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1232,10 +1228,10 @@ description: Variables in memory after executing loop_tag.kcl
             7.421476734138388
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1258,10 +1254,10 @@ description: Variables in memory after executing loop_tag.kcl
             3.740231207291609
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1284,10 +1280,10 @@ description: Variables in memory after executing loop_tag.kcl
             1.253332335643064
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1401,10 +1397,10 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1415,10 +1411,10 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1429,10 +1425,10 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1443,10 +1439,10 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1457,10 +1453,10 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1471,10 +1467,10 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1485,10 +1481,10 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1499,10 +1495,10 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1513,10 +1509,10 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1527,10 +1523,10 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1541,10 +1537,10 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1555,10 +1551,10 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1569,10 +1565,10 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1583,10 +1579,10 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1597,10 +1593,10 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1611,10 +1607,10 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1625,10 +1621,10 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1639,10 +1635,10 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1653,10 +1649,10 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1667,10 +1663,10 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1681,10 +1677,10 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1695,10 +1691,10 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1709,10 +1705,10 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1723,10 +1719,10 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1737,10 +1733,10 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1751,10 +1747,10 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1765,10 +1761,10 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1779,10 +1775,10 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1793,10 +1789,10 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1807,10 +1803,10 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1821,10 +1817,10 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1835,10 +1831,10 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1849,10 +1845,10 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1863,10 +1859,10 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1877,10 +1873,10 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1891,10 +1887,10 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1905,10 +1901,10 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1919,10 +1915,10 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1933,10 +1929,10 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1947,10 +1943,10 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1961,10 +1957,10 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1975,10 +1971,10 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1989,10 +1985,10 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -2003,10 +1999,10 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -2017,10 +2013,10 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -2031,10 +2027,10 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -2045,10 +2041,10 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -2059,10 +2055,10 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -2073,10 +2069,10 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -2104,10 +2100,10 @@ description: Variables in memory after executing loop_tag.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 970,
-              "end": 985,
+              "commentStart": 973,
+              "end": 988,
               "moduleId": 0,
-              "start": 970,
+              "start": 973,
               "type": "TagDeclarator",
               "value": "problematicTag"
             },
@@ -2130,10 +2126,10 @@ description: Variables in memory after executing loop_tag.kcl
               1.2533323356430426
             ],
             "tag": {
-              "commentStart": 970,
-              "end": 985,
+              "commentStart": 973,
+              "end": 988,
               "moduleId": 0,
-              "start": 970,
+              "start": 973,
               "type": "TagDeclarator",
               "value": "problematicTag"
             },
@@ -2156,10 +2152,10 @@ description: Variables in memory after executing loop_tag.kcl
               3.7402312072915906
             ],
             "tag": {
-              "commentStart": 970,
-              "end": 985,
+              "commentStart": 973,
+              "end": 988,
               "moduleId": 0,
-              "start": 970,
+              "start": 973,
               "type": "TagDeclarator",
               "value": "problematicTag"
             },
@@ -2182,10 +2178,10 @@ description: Variables in memory after executing loop_tag.kcl
               7.42147673413837
             ],
             "tag": {
-              "commentStart": 970,
-              "end": 985,
+              "commentStart": 973,
+              "end": 988,
               "moduleId": 0,
-              "start": 970,
+              "start": 973,
               "type": "TagDeclarator",
               "value": "problematicTag"
             },
@@ -2208,10 +2204,10 @@ description: Variables in memory after executing loop_tag.kcl
               12.239013475155524
             ],
             "tag": {
-              "commentStart": 970,
-              "end": 985,
+              "commentStart": 973,
+              "end": 988,
               "moduleId": 0,
-              "start": 970,
+              "start": 973,
               "type": "TagDeclarator",
               "value": "problematicTag"
             },
@@ -2234,10 +2230,10 @@ description: Variables in memory after executing loop_tag.kcl
               18.116865998080257
             ],
             "tag": {
-              "commentStart": 970,
-              "end": 985,
+              "commentStart": 973,
+              "end": 988,
               "moduleId": 0,
-              "start": 970,
+              "start": 973,
               "type": "TagDeclarator",
               "value": "problematicTag"
             },
@@ -2260,10 +2256,10 @@ description: Variables in memory after executing loop_tag.kcl
               24.962337057367144
             ],
             "tag": {
-              "commentStart": 970,
-              "end": 985,
+              "commentStart": 973,
+              "end": 988,
               "moduleId": 0,
-              "start": 970,
+              "start": 973,
               "type": "TagDeclarator",
               "value": "problematicTag"
             },
@@ -2286,10 +2282,10 @@ description: Variables in memory after executing loop_tag.kcl
               32.66746948512503
             ],
             "tag": {
-              "commentStart": 970,
-              "end": 985,
+              "commentStart": 973,
+              "end": 988,
               "moduleId": 0,
-              "start": 970,
+              "start": 973,
               "type": "TagDeclarator",
               "value": "problematicTag"
             },
@@ -2312,10 +2308,10 @@ description: Variables in memory after executing loop_tag.kcl
               41.11074874014518
             ],
             "tag": {
-              "commentStart": 970,
-              "end": 985,
+              "commentStart": 973,
+              "end": 988,
               "moduleId": 0,
-              "start": 970,
+              "start": 973,
               "type": "TagDeclarator",
               "value": "problematicTag"
             },
@@ -2338,10 +2334,10 @@ description: Variables in memory after executing loop_tag.kcl
               50.15901926480538
             ],
             "tag": {
-              "commentStart": 970,
-              "end": 985,
+              "commentStart": 973,
+              "end": 988,
               "moduleId": 0,
-              "start": 970,
+              "start": 973,
               "type": "TagDeclarator",
               "value": "problematicTag"
             },
@@ -2364,10 +2360,10 @@ description: Variables in memory after executing loop_tag.kcl
               59.66958442775692
             ],
             "tag": {
-              "commentStart": 970,
-              "end": 985,
+              "commentStart": 973,
+              "end": 988,
               "moduleId": 0,
-              "start": 970,
+              "start": 973,
               "type": "TagDeclarator",
               "value": "problematicTag"
             },
@@ -2390,10 +2386,10 @@ description: Variables in memory after executing loop_tag.kcl
               69.4924569350438
             ],
             "tag": {
-              "commentStart": 970,
-              "end": 985,
+              "commentStart": 973,
+              "end": 988,
               "moduleId": 0,
-              "start": 970,
+              "start": 973,
               "type": "TagDeclarator",
               "value": "problematicTag"
             },
@@ -2416,10 +2412,10 @@ description: Variables in memory after executing loop_tag.kcl
               79.47272421932652
             ],
             "tag": {
-              "commentStart": 970,
-              "end": 985,
+              "commentStart": 973,
+              "end": 988,
               "moduleId": 0,
-              "start": 970,
+              "start": 973,
               "type": "TagDeclarator",
               "value": "problematicTag"
             },
@@ -2442,10 +2438,10 @@ description: Variables in memory after executing loop_tag.kcl
               89.45299150360924
             ],
             "tag": {
-              "commentStart": 970,
-              "end": 985,
+              "commentStart": 973,
+              "end": 988,
               "moduleId": 0,
-              "start": 970,
+              "start": 973,
               "type": "TagDeclarator",
               "value": "problematicTag"
             },
@@ -2468,10 +2464,10 @@ description: Variables in memory after executing loop_tag.kcl
               99.27586401089613
             ],
             "tag": {
-              "commentStart": 970,
-              "end": 985,
+              "commentStart": 973,
+              "end": 988,
               "moduleId": 0,
-              "start": 970,
+              "start": 973,
               "type": "TagDeclarator",
               "value": "problematicTag"
             },
@@ -2494,10 +2490,10 @@ description: Variables in memory after executing loop_tag.kcl
               108.78642917384767
             ],
             "tag": {
-              "commentStart": 970,
-              "end": 985,
+              "commentStart": 973,
+              "end": 988,
               "moduleId": 0,
-              "start": 970,
+              "start": 973,
               "type": "TagDeclarator",
               "value": "problematicTag"
             },
@@ -2520,10 +2516,10 @@ description: Variables in memory after executing loop_tag.kcl
               117.83469969850786
             ],
             "tag": {
-              "commentStart": 970,
-              "end": 985,
+              "commentStart": 973,
+              "end": 988,
               "moduleId": 0,
-              "start": 970,
+              "start": 973,
               "type": "TagDeclarator",
               "value": "problematicTag"
             },
@@ -2546,10 +2542,10 @@ description: Variables in memory after executing loop_tag.kcl
               126.277978953528
             ],
             "tag": {
-              "commentStart": 970,
-              "end": 985,
+              "commentStart": 973,
+              "end": 988,
               "moduleId": 0,
-              "start": 970,
+              "start": 973,
               "type": "TagDeclarator",
               "value": "problematicTag"
             },
@@ -2572,10 +2568,10 @@ description: Variables in memory after executing loop_tag.kcl
               133.9831113812859
             ],
             "tag": {
-              "commentStart": 970,
-              "end": 985,
+              "commentStart": 973,
+              "end": 988,
               "moduleId": 0,
-              "start": 970,
+              "start": 973,
               "type": "TagDeclarator",
               "value": "problematicTag"
             },
@@ -2598,10 +2594,10 @@ description: Variables in memory after executing loop_tag.kcl
               140.8285824405728
             ],
             "tag": {
-              "commentStart": 970,
-              "end": 985,
+              "commentStart": 973,
+              "end": 988,
               "moduleId": 0,
-              "start": 970,
+              "start": 973,
               "type": "TagDeclarator",
               "value": "problematicTag"
             },
@@ -2624,10 +2620,10 @@ description: Variables in memory after executing loop_tag.kcl
               146.70643496349754
             ],
             "tag": {
-              "commentStart": 970,
-              "end": 985,
+              "commentStart": 973,
+              "end": 988,
               "moduleId": 0,
-              "start": 970,
+              "start": 973,
               "type": "TagDeclarator",
               "value": "problematicTag"
             },
@@ -2650,10 +2646,10 @@ description: Variables in memory after executing loop_tag.kcl
               151.5239717045147
             ],
             "tag": {
-              "commentStart": 970,
-              "end": 985,
+              "commentStart": 973,
+              "end": 988,
               "moduleId": 0,
-              "start": 970,
+              "start": 973,
               "type": "TagDeclarator",
               "value": "problematicTag"
             },
@@ -2676,10 +2672,10 @@ description: Variables in memory after executing loop_tag.kcl
               155.2052172313615
             ],
             "tag": {
-              "commentStart": 970,
-              "end": 985,
+              "commentStart": 973,
+              "end": 988,
               "moduleId": 0,
-              "start": 970,
+              "start": 973,
               "type": "TagDeclarator",
               "value": "problematicTag"
             },
@@ -2702,10 +2698,10 @@ description: Variables in memory after executing loop_tag.kcl
               157.69211610301005
             ],
             "tag": {
-              "commentStart": 970,
-              "end": 985,
+              "commentStart": 973,
+              "end": 988,
               "moduleId": 0,
-              "start": 970,
+              "start": 973,
               "type": "TagDeclarator",
               "value": "problematicTag"
             },
@@ -2728,10 +2724,10 @@ description: Variables in memory after executing loop_tag.kcl
               158.9454484386531
             ],
             "tag": {
-              "commentStart": 970,
-              "end": 985,
+              "commentStart": 973,
+              "end": 988,
               "moduleId": 0,
-              "start": 970,
+              "start": 973,
               "type": "TagDeclarator",
               "value": "problematicTag"
             },
@@ -2754,10 +2750,10 @@ description: Variables in memory after executing loop_tag.kcl
               158.9454484386531
             ],
             "tag": {
-              "commentStart": 970,
-              "end": 985,
+              "commentStart": 973,
+              "end": 988,
               "moduleId": 0,
-              "start": 970,
+              "start": 973,
               "type": "TagDeclarator",
               "value": "problematicTag"
             },
@@ -2780,10 +2776,10 @@ description: Variables in memory after executing loop_tag.kcl
               157.69211610301005
             ],
             "tag": {
-              "commentStart": 970,
-              "end": 985,
+              "commentStart": 973,
+              "end": 988,
               "moduleId": 0,
-              "start": 970,
+              "start": 973,
               "type": "TagDeclarator",
               "value": "problematicTag"
             },
@@ -2806,10 +2802,10 @@ description: Variables in memory after executing loop_tag.kcl
               155.2052172313615
             ],
             "tag": {
-              "commentStart": 970,
-              "end": 985,
+              "commentStart": 973,
+              "end": 988,
               "moduleId": 0,
-              "start": 970,
+              "start": 973,
               "type": "TagDeclarator",
               "value": "problematicTag"
             },
@@ -2832,10 +2828,10 @@ description: Variables in memory after executing loop_tag.kcl
               151.52397170451474
             ],
             "tag": {
-              "commentStart": 970,
-              "end": 985,
+              "commentStart": 973,
+              "end": 988,
               "moduleId": 0,
-              "start": 970,
+              "start": 973,
               "type": "TagDeclarator",
               "value": "problematicTag"
             },
@@ -2858,10 +2854,10 @@ description: Variables in memory after executing loop_tag.kcl
               146.70643496349757
             ],
             "tag": {
-              "commentStart": 970,
-              "end": 985,
+              "commentStart": 973,
+              "end": 988,
               "moduleId": 0,
-              "start": 970,
+              "start": 973,
               "type": "TagDeclarator",
               "value": "problematicTag"
             },
@@ -2884,10 +2880,10 @@ description: Variables in memory after executing loop_tag.kcl
               140.82858244057283
             ],
             "tag": {
-              "commentStart": 970,
-              "end": 985,
+              "commentStart": 973,
+              "end": 988,
               "moduleId": 0,
-              "start": 970,
+              "start": 973,
               "type": "TagDeclarator",
               "value": "problematicTag"
             },
@@ -2910,10 +2906,10 @@ description: Variables in memory after executing loop_tag.kcl
               133.98311138128594
             ],
             "tag": {
-              "commentStart": 970,
-              "end": 985,
+              "commentStart": 973,
+              "end": 988,
               "moduleId": 0,
-              "start": 970,
+              "start": 973,
               "type": "TagDeclarator",
               "value": "problematicTag"
             },
@@ -2936,10 +2932,10 @@ description: Variables in memory after executing loop_tag.kcl
               126.27797895352805
             ],
             "tag": {
-              "commentStart": 970,
-              "end": 985,
+              "commentStart": 973,
+              "end": 988,
               "moduleId": 0,
-              "start": 970,
+              "start": 973,
               "type": "TagDeclarator",
               "value": "problematicTag"
             },
@@ -2962,10 +2958,10 @@ description: Variables in memory after executing loop_tag.kcl
               117.83469969850789
             ],
             "tag": {
-              "commentStart": 970,
-              "end": 985,
+              "commentStart": 973,
+              "end": 988,
               "moduleId": 0,
-              "start": 970,
+              "start": 973,
               "type": "TagDeclarator",
               "value": "problematicTag"
             },
@@ -2988,10 +2984,10 @@ description: Variables in memory after executing loop_tag.kcl
               108.7864291738477
             ],
             "tag": {
-              "commentStart": 970,
-              "end": 985,
+              "commentStart": 973,
+              "end": 988,
               "moduleId": 0,
-              "start": 970,
+              "start": 973,
               "type": "TagDeclarator",
               "value": "problematicTag"
             },
@@ -3014,10 +3010,10 @@ description: Variables in memory after executing loop_tag.kcl
               99.27586401089616
             ],
             "tag": {
-              "commentStart": 970,
-              "end": 985,
+              "commentStart": 973,
+              "end": 988,
               "moduleId": 0,
-              "start": 970,
+              "start": 973,
               "type": "TagDeclarator",
               "value": "problematicTag"
             },
@@ -3040,10 +3036,10 @@ description: Variables in memory after executing loop_tag.kcl
               89.45299150360927
             ],
             "tag": {
-              "commentStart": 970,
-              "end": 985,
+              "commentStart": 973,
+              "end": 988,
               "moduleId": 0,
-              "start": 970,
+              "start": 973,
               "type": "TagDeclarator",
               "value": "problematicTag"
             },
@@ -3066,10 +3062,10 @@ description: Variables in memory after executing loop_tag.kcl
               79.47272421932655
             ],
             "tag": {
-              "commentStart": 970,
-              "end": 985,
+              "commentStart": 973,
+              "end": 988,
               "moduleId": 0,
-              "start": 970,
+              "start": 973,
               "type": "TagDeclarator",
               "value": "problematicTag"
             },
@@ -3092,10 +3088,10 @@ description: Variables in memory after executing loop_tag.kcl
               69.49245693504383
             ],
             "tag": {
-              "commentStart": 970,
-              "end": 985,
+              "commentStart": 973,
+              "end": 988,
               "moduleId": 0,
-              "start": 970,
+              "start": 973,
               "type": "TagDeclarator",
               "value": "problematicTag"
             },
@@ -3118,10 +3114,10 @@ description: Variables in memory after executing loop_tag.kcl
               59.669584427756945
             ],
             "tag": {
-              "commentStart": 970,
-              "end": 985,
+              "commentStart": 973,
+              "end": 988,
               "moduleId": 0,
-              "start": 970,
+              "start": 973,
               "type": "TagDeclarator",
               "value": "problematicTag"
             },
@@ -3144,10 +3140,10 @@ description: Variables in memory after executing loop_tag.kcl
               50.15901926480541
             ],
             "tag": {
-              "commentStart": 970,
-              "end": 985,
+              "commentStart": 973,
+              "end": 988,
               "moduleId": 0,
-              "start": 970,
+              "start": 973,
               "type": "TagDeclarator",
               "value": "problematicTag"
             },
@@ -3170,10 +3166,10 @@ description: Variables in memory after executing loop_tag.kcl
               41.11074874014521
             ],
             "tag": {
-              "commentStart": 970,
-              "end": 985,
+              "commentStart": 973,
+              "end": 988,
               "moduleId": 0,
-              "start": 970,
+              "start": 973,
               "type": "TagDeclarator",
               "value": "problematicTag"
             },
@@ -3196,10 +3192,10 @@ description: Variables in memory after executing loop_tag.kcl
               32.66746948512506
             ],
             "tag": {
-              "commentStart": 970,
-              "end": 985,
+              "commentStart": 973,
+              "end": 988,
               "moduleId": 0,
-              "start": 970,
+              "start": 973,
               "type": "TagDeclarator",
               "value": "problematicTag"
             },
@@ -3222,10 +3218,10 @@ description: Variables in memory after executing loop_tag.kcl
               24.962337057367172
             ],
             "tag": {
-              "commentStart": 970,
-              "end": 985,
+              "commentStart": 973,
+              "end": 988,
               "moduleId": 0,
-              "start": 970,
+              "start": 973,
               "type": "TagDeclarator",
               "value": "problematicTag"
             },
@@ -3248,10 +3244,10 @@ description: Variables in memory after executing loop_tag.kcl
               18.116865998080282
             ],
             "tag": {
-              "commentStart": 970,
-              "end": 985,
+              "commentStart": 973,
+              "end": 988,
               "moduleId": 0,
-              "start": 970,
+              "start": 973,
               "type": "TagDeclarator",
               "value": "problematicTag"
             },
@@ -3274,10 +3270,10 @@ description: Variables in memory after executing loop_tag.kcl
               12.239013475155549
             ],
             "tag": {
-              "commentStart": 970,
-              "end": 985,
+              "commentStart": 973,
+              "end": 988,
               "moduleId": 0,
-              "start": 970,
+              "start": 973,
               "type": "TagDeclarator",
               "value": "problematicTag"
             },
@@ -3300,10 +3296,10 @@ description: Variables in memory after executing loop_tag.kcl
               7.421476734138388
             ],
             "tag": {
-              "commentStart": 970,
-              "end": 985,
+              "commentStart": 973,
+              "end": 988,
               "moduleId": 0,
-              "start": 970,
+              "start": 973,
               "type": "TagDeclarator",
               "value": "problematicTag"
             },
@@ -3326,10 +3322,10 @@ description: Variables in memory after executing loop_tag.kcl
               3.740231207291609
             ],
             "tag": {
-              "commentStart": 970,
-              "end": 985,
+              "commentStart": 973,
+              "end": 988,
               "moduleId": 0,
-              "start": 970,
+              "start": 973,
               "type": "TagDeclarator",
               "value": "problematicTag"
             },
@@ -3352,10 +3348,10 @@ description: Variables in memory after executing loop_tag.kcl
               1.253332335643064
             ],
             "tag": {
-              "commentStart": 970,
-              "end": 985,
+              "commentStart": 973,
+              "end": 988,
               "moduleId": 0,
-              "start": 970,
+              "start": 973,
               "type": "TagDeclarator",
               "value": "problematicTag"
             },
@@ -3481,10 +3477,10 @@ description: Variables in memory after executing loop_tag.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -3507,10 +3503,10 @@ description: Variables in memory after executing loop_tag.kcl
             1.2533323356430426
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -3533,10 +3529,10 @@ description: Variables in memory after executing loop_tag.kcl
             3.7402312072915906
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -3559,10 +3555,10 @@ description: Variables in memory after executing loop_tag.kcl
             7.42147673413837
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -3585,10 +3581,10 @@ description: Variables in memory after executing loop_tag.kcl
             12.239013475155524
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -3611,10 +3607,10 @@ description: Variables in memory after executing loop_tag.kcl
             18.116865998080257
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -3637,10 +3633,10 @@ description: Variables in memory after executing loop_tag.kcl
             24.962337057367144
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -3663,10 +3659,10 @@ description: Variables in memory after executing loop_tag.kcl
             32.66746948512503
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -3689,10 +3685,10 @@ description: Variables in memory after executing loop_tag.kcl
             41.11074874014518
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -3715,10 +3711,10 @@ description: Variables in memory after executing loop_tag.kcl
             50.15901926480538
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -3741,10 +3737,10 @@ description: Variables in memory after executing loop_tag.kcl
             59.66958442775692
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -3767,10 +3763,10 @@ description: Variables in memory after executing loop_tag.kcl
             69.4924569350438
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -3793,10 +3789,10 @@ description: Variables in memory after executing loop_tag.kcl
             79.47272421932652
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -3819,10 +3815,10 @@ description: Variables in memory after executing loop_tag.kcl
             89.45299150360924
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -3845,10 +3841,10 @@ description: Variables in memory after executing loop_tag.kcl
             99.27586401089613
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -3871,10 +3867,10 @@ description: Variables in memory after executing loop_tag.kcl
             108.78642917384767
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -3897,10 +3893,10 @@ description: Variables in memory after executing loop_tag.kcl
             117.83469969850786
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -3923,10 +3919,10 @@ description: Variables in memory after executing loop_tag.kcl
             126.277978953528
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -3949,10 +3945,10 @@ description: Variables in memory after executing loop_tag.kcl
             133.9831113812859
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -3975,10 +3971,10 @@ description: Variables in memory after executing loop_tag.kcl
             140.8285824405728
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -4001,10 +3997,10 @@ description: Variables in memory after executing loop_tag.kcl
             146.70643496349754
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -4027,10 +4023,10 @@ description: Variables in memory after executing loop_tag.kcl
             151.5239717045147
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -4053,10 +4049,10 @@ description: Variables in memory after executing loop_tag.kcl
             155.2052172313615
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -4079,10 +4075,10 @@ description: Variables in memory after executing loop_tag.kcl
             157.69211610301005
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -4105,10 +4101,10 @@ description: Variables in memory after executing loop_tag.kcl
             158.9454484386531
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -4131,10 +4127,10 @@ description: Variables in memory after executing loop_tag.kcl
             158.9454484386531
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -4157,10 +4153,10 @@ description: Variables in memory after executing loop_tag.kcl
             157.69211610301005
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -4183,10 +4179,10 @@ description: Variables in memory after executing loop_tag.kcl
             155.2052172313615
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -4209,10 +4205,10 @@ description: Variables in memory after executing loop_tag.kcl
             151.52397170451474
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -4235,10 +4231,10 @@ description: Variables in memory after executing loop_tag.kcl
             146.70643496349757
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -4261,10 +4257,10 @@ description: Variables in memory after executing loop_tag.kcl
             140.82858244057283
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -4287,10 +4283,10 @@ description: Variables in memory after executing loop_tag.kcl
             133.98311138128594
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -4313,10 +4309,10 @@ description: Variables in memory after executing loop_tag.kcl
             126.27797895352805
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -4339,10 +4335,10 @@ description: Variables in memory after executing loop_tag.kcl
             117.83469969850789
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -4365,10 +4361,10 @@ description: Variables in memory after executing loop_tag.kcl
             108.7864291738477
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -4391,10 +4387,10 @@ description: Variables in memory after executing loop_tag.kcl
             99.27586401089616
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -4417,10 +4413,10 @@ description: Variables in memory after executing loop_tag.kcl
             89.45299150360927
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -4443,10 +4439,10 @@ description: Variables in memory after executing loop_tag.kcl
             79.47272421932655
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -4469,10 +4465,10 @@ description: Variables in memory after executing loop_tag.kcl
             69.49245693504383
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -4495,10 +4491,10 @@ description: Variables in memory after executing loop_tag.kcl
             59.669584427756945
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -4521,10 +4517,10 @@ description: Variables in memory after executing loop_tag.kcl
             50.15901926480541
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -4547,10 +4543,10 @@ description: Variables in memory after executing loop_tag.kcl
             41.11074874014521
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -4573,10 +4569,10 @@ description: Variables in memory after executing loop_tag.kcl
             32.66746948512506
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -4599,10 +4595,10 @@ description: Variables in memory after executing loop_tag.kcl
             24.962337057367172
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -4625,10 +4621,10 @@ description: Variables in memory after executing loop_tag.kcl
             18.116865998080282
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -4651,10 +4647,10 @@ description: Variables in memory after executing loop_tag.kcl
             12.239013475155549
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -4677,10 +4673,10 @@ description: Variables in memory after executing loop_tag.kcl
             7.421476734138388
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -4703,10 +4699,10 @@ description: Variables in memory after executing loop_tag.kcl
             3.740231207291609
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -4729,10 +4725,10 @@ description: Variables in memory after executing loop_tag.kcl
             1.253332335643064
           ],
           "tag": {
-            "commentStart": 970,
-            "end": 985,
+            "commentStart": 973,
+            "end": 988,
             "moduleId": 0,
-            "start": 970,
+            "start": 973,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },

@@ -54,7 +54,7 @@ async fn inner_shell(
         // Flush the batch for our fillets/chamfers if there are any.
         // If we do not do these for sketch on face, things will fail with face does not exist.
         exec_state
-            .flush_batch_for_solids((&args).into(), &[solid.clone()])
+            .flush_batch_for_solids((&args).into(), std::slice::from_ref(solid))
             .await?;
 
         for tag in &faces {

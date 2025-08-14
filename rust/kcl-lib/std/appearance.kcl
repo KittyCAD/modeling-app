@@ -1,3 +1,6 @@
+@no_std
+@settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
+
 /// Build a color from its red, green and blue components.
 /// These must be between 0 and 255.
 ///

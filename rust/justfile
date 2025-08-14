@@ -1,4 +1,4 @@
-cnr := "cargo nextest run"
+cnr := "cargo nextest run --no-fail-fast"
 cita := "cargo insta test --accept"
 kcl_lib_flags := "-p kcl-lib --features artifact-graph"
 
@@ -73,3 +73,24 @@ publish-kcl version:
     # We push the tag at the end of publish since pushing the tag
     # will trigger CI to release the kcl python bindings.
     git push origin kcl-{{version}}
+
+[working-directory: 'kcl-python-bindings']
+python-install-deps:
+    @echo "🔧 Installing Python dependencies..."
+    uv sync --extra test
+    @echo "✅ Python dependencies installed successfully"
+
+[working-directory: 'kcl-python-bindings']
+python-stubs:
+    @echo "📝 Generating type stubs with pyo3-stubgen..."
+    cargo run --bin stub_gen
+    mv zoo_kcl.pyi kcl.pyi
+    @echo "✅ Type stubs generated successfully"
+
+# Verify stub files are included in wheel
+[working-directory: 'kcl-python-bindings']
+python-verify-stubs:
+    @echo "🔍 Verifying stub files in wheel..."
+    uvx maturin build --release
+    python -m zipfile -l ../target/wheels/*.whl | grep "\.pyi"
+    @echo "✅ Stub files verified in wheel package"

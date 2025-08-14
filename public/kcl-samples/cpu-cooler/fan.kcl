@@ -20,32 +20,32 @@ fn fanBlade(offsetHeight, startAngle) {
          15 * cos(startAngle),
          15 * sin(startAngle)
        ])
-    |> arc(angleStart = startAngle, angleEnd = startAngle + 14, radius = 15)
+    |> arc(angleStart = startAngle, angleEnd = startAngle + 14deg, radius = 15)
     |> arc(
          endAbsolute = [
-           fanSize * 22 / 50 * cos(startAngle - 20),
-           fanSize * 22 / 50 * sin(startAngle - 20)
+           fanSize * 22 / 50 * cos(startAngle - 20deg),
+           fanSize * 22 / 50 * sin(startAngle - 20deg)
          ],
          interiorAbsolute = [
-           fanSize * 11 / 50 * cos(startAngle + 3),
-           fanSize * 11 / 50 * sin(startAngle + 3)
+           fanSize * 11 / 50 * cos(startAngle + 3deg),
+           fanSize * 11 / 50 * sin(startAngle + 3deg)
          ],
        )
     |> arc(
          endAbsolute = [
-           fanSize * 22 / 50 * cos(startAngle - 24),
-           fanSize * 22 / 50 * sin(startAngle - 24)
+           fanSize * 22 / 50 * cos(startAngle - 24deg),
+           fanSize * 22 / 50 * sin(startAngle - 24deg)
          ],
          interiorAbsolute = [
-           fanSize * 22 / 50 * cos(startAngle - 22),
-           fanSize * 22 / 50 * sin(startAngle - 22)
+           fanSize * 22 / 50 * cos(startAngle - 22deg),
+           fanSize * 22 / 50 * sin(startAngle - 22deg)
          ],
        )
     |> arc(
          endAbsolute = [profileStartX(%), profileStartY(%)],
          interiorAbsolute = [
-           fanSize * 11 / 50 * cos(startAngle - 5),
-           fanSize * 11 / 50 * sin(startAngle - 5)
+           fanSize * 11 / 50 * cos(startAngle - 5deg),
+           fanSize * 11 / 50 * sin(startAngle - 5deg)
          ],
        )
     |> close()
@@ -54,8 +54,8 @@ fn fanBlade(offsetHeight, startAngle) {
 
 // Loft the fan blade cross sections into a single blade, then pattern them about the fan center
 crossSections = [
-  fanBlade(offsetHeight = 4.5, startAngle = 50),
-  fanBlade(offsetHeight = (fanHeight - 2 - 4) / 2, startAngle = 30),
+  fanBlade(offsetHeight = 4.5, startAngle = 50deg),
+  fanBlade(offsetHeight = (fanHeight - 2 - 4) / 2, startAngle = 30deg),
   fanBlade(offsetHeight = fanHeight - 2, startAngle = 0)
 ]
 bladeLoft = loft(crossSections)
@@ -63,7 +63,7 @@ bladeLoft = loft(crossSections)
        instances = 9,
        axis = [1, 0, 0],
        center = [0, 0, 0],
-       arcDegrees = 360,
+       arcDegrees = 360deg,
        rotateDuplicates = true,
      )
 

@@ -41,5 +41,8 @@ Valid properties are:
   - Accepted values: `mm`, `cm`, `m`, `in` (inches), `ft` (feet), `yd` (yards).
 - `defaultAngleUnit`: the default angle unit to use for numbers declared in this file.
   - Accepted values: `deg` (degrees), `rad` (radians).
+- `experimentalFeatures`: how experimental features are handled within this file.
+  - Accepted values: `allow` (experimental features can be used freely), `warn` (experimental features
+  cause a warning), `deny` (the default, experimental features cause an error).
 
 These settings override any project-wide settings (configured in project.toml or via the UI).

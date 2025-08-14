@@ -10,7 +10,7 @@ use crate::{
     execution::{
         EnvironmentRef, ExecState, Face, Geometry, GeometryWithImportedGeometry, Helix, ImportedGeometry, MetaSettings,
         Metadata, Plane, Sketch, Solid, TagIdentifier,
-        annotations::{SETTINGS, SETTINGS_UNIT_LENGTH},
+        annotations::{self, SETTINGS, SETTINGS_UNIT_LENGTH},
         types::{NumericType, PrimitiveType, RuntimeType, UnitLen},
     },
     parsing::ast::types::{
@@ -116,6 +116,10 @@ where
 }
 
 #[derive(Debug, Clone, PartialEq, Default)]
+// If you try to compare two `crate::std::StdFn` the results will be meaningless and arbitrary,
+// because they're just function pointers.
+// TODO: Add a newtype around crate::std::StdFn which manually impls PartialEq and sets it to false.
+#[allow(unpredictable_function_pointer_comparisons)]
 pub enum FunctionSource {
     #[default]
     None,
@@ -123,6 +127,7 @@ pub enum FunctionSource {
         func: crate::std::StdFn,
         ast: crate::parsing::ast::types::BoxNode<FunctionExpression>,
         props: StdFnProps,
+        attrs: crate::execution::annotations::FnAttrs,
     },
     User {
         ast: crate::parsing::ast::types::BoxNode<FunctionExpression>,
@@ -363,22 +368,24 @@ impl KclValue {
         match literal.inner.value {
             LiteralValue::Number { value, suffix } => {
                 let ty = NumericType::from_parsed(suffix, &exec_state.mod_local.settings);
-                if let NumericType::Default { len, .. } = &ty {
-                    if !exec_state.mod_local.explicit_length_units && *len != UnitLen::Mm {
-                        exec_state.warn(
-                            CompilationError::err(
-                                literal.as_source_range(),
-                                "Project-wide units are deprecated. Prefer to use per-file default units.",
-                            )
-                            .with_suggestion(
-                                "Fix by adding per-file settings",
-                                format!("@{SETTINGS}({SETTINGS_UNIT_LENGTH} = {len})\n"),
-                                // Insert at the start of the file.
-                                Some(SourceRange::new(0, 0, literal.module_id)),
-                                crate::errors::Tag::Deprecated,
-                            ),
-                        );
-                    }
+                if let NumericType::Default { len, .. } = &ty
+                    && !exec_state.mod_local.explicit_length_units
+                    && *len != UnitLen::Mm
+                {
+                    exec_state.warn(
+                        CompilationError::err(
+                            literal.as_source_range(),
+                            "Project-wide units are deprecated. Prefer to use per-file default units.",
+                        )
+                        .with_suggestion(
+                            "Fix by adding per-file settings",
+                            format!("@{SETTINGS}({SETTINGS_UNIT_LENGTH} = {len})\n"),
+                            // Insert at the start of the file.
+                            Some(SourceRange::new(0, 0, literal.module_id)),
+                            crate::errors::Tag::Deprecated,
+                        ),
+                        annotations::WARN_DEPRECATED,
+                    );
                 }
                 KclValue::Number { value, meta, ty }
             }

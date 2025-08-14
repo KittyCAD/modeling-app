@@ -40,9 +40,11 @@ jobs:
           # cleanup old
           rm -rf documentation/content/pages/docs/kcl-std
           rm -rf documentation/content/pages/docs/kcl-lang
+          rm -rf documentation/content/kcl-test-outputs
           # move new
           mv -f docs/kcl-std documentation/content/pages/docs
           mv -f docs/kcl-lang documentation/content/pages/docs
+          mv -f rust/kcl-lib/tests/outputs documentation/content/kcl-test-outputs
           # We don't need the README
           rm documentation/content/pages/docs/kcl-std/README.md
       - name: move kcl-samples

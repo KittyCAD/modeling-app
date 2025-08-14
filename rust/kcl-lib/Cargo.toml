@@ -1,14 +1,21 @@
 [package]
 name = "kcl-lib"
 description = "KittyCAD Language implementation and tools"
-version = "0.2.91"
+version = "0.2.92"
 edition = "2024"
 license = "MIT"
 repository = "https://github.com/KittyCAD/modeling-app"
 rust-version = "1.88"
 authors = ["Jess Frazelle", "Adam Chalmers", "KittyCAD, Inc"]
 keywords = ["kcl", "KittyCAD", "CAD"]
-exclude = ["tests/*", "benches/*", "examples/*", "e2e/*", "bindings/*", "fuzz/*"]
+exclude = [
+    "tests/*",
+    "benches/*",
+    "examples/*",
+    "e2e/*",
+    "bindings/*",
+    "fuzz/*",
+]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [lib]
@@ -19,6 +26,21 @@ name = "kcl-lib-bin"
 path = "src/main.rs"
 bench = false
 
+[features]
+default = ["cli", "engine"]
+artifact-graph = []
+benchmark-execution = []
+cli = ["dep:clap", "kittycad/clap"]
+dhat-heap = ["dep:dhat"]
+# For the lsp server, when run with stdout for rpc we want to disable println.
+# This is used for editor extensions that use the lsp server.
+disable-println = []
+engine = []
+pyo3 = ["dep:pyo3", "dep:pyo3-stub-gen"]
+# Helper functions also used in benchmarks.
+lsp-test-util = []
+tabled = ["dep:tabled"]
+
 [dependencies]
 anyhow = { workspace = true, features = ["backtrace"] }
 async-recursion = "1.1.1"
@@ -26,9 +48,9 @@ async-trait = { workspace = true }
 base64 = "0.22.1"
 bson = { workspace = true }
 chrono = "0.4.41"
-clap = { version = "4.5.41", default-features = false, optional = true, features = [
-    "std",
-    "derive",
+clap = { version = "4.5.42", default-features = false, optional = true, features = [
+  "std",
+  "derive",
 ] }
 convert_case = "0.8.0"
 csscolorparser = "0.7.2"
@@ -54,19 +76,20 @@ mime_guess = "2.0.5"
 nalgebra-glm = "0.19.0"
 parse-display = "0.10.0"
 pyo3 = { workspace = true, optional = true }
+pyo3-stub-gen = { workspace = true, optional = true }
 regex = "1.11.1"
 reqwest = { version = "0.12", default-features = false, features = [
-    "stream",
-    "rustls-tls",
+  "stream",
+  "rustls-tls",
 ] }
 rgba_simple = "0.10.0"
 ropey = "1.6.1"
 schemars = { version = "0.8.17", features = [
-    "impl_json_schema",
-    "indexmap2",
-    "url",
-    "uuid1",
-    "preserve_order",
+  "impl_json_schema",
+  "indexmap2",
+  "url",
+  "uuid1",
+  "preserve_order",
 ] }
 serde = { workspace = true }
 serde_json = { workspace = true }
@@ -74,14 +97,14 @@ sha2 = "0.10.9"
 tabled = { version = "0.20.0", optional = true }
 tempfile = "3.20"
 thiserror = "2.0.0"
-toml = "0.9.3"
+toml = "0.9.5"
 ts-rs = { version = "11.0.1", features = [
-    "uuid-impl",
-    "url-impl",
-    "chrono-impl",
-    "indexmap-impl",
-    "no-serde-warnings",
-    "serde-json-impl",
+  "uuid-impl",
+  "url-impl",
+  "chrono-impl",
+  "indexmap-impl",
+  "no-serde-warnings",
+  "serde-json-impl",
 ] }
 tynm = "0.2.0"
 url = { version = "2.5.4", features = ["serde"] }
@@ -92,9 +115,16 @@ web-time = "1.1"
 winnow = "0.7"
 zip = { workspace = true }
 
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+tokio = { workspace = true, features = ["full"] }
+tokio-tungstenite = { version = "0.27.0", features = [
+  "rustls-tls-native-roots",
+] }
+tower-lsp = { workspace = true, features = ["proposed", "default"] }
+
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 console_error_panic_hook = { workspace = true }
-futures-lite = "2.6.0"
+futures-lite = "2.6.1"
 js-sys = { version = "0.3.72" }
 tokio = { workspace = true, features = ["sync", "time"] }
 tower-lsp = { workspace = true, features = ["runtime-agnostic"] }
@@ -103,28 +133,6 @@ wasm-bindgen = "0.2.99"
 wasm-bindgen-futures = "0.4.49"
 wasm-timer = { package = "zduny-wasm-timer", version = "0.2.5" }
 web-sys = { version = "0.3.76", features = ["console"] }
-
-[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
-tokio = { workspace = true, features = ["full"] }
-tokio-tungstenite = { version = "0.27.0", features = [
-    "rustls-tls-native-roots",
-] }
-tower-lsp = { workspace = true, features = ["proposed", "default"] }
-
-[features]
-default = ["cli", "engine"]
-artifact-graph = []
-benchmark-execution = []
-cli = ["dep:clap", "kittycad/clap"]
-dhat-heap = ["dep:dhat"]
-# For the lsp server, when run with stdout for rpc we want to disable println.
-# This is used for editor extensions that use the lsp server.
-disable-println = []
-engine = []
-pyo3 = ["dep:pyo3"]
-# Helper functions also used in benchmarks.
-lsp-test-util = []
-tabled = ["dep:tabled"]
 
 [dev-dependencies]
 approx = "0.5"
@@ -137,7 +145,7 @@ insta = { version = "1.43.1", features = ["json", "filters", "redactions"] }
 kcl-directory-test-macro = { version = "0.1", path = "../kcl-directory-test-macro" }
 miette = { version = "7.6.0", features = ["fancy"] }
 pretty_assertions = "1.4.1"
-tokio = { version = "1.47.0", features = ["rt-multi-thread", "macros", "time"] }
+tokio = { version = "1.47.1", features = ["rt-multi-thread", "macros", "time"] }
 twenty-twenty = "0.8.2"
 
 [lints]

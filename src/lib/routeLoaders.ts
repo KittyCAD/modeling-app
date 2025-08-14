@@ -35,16 +35,25 @@ export const fileLoader: LoaderFunction = async (
   routerData
 ): Promise<FileLoaderData | Response> => {
   const { params } = routerData
-  let { configuration } = await loadAndValidateSettings()
+
+  const isBrowserProject = params.id === decodeURIComponent(BROWSER_PATH)
+
+  const heuristicProjectFilePath =
+    isDesktop() && params.id
+      ? params.id
+          .split(window.electron.sep)
+          .slice(0, -1)
+          .join(window.electron.sep)
+      : undefined
+
+  let settings = await loadAndValidateSettings(heuristicProjectFilePath)
 
   const projectPathData = await getProjectMetaByRouteId(
     readAppSettingsFile,
     readLocalStorageAppSettingsFile,
     params.id,
-    configuration
+    settings.configuration
   )
-  const isBrowserProject = params.id === decodeURIComponent(BROWSER_PATH)
-
   let code = ''
 
   if (!isBrowserProject && projectPathData) {

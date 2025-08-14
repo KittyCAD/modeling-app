@@ -1328,13 +1328,13 @@ description: Result of parsing import_async.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "360",
+                                  "raw": "360deg",
                                   "start": 0,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
                                     "value": 360.0,
-                                    "suffix": "None"
+                                    "suffix": "Deg"
                                   }
                                 },
                                 "start": 0,
@@ -1356,13 +1356,13 @@ description: Result of parsing import_async.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "moduleId": 0,
-                                "raw": "180",
+                                "raw": "180deg",
                                 "start": 0,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
                                   "value": 180.0,
-                                  "suffix": "None"
+                                  "suffix": "Deg"
                                 }
                               }
                             },
@@ -1437,13 +1437,13 @@ description: Result of parsing import_async.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "moduleId": 0,
-                                "raw": "180",
+                                "raw": "180deg",
                                 "start": 0,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
                                   "value": 180.0,
-                                  "suffix": "None"
+                                  "suffix": "Deg"
                                 }
                               }
                             },
@@ -2826,13 +2826,13 @@ description: Result of parsing import_async.kcl
                                                     "commentStart": 0,
                                                     "end": 0,
                                                     "moduleId": 0,
-                                                    "raw": "360",
+                                                    "raw": "360deg",
                                                     "start": 0,
                                                     "type": "Literal",
                                                     "type": "Literal",
                                                     "value": {
                                                       "value": 360.0,
-                                                      "suffix": "None"
+                                                      "suffix": "Deg"
                                                     }
                                                   },
                                                   "moduleId": 0,
@@ -3080,13 +3080,13 @@ description: Result of parsing import_async.kcl
                                           "commentStart": 0,
                                           "end": 0,
                                           "moduleId": 0,
-                                          "raw": "360",
+                                          "raw": "360deg",
                                           "start": 0,
                                           "type": "Literal",
                                           "type": "Literal",
                                           "value": {
                                             "value": 360.0,
-                                            "suffix": "None"
+                                            "suffix": "Deg"
                                           }
                                         }
                                       },
@@ -3938,13 +3938,13 @@ description: Result of parsing import_async.kcl
                 "commentStart": 0,
                 "end": 0,
                 "moduleId": 0,
-                "raw": "20",
+                "raw": "20deg",
                 "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
                   "value": 20.0,
-                  "suffix": "None"
+                  "suffix": "Deg"
                 }
               }
             },
@@ -3962,13 +3962,13 @@ description: Result of parsing import_async.kcl
                 "commentStart": 0,
                 "end": 0,
                 "moduleId": 0,
-                "raw": "35",
+                "raw": "35deg",
                 "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
                   "value": 35.0,
-                  "suffix": "None"
+                  "suffix": "Deg"
                 }
               }
             },

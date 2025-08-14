@@ -194,7 +194,7 @@ function CommandBarKclInput({
           },
         },
         {
-          key: 'Shift-Backspace',
+          key: 'Meta-Backspace',
           run: () => {
             stepBack()
             return true

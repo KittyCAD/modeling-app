@@ -29,8 +29,8 @@ fn helicalGear(nTeeth, module, pressureAngle, helixAngle, gearHeight) {
     |> xLine(length = keywayDepth)
     |> yLine(length = -keywayWidth)
     |> xLine(length = -keywayDepth)
-    |> arc(angleStart = -1 * startAngle + 360, angleEnd = 180, radius = holeRadius)
-    |> arc(angleStart = 180, angleEnd = startAngle, radius = holeRadius)
+    |> arc(angleStart = -1 * startAngle + 360deg, angleEnd = 180deg, radius = holeRadius)
+    |> arc(angleStart = 180deg, angleEnd = startAngle, radius = holeRadius)
     |> close()
 
   // Define a function to create a rotated gear sketch on an offset plane
@@ -47,7 +47,7 @@ fn helicalGear(nTeeth, module, pressureAngle, helixAngle, gearHeight) {
            angle = helixCalc,
            tag = $seg01,
          )
-      |> line(endAbsolute = polar(angle = 160 / nTeeth + helixCalc, length = tipDiameter / 2))
+      |> line(endAbsolute = polar(angle = 160deg / nTeeth + helixCalc, length = tipDiameter / 2))
       |> involuteCircular(
            startDiameter = baseDiameter,
            endDiameter = tipDiameter,
@@ -56,13 +56,13 @@ fn helicalGear(nTeeth, module, pressureAngle, helixAngle, gearHeight) {
          )
 
       // Position the end line of the sketch at the start of the next tooth
-      |> line(endAbsolute = polar(angle = 360 / nTeeth + helixCalc, length = baseDiameter / 2))
+      |> line(endAbsolute = polar(angle = 360deg / nTeeth + helixCalc, length = baseDiameter / 2))
 
       // Pattern the sketch about the center by the specified number of teeth, then close the sketch
       |> patternCircular2d(
            instances = nTeeth,
            center = [0, 0],
-           arcDegrees = 360,
+           arcDegrees = 360deg,
            rotateDuplicates = true,
          )
       |> close()
@@ -92,7 +92,7 @@ fn helicalGear(nTeeth, module, pressureAngle, helixAngle, gearHeight) {
 helicalGear(
   nTeeth = 21,
   module = 2,
-  pressureAngle = 20,
-  helixAngle = 35,
+  pressureAngle = 20deg,
+  helixAngle = 35deg,
   gearHeight = 7,
 )

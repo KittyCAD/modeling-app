@@ -12,7 +12,7 @@ import { Popover } from '@headlessui/react'
 import Tooltip from '@src/components/Tooltip'
 import { HelpMenu } from '@src/components/HelpMenu'
 import { isDesktop } from '@src/lib/isDesktop'
-import { APP_DOWNLOAD_PATH } from '@src/lib/constants'
+import { APP_DOWNLOAD_PATH } from '@src/routes/utils'
 import { desktopAppPitchMessage } from '@src/components/DownloadAppToast'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import {

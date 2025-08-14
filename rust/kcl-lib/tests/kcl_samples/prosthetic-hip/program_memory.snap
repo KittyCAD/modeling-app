@@ -572,10 +572,10 @@ description: Variables in memory after executing prosthetic-hip.kcl
               -8.0
             ],
             "tag": {
-              "commentStart": 1889,
-              "end": 1895,
+              "commentStart": 1925,
+              "end": 1931,
               "moduleId": 0,
-              "start": 1889,
+              "start": 1925,
               "type": "TagDeclarator",
               "value": "seg04"
             },
@@ -1895,10 +1895,10 @@ description: Variables in memory after executing prosthetic-hip.kcl
             -9.5
           ],
           "tag": {
-            "commentStart": 879,
-            "end": 885,
+            "commentStart": 891,
+            "end": 897,
             "moduleId": 0,
-            "start": 879,
+            "start": 891,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -2126,10 +2126,10 @@ description: Variables in memory after executing prosthetic-hip.kcl
             -16.0
           ],
           "tag": {
-            "commentStart": 1359,
-            "end": 1365,
+            "commentStart": 1383,
+            "end": 1389,
             "moduleId": 0,
-            "start": 1359,
+            "start": 1383,
             "type": "TagDeclarator",
             "value": "seg03"
           },
@@ -2357,10 +2357,10 @@ description: Variables in memory after executing prosthetic-hip.kcl
             -8.0
           ],
           "tag": {
-            "commentStart": 1889,
-            "end": 1895,
+            "commentStart": 1925,
+            "end": 1931,
             "moduleId": 0,
-            "start": 1889,
+            "start": 1925,
             "type": "TagDeclarator",
             "value": "seg04"
           },
@@ -2588,10 +2588,10 @@ description: Variables in memory after executing prosthetic-hip.kcl
             -0.8
           ],
           "tag": {
-            "commentStart": 2423,
-            "end": 2429,
+            "commentStart": 2471,
+            "end": 2477,
             "moduleId": 0,
-            "start": 2423,
+            "start": 2471,
             "type": "TagDeclarator",
             "value": "seg05"
           },
@@ -2819,10 +2819,10 @@ description: Variables in memory after executing prosthetic-hip.kcl
             -0.5
           ],
           "tag": {
-            "commentStart": 2954,
-            "end": 2960,
+            "commentStart": 3014,
+            "end": 3020,
             "moduleId": 0,
-            "start": 2954,
+            "start": 3014,
             "type": "TagDeclarator",
             "value": "seg06"
           },
@@ -3046,10 +3046,10 @@ description: Variables in memory after executing prosthetic-hip.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2954,
-            "end": 2960,
+            "commentStart": 3014,
+            "end": 3020,
             "moduleId": 0,
-            "start": 2954,
+            "start": 3014,
             "type": "TagDeclarator",
             "value": "seg06"
           },
@@ -3105,10 +3105,10 @@ description: Variables in memory after executing prosthetic-hip.kcl
               -0.5
             ],
             "tag": {
-              "commentStart": 2954,
-              "end": 2960,
+              "commentStart": 3014,
+              "end": 3020,
               "moduleId": 0,
-              "start": 2954,
+              "start": 3014,
               "type": "TagDeclarator",
               "value": "seg06"
             },

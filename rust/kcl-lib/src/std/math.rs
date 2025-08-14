@@ -6,7 +6,7 @@ use crate::{
     CompilationError,
     errors::{KclError, KclErrorDetails},
     execution::{
-        ExecState, KclValue,
+        ExecState, KclValue, annotations,
         types::{ArrayLen, NumericType, RuntimeType},
     },
     std::args::{Args, TyF64},
@@ -114,7 +114,7 @@ pub async fn min(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
         exec_state.warn(CompilationError::err(
             args.source_range,
             "Calling `min` on numbers which have unknown or incompatible units.\n\nYou may need to add information about the type of the argument, for example:\n  using a numeric suffix: `42{ty}`\n  or using type ascription: `foo(): number({ty})`",
-        ));
+        ), annotations::WARN_UNKNOWN_UNITS);
     }
 
     let mut result = f64::MAX;
@@ -139,7 +139,7 @@ pub async fn max(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
         exec_state.warn(CompilationError::err(
             args.source_range,
             "Calling `max` on numbers which have unknown or incompatible units.\n\nYou may need to add information about the type of the argument, for example:\n  using a numeric suffix: `42{ty}`\n  or using type ascription: `foo(): number({ty})`",
-        ));
+        ), annotations::WARN_UNKNOWN_UNITS);
     }
 
     let mut result = f64::MIN;

@@ -2,6 +2,8 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Result of unparsing sketch_on_face_start.kcl
 ---
+@settings(experimentalFeatures = allow)
+
 fn cube(pos, scale) {
   sg = startSketchOn(XY)
     |> startProfile(at = pos)

@@ -27,7 +27,7 @@ fn herringboneGear(nTeeth, module, pressureAngle, helixAngle, gearHeight) {
            angle = helixCalc,
            tag = $seg01,
          )
-      |> line(endAbsolute = polar(angle = 160 / nTeeth + helixCalc, length = tipDiameter / 2))
+      |> line(endAbsolute = polar(angle = 160deg / nTeeth + helixCalc, length = tipDiameter / 2))
       |> involuteCircular(
            startRadius = baseDiameter / 2,
            endRadius = tipDiameter / 2,
@@ -36,13 +36,13 @@ fn herringboneGear(nTeeth, module, pressureAngle, helixAngle, gearHeight) {
          )
 
       // Position the end line of the sketch at the start of the next tooth
-      |> line(endAbsolute = polar(angle = 360 / nTeeth + helixCalc, length = baseDiameter / 2))
+      |> line(endAbsolute = polar(angle = 360deg / nTeeth + helixCalc, length = baseDiameter / 2))
 
       // Pattern the sketch about the center by the specified number of teeth, then close the sketch
       |> patternCircular2d(
            instances = nTeeth,
            center = [0, 0],
-           arcDegrees = 360,
+           arcDegrees = 360deg,
            rotateDuplicates = true,
          )
       |> close()
@@ -97,7 +97,7 @@ fn ringGear(nTeeth, module, pressureAngle, helixAngle, gearHeight) {
            angle = helixCalc,
            tag = $seg01,
          )
-      |> line(endAbsolute = polar(angle = 220 / nTeeth + helixCalc, length = tipDiameter / 2))
+      |> line(endAbsolute = polar(angle = 220deg / nTeeth + helixCalc, length = tipDiameter / 2))
       |> involuteCircular(
            startRadius = baseDiameter / 2,
            endRadius = tipDiameter / 2,
@@ -106,13 +106,13 @@ fn ringGear(nTeeth, module, pressureAngle, helixAngle, gearHeight) {
          )
 
       // Position the end line of the sketch at the start of the next tooth
-      |> line(endAbsolute = polar(angle = 360 / nTeeth + helixCalc, length = baseDiameter / 2))
+      |> line(endAbsolute = polar(angle = 360deg / nTeeth + helixCalc, length = baseDiameter / 2))
 
       // Pattern the sketch about the center by the specified number of teeth, then close the sketch
       |> patternCircular2d(
            instances = nTeeth,
            center = [0, 0],
-           arcDegrees = 360,
+           arcDegrees = 360deg,
            rotateDuplicates = true,
          )
       |> close()
@@ -151,8 +151,8 @@ fn ringGear(nTeeth, module, pressureAngle, helixAngle, gearHeight) {
 ringGear(
   nTeeth = 58,
   module = 1.5,
-  pressureAngle = 14,
-  helixAngle = -35,
+  pressureAngle = 14deg,
+  helixAngle = -35deg,
   gearHeight = 8,
 )
 
@@ -160,8 +160,8 @@ ringGear(
 herringboneGear(
   nTeeth = 18,
   module = 1.5,
-  pressureAngle = 14,
-  helixAngle = 35,
+  pressureAngle = 14deg,
+  helixAngle = 35deg,
   gearHeight = 8,
 )
 
@@ -170,8 +170,8 @@ numPlanetGears = 4
 herringboneGear(
        nTeeth = 18,
        module = 1.5,
-       pressureAngle = 14,
-       helixAngle = -35,
+       pressureAngle = 14deg,
+       helixAngle = -35deg,
        gearHeight = 8,
      )
   |> translate(y = 18 * 1.5 + 1.95)
@@ -179,6 +179,6 @@ herringboneGear(
        instances = numPlanetGears,
        axis = [0, 0, 1],
        center = [0, 0, 0],
-       arcDegrees = 360,
+       arcDegrees = 360deg,
        rotateDuplicates = false,
      )

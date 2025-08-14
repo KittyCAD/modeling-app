@@ -9,7 +9,7 @@
 /// You might also want the [KCL language reference](/docs/kcl-lang) or the [KCL guide](https://zoo.dev/docs/kcl-book/intro.html).
 
 @no_std
-@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+@settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
 
 // Note that everything in the prelude is treated as exported.
 
