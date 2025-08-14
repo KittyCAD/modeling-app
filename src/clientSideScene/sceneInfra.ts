@@ -130,6 +130,32 @@ export class SceneInfra {
     )
   }
 
+  // Returns the size of the current base unit in screen space pixels in ortho view.
+  // Eg. if 1 mm takes up 4 pixels in the current view, and the current base unit is 1cm then it returns 40 pixels.
+  getPixelsPerBaseUnit(camera: OrthographicCamera) {
+    const worldViewportWidth = (camera.right - camera.left) / camera.zoom
+    const viewportSize = this.renderer.getDrawingBufferSize(new Vector2())
+
+    // one [mm] in screen space (pixels) multiplied by baseUnitMultiplier
+    let rulerWidth =
+      (((1 / worldViewportWidth) * viewportSize.x) / window.devicePixelRatio) *
+      this._baseUnitMultiplier
+
+    return rulerWidth
+    // const zoom = camera.zoom
+    // const worldViewportWidth = (camera.right - camera.left) / zoom
+    // const worldViewportHeight = (camera.top - camera.bottom) / zoom
+    //
+    // const worldToScreenX = 2 / worldViewportWidth
+    // const worldToScreenY = 2 / worldViewportHeight
+    //
+    // const pxPerWorldX = viewportWidthPx / worldViewportWidth
+    // const pxPerWorldY = viewportHeightPx / worldViewportHeight
+    //
+    // They should be the same, they are not after window size is changed, until zoom occurs.
+    // const pxPerWorld = Math.min(pxPerWorldX, pxPerWorldY)
+  }
+
   set theme(theme: Themes) {
     this._theme = theme
   }

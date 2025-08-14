@@ -12,7 +12,7 @@ import { baseUnitLabels, baseUnitsUnion } from '@src/lib/settings/settingsTypes'
 import { codeManager, kclManager, sceneInfra } from '@src/lib/singletons'
 import { err, reportRejection } from '@src/lib/trap'
 import { useModelingContext } from '@src/hooks/useModelingContext'
-import { OrthographicCamera, Vector2 } from 'three'
+import { OrthographicCamera } from 'three'
 
 export function UnitsMenu() {
   const [fileSettings, setFileSettings] = useState(kclManager.fileSettings)
@@ -36,12 +36,8 @@ export function UnitsMenu() {
       )
       return
     }
-    const worldViewportWidth = (camera.right - camera.left) / camera.zoom
-    const viewportSize = sceneInfra.renderer.getDrawingBufferSize(new Vector2())
 
-    // one base unit in screen space (pixels)
-    let rulerWidth =
-      ((1 / worldViewportWidth) * viewportSize.x) / window.devicePixelRatio
+    let rulerWidth = sceneInfra.getPixelsPerBaseUnit(camera)
     let displayValue = 1
 
     if (rulerWidth > 150 || rulerWidth < 20) {

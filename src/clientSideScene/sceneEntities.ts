@@ -476,11 +476,10 @@ export class SceneEntities {
 
         gridHelper.update(
           this.sceneInfra.camControls.camera,
-          majorGridSpacing,
-          minorGridsPerMajor,
-          viewportSize.x,
-          viewportSize.y,
+          [viewportSize.x, viewportSize.y],
           {
+            majorGridSpacing,
+            minorGridsPerMajor,
             majorColor,
             minorColor,
             fixedSizeGrid: settings.modeling.fixedSizeGrid.current,

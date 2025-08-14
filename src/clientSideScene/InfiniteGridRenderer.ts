@@ -129,11 +129,10 @@ export class InfiniteGridRenderer extends LineSegments {
 
   update(
     camera: Camera,
-    majorSpacing: number,
-    minorPerMajor: number,
-    viewportWidthPx: number,
-    viewportHeightPx: number,
+    viewportSize: [number, number],
     options: {
+      majorGridSpacing: number
+      minorGridsPerMajor: number
       majorColor: [number, number, number, number]
       minorColor: [number, number, number, number]
       fixedSizeGrid?: boolean
@@ -149,16 +148,18 @@ export class InfiniteGridRenderer extends LineSegments {
 
     const material = this.material as RawShaderMaterial
 
-    const zoom = camera.zoom
-    let effectiveMajorSpacing = majorSpacing
-    let minorSpacing = effectiveMajorSpacing / minorPerMajor
+    let effectiveMajorSpacing = options.majorGridSpacing
+    let minorSpacing = effectiveMajorSpacing / options.minorGridsPerMajor
 
+    const zoom = camera.zoom
     const worldViewportWidth = (camera.right - camera.left) / zoom
     const worldViewportHeight = (camera.top - camera.bottom) / zoom
 
     const worldToScreenX = 2 / worldViewportWidth
     const worldToScreenY = 2 / worldViewportHeight
 
+    const viewportWidthPx = viewportSize[0]
+    const viewportHeightPx = viewportSize[1]
     const pxPerWorldX = viewportWidthPx / worldViewportWidth
     const pxPerWorldY = viewportHeightPx / worldViewportHeight
 
@@ -176,7 +177,8 @@ export class InfiniteGridRenderer extends LineSegments {
         effectiveMajorSpacing /= 10
         majorPx /= 10
       }
-      minorSpacing = effectiveMajorSpacing / Math.max(1, minorPerMajor)
+      minorSpacing =
+        effectiveMajorSpacing / Math.max(1, options.minorGridsPerMajor)
     }
 
     const minorSpacingPx = Math.min(
