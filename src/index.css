@@ -36,15 +36,6 @@ h6 {
   @apply font-sans;
 }
 
-.body-bg {
-  @apply bg-chalkboard-10;
-}
-
-.body-bg.dark,
-.dark .body-bg {
-  @apply bg-chalkboard-100;
-}
-
 body.dark {
   scrollbar-color: var(--color-chalkboard-70) var(--color-chalkboard-90);
   @apply text-chalkboard-10;
@@ -396,14 +387,23 @@ code {
       outline-offset: 4px;
     }
   }
+
+  .body-bg {
+    @apply bg-chalkboard-10;
+  }
+
+  .body-bg.dark,
+  .dark .body-bg {
+    @apply bg-chalkboard-100;
+  }
+
+  /* Can't use #code-mirror-override here as we're outside of this div */
+  .body-bg .cm-diagnosticAction {
+    @apply bg-primary;
+  }
 }
 
 #code-mirror-override .cm-scroller,
 #code-mirror-override .cm-editor {
   height: 100% !important;
-}
-
-/* Can't use #code-mirror-override here as we're outside of this div */
-.body-bg .cm-diagnosticAction {
-  @apply bg-primary;
 }
