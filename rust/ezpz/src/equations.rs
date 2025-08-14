@@ -83,6 +83,37 @@ impl std::ops::Add for Equation {
     }
 }
 
+impl std::ops::Mul for Equation {
+    type Output = Self;
+
+    fn mul(self, rhs: Self) -> Self::Output {
+        let eval = |vars: &Vars| {
+            let a = self;
+            let b = rhs;
+            let Eval {
+                value: ra,
+                derivatives: das,
+            } = a.evaluate(vars)?;
+            let Eval {
+                value: rb,
+                derivatives: dbs,
+            } = b.evaluate(vars)?;
+            let mut derivatives = Vars::with_capacity(das.len() + dbs.len());
+            for d in das {
+                *derivatives.entry(d.0).or_insert(0.0) += d.1 * rb;
+            }
+            for d in dbs {
+                *derivatives.entry(d.0).or_insert(0.0) += d.1 * ra;
+            }
+            Ok(Eval {
+                value: ra * rb,
+                derivatives,
+            })
+        };
+        Self { eval: Box::new(eval) }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -119,6 +150,20 @@ mod tests {
         let expected = Eval {
             value: 31.0,
             derivatives: IndexMap::from([('a', 2.0), ('b', 1.0)]),
+        };
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn eval_multiplied() {
+        let equation =
+            (Equation::single_variable('a') + Equation::single_variable('a') + Equation::single_variable('b'))
+                * Equation::single_variable('a');
+
+        let actual = equation.evaluate(&Vars::from([('a', 3.0), ('b', 2.0)])).unwrap();
+        let expected = Eval {
+            value: 24.0,
+            derivatives: IndexMap::from([('a', 14.0), ('b', 3.0)]),
         };
         assert_eq!(actual, expected);
     }
