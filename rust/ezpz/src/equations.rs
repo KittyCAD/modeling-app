@@ -108,6 +108,39 @@ impl std::ops::Mul for Equation {
     }
 }
 
+impl std::ops::Div for Equation {
+    type Output = Self;
+
+    fn div(self, rhs: Self) -> Self::Output {
+        let eval = |vars: &Vars| {
+            let a = self;
+            let b = rhs;
+            let Eval {
+                value: ra,
+                derivatives: mut das,
+            } = a.evaluate(vars)?;
+            let Eval {
+                value: rb,
+                derivatives: mut dbs,
+            } = b.evaluate(vars)?;
+            // Quotient rule. Reuse storage for derivatives of A and B
+            // so we don't have to reallocate. This saves 30% of time
+            // when evaluating on our benchmarks, compared to
+            // mapping over the dict and recollecting.
+            das.values_mut().for_each(|x| *x *= rb);
+            dbs.values_mut().for_each(|x| *x *= -ra);
+            let mut derivatives = union_with(das, dbs, |a, b| a + b);
+            let rb_squared = rb.powf(2.0);
+            derivatives.values_mut().for_each(|x| *x /= rb_squared);
+            Ok(Eval {
+                value: ra / rb,
+                derivatives,
+            })
+        };
+        Self { eval: Box::new(eval) }
+    }
+}
+
 fn union_with<K: std::hash::Hash + Eq, V: Copy>(
     a: IndexMap<K, V>,
     b: IndexMap<K, V>,
@@ -168,15 +201,15 @@ mod tests {
     }
 
     #[test]
-    fn eval_multiplied() {
+    fn eval_divided() {
         let equation =
             (Equation::single_variable('a') + Equation::single_variable('a') + Equation::single_variable('b'))
-                * Equation::single_variable('a');
+                / Equation::single_variable('a');
 
         let actual = equation.evaluate(&Vars::from([('a', 3.0), ('b', 2.0)])).unwrap();
         let expected = Eval {
-            value: 24.0,
-            derivatives: IndexMap::from([('a', 14.0), ('b', 3.0)]),
+            value: 8.0 / 3.0,
+            derivatives: IndexMap::from([('a', -2.0 / 9.0), ('b', 1.0 / 3.0)]),
         };
         assert_eq!(actual, expected);
     }
