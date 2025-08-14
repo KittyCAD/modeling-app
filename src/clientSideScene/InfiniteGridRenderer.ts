@@ -162,18 +162,10 @@ export class InfiniteGridRenderer extends LineSegments {
     const viewportWidthPx = viewportSize[0]
     const viewportHeightPx = viewportSize[1]
 
-    const pxPerWorldX = pixelsPerBaseUnit
-    const pxPerWorldY = pixelsPerBaseUnit
-    //const pxPerWorldX = viewportWidthPx / worldViewportWidth
-    //const pxPerWorldY = viewportHeightPx / worldViewportHeight
-
-    console.log('px per world', pxPerWorldX, pxPerWorldY)
-
     if (!options.fixedSizeGrid) {
       const desiredMin = options.majorPxRange[0]
       const desiredMax = options.majorPxRange[1]
-      const pxPerWorld = Math.min(pxPerWorldX, pxPerWorldY)
-      let majorPx = effectiveMajorSpacing * pxPerWorld
+      let majorPx = effectiveMajorSpacing * pixelsPerBaseUnit
 
       while (majorPx < desiredMin) {
         effectiveMajorSpacing *= 10
@@ -187,14 +179,8 @@ export class InfiniteGridRenderer extends LineSegments {
         effectiveMajorSpacing / Math.max(1, options.minorGridsPerMajor)
     }
 
-    const minorSpacingPx = Math.min(
-      minorSpacing * pxPerWorldX,
-      minorSpacing * pxPerWorldY
-    )
-    const majorSpacingPx = Math.min(
-      effectiveMajorSpacing * pxPerWorldX,
-      effectiveMajorSpacing * pxPerWorldY
-    )
+    const minorSpacingPx = minorSpacing * pixelsPerBaseUnit
+    const majorSpacingPx = effectiveMajorSpacing * pixelsPerBaseUnit
 
     let effectiveMinorSpacing = minorSpacing
     this.visible = true
@@ -226,10 +212,12 @@ export class InfiniteGridRenderer extends LineSegments {
     material.uniforms.viewportPx.value = [viewportWidthPx, viewportHeightPx]
 
     // Optional theme-based colors
-    if (options?.majorColor)
+    if (options?.majorColor) {
       material.uniforms.uMajorColor.value = options.majorColor
-    if (options?.minorColor)
+    }
+    if (options?.minorColor) {
       material.uniforms.uMinorColor.value = options.minorColor
+    }
 
     const totalVertices = verticalLines * 2 + horizontalLines * 2
     this.geometry.setDrawRange(0, totalVertices)
