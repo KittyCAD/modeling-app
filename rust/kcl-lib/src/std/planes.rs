@@ -124,17 +124,6 @@ pub(crate) async fn inner_plane_of(
     };
     let plane_info = plane_info.make_right_handed();
 
-    #[cfg(feature = "artifact-graph")]
-    {
-        use crate::execution::{Artifact, ArtifactId, CodeRef, PlaneOfFace};
-        // Create artifact used only by the UI, not the engine.
-        exec_state.add_artifact(Artifact::PlaneOfFace(PlaneOfFace {
-            id: ArtifactId::from(plane_id),
-            face_id: face_id.into(),
-            code_ref: CodeRef::placeholder(args.source_range),
-        }));
-    }
-
     Ok(Plane {
         artifact_id: plane_id.into(),
         id: plane_id,

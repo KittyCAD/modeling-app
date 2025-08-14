@@ -1,7 +1,7 @@
 use fnv::FnvHashMap;
 use indexmap::IndexMap;
 use kittycad_modeling_cmds::{
-    self as kcmc, EnableSketchMode, ModelingCmd,
+    self as kcmc, EnableSketchMode, FaceIsPlanar, ModelingCmd,
     ok_response::OkModelingCmdResponse,
     shared::ExtrusionFaceCapType,
     websocket::{BatchResponse, OkWebSocketResponseData, WebSocketResponse},
@@ -771,6 +771,13 @@ fn artifacts_to_update(
             return Ok(vec![Artifact::Plane(Plane {
                 id,
                 path_ids: Vec::new(),
+                code_ref,
+            })]);
+        }
+        ModelingCmd::FaceIsPlanar(FaceIsPlanar { object_id, .. }) => {
+            return Ok(vec![Artifact::PlaneOfFace(PlaneOfFace {
+                id,
+                face_id: object_id.into(),
                 code_ref,
             })]);
         }
