@@ -27,7 +27,17 @@ pub enum Error {
 }
 
 impl Equation {
-    /// The simplest kind of equation, a single variable.
+    /// Simplest equation: a constant.
+    /// Does not depend on input variables at all.
+    pub fn constant(value: f64) -> Self {
+        let eval = move |_vars: &Vars| {
+            let derivatives = Vars::new();
+            Ok(Eval { value, derivatives })
+        };
+        Self { eval: Box::new(eval) }
+    }
+
+    /// Simple equation with a single variable.
     /// E.g. `x`.
     pub fn single_variable(label: Label) -> Self {
         let eval = move |vars: &Vars| {
@@ -210,6 +220,20 @@ mod tests {
         let expected = Eval {
             value: 8.0 / 3.0,
             derivatives: IndexMap::from([('a', -2.0 / 9.0), ('b', 1.0 / 3.0)]),
+        };
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn eval_with_constant() {
+        // Basically (x + 5) * (x + y)
+        let equation = (Equation::single_variable('x') + Equation::constant(5.0))
+            * (Equation::single_variable('x') + Equation::single_variable('y'));
+
+        let actual = equation.evaluate(&Vars::from([('x', 2.0), ('y', 3.0)])).unwrap();
+        let expected = Eval {
+            value: 35.0,
+            derivatives: IndexMap::from([('x', 12.0), ('y', 7.0)]),
         };
         assert_eq!(actual, expected);
     }
