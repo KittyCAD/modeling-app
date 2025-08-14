@@ -1,3 +1,5 @@
+// Big thanks to Matt Keeter for inspiring this approach,
+// see https://www.mattkeeter.com/projects/constraints/
 use indexmap::IndexMap;
 
 pub type Label = char;
@@ -23,6 +25,8 @@ impl<F> Evaluate for F where F: FnOnce(&Vars) -> Result<Eval> {}
 
 /// Symbolic equation that can be evaluated.
 pub struct Equation {
+    /// An equation really is nothing more than something to be evaluated.
+    /// So all the significant logic for the equation lives in this closure.
     eval: Box<dyn Evaluate>,
 }
 

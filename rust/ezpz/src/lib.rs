@@ -1,5 +1,6 @@
-use crate::datatypes::*;
 use kittycad_modeling_cmds::shared::Angle;
+
+use crate::datatypes::*;
 
 pub mod datatypes;
 pub mod equations;
