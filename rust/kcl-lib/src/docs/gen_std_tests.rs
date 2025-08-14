@@ -240,6 +240,7 @@ fn generate_type_from_kcl(ty: &TyData, file_name: String, example_name: String, 
         "summary": ty.summary,
         "description": ty.description,
         "deprecated": ty.properties.deprecated,
+        "experimental": ty.properties.experimental,
         "examples": examples,
     });
 
@@ -341,6 +342,7 @@ fn generate_function_from_kcl(
         "summary": function.summary,
         "description": function.description,
         "deprecated": function.properties.deprecated,
+        "experimental": function.properties.experimental,
         "fn_signature": function.preferred_name.clone() + &function.fn_signature(),
         "examples": examples,
         "args": args,
@@ -391,6 +393,7 @@ fn generate_const_from_kcl(cnst: &ConstData, file_name: String, example_name: St
         "summary": cnst.summary,
         "description": cnst.description,
         "deprecated": cnst.properties.deprecated,
+        "experimental": cnst.properties.experimental,
         "type_": cnst.ty,
         "type_desc": cnst.ty.as_ref().map(|t| docs_for_type(t, kcl_std).unwrap_or_default()),
         "examples": examples,

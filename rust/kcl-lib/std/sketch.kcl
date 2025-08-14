@@ -352,10 +352,12 @@ export fn circle(
 /// Construct a 2-dimensional ellipse, of the specified major/minor radius, centered at the provided (x, y) point.
 ///
 /// ```
+/// @settings(experimentalFeatures = allow)
+///
 /// exampleSketch = startSketchOn(XY)
 ///   |> ellipse(center = [0, 0], majorRadius = 50, minorRadius = 20)
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, experimental = true)
 export fn ellipse(
   /// Sketch to extend, or plane or surface to sketch on.
   @sketchOrSurface: Sketch | Plane | Face,
@@ -1451,7 +1453,7 @@ export fn lastSegY(
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
-///     angle = 60,
+///     angle = 60deg,
 ///     length = 10,
 ///     tag = $thing,
 ///   )
@@ -1573,7 +1575,7 @@ export fn tangentToEnd(
 /// ```kcl
 /// sketch001 = startSketchOn(XY)
 ///  |> startProfile(at = [5, 2])
-///  |> angledLine(angle = 120, length = 50 , tag = $seg01)
+///  |> angledLine(angle = 120deg, length = 50 , tag = $seg01)
 ///  |> angledLine(angle = segAng(seg01) + 120deg, length = 50 )
 ///  |> line(end = profileStart(%))
 ///  |> close()
@@ -1590,7 +1592,7 @@ export fn profileStart(
 /// ```kcl
 /// sketch001 = startSketchOn(XY)
 ///  |> startProfile(at = [5, 2])
-///  |> angledLine(angle = -26.6, length = 50)
+///  |> angledLine(angle = -26.6deg, length = 50)
 ///  |> angledLine(angle = 90deg, length = 50)
 ///  |> angledLine(angle = 30deg, endAbsoluteX = profileStartX(%))
 /// ```
@@ -2074,6 +2076,8 @@ export fn subtract2d(
 /// Add a conic section to an existing sketch.
 ///
 /// ```kcl
+/// @settings(experimentalFeatures = allow)
+///
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> conic(
@@ -2085,7 +2089,7 @@ export fn subtract2d(
 ///   |> close()
 /// example = extrude(exampleSketch, length = 10)
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, experimental = true)
 export fn conic(
   /// Which sketch should this path be added to?
   @sketch: Sketch,
@@ -2110,6 +2114,8 @@ export fn conic(
 /// Add a parabolic segment to an existing sketch.
 ///
 /// ```kcl
+/// @settings(experimentalFeatures = allow)
+///
 /// exampleSketch = startSketchOn(XY)
 ///   |> startProfile(at = [0,0])
 ///   |> parabolic(
@@ -2118,7 +2124,7 @@ export fn conic(
 ///   )
 ///   |>close()
 ///```
-@(impl = std_rust)
+@(impl = std_rust, experimental = true)
 export fn parabolic(
   /// Which sketch should this path be added to?
   @sketch: Sketch,
@@ -2157,6 +2163,8 @@ export fn parabolicPoint(
 /// Add a hyperbolic section to an existing sketch.
 /// 
 /// ```kcl
+/// @settings(experimentalFeatures = allow)
+///
 /// exampleSketch = startSketchOn(XY)
 ///   |> startProfile(at = [0,0])
 ///   |> hyperbolic(
@@ -2167,7 +2175,7 @@ export fn parabolicPoint(
 ///   )
 ///   |>close()
 ///```
-@(impl = std_rust)
+@(impl = std_rust, experimental = true)
 export fn hyperbolic(
   /// Which sketch should this path be added to?
   @sketch: Sketch,
@@ -2207,17 +2215,19 @@ export fn hyperbolicPoint(
 /// Add an elliptic section to an existing sketch.
 ///
 /// ```kcl
+/// @settings(experimentalFeatures = allow)
+///
 /// majorRadius = 2
 /// minorRadius = 1
 /// ellip = ellipticPoint(majorRadius, minorRadius, x = 2)
 ///
 /// exampleSketch = startSketchOn(XY)
 ///    |> startProfile(at = ellip, tag = $start)
-///    |> elliptic(center = [0, 0], angleStart = segAng(start), angleEnd = 160, majorRadius, minorRadius)
+///    |> elliptic(center = [0, 0], angleStart = segAng(start), angleEnd = 160deg, majorRadius, minorRadius)
 ///    |> close()
 /// example = extrude(exampleSketch, length = 10)
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, experimental = true)
 export fn elliptic(
   /// Which sketch should this path be added to?
   @sketch: Sketch,
