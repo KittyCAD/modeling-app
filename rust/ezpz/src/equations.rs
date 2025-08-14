@@ -92,6 +92,14 @@ impl std::ops::Add for Equation {
     }
 }
 
+impl std::ops::Sub for Equation {
+    type Output = Self;
+
+    fn sub(self, rhs: Self) -> Self::Output {
+        self + (-rhs)
+    }
+}
+
 impl std::ops::Mul for Equation {
     type Output = Self;
 
@@ -184,8 +192,9 @@ fn union_with<K: std::hash::Hash + Eq, V: Copy>(
     out.reserve(b.len());
     for (b_key, b_val) in b {
         if let Some(a_val) = out.get(&b_key) {
-            // TODO: This requires a copy unfortunately.
-            // Can probably remove it if we stop using IndexMap.
+            // This requires a copy, but it's actually faster
+            // to copy one f64 than to redo the IndexMap by shifting/swapping.
+            // At least on the current benchmark suite. Feel free to measure alternatives.
             out.insert(b_key, f(*a_val, b_val));
         } else {
             out.insert(b_key, b_val);
