@@ -1,3 +1,4 @@
+@reference "../../index.css";
 .toggle {
   @apply flex items-center gap-2 w-fit;
   @apply text-chalkboard-110;

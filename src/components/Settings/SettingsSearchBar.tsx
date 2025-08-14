@@ -88,11 +88,11 @@ export function SettingsSearchBar() {
   return (
     <Combobox onChange={handleSelection}>
       <div className="relative group">
-        <div className="flex items-center gap-2 py-0.5 pr-1 pl-2 rounded border-solid border border-primary/10 dark:border-chalkboard-80 focus-within:border-primary dark:focus-within:border-chalkboard-30">
+        <div className="flex items-center gap-2 py-0.5 pr-1 pl-2 rounded-sm border-solid border border-primary/10 dark:border-chalkboard-80 focus-within:border-primary dark:focus-within:border-chalkboard-30">
           <Combobox.Input
             ref={inputRef}
             onChange={(event) => setQuery(event.target.value)}
-            className="w-full bg-transparent focus:outline-none selection:bg-primary/20 dark:selection:bg-primary/40 dark:focus:outline-none"
+            className="w-full bg-transparent focus:outline-hidden selection:bg-primary/20 dark:selection:bg-primary/40 dark:focus:outline-hidden"
             placeholder="Search settings (Ctrl+.)"
             autoCapitalize="off"
             autoComplete="off"
@@ -102,17 +102,17 @@ export function SettingsSearchBar() {
           />
           <CustomIcon
             name="search"
-            className="w-5 h-5 rounded-sm bg-primary/10 text-primary group-focus-within:bg-primary group-focus-within:text-chalkboard-10"
+            className="w-5 h-5 rounded-xs bg-primary/10 text-primary group-focus-within:bg-primary group-focus-within:text-chalkboard-10"
           />
         </div>
-        <Combobox.Options className="absolute top-full mt-2 right-0 w-80 overflow-y-auto z-50 max-h-96 cursor-pointer bg-chalkboard-10 dark:bg-chalkboard-100 border border-solid border-primary dark:border-chalkboard-30 rounded">
+        <Combobox.Options className="absolute top-full mt-2 right-0 w-80 overflow-y-auto z-50 max-h-96 cursor-pointer bg-chalkboard-10 dark:bg-chalkboard-100 border border-solid border-primary dark:border-chalkboard-30 rounded-sm">
           {searchResults?.map((option) => (
             <Combobox.Option
               key={`${option.category}-${option.name}-${option.level}`}
               value={option}
               className="flex flex-col items-start gap-2 px-4 py-2 ui-active:bg-primary/10 dark:ui-active:bg-chalkboard-90"
             >
-              <p className="flex-grow text-base capitalize m-0 leading-none">
+              <p className="grow text-base capitalize m-0 leading-none">
                 {option.level} ·{' '}
                 {decamelize(option.category, { separator: ' ' })} ·{' '}
                 {option.displayName}

@@ -26,7 +26,7 @@ export function ActionButtonDropdown({
   children,
   ...props
 }: ActionButtonSplitProps) {
-  const baseClassNames = `action-button p-0 m-0 group mono text-xs leading-none flex items-center gap-2 rounded-sm border-solid border border-chalkboard-30 hover:border-chalkboard-40 enabled:dark:border-chalkboard-70 dark:hover:border-chalkboard-60 dark:bg-chalkboard-90/50 text-chalkboard-100 dark:text-chalkboard-10`
+  const baseClassNames = `action-button p-0 m-0 group mono text-xs leading-none flex items-center gap-2 rounded-xs border-solid border border-chalkboard-30 hover:border-chalkboard-40 dark:enabled:border-chalkboard-70 dark:hover:border-chalkboard-60 dark:bg-chalkboard-90/50 text-chalkboard-100 dark:text-chalkboard-10`
   return (
     <Popover
       className={`${baseClassNames} ${className}`}
@@ -37,10 +37,10 @@ export function ActionButtonDropdown({
           {children}
           <Popover.Button
             className={
-              '!border-transparent dark:!border-transparent ' +
+              'border-transparent! dark:border-transparent! ' +
               'bg-chalkboard-transparent dark:bg-transparent disabled:bg-transparent dark:disabled:bg-transparent ' +
               'enabled:hover:bg-chalkboard-10 dark:enabled:hover:bg-chalkboard-100 ' +
-              'pressed:!bg-primary pressed:enabled:hover:!text-chalkboard-10 p-0 m-0 rounded-none !outline-none ui-open:border-primary ui-open:bg-primary'
+              'pressed:!bg-primary pressed:enabled:hover:!text-chalkboard-10 p-0 m-0 rounded-none outline-hidden! ui-open:border-primary ui-open:bg-primary'
             }
             data-onboarding-id={`${props.name}-dropdown-button`}
           >
@@ -48,7 +48,7 @@ export function ActionButtonDropdown({
               name="caretDown"
               className={
                 'w-3.5 h-5 text-chalkboard-70 dark:text-chalkboard-40 rounded-none ' +
-                'ui-open:rotate-180 ui-open:!text-chalkboard-10'
+                'ui-open:rotate-180 ui-open:text-chalkboard-10!'
               }
             />
             <span className="sr-only">
@@ -57,14 +57,14 @@ export function ActionButtonDropdown({
             <Tooltip
               position="bottom"
               hoverOnly
-              wrapperClassName="ui-open:!hidden"
+              wrapperClassName="ui-open:hidden!"
             >
               {dropdownTooltipText}
             </Tooltip>
           </Popover.Button>
           <Popover.Panel
             as="ul"
-            className="!pointer-events-auto absolute z-20 left-1/2 -translate-x-1/2 top-full mt-4 w-fit max-w-[280px] max-h-[80vh] overflow-y-auto py-2 flex flex-col align-stretch text-inherit dark:text-chalkboard-10 bg-chalkboard-10 dark:bg-chalkboard-100 rounded shadow-lg border border-solid border-chalkboard-30 dark:border-chalkboard-80 text-sm m-0 p-0"
+            className="pointer-events-auto! absolute z-20 left-1/2 -translate-x-1/2 top-full mt-4 w-fit max-w-[280px] max-h-[80vh] overflow-y-auto py-2 flex flex-col align-stretch text-inherit dark:text-chalkboard-10 bg-chalkboard-10 dark:bg-chalkboard-100 rounded-sm shadow-lg border border-solid border-chalkboard-30 dark:border-chalkboard-80 text-sm m-0 p-0"
             unmount={false}
           >
             {splitMenuItems.map((item, index) => (
@@ -110,13 +110,13 @@ function ActionButtonDropdownListItem({
       <button
         type="button"
         onClick={onClick}
-        className="group/button flex items-center gap-6 px-3 py-1 font-sans text-xs hover:bg-primary/10 dark:hover:bg-chalkboard-80 border-0 m-0 w-full rounded-none text-left disabled:!bg-transparent dark:disabled:text-chalkboard-60"
+        className="group/button flex items-center gap-6 px-3 py-1 font-sans text-xs hover:bg-primary/10 dark:hover:bg-chalkboard-80 border-0 m-0 w-full rounded-none text-left disabled:bg-transparent! dark:disabled:text-chalkboard-60"
         tabIndex={-1}
         disabled={item.disabled}
         data-testid={'dropdown-' + item.id}
         data-onboarding-id={`${item.id}-dropdown-item`}
       >
-        <span className="capitalize flex-grow text-left">{item.label}</span>
+        <span className="capitalize grow text-left">{item.label}</span>
         {item.status === 'unavailable' ? (
           <div className="flex flex-none items-center gap-1">
             <span className="text-chalkboard-70 dark:text-chalkboard-40">

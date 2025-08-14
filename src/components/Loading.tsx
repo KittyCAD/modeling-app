@@ -219,7 +219,7 @@ const Loading = ({
       {isUnrecoverableError ? (
         <CustomIcon
           name="exclamationMark"
-          className="w-8 h-8 !text-chalkboard-10 bg-destroy-60 rounded-full"
+          className="w-8 h-8 text-chalkboard-10! bg-destroy-60 rounded-full"
         />
       ) : (
         <Spinner />

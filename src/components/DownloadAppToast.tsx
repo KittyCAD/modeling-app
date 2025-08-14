@@ -32,7 +32,7 @@ export function DownloadAppToast({
                 href="https://www.google.com/chrome/"
                 rel="noopener noreferrer"
                 target="_blank"
-                className="!text-warn-80 dark:!text-warn-80 dark:hover:!text-warn-70 underline"
+                className="text-warn-80! dark:text-warn-80! dark:hover:text-warn-70! underline"
               >
                 this link
               </a>{' '}

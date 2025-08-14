@@ -149,7 +149,7 @@ export default function CommandBarSelectionMixedInput({
           <button
             type="button"
             onClick={() => onSubmit(null)}
-            className="mt-2 px-4 py-2 rounded border border-chalkboard-30 text-chalkboard-90 dark:text-chalkboard-10 hover:bg-chalkboard-10 dark:hover:bg-chalkboard-90 transition-colors"
+            className="mt-2 px-4 py-2 rounded-sm border border-chalkboard-30 text-chalkboard-90 dark:text-chalkboard-10 hover:bg-chalkboard-10 dark:hover:bg-chalkboard-90 transition-colors"
           >
             Continue without selection
           </button>

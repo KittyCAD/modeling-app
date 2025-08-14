@@ -29,14 +29,14 @@ function NetworkMachinesPopoverContent({
 }: { machines: components['schemas']['MachineInfoResponse'][] }) {
   return (
     <div
-      className="absolute left-2 bottom-full mb-1 w-64 flex flex-col gap-1 align-stretch bg-chalkboard-10 dark:bg-chalkboard-90 rounded shadow-lg border border-solid border-chalkboard-20/50 dark:border-chalkboard-80/50 text-sm"
+      className="absolute left-2 bottom-full mb-1 w-64 flex flex-col gap-1 align-stretch bg-chalkboard-10 dark:bg-chalkboard-90 rounded-sm shadow-lg border border-solid border-chalkboard-20/50 dark:border-chalkboard-80/50 text-sm"
       data-testid="network-popover"
     >
       <div className="flex items-center justify-between p-2 rounded-t-sm bg-chalkboard-20 dark:bg-chalkboard-80">
         <h2 className="text-sm font-sans font-normal">Network machines</h2>
         <p
           data-testid="network"
-          className="font-bold text-xs uppercase px-2 py-1 rounded-sm"
+          className="font-bold text-xs uppercase px-2 py-1 rounded-xs"
         >
           {machines.length}
         </p>

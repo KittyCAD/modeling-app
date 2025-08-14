@@ -127,7 +127,7 @@ export const CreateNewVariable = ({
           autoFocus={true}
           autoCapitalize="off"
           autoCorrect="off"
-          className={`flex-1 sm:text-sm px-2 py-1 rounded-sm bg-chalkboard-10 dark:bg-chalkboard-90 text-chalkboard-90 dark:text-chalkboard-10 ${
+          className={`flex-1 sm:text-sm px-2 py-1 rounded-xs bg-chalkboard-10 dark:bg-chalkboard-90 text-chalkboard-90 dark:text-chalkboard-10 ${
             !shouldCreateVariable ? 'opacity-50' : ''
           }`}
           value={newVariableName}
@@ -137,7 +137,7 @@ export const CreateNewVariable = ({
         />
       </div>
       {!isNewVariableNameUnique && (
-        <div className="bg-pink-200 dark:bg-chalkboard-80 dark:text-pink-200 rounded px-2 py-0.5 text-xs">
+        <div className="bg-pink-200 dark:bg-chalkboard-80 dark:text-pink-200 rounded-sm px-2 py-0.5 text-xs">
           Sorry, that's not a unique variable name. Please try something else
         </div>
       )}

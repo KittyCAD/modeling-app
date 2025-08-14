@@ -152,7 +152,7 @@ export const CommandBar = () => {
           leaveTo="opacity-0 scale-95"
         >
           <WrapperComponent.Panel
-            className="relative z-50 pointer-events-auto w-full max-w-xl pt-2 mx-auto border rounded rounded-tl-none shadow-lg bg-chalkboard-10 dark:bg-chalkboard-100 dark:border-chalkboard-70"
+            className="relative z-50 pointer-events-auto w-full max-w-xl pt-2 mx-auto border rounded-sm rounded-tl-none shadow-lg bg-chalkboard-10 dark:bg-chalkboard-100 dark:border-chalkboard-70"
             as="div"
             data-testid="command-bar"
           >
@@ -174,7 +174,7 @@ export const CommandBar = () => {
                 <CommandBarReview stepBack={stepBack} />
               )
             )}
-            <div className="flex flex-col gap-2 !absolute left-auto right-full top-[-3px] m-2.5 p-0 border-none bg-transparent hover:bg-transparent">
+            <div className="flex flex-col gap-2 absolute! left-auto right-full top-[-3px] m-2.5 p-0 border-none bg-transparent hover:bg-transparent">
               <button
                 data-testid="command-bar-close-button"
                 onClick={() => commandBarActor.send({ type: 'Close' })}
@@ -182,11 +182,11 @@ export const CommandBar = () => {
               >
                 <CustomIcon
                   name="close"
-                  className="w-5 h-5 rounded-sm bg-destroy-10 text-destroy-80 dark:bg-destroy-80 dark:text-destroy-10 group-hover:brightness-110"
+                  className="w-5 h-5 rounded-xs bg-destroy-10 text-destroy-80 dark:bg-destroy-80 dark:text-destroy-10 group-hover:brightness-110"
                 />
                 <Tooltip position="bottom">
                   Cancel{' '}
-                  <kbd className="hotkey ml-4 dark:!bg-chalkboard-80">esc</kbd>
+                  <kbd className="hotkey ml-4 dark:bg-chalkboard-80!">esc</kbd>
                 </Tooltip>
               </button>
             </div>

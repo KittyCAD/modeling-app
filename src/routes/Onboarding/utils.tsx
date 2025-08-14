@@ -39,7 +39,7 @@ import { useModelingContext } from '@src/hooks/useModelingContext'
 import type { SidebarType } from '@src/components/ModelingSidebar/ModelingPanes'
 
 export const kbdClasses =
-  'py-0.5 px-1 text-sm rounded bg-chalkboard-10 dark:bg-chalkboard-100 border border-chalkboard-50 border-b-2'
+  'py-0.5 px-1 text-sm rounded-sm bg-chalkboard-10 dark:bg-chalkboard-100 border border-chalkboard-50 border-b-2'
 
 // Get the 1-indexed step number of the current onboarding step
 function getStepNumber(
@@ -55,7 +55,7 @@ export const OnboardingCard = ({
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
-    className={`relative max-w-3xl min-w-80 cursor-auto bg-chalkboard-10 dark:bg-chalkboard-90 py-6 px-8 rounded border border-chalkboard-50 dark:border-chalkboard-80 shadow-lg ${className || ''}`}
+    className={`relative max-w-3xl min-w-80 cursor-auto bg-chalkboard-10 dark:bg-chalkboard-90 py-6 px-8 rounded-sm border border-chalkboard-50 dark:border-chalkboard-80 shadow-lg ${className || ''}`}
     {...props}
   >
     {children}
@@ -186,10 +186,10 @@ export function OnboardingButtons({
       >
         <CustomIcon
           name="close"
-          className="w-5 h-5 rounded-sm bg-destroy-10 text-destroy-80 dark:bg-destroy-80 dark:text-destroy-10 group-hover:brightness-110"
+          className="w-5 h-5 rounded-xs bg-destroy-10 text-destroy-80 dark:bg-destroy-80 dark:text-destroy-10 group-hover:brightness-110"
         />
         <Tooltip position="bottom">
-          Dismiss <kbd className="hotkey ml-4 dark:!bg-chalkboard-80">esc</kbd>
+          Dismiss <kbd className="hotkey ml-4 dark:bg-chalkboard-80!">esc</kbd>
         </Tooltip>
       </button>
       <div

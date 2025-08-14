@@ -681,7 +681,7 @@ export const ProjectExplorer = ({
       document.removeEventListener('keydown', keyDownHandler)
       fileExplorerContainer.current?.removeEventListener('focus', handleFocus)
       // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-      fileExplorerContainer.current?.removeEventListener('blur', handleBlur)
+      fileExplorerContainer.current?.removeEventListener('blur-sm', handleBlur)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [])

@@ -286,7 +286,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
                   </p>
                   {displayedName !== user.email && (
                     <p
-                      className="m-0 overflow-ellipsis overflow-hidden text-chalkboard-70 dark:text-chalkboard-40 text-xs"
+                      className="m-0 text-ellipsis overflow-hidden text-chalkboard-70 dark:text-chalkboard-40 text-xs"
                       data-testid="email"
                     >
                       {user.email}
@@ -309,7 +309,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
                     <li key={id} className="contents">
                       <ActionButton
                         {...rest}
-                        className="!font-sans flex items-center gap-2 rounded-sm py-1.5 px-2 cursor-pointer hover:bg-chalkboard-20 dark:hover:bg-chalkboard-80 !border-none text-left focus-visible:outline-appForeground"
+                        className="font-sans! flex items-center gap-2 rounded-xs py-1.5 px-2 cursor-pointer hover:bg-chalkboard-20 dark:hover:bg-chalkboard-80 border-none! text-left focus-visible:outline-appForeground"
                         onMouseUp={() => {
                           close()
                         }}

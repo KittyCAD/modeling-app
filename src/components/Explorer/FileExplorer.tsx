@@ -169,7 +169,7 @@ function RenameForm({
           autoCapitalize="off"
           autoCorrect="off"
           placeholder={formattedPlaceHolder}
-          className="p-1 overflow-hidden whitespace-nowrap text-ellipsis py-1 bg-transparent outline outline-primary -outline-offset-4 text-chalkboard-100 placeholder:text-chalkboard-70 dark:text-chalkboard-10 dark:placeholder:text-chalkboard-50 focus:ring-0"
+          className="p-1 overflow-hidden whitespace-nowrap text-ellipsis py-1 bg-transparent outline-solid outline-primary -outline-offset-4 text-chalkboard-100 placeholder:text-chalkboard-70 dark:text-chalkboard-10 dark:placeholder:text-chalkboard-50 focus:ring-0"
           onKeyDown={handleKeyDown}
           onBlur={onSubmit}
         />
@@ -234,8 +234,8 @@ export const FileExplorerRowElement = ({
 
   const outlineCSS =
     isIndexActive && !isMyRowRenaming
-      ? 'outline outline-1 outline-primary'
-      : 'outline-0 outline-none'
+      ? 'outline-solid outline-1 outline-primary'
+      : 'outline-0 outline-hidden'
   // Complaining about role="treeitem" focus but it is reimplemented aria labels
   /* eslint-disable */
   return (
@@ -243,7 +243,7 @@ export const FileExplorerRowElement = ({
       ref={rowElementRef}
       role="treeitem"
       data-testid="file-tree-item"
-      className={`h-5 flex flex-row items-center text-xs cursor-pointer -outline-offset-1 ${outlineCSS} hover:outline hover:outline-1 hover:bg-gray-300/50 hover:bg-gray-300/50 ${isSelected ? 'bg-primary/10' : ''}`}
+      className={`h-5 flex flex-row items-center text-xs cursor-pointer -outline-offset-1 ${outlineCSS} hover:outline-solid hover:outline-1 hover:bg-gray-300/50 hover:bg-gray-300/50 ${isSelected ? 'bg-primary/10' : ''}`}
       data-index={row.domIndex}
       data-last-element={row.domIndex === row.domLength - 1}
       data-parity={row.domIndex % 2 === 0}

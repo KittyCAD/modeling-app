@@ -25,10 +25,10 @@ export const FileExplorerHeaderActions = ({
         data-testid="create-file-button"
         iconStart={{
           icon: 'filePlus',
-          iconClassName: '!text-current',
+          iconClassName: 'text-current!',
           bgClassName: 'bg-transparent',
         }}
-        className="!p-0 !bg-transparent hover:text-primary border-transparent hover:border-primary !outline-none"
+        className="p-0! bg-transparent! hover:text-primary border-transparent hover:border-primary outline-hidden!"
         onClick={onCreateFile}
       >
         <Tooltip position="bottom-right">New File...</Tooltip>
@@ -39,10 +39,10 @@ export const FileExplorerHeaderActions = ({
         data-testid="create-folder-button"
         iconStart={{
           icon: 'folderPlus',
-          iconClassName: '!text-current',
+          iconClassName: 'text-current!',
           bgClassName: 'bg-transparent',
         }}
-        className="!p-0 !bg-transparent hover:text-primary border-transparent hover:border-primary !outline-none"
+        className="p-0! bg-transparent! hover:text-primary border-transparent hover:border-primary outline-hidden!"
         onClick={onCreateFolder}
       >
         <Tooltip position="bottom-right">New Folder...</Tooltip>
@@ -53,10 +53,10 @@ export const FileExplorerHeaderActions = ({
         data-testid="refresh-explorer"
         iconStart={{
           icon: 'subtract',
-          iconClassName: '!text-current',
+          iconClassName: 'text-current!',
           bgClassName: 'bg-transparent',
         }}
-        className="!p-0 !bg-transparent hover:text-primary border-transparent hover:border-primary !outline-none"
+        className="p-0! bg-transparent! hover:text-primary border-transparent hover:border-primary outline-hidden!"
         onClick={onRefreshExplorer}
       >
         <Tooltip position="bottom-right">Refresh Explorer</Tooltip>
@@ -67,10 +67,10 @@ export const FileExplorerHeaderActions = ({
         data-testid="collapse-all-folders-explorer"
         iconStart={{
           icon: 'collapse',
-          iconClassName: '!text-current',
+          iconClassName: 'text-current!',
           bgClassName: 'bg-transparent',
         }}
-        className="!p-0 !bg-transparent hover:text-primary border-transparent hover:border-primary !outline-none"
+        className="p-0! bg-transparent! hover:text-primary border-transparent hover:border-primary outline-hidden!"
         onClick={onCollapseExplorer}
       >
         <Tooltip position="bottom-right">Collapse Folders in Explorer</Tooltip>

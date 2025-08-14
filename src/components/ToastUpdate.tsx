@@ -31,8 +31,8 @@ export function ToastUpdate({
   }
 
   return (
-    <div className="inset-0 z-50 grid place-content-center rounded bg-chalkboard-110/50 shadow-md">
-      <div className="max-w-3xl min-w-[35rem] p-8 rounded bg-chalkboard-10 dark:bg-chalkboard-90">
+    <div className="inset-0 z-50 grid place-content-center rounded-sm bg-chalkboard-110/50 shadow-md">
+      <div className="max-w-3xl min-w-140 p-8 rounded-sm bg-chalkboard-10 dark:bg-chalkboard-90">
         <div className="my-4 flex items-baseline">
           <span
             className="px-3 py-1 text-xl rounded-full bg-primary text-chalkboard-10"
@@ -60,7 +60,7 @@ export function ToastUpdate({
         </div>
         {releaseNotes && (
           <details
-            className="my-4 border border-chalkboard-30 dark:border-chalkboard-60 rounded"
+            className="my-4 border border-chalkboard-30 dark:border-chalkboard-60 rounded-sm"
             open={containsBreakingChanges}
             data-testid="release-notes"
           >

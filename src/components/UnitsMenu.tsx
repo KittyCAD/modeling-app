@@ -26,12 +26,12 @@ export function UnitsMenu() {
           <Popover.Button
             data-testid="units-menu"
             className={`flex items-center gap-2 px-3 py-1 
-        text-xs text-primary bg-chalkboard-10/70 dark:bg-chalkboard-100/80 backdrop-blur-sm 
-        border !border-primary/50 rounded-full`}
+        text-xs text-primary bg-chalkboard-10/70 dark:bg-chalkboard-100/80 backdrop-blur-xs 
+        border border-primary/50! rounded-full`}
           >
-            <div className="w-4 h-[1px] bg-primary relative">
-              <div className="absolute w-[1px] h-[1em] bg-primary left-0 top-1/2 -translate-y-1/2"></div>
-              <div className="absolute w-[1px] h-[1em] bg-primary right-0 top-1/2 -translate-y-1/2"></div>
+            <div className="w-4 h-px bg-primary relative">
+              <div className="absolute w-px h-[1em] bg-primary left-0 top-1/2 -translate-y-1/2"></div>
+              <div className="absolute w-px h-[1em] bg-primary right-0 top-1/2 -translate-y-1/2"></div>
             </div>
             <span className="sr-only">Current units are:&nbsp;</span>
             {fileSettings.defaultLengthUnit ?? DEFAULT_DEFAULT_LENGTH_UNIT}

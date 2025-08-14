@@ -222,7 +222,7 @@ export function ModelingSidebar() {
 
   return (
     <Resizable
-      className={`group z-10 flex flex-col ${pointerEventsCssClass} ${context.store?.openPanes.length ? undefined : '!w-auto'}`}
+      className={`group z-10 flex flex-col ${pointerEventsCssClass} ${context.store?.openPanes.length ? undefined : 'w-auto!'}`}
       defaultSize={{
         width: '550px',
         height: 'auto',
@@ -294,7 +294,7 @@ export function ModelingSidebar() {
         <ul
           id="pane-section"
           className={
-            'ml-[-1px] col-start-2 col-span-1 flex flex-col items-stretch border-x border-chalkboard-30 dark:border-chalkboard-80 ' +
+            '-ml-px col-start-2 col-span-1 flex flex-col items-stretch border-x border-chalkboard-30 dark:border-chalkboard-80 ' +
             (context.store?.openPanes.length >= 1 ? `w-full` : `hidden`)
           }
         >
@@ -356,11 +356,11 @@ function ModelingPaneButton({
   return (
     <div
       id={paneConfig.id + '-button-holder'}
-      className="relative py-[1px]"
+      className="relative py-px"
       data-onboarding-id={`${paneConfig.id}-pane-button`}
     >
       <button
-        className={`group pointer-events-auto flex items-center justify-center border-0 border-r-2 rounded-none border-transparent dark:border-transparent p-2 m-0 !outline-0 ${paneIsOpen ? ' !border-primary' : ''}`}
+        className={`group pointer-events-auto flex items-center justify-center border-0 border-r-2 rounded-none border-transparent dark:border-transparent p-2 m-0 outline-0! ${paneIsOpen ? ' border-primary!' : ''}`}
         onClick={onClick}
         name={paneConfig.sidebarName}
         data-testid={paneConfig.id + SIDEBAR_BUTTON_SUFFIX}
@@ -371,7 +371,7 @@ function ModelingPaneButton({
         <ActionIcon
           icon={paneConfig.icon}
           size={paneConfig.iconSize || 'md'}
-          bgClassName="rounded-sm !bg-transparent"
+          bgClassName="rounded-xs bg-transparent!"
         />
         <span className="sr-only">
           {paneConfig.sidebarName}
@@ -433,10 +433,10 @@ function ResizeHandle(props: HTMLProps<HTMLDivElement>) {
       {...props}
       className={'group/grip absolute inset-0 ' + props.className}
     >
-      <div className="hidden group-hover/grip:block absolute bg-chalkboard-30 dark:bg-chalkboard-70 w-[1px] h-auto left-1/2 top-0 bottom-0" />
+      <div className="hidden group-hover/grip:block absolute bg-chalkboard-30 dark:bg-chalkboard-70 w-px h-auto left-1/2 top-0 bottom-0" />
       <div
         className={
-          'hidden group-hover/grip:block py-1 absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 rounded-sm w-fit group-hover/grip:bg-chalkboard-30 group-hover/grip:dark:bg-chalkboard-70 bg-transparent transition-colors border border-transparent group-hover/grip:border-chalkboard-40 dark:group-hover/grip:border-chalkboard-90 duration-75 transition-ease-out delay-100'
+          'hidden group-hover/grip:block py-1 absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 rounded-xs w-fit group-hover/grip:bg-chalkboard-30 dark:group-hover/grip:bg-chalkboard-70 bg-transparent transition-colors border border-transparent group-hover/grip:border-chalkboard-40 dark:group-hover/grip:border-chalkboard-90 duration-75 transition-ease-out delay-100'
         }
       >
         <CustomIcon className="w-5 -mx-0.5 rotate-90" name="sixDots" />

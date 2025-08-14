@@ -43,7 +43,7 @@ export default function Tooltip({
         wrapperStyle
       )}
     >
-      <div className={`rounded ${styles.tooltip} ${contentClassName || ''}`}>
+      <div className={`rounded-sm ${styles.tooltip} ${contentClassName || ''}`}>
         {children}
       </div>
     </div>

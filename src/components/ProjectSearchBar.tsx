@@ -44,15 +44,15 @@ export function ProjectSearchBar({
 
   return (
     <div className="relative group">
-      <div className="flex items-center gap-2 py-0.5 pl-0.5 pr-2 rounded border-solid border border-primary/10 dark:border-chalkboard-80 focus-within:border-primary dark:focus-within:border-chalkboard-30">
+      <div className="flex items-center gap-2 py-0.5 pl-0.5 pr-2 rounded-sm border-solid border border-primary/10 dark:border-chalkboard-80 focus-within:border-primary dark:focus-within:border-chalkboard-30">
         <CustomIcon
           name="search"
-          className="w-5 h-5 rounded-sm bg-primary/10 dark:bg-transparent text-primary dark:text-chalkboard-10 group-focus-within:bg-primary group-focus-within:text-chalkboard-10"
+          className="w-5 h-5 rounded-xs bg-primary/10 dark:bg-transparent text-primary dark:text-chalkboard-10 group-focus-within:bg-primary group-focus-within:text-chalkboard-10"
         />
         <input
           ref={inputRef}
           onChange={(event) => setQuery(event.target.value)}
-          className="w-full text-sm bg-transparent focus:outline-none selection:bg-primary/20 dark:selection:bg-primary/40 dark:focus:outline-none"
+          className="w-full text-sm bg-transparent focus:outline-hidden selection:bg-primary/20 dark:selection:bg-primary/40 dark:focus:outline-hidden"
           placeholder="Search projects (Ctrl+.)"
           autoCapitalize="off"
           autoComplete="off"

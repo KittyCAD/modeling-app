@@ -57,7 +57,7 @@ const ProgressBar = (props: { max: number; value: number }) => {
   const ratio = props.value / props.max
 
   return (
-    <div className="h-1.5 rounded w-full border-ml-black bg-ml-black border">
+    <div className="h-1.5 rounded-sm w-full border-ml-black bg-ml-black border">
       <div
         data-testid="billing-remaining-progress-bar-inner"
         className="bg-ml-green rounded-full"
@@ -92,10 +92,10 @@ export const BillingRemaining = (props: BillingRemainingProps) => {
     'dark:bg-transparent',
     'select-none',
     'cursor-pointer',
-    '!no-underline',
+    'no-underline!',
     'text-xs',
-    '!text-chalkboard-100',
-    'dark:!text-ml-green',
+    'text-chalkboard-100!',
+    'dark:text-ml-green!',
   ]
 
   return (
@@ -116,7 +116,7 @@ export const BillingRemaining = (props: BillingRemainingProps) => {
             <Spinner className="text-inherit w-4 h-4" />
           ))}
         {billingContext.credits !== Infinity && (
-          <div className={[isFlex ? 'flex-grow' : 'w-9'].join(' ')}>
+          <div className={[isFlex ? 'grow' : 'w-9'].join(' ')}>
             <ProgressBar
               max={billingContext.allowance ?? 1}
               value={billingContext.credits ?? 0}

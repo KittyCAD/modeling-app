@@ -77,7 +77,7 @@ function CommandBarBasicInput({
           ref={inputRef}
           type={arg.inputType}
           required
-          className={`flex-grow ${arg.inputType === 'color' ? 'h-[41px]' : 'px-2 py-1 border-b border-b-chalkboard-100 dark:border-b-chalkboard-80'} !bg-transparent focus:outline-none`}
+          className={`grow ${arg.inputType === 'color' ? 'h-[41px]' : 'px-2 py-1 border-b border-b-chalkboard-100 dark:border-b-chalkboard-80'} bg-transparent! focus:outline-hidden`}
           placeholder="Enter a value"
           defaultValue={defaultValue}
           onKeyDown={(event) => {

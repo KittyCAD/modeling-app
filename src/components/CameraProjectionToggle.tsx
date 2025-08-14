@@ -26,7 +26,7 @@ export function CameraProjectionToggle() {
           },
         })
       }}
-      className={`pointer-events-auto p-0 text-xs text-chalkboard-60 dark:text-chalkboard-40 bg-chalkboard-10/70 hover:bg-chalkboard-10 dark:bg-chalkboard-100/80 dark:hover:bg-chalkboard-100 backdrop-blur-sm 
+      className={`pointer-events-auto p-0 text-xs text-chalkboard-60 dark:text-chalkboard-40 bg-chalkboard-10/70 hover:bg-chalkboard-10 dark:bg-chalkboard-100/80 dark:hover:bg-chalkboard-100 backdrop-blur-xs 
         border border-primary/10 hover:border-primary/50 focus-visible:border-primary/50 rounded-full`}
     >
       <span className="sr-only">Camera projection: </span>
@@ -34,7 +34,7 @@ export function CameraProjectionToggle() {
         <span
           aria-hidden={checked}
           className={
-            'border border-solid m-[-1px] rounded-full px-2 py-1 ' +
+            'border border-solid -m-px rounded-full px-2 py-1 ' +
             (!checked
               ? 'text-primary border-primary -mr-2'
               : 'border-transparent')
@@ -45,7 +45,7 @@ export function CameraProjectionToggle() {
         <span
           aria-hidden={checked}
           className={
-            'border border-solid m-[-1px] rounded-full px-2 py-1 ' +
+            'border border-solid -m-px rounded-full px-2 py-1 ' +
             (checked
               ? 'text-primary border-primary -ml-2'
               : 'border-transparent')

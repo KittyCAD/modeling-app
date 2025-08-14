@@ -201,7 +201,7 @@ const Overlays = () => {
   // Set a large zIndex, the overlay for hover dropdown menu on line segments needs to render
   // over the length labels on the line segments
   return (
-    <div className="absolute inset-0 pointer-events-none z-sketchOverlayDropdown">
+    <div className="absolute inset-0 pointer-events-none z-sketch-overlay-dropdown">
       {Object.entries(context.segmentOverlays)
         .flatMap(([pathToNodeString, overlays]) =>
           overlays.map((b) => ({ pathToNodeString, overlay: b }))
@@ -378,7 +378,7 @@ const SegmentMenu = ({
           <Popover.Button
             data-testid="overlay-menu"
             data-stdlib-fn-name={stdLibFnName}
-            className="bg-chalkboard-10 dark:bg-chalkboard-100 border !border-transparent hover:!border-chalkboard-40 dark:hover:!border-chalkboard-70 ui-open:!border-chalkboard-40 dark:ui-open:!border-chalkboard-70 h-[26px] w-[26px] rounded-sm p-0 m-0"
+            className="bg-chalkboard-10 dark:bg-chalkboard-100 border border-transparent! hover:border-chalkboard-40! dark:hover:border-chalkboard-70! ui-open:border-chalkboard-40! dark:ui-open:border-chalkboard-70! h-[26px] w-[26px] rounded-xs p-0 m-0"
           >
             <CustomIcon name={'three-dots'} />
           </Popover.Button>
@@ -386,11 +386,11 @@ const SegmentMenu = ({
             as="menu"
             className={`absolute ${
               verticalPosition === 'top' ? 'bottom-full' : 'top-full'
-            } z-10 w-36 flex flex-col gap-1 divide-y divide-chalkboard-20 dark:divide-chalkboard-70 align-stretch px-0 py-1 bg-chalkboard-10 dark:bg-chalkboard-100 rounded-sm shadow-lg border border-solid border-chalkboard-20/50 dark:border-chalkboard-80/50`}
+            } z-10 w-36 flex flex-col gap-1 divide-y divide-chalkboard-20 dark:divide-chalkboard-70 align-stretch px-0 py-1 bg-chalkboard-10 dark:bg-chalkboard-100 rounded-xs shadow-lg border border-solid border-chalkboard-20/50 dark:border-chalkboard-80/50`}
           >
             {stdLibFnName !== 'arcTo' && (
               <button
-                className="!border-transparent rounded-sm text-left p-1 text-nowrap"
+                className="border-transparent! rounded-xs text-left p-1 text-nowrap"
                 onClick={() => {
                   send({
                     type: 'Constrain remove constraints',
@@ -402,7 +402,7 @@ const SegmentMenu = ({
               </button>
             )}
             <button
-              className="!border-transparent rounded-sm text-left p-1 text-nowrap"
+              className="border-transparent! rounded-xs text-left p-1 text-nowrap"
               title={
                 dependentSourceRanges.length > 0
                   ? `At least ${dependentSourceRanges.length} segment rely on this segment's tag.`
@@ -533,11 +533,11 @@ const ConstraintSymbol = ({
         data-is-constrained={isConstrained ? 'true' : 'false'}
         className={`${
           implicitDesc
-            ? 'bg-chalkboard-10 dark:bg-chalkboard-100 border-transparent border-0 rounded'
+            ? 'bg-chalkboard-10 dark:bg-chalkboard-100 border-transparent border-0 rounded-sm'
             : isConstrained
-              ? 'bg-chalkboard-10 dark:bg-chalkboard-90 dark:hover:bg-chalkboard-80 border-chalkboard-40 dark:border-chalkboard-70 rounded-sm'
+              ? 'bg-chalkboard-10 dark:bg-chalkboard-90 dark:hover:bg-chalkboard-80 border-chalkboard-40 dark:border-chalkboard-70 rounded-xs'
               : 'bg-primary/30 dark:bg-primary text-primary dark:text-chalkboard-10 dark:border-transparent group-hover:bg-primary/40 group-hover:border-primary/50 group-hover:brightness-125'
-        } h-[26px] w-[26px] rounded-sm relative m-0 p-0`}
+        } h-[26px] w-[26px] rounded-xs relative m-0 p-0`}
         onMouseEnter={() => {
           editorManager.setHighlightRange([range])
         }}
@@ -622,7 +622,7 @@ const ConstraintSymbol = ({
         }}
       >
         <div
-          className="bg-chalkboard-10 dark:bg-chalkboard-90 p-2 px-3 rounded-sm border border-solid border-chalkboard-20 dark:border-chalkboard-80 shadow-sm"
+          className="bg-chalkboard-10 dark:bg-chalkboard-90 p-2 px-3 rounded-xs border border-solid border-chalkboard-20 dark:border-chalkboard-80 shadow-xs"
           data-testid="constraint-symbol-popover"
         >
           {implicitDesc ? (

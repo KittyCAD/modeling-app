@@ -33,8 +33,8 @@ export const ModelingPaneHeader = ({
           <ActionIcon
             icon={icon}
             size="sm"
-            iconClassName="!text-chalkboard-80 dark:!text-chalkboard-30"
-            bgClassName="!bg-transparent"
+            iconClassName="text-chalkboard-80! dark:text-chalkboard-30!"
+            bgClassName="bg-transparent!"
           />
         )}
         <span data-testid={id + '-header'}>{title}</span>
@@ -44,10 +44,10 @@ export const ModelingPaneHeader = ({
         Element="button"
         iconStart={{
           icon: 'close',
-          iconClassName: '!text-current',
+          iconClassName: 'text-current!',
           bgClassName: 'bg-transparent dark:bg-transparent',
         }}
-        className="!p-0 !bg-transparent hover:text-primary border-transparent dark:!border-transparent hover:!border-primary dark:hover:!border-chalkboard-70 !outline-none"
+        className="p-0! bg-transparent! hover:text-primary border-transparent dark:border-transparent! hover:border-primary! dark:hover:border-chalkboard-70! outline-hidden!"
         onClick={() => onClose()}
       >
         <Tooltip position="bottom-right">Close</Tooltip>

@@ -219,7 +219,7 @@ const Home = () => {
   const { searchResults, query, setQuery } = useProjectSearch(projects)
   const sort = searchParams.get('sort_by') ?? 'modified:desc'
   const sidebarButtonClasses =
-    'flex items-center p-2 gap-2 leading-tight border-transparent dark:border-transparent enabled:dark:border-transparent enabled:hover:border-primary/50 enabled:dark:hover:border-inherit active:border-primary dark:bg-transparent hover:bg-transparent'
+    'flex items-center p-2 gap-2 leading-tight border-transparent dark:border-transparent dark:enabled:border-transparent enabled:hover:border-primary/50 dark:enabled:hover:border-inherit active:border-primary dark:bg-transparent hover:bg-transparent'
 
   return (
     <div className="relative flex flex-col items-stretch h-screen w-screen overflow-hidden">
@@ -247,11 +247,11 @@ const Home = () => {
                       kclManager,
                     }).catch(reportRejection)
                   }}
-                  className={`${sidebarButtonClasses} !text-primary flex-1`}
+                  className={`${sidebarButtonClasses} text-primary! flex-1`}
                   iconStart={{
                     icon: 'play',
-                    bgClassName: '!bg-primary rounded-sm',
-                    iconClassName: '!text-white',
+                    bgClassName: 'bg-primary! rounded-xs',
+                    iconClassName: 'text-white!',
                   }}
                   data-testid="home-tutorial-button"
                 >
@@ -263,7 +263,7 @@ const Home = () => {
                   className={`${sidebarButtonClasses} hidden group-hover:flex flex-none ml-auto`}
                   iconStart={{
                     icon: 'close',
-                    bgClassName: '!bg-transparent rounded-sm',
+                    bgClassName: 'bg-transparent! rounded-xs',
                   }}
                   data-testid="onboarding-dismiss"
                 >
@@ -286,7 +286,7 @@ const Home = () => {
                 className={sidebarButtonClasses}
                 iconStart={{
                   icon: 'plus',
-                  bgClassName: '!bg-transparent rounded-sm',
+                  bgClassName: 'bg-transparent! rounded-xs',
                 }}
                 data-testid="home-new-file"
               >
@@ -313,7 +313,7 @@ const Home = () => {
                 className={sidebarButtonClasses}
                 iconStart={{
                   icon: 'sparkles',
-                  bgClassName: '!bg-transparent rounded-sm',
+                  bgClassName: 'bg-transparent! rounded-xs',
                 }}
                 data-testid="home-text-to-cad"
               >
@@ -347,7 +347,7 @@ const Home = () => {
                 className={sidebarButtonClasses}
                 iconStart={{
                   icon: 'importFile',
-                  bgClassName: '!bg-transparent rounded-sm',
+                  bgClassName: 'bg-transparent! rounded-xs',
                 }}
                 data-testid="home-create-from-sample"
               >
@@ -373,7 +373,7 @@ const Home = () => {
                 className={sidebarButtonClasses}
                 iconStart={{
                   icon: 'person',
-                  bgClassName: '!bg-transparent rounded-sm',
+                  bgClassName: 'bg-transparent! rounded-xs',
                 }}
                 data-testid="home-account"
               >
@@ -388,7 +388,7 @@ const Home = () => {
                 className={sidebarButtonClasses}
                 iconStart={{
                   icon: 'glasses',
-                  bgClassName: '!bg-transparent rounded-sm',
+                  bgClassName: 'bg-transparent! rounded-xs',
                 }}
                 data-testid="home-blog"
               >
@@ -457,7 +457,7 @@ function HomeHeader({
                 icon: getSortIcon(sort, 'name'),
                 bgClassName: 'bg-transparent',
                 iconClassName: !sort.includes('name')
-                  ? '!text-chalkboard-90 dark:!text-chalkboard-30'
+                  ? 'text-chalkboard-90! dark:text-chalkboard-30!'
                   : '',
               }}
             >
@@ -478,7 +478,7 @@ function HomeHeader({
                 icon: sort ? getSortIcon(sort, 'modified') : 'arrowDown',
                 bgClassName: 'bg-transparent',
                 iconClassName: !isSortByModified
-                  ? '!text-chalkboard-90 dark:!text-chalkboard-30'
+                  ? 'text-chalkboard-90! dark:text-chalkboard-30!'
                   : '',
               }}
             >
@@ -501,7 +501,7 @@ function HomeHeader({
       {!readWriteProjectDir.value && (
         <section>
           <div className="flex items-center select-none">
-            <div className="flex gap-8 items-center justify-between grow bg-destroy-80 text-white py-1 px-4 my-2 rounded-sm">
+            <div className="flex gap-8 items-center justify-between grow bg-destroy-80 text-white py-1 px-4 my-2 rounded-xs">
               <p className="">{errorMessage(readWriteProjectDir.error)}</p>
               <Link
                 data-testid="project-directory-settings-link"
@@ -552,7 +552,7 @@ function ProjectGrid({
               ))}
             </ul>
           ) : (
-            <p className="p-4 my-8 border border-dashed rounded border-chalkboard-30 dark:border-chalkboard-70">
+            <p className="p-4 my-8 border border-dashed rounded-sm border-chalkboard-30 dark:border-chalkboard-70">
               No projects found
               {projects.length === 0
                 ? ', ready to make your first one?'

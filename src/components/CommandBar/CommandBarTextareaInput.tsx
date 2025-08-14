@@ -42,7 +42,7 @@ function CommandBarTextareaInput({
       onSubmit={handleSubmit}
       ref={formRef}
     >
-      <label className="flex items-start rounded border border-chalkboard-100 dark:border-chalkboard-80">
+      <label className="flex items-start rounded-sm border border-chalkboard-100 dark:border-chalkboard-80">
         <span
           data-testid="cmd-bar-arg-name"
           className="capitalize px-2 py-1 rounded-br bg-chalkboard-100 dark:bg-chalkboard-80 text-chalkboard-10 border-b border-b-chalkboard-100 dark:border-b-chalkboard-80"
@@ -55,7 +55,7 @@ function CommandBarTextareaInput({
           name={arg.inputType}
           ref={inputRef}
           required
-          className="flex-grow mx-2 my-1 !bg-transparent focus:outline-none min-h-12"
+          className="grow mx-2 my-1 bg-transparent! focus:outline-hidden min-h-12"
           placeholder="Enter a value"
           defaultValue={
             (commandBarState.context.argumentsToSubmit[arg.name] as

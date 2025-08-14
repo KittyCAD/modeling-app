@@ -59,7 +59,7 @@ function CommandComboBox({
         <Combobox.Input
           data-testid="cmd-bar-search"
           onChange={(event) => setQuery(event.target.value)}
-          className="w-full bg-transparent focus:outline-none selection:bg-primary/20 dark:selection:bg-primary/40 dark:focus:outline-none"
+          className="w-full bg-transparent focus:outline-hidden selection:bg-primary/20 dark:selection:bg-primary/40 dark:focus:outline-hidden"
           onKeyDown={(event) => {
             if (
               (event.metaKey && event.key === 'k') ||
@@ -90,14 +90,14 @@ function CommandComboBox({
             <Combobox.Option
               key={option.groupId + option.name + (option.displayName || '')}
               value={option}
-              className="flex items-center gap-4 px-4 py-1.5 first:mt-2 last:mb-2 ui-active:bg-primary/10 dark:ui-active:bg-chalkboard-90 ui-disabled:!text-chalkboard-50"
+              className="flex items-center gap-4 px-4 py-1.5 first:mt-2 last:mb-2 ui-active:bg-primary/10 dark:ui-active:bg-chalkboard-90 ui-disabled:text-chalkboard-50!"
               disabled={optionIsDisabled(option)}
               data-testid={`cmd-bar-option`}
             >
               {'icon' in option && option.icon && (
                 <CustomIcon name={option.icon} className="w-5 h-5" />
               )}
-              <div className="flex-grow flex flex-col">
+              <div className="grow flex flex-col">
                 <p className="my-0 leading-tight">
                   {option.displayName || option.name}{' '}
                 </p>

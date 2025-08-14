@@ -50,7 +50,7 @@ root.render(
             maxInlineSize: 'min(480px, 100%)',
           },
           className:
-            'bg-chalkboard-10 dark:bg-chalkboard-90 text-chalkboard-110 dark:text-chalkboard-10 rounded-sm border-chalkboard-20/50 dark:border-chalkboard-80/50',
+            'bg-chalkboard-10 dark:bg-chalkboard-90 text-chalkboard-110 dark:text-chalkboard-10 rounded-xs border-chalkboard-20/50 dark:border-chalkboard-80/50',
           success: {
             iconTheme: {
               primary: 'oklch(89% 0.16 143.4deg)',

@@ -21,7 +21,7 @@ export const useDocumentHasFocus = () => {
     return () => {
       if (globalThis.window && typeof globalThis.window !== 'undefined') {
         globalThis.window.removeEventListener('focus', onFocus)
-        globalThis.window.removeEventListener('blur', onBlur)
+        globalThis.window.removeEventListener('blur-sm', onBlur)
       }
     }
   }, [])

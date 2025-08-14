@@ -18,7 +18,7 @@ export function WasmErrToast({ onDismiss }: WasmErrorToastProps) {
               href="https://webassembly.org/"
               rel="noopener noreferrer"
               target="_blank"
-              className="!text-warn-80 dark:!text-warn-80 dark:hover:!text-warn-70 underline"
+              className="text-warn-80! dark:text-warn-80! dark:hover:text-warn-70! underline"
             >
               WASM or web assembly
             </a>{' '}
@@ -29,7 +29,7 @@ export function WasmErrToast({ onDismiss }: WasmErrorToastProps) {
               href="https://github.com/KittyCAD/modeling-app"
               rel="noopener noreferrer"
               target="_blank"
-              className="!text-warn-80 dark:!text-warn-80 dark:hover:!text-warn-70 underline"
+              className="text-warn-80! dark:text-warn-80! dark:hover:text-warn-70! underline"
             >
               our Github
             </a>

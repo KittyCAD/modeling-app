@@ -8,7 +8,7 @@ export function EnvironmentChip() {
   const shorthand = env().VITE_KITTYCAD_BASE_DOMAIN
   const pool = env().POOL
   return (
-    <div className="flex items-center px-2 py-1 text-xs text-chalkboard-80 dark:text-chalkboard-30 rounded-none border-none hover:bg-chalkboard-30 dark:hover:bg-chalkboard-80 focus:bg-chalkboard-30 dark:focus:bg-chalkboard-80 hover:text-chalkboard-100 dark:hover:text-chalkboard-10 focus:text-chalkboard-100 dark:focus:text-chalkboard-10  focus:outline-none focus-visible:ring-2 focus:ring-primary focus:ring-opacity-50">
+    <div className="flex items-center px-2 py-1 text-xs text-chalkboard-80 dark:text-chalkboard-30 rounded-none border-none hover:bg-chalkboard-30 dark:hover:bg-chalkboard-80 focus:bg-chalkboard-30 dark:focus:bg-chalkboard-80 hover:text-chalkboard-100 dark:hover:text-chalkboard-10 focus:text-chalkboard-100 dark:focus:text-chalkboard-10  focus:outline-hidden focus-visible:ring-2 focus:ring-primary focus:ring-opacity-50">
       <span className="">
         {shorthand} {pool ? `+ Pool` : ''}
       </span>
@@ -19,7 +19,7 @@ export function EnvironmentChip() {
 export function EnvironmentDescription() {
   const fullEnvironmentName = env().VITE_KITTYCAD_BASE_DOMAIN
   return (
-    <div className="absolute left-2 bottom-full mb-1 flex-col gap-1 align-stretch bg-chalkboard-10 dark:bg-chalkboard-90 rounded shadow-lg border border-solid border-chalkboard-20/50 dark:border-chalkboard-80/50 text-sm">
+    <div className="absolute left-2 bottom-full mb-1 flex-col gap-1 align-stretch bg-chalkboard-10 dark:bg-chalkboard-90 rounded-sm shadow-lg border border-solid border-chalkboard-20/50 dark:border-chalkboard-80/50 text-sm">
       <div
         className={`flex flex-col p-2 mb-2 rounded-t-sm bg-chalkboard-20 text-chalkboard-100 dark:bg-chalkboard-80 dark:text-chalkboard-10`}
       >
@@ -27,7 +27,7 @@ export function EnvironmentDescription() {
           <h2 className="text-sm font-sans font-normal">Environment</h2>
           <p
             data-testid="environment"
-            className="text-xs rounded-sm flex flex-row items-center"
+            className="text-xs rounded-xs flex flex-row items-center"
           >
             <ActionButton
               Element="button"
@@ -46,7 +46,7 @@ export function EnvironmentDescription() {
                   })
                 }
               }}
-              iconEnd={{ icon: 'sketch', bgClassName: '!bg-transparent' }}
+              iconEnd={{ icon: 'sketch', bgClassName: 'bg-transparent!' }}
               className="ml-1 py-0.5 pr-0.5"
             >
               {fullEnvironmentName}

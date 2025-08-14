@@ -18,7 +18,7 @@ export const ProjectCardRenameForm = forwardRef(
     return (
       <form {...props}>
         <input
-          className="min-w-0 dark:bg-chalkboard-80 dark:border-chalkboard-40 focus:outline-none"
+          className="min-w-0 dark:bg-chalkboard-80 dark:border-chalkboard-40 focus:outline-hidden"
           type="text"
           data-testid="project-rename-input"
           id="newProjectName"
@@ -41,9 +41,9 @@ export const ProjectCardRenameForm = forwardRef(
             type="submit"
             iconStart={{
               icon: 'checkmark',
-              bgClassName: '!bg-transparent',
+              bgClassName: 'bg-transparent!',
             }}
-            className="!p-0"
+            className="p-0!"
           >
             <Tooltip position="left">Rename project</Tooltip>
           </ActionButton>
@@ -51,10 +51,10 @@ export const ProjectCardRenameForm = forwardRef(
             Element="button"
             iconStart={{
               icon: 'close',
-              iconClassName: 'dark:!text-chalkboard-20',
-              bgClassName: '!bg-transparent',
+              iconClassName: 'dark:text-chalkboard-20!',
+              bgClassName: 'bg-transparent!',
             }}
-            className="!p-0"
+            className="p-0!"
             onClick={onDismiss}
           >
             <Tooltip position="left">Cancel</Tooltip>

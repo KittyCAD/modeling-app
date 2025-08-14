@@ -10,7 +10,7 @@ export function ToastUnsupportedSelection({
   const githubIssueUrl = 'https://github.com/KittyCAD/modeling-app/issues/6368'
 
   return (
-    <div className="inset-0 z-50 grid place-content-center rounded bg-chalkboard-10 dark:bg-chalkboard-90 shadow-md p-3">
+    <div className="inset-0 z-50 grid place-content-center rounded-sm bg-chalkboard-10 dark:bg-chalkboard-90 shadow-md p-3">
       <section>
         <p className="text-sm text-chalkboard-70 dark:text-chalkboard-30">
           Some faces and edges are not currently selectable.{' '}

@@ -34,10 +34,10 @@ export const MemoryPaneMenu = () => {
         Element="button"
         iconStart={{
           icon: 'clipboardPlus',
-          iconClassName: '!text-current',
+          iconClassName: 'text-current!',
           bgClassName: 'bg-transparent',
         }}
-        className="!p-0 !bg-transparent hover:text-primary border-transparent hover:border-primary !outline-none"
+        className="p-0! bg-transparent! hover:text-primary border-transparent hover:border-primary outline-hidden!"
         onClick={copyProgramMemoryToClipboard}
       >
         <Tooltip position="bottom-right">Copy to clipboard</Tooltip>

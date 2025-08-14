@@ -34,11 +34,11 @@ export function Toolbar({
 }: React.HTMLAttributes<HTMLElement>) {
   const { state, send, context } = useModelingContext()
   const iconClassName =
-    'group-disabled:text-chalkboard-50 !text-inherit dark:group-enabled:group-hover:!text-inherit'
-  const bgClassName = '!bg-transparent'
+    'group-disabled:text-chalkboard-50 text-inherit! dark:group-hover:group-enabled:text-inherit!'
+  const bgClassName = 'bg-transparent!'
   const buttonBgClassName =
     'bg-chalkboard-transparent dark:bg-transparent disabled:bg-transparent dark:disabled:bg-transparent enabled:hover:bg-chalkboard-10 dark:enabled:hover:bg-chalkboard-100 pressed:!bg-primary pressed:enabled:hover:!text-chalkboard-10'
-  const buttonBorderClassName = '!border-transparent'
+  const buttonBorderClassName = 'border-transparent!'
 
   const isInTemporaryWorkspace = codeManager.isBufferMode
 
@@ -104,7 +104,7 @@ export function Toolbar({
 
   const tooltipContentClassName = !showRichContent
     ? ''
-    : '!text-left text-wrap !text-xs !p-0 !pb-2 flex !max-w-none !w-72 flex-col items-stretch'
+    : 'text-left! text-wrap text-xs! p-0! pb-2! flex max-w-none! w-72! flex-col items-stretch'
   const richContentTimeout = useRef<number | null>(null)
   const richContentClearTimeout = useRef<number | null>(null)
   // On mouse enter, show rich content after a 1s delay
@@ -207,13 +207,13 @@ export function Toolbar({
     <menu
       data-current-mode={currentMode}
       data-onboarding-id="toolbar"
-      className="z-[19] max-w-full whitespace-nowrap rounded-b px-2 py-1 mx-auto bg-chalkboard-10 dark:bg-chalkboard-90 relative border border-chalkboard-30 dark:border-chalkboard-80 border-t-0 shadow-sm"
+      className="z-19 max-w-full whitespace-nowrap rounded-b px-2 py-1 mx-auto bg-chalkboard-10 dark:bg-chalkboard-90 relative border border-chalkboard-30 dark:border-chalkboard-80 border-t-0 shadow-xs"
     >
       <ul
         {...props}
         ref={toolbarButtonsRef}
         className={
-          'has-[[aria-expanded=true]]:!pointer-events-none m-0 py-1 rounded-l-sm flex gap-1.5 items-center ' +
+          'has-aria-expanded:pointer-events-none! m-0 py-1 rounded-l-sm flex gap-1.5 items-center ' +
           className
         }
       >
@@ -224,7 +224,7 @@ export function Toolbar({
             return (
               <div
                 key={'break-' + i}
-                className="h-5 w-[1px] block bg-chalkboard-30 dark:bg-chalkboard-80"
+                className="h-5 w-px block bg-chalkboard-30 dark:bg-chalkboard-80"
               />
             )
           } else if (isToolbarItemResolvedDropdown(maybeIconConfig)) {
@@ -249,10 +249,10 @@ export function Toolbar({
                 className={
                   (maybeIconConfig.array[0].alwaysDark
                     ? 'dark bg-chalkboard-90 '
-                    : '!bg-transparent ') +
+                    : 'bg-transparent! ') +
                   'group/wrapper ' +
                   buttonBorderClassName +
-                  ' relative group !gap-0'
+                  ' relative group gap-0!'
                 }
                 splitMenuItems={maybeIconConfig.array.map((itemConfig) => ({
                   id: itemConfig.id,
@@ -287,7 +287,7 @@ export function Toolbar({
                       bgClassName: bgClassName,
                     }}
                     className={
-                      '!border-transparent !px-0 pressed:!text-chalkboard-10 pressed:enabled:hovered:!text-chalkboard-10 ' +
+                      'border-transparent! px-0! pressed:!text-chalkboard-10 pressed:enabled:hovered:!text-chalkboard-10 ' +
                       buttonBgClassName
                     }
                     aria-pressed={selectedIcon.isActive}
@@ -310,7 +310,7 @@ export function Toolbar({
                     <ToolbarItemTooltip
                       itemConfig={selectedIcon}
                       configCallbackProps={configCallbackProps}
-                      wrapperClassName="ui-open:!hidden"
+                      wrapperClassName="ui-open:hidden!"
                       contentClassName={tooltipContentClassName}
                     >
                       {showRichContent ? (
@@ -358,7 +358,7 @@ export function Toolbar({
                   buttonBorderClassName +
                   ' ' +
                   buttonBgClassName +
-                  (!itemConfig.showTitle ? ' !px-0' : '')
+                  (!itemConfig.showTitle ? ' px-0!' : '')
                 }
                 name={itemConfig.title}
                 // aria-description is still in ARIA 1.3 draft.
@@ -404,14 +404,14 @@ export function Toolbar({
             <button
               data-testid="tws-save"
               onClick={onClickSave}
-              className="mt-2 py-1 rounded-sm border-solid border border-chalkboard-30 hover:border-chalkboard-40 dark:hover:border-chalkboard-60 dark:bg-chalkboard-90/50 text-chalkboard-100 dark:text-chalkboard-10 bg-chalkboard-10 dark:bg-chalkboard-90 px-2"
+              className="mt-2 py-1 rounded-xs border-solid border border-chalkboard-30 hover:border-chalkboard-40 dark:hover:border-chalkboard-60 dark:bg-chalkboard-90/50 text-chalkboard-100 dark:text-chalkboard-10 bg-chalkboard-10 dark:bg-chalkboard-90 px-2"
             >
               Save
             </button>
           </div>
         )}
         {state.matches('Sketch no face') && (
-          <div className="mt-2 py-1 px-2 bg-chalkboard-10 dark:bg-chalkboard-90 border border-chalkboard-20 dark:border-chalkboard-80 rounded shadow-lg">
+          <div className="mt-2 py-1 px-2 bg-chalkboard-10 dark:bg-chalkboard-90 border border-chalkboard-20 dark:border-chalkboard-80 rounded-sm shadow-lg">
             <p className="text-xs">Select a plane or face to start sketching</p>
           </div>
         )}
@@ -467,7 +467,7 @@ const ToolbarItemTooltip = memo(function ToolbarItemContents({
       }
       hoverOnly
       position="bottom"
-      wrapperClassName={'!p-4 !pointer-events-auto ' + wrapperClassName}
+      wrapperClassName={'p-4! pointer-events-auto! ' + wrapperClassName}
       contentClassName={contentClassName}
     >
       {children}
@@ -606,7 +606,7 @@ const ToolbarItemTooltipRichContent = ({
                   onClick={openExternalBrowserIfDesktop(link.url)}
                   target="_blank"
                   rel="noreferrer"
-                  className="flex items-center rounded-sm p-1 no-underline text-inherit hover:bg-primary/10 hover:text-primary dark:hover:bg-chalkboard-70 dark:hover:text-inherit"
+                  className="flex items-center rounded-xs p-1 no-underline text-inherit hover:bg-primary/10 hover:text-primary dark:hover:bg-chalkboard-70 dark:hover:text-inherit"
                 >
                   <span className="flex-1">Open {link.label}</span>
                   <CustomIcon name="link" className="w-4 h-4" />

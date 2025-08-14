@@ -97,7 +97,7 @@ function BillingStatusBarItem() {
           position="top"
           contentClassName="text-xs"
           hoverOnly
-          wrapperClassName="ui-open:!hidden"
+          wrapperClassName="ui-open:hidden!"
         >
           Text-to-CAD credits
         </Tooltip>
