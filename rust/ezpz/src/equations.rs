@@ -75,16 +75,16 @@ impl std::ops::Add for Equation {
             let a = self;
             let b = rhs;
             let Eval {
-                value: ra,
+                value: va,
                 derivatives: das,
             } = a.evaluate(vars)?;
             let Eval {
-                value: rb,
+                value: vb,
                 derivatives: dbs,
             } = b.evaluate(vars)?;
             let derivatives = union_with(das, dbs, |a, b| a + b);
             Ok(Eval {
-                value: ra + rb,
+                value: va + vb,
                 derivatives,
             })
         };
@@ -108,22 +108,22 @@ impl std::ops::Mul for Equation {
             let a = self;
             let b = rhs;
             let Eval {
-                value: ra,
+                value: va,
                 derivatives: mut das,
             } = a.evaluate(vars)?;
             let Eval {
-                value: rb,
+                value: vb,
                 derivatives: mut dbs,
             } = b.evaluate(vars)?;
             // Product rule. Reuse storage for derivatives of A and B
             // so we don't have to reallocate. This saves 30% of time
             // when evaluating on our benchmarks, compared to
             // mapping over the dict and recollecting.
-            das.values_mut().for_each(|x| *x *= rb);
-            dbs.values_mut().for_each(|x| *x *= ra);
+            das.values_mut().for_each(|d| *d *= vb);
+            dbs.values_mut().for_each(|d| *d *= va);
             let derivatives = union_with(das, dbs, |a, b| a + b);
             Ok(Eval {
-                value: ra * rb,
+                value: va * vb,
                 derivatives,
             })
         };
@@ -139,24 +139,24 @@ impl std::ops::Div for Equation {
             let a = self;
             let b = rhs;
             let Eval {
-                value: ra,
+                value: va,
                 derivatives: mut das,
             } = a.evaluate(vars)?;
             let Eval {
-                value: rb,
+                value: vb,
                 derivatives: mut dbs,
             } = b.evaluate(vars)?;
             // Quotient rule. Reuse storage for derivatives of A and B
             // so we don't have to reallocate. This saves 30% of time
             // when evaluating on our benchmarks, compared to
             // mapping over the dict and recollecting.
-            das.values_mut().for_each(|x| *x *= rb);
-            dbs.values_mut().for_each(|x| *x *= -ra);
+            das.values_mut().for_each(|d| *d *= vb);
+            dbs.values_mut().for_each(|d| *d *= -va);
             let mut derivatives = union_with(das, dbs, |a, b| a + b);
-            let rb_squared = rb.powf(2.0);
-            derivatives.values_mut().for_each(|x| *x /= rb_squared);
+            let rb_squared = vb.powf(2.0);
+            derivatives.values_mut().for_each(|d| *d /= rb_squared);
             Ok(Eval {
-                value: ra / rb,
+                value: va / vb,
                 derivatives,
             })
         };
