@@ -10,9 +10,9 @@ type Result<T> = std::result::Result<T, Error>;
 #[derive(Debug, PartialEq)]
 pub struct Eval {
     /// The value of the equation.
-    value: f64,
+    pub value: f64,
     /// All derivatives of all variables.
-    derivatives: Vars,
+    pub derivatives: Vars,
 }
 
 /// Symbolic equation that can be evaluated.
@@ -67,13 +67,7 @@ impl std::ops::Add for Equation {
                 value: rb,
                 derivatives: dbs,
             } = b.evaluate(vars)?;
-            let mut derivatives = Vars::with_capacity(das.len() + dbs.len());
-            for d in das {
-                *derivatives.entry(d.0).or_insert(0.0) += d.1;
-            }
-            for d in dbs {
-                *derivatives.entry(d.0).or_insert(0.0) += d.1;
-            }
+            let derivatives = union_with(das, dbs, |a, b| a + b);
             Ok(Eval {
                 value: ra + rb,
                 derivatives,
@@ -98,13 +92,11 @@ impl std::ops::Mul for Equation {
                 value: rb,
                 derivatives: dbs,
             } = b.evaluate(vars)?;
-            let mut derivatives = Vars::with_capacity(das.len() + dbs.len());
-            for d in das {
-                *derivatives.entry(d.0).or_insert(0.0) += d.1 * rb;
-            }
-            for d in dbs {
-                *derivatives.entry(d.0).or_insert(0.0) += d.1 * ra;
-            }
+            let derivatives = union_with(
+                das.into_iter().map(|(k, x)| (k, x * rb)).collect(),
+                dbs.into_iter().map(|(k, x)| (k, x * ra)).collect(),
+                |a, b| a + b,
+            );
             Ok(Eval {
                 value: ra * rb,
                 derivatives,
@@ -112,6 +104,25 @@ impl std::ops::Mul for Equation {
         };
         Self { eval: Box::new(eval) }
     }
+}
+
+fn union_with<K: std::hash::Hash + Eq, V: Copy>(
+    a: IndexMap<K, V>,
+    b: IndexMap<K, V>,
+    f: impl Fn(V, V) -> V,
+) -> IndexMap<K, V> {
+    let mut out = a;
+    out.reserve(b.len());
+    for (b_key, b_val) in b {
+        if let Some(a_val) = out.get(&b_key) {
+            // TODO: This requires a copy unfortunately.
+            // Can probably remove it if we stop using IndexMap.
+            out.insert(b_key, f(*a_val, b_val));
+        } else {
+            out.insert(b_key, b_val);
+        }
+    }
+    out
 }
 
 #[cfg(test)]

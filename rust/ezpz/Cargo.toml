@@ -9,5 +9,12 @@ indexmap.workspace = true
 kittycad-modeling-cmds = { workspace = true }
 libm = "0.2.15"
 
+[dev-dependencies]
+divan = "0.1.21"
+
 [lints]
 workspace = true
+
+[[bench]]
+name = "equations"
+harness = false
