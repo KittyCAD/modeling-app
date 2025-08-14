@@ -2,6 +2,7 @@ use crate::datatypes::*;
 use kittycad_modeling_cmds::shared::Angle;
 
 pub mod datatypes;
+pub mod equations;
 
 pub enum Constraint {
     /// Also length.
@@ -18,5 +19,3 @@ pub enum Constraint {
     /// Two points symmetric across a line.
     Symmetric(DatumLine, DatumPoint, DatumPoint),
 }
-
-impl Constraint {}
