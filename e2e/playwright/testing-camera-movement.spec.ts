@@ -92,175 +92,173 @@ test.describe('Testing Camera Movement', () => {
     }
   }
 
-  test(
-    'Can pan and zoom camera reliably',
-    {
-      tag: '@web',
-    },
-    async ({ page, homePage, scene, cmdBar }) => {
-      const u = await getUtils(page)
-      const camInitialPosition: [number, number, number] = [0, 85, 85]
+  test('Can pan and zoom camera reliably', async ({
+    page,
+    homePage,
+    scene,
+    cmdBar,
+  }) => {
+    const u = await getUtils(page)
+    const camInitialPosition: [number, number, number] = [0, 85, 85]
 
-      await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
+    await homePage.goToModelingScene()
+    await scene.settled(cmdBar)
 
-      await u.openAndClearDebugPanel()
-      await u.closeKclCodePanel()
+    await u.openAndClearDebugPanel()
+    await u.closeKclCodePanel()
 
-      await test.step('Pan', async () => {
-        await bakeInRetries({
-          mouseActions: async () => {
-            const dragStart = await scene.convertPagePositionToStream(600, 200)
-            const dragEnd = await scene.convertPagePositionToStream(700, 200)
-            await page.keyboard.down('Shift')
-            await page.mouse.move(dragStart.x, dragStart.y)
-            await page.mouse.down({ button: 'right' })
-            // Gotcha: remove steps:2 from this 700,200 mouse move. This bricked the test on local host engine.
-            await page.mouse.move(dragEnd.x, dragEnd.y)
-            await page.mouse.up({ button: 'right' })
-            await page.keyboard.up('Shift')
-            await page.waitForTimeout(200)
-          },
-          afterPosition: [19, 85, 85],
-          beforePosition: camInitialPosition,
-          page,
-          scene,
-        })
+    await test.step('Pan', async () => {
+      await bakeInRetries({
+        mouseActions: async () => {
+          const dragStart = await scene.convertPagePositionToStream(600, 200)
+          const dragEnd = await scene.convertPagePositionToStream(700, 200)
+          await page.keyboard.down('Shift')
+          await page.mouse.move(dragStart.x, dragStart.y)
+          await page.mouse.down({ button: 'right' })
+          // Gotcha: remove steps:2 from this 700,200 mouse move. This bricked the test on local host engine.
+          await page.mouse.move(dragEnd.x, dragEnd.y)
+          await page.mouse.up({ button: 'right' })
+          await page.keyboard.up('Shift')
+          await page.waitForTimeout(200)
+        },
+        afterPosition: [19, 85, 85],
+        beforePosition: camInitialPosition,
+        page,
+        scene,
+      })
+    })
+
+    await test.step('Zoom with click and drag', async () => {
+      await bakeInRetries({
+        mouseActions: async () => {
+          const dragStart = await scene.convertPagePositionToStream(700, 400)
+          const dragEnd = await scene.convertPagePositionToStream(700, 300)
+          await page.keyboard.down('Control')
+          await page.mouse.move(dragStart.x, dragStart.y)
+          await page.mouse.down({ button: 'right' })
+          await page.mouse.move(dragEnd.x, dragEnd.y)
+          await page.mouse.up({ button: 'right' })
+          await page.keyboard.up('Control')
+        },
+        afterPosition: [0, 118, 118],
+        beforePosition: camInitialPosition,
+        page,
+        scene,
+      })
+    })
+
+    await test.step('Zoom with scrollwheel', async () => {
+      const refreshCamValuesCmd: EngineCommand = {
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: {
+          type: 'default_camera_get_settings',
+        },
+      }
+      await bakeInRetries({
+        mouseActions: async () => {
+          const scrollPos = await scene.convertPagePositionToStream(700, 400)
+          await page.mouse.move(scrollPos.x, scrollPos.y)
+          await page.mouse.wheel(0, -150)
+
+          // Scroll zooming doesn't update the debug pane's cam position values,
+          // so we have to force a refresh.
+          await u.openAndClearDebugPanel()
+          await u.sendCustomCmd(refreshCamValuesCmd)
+          await u.waitForCmdReceive('default_camera_get_settings')
+          await u.closeDebugPanel()
+        },
+        afterPosition: [0, 42.5, 42.5],
+        beforePosition: camInitialPosition,
+        page,
+        scene,
+      })
+    })
+  })
+
+  test('Can orbit camera reliably', async ({
+    page,
+    homePage,
+    scene,
+    cmdBar,
+  }) => {
+    const u = await getUtils(page)
+    const initialCamPosition: [number, number, number] = [0, 85, 85]
+
+    await homePage.goToModelingScene()
+    // this turns on the debug pane setting as well
+    await scene.settled(cmdBar)
+
+    await u.openAndClearDebugPanel()
+    await u.closeKclCodePanel()
+
+    await test.step('Test orbit with spherical mode', async () => {
+      await bakeInRetries({
+        mouseActions: async () => {
+          const moveOne = await scene.convertPagePositionToStream(700, 200)
+          await page.mouse.move(moveOne.x, moveOne.y)
+          await page.mouse.down({ button: 'right' })
+          await page.waitForTimeout(100)
+
+          const appLogoBBox = await page.getByTestId('app-logo').boundingBox()
+          expect(appLogoBBox).not.toBeNull()
+          if (!appLogoBBox) throw new Error('app logo not found')
+          await page.mouse.move(
+            appLogoBBox.x + appLogoBBox.width / 2,
+            appLogoBBox.y + appLogoBBox.height / 2
+          )
+          await page.waitForTimeout(100)
+          const moveTwo = await scene.convertPagePositionToStream(600, 303)
+          await page.mouse.move(moveTwo.x, moveTwo.y)
+          await page.waitForTimeout(100)
+          await page.mouse.up({ button: 'right' })
+        },
+        afterPosition: [-4, 10.5, 120],
+        beforePosition: initialCamPosition,
+        page,
+        scene,
+      })
+    })
+
+    await test.step('Test orbit with trackball mode', async () => {
+      await test.step('Set orbitMode to trackball', async () => {
+        await cmdBar.openCmdBar()
+        await cmdBar.selectOption({ name: 'camera orbit' }).click()
+        await cmdBar.selectOption({ name: 'trackball' }).click()
+        await expect(
+          page.getByText(`camera orbit to "trackball"`)
+        ).toBeVisible()
       })
 
-      await test.step('Zoom with click and drag', async () => {
-        await bakeInRetries({
-          mouseActions: async () => {
-            const dragStart = await scene.convertPagePositionToStream(700, 400)
-            const dragEnd = await scene.convertPagePositionToStream(700, 300)
-            await page.keyboard.down('Control')
-            await page.mouse.move(dragStart.x, dragStart.y)
-            await page.mouse.down({ button: 'right' })
-            await page.mouse.move(dragEnd.x, dragEnd.y)
-            await page.mouse.up({ button: 'right' })
-            await page.keyboard.up('Control')
-          },
-          afterPosition: [0, 118, 118],
-          beforePosition: camInitialPosition,
-          page,
-          scene,
-        })
+      await bakeInRetries({
+        mouseActions: async () => {
+          const moveOne = await scene.convertPagePositionToStream(700, 200)
+          await page.mouse.move(moveOne.x, moveOne.y)
+          await page.mouse.down({ button: 'right' })
+          await page.waitForTimeout(100)
+
+          const appLogoBBox = await page.getByTestId('app-logo').boundingBox()
+          expect(appLogoBBox).not.toBeNull()
+          if (!appLogoBBox) {
+            throw new Error('app logo not found')
+          }
+          await page.mouse.move(
+            appLogoBBox.x + appLogoBBox.width / 2,
+            appLogoBBox.y + appLogoBBox.height / 2
+          )
+          await page.waitForTimeout(100)
+          const moveTwo = await scene.convertPagePositionToStream(600, 303)
+          await page.mouse.move(moveTwo.x, moveTwo.y)
+          await page.waitForTimeout(100)
+          await page.mouse.up({ button: 'right' })
+        },
+        afterPosition: [47.27, -15.48, 109.43],
+        beforePosition: initialCamPosition,
+        page,
+        scene,
       })
-
-      await test.step('Zoom with scrollwheel', async () => {
-        const refreshCamValuesCmd: EngineCommand = {
-          type: 'modeling_cmd_req',
-          cmd_id: uuidv4(),
-          cmd: {
-            type: 'default_camera_get_settings',
-          },
-        }
-        await bakeInRetries({
-          mouseActions: async () => {
-            const scrollPos = await scene.convertPagePositionToStream(700, 400)
-            await page.mouse.move(scrollPos.x, scrollPos.y)
-            await page.mouse.wheel(0, -150)
-
-            // Scroll zooming doesn't update the debug pane's cam position values,
-            // so we have to force a refresh.
-            await u.openAndClearDebugPanel()
-            await u.sendCustomCmd(refreshCamValuesCmd)
-            await u.waitForCmdReceive('default_camera_get_settings')
-            await u.closeDebugPanel()
-          },
-          afterPosition: [0, 42.5, 42.5],
-          beforePosition: camInitialPosition,
-          page,
-          scene,
-        })
-      })
-    }
-  )
-
-  test(
-    'Can orbit camera reliably',
-    {
-      tag: '@web',
-    },
-    async ({ page, homePage, scene, cmdBar }) => {
-      const u = await getUtils(page)
-      const initialCamPosition: [number, number, number] = [0, 85, 85]
-
-      await homePage.goToModelingScene()
-      // this turns on the debug pane setting as well
-      await scene.settled(cmdBar)
-
-      await u.openAndClearDebugPanel()
-      await u.closeKclCodePanel()
-
-      await test.step('Test orbit with spherical mode', async () => {
-        await bakeInRetries({
-          mouseActions: async () => {
-            const moveOne = await scene.convertPagePositionToStream(700, 200)
-            await page.mouse.move(moveOne.x, moveOne.y)
-            await page.mouse.down({ button: 'right' })
-            await page.waitForTimeout(100)
-
-            const appLogoBBox = await page.getByTestId('app-logo').boundingBox()
-            expect(appLogoBBox).not.toBeNull()
-            if (!appLogoBBox) throw new Error('app logo not found')
-            await page.mouse.move(
-              appLogoBBox.x + appLogoBBox.width / 2,
-              appLogoBBox.y + appLogoBBox.height / 2
-            )
-            await page.waitForTimeout(100)
-            const moveTwo = await scene.convertPagePositionToStream(600, 303)
-            await page.mouse.move(moveTwo.x, moveTwo.y)
-            await page.waitForTimeout(100)
-            await page.mouse.up({ button: 'right' })
-          },
-          afterPosition: [-4, 10.5, 120],
-          beforePosition: initialCamPosition,
-          page,
-          scene,
-        })
-      })
-
-      await test.step('Test orbit with trackball mode', async () => {
-        await test.step('Set orbitMode to trackball', async () => {
-          await cmdBar.openCmdBar()
-          await cmdBar.selectOption({ name: 'camera orbit' }).click()
-          await cmdBar.selectOption({ name: 'trackball' }).click()
-          await expect(
-            page.getByText(`camera orbit to "trackball"`)
-          ).toBeVisible()
-        })
-
-        await bakeInRetries({
-          mouseActions: async () => {
-            const moveOne = await scene.convertPagePositionToStream(700, 200)
-            await page.mouse.move(moveOne.x, moveOne.y)
-            await page.mouse.down({ button: 'right' })
-            await page.waitForTimeout(100)
-
-            const appLogoBBox = await page.getByTestId('app-logo').boundingBox()
-            expect(appLogoBBox).not.toBeNull()
-            if (!appLogoBBox) {
-              throw new Error('app logo not found')
-            }
-            await page.mouse.move(
-              appLogoBBox.x + appLogoBBox.width / 2,
-              appLogoBBox.y + appLogoBBox.height / 2
-            )
-            await page.waitForTimeout(100)
-            const moveTwo = await scene.convertPagePositionToStream(600, 303)
-            await page.mouse.move(moveTwo.x, moveTwo.y)
-            await page.waitForTimeout(100)
-            await page.mouse.up({ button: 'right' })
-          },
-          afterPosition: [47.27, -15.48, 109.43],
-          beforePosition: initialCamPosition,
-          page,
-          scene,
-        })
-      })
-    }
-  )
+    })
+  })
 
   // TODO: fix after electron migration is merged
   test('Zoom should be consistent when exiting or entering sketches', async ({
