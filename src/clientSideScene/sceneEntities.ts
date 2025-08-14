@@ -355,7 +355,7 @@ export class SceneEntities {
       x?.scale.set(1, factor / this.sceneInfra._baseUnitMultiplier, 1)
       const y = this.axisGroup.getObjectByName(Y_AXIS)
       y?.scale.set(factor / this.sceneInfra._baseUnitMultiplier, 1, 1)
-      this.updateGrid()
+      this.updateInfiniteGrid()
     }
     this.sceneInfra.overlayCallbacks(callbacks)
   }
@@ -448,47 +448,53 @@ export class SceneEntities {
     sketchPosition && this.axisGroup.position.set(...sketchPosition)
     this.sceneInfra.scene.add(this.axisGroup)
 
-    this.updateGrid()
+    this.updateInfiniteGrid()
   }
 
-  updateGrid() {
-    const settings = this.getSettings?.()
-    if (settings) {
-      const gridHelper = this.sceneInfra.scene
-        .getObjectByName(AXIS_GROUP)
-        ?.getObjectByName('gridHelper')
-      if (gridHelper instanceof InfiniteGridRenderer) {
-        const majorGridSpacing = settings.modeling.majorGridSpacing.current ?? 1
-        const minorGridsPerMajor =
-          settings.modeling.minorGridsPerMajor.current ?? 4
+  private updateInfiniteGrid() {
+    const camera = this.sceneInfra.camControls.camera
+    if (camera instanceof OrthographicCamera) {
+      const settings = this.getSettings?.()
+      if (settings) {
+        const gridHelper = this.sceneInfra.scene
+          .getObjectByName(AXIS_GROUP)
+          ?.getObjectByName('gridHelper')
+        if (gridHelper instanceof InfiniteGridRenderer) {
+          const majorGridSpacing =
+            settings.modeling.majorGridSpacing.current ?? 1
+          const minorGridsPerMajor =
+            settings.modeling.minorGridsPerMajor.current ?? 4
 
-        const viewportSize = this.sceneInfra.renderer.getDrawingBufferSize(
-          new Vector2()
-        )
-        // Choose grid colors based on app theme: dark = existing colors, light = subtle gray
-        const isLight = getResolvedTheme(this.sceneInfra.theme) === Themes.Light
-        const majorColor: [number, number, number, number] = isLight
-          ? [0.3, 0.3, 0.3, 1.0]
-          : [0.7, 0.7, 0.7, 1.0]
-        const minorColor: [number, number, number, number] = isLight
-          ? [0.2, 0.2, 0.2, 1.0]
-          : [0.9, 0.9, 0.9, 1.0]
+          const viewportSize = this.sceneInfra.renderer.getDrawingBufferSize(
+            new Vector2()
+          )
+          // Choose grid colors based on app theme: dark = existing colors, light = subtle gray
+          const isLight =
+            getResolvedTheme(this.sceneInfra.theme) === Themes.Light
+          const majorColor: [number, number, number, number] = isLight
+            ? [0.3, 0.3, 0.3, 1.0]
+            : [0.7, 0.7, 0.7, 1.0]
+          const minorColor: [number, number, number, number] = isLight
+            ? [0.2, 0.2, 0.2, 1.0]
+            : [0.9, 0.9, 0.9, 1.0]
 
-        gridHelper.update(
-          this.sceneInfra.camControls.camera,
-          [viewportSize.x, viewportSize.y],
-          {
-            majorGridSpacing,
-            minorGridsPerMajor,
-            majorColor,
-            minorColor,
-            fixedSizeGrid: settings.modeling.fixedSizeGrid.current,
-            majorPxRange: [40, 120],
-          }
-        )
+          gridHelper.update(
+            camera,
+            [viewportSize.x, viewportSize.y],
+            this.sceneInfra.getPixelsPerBaseUnit(camera),
+            {
+              majorGridSpacing,
+              minorGridsPerMajor,
+              majorColor,
+              minorColor,
+              fixedSizeGrid: settings.modeling.fixedSizeGrid.current,
+              majorPxRange: [40, 120],
+            }
+          )
+        }
+      } else {
+        console.error('Settings not available for grid update')
       }
-    } else {
-      console.error('Settings not available for grid update')
     }
   }
 

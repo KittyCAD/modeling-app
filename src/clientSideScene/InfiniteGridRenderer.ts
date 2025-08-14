@@ -130,13 +130,14 @@ export class InfiniteGridRenderer extends LineSegments {
   update(
     camera: Camera,
     viewportSize: [number, number],
+    pixelsPerBaseUnit: number,
     options: {
       majorGridSpacing: number
       minorGridsPerMajor: number
       majorColor: [number, number, number, number]
       minorColor: [number, number, number, number]
-      fixedSizeGrid?: boolean
-      majorPxRange?: [number, number]
+      fixedSizeGrid: boolean
+      majorPxRange: [number, number]
     }
   ) {
     if (!(camera instanceof OrthographicCamera)) {
@@ -160,12 +161,17 @@ export class InfiniteGridRenderer extends LineSegments {
 
     const viewportWidthPx = viewportSize[0]
     const viewportHeightPx = viewportSize[1]
-    const pxPerWorldX = viewportWidthPx / worldViewportWidth
-    const pxPerWorldY = viewportHeightPx / worldViewportHeight
+
+    const pxPerWorldX = pixelsPerBaseUnit
+    const pxPerWorldY = pixelsPerBaseUnit
+    //const pxPerWorldX = viewportWidthPx / worldViewportWidth
+    //const pxPerWorldY = viewportHeightPx / worldViewportHeight
+
+    console.log('px per world', pxPerWorldX, pxPerWorldY)
 
     if (!options.fixedSizeGrid) {
-      const desiredMin = options.majorPxRange?.[0] ?? 40
-      const desiredMax = options.majorPxRange?.[1] ?? 120
+      const desiredMin = options.majorPxRange[0]
+      const desiredMax = options.majorPxRange[1]
       const pxPerWorld = Math.min(pxPerWorldX, pxPerWorldY)
       let majorPx = effectiveMajorSpacing * pxPerWorld
 
