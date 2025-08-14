@@ -151,6 +151,23 @@ impl std::ops::Div for Equation {
     }
 }
 
+impl std::ops::Neg for Equation {
+    type Output = Self;
+
+    fn neg(self) -> Self::Output {
+        let eval = |vars: &Vars| {
+            let a = self;
+            let Eval {
+                value: r,
+                mut derivatives,
+            } = a.evaluate(vars)?;
+            derivatives.values_mut().for_each(|d| *d = d.neg());
+            Ok(Eval { value: -r, derivatives })
+        };
+        Self { eval: Box::new(eval) }
+    }
+}
+
 fn union_with<K: std::hash::Hash + Eq, V: Copy>(
     a: IndexMap<K, V>,
     b: IndexMap<K, V>,
@@ -255,5 +272,23 @@ mod tests {
             derivatives: vars("x=12, y=7"),
         };
         assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn eval_negated() {
+        // These two should be equivalent.
+        let equation0 = -v('x');
+        let equation1 = v('x') * c(-1.0);
+
+        // So their evaluations should be equivalent.
+        let actual0 = equation0.evaluate(&vars("x=2")).unwrap();
+        let actual1 = equation1.evaluate(&vars("x=2")).unwrap();
+
+        let expected = Eval {
+            value: -2.0,
+            derivatives: vars("x=-1"),
+        };
+        assert_eq!(actual0, expected);
+        assert_eq!(actual1, expected);
     }
 }
