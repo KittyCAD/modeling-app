@@ -174,49 +174,69 @@ fn union_with<K: std::hash::Hash + Eq, V: Copy>(
 mod tests {
     use super::*;
 
+    // Convenient shorthand for 'variable', to make tests nicer.
+    fn v(label: Label) -> Equation {
+        Equation::single_variable(label)
+    }
+
+    // Convenient shorthand for 'constant', to make tests nicer.
+    fn c(constant: f64) -> Equation {
+        Equation::constant(constant)
+    }
+
+    // Convenience to make tests nicer
+    fn vars(s: &str) -> Vars {
+        let mut vars = Vars::new();
+        for assign in s.replace(' ', "").split(',') {
+            let (label, value) = assign.split_once('=').unwrap();
+            let label = label.chars().next().unwrap();
+            let value = value.parse().unwrap();
+            vars.insert(label, value);
+        }
+        vars
+    }
+
     #[test]
     fn eval_single_var() {
-        let equation = Equation::single_variable('a');
+        let equation = v('a');
 
-        let actual = equation.evaluate(&Vars::from([('a', 14.0)])).unwrap();
+        let actual = equation.evaluate(&vars("a=14")).unwrap();
         let expected = Eval {
             value: 14.0,
-            derivatives: IndexMap::from([('a', 1.0)]),
+            derivatives: vars("a=1"),
         };
         assert_eq!(actual, expected,);
     }
 
     #[test]
     fn eval_two_vars() {
-        let equation = Equation::single_variable('a') + Equation::single_variable('b');
+        let equation = v('a') + v('b');
 
-        let actual = equation.evaluate(&Vars::from([('a', 14.0), ('b', 2.0)])).unwrap();
+        let actual = equation.evaluate(&vars("a=14,b=2")).unwrap();
         let expected = Eval {
             value: 16.0,
-            derivatives: IndexMap::from([('a', 1.0), ('b', 1.0)]),
+            derivatives: vars("a=1,b=1"),
         };
         assert_eq!(actual, expected);
     }
 
     #[test]
     fn eval_same_var_added() {
-        let equation = Equation::single_variable('a') + Equation::single_variable('a') + Equation::single_variable('b');
+        let equation = v('a') + v('a') + v('b');
 
-        let actual = equation.evaluate(&Vars::from([('a', 14.0), ('b', 3.0)])).unwrap();
+        let actual = equation.evaluate(&vars("a=14, b=3")).unwrap();
         let expected = Eval {
             value: 31.0,
-            derivatives: IndexMap::from([('a', 2.0), ('b', 1.0)]),
+            derivatives: vars("a=2, b=1"),
         };
         assert_eq!(actual, expected);
     }
 
     #[test]
     fn eval_divided() {
-        let equation =
-            (Equation::single_variable('a') + Equation::single_variable('a') + Equation::single_variable('b'))
-                / Equation::single_variable('a');
+        let equation = (v('a') + v('a') + v('b')) / v('a');
 
-        let actual = equation.evaluate(&Vars::from([('a', 3.0), ('b', 2.0)])).unwrap();
+        let actual = equation.evaluate(&vars("a=3,b=2")).unwrap();
         let expected = Eval {
             value: 8.0 / 3.0,
             derivatives: IndexMap::from([('a', -2.0 / 9.0), ('b', 1.0 / 3.0)]),
@@ -227,13 +247,12 @@ mod tests {
     #[test]
     fn eval_with_constant() {
         // Basically (x + 5) * (x + y)
-        let equation = (Equation::single_variable('x') + Equation::constant(5.0))
-            * (Equation::single_variable('x') + Equation::single_variable('y'));
+        let equation = (v('x') + c(5.0)) * (v('x') + v('y'));
 
-        let actual = equation.evaluate(&Vars::from([('x', 2.0), ('y', 3.0)])).unwrap();
+        let actual = equation.evaluate(&vars("x=2,y=3")).unwrap();
         let expected = Eval {
             value: 35.0,
-            derivatives: IndexMap::from([('x', 12.0), ('y', 7.0)]),
+            derivatives: vars("x=12, y=7"),
         };
         assert_eq!(actual, expected);
     }

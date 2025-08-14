@@ -5,7 +5,6 @@ fn main() {
     divan::main();
 }
 
-// Register a `fibonacci` function and benchmark it over multiple cases.
 #[divan::bench(args = [1.0, 2.0, 4.0])]
 fn multiplied(n: f64) -> f64 {
     let equation = (Equation::single_variable('a') + Equation::single_variable('a') + Equation::single_variable('b'))
