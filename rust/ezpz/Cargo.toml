@@ -5,6 +5,8 @@ edition = "2024"
 description = "A constraint solver for KCL and Zoo Design Studio"
 
 [dependencies]
+kittycad-modeling-cmds = { workspace = true }
+libm = "0.2.15"
 
 [lints]
 workspace = true
