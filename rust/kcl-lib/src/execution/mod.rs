@@ -1458,7 +1458,7 @@ mod tests {
     use super::*;
     use crate::{
         ModuleId,
-        errors::KclErrorDetails,
+        errors::{KclErrorDetails, Severity},
         exec::NumericType,
         execution::{memory::Stack, types::RuntimeType},
     };
@@ -1809,7 +1809,8 @@ answer = returnX()"#;
 
     #[tokio::test(flavor = "multi_thread")]
     async fn type_aliases() {
-        let text = r#"type MyTy = [number; 2]
+        let text = r#"@settings(experimentalFeatures = allow)
+type MyTy = [number; 2]
 fn foo(@x: MyTy) {
     return x[0]
 }
@@ -2246,7 +2247,7 @@ test([0, 0])
 "#;
         let result = parse_execute(ast).await;
         assert!(result.is_err());
-        assert!(result.unwrap_err().to_string().contains("undefined"),);
+        assert!(result.unwrap_err().to_string().contains("undefined"));
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -2516,5 +2517,60 @@ sketch2 = startSketchOn(solid, face = tag0)
 foo() |> extrude(length = 1)
 "#;
         parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn experimental() {
+        let code = r#"
+startSketchOn(XY)
+  |> startProfile(at = [0, 0], tag = $start)
+  |> elliptic(center = [0, 0], angleStart = segAng(start), angleEnd = 160deg, majorRadius = 2, minorRadius = 3)
+"#;
+        let result = parse_execute(code).await.unwrap();
+        let errors = result.exec_state.errors();
+        assert_eq!(errors.len(), 1);
+        assert_eq!(errors[0].severity, Severity::Error);
+        let msg = &errors[0].message;
+        assert!(msg.contains("experimental"), "found {msg}");
+
+        let code = r#"@settings(experimentalFeatures = allow)
+startSketchOn(XY)
+  |> startProfile(at = [0, 0], tag = $start)
+  |> elliptic(center = [0, 0], angleStart = segAng(start), angleEnd = 160deg, majorRadius = 2, minorRadius = 3)
+"#;
+        let result = parse_execute(code).await.unwrap();
+        let errors = result.exec_state.errors();
+        assert!(errors.is_empty());
+
+        let code = r#"@settings(experimentalFeatures = warn)
+startSketchOn(XY)
+  |> startProfile(at = [0, 0], tag = $start)
+  |> elliptic(center = [0, 0], angleStart = segAng(start), angleEnd = 160deg, majorRadius = 2, minorRadius = 3)
+"#;
+        let result = parse_execute(code).await.unwrap();
+        let errors = result.exec_state.errors();
+        assert_eq!(errors.len(), 1);
+        assert_eq!(errors[0].severity, Severity::Warning);
+        let msg = &errors[0].message;
+        assert!(msg.contains("experimental"), "found {msg}");
+
+        let code = r#"@settings(experimentalFeatures = deny)
+startSketchOn(XY)
+  |> startProfile(at = [0, 0], tag = $start)
+  |> elliptic(center = [0, 0], angleStart = segAng(start), angleEnd = 160deg, majorRadius = 2, minorRadius = 3)
+"#;
+        let result = parse_execute(code).await.unwrap();
+        let errors = result.exec_state.errors();
+        assert_eq!(errors.len(), 1);
+        assert_eq!(errors[0].severity, Severity::Error);
+        let msg = &errors[0].message;
+        assert!(msg.contains("experimental"), "found {msg}");
+
+        let code = r#"@settings(experimentalFeatures = foo)
+startSketchOn(XY)
+  |> startProfile(at = [0, 0], tag = $start)
+  |> elliptic(center = [0, 0], angleStart = segAng(start), angleEnd = 160deg, majorRadius = 2, minorRadius = 3)
+"#;
+        parse_execute(code).await.unwrap_err();
     }
 }

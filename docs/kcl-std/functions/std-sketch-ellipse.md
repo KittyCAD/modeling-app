@@ -5,6 +5,8 @@ excerpt: "Construct a 2-dimensional ellipse, of the specified major/minor radius
 layout: manual
 ---
 
+**WARNING:** This function is experimental and may change or be removed.
+
 Construct a 2-dimensional ellipse, of the specified major/minor radius, centered at the provided (x, y) point.
 
 ```kcl
@@ -39,6 +41,8 @@ ellipse(
 ### Examples
 
 ```kcl
+@settings(experimentalFeatures = allow)
+
 exampleSketch = startSketchOn(XY)
   |> ellipse(center = [0, 0], majorRadius = 50, minorRadius = 20)
 
