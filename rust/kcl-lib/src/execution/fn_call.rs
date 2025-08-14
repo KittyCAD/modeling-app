@@ -110,11 +110,13 @@ impl KwArgs {
     }
 }
 
+#[derive(Debug)]
 struct FunctionDefinition<'a> {
     input_arg: Option<(String, Option<Type>)>,
     named_args: IndexMap<String, (Option<DefaultParamVal>, Option<Type>)>,
     return_type: Option<Node<Type>>,
     deprecated: bool,
+    experimental: bool,
     include_in_feature_tree: bool,
     is_std: bool,
     body: FunctionBody<'a>,
@@ -153,13 +155,19 @@ impl<'a> From<&'a FunctionSource> for FunctionDefinition<'a> {
         }
 
         match value {
-            FunctionSource::Std { func, ast, props } => {
+            FunctionSource::Std {
+                func,
+                ast,
+                props,
+                attrs,
+            } => {
                 let (input_arg, named_args) = args_from_ast(ast);
                 FunctionDefinition {
                     input_arg,
                     named_args,
                     return_type: ast.return_type.clone(),
-                    deprecated: props.deprecated,
+                    deprecated: attrs.deprecated,
+                    experimental: attrs.experimental,
                     include_in_feature_tree: props.include_in_feature_tree,
                     is_std: true,
                     body: FunctionBody::Rust(*func),
@@ -172,6 +180,7 @@ impl<'a> From<&'a FunctionSource> for FunctionDefinition<'a> {
                     named_args,
                     return_type: ast.return_type.clone(),
                     deprecated: false,
+                    experimental: false,
                     include_in_feature_tree: true,
                     // TODO I think this might be wrong for pure Rust std functions
                     is_std: false,
@@ -302,6 +311,15 @@ impl FunctionDefinition<'_> {
                     ),
                 ),
                 annotations::WARN_DEPRECATED,
+            );
+        }
+        if self.experimental {
+            exec_state.warn_experimental(
+                &match &fn_name {
+                    Some(n) => format!("`{n}`"),
+                    None => "This function".to_owned(),
+                },
+                callsite,
             );
         }
 

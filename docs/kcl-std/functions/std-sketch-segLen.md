@@ -29,7 +29,7 @@ segLen(@tag: TaggedEdge): number(Length)
 ```kcl
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
-  |> angledLine(angle = 60, length = 10, tag = $thing)
+  |> angledLine(angle = 60deg, length = 10, tag = $thing)
   |> tangentialArc(angle = -120deg, radius = 5)
   |> angledLine(angle = -60deg, length = segLen(thing))
   |> close()

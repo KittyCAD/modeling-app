@@ -3,7 +3,7 @@ source: kcl-lib/src/simulation_tests.rs
 description: Result of unparsing elliptic_curve_inches_regression.kcl
 ---
 // The length unit of this file is inches (in)
-@settings(defaultLengthUnit = in)
+@settings(defaultLengthUnit = in, experimentalFeatures = allow)
 
 // define a plane plane000
 plane000 = {
