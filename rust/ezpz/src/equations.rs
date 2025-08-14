@@ -7,6 +7,7 @@ pub type Vars = IndexMap<Label, f64>;
 
 type Result<T> = std::result::Result<T, Error>;
 
+/// Result of evaluating an equation.
 #[derive(Debug, PartialEq)]
 pub struct Eval {
     /// The value of the equation.
@@ -15,9 +16,14 @@ pub struct Eval {
     pub derivatives: Vars,
 }
 
+/// This is basically a newtype for
+/// `FnOnce(&Vars) -> Result<Eval>`.
+trait Evaluate: FnOnce(&Vars) -> Result<Eval> {}
+impl<F> Evaluate for F where F: FnOnce(&Vars) -> Result<Eval> {}
+
 /// Symbolic equation that can be evaluated.
 pub struct Equation {
-    eval: Box<dyn FnOnce(&Vars) -> Result<Eval>>,
+    eval: Box<dyn Evaluate>,
 }
 
 /// Errors that could occur.
@@ -48,7 +54,6 @@ impl Equation {
             let mut derivatives = Vars::with_capacity(1);
             derivatives.insert(label, 1.0);
 
-            // All done.
             Ok(Eval {
                 value: var_value,
                 derivatives,
@@ -168,6 +173,8 @@ impl std::ops::Neg for Equation {
     }
 }
 
+/// Union two maps. If a value appears in both maps,
+/// pass both instances into `f` and insert that value.
 fn union_with<K: std::hash::Hash + Eq, V: Copy>(
     a: IndexMap<K, V>,
     b: IndexMap<K, V>,
