@@ -2,7 +2,7 @@
 // see https://www.mattkeeter.com/projects/constraints/
 use indexmap::IndexMap;
 
-pub type Label = char;
+pub type Label = String;
 
 /// The value of each variable in an equation.
 pub type Vars = IndexMap<Label, f64>;
@@ -212,8 +212,8 @@ mod tests {
     use super::*;
 
     // Convenient shorthand for 'variable', to make tests nicer.
-    fn v(label: Label) -> Equation {
-        Equation::single_variable(label)
+    fn v(label: &str) -> Equation {
+        Equation::single_variable(label.to_owned())
     }
 
     // Convenient shorthand for 'constant', to make tests nicer.
@@ -226,16 +226,15 @@ mod tests {
         let mut vars = Vars::new();
         for assign in s.replace(' ', "").split(',') {
             let (label, value) = assign.split_once('=').unwrap();
-            let label = label.chars().next().unwrap();
             let value = value.parse().unwrap();
-            vars.insert(label, value);
+            vars.insert(label.to_owned(), value);
         }
         vars
     }
 
     #[test]
     fn eval_single_var() {
-        let equation = v('a');
+        let equation = v("a");
 
         let actual = equation.evaluate(&vars("a=14")).unwrap();
         let expected = Eval {
@@ -247,7 +246,7 @@ mod tests {
 
     #[test]
     fn eval_two_vars() {
-        let equation = v('a') + v('b');
+        let equation = v("a") + v("b");
 
         let actual = equation.evaluate(&vars("a=14,b=2")).unwrap();
         let expected = Eval {
@@ -259,7 +258,7 @@ mod tests {
 
     #[test]
     fn eval_same_var_added() {
-        let equation = v('a') + v('a') + v('b');
+        let equation = v("a") + v("a") + v("b");
 
         let actual = equation.evaluate(&vars("a=14, b=3")).unwrap();
         let expected = Eval {
@@ -271,12 +270,12 @@ mod tests {
 
     #[test]
     fn eval_divided() {
-        let equation = (v('a') + v('a') + v('b')) / v('a');
+        let equation = (v("a") + v("a") + v("b")) / v("a");
 
         let actual = equation.evaluate(&vars("a=3,b=2")).unwrap();
         let expected = Eval {
             value: 8.0 / 3.0,
-            derivatives: IndexMap::from([('a', -2.0 / 9.0), ('b', 1.0 / 3.0)]),
+            derivatives: IndexMap::from([("a".to_owned(), -2.0 / 9.0), ("b".to_owned(), 1.0 / 3.0)]),
         };
         assert_eq!(actual, expected);
     }
@@ -284,7 +283,7 @@ mod tests {
     #[test]
     fn eval_with_constant() {
         // Basically (x + 5) * (x + y)
-        let equation = (v('x') + c(5.0)) * (v('x') + v('y'));
+        let equation = (v("x") + c(5.0)) * (v("x") + v("y"));
 
         let actual = equation.evaluate(&vars("x=2,y=3")).unwrap();
         let expected = Eval {
@@ -297,8 +296,8 @@ mod tests {
     #[test]
     fn eval_negated() {
         // These two should be equivalent.
-        let equation0 = -v('x');
-        let equation1 = v('x') * c(-1.0);
+        let equation0 = -v("x");
+        let equation1 = v("x") * c(-1.0);
 
         // So their evaluations should be equivalent.
         let actual0 = equation0.evaluate(&vars("x=2")).unwrap();
