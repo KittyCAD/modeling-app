@@ -14,14 +14,14 @@ export function StatusBar({
   return (
     <footer
       id="statusbar"
-      className="relative z-10 flex justify-between items-center bg-chalkboard-20 dark:bg-chalkboard-90 text-chalkboard-80 dark:text-chalkboard-30 border-t border-t-chalkboard-30 dark:border-t-chalkboard-80"
+      className="relative z-10 flex justify-between bg-chalkboard-20 dark:bg-chalkboard-90 text-chalkboard-80 dark:text-chalkboard-30 border-t border-t-chalkboard-30 dark:border-t-chalkboard-80"
     >
-      <menu id="statusbar-globals" className="flex items-stretch">
+      <menu id="statusbar-globals" className="flex">
         {globalItems.map((item) => (
           <StatusBarItem key={item.id} {...item} position="left" />
         ))}
       </menu>
-      <menu id="statusbar-locals" className="flex items-stretch">
+      <menu id="statusbar-locals" className="flex">
         {localItems.map((item) => (
           <StatusBarItem key={item.id} {...item} position="right" />
         ))}
