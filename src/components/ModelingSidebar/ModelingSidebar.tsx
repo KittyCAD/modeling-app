@@ -1,3 +1,4 @@
+import { type settings } from '@src/lib/settings/initialSettings'
 import type { IconDefinition } from '@fortawesome/free-solid-svg-icons'
 import { Resizable } from 're-resizable'
 import type { HTMLProps, MouseEventHandler, Ref } from 'react'
@@ -148,8 +149,8 @@ export function ModelingSidebarRight() {
   const sidebarActions: Ref<SidebarAction[]> = useRef([])
   return (
     <ModelingSidebar
-      sidebarPanes={sidebarPanesRight}
-      sidebarActions={sidebarActions.current}
+      sidebarPanes={sidebarPanesRight || []}
+      sidebarActions={sidebarActions.current || []}
       settings={settings}
       align={Alignment.Right}
     />
@@ -159,7 +160,7 @@ export function ModelingSidebarRight() {
 interface ModelingSidebarProps {
   sidebarActions: SidebarAction[]
   sidebarPanes: SidebarPane[]
-  settings: Settings
+  settings: typeof settings
   align: Alignment
 }
 
@@ -345,6 +346,11 @@ export function ModelingSidebar(props: ModelingSidebarProps) {
               <ul id="sidebar-actions" className="flex flex-col">
                 {filteredActions.map((action) => (
                   <ModelingPaneButton
+                    align={
+                      props.align === Alignment.Right
+                        ? Alignment.Left
+                        : Alignment.Right
+                    }
                     key={action.id}
                     paneConfig={{
                       id: action.id,

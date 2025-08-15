@@ -177,7 +177,25 @@ export function createApplicationCommands({
 
         mlEphantManagerActor.send({
           type: MlEphantManagerTransitions.PromptCreateModel,
-          projectPathForPromptOutput: uniquePromptFilePath,
+          // It's always going to be a fresh directory since it's a new
+          // project.
+          projectForPromptOutput: {
+            name: '',
+            path: uniquePromptFilePath,
+            children: [],
+            readWriteAccess: true,
+            metadata: {
+              accessed: '',
+              created: '',
+              modified: '',
+              permission: null,
+              type: null,
+              size: 0,
+            },
+            kcl_file_count: 0,
+            directory_count: 0,
+            default_file: '',
+          },
           prompt: requestedPrompt,
         })
       }

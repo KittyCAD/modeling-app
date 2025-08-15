@@ -1,3 +1,4 @@
+import { GenerateWithTTCButton } from '@src/components/GenerateWithTTCButton'
 import type { FormEvent, HTMLProps } from 'react'
 import { useEffect, useState } from 'react'
 import { toast } from 'react-hot-toast'
@@ -9,6 +10,10 @@ import {
   useSearchParams,
 } from 'react-router-dom'
 
+import {
+  IResponseMlConversation,
+  IResponseMlConversations,
+} from '@src/lib/textToCad'
 import { ActionButton } from '@src/components/ActionButton'
 import { AppHeader } from '@src/components/AppHeader'
 import Loading from '@src/components/Loading'
@@ -65,7 +70,6 @@ import {
 } from '@src/routes/Onboarding/utils'
 import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
-import { ML_EXPERIMENTAL_MESSAGE } from '@src/lib/constants'
 import { StatusBar } from '@src/components/StatusBar/StatusBar'
 import { useNetworkMachineStatus } from '@src/components/NetworkMachineIndicator'
 import {
@@ -226,14 +230,6 @@ const Home = () => {
     return actor.context.conversations
   })
 
-  // Trigger a rerender for the Prompts tab when prompts change state.
-  const promptsInProgressToCompleted = useSelector(
-    mlEphantManagerActor,
-    (actor) => {
-      return actor.context.promptsInProgressToCompleted
-    }
-  )
-
   const [tabSelected, setTabSelected] = useState<HomeTabKeys>(
     HomeTabKeys.Projects
   )
@@ -252,12 +248,12 @@ const Home = () => {
         setItems(projects)
         break
       case HomeTabKeys.Prompts:
-        setItems(conversations.items)
+        setItems(conversations)
         break
       default:
         const _ex: never = tabSelected
     }
-  }, [tabSelected, promptsInProgressToCompleted, projects])
+  }, [tabSelected, projects])
 
   useEffect(() => {
     searchAgainst(items)('')
@@ -341,9 +337,8 @@ const Home = () => {
               </ActionButton>
             </li>
             <li className="contents">
-              <ActionButton
-                Element="button"
-                onClick={() =>
+              <GenerateWithTTCButton
+                onClick={() => {
                   commandBarActor.send({
                     type: 'Find and select command',
                     data: {
@@ -356,25 +351,8 @@ const Home = () => {
                       },
                     },
                   })
-                }
-                className={sidebarButtonClasses}
-                iconStart={{
-                  icon: 'sparkles',
-                  bgClassName: '!bg-transparent rounded-sm',
                 }}
-                data-testid="home-text-to-cad"
-              >
-                Generate with Text-to-CAD
-                <Tooltip position="bottom-left">
-                  <div className="text-sm flex flex-col max-w-xs">
-                    <div className="text-xs flex justify-center item-center gap-1 pb-1 border-b border-chalkboard-50">
-                      <CustomIcon name="beaker" className="w-4 h-4" />
-                      <span>Experimental</span>
-                    </div>
-                    <p className="pt-2 text-left">{ML_EXPERIMENTAL_MESSAGE}</p>
-                  </div>
-                </Tooltip>
-              </ActionButton>
+              />
             </li>
             <li className="contents">
               <ActionButton
@@ -652,7 +630,7 @@ function HomeItemsArea(props: HomeItemsAreaProps) {
     case HomeTabKeys.Prompts:
       grid = areHomeItemsConversations(props.searchResults) ? (
         <ResultGridConversations
-          searchResults={props.searchResults}
+          searchResults={props.searchResults.items}
           query={props.query}
           sortBy={props.sortBy}
           settings={props.settings}
@@ -706,13 +684,24 @@ function ResultGridConversations(props: ResultGridConversationsProps) {
     )
   }
 
+  if (props.searchResults.length > 0) {
+    return (
+      <div className="grid w-full sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-4">
+        {props.searchResults
+          .sort(getConvoSortFunction(props.sortBy))
+          .map((convo: IResponseMlConversation) => (
+            <ConvoCard key={convo.id} {...convo} onAction={onAction} />
+          ))}
+      </div>
+    )
+  }
+
   return (
-    <div className="grid w-full sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-4">
-      {props.searchResults
-        .sort(getConvoSortFunction(props.sortBy))
-        .map((convo: IResponseMlConversation) => (
-          <ConvoCard key={convo.id} {...convo} onAction={onAction} />
-        ))}
+    <div className="flex flex-col items-center justify-center w-full gap-4">
+      <div className="text-sm text-chalkboard-80 dark:text-chalkboard-30">
+        Looks like you haven't prompted yet!
+      </div>
+      <GenerateWithTTCButton onClick={() => onAction('')} hasBorder={true} />
     </div>
   )
 }

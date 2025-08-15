@@ -57,7 +57,7 @@ export const MlEphantConversationInput = (
   }
 
   useEffect(() => {
-    if (!isAnimating) {
+    if (!isAnimating && refDiv.current !== null) {
       refDiv.current.focus()
     }
   }, [isAnimating])
@@ -69,13 +69,11 @@ export const MlEphantConversationInput = (
         <div
           contentEditable={true}
           autoCapitalize="off"
-          autoComplete="off"
           autoCorrect="off"
           spellCheck="false"
           ref={refDiv}
           className={`outline-none w-full overflow-auto ${isAnimating ? 'hidden' : ''}`}
           style={{ height: '2lh' }}
-          placeholder="Help get me started on..."
         ></div>
         <div
           className={`${isAnimating ? '' : 'hidden'} overflow-hidden w-full p-2`}

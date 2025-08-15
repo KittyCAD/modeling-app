@@ -18,7 +18,7 @@ import {
   engineCommandManager,
 } from '@src/lib/singletons'
 import { BillingTransition } from '@src/machines/billingMachine'
-import { PromptType } from '@src/lib/prompt'
+import { PromptType, Prompt } from '@src/lib/prompt'
 import {
   MlEphantManagerStates,
   MlEphantManagerTransitions,
@@ -35,6 +35,7 @@ import {
   NO_PROJECT_DIRECTORY,
   SystemIOMachineEvents,
   SystemIOMachineStates,
+  RequestedKCLFile,
 } from '@src/machines/systemIO/utils'
 import { useNavigate } from 'react-router-dom'
 import { useEffect } from 'react'
@@ -249,25 +250,23 @@ export function SystemIOMachineLogicListenerDesktop() {
   useEffect(() => {
     const subscription = mlEphantManagerActor.subscribe((next) => {
       if (
-        !next.matches(
-          MlEphantManagerStates.Ready +
-            '.' +
-            MlEphantManagerStates.Background +
-            '.' +
-            MlEphantManagerTransitions.GetPromptsPendingStatuses
-        )
+        !next.matches({
+          [MlEphantManagerStates.Ready]: {
+            [MlEphantManagerStates.Background]:
+              MlEphantManagerTransitions.GetPromptsPendingStatuses,
+          },
+        })
       ) {
         return
       }
 
-      let hadUpdate =
-        next.context.promptsInProgressToCompleted.promptsBelongingToConversation
-          .length > 0
+      let hadUpdate = next.context.promptsInProgressToCompleted.size > 0
 
-      next.context.promptsInProgressToCompleted.promptsBelongingToConversation.forEach(
+      next.context.promptsInProgressToCompleted.forEach(
         (promptId: Prompt['id']) => {
           const prompt = next.context.promptsPool.get(promptId)
           if (prompt === undefined) return
+          if (prompt.code === undefined) return
           const promptMeta = next.context.promptsMeta.get(prompt.id)
           if (promptMeta === undefined) {
             console.warn('No metadata for this prompt - ignoring.')
@@ -275,10 +274,12 @@ export function SystemIOMachineLogicListenerDesktop() {
           }
 
           if (promptMeta.type === PromptType.Create) {
+            // NOTE: Good chance after making tsc happy I fucked myself somehow
             systemIOActor.send({
               type: SystemIOMachineEvents.importFileFromURL,
               data: {
                 requestedCode: prompt.code,
+                requestedProjectName: promptMeta.project.name,
                 requestedFileNameWithExtension: PROJECT_ENTRYPOINT,
               },
             })
@@ -304,9 +305,9 @@ export function SystemIOMachineLogicListenerDesktop() {
               type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToFile,
               data: {
                 files: requestedFiles,
-                // The navigation to the currently selected file doesn't work?
-                // TODO: ping kevin again.
                 override: true,
+                requestedProjectName: '',
+                requestedFileNameWithExtension: '',
               },
             })
           }
@@ -353,8 +354,10 @@ export function SystemIOMachineLogicListenerDesktop() {
       }
       systemIOActor.send({
         type: SystemIOMachineEvents.saveMlEphantConversations,
-        projectId: settings.meta.id.current,
-        conversationId: next.context.conversationId,
+        data: {
+          projectId: settings.meta.id.current,
+          conversationId: next.context.conversationId,
+        },
       })
     })
 

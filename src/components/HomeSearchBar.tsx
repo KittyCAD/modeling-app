@@ -14,7 +14,8 @@ export type HomeItem = Project | IResponseMlConversation
 export type HomeItems = Project[] | IResponseMlConversations
 
 export const areHomeItemsProjects = (items: HomeItems): items is Project[] => {
-  if (items.length === 0) return true
+  if ('items' in items === true) return false
+  if (items instanceof Array === false) return false
   const item = items[0]
   return item !== undefined && 'path' in item
 }
@@ -22,8 +23,9 @@ export const areHomeItemsProjects = (items: HomeItems): items is Project[] => {
 export const areHomeItemsConversations = (
   items: HomeItems
 ): items is IResponseMlConversations => {
-  if (items.length === 0) return true
-  const item = items[0]
+  if ('items' in items === false) return false
+  if (items instanceof Array === true) return false
+  const item = items.items[0]
   return item !== undefined && 'first_prompt' in item
 }
 

@@ -1,9 +1,13 @@
-import { PROJECT_ENTRYPOINT, REGEXP_UUIDV4 } from '@src/lib/constants'
+import toast from 'react-hot-toast'
+import type { ExecState } from '@src/lang/wasm'
+import type { FileMeta } from '@src/lib/types'
+import { isNonNullable } from '@src/lib/utils'
+import { PROJECT_ENTRYPOINT, REGEXP_UUIDV4, FILE_EXT } from '@src/lib/constants'
 import { joinOSPaths } from '@src/lib/paths'
 import { getUniqueProjectName } from '@src/lib/desktopFS'
 import { getAllSubDirectoriesAtProjectRoot } from '@src/machines/systemIO/snapshotContext'
 import { isDesktop } from '@src/lib/isDesktop'
-import type { Project } from '@src/lib/project'
+import type { FileEntry, Project } from '@src/lib/project'
 import type { ActorRefFrom } from 'xstate'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 
@@ -219,8 +223,8 @@ export const determineProjectFilePathFromPrompt = (args: {
 
 export const collectProjectFiles = async (args: {
   selectedFileContents: string
-  fileNames: any
-  targetFile?: string
+  fileNames: ExecState['filenames']
+  targetFile?: FileEntry
   projectContext?: any
 }) => {
   let projectFiles: FileMeta[] = [
@@ -295,7 +299,7 @@ export const collectProjectFiles = async (args: {
         filePromises.push(filePromise)
       }
     }
-    recursivelyPushFilePromises(context?.project?.children)
+    recursivelyPushFilePromises(args.projectContext?.children)
     projectFiles = (await Promise.all(filePromises)).filter(isNonNullable)
     const MB20 = 2 ** 20 * 20
     if (uploadSize > MB20) {
@@ -315,27 +319,30 @@ export const collectProjectFiles = async (args: {
   return projectFiles
 }
 
-export const jsonToMlConversations = (json) => {
+export const jsonToMlConversations = (json: string) => {
   const mlConversations = new Map<string, string>()
   const untypedObject = JSON.parse(json)
   for (let entry of Object.entries(untypedObject)) {
-    if (!REGEXP_UUIDV4.test(entry[0])) {
+    if (typeof entry[0] === 'string' && !REGEXP_UUIDV4.test(entry[0])) {
       console.warn(
         'Expected a project id string as a key (potentially bad format)'
       )
       continue
     }
-    if (!REGEXP_UUIDV4.test(entry[1])) {
+    if (typeof entry[1] === 'string' && !REGEXP_UUIDV4.test(entry[1])) {
       console.warn('Expected a conversation id string (potentially bad format)')
       continue
     }
-    mlConversations.set(entry[0], entry[1])
+
+    if (typeof entry[0] === 'string' && typeof entry[1] === 'string') {
+      mlConversations.set(entry[0], entry[1])
+    }
   }
   return mlConversations
 }
 
 export const mlConversationsToJson = (
-  convos: (typeof SystemIOContext)['mlEphantConversations']
+  convos: SystemIOContext['mlEphantConversations']
 ): string => {
   return JSON.stringify(Object.fromEntries(convos))
 }

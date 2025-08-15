@@ -73,26 +73,6 @@ export async function submitTextToCadMultiFileIterationRequest(
   },
   token: string
 ): Promise<TextToCadMultiFileIteration_type | Error> {
-  return {
-    conversation_id: 'd951cd15-44c5-424d-b943-97d1bb4a400a',
-    code: 'agLu8J7s7jsKjDbCRLJZPfY9nWuII',
-    completed_at: '2025-08-13T15:18:33.273Z',
-    created_at: '2025-08-13T15:18:33.273Z',
-    error: 'gIWGFQLTP257',
-    feedback: 'accepted',
-    id: 'e951cd15-44d5-4e4d-b943-97d1bb4a400a',
-    kcl_version: 'T2g4ZxfkqPu6O4L',
-    model: 'kcl',
-    model_version: '8TTp1htP1MA9ZOY9YU',
-    output_format: 'stl',
-    outputs: {},
-    prompt: 'Wawawawawa',
-    started_at: '2025-08-13T15:18:33.273Z',
-    status: 'completed',
-    updated_at: '2025-08-13T15:18:33.273Z',
-    user_id: 'e4bda170-4ae6-4988-bc51-248b8e52f55b',
-  }
-
   const formData = new FormData()
   formData.append('body', JSON.stringify(request.body))
 
@@ -134,7 +114,6 @@ export function constructMultiFileIterationRequestWithPromptHelpers({
   prompt,
   selections,
   projectFiles,
-  token,
   artifactGraph,
   projectName,
 }: {
@@ -312,6 +291,7 @@ See later source ranges for more context. about the sweep`,
   let payload = {
     body: {
       prompt,
+      conversation_id: conversationId,
       source_ranges: ranges,
       project_name:
         projectName !== '' && projectName !== 'browser'
@@ -322,9 +302,11 @@ See later source ranges for more context. about the sweep`,
     files,
   }
 
-  if (conversationId) {
-    payload.body.conversation_id = conversationId
+  if (!conversationId) {
+    delete payload.body.conversation_id
   }
+
+  return payload
 }
 
 export async function getPromptToEditResult(

@@ -646,11 +646,19 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
       async (args: {
         input: {
           context: SystemIOContext
-          event: { projectId: string; conversationId: string }
+          event: {
+            data: {
+              projectId: string
+              conversationId: string
+            }
+          }
         }
       }) => {
         const next = new Map(args.input.context.mlEphantConversations)
-        next.set(args.input.event.projectId, args.input.event.conversationId)
+        next.set(
+          args.input.event.data.projectId,
+          args.input.event.data.conversationId
+        )
         const json = mlConversationsToJson(next)
         await window.electron.writeFile(
           window.electron.path.join(

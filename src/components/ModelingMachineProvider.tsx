@@ -6,6 +6,7 @@ import React, {
   useMemo,
   useRef,
 } from 'react'
+import type { MutableRefObject } from 'react'
 import toast from 'react-hot-toast'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { useLoaderData } from 'react-router-dom'
@@ -49,7 +50,6 @@ import {
 } from '@src/lang/std/engineConnection'
 import { err, reportRejection, trap, reject } from '@src/lib/trap'
 import { isNonNullable, platform, uuidv4 } from '@src/lib/utils'
-import { promptToEditFlow } from '@src/lib/promptToEdit'
 import type { FileMeta } from '@src/lib/types'
 import { commandBarActor } from '@src/lib/singletons'
 import { useToken, useSettings } from '@src/lib/singletons'
@@ -113,6 +113,7 @@ export const ModelingMachineContext = createContext(
     state: StateFrom<typeof modelingMachine>
     context: ContextFrom<typeof modelingMachine>
     send: Prop<Actor<typeof modelingMachine>, 'send'>
+    theProject: MutableRefObject<Project | undefined>
   }
 )
 

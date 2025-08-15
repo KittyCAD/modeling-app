@@ -1,10 +1,15 @@
+import { type settings } from '@src/lib/settings/initialSettings'
+import type CodeManager from '@src/lang/codeManager'
+import type { KclManager } from '@src/lang/KclSingleton'
+import type { IndexLoaderData } from '@src/lib/types'
+import type { SystemIOActor } from '@src/lib/singletons'
 import { useEffect, useState } from 'react'
-import { useSettings, systemIOActor } from '@src/lib/singletons'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { useLoaderData } from 'react-router-dom'
 import { useSelector } from '@xstate/react'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { MlEphantConversation } from '@src/components/MlEphantConversation'
+import type { MlEphantManagerActor } from '@src/machines/mlEphantManagerMachine'
 import {
   MlEphantManagerContext,
   MlEphantManagerStates,
@@ -12,8 +17,14 @@ import {
 } from '@src/machines/mlEphantManagerMachine'
 import { Prompt } from '@src/lib/prompt'
 import { collectProjectFiles } from '@src/machines/systemIO/utils'
+import { ModelingMachineContext } from '@src/machines/modelingMachine'
+import type { FileEntry, Project } from '@src/lib/project'
+import type { Selections } from '@src/lib/selections'
 
-const hasMlEditableSelection = (graphSelections, codeSelections) => {
+const hasMlEditableSelection = (
+  graphSelections: Selections['graphSelections'],
+  codeSelections: Selections['otherSelections']
+) => {
   return graphSelections.length > 0 || codeSelections.length > 0
 }
 
@@ -23,76 +34,96 @@ const hasPromptsPending = (promptsPool: Prompt[]) => {
   )
 }
 
-export const MlEphantConversationPane = () => {
-  const settings = useSettings()
-  const { context: contextModeling, theProject } = useModelingContext()
-  const { file: loaderFile } = useLoaderData() as IndexLoaderData
-
+export const MlEphantConversationPane = (props: {
+  mlEphantManagerActor: MlEphantManagerActor
+  systemIOActor: SystemIOActor
+  kclManager: KclManager
+  codeManager: CodeManager
+  theProject: Project | undefined
+  contextModeling: ModelingMachineContext
+  loaderFile: FileEntry | undefined
+  settings: typeof settings
+}) => {
   const [hasCheckedForMlConversations, setHasCheckedForMlConversations] =
     useState(false)
 
-  const actor = mlEphantManagerActor.getSnapshot()
+  const mlEphantManagerActorSnapshot = props.mlEphantManagerActor.getSnapshot()
   const promptsBelongingToConversation = useSelector(
-    mlEphantManagerActor,
+    props.mlEphantManagerActor,
     () => {
-      return actor.context.promptsBelongingToConversation
+      return mlEphantManagerActorSnapshot.context.promptsBelongingToConversation
     }
   )
   const prompts = Array.from(
     promptsBelongingToConversation
       ?.values()
-      .map((promptId) => actor.context.promptsPool.get(promptId))
+      .map((promptId) =>
+        mlEphantManagerActorSnapshot.context.promptsPool.get(promptId)
+      )
       .filter((x) => x !== undefined) ?? []
   )
 
   const onProcess = async (requestedPrompt: string) => {
+    if (props.theProject === undefined) {
+      console.warn('theProject is `undefined` - should not be possible')
+      return
+    }
+
     const projectFiles = await collectProjectFiles({
-      selectedFileContents: codeManager.code,
-      fileNames: kclManager.execState.filenames,
-      projectContext: theProject,
-      targetFile: loaderFile,
+      selectedFileContents: props.codeManager.code,
+      fileNames: props.kclManager.execState.filenames,
+      projectContext: props.theProject,
+      targetFile: props.loaderFile,
     })
 
     // Only on initial project creation do we call the create endpoint, which
-    // has more data for initial creations. TTC updates will close this gap.
-    mlEphantManagerActor.send({
+    // has more data for initial creations. Improvements to the TTC service
+    // will close this gap in performance.
+    props.mlEphantManagerActor.send({
       type: MlEphantManagerTransitions.PromptEditModel,
       prompt: requestedPrompt,
-      projectForPromptOutput: theProject?.current,
-      fileSelectedDuringPrompting: loaderFile,
+      projectForPromptOutput: props.theProject,
+      fileSelectedDuringPrompting: props.loaderFile,
       projectFiles,
-      selections: contextModeling.selectionRanges,
-      artifactGraph: kclManager.artifactGraph,
+      selections: props.contextModeling.selectionRanges,
+      artifactGraph: props.kclManager.artifactGraph,
     })
   }
 
   useEffect(() => {
-    const subscription = systemIOActor.subscribe((snapshot) => {
-      if (snapshot.value === 'idle' && !hasCheckedForMlConversations) {
-        setHasCheckedForMlConversations(true)
-        systemIOActor.send({
-          type: SystemIOMachineEvents.getMlEphantConversations,
-        })
-        return
-      }
+    const subscription = props.systemIOActor.subscribe(
+      (systemIOActorSnapshot) => {
+        if (
+          systemIOActorSnapshot.value === 'idle' &&
+          !hasCheckedForMlConversations
+        ) {
+          setHasCheckedForMlConversations(true)
+          props.systemIOActor.send({
+            type: SystemIOMachineEvents.getMlEphantConversations,
+          })
+          return
+        }
 
-      // We can now reliably use the mlConversations data.
-      // THIS IS WHERE PROJECT IDS ARE MAPPED TO CONVERSATION IDS.
-      if (
-        snapshot.value === 'idle' &&
-        hasCheckedForMlConversations &&
-        snapshot.context.promptsBelongingToConversation === undefined
-      ) {
-        const conversationId = snapshot.context.mlEphantConversations.get(
-          settings.meta.id.project
-        )
+        // We can now reliably use the mlConversations data.
+        // THIS IS WHERE PROJECT IDS ARE MAPPED TO CONVERSATION IDS.
+        if (
+          systemIOActorSnapshot.value === 'idle' &&
+          hasCheckedForMlConversations &&
+          mlEphantManagerActorSnapshot.context
+            .promptsBelongingToConversation === undefined
+        ) {
+          const conversationId =
+            systemIOActorSnapshot.context.mlEphantConversations.get(
+              props.settings.meta.id.current
+            )
 
-        mlEphantManagerActor.send({
-          type: MlEphantManagerTransitions.GetPromptsBelongingToConversation,
-          conversationId,
-        })
+          props.mlEphantManagerActor.send({
+            type: MlEphantManagerTransitions.GetPromptsBelongingToConversation,
+            conversationId,
+          })
+        }
       }
-    })
+    )
     return () => {
       subscription.unsubscribe()
     }

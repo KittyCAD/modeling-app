@@ -75,6 +75,9 @@ export const systemIOMachineWeb = systemIOMachine.provide({
     [SystemIOMachineActors.getMlEphantConversations]: fromPromise(
       async (args: {}) => {
         const json = localStorage.getItem(LOCAL_STORAGE_ML_CONVERSATIONS)
+        if (json === null) {
+          return Promise.reject(new Error('No LOCAL_STORAGE_ML_CONVERSATIONS'))
+        }
         return jsonToMlConversations(json)
       }
     ),
@@ -82,7 +85,7 @@ export const systemIOMachineWeb = systemIOMachine.provide({
       async (args: {
         input: {
           context: SystemIOContext
-          event: { projectId: string; conversationId: string }
+          event: { data: { projectId: string; conversationId: string } }
         }
       }) => {
         const json = mlConversationsToJson(
@@ -90,10 +93,11 @@ export const systemIOMachineWeb = systemIOMachine.provide({
         )
         await localStorage.setItem(LOCAL_STORAGE_ML_CONVERSATIONS, json)
         const next = new Map(args.input.context.mlEphantConversations)
-        next.set(args.input.event.projectId, args.input.event.conversationId)
-        return {
-          mlEphantConversations: next,
-        }
+        next.set(
+          args.input.event.data.projectId,
+          args.input.event.data.conversationId
+        )
+        return next
       }
     ),
   },
