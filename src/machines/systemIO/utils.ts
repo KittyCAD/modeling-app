@@ -33,8 +33,8 @@ export enum SystemIOMachineActors {
   renameFileAndNavigateToFile = 'rename file and navigate to file',
   renameFolderAndNavigateToFile = 'rename folder and navigate to file',
   deleteFileOrFolderAndNavigate = 'delete file or folder and navigate',
-  getMlEphantConversations = 'get Ml-ephant conversations',
-  saveMlEphantConversations = 'save Ml-ephant conversations',
+  getMlEphantConversations = 'get ml-ephant conversations',
+  saveMlEphantConversations = 'save ml-ephant conversations',
 }
 
 export enum SystemIOMachineStates {
@@ -60,8 +60,8 @@ export enum SystemIOMachineStates {
   renamingFileAndNavigateToFile = 'renamingFileAndNavigateToFile',
   renamingFolderAndNavigateToFile = 'renamingFolderAndNavigateToFile',
   deletingFileOrFolderAndNavigate = 'delete file or folder and navigate',
-  gettingMlEphantConversations = 'getting Ml-ephant conversations',
-  savingMlEphantConversations = 'saving Ml-ephant conversations',
+  gettingMlEphantConversations = 'getting ml-ephant conversations',
+  savingMlEphantConversations = 'saving ml-ephant conversations',
 }
 
 const donePrefix = 'xstate.done.actor.'
@@ -122,7 +122,7 @@ export enum SystemIOMachineActions {
   setRequestedTextToCadGeneration = 'set requested text to cad generation',
   setLastProjectDeleteRequest = 'set last project delete request',
   toastProjectNameTooLong = 'toast project name too long',
-  setMlEphantConversations = 'set Ml-ephant conversations',
+  setMlEphantConversations = 'set ml-ephant conversations',
 }
 
 export enum SystemIOMachineGuards {

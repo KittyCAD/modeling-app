@@ -1,3 +1,4 @@
+import { NIL as uuidNIL } from 'uuid'
 import { type settings } from '@src/lib/settings/initialSettings'
 import type CodeManager from '@src/lang/codeManager'
 import type { KclManager } from '@src/lang/KclSingleton'
@@ -17,6 +18,7 @@ import {
 } from '@src/machines/mlEphantManagerMachine'
 import { Prompt } from '@src/lib/prompt'
 import { collectProjectFiles } from '@src/machines/systemIO/utils'
+import { S } from '@src/machines/utils'
 import { ModelingMachineContext } from '@src/machines/modelingMachine'
 import type { FileEntry, Project } from '@src/lib/project'
 import type { Selections } from '@src/lib/selections'
@@ -90,6 +92,29 @@ export const MlEphantConversationPane = (props: {
     })
   }
 
+  const onSeeMoreHistory = (nextPage?: string) => {
+    if (!nextPage) return
+    const conversationId = props.systemIOActor
+      .getSnapshot()
+      .context.mlEphantConversations.get(props.settings.meta.id.current)
+
+    props.mlEphantManagerActor.send({
+      type: MlEphantManagerTransitions.GetPromptsBelongingToConversation,
+      conversationId,
+      nextPage:
+        mlEphantManagerActorSnapshot.context
+          .pageTokenPromptsBelongingToConversation,
+    })
+  }
+
+  const onFeedback = (id: Prompt['id'], feedback: Prompt['feedback']) => {
+    props.mlEphantManagerActor.send({
+      type: MlEphantManagerTransitions.PromptFeedback,
+      promptId: id,
+      feedback,
+    })
+  }
+
   useEffect(() => {
     const subscription = props.systemIOActor.subscribe(
       (systemIOActorSnapshot) => {
@@ -104,6 +129,15 @@ export const MlEphantConversationPane = (props: {
           return
         }
 
+        const conversationId =
+          systemIOActorSnapshot.context.mlEphantConversations.get(
+            props.settings.meta.id.current
+          )
+
+        if (conversationId === uuidNIL) {
+          return
+        }
+
         // We can now reliably use the mlConversations data.
         // THIS IS WHERE PROJECT IDS ARE MAPPED TO CONVERSATION IDS.
         if (
@@ -112,11 +146,6 @@ export const MlEphantConversationPane = (props: {
           mlEphantManagerActorSnapshot.context
             .promptsBelongingToConversation === undefined
         ) {
-          const conversationId =
-            systemIOActorSnapshot.context.mlEphantConversations.get(
-              props.settings.meta.id.current
-            )
-
           props.mlEphantManagerActor.send({
             type: MlEphantManagerTransitions.GetPromptsBelongingToConversation,
             conversationId,
@@ -129,12 +158,29 @@ export const MlEphantConversationPane = (props: {
     }
   }, [hasCheckedForMlConversations])
 
+  const isProcessing =
+    mlEphantManagerActorSnapshot.matches({
+      [MlEphantManagerStates.Ready]: {
+        [MlEphantManagerStates.Foreground]: S.Await,
+      },
+    }) === false
+
   return (
     <MlEphantConversation
-      isLoading={promptsBelongingToConversation === undefined}
+      isLoading={promptsBelongingToConversation === undefined || isProcessing}
       prompts={prompts}
       onProcess={onProcess}
-      disabled={hasPromptsPending(prompts)}
+      onFeedback={onFeedback}
+      disabled={hasPromptsPending(prompts) || isProcessing}
+      hasPromptCompleted={
+        mlEphantManagerActorSnapshot.context.promptsInProgressToCompleted.size >
+        0
+      }
+      nextPage={
+        mlEphantManagerActorSnapshot.context
+          .pageTokenPromptsBelongingToConversation
+      }
+      onSeeMoreHistory={onSeeMoreHistory}
     />
   )
 }

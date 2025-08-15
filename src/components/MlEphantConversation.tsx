@@ -9,13 +9,19 @@ export interface MlEphantConversationProps {
   isLoading: boolean
   prompts: Prompt[]
   onProcess: (requestedPrompt: string) => void
+  onFeedback: (id: Prompt['id'], feedback: Prompt['feedback']) => void
   disabled?: boolean
+  nextPage?: string
+  onSeeMoreHistory: (nextPage?: string) => void
+  hasPromptCompleted: boolean
 }
 
 interface MlEphantConversationInputProps {
   onProcess: MlEphantConversationProps['onProcess']
   disabled?: boolean
 }
+
+const ANIMATION_TIME = 2000
 
 export const MlEphantConversationInput = (
   props: MlEphantConversationInputProps
@@ -53,7 +59,7 @@ export const MlEphantConversationInput = (
 
     setTimeout(() => {
       setAnimating(false)
-    }, 2000)
+    }, ANIMATION_TIME)
   }
 
   useEffect(() => {
@@ -72,6 +78,13 @@ export const MlEphantConversationInput = (
           autoCorrect="off"
           spellCheck="false"
           ref={refDiv}
+          onKeyDown={(e) => {
+            if (e.key !== 'Enter') {
+              return
+            }
+            e.preventDefault()
+            onClick()
+          }}
           className={`outline-none w-full overflow-auto ${isAnimating ? 'hidden' : ''}`}
           style={{ height: '2lh' }}
         ></div>
@@ -97,25 +110,63 @@ export const MlEphantConversationInput = (
 
 export const MlEphantConversation = (props: MlEphantConversationProps) => {
   const refScroll = useRef<HTMLDivElement>(null)
+  const [autoScroll, setAutoScroll] = useState<boolean>(true)
 
-  const onDelete = () => {}
-  const onFeedback = () => {}
+  const onSeeMoreHistory = () => {
+    setAutoScroll(false)
+    props.onSeeMoreHistory(props.nextPage)
+  }
+
+  const onProcess = (requestedPrompt: string) => {
+    setAutoScroll(true)
+    props.onProcess(requestedPrompt)
+  }
 
   useEffect(() => {
-    if (refScroll.current) {
-      refScroll.current.children[
-        refScroll.current.children.length - 1
-      ].scrollIntoView()
+    if (autoScroll === false) {
+      return
     }
-  }, [props.prompts.length])
+    if (refScroll.current === null) {
+      return
+    }
+    if (props.prompts.length === 0) {
+      return
+    }
+
+    setTimeout(() => {
+      if (refScroll.current == null) {
+        return
+      }
+      refScroll.current.scrollTo({
+        top: refScroll.current.scrollHeight,
+        behavior: 'smooth',
+      })
+    }, ANIMATION_TIME / 4) // This is a heuristic. I'm sorry. We'd need to
+    // hook up "animation is done" otherwise to all children.
+  }, [props.prompts.length, autoScroll])
+
+  useEffect(() => {
+    if (autoScroll === false) {
+      return
+    }
+    if (refScroll.current == null) {
+      return
+    }
+    if (!props.hasPromptCompleted) {
+      return
+    }
+    refScroll.current.scrollTo({
+      top: refScroll.current.scrollHeight,
+      behavior: 'smooth',
+    })
+  }, [props.hasPromptCompleted, autoScroll])
 
   const promptCards = props.prompts.map((prompt) => (
     <PromptCard
       key={prompt.id}
       {...prompt}
       disabled={prompt.status !== 'completed'}
-      onDelete={onDelete}
-      onFeedback={onFeedback}
+      onFeedback={props.onFeedback}
     />
   ))
   return (
@@ -125,9 +176,18 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
           <div className="h-full flex flex-col justify-end overflow-auto">
             <div className="overflow-auto" ref={refScroll}>
               {props.isLoading === false ? (
-                <div className="text-center p-4 text-chalkboard-60 text-md">
-                  The beginning of this project's Text-to-CAD history.
-                </div>
+                props.nextPage ? (
+                  <div
+                    onClick={() => onSeeMoreHistory()}
+                    className="cursor-pointer underline text-center p-4 text-chalkboard-60 text-sm"
+                  >
+                    See more history
+                  </div>
+                ) : (
+                  <div className="text-center p-4 text-chalkboard-60 text-md">
+                    The beginning of this project's Text-to-CAD history.
+                  </div>
+                )
               ) : (
                 <div className="text-center p-4 text-chalkboard-60 text-md animate-pulse">
                   Loading history
@@ -139,7 +199,7 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
           <div className="border-t">
             <MlEphantConversationInput
               disabled={props.disabled || props.isLoading}
-              onProcess={props.onProcess}
+              onProcess={onProcess}
             />
           </div>
         </div>
