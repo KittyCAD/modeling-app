@@ -19,9 +19,9 @@ use super::{
     token::{NumericSuffix, RESERVED_WORDS},
 };
 use crate::{
-    IMPORT_FILE_EXTENSIONS, SourceRange, TypedPath,
+    IMPORT_FILE_EXTENSIONS, MetaSettings, SourceRange, TypedPath,
     errors::{CompilationError, Severity, Tag},
-    execution::types::ArrayLen,
+    execution::{annotations, types::ArrayLen},
     parsing::{
         PIPE_OPERATOR, PIPE_SUBSTITUTION_OPERATOR,
         ast::types::{
@@ -71,11 +71,15 @@ pub fn run_parser(i: TokenSlice) -> super::ParseResult {
 #[derive(Debug, Clone, Default)]
 struct ParseContext {
     pub errors: Vec<CompilationError>,
+    settings: MetaSettings,
 }
 
 impl ParseContext {
     fn new() -> Self {
-        ParseContext { errors: Vec::new() }
+        ParseContext {
+            errors: Vec::new(),
+            settings: Default::default(),
+        }
     }
 
     /// Set a new `ParseContext` in thread-local storage. Panics if one already exists.
@@ -88,6 +92,22 @@ impl ParseContext {
     /// is not present.
     fn take() -> ParseContext {
         CTXT.with_borrow_mut(|ctxt| ctxt.take()).unwrap()
+    }
+
+    fn handle_attribute(attr: &Node<Annotation>) {
+        // TODO handle scoping of attributes - not currently much of an issue because if settings is
+        // not top-level, then we'll get an error later.
+        match attr.name() {
+            Some(annotations::SETTINGS) => {
+                CTXT.with_borrow_mut(|ctxt| {
+                    let _ = ctxt.as_mut().unwrap().settings.update_from_annotation(attr);
+                });
+            }
+            Some(annotations::WARNINGS) => {
+                // TODO https://github.com/KittyCAD/modeling-app/issues/8021
+            }
+            _ => {}
+        }
     }
 
     /// Add an error to the current `ParseContext`, panics if there is none.
@@ -115,6 +135,24 @@ impl ParseContext {
     fn warn(mut e: CompilationError) {
         e.severity = Severity::Warning;
         Self::err(e);
+    }
+
+    fn experimental(feature: &str, source_range: SourceRange) {
+        CTXT.with_borrow_mut(|ctxt| {
+            let ctxt = ctxt.as_mut().unwrap();
+            let Some(severity) = ctxt.settings.experimental_features.severity() else {
+                return;
+            };
+            let error = CompilationError {
+                source_range,
+                message: format!("Use of {feature} is experimental and may change or be removed."),
+                suggestion: None,
+                severity,
+                tag: crate::errors::Tag::None,
+            };
+
+            ctxt.errors.push(error);
+        });
     }
 }
 
@@ -338,12 +376,20 @@ fn annotation(i: &mut TokenSlice) -> ModalResult<Node<Annotation>> {
         ));
     }
 
-    let value = Annotation {
-        name,
-        properties,
-        digest: None,
-    };
-    Ok(Node::new(value, at.start, end, at.module_id))
+    let value = Node::new(
+        Annotation {
+            name,
+            properties,
+            digest: None,
+        },
+        at.start,
+        end,
+        at.module_id,
+    );
+
+    ParseContext::handle_attribute(&value);
+
+    Ok(value)
 }
 
 // Matches remaining three cases of NonCodeValue
@@ -1973,11 +2019,8 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
         ImportPath::Kcl {
             filename: TypedPath::new(&path_string),
         }
-    } else if path_string.starts_with("std::") {
-        ParseContext::warn(CompilationError::err(
-            path_range,
-            "explicit imports from the standard library are experimental, likely to be buggy, and likely to change.",
-        ));
+    } else if path_string.starts_with("std") {
+        ParseContext::experimental("explicit imports from the standard library", path_range);
 
         let segments: Vec<String> = path_string.split("::").map(str::to_owned).collect();
 
@@ -1990,7 +2033,7 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
         }
 
         // For now we only support importing from singly-nested modules inside std.
-        if segments.len() != 2 {
+        if segments.len() > 2 {
             return Err(ErrMode::Cut(
                 CompilationError::fatal(
                     path_range,
@@ -2125,10 +2168,10 @@ fn label(i: &mut TokenSlice) -> ModalResult<Node<Identifier>> {
     )
     .parse_next(i)?;
 
-    ParseContext::warn(CompilationError::err(
+    ParseContext::experimental(
+        "`as` for tagging expressions",
         SourceRange::new(result.start, result.end, result.module_id),
-        "Using `as` for tagging expressions is experimental, likely to be buggy, and likely to change",
-    ));
+    );
 
     Ok(result)
 }
@@ -2374,10 +2417,7 @@ fn ty_decl(i: &mut TokenSlice) -> ModalResult<BoxNode<TypeDeclaration>> {
         ignore_whitespace(i);
         let ty = type_(i)?;
 
-        ParseContext::warn(CompilationError::err(
-            ty.as_source_range(),
-            "Type aliases are experimental, likely to change in the future, and likely to not work properly.",
-        ));
+        ParseContext::experimental("type aliases", ty.as_source_range());
 
         Some(ty)
     } else {
@@ -2398,10 +2438,7 @@ fn ty_decl(i: &mut TokenSlice) -> ModalResult<BoxNode<TypeDeclaration>> {
         },
     );
 
-    ParseContext::warn(CompilationError::err(
-        result.as_source_range(),
-        "Type declarations are experimental, likely to change, and may or may not do anything useful.",
-    ));
+    ParseContext::experimental("type declarations", result.as_source_range());
 
     Ok(result)
 }
@@ -5085,7 +5122,8 @@ let myBox = box(p=[0,0], h=-3, l=-16, w=-10)
 
     #[test]
     fn parse_function_types() {
-        let code = r#"foo = x: fn
+        let code = r#"@settings(experimentalFeatures = allow)
+foo = x: fn
 foo = x: fn(number)
 fn foo(x: fn(): number): fn { return 0 }
 fn foo(x: fn(a, b: number(mm), c: d): number(Angle)): fn { return 0 }
@@ -5099,6 +5137,24 @@ type foo = fn(fn, f: fn(number(_))): [fn([any]): string]
     "#;
         assert_no_err(code);
     }
+
+    #[test]
+    fn experimental() {
+        let code = r#"4 as foo"#;
+        assert_err(code, "Use of `as` for tagging expressions is experimental", [5, 8]);
+
+        let code = r#"@settings(experimentalFeatures = allow)
+4 as foo
+    "#;
+        assert_no_err(code);
+
+        let code = r#"@settings(experimentalFeatures = warn)
+4 as foo
+    "#;
+        let (_, errs) = assert_no_err(code);
+        assert_eq!(errs.len(), 1);
+    }
+
     #[test]
     fn test_parse_tag_starting_with_bang() {
         let some_program_string = r#"startSketchOn(XY)

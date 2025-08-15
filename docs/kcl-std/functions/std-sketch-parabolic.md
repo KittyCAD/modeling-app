@@ -5,6 +5,8 @@ excerpt: "Add a parabolic segment to an existing sketch."
 layout: manual
 ---
 
+**WARNING:** This function is experimental and may change or be removed.
+
 Add a parabolic segment to an existing sketch.
 
 ```kcl
@@ -41,6 +43,8 @@ parabolic(
 ### Examples
 
 ```kcl
+@settings(experimentalFeatures = allow)
+
 exampleSketch = startSketchOn(XY)
   |> startProfile(at = [0, 0])
   |> parabolic(end = [10, 0], coefficients = [2, 0, 0])
