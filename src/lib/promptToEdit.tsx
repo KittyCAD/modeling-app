@@ -313,7 +313,7 @@ export async function getPromptToEditResult(
   id: string,
   token?: string
 ): Promise<Models['TextToCadMultiFileIteration_type'] | Error> {
-  const url = withAPIBaseURL(`/async/operations/${id}`)
+  const url = withAPIBaseURL(`/user/text-to-cad/${id}`)
   const data: Models['TextToCadMultiFileIteration_type'] | Error =
     await crossPlatformFetch(
       url,

@@ -16,6 +16,7 @@ import { PromptType } from '@src/lib/prompt'
 import {
   textToCadMlConversations,
   textToCadMlPromptsBelongingToConversation,
+  textToCadPromptFeedback,
   getTextToCadCreateResult,
   submitTextToCadCreateRequest,
   IResponseMlConversations,
@@ -44,9 +45,8 @@ export enum MlEphantManagerTransitions {
   GetPromptsPendingStatuses = 'get-prompts-pending-statuses',
   PromptEditModel = 'prompt-edit-model',
   PromptCreateModel = 'prompt-create-model',
-  PromptRate = 'prompt-rate',
-  // Note, technically hiding.
-  PromptDelete = 'prompt-delete',
+  PromptFeedback = 'prompt-feedback',
+  ClearProjectSpecificState = 'clear-project-specific-state',
 }
 
 export type MlEphantManagerEvents =
@@ -60,6 +60,7 @@ export type MlEphantManagerEvents =
   | {
       type: MlEphantManagerTransitions.GetPromptsBelongingToConversation
       conversationId?: string
+      nextPage?: string
     }
   | {
       type: MlEphantManagerTransitions.PromptCreateModel
@@ -76,12 +77,12 @@ export type MlEphantManagerEvents =
       artifactGraph: ArtifactGraph
     }
   | {
-      type: MlEphantManagerTransitions.PromptRate
+      type: MlEphantManagerTransitions.PromptFeedback
       promptId: string
+      feedback: Prompt['feedback']
     }
   | {
-      type: MlEphantManagerTransitions.PromptDelete
-      promptId: string
+      type: MlEphantManagerTransitions.ClearProjectSpecificState
     }
 
 // Used to specify a specific event in input properties
@@ -201,9 +202,9 @@ export const mlEphantManagerMachine = setup({
           context.apiTokenMlephant,
           {
             conversationId: args.input.event.conversationId,
-            pageToken: undefined,
-            limit: 20,
-            sortBy: 'created_at_ascending',
+            pageToken: args.input.event.nextPage,
+            limit: 5,
+            sortBy: 'created_at_descending',
           }
         )
 
@@ -212,12 +213,18 @@ export const mlEphantManagerMachine = setup({
         }
 
         // Clear the prompts pool and what prompts we were tracking.
-        const promptsPoolNext = new Map()
-        const promptsBelongingToConversationNext = new Set<string>()
-        result.items.forEach((prompt) => {
-          promptsPoolNext.set(prompt.id, prompt)
+        const promptsPoolNext = new Map(context.promptsPool)
+        let promptsBelongingToConversationNext = new Set<string>()
+
+        result.items.reverse().forEach((prompt) => {
+          promptsPoolNext.set(prompt.id, { ...prompt, source_ranges: [] })
           promptsBelongingToConversationNext.add(prompt.id)
         })
+
+        promptsBelongingToConversationNext =
+          promptsBelongingToConversationNext.union(
+            context.promptsBelongingToConversation ?? new Set<string>()
+          )
 
         return {
           promptsPool: promptsPoolNext,
@@ -248,11 +255,10 @@ export const mlEphantManagerMachine = setup({
           return Promise.reject(result)
         }
 
-        const promptsPool = context.promptsPool
-        const promptsBelongingToConversation = new Set(
-          context.promptsBelongingToConversation
-        )
-        const promptsMeta = new Map(context.promptsMeta)
+        const promptsPool = new Map()
+        // We're going to create a new project so it'll be the first
+        const promptsBelongingToConversation = new Set<string>()
+        const promptsMeta = new Map()
 
         promptsPool.set(result.id, { ...result, source_ranges: [] })
         promptsBelongingToConversation.add(result.id)
@@ -330,6 +336,35 @@ export const mlEphantManagerMachine = setup({
         }
       }
     ),
+    [MlEphantManagerTransitions.PromptFeedback]: fromPromise(
+      async function (args: {
+        input: {
+          event: XSEvent<MlEphantManagerTransitions.PromptFeedback>
+          context: MlEphantManagerContext
+        }
+      }): Promise<Partial<MlEphantManagerContext>> {
+        const context = args.input.context
+
+        if (context.apiTokenMlephant === undefined)
+          return Promise.reject('missing api token')
+
+        const promptsPoolNext = new Map(args.input.context.promptsPool)
+        const prompt = promptsPoolNext.get(args.input.event.promptId)
+        if (!prompt) {
+          return Promise.reject(new Error('Cant find prompt'))
+        }
+        prompt.feedback = args.input.event.feedback
+
+        await textToCadPromptFeedback(context.apiTokenMlephant, {
+          id: args.input.event.promptId,
+          feedback: args.input.event.feedback,
+        })
+
+        return {
+          promptsPool: promptsPoolNext,
+        }
+      }
+    ),
     [MlEphantManagerTransitions.GetPromptsPendingStatuses]: fromPromise(
       async function (args: {
         input: {
@@ -351,6 +386,14 @@ export const mlEphantManagerMachine = setup({
             continue
           }
 
+          // Only check on prompts that need checking lol
+          if (
+            ['in_progress', 'queued', 'uploaded'].includes(prompt.status) ===
+            false
+          ) {
+            continue
+          }
+
           // This shit'll be nuked when we have pure websocket API and no diff.
           // between creation and iteration.
           let result
@@ -368,6 +411,14 @@ export const mlEphantManagerMachine = setup({
 
           if (err(result)) {
             return Promise.reject(result)
+          }
+
+          // It's not done still.
+          if (
+            ['in_progress', 'queued', 'uploaded'].includes(result.status) ===
+            true
+          ) {
+            continue
           }
 
           promptsInProgressToCompleted.add(prompt.id)
@@ -457,7 +508,19 @@ export const mlEphantManagerMachine = setup({
                 MlEphantManagerTransitions.GetPromptsBelongingToConversation,
                 MlEphantManagerTransitions.PromptCreateModel,
                 MlEphantManagerTransitions.PromptEditModel,
+                MlEphantManagerTransitions.PromptFeedback,
+                MlEphantManagerTransitions.ClearProjectSpecificState,
               ]),
+            },
+            [MlEphantManagerTransitions.ClearProjectSpecificState]: {
+              always: {
+                target: S.Await,
+                actions: [
+                  assign({
+                    promptsBelongingToConversation: undefined,
+                  }),
+                ],
+              },
             },
             [MlEphantManagerTransitions.GetConversationsThatCreatedProjects]: {
               invoke: {
@@ -510,6 +573,21 @@ export const mlEphantManagerMachine = setup({
                   context: args.context,
                 }),
                 src: MlEphantManagerTransitions.PromptEditModel,
+                onDone: {
+                  target: S.Await,
+                  actions: assign(({ event }) => event.output),
+                },
+                onError: { target: S.Await, actions: console.error },
+              },
+            },
+            [MlEphantManagerTransitions.PromptFeedback]: {
+              invoke: {
+                input: (args) => ({
+                  event:
+                    args.event as XSEvent<MlEphantManagerTransitions.PromptFeedback>,
+                  context: args.context,
+                }),
+                src: MlEphantManagerTransitions.PromptFeedback,
                 onDone: {
                   target: S.Await,
                   actions: assign(({ event }) => event.output),

@@ -266,7 +266,7 @@ export function SystemIOMachineLogicListenerDesktop() {
         (promptId: Prompt['id']) => {
           const prompt = next.context.promptsPool.get(promptId)
           if (prompt === undefined) return
-          if (prompt.code === undefined) return
+          if (prompt.status === 'failed') return
           const promptMeta = next.context.promptsMeta.get(prompt.id)
           if (promptMeta === undefined) {
             console.warn('No metadata for this prompt - ignoring.')
@@ -274,7 +274,7 @@ export function SystemIOMachineLogicListenerDesktop() {
           }
 
           if (promptMeta.type === PromptType.Create) {
-            // NOTE: Good chance after making tsc happy I fucked myself somehow
+            if (prompt.code === undefined) return
             systemIOActor.send({
               type: SystemIOMachineEvents.importFileFromURL,
               data: {

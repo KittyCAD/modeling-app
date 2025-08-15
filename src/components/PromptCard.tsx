@@ -30,7 +30,10 @@ export const ConvoCard = (props: ConvoCardProps) => {
           )}
         </div>
         <div className="text-sm text-chalkboard-70">
-          {ms(new Date(props.created_at).getTime() / 1000, { long: true })} ago
+          {ms(Date.now() - new Date(props.created_at).getTime(), {
+            long: true,
+          })}{' '}
+          ago
         </div>
       </div>
     </div>
@@ -40,7 +43,6 @@ export const ConvoCard = (props: ConvoCardProps) => {
 export interface PromptCardProps extends Prompt {
   disabled?: boolean
   onAction?: (id: Prompt['id'], prompt: Prompt['prompt']) => void
-  onDelete?: (id: Prompt['id']) => void
   onFeedback?: (id: string, feedback: Prompt['feedback']) => void
 }
 
@@ -101,19 +103,22 @@ export const PromptCardActionButton = (props: {
 
 export const PromptCardStatus = (props: {
   status: Prompt['status']
+  maybeError?: string
 }) => {
   const loading = (
     <Loading isCompact={true} isDummy={true}>
       Thinking
     </Loading>
   )
+  const failed = <div>{props.maybeError}</div>
+
   const Status: { [key in Prompt['status']]: ReactNode | null } = {
     completed: null,
     in_progress: loading,
     queued: loading,
     uploaded: loading,
     // A bit less harsh wording
-    failed: <>Unsuccessful</>,
+    failed,
   }
 
   return (
@@ -147,6 +152,10 @@ export const PromptCard = (props: PromptCardProps) => {
     setStyle({ height: refHeight.current })
   }, [])
 
+  useEffect(() => {
+    setStyle({ height: 'auto' })
+  }, [props.status])
+
   return (
     <div ref={refCard} className={cssCard} style={style}>
       <div className="flex flex-row justify-between gap-2">
@@ -162,7 +171,7 @@ export const PromptCard = (props: PromptCardProps) => {
           />
         </div>
       </div>
-      <div className="flex flex-row justify-between">
+      <div className="flex flex-row justify-between gap-2">
         <div className="flex flex-row gap-2">
           {props.onAction !== undefined && (
             <PromptCardActionButton
@@ -171,10 +180,13 @@ export const PromptCard = (props: PromptCardProps) => {
               onClick={() => props.onAction?.(props.id, props.prompt)}
             />
           )}
-          <PromptCardStatus status={props.status} />
+          <PromptCardStatus status={props.status} maybeError={props.error} />
         </div>
-        <div className="text-sm text-chalkboard-70">
-          {ms(new Date(props.created_at).getTime(), { long: true })} ago
+        <div className="text-sm text-chalkboard-70 flex-shrink-0">
+          {ms(Date.now() - new Date(props.created_at).getTime(), {
+            long: true,
+          })}{' '}
+          ago
         </div>
       </div>
     </div>

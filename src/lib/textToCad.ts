@@ -63,7 +63,7 @@ export async function getTextToCadCreateResult(
   id: string,
   token?: string
 ): Promise<Models['TextToCad_type'] | Error> {
-  const url = withAPIBaseURL(`/async/operations/${id}`)
+  const url = withAPIBaseURL(`/user/text-to-cad/${id}`)
   const data: Models['TextToCad_type'] | Error = await crossPlatformFetch(
     url,
     {
@@ -132,7 +132,7 @@ export async function textToCadMlPromptsBelongingToConversation(
     conversationId: string
     pageToken?: string
     limit?: number
-    sortBy: 'created_at_ascending'
+    sortBy: 'created_at_ascending' | 'created_at_descending'
   }
 ): Promise<PromptsPaged | Error> {
   const url = withAPIBaseURL(
@@ -142,6 +142,27 @@ export async function textToCadMlPromptsBelongingToConversation(
     url,
     {
       method: 'GET',
+    },
+    token
+  )
+
+  return data
+}
+
+export async function textToCadPromptFeedback(
+  token: string,
+  args: {
+    id: Models['TextToCad_type']['id']
+    feedback: Models['TextToCad_type']['feedback']
+  }
+): Promise<void | Error> {
+  const url = withAPIBaseURL(
+    `/user/text-to-cad/${args.id}?feedback=${args.feedback}`
+  )
+  const data: void | Error = await crossPlatformFetch(
+    url,
+    {
+      method: 'POST',
     },
     token
   )
