@@ -1,6 +1,7 @@
-use crate::datatypes::*;
-use crate::equations::*;
+use indexmap::IndexSet;
 use kittycad_modeling_cmds::shared::Angle;
+
+use crate::{datatypes::*, equations::*};
 
 pub mod datatypes;
 pub mod equations;
@@ -23,8 +24,42 @@ pub enum Constraint {
     Symmetric(DatumLine, DatumPoint, DatumPoint),
 }
 
+#[derive(Default)]
+#[cfg_attr(test, derive(Debug))]
+pub struct System {
+    equations: Vec<Equation>,
+    variables: IndexSet<Label>,
+}
+
+impl std::ops::Add for System {
+    type Output = Self;
+
+    fn add(mut self, rhs: Self) -> Self::Output {
+        self.equations.extend(rhs.equations);
+        self.variables.extend(rhs.variables);
+        self
+    }
+}
+
+impl std::ops::AddAssign for System {
+    fn add_assign(&mut self, rhs: Self) {
+        self.equations.extend(rhs.equations);
+        self.variables.extend(rhs.variables);
+    }
+}
+
+impl FromIterator<System> for System {
+    fn from_iter<T: IntoIterator<Item = System>>(iter: T) -> Self {
+        let mut system = System::default();
+        for sys in iter {
+            system += sys;
+        }
+        system
+    }
+}
+
 impl Constraint {
-    pub fn into_equations(self) -> Vec<Equation> {
+    pub fn into_system(self, system: &mut System) {
         // For now, just for ease of debugging, use strings.
         // When we are ready to actually measure performance, change to numeric IDs.
         match self {
@@ -32,24 +67,25 @@ impl Constraint {
             Constraint::DistancePointToLine(p, line) => todo!(),
             Constraint::Angle(line, angle) => todo!(),
             Constraint::Coincident(p0, p1) => {
-                vec![
-                    Equation::single_variable(format!("{}y", p1.label()))
-                        - Equation::single_variable(format!("{}y", p0.label())),
-                    Equation::single_variable(format!("{}x", p1.label()))
-                        - Equation::single_variable(format!("{}x", p0.label())),
-                ]
+                system
+                    .variables
+                    .extend([p1.label_y(), p0.label_y(), p1.label_x(), p0.label_x()]);
+                system.equations.extend([
+                    Equation::single_variable(p1.label_y()) - Equation::single_variable(p0.label_y()),
+                    Equation::single_variable(p1.label_x()) - Equation::single_variable(p0.label_x()),
+                ]);
             }
             Constraint::Vertical(p0, p1) => {
-                vec![
-                    Equation::single_variable(format!("{}x", p1.label()))
-                        - Equation::single_variable(format!("{}x", p0.label())),
-                ]
+                system.variables.extend([p1.label_x(), p0.label_x()]);
+                system
+                    .equations
+                    .push(Equation::single_variable(p1.label_x()) - Equation::single_variable(p0.label_x()));
             }
             Constraint::Horizontal(p0, p1) => {
-                vec![
-                    Equation::single_variable(format!("{}y", p1.label()))
-                        - Equation::single_variable(format!("{}y", p0.label())),
-                ]
+                system.variables.extend([p1.label_y(), p0.label_y()]);
+                system
+                    .equations
+                    .push(Equation::single_variable(p1.label_y()) - Equation::single_variable(p0.label_y()));
             }
             Constraint::Symmetric(line, p0, p1) => todo!(),
         }
@@ -66,7 +102,10 @@ mod tests {
             DatumPoint::new("p".to_owned()),
             DatumPoint::new("q".to_owned()),
         )];
-        let equations: Vec<_> = constraints.into_iter().flat_map(|c| c.into_equations()).collect();
-        dbg!(&equations);
+        let mut system = System::default();
+        for constraint in constraints {
+            constraint.into_system(&mut system);
+        }
+        dbg!(&system);
     }
 }

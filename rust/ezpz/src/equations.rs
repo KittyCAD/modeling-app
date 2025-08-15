@@ -2,10 +2,7 @@
 // see https://www.mattkeeter.com/projects/constraints/
 use indexmap::IndexMap;
 
-// TODO: This could be generic instead,
-// so that in debug/tests we use strings for easy readability,
-// and in production we use ints for speed.
-pub type Label = String;
+use crate::datatypes::Label;
 
 /// The value of each variable in an equation.
 pub type Vars = IndexMap<Label, f64>;

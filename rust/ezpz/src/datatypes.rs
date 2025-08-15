@@ -30,8 +30,19 @@ impl DatumPoint {
 type Id = String;
 
 impl DatumPoint {
+    /// Label for this.
     pub fn label(&self) -> Id {
         self.label.clone()
+    }
+
+    /// Label for the X component of the point.
+    pub fn label_x(&self) -> Id {
+        format!("{}x", self.label)
+    }
+
+    /// Label for the Y component of the point.
+    pub fn label_y(&self) -> Id {
+        format!("{}y", self.label)
     }
 }
 
