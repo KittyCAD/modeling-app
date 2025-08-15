@@ -218,21 +218,27 @@ export class InfiniteGridRenderer extends LineSegments<
 
     const lineGap = effectiveMinorSpacing * pixelsPerBaseUnit
     const lineGapNDC = [
-      lineGap / viewportWidthPx * 2 * window.devicePixelRatio,
-      lineGap / viewportHeightPx * 2 * window.devicePixelRatio
+      (lineGap / viewportWidthPx) * 2 * window.devicePixelRatio,
+      (lineGap / viewportHeightPx) * 2 * window.devicePixelRatio,
     ]
 
     const ndc = new Vector3(-1, -1, 0)
     // camera.updateProjectionMatrix()
     // camera.updateMatrixWorld()
     ndc.unproject(camera)
-    const leftEdge = ndc.y / baseUnitMultiplier// x, other: z // baseMultiplier
-    const bottomEdge = ndc.z / baseUnitMultiplier// y, other: z // baseMultiplier
+    const leftEdge = ndc.y / baseUnitMultiplier // x, other: z // baseMultiplier
+    const bottomEdge = ndc.z / baseUnitMultiplier // y, other: z // baseMultiplier
     console.log('leftEdge', leftEdge, camera.position, camera.left)
 
     const lineOffsetNDC = [
-      -1 -((leftEdge % 1) + 1) * pixelsPerBaseUnit / viewportWidthPx * 2 * window.devicePixelRatio, //-camera.position.z % effectiveMinorSpacing / worldViewportWidth * 2,
-      -1 - ((bottomEdge % 1) + 1) * pixelsPerBaseUnit / viewportHeightPx * 2 * window.devicePixelRatio //-camera.position.y % effectiveMinorSpacing / worldViewportHeight * 2,
+      -1 -
+        ((((leftEdge % 1) + 1) * pixelsPerBaseUnit) / viewportWidthPx) *
+          2 *
+          window.devicePixelRatio, //-camera.position.z % effectiveMinorSpacing / worldViewportWidth * 2,
+      -1 -
+        ((((bottomEdge % 1) + 1) * pixelsPerBaseUnit) / viewportHeightPx) *
+          2 *
+          window.devicePixelRatio, //-camera.position.y % effectiveMinorSpacing / worldViewportHeight * 2,
     ]
 
     const material = this.material
