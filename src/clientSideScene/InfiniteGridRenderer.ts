@@ -46,7 +46,6 @@ void main()
 		float screenX = (worldX - cameraPos.x) * worldToScreenX;
 		float screenY = (vertIndex == 0) ? -1.0 : 1.0;
 
-		// Snap X to integer pixels
 		screenX = snapToPixel(screenX, viewportPx.x);
 
 		screenPos = vec2(screenX, screenY);
@@ -64,7 +63,6 @@ void main()
 		float screenX = (vertIndex == 0) ? -1.0 : 1.0;
 		float screenY = (worldY - cameraPos.y) * worldToScreenY;
 
-		// Snap Y to integer pixels
 		screenY = snapToPixel(screenY, viewportPx.y);
 
 		screenPos = vec2(screenX, screenY);
@@ -111,7 +109,7 @@ export class InfiniteGridRenderer extends LineSegments<
         worldToScreenY: { value: 0.1 },
         minorSpacing: { value: 1.0 },
         majorSpacing: { value: 4.0 },
-        viewportPx: { value: [1.0, 1.0] }, // set real size in update()
+        viewportPx: { value: [1.0, 1.0] },
         uMajorColor: { value: [0.3, 0.3, 0.3, 1.0] },
         uMinorColor: { value: [0.2, 0.2, 0.2, 1.0] },
       },
@@ -164,6 +162,7 @@ export class InfiniteGridRenderer extends LineSegments<
     const viewportHeightPx = viewportSize[1]
 
     if (!options.fixedSizeGrid) {
+      // In non-fixed size mode, adjust major spacing based on current zoom level
       const desiredMin = options.majorPxRange[0]
       const desiredMax = options.majorPxRange[1]
       let majorPx = effectiveMajorSpacing * pixelsPerBaseUnit
@@ -180,8 +179,8 @@ export class InfiniteGridRenderer extends LineSegments<
         effectiveMajorSpacing / Math.max(1, options.minorGridsPerMajor)
     }
 
-    const minorSpacingPx = minorSpacing * pixelsPerBaseUnit
     const majorSpacingPx = effectiveMajorSpacing * pixelsPerBaseUnit
+    let minorSpacingPx = minorSpacing * pixelsPerBaseUnit
 
     let effectiveMinorSpacing = minorSpacing
     this.visible = true
@@ -197,6 +196,7 @@ export class InfiniteGridRenderer extends LineSegments<
         effectiveMinorSpacing = effectiveMajorSpacing
       }
     }
+    minorSpacingPx = effectiveMinorSpacing * pixelsPerBaseUnit
 
     const verticalLines =
       Math.ceil(worldViewportWidth / effectiveMinorSpacing) + 2
@@ -213,7 +213,6 @@ export class InfiniteGridRenderer extends LineSegments<
     material.uniforms.majorSpacing.value = effectiveMajorSpacing
     material.uniforms.viewportPx.value = [viewportWidthPx, viewportHeightPx]
 
-    // Optional theme-based colors
     if (options?.majorColor) {
       material.uniforms.uMajorColor.value = options.majorColor
     }

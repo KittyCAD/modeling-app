@@ -208,7 +208,6 @@ export const settingsMachine = setup({
       }
     },
     setClientTheme: ({ context, self }) => {
-      console.log('setClientTheme***')
       const rootContext = self.system.get('root').getSnapshot().context
       const sceneInfra = rootContext.sceneInfra
       const sceneEntitiesManager = rootContext.sceneEntitiesManager
