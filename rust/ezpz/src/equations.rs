@@ -28,6 +28,15 @@ pub struct Equation {
     /// An equation really is nothing more than something to be evaluated.
     /// So all the significant logic for the equation lives in this closure.
     eval: Box<dyn Evaluate>,
+    #[cfg(test)]
+    debug_repr: String,
+}
+
+#[cfg(test)]
+impl std::fmt::Debug for Equation {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{} = 0", self.debug_repr)
+    }
 }
 
 /// Errors that could occur.
@@ -44,12 +53,18 @@ impl Equation {
             let derivatives = Vars::new();
             Ok(Eval { value, derivatives })
         };
-        Self { eval: Box::new(eval) }
+        Self {
+            eval: Box::new(eval),
+            #[cfg(test)]
+            debug_repr: value.to_string(),
+        }
     }
 
     /// Simple equation with a single variable.
     /// E.g. `x`.
     pub fn single_variable(label: Label) -> Self {
+        #[cfg(test)]
+        let debug_repr = label.clone();
         let eval = move |vars: &Vars| {
             let Some(var_value) = vars.get(&label).copied() else {
                 return Err(Error::MissingVariable(label));
@@ -63,7 +78,11 @@ impl Equation {
                 derivatives,
             })
         };
-        Self { eval: Box::new(eval) }
+        Self {
+            eval: Box::new(eval),
+            #[cfg(test)]
+            debug_repr,
+        }
     }
 
     pub fn evaluate(self, vars: &Vars) -> Result<Eval> {
@@ -75,6 +94,9 @@ impl std::ops::Add for Equation {
     type Output = Self;
 
     fn add(self, rhs: Self) -> Self::Output {
+        #[cfg(test)]
+        let debug_repr = format!("({} + {})", self.debug_repr, rhs.debug_repr);
+
         let eval = |vars: &Vars| {
             let a = self;
             let b = rhs;
@@ -92,7 +114,11 @@ impl std::ops::Add for Equation {
                 derivatives,
             })
         };
-        Self { eval: Box::new(eval) }
+        Self {
+            eval: Box::new(eval),
+            #[cfg(test)]
+            debug_repr,
+        }
     }
 }
 
@@ -108,6 +134,8 @@ impl std::ops::Mul for Equation {
     type Output = Self;
 
     fn mul(self, rhs: Self) -> Self::Output {
+        #[cfg(test)]
+        let debug_repr = format!("({} * {})", self.debug_repr, rhs.debug_repr);
         let eval = |vars: &Vars| {
             let a = self;
             let b = rhs;
@@ -131,7 +159,12 @@ impl std::ops::Mul for Equation {
                 derivatives,
             })
         };
-        Self { eval: Box::new(eval) }
+        Self {
+            eval: Box::new(eval),
+
+            #[cfg(test)]
+            debug_repr,
+        }
     }
 }
 
@@ -139,6 +172,8 @@ impl std::ops::Div for Equation {
     type Output = Self;
 
     fn div(self, rhs: Self) -> Self::Output {
+        #[cfg(test)]
+        let debug_repr = format!("({} / {})", self.debug_repr, rhs.debug_repr);
         let eval = |vars: &Vars| {
             let a = self;
             let b = rhs;
@@ -164,7 +199,11 @@ impl std::ops::Div for Equation {
                 derivatives,
             })
         };
-        Self { eval: Box::new(eval) }
+        Self {
+            eval: Box::new(eval),
+            #[cfg(test)]
+            debug_repr,
+        }
     }
 }
 
@@ -172,6 +211,8 @@ impl std::ops::Neg for Equation {
     type Output = Self;
 
     fn neg(self) -> Self::Output {
+        #[cfg(test)]
+        let debug_repr = format!("-{}", self.debug_repr);
         let eval = |vars: &Vars| {
             let a = self;
             let Eval {
@@ -181,7 +222,11 @@ impl std::ops::Neg for Equation {
             derivatives.values_mut().for_each(|d| *d = d.neg());
             Ok(Eval { value: -r, derivatives })
         };
-        Self { eval: Box::new(eval) }
+        Self {
+            eval: Box::new(eval),
+            #[cfg(test)]
+            debug_repr,
+        }
     }
 }
 
@@ -211,14 +256,20 @@ fn union_with<K: std::hash::Hash + Eq, V: Copy>(
 mod tests {
     use super::*;
 
-    // Convenient shorthand for 'variable', to make tests nicer.
-    fn v(label: &str) -> Equation {
-        Equation::single_variable(label.to_owned())
+    impl From<&str> for Equation {
+        fn from(label: &str) -> Self {
+            Equation::single_variable(label.to_owned())
+        }
     }
 
-    // Convenient shorthand for 'constant', to make tests nicer.
-    fn c(constant: f64) -> Equation {
-        Equation::constant(constant)
+    impl From<f64> for Equation {
+        fn from(constant: f64) -> Self {
+            Equation::constant(constant)
+        }
+    }
+
+    fn f<T: Into<Equation>>(t: T) -> Equation {
+        t.into()
     }
 
     // Convenience to make tests nicer
@@ -234,7 +285,7 @@ mod tests {
 
     #[test]
     fn eval_single_var() {
-        let equation = v("a");
+        let equation = f("a");
 
         let actual = equation.evaluate(&vars("a=14")).unwrap();
         let expected = Eval {
@@ -246,7 +297,7 @@ mod tests {
 
     #[test]
     fn eval_two_vars() {
-        let equation = v("a") + v("b");
+        let equation = f("a") + f("b");
 
         let actual = equation.evaluate(&vars("a=14,b=2")).unwrap();
         let expected = Eval {
@@ -258,7 +309,7 @@ mod tests {
 
     #[test]
     fn eval_same_var_added() {
-        let equation = v("a") + v("a") + v("b");
+        let equation = f("a") + f("a") + f("b");
 
         let actual = equation.evaluate(&vars("a=14, b=3")).unwrap();
         let expected = Eval {
@@ -270,7 +321,7 @@ mod tests {
 
     #[test]
     fn eval_divided() {
-        let equation = (v("a") + v("a") + v("b")) / v("a");
+        let equation = (f("a") + f("a") + f("b")) / f("a");
 
         let actual = equation.evaluate(&vars("a=3,b=2")).unwrap();
         let expected = Eval {
@@ -283,7 +334,7 @@ mod tests {
     #[test]
     fn eval_with_constant() {
         // Basically (x + 5) * (x + y)
-        let equation = (v("x") + c(5.0)) * (v("x") + v("y"));
+        let equation = (f("x") + f(5.0)) * (f("x") + f("y"));
 
         let actual = equation.evaluate(&vars("x=2,y=3")).unwrap();
         let expected = Eval {
@@ -296,8 +347,8 @@ mod tests {
     #[test]
     fn eval_negated() {
         // These two should be equivalent.
-        let equation0 = -v("x");
-        let equation1 = v("x") * c(-1.0);
+        let equation0 = -f("x");
+        let equation1 = f("x") * f(-1.0);
 
         // So their evaluations should be equivalent.
         let actual0 = equation0.evaluate(&vars("x=2")).unwrap();
