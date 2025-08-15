@@ -88,7 +88,10 @@ void main()
 	fragColor = vLineType > 0.5 ? uMajorColor : uMinorColor;
 }`
 
-export class InfiniteGridRenderer extends LineSegments {
+export class InfiniteGridRenderer extends LineSegments<
+  BufferGeometry,
+  RawShaderMaterial
+> {
   private minMinorGridPixelSpacing = 10
   private minMajorGridPixelSpacing = 10
 
@@ -147,8 +150,6 @@ export class InfiniteGridRenderer extends LineSegments {
       return
     }
 
-    const material = this.material as RawShaderMaterial
-
     let effectiveMajorSpacing = options.majorGridSpacing
     let minorSpacing = effectiveMajorSpacing / options.minorGridsPerMajor
 
@@ -202,6 +203,7 @@ export class InfiniteGridRenderer extends LineSegments {
     const horizontalLines =
       Math.ceil(worldViewportHeight / effectiveMinorSpacing) + 2
 
+    const material = this.material
     material.uniforms.verticalLines.value = verticalLines
     material.uniforms.horizontalLines.value = horizontalLines
     material.uniforms.cameraPos.value = [camera.position.y, camera.position.z]
