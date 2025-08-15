@@ -1,4 +1,4 @@
-import type { Camera } from 'three'
+import { Camera, Vector3 } from 'three'
 import { OrthographicCamera } from 'three'
 import { GLSL3, LineSegments } from 'three'
 import { BufferGeometry, RawShaderMaterial } from 'three'
@@ -13,6 +13,10 @@ uniform float worldToScreenY;
 uniform float minorSpacing;
 uniform float majorSpacing;
 uniform vec2 viewportPx; // (drawing buffer width, height) in pixels
+
+uniform vec2 lineGapNDC;
+uniform vec2 lineOffsetNDC;
+uniform int minorsPerMajor;
 
 out float vLineType;
 
@@ -47,10 +51,11 @@ void main()
 		float screenY = (vertIndex == 0) ? -1.0 : 1.0;
 
 		screenX = snapToPixel(screenX, viewportPx.x);
-
+		screenX = lineOffsetNDC.x + float(lineIndex) * lineGapNDC.x;
 		screenPos = vec2(screenX, screenY);
 
 		vLineType = mod(abs(worldX), majorSpacing) < 0.001 ? 1.0 : 0.0;
+		vLineType = lineIndex % minorsPerMajor == 0 ? 1.0 : 0.0;
 	}
 	else
 	{
@@ -62,12 +67,13 @@ void main()
 
 		float screenX = (vertIndex == 0) ? -1.0 : 1.0;
 		float screenY = (worldY - cameraPos.y) * worldToScreenY;
+		screenY = lineOffsetNDC.y + float(lineIndex) * lineGapNDC.y;
 
 		screenY = snapToPixel(screenY, viewportPx.y);
-
 		screenPos = vec2(screenX, screenY);
 
 		vLineType = mod(abs(worldY), majorSpacing) < 0.001 ? 1.0 : 0.0;
+		vLineType = lineIndex % minorsPerMajor == 0 ? 1.0 : 0.0;
 	}
 
 	gl_Position = vec4(screenPos, 0.0, 1.0);
@@ -110,6 +116,9 @@ export class InfiniteGridRenderer extends LineSegments<
         minorSpacing: { value: 1.0 },
         majorSpacing: { value: 4.0 },
         viewportPx: { value: [1.0, 1.0] },
+        lineGapNDC: { value: [1.0, 1.0] },
+        lineOffsetNDC: { value: [-1.0, -1.0] },
+        minorsPerMajor: { value: 4 },
         uMajorColor: { value: [0.3, 0.3, 0.3, 1.0] },
         uMinorColor: { value: [0.2, 0.2, 0.2, 1.0] },
       },
@@ -132,6 +141,7 @@ export class InfiniteGridRenderer extends LineSegments<
     camera: Camera,
     viewportSize: [number, number],
     pixelsPerBaseUnit: number,
+    baseUnitMultiplier: number,
     options: {
       majorGridSpacing: number
       minorGridsPerMajor: number
@@ -184,6 +194,9 @@ export class InfiniteGridRenderer extends LineSegments<
 
     let effectiveMinorSpacing = minorSpacing
     this.visible = true
+
+    console.log('minorSpacingPx', minorSpacingPx)
+
     if (options.fixedSizeGrid) {
       // If major grid would be too dense on screen, hide the grid entirely
       if (majorSpacingPx < this.minMajorGridPixelSpacing) {
@@ -203,6 +216,25 @@ export class InfiniteGridRenderer extends LineSegments<
     const horizontalLines =
       Math.ceil(worldViewportHeight / effectiveMinorSpacing) + 2
 
+    const lineGap = effectiveMinorSpacing * pixelsPerBaseUnit
+    const lineGapNDC = [
+      lineGap / viewportWidthPx * 2 * window.devicePixelRatio,
+      lineGap / viewportHeightPx * 2 * window.devicePixelRatio
+    ]
+
+    const ndc = new Vector3(-1, -1, 0)
+    // camera.updateProjectionMatrix()
+    // camera.updateMatrixWorld()
+    ndc.unproject(camera)
+    const leftEdge = ndc.y / baseUnitMultiplier// x, other: z // baseMultiplier
+    const bottomEdge = ndc.z / baseUnitMultiplier// y, other: z // baseMultiplier
+    console.log('leftEdge', leftEdge, camera.position, camera.left)
+
+    const lineOffsetNDC = [
+      -1 -((leftEdge % 1) + 1) * pixelsPerBaseUnit / viewportWidthPx * 2 * window.devicePixelRatio, //-camera.position.z % effectiveMinorSpacing / worldViewportWidth * 2,
+      -1 - ((bottomEdge % 1) + 1) * pixelsPerBaseUnit / viewportHeightPx * 2 * window.devicePixelRatio //-camera.position.y % effectiveMinorSpacing / worldViewportHeight * 2,
+    ]
+
     const material = this.material
     material.uniforms.verticalLines.value = verticalLines
     material.uniforms.horizontalLines.value = horizontalLines
@@ -212,6 +244,9 @@ export class InfiniteGridRenderer extends LineSegments<
     material.uniforms.minorSpacing.value = effectiveMinorSpacing
     material.uniforms.majorSpacing.value = effectiveMajorSpacing
     material.uniforms.viewportPx.value = [viewportWidthPx, viewportHeightPx]
+    material.uniforms.lineGapNDC.value = lineGapNDC
+    material.uniforms.lineOffsetNDC.value = lineOffsetNDC
+    material.uniforms.minorsPerMajor.value = 1 / effectiveMinorSpacing
 
     if (options?.majorColor) {
       material.uniforms.uMajorColor.value = options.majorColor
