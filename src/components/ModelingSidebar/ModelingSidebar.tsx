@@ -252,7 +252,7 @@ export function ModelingSidebar() {
       <div id="app-sidebar" className="flex flex-row flex-1">
         <ul
           className={
-            'relative pointer-events-auto p-0 col-start-1 col-span-1 flex flex-col items-stretch ' +
+            'relative z-2 pointer-events-auto p-0 col-start-1 col-span-1 flex flex-col items-stretch ' +
             'bg-chalkboard-10 border-r border-chalkboard-30 dark:bg-chalkboard-90 dark:border-chalkboard-80 '
           }
         >

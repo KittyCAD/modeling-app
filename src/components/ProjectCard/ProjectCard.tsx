@@ -110,7 +110,7 @@ function ProjectCard({
             : 'cursor-not-allowed'
         }`}
       >
-        <div className="h-36 relative overflow-hidden bg-linear-to-b from-transparent to-primary/10 rounded-t-sm">
+        <div className="h-36 relative overflow-hidden bg-linear-to-b from-transparent to-primary/10 rounded-t-xs">
           {imageUrl && (
             <img
               src={imageUrl}

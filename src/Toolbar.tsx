@@ -37,7 +37,7 @@ export function Toolbar({
     'group-disabled:text-chalkboard-50 text-inherit! dark:group-hover:group-enabled:text-inherit!'
   const bgClassName = 'bg-transparent!'
   const buttonBgClassName =
-    'bg-chalkboard-transparent dark:bg-transparent disabled:bg-transparent dark:disabled:bg-transparent enabled:hover:bg-chalkboard-10 dark:enabled:hover:bg-chalkboard-100 pressed:!bg-primary pressed:enabled:hover:!text-chalkboard-10'
+    'bg-chalkboard-transparent dark:bg-transparent disabled:bg-transparent dark:disabled:bg-transparent enabled:hover:bg-chalkboard-10 dark:enabled:hover:bg-chalkboard-100 pressed:bg-primary! pressed:enabled:hover:text-chalkboard-10!'
   const buttonBorderClassName = 'border-transparent!'
 
   const isInTemporaryWorkspace = codeManager.isBufferMode
@@ -287,7 +287,7 @@ export function Toolbar({
                       bgClassName: bgClassName,
                     }}
                     className={
-                      'border-transparent! px-0! pressed:!text-chalkboard-10 pressed:enabled:hovered:!text-chalkboard-10 ' +
+                      'border-transparent! px-0! pressed:text-chalkboard-10! pressed:enabled:hovered:text-chalkboard-10! ' +
                       buttonBgClassName
                     }
                     aria-pressed={selectedIcon.isActive}
@@ -354,7 +354,7 @@ export function Toolbar({
                   bgClassName: bgClassName,
                 }}
                 className={
-                  'pressed:!text-chalkboard-10 pressed:enabled:hovered:!text-chalkboard-10 ' +
+                  'pressed:text-chalkboard-10! pressed:enabled:hovered:text-chalkboard-10! ' +
                   buttonBorderClassName +
                   ' ' +
                   buttonBgClassName +

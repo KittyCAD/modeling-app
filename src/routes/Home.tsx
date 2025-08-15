@@ -219,7 +219,7 @@ const Home = () => {
   const { searchResults, query, setQuery } = useProjectSearch(projects)
   const sort = searchParams.get('sort_by') ?? 'modified:desc'
   const sidebarButtonClasses =
-    'flex items-center p-2 gap-2 leading-tight border-transparent dark:border-transparent dark:enabled:border-transparent enabled:hover:border-primary/50 dark:enabled:hover:border-inherit active:border-primary dark:bg-transparent hover:bg-transparent'
+    'flex items-center p-2 gap-2 leading-tight border-transparent dark:border-transparent enabled:dark:border-transparent enabled:hover:border-primary/50 enabled:dark:hover:border-inherit active:border-primary dark:bg-transparent hover:bg-transparent'
 
   return (
     <div className="relative flex flex-col items-stretch h-screen w-screen overflow-hidden">

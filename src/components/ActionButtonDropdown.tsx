@@ -40,7 +40,7 @@ export function ActionButtonDropdown({
               'border-transparent! dark:border-transparent! ' +
               'bg-chalkboard-transparent dark:bg-transparent disabled:bg-transparent dark:disabled:bg-transparent ' +
               'enabled:hover:bg-chalkboard-10 dark:enabled:hover:bg-chalkboard-100 ' +
-              'pressed:!bg-primary pressed:enabled:hover:!text-chalkboard-10 p-0 m-0 rounded-none outline-hidden! ui-open:border-primary ui-open:bg-primary'
+              'pressed:bg-primary! pressed:enabled:hover:text-chalkboard-10! p-0 m-0 rounded-none outline-hidden! ui-open:border-primary ui-open:bg-primary dark:ui-open:bg-transparent'
             }
             data-onboarding-id={`${props.name}-dropdown-button`}
           >
