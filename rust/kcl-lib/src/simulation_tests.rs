@@ -159,10 +159,7 @@ fn parse(test_name: &str) {
 
 fn parse_test(test: &Test) {
     let input = test.read();
-    let tokens = crate::parsing::token::lex(&input, ModuleId::default()).unwrap();
-
-    // Parse the tokens into an AST.
-    let parse_res = Result::<_, KclError>::Ok(crate::parsing::parse_tokens(tokens).unwrap());
+    let parse_res = Result::<_, KclError>::Ok(crate::parsing::parse_str(&input, ModuleId::default()).unwrap());
     assert_snapshot(test, "Result of parsing", || {
         insta::assert_json_snapshot!("ast", parse_res, {
             ".**.start" => 0,
@@ -179,8 +176,7 @@ async fn unparse(test_name: &str) {
 async fn unparse_test(test: &Test) {
     // Parse into an AST
     let input = test.read();
-    let tokens = crate::parsing::token::lex(&input, ModuleId::default()).unwrap();
-    let ast = crate::parsing::parse_tokens(tokens).unwrap();
+    let ast = crate::parsing::parse_str(&input, ModuleId::default()).unwrap();
 
     // Check recasting.
     let actual = ast.recast_top(&Default::default(), 0);

@@ -103,7 +103,7 @@ function CommandBarPathInput({
           placeholder="Enter a path"
           defaultValue={defaultValue}
           onKeyDown={(event) => {
-            if (event.key === 'Backspace' && event.shiftKey) {
+            if (event.key === 'Backspace' && event.metaKey) {
               stepBack()
             }
           }}

@@ -271,54 +271,58 @@ export function App() {
             <CommandBarOpenButton />
             <ShareButton />
           </AppHeader>
-          <Toolbar />
         </div>
         <ModalContainer />
-        <ModelingSidebar />
-        <EngineStream pool={pool} authToken={authToken} />
-        {/* <CamToggle /> */}
-        <section className="absolute bottom-2 right-2 flex flex-col items-end gap-3 pointer-events-none">
-          <UnitsMenu />
-          <Gizmo />
+        <section className="flex flex-1">
+          <ModelingSidebar />
+          <div className="relative z-0 flex flex-col flex-1 items-center overflow-hidden">
+            <Toolbar />
+            <EngineStream pool={pool} authToken={authToken} />
+            <div className="absolute bottom-2 right-2 flex flex-col items-end gap-3 pointer-events-none">
+              <UnitsMenu />
+              <Gizmo />
+            </div>
+          </div>
         </section>
-      </div>
-      <StatusBar
-        globalItems={[
-          networkHealthStatus,
-          ...(isDesktop() ? [networkMachineStatus] : []),
-          ...defaultGlobalStatusBarItems({ location, filePath }),
-        ]}
-        localItems={[
-          ...(getSettings().app.showDebugPanel.current
-            ? ([
-                {
-                  id: 'modeling-state',
-                  element: 'text',
-                  label:
-                    modelingState.value instanceof Object
-                      ? (xStateValueToString(modelingState.value) ?? '')
-                      : modelingState.value,
-                  toolTip: {
-                    children: 'The current state of the modeler',
+        {/* <CamToggle /> */}
+        <StatusBar
+          globalItems={[
+            networkHealthStatus,
+            ...(isDesktop() ? [networkMachineStatus] : []),
+            ...defaultGlobalStatusBarItems({ location, filePath }),
+          ]}
+          localItems={[
+            ...(getSettings().app.showDebugPanel.current
+              ? ([
+                  {
+                    id: 'modeling-state',
+                    element: 'text',
+                    label:
+                      modelingState.value instanceof Object
+                        ? (xStateValueToString(modelingState.value) ?? '')
+                        : modelingState.value,
+                    toolTip: {
+                      children: 'The current state of the modeler',
+                    },
                   },
-                },
-              ] satisfies StatusBarItemType[])
-            : []),
-          {
-            id: 'selection',
-            'data-testid': 'selection-status',
-            element: 'text',
-            label:
-              getSelectionTypeDisplayText(
-                modelingState.context.selectionRanges
-              ) ?? 'No selection',
-            toolTip: {
-              children: 'Currently selected geometry',
+                ] satisfies StatusBarItemType[])
+              : []),
+            {
+              id: 'selection',
+              'data-testid': 'selection-status',
+              element: 'text',
+              label:
+                getSelectionTypeDisplayText(
+                  modelingState.context.selectionRanges
+                ) ?? 'No selection',
+              toolTip: {
+                children: 'Currently selected geometry',
+              },
             },
-          },
-          ...defaultLocalStatusBarItems,
-        ]}
-      />
+            ...defaultLocalStatusBarItems,
+          ]}
+        />
+      </div>
     </div>
   )
 }

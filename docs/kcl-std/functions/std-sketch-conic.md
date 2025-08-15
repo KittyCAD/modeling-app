@@ -5,6 +5,8 @@ excerpt: "Add a conic section to an existing sketch."
 layout: manual
 ---
 
+**WARNING:** This function is experimental and may change or be removed.
+
 Add a conic section to an existing sketch.
 
 ```kcl
@@ -45,6 +47,8 @@ conic(
 ### Examples
 
 ```kcl
+@settings(experimentalFeatures = allow)
+
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> conic(

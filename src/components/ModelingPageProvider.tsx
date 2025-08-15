@@ -106,13 +106,7 @@ export const ModelingPageProvider = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [location])
 
-  const cb = modelingMenuCallbackMostActions(
-    settings,
-    navigate,
-    filePath,
-    project,
-    token
-  )
+  const cb = modelingMenuCallbackMostActions(settings, navigate, filePath)
   useMenuListener(cb)
 
   const kclCommandMemo = useMemo(() => {

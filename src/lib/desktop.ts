@@ -28,7 +28,7 @@ import type { FileEntry, FileMetadata, Project } from '@src/lib/project'
 import { err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import { getInVariableCase } from '@src/lib/utils'
-import { IS_STAGING } from '@src/routes/utils'
+import { IS_STAGING, IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
 import type { IElectronAPI } from '@root/interface'
 
@@ -484,10 +484,12 @@ export async function writeProjectSettingsFile(
 }
 
 // Important for saving settings.
-// TODO: should be pulled from electron-builder.yml
-const APP_ID = IS_STAGING
-  ? 'dev.zoo.modeling-app-staging'
-  : 'dev.zoo.modeling-app'
+let APP_ID = 'dev.zoo.modeling-app'
+if (IS_STAGING) {
+  APP_ID = `${APP_ID}-staging`
+} else if (IS_STAGING_OR_DEBUG) {
+  APP_ID = `${APP_ID}-local`
+}
 
 const getAppFolderName = (electron: IElectronAPI) => {
   if (electron.os.isMac || electron.os.isWindows) {

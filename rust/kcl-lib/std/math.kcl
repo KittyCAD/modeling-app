@@ -1,7 +1,7 @@
 /// Functions for mathematical operations and some useful constants.
 
 @no_std
-@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+@settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
 
 import Point2d from "std::types"
 
@@ -203,8 +203,6 @@ export fn polar(angle: number(rad), length: number(Length)): Point2d {
 /// If `num` is negative, the result will be too.
 ///
 /// ```
-/// import rem from "std::math"
-///
 /// assert(rem( 7,    divisor =   4), isEqualTo =   3, error = "remainder is 3")
 /// assert(rem(-7,    divisor =   4), isEqualTo =  -3, error = "remainder is -3")
 /// assert(rem( 7,    divisor =  -4), isEqualTo =   3, error = "remainder is 3")

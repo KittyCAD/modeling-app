@@ -5,7 +5,7 @@
 /// does.
 
 @no_std
-@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+@settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
 
 /// The `any` type is the type of all possible values in KCL. I.e., if a function accepts an argument
 /// with type `any`, then it can accept any value.

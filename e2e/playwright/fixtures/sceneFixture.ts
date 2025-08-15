@@ -85,7 +85,8 @@ export class SceneFixture {
   convertPagePositionToStream = async (
     x: number,
     y: number,
-    format: 'pixels' | 'ratio' | undefined = 'pixels'
+    format: 'pixels' | 'ratio' | undefined = 'pixels',
+    relativeToStream = false
   ) => {
     const viewportSize = this.page.viewportSize()
     const streamBoundingBox = await this.streamWrapper.boundingBox()
@@ -99,11 +100,11 @@ export class SceneFixture {
     const resolvedX =
       (x / (format === 'pixels' ? viewportSize.width : 1)) *
         streamBoundingBox.width +
-      streamBoundingBox.x
+      (relativeToStream ? 0 : streamBoundingBox.x)
     const resolvedY =
       (y / (format === 'pixels' ? viewportSize.height : 1)) *
         streamBoundingBox.height +
-      streamBoundingBox.y
+      (relativeToStream ? 0 : streamBoundingBox.y)
 
     const resolvedPoint = {
       x: Math.round(resolvedX),
@@ -203,12 +204,14 @@ export class SceneFixture {
         const resolvedToPoint = await this.convertPagePositionToStream(
           x,
           y,
-          format
+          format,
+          true
         )
         const resolvedFromPoint = await this.convertPagePositionToStream(
           dragToParams.fromPoint.x,
           dragToParams.fromPoint.y,
-          format
+          format,
+          true
         )
         if (debug) {
           console.log({
@@ -239,12 +242,14 @@ export class SceneFixture {
         const resolvedFromPoint = await this.convertPagePositionToStream(
           x,
           y,
-          format
+          format,
+          true
         )
         const resolvedToPoint = await this.convertPagePositionToStream(
           dragFromParams.toPoint.x,
           dragFromParams.toPoint.y,
-          format
+          format,
+          true
         )
         if (debug) {
           console.log({
