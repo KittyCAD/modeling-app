@@ -209,9 +209,19 @@ export const systemIOMachine = setup({
           type: SystemIOMachineEvents.getMlEphantConversations
         }
       | {
+          type: SystemIOMachineEvents.done_getMlEphantConversations
+          output: SystemIOContext['mlEphantConversations']
+        }
+      | {
           type: SystemIOMachineEvents.saveMlEphantConversations
-          projectId: string
-          conversationId: string
+          data: {
+            projectId: string
+            conversationId: string
+          }
+        }
+      | {
+          type: SystemIOMachineEvents.done_saveMlEphantConversations
+          output: SystemIOContext['mlEphantConversations']
         },
   },
   guards: {
@@ -314,6 +324,10 @@ export const systemIOMachine = setup({
     },
     [SystemIOMachineActions.setMlEphantConversations]: assign({
       mlEphantConversations: ({ event }) => {
+        assertEvent(event, [
+          SystemIOMachineEvents.done_getMlEphantConversations,
+          SystemIOMachineEvents.done_saveMlEphantConversations,
+        ])
         return event.output
       },
     }),
@@ -562,24 +576,24 @@ export const systemIOMachine = setup({
       async ({
         input,
       }: {
-        input: {
-          context: SystemIOContext
-          rootContext: AppMachineContext
-        }
+        input: {}
       }) => {
         return new Map()
       }
     ),
     [SystemIOMachineActors.saveMlEphantConversations]: fromPromise(
-      async ({
-        input,
-      }: {
+      async (args: {
         input: {
           context: SystemIOContext
-          rootContext: AppMachineContext
+          event: {
+            data: {
+              projectId: string
+              conversationId: string
+            }
+          }
         }
       }) => {
-        return
+        return new Map()
       }
     ),
   },
@@ -1282,7 +1296,10 @@ export const systemIOMachine = setup({
         // No input required.
         // Implicit input is settings path, which comes from a function
         // we call internally.
-        input: () => {},
+        input: ({ event }) => {
+          assertEvent(event, SystemIOMachineEvents.getMlEphantConversations)
+          return {}
+        },
         onDone: {
           target: SystemIOMachineStates.idle,
           actions: [SystemIOMachineActions.setMlEphantConversations],
@@ -1296,7 +1313,13 @@ export const systemIOMachine = setup({
       invoke: {
         id: SystemIOMachineActors.saveMlEphantConversations,
         src: SystemIOMachineActors.saveMlEphantConversations,
-        input: (args) => args,
+        input: ({ event, context }) => {
+          assertEvent(event, SystemIOMachineEvents.saveMlEphantConversations)
+          return {
+            context,
+            event,
+          }
+        },
         onDone: {
           target: SystemIOMachineStates.idle,
           actions: [SystemIOMachineActions.setMlEphantConversations],

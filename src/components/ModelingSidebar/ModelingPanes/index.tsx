@@ -1,3 +1,5 @@
+import { useLoaderData } from 'react-router-dom'
+import { useModelingContext } from '@src/hooks/useModelingContext'
 import type { IconDefinition } from '@fortawesome/free-solid-svg-icons'
 import {
   useState,
@@ -27,6 +29,9 @@ import {
   commandBarActor,
   editorManager,
   systemIOActor,
+  mlEphantManagerActor,
+  kclManager,
+  codeManager,
   useSettings,
 } from '@src/lib/singletons'
 import type { settingsMachine } from '@src/machines/settingsMachine'
@@ -54,6 +59,7 @@ export type SidebarType =
   | 'logs'
   | 'lspMessages'
   | 'variables'
+  | 'text-to-cad'
 
 export interface BadgeInfo {
   value: (props: PaneCallbackProps) => boolean | number | string
@@ -377,6 +383,10 @@ export const sidebarPanesRight: SidebarPane[] = [
     keybinding: 'Shift + E',
     sidebarName: 'Text-to-CAD',
     Content: (props) => {
+      const settings = useSettings()
+      const { context: contextModeling, theProject } = useModelingContext()
+      const { file: loaderFile } = useLoaderData() as IndexLoaderData
+
       return (
         <>
           <ModelingPaneHeader
@@ -386,7 +396,18 @@ export const sidebarPanesRight: SidebarPane[] = [
             Menu={null}
             onClose={props.onClose}
           />
-          <MlEphantConversationPane />
+          <MlEphantConversationPane
+            {...{
+              mlEphantManagerActor,
+              systemIOActor,
+              kclManager,
+              codeManager,
+              contextModeling,
+              theProject: theProject.current,
+              loaderFile,
+              settings,
+            }}
+          />
         </>
       )
     },

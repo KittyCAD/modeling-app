@@ -235,9 +235,11 @@ export const useSettings = () =>
     return settings
   })
 
-export const systemIOActor = appActor.system.get(SYSTEM_IO) as ActorRefFrom<
+export type SystemIOActor = ActorRefFrom<
   (typeof appMachineActors)[typeof SYSTEM_IO]
 >
+
+export const systemIOActor = appActor.system.get(SYSTEM_IO) as SystemIOActor
 
 export const engineStreamActor = appActor.system.get(
   ENGINE_STREAM
@@ -246,8 +248,6 @@ export const engineStreamActor = appActor.system.get(
 export const mlEphantManagerActor = appActor.system.get(
   MLEPHANT_MANAGER
 ) as ActorRefFrom<(typeof appMachineActors)[typeof MLEPHANT_MANAGER]>
-
-window.mlEphantManagerActor = mlEphantManagerActor
 
 export const commandBarActor = appActor.system.get(COMMAND_BAR) as ActorRefFrom<
   (typeof appMachineActors)[typeof COMMAND_BAR]

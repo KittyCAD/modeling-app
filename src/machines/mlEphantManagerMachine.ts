@@ -3,19 +3,26 @@ import type { ActorRefFrom } from 'xstate'
 
 import { ACTOR_IDS } from '@src/machines/machineConstants'
 import { S, transitions } from '@src/machines/utils'
+import { err } from '@src/lib/trap'
 
+import type { ArtifactGraph } from '@src/lang/wasm'
 import type { Selections } from '@src/lib/selections'
-import type { Project } from '@src/lib/project'
+import type { FileEntry, Project } from '@src/lib/project'
+import type { FileMeta } from '@src/lib/types'
+
 import type { Prompt } from '@src/lib/prompt'
-import { generateFakeSubmittedPrompt, PromptType } from '@src/lib/prompt'
+import { PromptType } from '@src/lib/prompt'
+
 import {
   textToCadMlConversations,
   textToCadMlPromptsBelongingToConversation,
+  getTextToCadCreateResult,
   submitTextToCadCreateRequest,
   IResponseMlConversations,
 } from '@src/lib/textToCad'
 
 import {
+  getPromptToEditResult,
   submitTextToCadMultiFileIterationRequest,
   constructMultiFileIterationRequestWithPromptHelpers,
 } from '@src/lib/promptToEdit'
@@ -52,7 +59,7 @@ export type MlEphantManagerEvents =
     }
   | {
       type: MlEphantManagerTransitions.GetPromptsBelongingToConversation
-      conversationId: string
+      conversationId?: string
     }
   | {
       type: MlEphantManagerTransitions.PromptCreateModel
@@ -63,8 +70,8 @@ export type MlEphantManagerEvents =
       type: MlEphantManagerTransitions.PromptEditModel
       projectForPromptOutput: Project
       prompt: string
-      fileSelectedDuringPrompting: string
-      projectFiles: Project[]
+      fileSelectedDuringPrompting?: FileEntry
+      projectFiles: FileMeta[]
       selections: Selections
       artifactGraph: ArtifactGraph
     }
@@ -97,9 +104,7 @@ export interface MlEphantManagerContext {
   // NOTE TO SUBSCRIBERS! You must check the last event in combination with this
   // data to ensure it's from a status poll, and not some other event, that
   // update the context.
-  promptsInProgressToCompleted: {
-    promptsBelongingToConversation: Set<Prompt['id']>
-  }
+  promptsInProgressToCompleted: Set<Prompt['id']>
 
   // The current conversation being interacted with.
   conversationId?: string
@@ -116,7 +121,7 @@ export interface MlEphantManagerContext {
       project: Project
 
       // The file that was the "target" during prompting.
-      targetFile: string
+      targetFile?: FileEntry
     }
   >
 }
@@ -129,9 +134,7 @@ export const mlEphantDefaultContext = () => ({
   },
   promptsPool: new Map(),
   promptsBelongingToConversation: undefined,
-  promptsInProgressToCompleted: {
-    promptsBelongingToConversation: [],
-  },
+  promptsInProgressToCompleted: new Set<string>(),
   conversationId: undefined,
   promptsMeta: new Map(),
 })
@@ -152,12 +155,16 @@ export const mlEphantManagerMachine = setup({
         if (context.apiTokenMlephant === undefined)
           return Promise.reject('missing api token')
 
-        const conversations: IResponseMlConversations =
+        const conversations: IResponseMlConversations | Error =
           await textToCadMlConversations(context.apiTokenMlephant, {
             pageToken: context.conversations.next_page,
             limit: 20,
-            sortBy: 'created_at',
+            sortBy: 'created_at_descending',
           })
+
+        if (err(conversations)) {
+          return Promise.reject(conversations)
+        }
 
         const nextItems = context.conversations.items.concat(
           conversations.items
@@ -184,8 +191,8 @@ export const mlEphantManagerMachine = setup({
         // If no conversation id, simply initialize context.
         if (args.input.event.conversationId === undefined) {
           return {
-            promptsPool: new Set(),
-            promptsBelongingToConversation: new Map(),
+            promptsPool: new Map(),
+            promptsBelongingToConversation: new Set(),
             pageTokenPromptsBelongingToConversation: undefined,
           }
         }
@@ -196,13 +203,17 @@ export const mlEphantManagerMachine = setup({
             conversationId: args.input.event.conversationId,
             pageToken: undefined,
             limit: 20,
-            sortBy: 'created_at',
+            sortBy: 'created_at_ascending',
           }
         )
 
+        if (err(result)) {
+          return Promise.reject(result)
+        }
+
         // Clear the prompts pool and what prompts we were tracking.
         const promptsPoolNext = new Map()
-        const promptsBelongingToConversationNext = new Set()
+        const promptsBelongingToConversationNext = new Set<string>()
         result.items.forEach((prompt) => {
           promptsPoolNext.set(prompt.id, prompt)
           promptsBelongingToConversationNext.add(prompt.id)
@@ -211,7 +222,7 @@ export const mlEphantManagerMachine = setup({
         return {
           promptsPool: promptsPoolNext,
           promptsBelongingToConversation: promptsBelongingToConversationNext,
-          pageTokenPromptsBelongingToConversation: result.page_token,
+          pageTokenPromptsBelongingToConversation: result.next_page,
         }
       }
     ),
@@ -229,9 +240,13 @@ export const mlEphantManagerMachine = setup({
 
         const result = await submitTextToCadCreateRequest(
           args.input.event.prompt,
-          args.input.event.projectName,
+          args.input.event.projectForPromptOutput.path,
           context.apiTokenMlephant
         )
+
+        if (err(result)) {
+          return Promise.reject(result)
+        }
 
         const promptsPool = context.promptsPool
         const promptsBelongingToConversation = new Set(
@@ -239,7 +254,7 @@ export const mlEphantManagerMachine = setup({
         )
         const promptsMeta = new Map(context.promptsMeta)
 
-        promptsPool.set(result.id, result)
+        promptsPool.set(result.id, { ...result, source_ranges: [] })
         promptsBelongingToConversation.add(result.id)
         promptsMeta.set(result.id, {
           type: PromptType.Create,
@@ -247,6 +262,8 @@ export const mlEphantManagerMachine = setup({
         })
 
         return {
+          // When we release new types this'll be fixed and error
+          // @ts-expect-error
           conversationId: result.conversation_id,
           promptsBelongingToConversation,
           promptsMeta,
@@ -282,13 +299,21 @@ export const mlEphantManagerMachine = setup({
           context.apiTokenMlephant
         )
 
+        if (err(result)) {
+          return Promise.reject(result)
+        }
+
         const promptsPool = context.promptsPool
         const promptsBelongingToConversation = new Set(
           context.promptsBelongingToConversation
         )
         const promptsMeta = new Map(context.promptsMeta)
 
-        promptsPool.set(result.id, result)
+        promptsPool.set(result.id, {
+          ...result,
+          prompt: result.prompt ?? '',
+          output_format: 'glb', // it's a lie. we have no 'none' type...
+        })
         promptsBelongingToConversation.add(result.id)
         promptsMeta.set(result.id, {
           type: PromptType.Edit,
@@ -297,6 +322,8 @@ export const mlEphantManagerMachine = setup({
         })
 
         return {
+          // Same deal here
+          // @ts-expect-error
           conversationId: result.conversation_id,
           promptsBelongingToConversation,
           promptsMeta,
@@ -314,32 +341,47 @@ export const mlEphantManagerMachine = setup({
         if (context.apiTokenMlephant === undefined)
           return Promise.reject('missing api token')
 
-        return new Promise((resolve) => {
-          setTimeout(() => {
-            const promptsPool = context.promptsPool
-            const promptsInProgressToCompleted = {
-              promptsBelongingToConversation: new Set(),
-            }
-            const promptsBelongingToConversation =
-              context.promptsBelongingToConversation
+        const promptsPool = context.promptsPool
+        const promptsInProgressToCompleted = new Set<string>()
 
-            promptsPool.values().forEach((prompt) => {
-              // Replace this with the actual request call.
-              if (prompt.status !== ('in_progress' as any)) return
-              prompt.status = 'completed'
+        for (let prompt of promptsPool.values()) {
+          const promptMeta = context.promptsMeta.get(prompt.id)
 
-              if (promptsBelongingToConversation?.has(prompt.id)) {
-                promptsInProgressToCompleted.promptsBelongingToConversation.add(
-                  prompt.id
-                )
-              }
-            })
+          if (promptMeta === undefined) {
+            continue
+          }
 
-            resolve({
-              promptsInProgressToCompleted,
-            })
-          }, 3000)
-        })
+          // This shit'll be nuked when we have pure websocket API and no diff.
+          // between creation and iteration.
+          let result
+          if (promptMeta.type === PromptType.Create) {
+            result = await getTextToCadCreateResult(
+              prompt.id,
+              context.apiTokenMlephant
+            )
+          } /* PromptType.Edit */ else {
+            result = await getPromptToEditResult(
+              prompt.id,
+              context.apiTokenMlephant
+            )
+          }
+
+          if (err(result)) {
+            return Promise.reject(result)
+          }
+
+          promptsInProgressToCompleted.add(prompt.id)
+          promptsPool.set(prompt.id, {
+            ...result,
+            prompt: result.prompt ?? '',
+            source_ranges: [],
+            output_format: 'glb', // it's a lie we don't give a shit what this is
+          })
+        }
+
+        return {
+          promptsInProgressToCompleted,
+        }
       }
     ),
   },

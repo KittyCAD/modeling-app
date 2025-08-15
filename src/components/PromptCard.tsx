@@ -8,7 +8,7 @@ import Loading from '@src/components/Loading'
 // In the future we can split this out but the code is 99% the same as
 // the PromptCard, which came first.
 export interface ConvoCardProps extends IResponseMlConversation {
-  onAction?: (id: Prompt['id'], prompt: Prompt['prompt']) => void
+  onAction?: (prompt: IResponseMlConversation['first_prompt']) => void
 }
 
 export const ConvoCard = (props: ConvoCardProps) => {
@@ -24,7 +24,7 @@ export const ConvoCard = (props: ConvoCardProps) => {
         <div className="flex flex-row gap-2">
           {props.onAction !== undefined && (
             <PromptCardActionButton
-              status={props.status}
+              status={'completed' as Prompt['status']}
               onClick={() => props.onAction?.(props.first_prompt)}
             />
           )}
@@ -107,16 +107,20 @@ export const PromptCardStatus = (props: {
       Thinking
     </Loading>
   )
-  const status: { [key: Prompt['status']]: ReactNode } = {
+  const Status: { [key in Prompt['status']]: ReactNode | null } = {
     completed: null,
     in_progress: loading,
     queued: loading,
     uploaded: loading,
     // A bit less harsh wording
     failed: <>Unsuccessful</>,
-  }[props.status]
+  }
 
-  return <div className="select-none text-sm text-chalkboard-70">{status}</div>
+  return (
+    <div className="select-none text-sm text-chalkboard-70">
+      {Status[props.status]}
+    </div>
+  )
 }
 
 export const PromptCard = (props: PromptCardProps) => {
@@ -129,8 +133,14 @@ export const PromptCard = (props: PromptCardProps) => {
     ${props.status === 'in_progress' || props.status === 'queued' ? 'animate-pulse' : ''}
   `
   useLayoutEffect(() => {
+    if (refHeight.current === null) {
+      return
+    }
+    if (refCard.current === null) {
+      return
+    }
     refHeight.current = refCard.current.getBoundingClientRect().height
-    refCard.current.style.height = 0
+    refCard.current.style.height = '0'
   }, [])
 
   useEffect(() => {

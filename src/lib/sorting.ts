@@ -63,8 +63,8 @@ export function getConvoSortFunction(sortBy: string) {
   ) => {
     if (a.first_prompt && b.first_prompt) {
       return sortBy.includes('desc')
-        ? a.first_prompt.localeCompare(b.prompt)
-        : b.first_prompt.localeCompare(a.prompt)
+        ? a.first_prompt.localeCompare(b.first_prompt)
+        : b.first_prompt.localeCompare(a.first_prompt)
     }
     return 0
   }

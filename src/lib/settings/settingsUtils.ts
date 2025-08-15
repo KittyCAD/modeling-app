@@ -351,17 +351,18 @@ export async function loadAndValidateSettings(
       : readLocalStorageProjectSettingsFile()
 
     // An id was missing. Create one and write it to disk immediately.
-    if (!projectSettings.settings?.meta?.id) {
+    if (!err(projectSettings) && !projectSettings.settings?.meta?.id) {
       projectSettings = {
-        meta: {
-          id: v4(),
+        settings: {
+          meta: {
+            id: v4(),
+          },
         },
       }
       // Duplicated from settingsUtils.ts
-      const projectTomlString = serializeProjectConfiguration(
-        settingsPayloadToProjectConfiguration(projectSettings)
-      )
-      if (err(projectTomlString)) return
+      const projectTomlString = serializeProjectConfiguration(projectSettings)
+      if (err(projectTomlString))
+        return Promise.reject(new Error('Failed to serialize project settings'))
       if (onDesktop) {
         await writeProjectSettingsFile(projectPath, projectTomlString)
       } else {
