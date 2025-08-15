@@ -1,6 +1,16 @@
 use kittycad_modeling_cmds::shared::Angle;
 use libm::{cos, sin};
 
+/// TODO: For performance reasons this should be a number not a string.
+/// Numeric IDs should allow calculating the IDs of children from parents,
+/// e.g. the IDs of a line segment's points should be a pure function
+/// of the parent's ID. That way we can calculate IDs easily instead of
+/// looking them up in some data structure.
+///
+/// But for now, let's use strings because they're easy to debug. Soon we can
+/// keep a numeric ID and have a Map<Id, String> to look up numeric IDs and find
+/// their human-friendly labels for debugging. No runtime cost, conditionally compiled
+/// only for test mode.
 pub type Label = String;
 
 /// 1D distance.
@@ -8,13 +18,26 @@ pub type Distance = f64;
 
 /// 2D point.
 pub struct DatumPoint {
-    pub label: Label,
-    pub point: kittycad_modeling_cmds::shared::Point2d<Distance>,
+    label: Label,
+}
+
+impl DatumPoint {
+    pub fn new(label: Label) -> Self {
+        Self { label }
+    }
+}
+
+type Id = String;
+
+impl DatumPoint {
+    pub fn label(&self) -> Id {
+        self.label.clone()
+    }
 }
 
 /// Line of infinite length.
 pub struct DatumLine {
-    pub label: Label,
+    label: Label,
     // Unusual representation of a line using two parameters, theta and A
     theta: Angle,
     a: f64,
@@ -38,21 +61,21 @@ impl DatumLine {
 
 /// Finite segment of a line.
 pub struct LineSegment {
-    pub label: Label,
+    label: Label,
     pub p0: DatumPoint,
     pub p1: DatumPoint,
 }
 
 /// A circle.
 pub struct Circle {
-    pub label: Label,
+    label: Label,
     pub center: DatumPoint,
     pub radius: Distance,
 }
 
 /// Arc on the perimeter of a circle.
 pub struct CircularArc {
-    pub label: Label,
+    label: Label,
     /// Center of the circle
     pub center: DatumPoint,
     /// Lies on the arc.
