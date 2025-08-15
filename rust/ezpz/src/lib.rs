@@ -4,6 +4,7 @@ use kittycad_modeling_cmds::shared::Angle;
 
 pub mod datatypes;
 pub mod equations;
+pub mod solver;
 
 pub enum Constraint {
     /// Also length.
@@ -23,7 +24,7 @@ pub enum Constraint {
 }
 
 impl Constraint {
-    fn into_equations(self) -> Vec<Equation> {
+    pub fn into_equations(self) -> Vec<Equation> {
         // For now, just for ease of debugging, use strings.
         // When we are ready to actually measure performance, change to numeric IDs.
         match self {
@@ -38,8 +39,18 @@ impl Constraint {
                         - Equation::single_variable(format!("{}x", p0.label())),
                 ]
             }
-            Constraint::Vertical(p0, p1) => todo!(),
-            Constraint::Horizontal(p0, p1) => todo!(),
+            Constraint::Vertical(p0, p1) => {
+                vec![
+                    Equation::single_variable(format!("{}x", p1.label()))
+                        - Equation::single_variable(format!("{}x", p0.label())),
+                ]
+            }
+            Constraint::Horizontal(p0, p1) => {
+                vec![
+                    Equation::single_variable(format!("{}y", p1.label()))
+                        - Equation::single_variable(format!("{}y", p0.label())),
+                ]
+            }
             Constraint::Symmetric(line, p0, p1) => todo!(),
         }
     }
