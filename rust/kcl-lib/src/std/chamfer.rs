@@ -2,7 +2,7 @@
 
 use anyhow::Result;
 use kcmc::{ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit, shared::CutType};
-use kittycad_modeling_cmds as kcmc;
+use kittycad_modeling_cmds::{self as kcmc, shared::Angle};
 
 use super::args::TyF64;
 use crate::{
@@ -22,11 +22,13 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     let solid = args.get_unlabeled_kw_arg("solid", &RuntimeType::solid(), exec_state)?;
     let length: TyF64 = args.get_kw_arg("length", &RuntimeType::length(), exec_state)?;
     let tags = args.kw_arg_edge_array_and_source("tags")?;
+    let ratio = args.get_kw_arg_opt("ratio", &RuntimeType::num_any(), exec_state)?;
+    let angle = args.get_kw_arg_opt("angle", &RuntimeType::angle(), exec_state)?;
     let tag = args.get_kw_arg_opt("tag", &RuntimeType::tag_decl(), exec_state)?;
 
     super::fillet::validate_unique(&tags)?;
     let tags: Vec<EdgeReference> = tags.into_iter().map(|item| item.0).collect();
-    let value = inner_chamfer(solid, length, tags, tag, exec_state, args).await?;
+    let value = inner_chamfer(solid, length, tags, ratio, angle, tag, exec_state, args).await?;
     Ok(KclValue::Solid { value })
 }
 
@@ -34,6 +36,8 @@ async fn inner_chamfer(
     solid: Box<Solid>,
     length: TyF64,
     tags: Vec<EdgeReference>,
+    ratio: Option<TyF64>,
+    angle: Option<TyF64>,
     tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
@@ -47,6 +51,8 @@ async fn inner_chamfer(
         )));
     }
 
+    let ratio = ratio.map(|x| x.to_mm());
+    let angle = angle.map(|x| Angle::from_degrees(x.to_degrees()));
     let mut solid = solid.clone();
     for edge_tag in tags {
         let edge_id = match edge_tag {
@@ -66,7 +72,7 @@ async fn inner_chamfer(
                     object_id: solid.id,
                     radius: LengthUnit(length.to_mm()),
                     tolerance: LengthUnit(DEFAULT_TOLERANCE), // We can let the user set this in the future.
-                    cut_type: CutType::Chamfer,
+                    cut_type: CutType::Chamfer { ratio, angle },
                 }),
             )
             .await?;

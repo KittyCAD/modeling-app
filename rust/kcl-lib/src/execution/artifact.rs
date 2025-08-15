@@ -291,7 +291,7 @@ impl From<kcmc::shared::CutType> for EdgeCutSubType {
     fn from(cut_type: kcmc::shared::CutType) -> Self {
         match cut_type {
             kcmc::shared::CutType::Fillet => EdgeCutSubType::Fillet,
-            kcmc::shared::CutType::Chamfer => EdgeCutSubType::Chamfer,
+            kcmc::shared::CutType::Chamfer { ratio: _, angle: _ } => EdgeCutSubType::Chamfer,
         }
     }
 }

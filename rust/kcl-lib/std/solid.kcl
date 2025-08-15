@@ -147,6 +147,10 @@ export fn chamfer(
   length: number(Length),
   /// The paths you want to chamfer
   tags: [Edge; 1+],
+  /// The ratio of the edge lengths
+  ratio?: number,
+  /// The angle between the edges
+  angle?: number(Angle),
   /// Create a new tag which refers to this chamfer
   tag?: TagDecl,
 ): Solid {}
