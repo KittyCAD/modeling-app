@@ -137,6 +137,8 @@ impl NonlinearSystem for Model {
         for (row_num, residual) in self
             .constraints
             .iter()
+            // Each constraint could have multiple residuals, so flat map to combine them into
+            // one flat list of residuals.
             .flat_map(|constraint| {
                 let residual = constraint.residual(&self.all_ids, current_assignments).unwrap();
                 debug_assert_eq!(residual.len(), constraint.residual_dim());
@@ -153,14 +155,12 @@ impl NonlinearSystem for Model {
         for (row_num, jacobian_row) in self
             .constraints
             .iter()
-            .flat_map(|constraint| {
-                let row = constraint.jacobian_section(&self.all_ids, current_assignments).unwrap();
-                debug_assert_eq!(row.len(), constraint.residual_dim());
-                row
-            })
+            // Each constraint could have multiple rows, so flat map to combine them into one flat list
+            // of rows.
+            .flat_map(|constraint| constraint.jacobian_section(&self.all_ids, current_assignments).unwrap())
             .enumerate()
         {
-            todo!("Use {row_num} and {jacobian_row:?}")
+            todo!()
         }
     }
 }
