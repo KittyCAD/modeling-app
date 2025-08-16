@@ -293,6 +293,7 @@ app.on('window-all-closed', () => {
 app.on('ready', (event, data) => {
   // Avoid potentially 2 ready fires
   if (mainWindow) return
+
   // Create the mainWindow
   mainWindow = createWindow()
   // Set menu application to null to avoid default electron menu
