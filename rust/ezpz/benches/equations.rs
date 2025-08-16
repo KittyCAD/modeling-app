@@ -1,5 +1,5 @@
 use divan::black_box;
-use kcl_ezpz::id::Id;
+use kcl_ezpz::Id;
 
 fn main() {
     // Run registered benchmarks.
