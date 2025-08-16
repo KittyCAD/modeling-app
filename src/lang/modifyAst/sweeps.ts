@@ -6,6 +6,7 @@ import {
   createLabeledArg,
   createLiteral,
   createLocalName,
+  createTagDeclarator,
 } from '@src/lang/create'
 import {
   createVariableExpressionsArray,
@@ -43,7 +44,12 @@ export function addExtrude({
   length,
   symmetric,
   bidirectionalLength,
+  tagStart,
+  tagEnd,
   twistAngle,
+  twistAngleStep,
+  twistCenterX,
+  twistCenterY,
   method,
   nodeToEdit,
 }: {
@@ -52,7 +58,12 @@ export function addExtrude({
   length: KclCommandValue
   symmetric?: boolean
   bidirectionalLength?: KclCommandValue
+  tagStart?: string
+  tagEnd?: string
   twistAngle?: KclCommandValue
+  twistAngleStep?: KclCommandValue
+  twistCenterX?: KclCommandValue
+  twistCenterY?: KclCommandValue
   method?: string
   nodeToEdit?: PathToNode
 }):
@@ -83,8 +94,23 @@ export function addExtrude({
         ),
       ]
     : []
+  const tagStartExpr = tagStart
+    ? [createLabeledArg('tagStart', createLocalName(tagStart))]
+    : []
+  const tagEndExpr = tagEnd
+    ? [createLabeledArg('tagEnd', createLocalName(tagEnd))]
+    : []
   const twistAngleExpr = twistAngle
     ? [createLabeledArg('twistAngle', valueOrVariable(twistAngle))]
+    : []
+  const twistAngleStepExpr = twistAngleStep
+    ? [createLabeledArg('twistAngleStep', valueOrVariable(twistAngleStep))]
+    : []
+  const twistCenterXExpr = twistCenterX
+    ? [createLabeledArg('twistCenterX', valueOrVariable(twistCenterX))]
+    : []
+  const twistCenterYExpr = twistCenterY
+    ? [createLabeledArg('twistCenterY', valueOrVariable(twistCenterY))]
     : []
   const methodExpr = method
     ? [createLabeledArg('method', createLocalName(method))]
@@ -95,7 +121,12 @@ export function addExtrude({
     createLabeledArg('length', valueOrVariable(length)),
     ...symmetricExpr,
     ...bidirectionalLengthExpr,
+    ...tagStartExpr,
+    ...tagEndExpr,
     ...twistAngleExpr,
+    ...twistAngleStepExpr,
+    ...twistCenterXExpr,
+    ...twistCenterYExpr,
     ...methodExpr,
   ])
 
@@ -116,6 +147,27 @@ export function addExtrude({
   }
   if (twistAngle && 'variableName' in twistAngle && twistAngle.variableName) {
     insertVariableAndOffsetPathToNode(twistAngle, modifiedAst, nodeToEdit)
+  }
+  if (
+    twistAngleStep &&
+    'variableName' in twistAngleStep &&
+    twistAngleStep.variableName
+  ) {
+    insertVariableAndOffsetPathToNode(twistAngleStep, modifiedAst, nodeToEdit)
+  }
+  if (
+    twistCenterX &&
+    'variableName' in twistCenterX &&
+    twistCenterX.variableName
+  ) {
+    insertVariableAndOffsetPathToNode(twistCenterX, modifiedAst, nodeToEdit)
+  }
+  if (
+    twistCenterY &&
+    'variableName' in twistCenterY &&
+    twistCenterY.variableName
+  ) {
+    insertVariableAndOffsetPathToNode(twistCenterY, modifiedAst, nodeToEdit)
   }
 
   // 3. If edit, we assign the new function call declaration to the existing node,
