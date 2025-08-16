@@ -9,46 +9,66 @@ use libm::{cos, sin};
 ///
 /// But for now, let's use strings because they're easy to debug. Soon we can
 /// keep a numeric ID and have a Map<Id, String> to look up numeric IDs and find
-/// their human-friendly labels for debugging. No runtime cost, conditionally compiled
+/// their human-friendly ids for debugging. No runtime cost, conditionally compiled
 /// only for test mode.
-pub type Label = String;
+#[derive(Clone, Copy, Eq, PartialEq, Ord, PartialOrd, Hash)]
+pub struct Id([char; 10]);
+
+impl std::fmt::Display for Id {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        for ch in self.0 {
+            write!(f, "{ch}")?;
+        }
+        Ok(())
+    }
+}
+impl std::fmt::Debug for Id {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        for ch in self.0 {
+            write!(f, "{ch}")?;
+        }
+        Ok(())
+    }
+}
 
 /// 1D distance.
 pub type Distance = f64;
 
 /// 2D point.
 pub struct DatumPoint {
-    label: Label,
+    id: Id,
 }
 
 impl DatumPoint {
-    pub fn new(label: Label) -> Self {
-        Self { label }
+    pub fn new(id: Id) -> Self {
+        Self { id }
     }
 }
 
-type Id = String;
-
 impl DatumPoint {
-    /// Label for this.
-    pub fn label(&self) -> Id {
-        self.label.clone()
+    /// Id for this.
+    pub fn id(&self) -> Id {
+        self.id.clone()
     }
 
-    /// Label for the X component of the point.
-    pub fn label_x(&self) -> Id {
-        format!("{}x", self.label)
+    /// Id for the X component of the point.
+    pub fn id_x(&self) -> Id {
+        let mut s = self.id;
+        s.0[9] = 'x';
+        s
     }
 
-    /// Label for the Y component of the point.
-    pub fn label_y(&self) -> Id {
-        format!("{}y", self.label)
+    /// Id for the Y component of the point.
+    pub fn id_y(&self) -> Id {
+        let mut s = self.id;
+        s.0[9] = 'y';
+        s
     }
 }
 
 /// Line of infinite length.
 pub struct DatumLine {
-    label: Label,
+    id: Id,
     // Unusual representation of a line using two parameters, theta and A
     theta: Angle,
     a: f64,
@@ -72,21 +92,21 @@ impl DatumLine {
 
 /// Finite segment of a line.
 pub struct LineSegment {
-    label: Label,
+    id: Id,
     pub p0: DatumPoint,
     pub p1: DatumPoint,
 }
 
 /// A circle.
 pub struct Circle {
-    label: Label,
+    id: Id,
     pub center: DatumPoint,
     pub radius: Distance,
 }
 
 /// Arc on the perimeter of a circle.
 pub struct CircularArc {
-    label: Label,
+    id: Id,
     /// Center of the circle
     pub center: DatumPoint,
     /// Lies on the arc.
