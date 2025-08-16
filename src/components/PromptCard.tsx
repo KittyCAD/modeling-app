@@ -153,7 +153,9 @@ export const PromptCard = (props: PromptCardProps) => {
   }, [])
 
   useEffect(() => {
-    if (props.status !== 'completed') { return }
+    if (props.status !== 'completed') {
+      return
+    }
     setStyle({ height: 'auto' })
   }, [props.status])
 
