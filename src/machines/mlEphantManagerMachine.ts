@@ -197,7 +197,7 @@ export const mlEphantManagerMachine = setup({
           {
             conversationId: args.input.event.conversationId,
             pageToken: args.input.event.nextPage,
-            limit: 5,
+            limit: 20,
             sortBy: 'created_at_descending',
           }
         )

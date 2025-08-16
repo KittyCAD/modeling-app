@@ -177,12 +177,13 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
             <div className="overflow-auto" ref={refScroll}>
               {props.isLoading === false ? (
                 props.nextPage ? (
-                  <button
+                  /* eslint-disable-next-line jsx-a11y/no-static-element-interactions */
+                  <div
                     onClick={() => onSeeMoreHistory()}
                     className="cursor-pointer underline text-center p-4 text-chalkboard-60 text-sm"
                   >
                     See more history
-                  </button>
+                  </div>
                 ) : (
                   <div className="text-center p-4 text-chalkboard-60 text-md">
                     The beginning of this project's Text-to-CAD history.
