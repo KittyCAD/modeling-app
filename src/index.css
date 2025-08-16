@@ -135,9 +135,14 @@ input {
     monospace;
 }
 
-code {
+code,
+#code-mirror-override .cm-scroller {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
+}
+
+#code-mirror-override {
+  @apply text-xs;
 }
 
 /*
