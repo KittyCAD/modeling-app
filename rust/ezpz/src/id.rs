@@ -3,11 +3,18 @@
 ///
 /// Integers have these properties, in the future we should just use integers.
 /// But for now, lets use strings because they're easy to debug. To get better performance
-/// than true strings, let's just use 10 chars.
+/// than true strings, let's just use 10 chars. This is very limiting, and the current
+/// impl can only support single-char entities, and only 10 child points per entity.
+/// But it's enough to establish a performance baseline and to help debug as we develop the
+/// solver.
 ///
 /// Soon we can use a numeric ID and have a Map<Id, String> to look up numeric IDs and find
 /// their human-friendly ids for debugging. No runtime cost, conditionally compiled
 /// only for test mode.
+///
+/// IDs can relate to each other, for example, a rectangle has 4 points, and the ID of each
+/// point should be easy to calculate from the ID of the rectangle. This means we can avoid
+/// keeping a lookup table of IDs that must be queried. Instead, we just derive the child ID.
 #[derive(Clone, Copy, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub struct Id {
     tag: [char; 10],
@@ -15,6 +22,7 @@ pub struct Id {
     id_type: IdType,
 }
 
+/// What type of thing is this ID for?
 #[derive(Clone, Copy, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub enum IdType {
     Entity,
@@ -51,7 +59,7 @@ impl std::fmt::Debug for IdType {
 }
 
 impl Id {
-    /// Get the ID of the child X component.
+    /// Get the ID of the child point number i.
     pub fn for_point(self, i: usize) -> Self {
         assert_eq!(
             self.id_type,
@@ -112,6 +120,7 @@ impl Id {
         out
     }
 
+    /// Make a new entity, with a single-character ID.
     pub fn for_entity(ch: char) -> Self {
         let mut tag = [' '; 10];
         tag[0] = ch;

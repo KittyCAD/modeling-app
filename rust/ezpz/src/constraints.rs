@@ -3,6 +3,7 @@ use crate::id::Id;
 use crate::{Error, Result};
 use kittycad_modeling_cmds::shared::Angle;
 
+/// Each geometric constraint we support.
 pub enum Constraint {
     /// Also length.
     Distance(DatumPoint, DatumPoint),
@@ -20,6 +21,7 @@ pub enum Constraint {
     Symmetric(DatumLine, DatumPoint, DatumPoint),
 }
 
+/// Given a list of all IDs in the system, find the target ID's index in that list.
 fn lookup(target_id: Id, all_ids: &[Id]) -> Result<usize> {
     // Right now data is small enough that I suspect linear search
     // beats binary search.
@@ -143,6 +145,7 @@ impl Constraint {
         }
     }
 
+    /// All IDs that are associated with this constraint.
     pub fn involved_ids(&self) -> Vec<Id> {
         match self {
             Constraint::Distance(_p0, _p1) => todo!(),

@@ -28,6 +28,9 @@ impl RowMap for Layout {
     }
 }
 
+/// A Jacobian cache.
+/// Stores the Jacobian so we don't constantly reallocate it.
+/// Required by newton_faer.
 struct Jc {
     sym: SymbolicSparseColMat<usize>,
     vals: Vec<f64>,
@@ -50,6 +53,7 @@ impl JacobianCache<f64> for Jc {
     }
 }
 
+/// Generate 2D indices that iterate over every cell in a matrix of the given size.
 fn gen_pairs(num_cols: usize, num_rows: usize) -> Vec<Pair<usize, usize>> {
     let mut out = Vec::with_capacity(num_cols * num_rows);
     for col in 0..num_cols {
@@ -60,6 +64,7 @@ fn gen_pairs(num_cols: usize, num_rows: usize) -> Vec<Pair<usize, usize>> {
     out
 }
 
+/// The problem to actually solve.
 pub struct Model {
     layout: Layout,
     all_ids: Vec<Id>,
@@ -112,7 +117,9 @@ impl Model {
     }
 }
 
+/// Connect the model to newton_faer's solver.
 impl NonlinearSystem for Model {
+    /// What number type we're using.
     type Real = f64;
     type Layout = Layout;
 
