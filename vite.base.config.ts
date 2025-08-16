@@ -115,3 +115,107 @@ export function pluginHotRestart(command: 'reload' | 'restart'): Plugin {
     },
   }
 }
+
+export function indexHtmlCsp(enabled: boolean): Plugin {
+  const csp = [
+    //  By default, only allow same origin.
+    "default-src 'self'",
+    // Allow inline styles and styles from the same origin. This is how we use CSS rightnow.
+    "style-src 'self' 'unsafe-inline'",
+    // Allow images from any source and inline images. We fetch user profile images from any origin.
+    "img-src * blob: 'unsafe-inline'",
+    // Allow WebSocket connections and fetches to our API.
+    "connect-src 'self' https://plausible.corp.zoo.dev https://api.zoo.dev wss://api.zoo.dev https://api.dev.zoo.dev wss://api.dev.zoo.dev https://api.zoogov.dev wss://api.zoogov.dev",
+    // Disallow legacy stuff
+    "object-src 'none'",
+  ]
+
+  // Allow scripts from the same origin and from Plausible Analytics. Allow WASM execution.
+  const cspScriptBase =
+    "script-src 'self' 'wasm-unsafe-eval' https://plausible.corp.zoo.dev/js/script.tagged-events.js"
+
+  // frame ancestors can only be blocked using HTTP headers (see vercel.json)
+  const vercelCspBase = ["frame-ancestors 'none'"]
+
+  const cspReporting = [
+    'report-uri https://csp-logger.vercel.app/csp-report',
+    'report-to csp-reporting-endpoint',
+  ]
+
+  const vercelCsp =
+    csp
+      .concat(vercelCspBase)
+      .concat([cspScriptBase])
+      .concat(cspReporting)
+      .join('; ') + ';'
+
+  const reportingEndpoints = {
+    key: 'Reporting-Endpoints',
+    value: 'csp-reporting-endpoint="https://csp-logger.vercel.app/csp-report"',
+  }
+
+  console.log(
+    'Content-Security-Policy for Vercel (prod) (vercel.json):',
+    vercelCsp
+  )
+
+  console.log(
+    JSON.stringify(
+      [
+        reportingEndpoints,
+        {
+          key: 'Content-Security-Policy-Report-Only',
+          value: vercelCsp,
+        },
+      ],
+      null,
+      2
+    )
+  )
+
+  console.log('Content-Security-Policy for Vercel (preview) (vercel.json):')
+
+  console.log(
+    JSON.stringify(
+      [
+        reportingEndpoints,
+        {
+          key: 'Content-Security-Policy-Report-Only',
+          value:
+            csp
+              .concat(vercelCspBase)
+              .concat([
+                // vercel.live is used for feedback scripts in preview deployments.
+                "frame-src 'self' https://vercel.live",
+                `${cspScriptBase} https://vercel.live/_next-live/feedback/feedback.js 'unsafe-eval'`,
+              ])
+              .concat(cspReporting)
+              .join('; ') + ';',
+        },
+      ],
+
+      null,
+      2
+    )
+  )
+
+  return {
+    name: 'html-transform',
+    transformIndexHtml(html: string) {
+      let indexHtmlRegex =
+        /<meta\shttp-equiv="Content-Security-Policy"\scontent="(.*?)">/
+      if (!enabled) {
+        // Web deployments that are deployed to vercel don't need a CSP in the indexHTML.
+        // They get it through vercel.json.
+        return html.replace(indexHtmlRegex, '')
+      } else {
+        return html.replace(
+          indexHtmlRegex,
+          `<meta http-equiv="Content-Security-Policy" content="${
+            csp.concat([cspScriptBase]).join('; ') + ';'
+          }">`
+        )
+      }
+    },
+  }
+}

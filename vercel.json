@@ -2,7 +2,26 @@
   "version": 2,
   "headers": [
     {
-      "source": "/",
+      "source": "/(.*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "app.zoo.dev"
+        }
+      ],
+      "headers": [
+        {
+          "key": "Reporting-Endpoints",
+          "value": "csp-reporting-endpoint=\"https://csp-logger.vercel.app/csp-report\""
+        },
+        {
+          "key": "Content-Security-Policy-Report-Only",
+          "value": "default-src 'self'; style-src 'self' 'unsafe-inline'; img-src * blob: 'unsafe-inline'; connect-src 'self' https://plausible.corp.zoo.dev https://api.zoo.dev wss://api.zoo.dev https://api.dev.zoo.dev wss://api.dev.zoo.dev https://api.zoogov.dev wss://api.zoogov.dev; object-src 'none'; frame-ancestors 'none'; script-src 'self' 'wasm-unsafe-eval' https://plausible.corp.zoo.dev/js/script.tagged-events.js; report-uri https://csp-logger.vercel.app/csp-report; report-to csp-reporting-endpoint;"
+        }
+      ]
+    },
+    {
+      "source": "/(.*)",
       "missing": [
         {
           "type": "host",
@@ -13,6 +32,14 @@
         {
           "key": "X-Robots-Tag",
           "value": "noindex"
+        },
+        {
+          "key": "Reporting-Endpoints",
+          "value": "csp-reporting-endpoint=\"https://csp-logger.vercel.app/csp-report\""
+        },
+        {
+          "key": "Content-Security-Policy-Report-Only",
+          "value": "default-src 'self'; style-src 'self' 'unsafe-inline'; img-src * blob: 'unsafe-inline'; connect-src 'self' https://plausible.corp.zoo.dev https://api.zoo.dev wss://api.zoo.dev https://api.dev.zoo.dev wss://api.dev.zoo.dev https://api.zoogov.dev wss://api.zoogov.dev; object-src 'none'; frame-ancestors 'none'; frame-src 'self' https://vercel.live; script-src 'self' 'wasm-unsafe-eval' https://plausible.corp.zoo.dev/js/script.tagged-events.js https://vercel.live/_next-live/feedback/feedback.js 'unsafe-eval'; report-uri https://csp-logger.vercel.app/csp-report; report-to csp-reporting-endpoint;"
         }
       ]
     }
