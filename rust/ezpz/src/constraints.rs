@@ -1,7 +1,6 @@
-use crate::datatypes::*;
-use crate::id::Id;
-use crate::{Error, Result};
 use kittycad_modeling_cmds::shared::Angle;
+
+use crate::{Error, Result, datatypes::*, id::Id};
 
 /// Each geometric constraint we support.
 pub enum Constraint {

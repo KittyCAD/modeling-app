@@ -1,8 +1,7 @@
 use faer::sparse::{Pair, SymbolicSparseColMat};
 use newton_faer::{JacobianCache, NonlinearSystem, RowMap};
 
-use crate::Constraint;
-use crate::id::Id;
+use crate::{Constraint, id::Id};
 
 /// TODO. I don't really know what this is used for yet.
 /// newton_faer crate uses it, but it might just be for

@@ -1,10 +1,10 @@
-pub use crate::constraints::Constraint;
 use indexmap::IndexMap;
+
+pub use crate::constraints::Constraint;
 // Only public for now so that I can benchmark it.
 // TODO: Replace this with an end-to-end benchmark,
 // or find a different way to structure modules.
 pub use crate::id::Id;
-
 use crate::solver::Model;
 
 /// Each kind of constraint we support.
@@ -45,9 +45,8 @@ pub fn solve(constraints: Vec<Constraint>, initial_guesses: IndexMap<Id, f64>) -
 #[cfg(test)]
 mod tests {
 
-    use crate::datatypes::DatumPoint;
-
     use super::*;
+    use crate::datatypes::DatumPoint;
 
     #[test]
     fn test_simple() {
