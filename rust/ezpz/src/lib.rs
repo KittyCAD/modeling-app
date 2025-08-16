@@ -29,8 +29,8 @@ pub enum Error {
 /// Given some initial guesses, constrain them.
 /// Returns the same variables in the same order, but constrained.
 pub fn solve(constraints: Vec<Constraint>, initial_guesses: IndexMap<Id, f64>) -> Result<Vec<f64>> {
-    // TODO: The model has to take in the list of IDs.
-    let mut model = Model::new(constraints);
+    let all_variables: Vec<Id> = initial_guesses.keys().copied().collect();
+    let mut model = Model::new(constraints, all_variables);
     let mut final_values: Vec<_> = initial_guesses.into_iter().map(|(_id, guess)| guess).collect();
     let iters = newton_faer::solve(
         &mut model,

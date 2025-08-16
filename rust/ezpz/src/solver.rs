@@ -1,5 +1,4 @@
 use faer::sparse::{Pair, SymbolicSparseColMat};
-use indexmap::IndexSet;
 use newton_faer::{JacobianCache, NonlinearSystem, RowMap};
 
 use crate::Constraint;
@@ -73,7 +72,7 @@ pub struct Model {
 }
 
 impl Model {
-    pub fn new(constraints: Vec<Constraint>) -> Self {
+    pub fn new(constraints: Vec<Constraint>, all_variables: Vec<Id>) -> Self {
         /*
         Firstly, find the size of the relevant matrices.
         Each constraint yields 1 or more residual function f.
@@ -88,12 +87,7 @@ impl Model {
             num_cols = total number of variables
                        which is = total number of "involved primitive IDs"
         */
-        let num_constraints = constraints.len();
-        let mut all_variables: IndexSet<Id> = IndexSet::with_capacity(num_constraints);
         let num_residuals: usize = constraints.iter().map(|c| c.residual_dim()).sum();
-        for constraint in &constraints {
-            all_variables.extend(constraint.involved_ids());
-        }
         let num_cols = all_variables.len();
         let num_rows = num_residuals;
 
@@ -112,7 +106,7 @@ impl Model {
                 vals: vec![0.0; num_cells],
             },
             constraints,
-            all_ids: all_variables.into_iter().collect(),
+            all_ids: all_variables,
         }
     }
 }
