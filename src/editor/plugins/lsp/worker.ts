@@ -18,7 +18,7 @@ import type {
   LspWorkerEvent,
 } from '@src/editor/plugins/lsp/types'
 import { LspWorker } from '@src/editor/plugins/lsp/types'
-import { fileSystemManager } from '@src/lang/std/fileSystemManager'
+import { projectFsManager } from '@src/lang/std/fileSystemManager'
 import { err, reportRejection } from '@src/lib/trap'
 
 const intoServer: IntoServer = new IntoServer()
@@ -75,7 +75,7 @@ onmessage = function (event: MessageEvent) {
           const config = new LspServerConfig(
             intoServer,
             fromServer,
-            fileSystemManager
+            projectFsManager
           )
           console.log('Starting worker', worker)
           switch (worker) {

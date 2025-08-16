@@ -65,6 +65,9 @@ function CommandBarPathInput({
         configuration.filters = arg.filters
       }
 
+      if (!window.electron) {
+        return new Error("Can't open file picker without electron")
+      }
       const newPath = await window.electron.open(configuration)
       if (newPath.canceled) return
       inputRef.current.value = newPath.filePaths[0]
@@ -75,7 +78,7 @@ function CommandBarPathInput({
 
   // Fire on component mount, if outside of e2e test context
   useEffect(() => {
-    window.electron.process.env.NODE_ENV !== 'test' &&
+    window.electron?.process.env.NODE_ENV !== 'test' &&
       toSync(pickFileThroughNativeDialog, reportRejection)()
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [])

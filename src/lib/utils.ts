@@ -2,7 +2,6 @@ import type { Binary as BSONBinary } from 'bson'
 import { v4 } from 'uuid'
 import type { AnyMachineSnapshot } from 'xstate'
 import type { CallExpressionKw, ExecState, SourceRange } from '@src/lang/wasm'
-import { isDesktop } from '@src/lib/isDesktop'
 import type { AsyncFn } from '@src/lib/types'
 
 import * as THREE from 'three'
@@ -245,7 +244,7 @@ export function getNormalisedCoordinates(
 export type Platform = 'macos' | 'windows' | 'linux' | ''
 
 export function platform(): Platform {
-  if (isDesktop()) {
+  if (window.electron) {
     const platform = window.electron.platform ?? ''
     // https://nodejs.org/api/process.html#processplatform
     switch (platform) {

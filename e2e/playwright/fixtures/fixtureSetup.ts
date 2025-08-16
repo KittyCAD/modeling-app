@@ -228,7 +228,10 @@ export class ElectronZoo {
       }, dims)
 
       return this.evaluate(async (dims: { width: number; height: number }) => {
-        await window.electron.resizeWindow(dims.width, dims.height)
+        if (!window.electron) {
+          throw new Error('Electron not defined')
+        }
+        await window.electron?.resizeWindow(dims.width, dims.height)
         window.document.body.style.width = dims.width + 'px'
         window.document.body.style.height = dims.height + 'px'
         window.document.documentElement.style.width = dims.width + 'px'

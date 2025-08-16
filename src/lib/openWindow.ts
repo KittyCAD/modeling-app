@@ -1,13 +1,11 @@
 import type { MouseEventHandler } from 'react'
 
-import { isDesktop } from '@src/lib/isDesktop'
 import { reportRejection } from '@src/lib/trap'
 
 export const openExternalBrowserIfDesktop = (to?: string) =>
   function (e) {
-    if (isDesktop()) {
-      // Ignoring because currentTarget could be a few different things
-      // @ts-ignore
+    if (window.electron) {
+      // currentTarget could be a few different things
       window.electron
         .openExternal(to || e.currentTarget?.href)
         .catch(reportRejection)
@@ -19,7 +17,7 @@ export const openExternalBrowserIfDesktop = (to?: string) =>
 
 // Open a new browser window desktop style or browser style.
 export default async function openWindow(url: string) {
-  if (isDesktop()) {
+  if (window.electron) {
     await window.electron.openExternal(url)
   } else {
     window.open(url, '_blank')

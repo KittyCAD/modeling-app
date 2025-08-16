@@ -197,7 +197,7 @@ export const AllSettingsFields = forwardRef(
                     if (!finalPath) {
                       return new Error('finalPath undefined')
                     }
-                    window.electron.showInFolder(finalPath)
+                    window.electron?.showInFolder(finalPath)
                   }, reportRejection)}
                   iconStart={{
                     icon: 'folder',
@@ -250,7 +250,7 @@ export const AllSettingsFields = forwardRef(
               <ActionButton
                 Element="button"
                 onClick={() => {
-                  window.electron.appCheckForUpdates().catch(reportRejection)
+                  window.electron?.appCheckForUpdates().catch(reportRejection)
                 }}
                 iconStart={{
                   icon: 'refresh',
