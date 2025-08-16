@@ -269,14 +269,26 @@ const saveLocalDeviceState = (state: LocalDeviceState) => {
 }
 
 const isBoundsVisible = (bounds: Electron.Rectangle): boolean => {
+  const headerArea = {
+    x: bounds.x,
+    y: bounds.y,
+    width: bounds.width,
+    height: 40,
+  }
   return screen.getAllDisplays().some((display) => {
     const displayBounds = display.bounds
-    return !(
-      bounds.x >= displayBounds.x + displayBounds.width ||
-      bounds.x + bounds.width <= displayBounds.x ||
-      bounds.y >= displayBounds.y + displayBounds.height ||
-      bounds.y + bounds.height <= displayBounds.y
-    )
+    const visibleHeaderArea = intersectRect(headerArea, displayBounds)
+    if (visibleHeaderArea) {
+      // We want the header's height to be fully visible, and the header to be at least 50% visible on its width
+      // (might be ok that some part of it is cut off)
+      if (
+        visibleHeaderArea.height >= headerArea.height &&
+        visibleHeaderArea.width >= headerArea.width / 2
+      ) {
+        return true
+      }
+    }
+    return false
   })
 }
 
@@ -698,4 +710,23 @@ function registerStartupListeners() {
   app.on('will-finish-launching', function () {
     app.on('open-url', onOpenUrl)
   })
+}
+
+function intersectRect(
+  a: Electron.Rectangle,
+  b: Electron.Rectangle
+): Electron.Rectangle | null {
+  const x1 = Math.max(a.x, b.x)
+  const y1 = Math.max(a.y, b.y)
+  const x2 = Math.min(a.x + a.width, b.x + b.width)
+  const y2 = Math.min(a.y + a.height, b.y + b.height)
+
+  const width = x2 - x1
+  const height = y2 - y1
+
+  if (width <= 0 || height <= 0) {
+    return null
+  }
+
+  return { x: x1, y: y1, width, height }
 }
