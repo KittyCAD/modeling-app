@@ -63,6 +63,7 @@ function ArgumentInput({
   stepBack: () => void
   onSubmit: (event: any) => void
 }) {
+  // @ts-ignore
   switch (arg.inputType) {
     case 'options':
       return (
@@ -123,6 +124,15 @@ function ArgumentInput({
       return (
         <CommandBarPathInput
           arg={arg}
+          stepBack={stepBack}
+          onSubmit={onSubmit}
+        />
+      )
+    case 'number':
+      console.error("'number' input is not implemented for CommandBar yet")
+      return (
+        <CommandBarBasicInput
+          arg={arg as any}
           stepBack={stepBack}
           onSubmit={onSubmit}
         />

@@ -38,7 +38,6 @@ import type { SafeArray } from '@src/lib/utils'
 import { getAngle, getLength, uuidv4 } from '@src/lib/utils'
 
 import {
-  createGridHelper,
   isQuaternionVertical,
   orthoScale,
   perspScale,
@@ -87,7 +86,6 @@ import {
   SKETCH_LAYER,
   X_AXIS,
   Y_AXIS,
-  getSceneScale,
 } from '@src/clientSideScene/sceneUtils'
 import type { SegmentUtils } from '@src/clientSideScene/segments'
 import { createLineShape } from '@src/clientSideScene/segments'
@@ -162,7 +160,7 @@ import type RustContext from '@src/lib/rustContext'
 import { updateExtraSegments } from '@src/lib/selections'
 import type { Selections } from '@src/lib/selections'
 import { getEventForSegmentSelection } from '@src/lib/selections'
-import type { Themes } from '@src/lib/theme'
+import { getResolvedTheme, Themes } from '@src/lib/theme'
 import { getThemeColorForThreeJs } from '@src/lib/theme'
 import { err, reportRejection, trap } from '@src/lib/trap'
 import { isArray, isOverlap, roundOff } from '@src/lib/utils'
@@ -179,6 +177,8 @@ import type {
   SketchTool,
 } from '@src/machines/modelingMachine'
 import { calculateIntersectionOfTwoLines } from 'sketch-helpers'
+import type { SettingsType } from '@src/lib/settings/initialSettings'
+import { InfiniteGridRenderer } from '@src/clientSideScene/InfiniteGridRenderer'
 
 type DraftSegment = 'line' | 'tangentialArc'
 
@@ -199,6 +199,8 @@ export class SceneEntities {
   axisGroup: Group | null = null
   draftPointGroups: Group[] = []
   currentSketchQuaternion: Quaternion | null = null
+
+  getSettings: (() => SettingsType) | null = null
 
   constructor(
     engineCommandManager: EngineCommandManager,
@@ -353,6 +355,7 @@ export class SceneEntities {
       x?.scale.set(1, factor / this.sceneInfra._baseUnitMultiplier, 1)
       const y = this.axisGroup.getObjectByName(Y_AXIS)
       y?.scale.set(factor / this.sceneInfra._baseUnitMultiplier, 1, 1)
+      this.updateInfiniteGrid()
     }
     this.sceneInfra.overlayCallbacks(callbacks)
   }
@@ -416,15 +419,8 @@ export class SceneEntities {
     yAxisMesh.name = Y_AXIS
 
     this.axisGroup = new Group()
-    const gridHelper = createGridHelper({ size: 100, divisions: 10 })
-    gridHelper.position.z = -0.01
-    gridHelper.renderOrder = -3 // is this working?
+    const gridHelper = new InfiniteGridRenderer()
     gridHelper.name = 'gridHelper'
-    const sceneScale = getSceneScale(
-      this.sceneInfra.camControls.camera,
-      this.sceneInfra.camControls.target
-    )
-    gridHelper.scale.set(sceneScale, sceneScale, sceneScale)
 
     const factor =
       this.sceneInfra.camControls.camera instanceof OrthographicCamera
@@ -451,6 +447,56 @@ export class SceneEntities {
     this.axisGroup.setRotationFromQuaternion(quat)
     sketchPosition && this.axisGroup.position.set(...sketchPosition)
     this.sceneInfra.scene.add(this.axisGroup)
+
+    this.updateInfiniteGrid()
+  }
+
+  private updateInfiniteGrid() {
+    const camera = this.sceneInfra.camControls.camera
+    if (camera instanceof OrthographicCamera) {
+      const settings = this.getSettings?.()
+      if (settings) {
+        const gridHelper = this.sceneInfra.scene
+          .getObjectByName(AXIS_GROUP)
+          ?.getObjectByName('gridHelper')
+        if (gridHelper instanceof InfiniteGridRenderer) {
+          const majorGridSpacing =
+            settings.modeling.majorGridSpacing.current ?? 1
+          const minorGridsPerMajor =
+            settings.modeling.minorGridsPerMajor.current ?? 4
+
+          const viewportSize = this.sceneInfra.renderer.getDrawingBufferSize(
+            new Vector2()
+          )
+          // Choose grid colors based on app theme: dark = existing colors, light = subtle gray
+          const isLight =
+            getResolvedTheme(this.sceneInfra.theme) === Themes.Light
+          const majorColor: [number, number, number, number] = isLight
+            ? [0.3, 0.3, 0.3, 1.0]
+            : [0.7, 0.7, 0.7, 1.0]
+          const minorColor: [number, number, number, number] = isLight
+            ? [0.2, 0.2, 0.2, 1.0]
+            : [0.9, 0.9, 0.9, 1.0]
+
+          gridHelper.update(
+            camera,
+            [viewportSize.x, viewportSize.y],
+            this.sceneInfra.getPixelsPerBaseUnit(camera),
+            this.sceneInfra._baseUnitMultiplier,
+            {
+              majorGridSpacing,
+              minorGridsPerMajor,
+              majorColor,
+              minorColor,
+              fixedSizeGrid: settings.modeling.fixedSizeGrid.current,
+              majorPxRange: [40, 120],
+            }
+          )
+        }
+      } else {
+        console.error('Settings not available for grid update')
+      }
+    }
   }
 
   getDraftPoint() {
@@ -490,7 +536,7 @@ export class SceneEntities {
       isDraft: true,
       from: [point.x, point.y],
       scale,
-      theme: this.sceneInfra._theme,
+      theme: this.sceneInfra.theme,
       // default is 12, this makes the draft point pop a bit more,
       // especially when snapping to the startProfile handle as it's it was the exact same size
       size: 16,
@@ -502,6 +548,28 @@ export class SceneEntities {
   removeDraftPoint() {
     const draftPoint = this.getDraftPoint()
     if (draftPoint) draftPoint.removeFromParent()
+  }
+
+  private snapToGrid(point: Coords2d, event: MouseEvent): Coords2d {
+    if (event.ctrlKey || event.metaKey) {
+      // disable snapping with ctrl
+      return point
+    }
+
+    const settings = this.getSettings?.()
+    if (!settings) {
+      console.error('getSettings not injected!')
+      return point
+    }
+    if (!settings.modeling.snapToGrid.current) return point
+
+    const snapsPerMinor = settings.modeling.snapsPerMinor.current
+    const minorsPerMajor = settings.modeling.minorGridsPerMajor.current
+    const multiplier = minorsPerMajor * snapsPerMinor
+    return [
+      Math.round(point[0] * multiplier) / multiplier,
+      Math.round(point[1] * multiplier) / multiplier,
+    ]
   }
 
   setupNoPointsListener({
@@ -636,16 +704,19 @@ export class SceneEntities {
           (sceneObject) => sceneObject.object.name === X_AXIS
         )
 
-        const snappedClickPoint = {
-          x: yAxisIntersection ? 0 : intersectionPoint.twoD.x,
-          y: xAxisIntersection ? 0 : intersectionPoint.twoD.y,
+        let startPoint: Coords2d = [
+          yAxisIntersection ? 0 : intersectionPoint.twoD.x,
+          xAxisIntersection ? 0 : intersectionPoint.twoD.y,
+        ]
+        if (!xAxisIntersection && !yAxisIntersection) {
+          startPoint = this.snapToGrid(startPoint, args.mouseEvent)
         }
 
         const inserted = insertNewStartProfileAt(
           this.kclManager.ast,
           sketchDetails.sketchNodePaths,
           sketchDetails.planeNodePath,
-          [snappedClickPoint.x, snappedClickPoint.y],
+          startPoint,
           'end'
         )
 
@@ -729,7 +800,7 @@ export class SceneEntities {
           id: sketch.start.__geoMeta.id,
           pathToNode: segPathToNode,
           scale,
-          theme: this.sceneInfra._theme,
+          theme: this.sceneInfra.theme,
           isDraft: false,
         })
         _profileStart.layers.set(SKETCH_LAYER)
@@ -863,7 +934,7 @@ export class SceneEntities {
           pathToNode: segPathToNode,
           isDraftSegment,
           scale,
-          theme: this.sceneInfra._theme,
+          theme: this.sceneInfra.theme,
           isSelected,
           sceneInfra: this.sceneInfra,
           selection,
@@ -2746,12 +2817,16 @@ export class SceneEntities {
       }
     }
 
-    // Snap to the main axes if there was no snapping to tangent direction
     if (!snappedToTangent) {
+      // Snap to the main axes if there was no snapping to tangent direction
       snappedPoint = [
         intersectsYAxis ? 0 : snappedPoint[0],
         intersectsXAxis ? 0 : snappedPoint[1],
-      ]
+      ] as const
+
+      if (!intersectsXAxis && !intersectsYAxis) {
+        snappedPoint = this.snapToGrid(snappedPoint, mouseEvent)
+      }
     }
 
     return {
@@ -3502,7 +3577,7 @@ export class SceneEntities {
           isSelected
             ? SEGMENT_BLUE
             : parent?.userData?.baseColor ||
-                getThemeColorForThreeJs(this.sceneInfra._theme)
+                getThemeColorForThreeJs(this.sceneInfra.theme)
         )
         updateExtraSegments(parent, 'hoveringLine', false)
         updateExtraSegments(parent, 'selected', isSelected)
@@ -3618,7 +3693,7 @@ export class SceneEntities {
   }
 
   drawDashedLine({ from, to }: { from: Coords2d; to: Coords2d }) {
-    const baseColor = getThemeColorForThreeJs(this.sceneInfra._theme)
+    const baseColor = getThemeColorForThreeJs(this.sceneInfra.theme)
     const color = baseColor
     const meshType = STRAIGHT_SEGMENT_DASH
 

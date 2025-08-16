@@ -145,6 +145,40 @@ export function SettingsFieldInput({
           }}
         />
       )
+    case 'number':
+      return (
+        <input
+          name={`${category}-${settingName}`}
+          data-testid={`${category}-${settingName}`}
+          type="number"
+          step="any"
+          className="p-1 bg-transparent border rounded-sm border-chalkboard-30 w-full disabled:opacity-50 disabled:pointer-events-none"
+          defaultValue={Number(
+            setting[settingsLevel] !== undefined
+              ? setting[settingsLevel]
+              : setting.getFallback(settingsLevel)
+          )}
+          disabled={!setting.isEnabled(context)}
+          onBlur={(e) => {
+            const numValue = parseFloat(e.target.value)
+            if (!Number.isNaN(numValue)) {
+              const currentValue =
+                setting[settingsLevel] !== undefined
+                  ? setting[settingsLevel]
+                  : setting.getFallback(settingsLevel)
+              if (currentValue !== numValue) {
+                send({
+                  type: `set.${category}.${settingName}`,
+                  data: {
+                    level: settingsLevel,
+                    value: numValue,
+                  },
+                } as unknown as EventFrom<WildcardSetEvent>)
+              }
+            }
+          }}
+        />
+      )
   }
   return (
     <p className="text-destroy-70 dark:text-destroy-20">
