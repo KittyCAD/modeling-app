@@ -55,10 +55,11 @@ export function UnitsMenu() {
   useEffect(() => {
     const unsubscribe =
       sceneInfra.camControls.subscribeToCamChange(onCameraChange)
+    onCameraChange()
     return () => {
       unsubscribe()
     }
-  }, [inSketchMode, currentUnit, onCameraChange])
+  }, [onCameraChange])
   useEffect(() => {
     setFileSettings(kclManager.fileSettings)
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
