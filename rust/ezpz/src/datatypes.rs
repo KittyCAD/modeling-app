@@ -1,35 +1,7 @@
 use kittycad_modeling_cmds::shared::Angle;
 use libm::{cos, sin};
 
-/// TODO: For performance reasons this should be a number not a string.
-/// Numeric IDs should allow calculating the IDs of children from parents,
-/// e.g. the IDs of a line segment's points should be a pure function
-/// of the parent's ID. That way we can calculate IDs easily instead of
-/// looking them up in some data structure.
-///
-/// But for now, let's use strings because they're easy to debug. Soon we can
-/// keep a numeric ID and have a Map<Id, String> to look up numeric IDs and find
-/// their human-friendly ids for debugging. No runtime cost, conditionally compiled
-/// only for test mode.
-#[derive(Clone, Copy, Eq, PartialEq, Ord, PartialOrd, Hash)]
-pub struct Id([char; 10]);
-
-impl std::fmt::Display for Id {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        for ch in self.0 {
-            write!(f, "{ch}")?;
-        }
-        Ok(())
-    }
-}
-impl std::fmt::Debug for Id {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        for ch in self.0 {
-            write!(f, "{ch}")?;
-        }
-        Ok(())
-    }
-}
+use crate::id::Id;
 
 /// 1D distance.
 pub type Distance = f64;
@@ -53,21 +25,18 @@ impl DatumPoint {
 
     /// Id for the X component of the point.
     pub fn id_x(&self) -> Id {
-        let mut s = self.id;
-        s.0[9] = 'x';
-        s
+        self.id.for_x_component()
     }
 
     /// Id for the Y component of the point.
     pub fn id_y(&self) -> Id {
-        let mut s = self.id;
-        s.0[9] = 'y';
-        s
+        self.id.for_y_component()
     }
 }
 
 /// Line of infinite length.
 pub struct DatumLine {
+    #[allow(dead_code)]
     id: Id,
     // Unusual representation of a line using two parameters, theta and A
     theta: Angle,
@@ -92,12 +61,14 @@ impl DatumLine {
 
 /// Finite segment of a line.
 pub struct LineSegment {
+    #[allow(dead_code)]
     id: Id,
     pub p0: DatumPoint,
     pub p1: DatumPoint,
 }
 
 /// A circle.
+#[allow(dead_code)]
 pub struct Circle {
     id: Id,
     pub center: DatumPoint,
@@ -105,6 +76,7 @@ pub struct Circle {
 }
 
 /// Arc on the perimeter of a circle.
+#[allow(dead_code)]
 pub struct CircularArc {
     id: Id,
     /// Center of the circle

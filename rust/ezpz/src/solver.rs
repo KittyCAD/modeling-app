@@ -1,9 +1,14 @@
 use faer::sparse::{Pair, SymbolicSparseColMat};
 use indexmap::IndexSet;
-use newton_faer::{JacobianCache, NewtonCfg, NonlinearSystem, RowMap, solve};
+use newton_faer::{JacobianCache, NonlinearSystem, RowMap};
 
-use crate::{Constraint, datatypes::Id};
+use crate::Constraint;
+use crate::id::Id;
 
+/// TODO. I don't really know what this is used for yet.
+/// newton_faer crate uses it, but it might just be for
+/// bookkeeping when mapping variables to the index they occupy,
+/// which I'm currently doing in my own way.
 pub struct Layout {
     dimensions: usize,
 }
@@ -18,7 +23,7 @@ impl RowMap for Layout {
     // bus = index?
     // I think `bus` is the row number and `var` is the variable being looked up,
     // and you give the index (column) of the variable in that row?
-    fn row(&self, bus: usize, var: Self::Var) -> Option<usize> {
+    fn row(&self, _bus: usize, _var: Self::Var) -> Option<usize> {
         None
     }
 }
@@ -55,7 +60,7 @@ fn gen_pairs(num_cols: usize, num_rows: usize) -> Vec<Pair<usize, usize>> {
     out
 }
 
-struct Model {
+pub struct Model {
     layout: Layout,
     all_ids: Vec<Id>,
     jc: Jc,
@@ -155,7 +160,7 @@ impl NonlinearSystem for Model {
             })
             .enumerate()
         {
-            // Row number is
+            todo!("Use {row_num} and {jacobian_row:?}")
         }
     }
 }
@@ -176,10 +181,5 @@ mod tests {
             Pair { row: 1, col: 2 },
         ];
         assert_eq!(expected, actual)
-    }
-
-    #[test]
-    fn test_foo() {
-        let x = Model::new(Vec::new());
     }
 }

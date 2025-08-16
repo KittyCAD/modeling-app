@@ -1,0 +1,160 @@
+/// For performance reasons, this should not require heap allocations, this should be
+/// quick to copy and to compute.
+///
+/// Integers have these properties, in the future we should just use integers.
+/// But for now, lets use strings because they're easy to debug. To get better performance
+/// than true strings, let's just use 10 chars.
+///
+/// Soon we can use a numeric ID and have a Map<Id, String> to look up numeric IDs and find
+/// their human-friendly ids for debugging. No runtime cost, conditionally compiled
+/// only for test mode.
+#[derive(Clone, Copy, Eq, PartialEq, Ord, PartialOrd, Hash)]
+pub struct Id {
+    tag: [char; 10],
+    len: usize,
+    id_type: IdType,
+}
+
+#[derive(Clone, Copy, Eq, PartialEq, Ord, PartialOrd, Hash)]
+pub enum IdType {
+    Entity,
+    Point,
+    Component,
+}
+
+impl std::fmt::Display for IdType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "{}",
+            match self {
+                IdType::Entity => "Entity",
+                IdType::Point => "Point",
+                IdType::Component => "Component",
+            }
+        )
+    }
+}
+
+impl std::fmt::Debug for IdType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "{}",
+            match self {
+                IdType::Entity => "Entity",
+                IdType::Point => "Point",
+                IdType::Component => "Component",
+            }
+        )
+    }
+}
+
+impl Id {
+    /// Get the ID of the child X component.
+    pub fn for_point(self, i: usize) -> Self {
+        assert_eq!(
+            self.id_type,
+            IdType::Entity,
+            "Only entities can have a child points, but this is type {}",
+            self.id_type
+        );
+        let mut out = self;
+        out.tag[out.len] = '.';
+        out.tag[out.len + 1] = 'p';
+        out.tag[out.len + 2] = match i {
+            0 => '0',
+            1 => '1',
+            2 => '2',
+            3 => '3',
+            4 => '4',
+            5 => '5',
+            6 => '6',
+            7 => '7',
+            8 => '8',
+            9 => '9',
+            _ => panic!("too many points in this entity"),
+        };
+        out.len += 3;
+        out.id_type = IdType::Point;
+        out
+    }
+
+    /// Get the ID of the child X component.
+    pub fn for_x_component(self) -> Self {
+        assert_eq!(
+            self.id_type,
+            IdType::Point,
+            "Only points can have a child x component, but this is type {}",
+            self.id_type
+        );
+        let mut out = self;
+        out.tag[out.len] = '.';
+        out.tag[out.len + 1] = 'x';
+        out.len += 2;
+        out.id_type = IdType::Component;
+        out
+    }
+
+    /// Get the ID of the child Y component.
+    pub fn for_y_component(self) -> Self {
+        assert_eq!(
+            self.id_type,
+            IdType::Point,
+            "Only points can have a child y component, but this is type {}",
+            self.id_type
+        );
+        let mut out = self;
+        out.tag[out.len] = '.';
+        out.tag[out.len + 1] = 'y';
+        out.len += 2;
+        out.id_type = IdType::Component;
+        out
+    }
+
+    pub fn for_entity(ch: char) -> Self {
+        let mut tag = [' '; 10];
+        tag[0] = ch;
+        Self {
+            tag,
+            len: 1,
+            id_type: IdType::Entity,
+        }
+    }
+}
+
+impl std::fmt::Display for Id {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        for ch in self.tag.iter().take(self.len) {
+            write!(f, "{ch}")?;
+        }
+        Ok(())
+    }
+}
+
+impl std::fmt::Debug for Id {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        for ch in self.tag.iter().take(self.len) {
+            write!(f, "{ch}")?;
+        }
+        Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_id_of_children() {
+        let entity_id = Id::for_entity('a');
+        assert_eq!(entity_id.to_string(), "a");
+        assert_eq!(entity_id.id_type, IdType::Entity);
+        let p0_id = entity_id.for_point(0);
+        assert_eq!(p0_id.to_string(), "a.p0");
+        assert_eq!(p0_id.id_type, IdType::Point);
+        let x_id = p0_id.for_x_component();
+        assert_eq!(x_id.to_string(), "a.p0.x");
+        assert_eq!(x_id.id_type, IdType::Component);
+    }
+}
