@@ -230,7 +230,7 @@ async fn inner_circle(
     let mut new_sketch = sketch;
     new_sketch.is_closed = true;
     if let Some(tag) = &tag {
-        new_sketch.add_tag(tag, &current_path, exec_state);
+        new_sketch.add_tag(tag, &current_path, exec_state, &None);
     }
 
     new_sketch.paths.push(current_path);
@@ -332,7 +332,7 @@ async fn inner_circle_three_point(
     let mut new_sketch = sketch;
     new_sketch.is_closed = true;
     if let Some(tag) = &tag {
-        new_sketch.add_tag(tag, &current_path, exec_state);
+        new_sketch.add_tag(tag, &current_path, exec_state, &None);
     }
 
     new_sketch.paths.push(current_path);
@@ -635,7 +635,7 @@ async fn inner_ellipse(
     let mut new_sketch = sketch;
     new_sketch.is_closed = true;
     if let Some(tag) = &tag {
-        new_sketch.add_tag(tag, &current_path, exec_state);
+        new_sketch.add_tag(tag, &current_path, exec_state, &None);
     }
 
     new_sketch.paths.push(current_path);
