@@ -10,6 +10,7 @@ import {
   STARTING_INDEX_TO_SELECT,
   FILE_PLACEHOLDER_NAME,
   FOLDER_PLACEHOLDER_NAME,
+  copyPasteSourceAndTarget,
 } from '@src/components/Explorer/utils'
 import type {
   FileExplorerEntry,
@@ -107,7 +108,11 @@ export const ProjectExplorer = ({
   const [contextMenuRow, setContextMenuRow] =
     useState<FileExplorerEntry | null>(null)
   const [isRenaming, setIsRenaming] = useState<boolean>(false)
+  const [isCopying, setIsCopying] = useState<boolean>(false)
   const lastIndexBeforeNothing = useRef<number>(-2)
+
+  // Store a path to copy and paste! Works for folders and files
+  const copyToClipBoard = useRef<FileEntry | null>(null)
 
   const fileExplorerContainer = useRef<HTMLDivElement | null>(null)
   const projectExplorerRef = useRef<HTMLDivElement | null>(null)
@@ -327,6 +332,50 @@ export const ProjectExplorer = ({
           },
           onOpenInNewWindow: () => {
             window.electron.openInNewWindow(row.path)
+          },
+          onCopy: () => {
+            copyToClipBoard.current = {
+              path: row.path,
+              name: row.name,
+              children: row.children,
+            }
+            setIsCopying(true)
+          },
+          onPaste: () => {
+            if (copyToClipBoard.current) {
+              const absoluteParentPath = getParentAbsolutePath(row.path)
+              const parentIndex = flattenedData.findIndex((entry) => {
+                return entry.path === absoluteParentPath
+              })
+              const parent =
+                parentIndex >= 0 ? flattenedData[parentIndex] : project
+              const result = copyPasteSourceAndTarget(
+                row.children?.map((child) => child.path) || [],
+                parent.children?.map((child) => child.path) || [],
+                copyToClipBoard.current,
+                {
+                  path: row.path,
+                  name: row.name,
+                  children: row.children,
+                },
+                '-copy-'
+              )
+              if (result && result.src && result.target) {
+                systemIOActor.send({
+                  type: SystemIOMachineEvents.copyRecursive,
+                  data: {
+                    src: result.src,
+                    target: result.target,
+                  },
+                })
+              } else {
+                console.error('failed to copy and paste the result is null')
+              }
+            }
+
+            // clear the path
+            copyToClipBoard.current = null
+            setIsCopying(false)
           },
           onRenameStart: () => {
             if (readOnly) {
@@ -711,6 +760,7 @@ export const ProjectExplorer = ({
             selectedRow={selectedRow}
             contextMenuRow={contextMenuRow}
             isRenaming={isRenaming}
+            isCopying={isCopying}
           ></FileExplorer>
         )}
       </div>
