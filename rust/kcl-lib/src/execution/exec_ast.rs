@@ -870,9 +870,9 @@ fn apply_ascription(
 
     value.coerce(&ty, false, exec_state).map_err(|_| {
         let suggestion = if ty == RuntimeType::length() {
-            ", you might try coercing to a fully specified numeric type such as `number(mm)`"
+            ", you might try coercing to a fully specified numeric type such as `mm`"
         } else if ty == RuntimeType::angle() {
-            ", you might try coercing to a fully specified numeric type such as `number(deg)`"
+            ", you might try coercing to a fully specified numeric type such as `deg`"
         } else {
             ""
         };
@@ -1947,6 +1947,18 @@ mixedArr = [0, "a"]: [number(mm)]
             ),
             "Expected error but found {err:?}"
         );
+
+        let program = r#"
+mixedArr = [0, "a"]: [mm]
+"#;
+        let result = parse_execute(program).await;
+        let err = result.unwrap_err();
+        assert!(
+            err.to_string().contains(
+                "could not coerce an array of `number`, `string` (with type `[any; 2]`) to type `[number(mm)]`"
+            ),
+            "Expected error but found {err:?}"
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -2116,7 +2128,25 @@ a = foo()
 
         parse_execute(program).await.unwrap();
 
+        let program = r#"fn foo(): mm {
+  return 42
+}
+
+a = foo()
+"#;
+
+        parse_execute(program).await.unwrap();
+
         let program = r#"fn foo(): number(mm) {
+  return { bar: 42 }
+}
+
+a = foo()
+"#;
+
+        parse_execute(program).await.unwrap_err();
+
+        let program = r#"fn foo(): mm {
   return { bar: 42 }
 }
 
@@ -2181,6 +2211,9 @@ startSketchOn(XY)
     #[tokio::test(flavor = "multi_thread")]
     async fn ascription_in_binop() {
         let ast = r#"foo = tan(0): number(rad) - 4deg"#;
+        parse_execute(ast).await.unwrap();
+
+        let ast = r#"foo = tan(0): rad - 4deg"#;
         parse_execute(ast).await.unwrap();
     }
 
