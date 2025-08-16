@@ -36,7 +36,7 @@ pub struct Position {
 
 impl Positions {
     pub fn get(&self, id: &Id) -> Result<&Position> {
-        self.storage.get(id).ok_or(Error::NotFound(id.clone()))
+        self.storage.get(id).ok_or(Error::NotFound(*id))
     }
 }
 

@@ -20,7 +20,7 @@ impl DatumPoint {
 impl DatumPoint {
     /// Id for this.
     pub fn id(&self) -> Id {
-        self.id.clone()
+        self.id
     }
 
     /// Id for the X component of the point.

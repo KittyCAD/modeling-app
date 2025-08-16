@@ -1,25 +1,14 @@
-use kcl_ezpz::equations::{Equation, Label, Vars};
+use divan::black_box;
+use kcl_ezpz::id::Id;
 
 fn main() {
     // Run registered benchmarks.
     divan::main();
 }
-// Convenient shorthand for 'variable', to make tests nicer.
-#[inline(always)]
-fn v(label: Label) -> Equation {
-    Equation::single_variable(label)
-}
 
-// Convenient shorthand for 'constant', to make tests nicer.
-#[inline(always)]
-fn c(constant: f64) -> Equation {
-    Equation::constant(constant)
-}
-
-#[divan::bench(args = [1.0, 2.0, 4.0])]
-fn multiplied(n: f64) -> f64 {
-    let equation = (v('a') + v('a') + v('b')) * (v('a') - c(3.0));
-
-    let actual = equation.evaluate(&Vars::from([('a', n), ('b', 2.0)])).unwrap();
-    actual.value
+#[divan::bench(args = [0, 1, 8])]
+fn id_generation(point_id: usize) -> Id {
+    let entity_id = black_box(Id::for_entity('a'));
+    let p0_id = black_box(entity_id.for_point(point_id));
+    black_box(p0_id.for_x_component())
 }
