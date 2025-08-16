@@ -25,12 +25,12 @@ impl DatumPoint {
 
     /// Id for the X component of the point.
     pub fn id_x(&self) -> Id {
-        self.id.for_x_component()
+        self.id.child_x_component()
     }
 
     /// Id for the Y component of the point.
     pub fn id_y(&self) -> Id {
-        self.id.for_y_component()
+        self.id.child_y_component()
     }
 }
 

@@ -60,7 +60,7 @@ impl std::fmt::Debug for IdType {
 
 impl Id {
     /// Get the ID of the child point number i.
-    pub fn for_point(self, i: usize) -> Self {
+    pub fn child_point(self, i: usize) -> Self {
         assert_eq!(
             self.id_type,
             IdType::Entity,
@@ -89,7 +89,7 @@ impl Id {
     }
 
     /// Get the ID of the child X component.
-    pub fn for_x_component(self) -> Self {
+    pub fn child_x_component(self) -> Self {
         assert_eq!(
             self.id_type,
             IdType::Point,
@@ -105,7 +105,7 @@ impl Id {
     }
 
     /// Get the ID of the child Y component.
-    pub fn for_y_component(self) -> Self {
+    pub fn child_y_component(self) -> Self {
         assert_eq!(
             self.id_type,
             IdType::Point,
@@ -121,13 +121,23 @@ impl Id {
     }
 
     /// Make a new entity, with a single-character ID.
-    pub fn for_entity(ch: char) -> Self {
+    pub fn new_entity(ch: char) -> Self {
         let mut tag = [' '; 10];
         tag[0] = ch;
         Self {
             tag,
             len: 1,
             id_type: IdType::Entity,
+        }
+    }
+
+    pub fn new_point(ch: char) -> Self {
+        let mut tag = [' '; 10];
+        tag[0] = ch;
+        Self {
+            tag,
+            len: 1,
+            id_type: IdType::Point,
         }
     }
 }
@@ -156,13 +166,13 @@ mod tests {
 
     #[test]
     fn test_id_of_children() {
-        let entity_id = Id::for_entity('a');
+        let entity_id = Id::new_entity('a');
         assert_eq!(entity_id.to_string(), "a");
         assert_eq!(entity_id.id_type, IdType::Entity);
-        let p0_id = entity_id.for_point(0);
+        let p0_id = entity_id.child_point(0);
         assert_eq!(p0_id.to_string(), "a.p0");
         assert_eq!(p0_id.id_type, IdType::Point);
-        let x_id = p0_id.for_x_component();
+        let x_id = p0_id.child_x_component();
         assert_eq!(x_id.to_string(), "a.p0.x");
         assert_eq!(x_id.id_type, IdType::Component);
     }
