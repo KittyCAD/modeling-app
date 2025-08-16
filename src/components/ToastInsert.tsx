@@ -4,8 +4,8 @@ import { ActionButton } from '@src/components/ActionButton'
 
 export function ToastInsert({ onInsert }: { onInsert: () => void }) {
   return (
-    <div className="inset-0 z-50 grid place-content-center rounded bg-chalkboard-110/50 shadow-md">
-      <div className="max-w-3xl min-w-[35rem] p-8 rounded bg-chalkboard-10 dark:bg-chalkboard-90">
+    <div className="inset-0 z-50 grid place-content-center rounded-sm bg-chalkboard-110/50 shadow-md">
+      <div className="max-w-3xl min-w-140 p-8 rounded-sm bg-chalkboard-10 dark:bg-chalkboard-90">
         <p className="text-md">
           Non-KCL files aren't editable here in Zoo Studio, but you may insert
           them using the button below or the Insert command.

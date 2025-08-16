@@ -17,7 +17,7 @@ export function DeleteConfirmationDialog({
   return (
     <Dialog open={true} onClose={onDismiss} className="relative z-50">
       <div className="fixed inset-0 grid bg-chalkboard-110/80 place-content-center">
-        <Dialog.Panel className="max-w-2xl p-4 border rounded bg-chalkboard-10 dark:bg-chalkboard-100 border-destroy-80">
+        <Dialog.Panel className="max-w-2xl p-4 border rounded-sm bg-chalkboard-10 dark:bg-chalkboard-100 border-destroy-80">
           <Dialog.Title as="h2" className="mb-4 text-2xl font-bold">
             {title}
           </Dialog.Title>
@@ -30,7 +30,7 @@ export function DeleteConfirmationDialog({
               iconStart={{
                 icon: 'trash',
                 bgClassName: 'bg-destroy-10 dark:bg-destroy-80',
-                iconClassName: '!text-destroy-80 dark:!text-destroy-20',
+                iconClassName: 'text-destroy-80! dark:text-destroy-20!',
               }}
               className="hover:border-destroy-40 dark:hover:border-destroy-40 hover:bg-destroy-10/20 dark:hover:bg-destroy-80/20"
               data-testid="delete-confirmation"

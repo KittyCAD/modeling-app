@@ -62,24 +62,5 @@ module.exports = {
     },
   },
   darkMode: 'class',
-  plugins: [
-    require('@headlessui/tailwindcss'),
-    // custom plugin to add variants for aria-pressed
-    // To use, just add a class of 'group-pressed:<some-tailwind-class>' or 'pressed:<some-tailwind-class>'
-    // to your element. Based on https://dev.to/philw_/tying-tailwind-styling-to-aria-attributes-502f
-    plugin(function ({ addVariant, e }) {
-      addVariant('group-pressed', ({ modifySelectors, separator }) => {
-        modifySelectors(({ className }) => {
-          return `.group[aria-pressed='true'] .${e(
-            `group-pressed${separator}${className}`
-          )}`
-        })
-      })
-      addVariant('pressed', ({ modifySelectors, separator }) => {
-        modifySelectors(({ className }) => {
-          return `.${e(`pressed${separator}${className}`)}[aria-pressed='true']`
-        })
-      })
-    }),
-  ],
+  plugins: [require('@headlessui/tailwindcss')],
 }

@@ -1,3 +1,4 @@
+@reference "../../index.css";
 .panel {
   @apply relative z-0 max-w-full flex-auto;
   display: grid;

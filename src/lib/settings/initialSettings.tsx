@@ -313,9 +313,9 @@ export function createSettings() {
         Component: ({ value, updateValue }) => {
           const inputRef = useRef<HTMLInputElement>(null)
           return (
-            <div className="flex gap-4 p-1 border rounded-sm border-chalkboard-30">
+            <div className="flex gap-4 p-1 border rounded-xs border-chalkboard-30">
               <input
-                className="flex-grow text-xs px-2 bg-transparent"
+                className="grow text-xs px-2 bg-transparent"
                 value={value}
                 disabled
                 data-testid="project-directory-input"
@@ -667,9 +667,9 @@ export function createSettings() {
         validate: (v) => REGEXP_UUIDV4.test(v),
         Component: ({ value }) => {
           return (
-            <div className="flex gap-4 p-1 border rounded-sm border-chalkboard-30">
+            <div className="flex gap-4 p-1 border rounded-xs border-chalkboard-30">
               <input
-                className="flex-grow text-xs px-2 bg-chalkboard-30 dark:bg-chalkboard-80 cursor-not-allowed"
+                className="grow text-xs px-2 bg-chalkboard-30 dark:bg-chalkboard-80 cursor-not-allowed"
                 value={value}
                 disabled
                 data-testid="project-id"

@@ -122,7 +122,7 @@ export const OpenInDesktopAppHandler = (props: React.PropsWithChildren) => {
             <div className="flex flex-col gap-2">
               <ActionButton
                 Element="button"
-                className={buttonClasses + ' !text-base'}
+                className={buttonClasses + ' text-base!'}
                 onClick={onOpenInDesktopApp}
                 iconEnd={{ icon: 'arrowRight' }}
               >
@@ -135,14 +135,14 @@ export const OpenInDesktopAppHandler = (props: React.PropsWithChildren) => {
                   ' text-sm border-transparent justify-center dark:bg-transparent'
                 }
                 to={withSiteBaseURL(`/${APP_DOWNLOAD_PATH}`)}
-                iconEnd={{ icon: 'link', bgClassName: '!bg-transparent' }}
+                iconEnd={{ icon: 'link', bgClassName: 'bg-transparent!' }}
               >
                 Download desktop app
               </ActionButton>
             </div>
             <ActionButton
               Element="button"
-              className={buttonClasses + ' -order-1 !text-base'}
+              className={buttonClasses + ' -order-1 text-base!'}
               onClick={continueToWebApp}
               iconStart={{ icon: 'arrowLeft' }}
               data-testid="continue-to-web-app-button"

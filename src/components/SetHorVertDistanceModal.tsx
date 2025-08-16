@@ -127,7 +127,7 @@ export const GetInfoModal = ({
                     name="val"
                     id="val"
                     ref={inputRef}
-                    className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm text-gray-900 border-gray-300 rounded-md font-mono"
+                    className="shadow-xs focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm text-gray-900 border-gray-300 rounded-md font-mono"
                     value={value}
                     onChange={(e) => {
                       setValue(e.target.value)
@@ -147,7 +147,7 @@ export const GetInfoModal = ({
                     name="segName"
                     id="segName"
                     disabled={!isSegNameEditable}
-                    className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm text-gray-900 border-gray-300 rounded-md font-mono"
+                    className="shadow-xs focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm text-gray-900 border-gray-300 rounded-md font-mono"
                     value={segName}
                     onChange={(e) => {
                       setSegName(e.target.value)
@@ -165,7 +165,7 @@ export const GetInfoModal = ({
                 <div className="mt-4">
                   <button
                     type="button"
-                    className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                    className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
                     onClick={() =>
                       valueNode &&
                       onResolve({

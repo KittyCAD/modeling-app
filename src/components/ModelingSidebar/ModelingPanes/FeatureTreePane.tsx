@@ -221,7 +221,7 @@ export const FeatureTreePane = () => {
                   `bg-destroy-10/40 dark:bg-destroy-80/40`
                 }`}
               >
-                <div className="text-sm bg-destroy-80 text-chalkboard-10 py-1 px-2 rounded flex gap-2 items-center">
+                <div className="text-sm bg-destroy-80 text-chalkboard-10 py-1 px-2 rounded-sm flex gap-2 items-center">
                   <p className="flex-1">
                     Errors found in KCL code.
                     <br />
@@ -229,7 +229,7 @@ export const FeatureTreePane = () => {
                   </p>
                   <button
                     onClick={goToError}
-                    className="bg-chalkboard-10 text-destroy-80 p-1 rounded-sm flex-none hover:bg-chalkboard-10 hover:border-destroy-70 hover:text-destroy-80 border-transparent"
+                    className="bg-chalkboard-10 text-destroy-80 p-1 rounded-xs flex-none hover:bg-chalkboard-10 hover:border-destroy-70 hover:text-destroy-80 border-transparent"
                   >
                     View error
                   </button>
@@ -280,7 +280,7 @@ const VisibilityToggle = (props: VisibilityToggleProps) => {
   return (
     <button
       onClick={handleToggleVisible}
-      className="p-0 m-0"
+      className="p-0 m-0 border-transparent!"
       data-testid="feature-tree-visibility-toggle"
     >
       <CustomIcon
@@ -331,7 +331,7 @@ const OperationItemWrapper = ({
     >
       <button
         {...props}
-        className={`reset !py-0.5 !px-1 flex-1 flex items-center gap-2 text-left text-base ${selectable ? 'border-transparent dark:border-transparent' : '!border-transparent cursor-default'} ${className}`}
+        className={`reset py-0.5! px-1! flex-1 flex items-center gap-2 text-left text-base border-transparent! bg-transparent! ${selectable ? 'cursor-pointer' : 'cursor-default'} ${className}`}
       >
         <CustomIcon name={icon} className="w-5 h-5 block" />
         <div className="flex flex-1 items-baseline align-baseline">

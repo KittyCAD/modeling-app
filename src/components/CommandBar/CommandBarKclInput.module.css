@@ -1,3 +1,4 @@
+@reference "../../index.css";
 .editor {
   @apply text-base flex-1 overflow-auto;
   scrollbar-width: thin;

@@ -1,3 +1,4 @@
+@reference "../../../index.css";
 .button {
   @apply flex justify-between items-center gap-2 px-2 py-1 text-left border-none rounded-sm;
   @apply !no-underline text-xs select-none text-chalkboard-90;

@@ -49,7 +49,7 @@ export const Telemetry = () => {
               <div className="flex gap-4 items-start">
                 <button
                   onClick={close}
-                  className="p-0 m-0 focus:ring-0 focus:outline-none border-none hover:bg-destroy-10 focus:bg-destroy-10 dark:hover:bg-destroy-80/50 dark:focus:bg-destroy-80/50"
+                  className="p-0 m-0 focus:ring-0 focus:outline-hidden border-none hover:bg-destroy-10 focus:bg-destroy-10 dark:hover:bg-destroy-80/50 dark:focus:bg-destroy-80/50"
                   data-testid="settings-close-button"
                 >
                   <CustomIcon name="close" className="w-5 h-5" />

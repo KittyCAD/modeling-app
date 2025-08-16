@@ -125,7 +125,7 @@ export const SetAngleLengthModal = ({
                     type="text"
                     name="val"
                     id="val"
-                    className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md font-mono pl-1 text-gray-900"
+                    className="shadow-xs focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md font-mono pl-1 text-gray-900"
                     value={value}
                     onChange={(e) => {
                       setValue(e.target.value)
@@ -144,7 +144,7 @@ export const SetAngleLengthModal = ({
                   <button
                     type="button"
                     disabled={isDisabled}
-                    className={`inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 ${
+                    className={`inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 ${
                       isDisabled ? 'opacity-50 cursor-not-allowed' : ''
                     }`}
                     onClick={() =>

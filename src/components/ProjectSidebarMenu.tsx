@@ -37,7 +37,7 @@ const ProjectSidebarMenu = ({
   const trafficLightsOffset =
     isDesktop() && window.electron.os.isMac ? 'ml-20' : ''
   return (
-    <div className={'!no-underline flex gap-2 ' + trafficLightsOffset}>
+    <div className={'no-underline! flex gap-2 ' + trafficLightsOffset}>
       <AppLogoLink project={project} file={file} />
       {enableMenu ? (
         <ProjectMenuPopover project={project} file={file} />
@@ -148,7 +148,7 @@ function ProjectMenuPopover({
               {!findCommand(insertCommandInfo) && (
                 <Tooltip
                   position="right"
-                  wrapperClassName="!max-w-none min-w-fit"
+                  wrapperClassName="max-w-none! min-w-fit"
                 >
                   Awaiting engine connection
                 </Tooltip>
@@ -171,7 +171,7 @@ function ProjectMenuPopover({
               {!findCommand(exportCommandInfo) && (
                 <Tooltip
                   position="right"
-                  wrapperClassName="!max-w-none min-w-fit"
+                  wrapperClassName="max-w-none! min-w-fit"
                 >
                   Awaiting engine connection
                 </Tooltip>
@@ -195,7 +195,7 @@ function ProjectMenuPopover({
               {!findCommand(makeCommandInfo) && (
                 <Tooltip
                   position="right"
-                  wrapperClassName="!max-w-none min-w-fit"
+                  wrapperClassName="max-w-none! min-w-fit"
                 >
                   Awaiting engine connection
                 </Tooltip>
@@ -251,7 +251,7 @@ function ProjectMenuPopover({
   return (
     <Popover className="relative">
       <Popover.Button
-        className="gap-1 rounded-sm mr-auto max-h-min min-w-max border-0 py-1 px-2 flex items-center  focus-visible:outline-appForeground dark:hover:bg-chalkboard-90"
+        className="gap-1 rounded-xs mr-auto max-h-min min-w-max border-0 py-1 px-2 flex items-center  focus-visible:outline-appForeground dark:hover:bg-chalkboard-90"
         data-testid="project-sidebar-toggle"
       >
         <div
@@ -310,7 +310,7 @@ function ProjectMenuPopover({
                     <ActionButton
                       {...rest}
                       className={
-                        'relative !font-sans flex items-center gap-2 rounded-sm py-1.5 px-2 cursor-pointer hover:bg-chalkboard-20 dark:hover:bg-chalkboard-80 border-none text-left ' +
+                        'relative font-sans! flex items-center gap-2 rounded-xs py-1.5 px-2 cursor-pointer hover:bg-chalkboard-20 dark:hover:bg-chalkboard-80 border-none text-left ' +
                         className
                       }
                       onMouseUp={() => {

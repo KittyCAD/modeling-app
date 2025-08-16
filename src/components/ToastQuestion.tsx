@@ -15,7 +15,7 @@ export function ToastQuestion(props: ToastQuestionProps) {
       <div className="mb-3">{props.question}</div>
       <div className="flex gap-2">
         <button
-          className="bg-chalkboard-20 dark:bg-chalkboard-80 px-3 py-1 rounded"
+          className="bg-chalkboard-20 dark:bg-chalkboard-80 px-3 py-1 rounded-sm"
           onClick={() => {
             toast.dismiss(TOAST_ID)
             props.onYes()
@@ -24,7 +24,7 @@ export function ToastQuestion(props: ToastQuestionProps) {
           Yes
         </button>
         <button
-          className="bg-chalkboard-20 dark:bg-chalkboard-80 px-3 py-1 rounded"
+          className="bg-chalkboard-20 dark:bg-chalkboard-80 px-3 py-1 rounded-sm"
           onClick={() => {
             toast.dismiss(TOAST_ID)
             props.onNo()

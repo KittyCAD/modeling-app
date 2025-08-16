@@ -24,7 +24,7 @@ export const UpdaterRestartModal = ({
   version,
 }: UpdaterRestartModalProps) => (
   <div className="fixed inset-0 z-50 grid place-content-center bg-chalkboard-110/50">
-    <div className="max-w-3xl p-8 rounded bg-chalkboard-10 dark:bg-chalkboard-90">
+    <div className="max-w-3xl p-8 rounded-sm bg-chalkboard-10 dark:bg-chalkboard-90">
       <h1 className="text-3xl font-bold">Ready to restart?</h1>
       <p className="my-4" data-testid="update-restart-version">
         v{version} is now installed. Restart the app to use the new features.

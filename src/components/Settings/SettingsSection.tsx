@@ -39,7 +39,7 @@ export function SettingsSection({
           {onFallback && parentLevel && settingHasChanged && (
             <button
               onClick={onFallback}
-              className="hidden group-hover:block group-focus-within:block border-none p-0 hover:bg-warn-10 dark:hover:bg-warn-80 focus:bg-warn-10 dark:focus:bg-warn-80 focus:outline-none"
+              className="hidden group-hover:block group-focus-within:block border-none p-0 hover:bg-warn-10 dark:hover:bg-warn-80 focus:bg-warn-10 dark:focus:bg-warn-80 focus:outline-hidden"
             >
               <CustomIcon name="refresh" className="w-4 h-4" />
               <span className="sr-only">Roll back {title}</span>

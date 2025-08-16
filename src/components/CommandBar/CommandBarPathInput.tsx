@@ -96,7 +96,7 @@ function CommandBarPathInput({
           name={arg.inputType}
           ref={inputRef}
           required
-          className="flex-grow px-2 py-1 !bg-transparent focus:outline-none"
+          className="grow px-2 py-1 bg-transparent! focus:outline-hidden"
           placeholder="Enter a path"
           defaultValue={defaultValue}
           onKeyDown={(event) => {
