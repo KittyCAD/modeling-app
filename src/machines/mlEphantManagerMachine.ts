@@ -1,7 +1,6 @@
 import { assign, setup, fromPromise } from 'xstate'
 import type { ActorRefFrom } from 'xstate'
 
-import { ACTOR_IDS } from '@src/machines/machineConstants'
 import { S, transitions } from '@src/machines/utils'
 import { err } from '@src/lib/trap'
 
@@ -19,7 +18,7 @@ import {
   textToCadPromptFeedback,
   getTextToCadCreateResult,
   submitTextToCadCreateRequest,
-  IResponseMlConversations,
+  type IResponseMlConversations,
 } from '@src/lib/textToCad'
 
 import {
@@ -88,6 +87,18 @@ export type MlEphantManagerEvents =
 // Used to specify a specific event in input properties
 type XSEvent<T> = Extract<MlEphantManagerEvents, { type: T }>
 
+export interface PromptMeta {
+  // If it's a creation prompt, it'll run some SystemIO code that
+  // creates a new project and other goodies.
+  type: PromptType
+
+  // Where the prompt's output should be placed on completion.
+  project: Project
+
+  // The file that was the "target" during prompting.
+  targetFile?: FileEntry
+}
+
 export interface MlEphantManagerContext {
   apiTokenMlephant?: string
 
@@ -111,20 +122,7 @@ export interface MlEphantManagerContext {
   conversationId?: string
 
   // Metadata per prompt that needs to be kept track separately.
-  promptsMeta: Map<
-    Prompt['id'],
-    {
-      // If it's a creation prompt, it'll run some SystemIO code that
-      // creates a new project and other goodies.
-      type: PromptType
-
-      // Where the prompt's output should be placed on completion.
-      project: Project
-
-      // The file that was the "target" during prompting.
-      targetFile?: FileEntry
-    }
-  >
+  promptsMeta: Map<Prompt['id'], PromptMeta>
 }
 
 export const mlEphantDefaultContext = () => ({
@@ -191,11 +189,7 @@ export const mlEphantManagerMachine = setup({
 
         // If no conversation id, simply initialize context.
         if (args.input.event.conversationId === undefined) {
-          return {
-            promptsPool: new Map(),
-            promptsBelongingToConversation: new Set(),
-            pageTokenPromptsBelongingToConversation: undefined,
-          }
+          return args.input.context
         }
 
         const result = await textToCadMlPromptsBelongingToConversation(
@@ -227,6 +221,7 @@ export const mlEphantManagerMachine = setup({
           )
 
         return {
+          conversationId: args.input.event.conversationId,
           promptsPool: promptsPoolNext,
           promptsBelongingToConversation: promptsBelongingToConversationNext,
           pageTokenPromptsBelongingToConversation: result.next_page,
@@ -268,6 +263,7 @@ export const mlEphantManagerMachine = setup({
         })
 
         return {
+          promptsPool,
           // When we release new types this'll be fixed and error
           // @ts-expect-error
           conversationId: result.conversation_id,
@@ -518,6 +514,7 @@ export const mlEphantManagerMachine = setup({
                 actions: [
                   assign({
                     promptsBelongingToConversation: undefined,
+                    conversationId: undefined,
                   }),
                 ],
               },

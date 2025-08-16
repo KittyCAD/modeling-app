@@ -10,10 +10,7 @@ import {
   useSearchParams,
 } from 'react-router-dom'
 
-import {
-  IResponseMlConversation,
-  IResponseMlConversations,
-} from '@src/lib/textToCad'
+import type { IResponseMlConversation } from '@src/lib/textToCad'
 import { ActionButton } from '@src/components/ActionButton'
 import { AppHeader } from '@src/components/AppHeader'
 import Loading from '@src/components/Loading'
@@ -68,7 +65,6 @@ import {
   needsToOnboard,
   onDismissOnboardingInvite,
 } from '@src/routes/Onboarding/utils'
-import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
 import { StatusBar } from '@src/components/StatusBar/StatusBar'
 import { useNetworkMachineStatus } from '@src/components/NetworkMachineIndicator'
@@ -260,10 +256,11 @@ const Home = () => {
       default:
         const _ex: never = tabSelected
     }
-  }, [tabSelected, projects])
+  }, [tabSelected, projects, conversations])
 
   useEffect(() => {
     searchAgainst(items)('')
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [items])
 
   const sidebarButtonClasses =

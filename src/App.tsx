@@ -17,7 +17,6 @@ import {
   ModelingSidebarLeft,
   ModelingSidebarRight,
 } from '@src/components/ModelingSidebar/ModelingSidebar'
-import { MlEphantConversation } from '@src/components/MlEphantConversation'
 import { UnitsMenu } from '@src/components/UnitsMenu'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import { useQueryParamEffects } from '@src/hooks/useQueryParamEffects'

@@ -2,7 +2,7 @@ import toast from 'react-hot-toast'
 import type { ExecState } from '@src/lang/wasm'
 import type { FileMeta } from '@src/lib/types'
 import { isNonNullable } from '@src/lib/utils'
-import { PROJECT_ENTRYPOINT, REGEXP_UUIDV4, FILE_EXT } from '@src/lib/constants'
+import { REGEXP_UUIDV4, FILE_EXT } from '@src/lib/constants'
 import { joinOSPaths } from '@src/lib/paths'
 import { getUniqueProjectName } from '@src/lib/desktopFS'
 import { getAllSubDirectoriesAtProjectRoot } from '@src/machines/systemIO/snapshotContext'
@@ -160,7 +160,7 @@ export type SystemIOContext = {
   }
 
   // A mapping between project id and conversation ids.
-  mlEphantConversations: Map<string, string>
+  mlEphantConversations?: Map<string, string>
 }
 
 export type RequestedKCLFile = {
@@ -308,13 +308,6 @@ export const collectProjectFiles = async (args: {
       )
     }
   }
-  // route to main.kcl by default for web and desktop
-  let filePath: string = PROJECT_ENTRYPOINT
-  const possibleFileName = args.targetFile?.path
-  if (possibleFileName && isDesktop()) {
-    // When prompt to edit finishes, try to route to the file they were in otherwise go to main.kcl
-    filePath = window.electron.path.relative(basePath, possibleFileName)
-  }
 
   return projectFiles
 }
@@ -344,5 +337,5 @@ export const jsonToMlConversations = (json: string) => {
 export const mlConversationsToJson = (
   convos: SystemIOContext['mlEphantConversations']
 ): string => {
-  return JSON.stringify(Object.fromEntries(convos))
+  return JSON.stringify(Object.fromEntries(convos ?? new Map<string, string>()))
 }

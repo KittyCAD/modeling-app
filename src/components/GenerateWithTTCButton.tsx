@@ -5,14 +5,14 @@ import Tooltip from '@src/components/Tooltip'
 
 export const GenerateWithTTCButton = (props: {
   hasBorder?: true
-  onClick: (prompt: string) => void
+  onClick: () => void
 }) => {
   const sidebarButtonClasses = `${props.hasBorder ? 'border' : 'border-transparent'} flex items-center p-2 gap-2 leading-tight dark:border-transparent enabled:dark:border-transparent enabled:hover:border-primary/50 enabled:dark:hover:border-inherit active:border-primary dark:bg-transparent hover:bg-transparent`
 
   return (
     <ActionButton
       Element="button"
-      onClick={() => props.onClick}
+      onClick={() => props.onClick()}
       className={sidebarButtonClasses}
       iconStart={{
         icon: 'sparkles',

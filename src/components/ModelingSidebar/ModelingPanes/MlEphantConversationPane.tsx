@@ -1,34 +1,23 @@
+import { reportRejection } from '@src/lib/trap'
 import { NIL as uuidNIL } from 'uuid'
 import { type settings } from '@src/lib/settings/initialSettings'
 import type CodeManager from '@src/lang/codeManager'
 import type { KclManager } from '@src/lang/KclSingleton'
-import type { IndexLoaderData } from '@src/lib/types'
 import type { SystemIOActor } from '@src/lib/singletons'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
-import { useLoaderData } from 'react-router-dom'
 import { useSelector } from '@xstate/react'
-import { useModelingContext } from '@src/hooks/useModelingContext'
 import { MlEphantConversation } from '@src/components/MlEphantConversation'
 import type { MlEphantManagerActor } from '@src/machines/mlEphantManagerMachine'
 import {
-  MlEphantManagerContext,
   MlEphantManagerStates,
   MlEphantManagerTransitions,
 } from '@src/machines/mlEphantManagerMachine'
-import { Prompt } from '@src/lib/prompt'
+import type { Prompt } from '@src/lib/prompt'
 import { collectProjectFiles } from '@src/machines/systemIO/utils'
 import { S } from '@src/machines/utils'
-import { ModelingMachineContext } from '@src/machines/modelingMachine'
+import type { ModelingMachineContext } from '@src/machines/modelingMachine'
 import type { FileEntry, Project } from '@src/lib/project'
-import type { Selections } from '@src/lib/selections'
-
-const hasMlEditableSelection = (
-  graphSelections: Selections['graphSelections'],
-  codeSelections: Selections['otherSelections']
-) => {
-  return graphSelections.length > 0 || codeSelections.length > 0
-}
 
 const hasPromptsPending = (promptsPool: Prompt[]) => {
   return (
@@ -46,9 +35,6 @@ export const MlEphantConversationPane = (props: {
   loaderFile: FileEntry | undefined
   settings: typeof settings
 }) => {
-  const [hasCheckedForMlConversations, setHasCheckedForMlConversations] =
-    useState(false)
-
   const mlEphantManagerActorSnapshot = props.mlEphantManagerActor.getSnapshot()
   const promptsBelongingToConversation = useSelector(
     props.mlEphantManagerActor,
@@ -94,9 +80,14 @@ export const MlEphantConversationPane = (props: {
 
   const onSeeMoreHistory = (nextPage?: string) => {
     if (!nextPage) return
+
     const conversationId = props.systemIOActor
       .getSnapshot()
-      .context.mlEphantConversations.get(props.settings.meta.id.current)
+      .context.mlEphantConversations?.get(props.settings.meta.id.current)
+
+    if (conversationId === undefined || conversationId === uuidNIL) {
+      console.warn('Unexpected conversationId is undefined!')
+    }
 
     props.mlEphantManagerActor.send({
       type: MlEphantManagerTransitions.GetPromptsBelongingToConversation,
@@ -115,49 +106,6 @@ export const MlEphantConversationPane = (props: {
     })
   }
 
-  useEffect(() => {
-    const subscription = props.systemIOActor.subscribe(
-      (systemIOActorSnapshot) => {
-        if (
-          systemIOActorSnapshot.value === 'idle' &&
-          !hasCheckedForMlConversations
-        ) {
-          setHasCheckedForMlConversations(true)
-          props.systemIOActor.send({
-            type: SystemIOMachineEvents.getMlEphantConversations,
-          })
-          return
-        }
-
-        const conversationId =
-          systemIOActorSnapshot.context.mlEphantConversations.get(
-            props.settings.meta.id.current
-          )
-
-        if (conversationId === uuidNIL) {
-          return
-        }
-
-        // We can now reliably use the mlConversations data.
-        // THIS IS WHERE PROJECT IDS ARE MAPPED TO CONVERSATION IDS.
-        if (
-          systemIOActorSnapshot.value === 'idle' &&
-          hasCheckedForMlConversations &&
-          mlEphantManagerActorSnapshot.context
-            .promptsBelongingToConversation === undefined
-        ) {
-          props.mlEphantManagerActor.send({
-            type: MlEphantManagerTransitions.GetPromptsBelongingToConversation,
-            conversationId,
-          })
-        }
-      }
-    )
-    return () => {
-      subscription.unsubscribe()
-    }
-  }, [hasCheckedForMlConversations])
-
   const isProcessing =
     mlEphantManagerActorSnapshot.matches({
       [MlEphantManagerStates.Ready]: {
@@ -165,11 +113,95 @@ export const MlEphantConversationPane = (props: {
       },
     }) === false
 
+  const tryToGetPrompts = () => {
+    const mlEphantConversations =
+      props.systemIOActor.getSnapshot().context.mlEphantConversations
+
+    // Not ready yet.
+    if (mlEphantConversations === undefined) {
+      return
+    }
+    if (props.settings.meta.id.current === uuidNIL) {
+      return
+    }
+
+    const conversationId = mlEphantConversations.get(
+      props.settings.meta.id.current
+    )
+
+    if (conversationId === uuidNIL) {
+      return
+    }
+
+    // We can now reliably use the mlConversations data.
+    // THIS IS WHERE PROJECT IDS ARE MAPPED TO CONVERSATION IDS.
+    if (
+      props.mlEphantManagerActor.getSnapshot().context
+        .promptsBelongingToConversation === undefined
+    ) {
+      props.mlEphantManagerActor.send({
+        type: MlEphantManagerTransitions.GetPromptsBelongingToConversation,
+        conversationId,
+      })
+    }
+  }
+
+  useEffect(() => {
+    const subscriptionSystemIOActor = props.systemIOActor.subscribe(
+      (systemIOActorSnapshot) => {
+        if (systemIOActorSnapshot.value !== 'idle') {
+          return
+        }
+        if (props.settings.meta.id.current === uuidNIL) {
+          return
+        }
+        if (systemIOActorSnapshot.context.mlEphantConversations === undefined) {
+          props.systemIOActor.send({
+            type: SystemIOMachineEvents.getMlEphantConversations,
+          })
+          return
+        }
+
+        tryToGetPrompts()
+      }
+    )
+
+    const subscriptionMlEphantManagerActor =
+      props.mlEphantManagerActor.subscribe((mlEphantManagerActorSnapshot2) => {
+        const isProcessing =
+          mlEphantManagerActorSnapshot2.matches({
+            [MlEphantManagerStates.Ready]: {
+              [MlEphantManagerStates.Foreground]: S.Await,
+            },
+          }) === false
+
+        if (isProcessing) {
+          return
+        }
+
+        tryToGetPrompts()
+      })
+
+    props.systemIOActor.send({
+      type: SystemIOMachineEvents.getMlEphantConversations,
+    })
+
+    tryToGetPrompts()
+
+    return () => {
+      subscriptionSystemIOActor.unsubscribe()
+      subscriptionMlEphantManagerActor.unsubscribe()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
+  }, [props.settings.meta.id.current])
+
   return (
     <MlEphantConversation
       isLoading={promptsBelongingToConversation === undefined || isProcessing}
       prompts={prompts}
-      onProcess={onProcess}
+      onProcess={(requestedPrompt: string) => {
+        onProcess(requestedPrompt).catch(reportRejection)
+      }}
       onFeedback={onFeedback}
       disabled={hasPromptsPending(prompts) || isProcessing}
       hasPromptCompleted={
