@@ -1,4 +1,3 @@
-import { NIL as uuidNIL } from 'uuid'
 import { useFileSystemWatcher } from '@src/hooks/useFileSystemWatcher'
 import {
   PATHS,
@@ -17,30 +16,23 @@ import {
   mlEphantManagerActor,
   engineCommandManager,
 } from '@src/lib/singletons'
-import { BillingTransition } from '@src/machines/billingMachine'
-import { PromptType, Prompt } from '@src/lib/prompt'
-import {
-  MlEphantManagerStates,
-  MlEphantManagerTransitions,
-} from '@src/machines/mlEphantManagerMachine'
+import { PromptType, type Prompt } from '@src/lib/prompt'
+import { type PromptMeta } from '@src/machines/mlEphantManagerMachine'
 import {
   useHasListedProjects,
   useProjectDirectoryPath,
   useRequestedFileName,
   useRequestedProjectName,
-  useRequestedTextToCadGeneration,
-  useFolders,
+  useProjectIdToConversationId,
+  useWatchForNewFileRequestsFromMlEphant,
 } from '@src/machines/systemIO/hooks'
 import {
   NO_PROJECT_DIRECTORY,
   SystemIOMachineEvents,
-  SystemIOMachineStates,
-  RequestedKCLFile,
+  type RequestedKCLFile,
 } from '@src/machines/systemIO/utils'
 import { useNavigate } from 'react-router-dom'
 import { useEffect } from 'react'
-import { reportRejection } from '@src/lib/trap'
-import { getUniqueProjectName } from '@src/lib/desktopFS'
 import { useLspContext } from '@src/components/LspProvider'
 import { useLocation } from 'react-router-dom'
 import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
@@ -56,9 +48,7 @@ export function SystemIOMachineLogicListenerDesktop() {
   const hasListedProjects = useHasListedProjects()
   const navigate = useNavigate()
   const settings = useSettings()
-  const requestedTextToCadGeneration = useRequestedTextToCadGeneration()
   const token = useToken()
-  const folders = useFolders()
   const { onFileOpen, onFileClose } = useLspContext()
   const { pathname } = useLocation()
 
@@ -246,125 +236,69 @@ export function SystemIOMachineLogicListenerDesktop() {
     )
   }
 
-  // Watch MlEphant for any responses that require files to be created.
-  useEffect(() => {
-    const subscription = mlEphantManagerActor.subscribe((next) => {
-      if (
-        !next.matches({
-          [MlEphantManagerStates.Ready]: {
-            [MlEphantManagerStates.Background]:
-              MlEphantManagerTransitions.GetPromptsPendingStatuses,
+  useWatchForNewFileRequestsFromMlEphant(
+    mlEphantManagerActor,
+    billingActor,
+    token,
+    (prompt: Prompt, promptMeta: PromptMeta) => {
+      if (promptMeta.type === PromptType.Create) {
+        if (prompt.code === undefined) return
+        systemIOActor.send({
+          type: SystemIOMachineEvents.importFileFromURL,
+          data: {
+            requestedCode: prompt.code,
+            requestedProjectName: promptMeta.project.name,
+            requestedFileNameWithExtension: PROJECT_ENTRYPOINT,
           },
         })
-      ) {
-        return
-      }
-
-      let hadUpdate = next.context.promptsInProgressToCompleted.size > 0
-
-      next.context.promptsInProgressToCompleted.forEach(
-        (promptId: Prompt['id']) => {
-          const prompt = next.context.promptsPool.get(promptId)
-          if (prompt === undefined) return
-          if (prompt.status === 'failed') return
-          const promptMeta = next.context.promptsMeta.get(prompt.id)
-          if (promptMeta === undefined) {
-            console.warn('No metadata for this prompt - ignoring.')
-            return
+      } else {
+        const requestedFiles: RequestedKCLFile[] = Object.entries(
+          prompt.outputs
+        ).map(([relativePath, fileContents]) => {
+          const lastSep = relativePath.lastIndexOf(window.electron.sep)
+          let pathPart = relativePath.slice(0, lastSep)
+          let filePart = relativePath.slice(lastSep)
+          if (lastSep < 0) {
+            pathPart = ''
+            filePart = relativePath
           }
-
-          if (promptMeta.type === PromptType.Create) {
-            if (prompt.code === undefined) return
-            systemIOActor.send({
-              type: SystemIOMachineEvents.importFileFromURL,
-              data: {
-                requestedCode: prompt.code,
-                requestedProjectName: promptMeta.project.name,
-                requestedFileNameWithExtension: PROJECT_ENTRYPOINT,
-              },
-            })
-          } else {
-            const requestedFiles: RequestedKCLFile[] = Object.entries(
-              prompt.outputs
-            ).map(([relativePath, fileContents]) => {
-              const lastSep = relativePath.lastIndexOf(window.electron.sep)
-              let pathPart = relativePath.slice(0, lastSep)
-              let filePart = relativePath.slice(lastSep)
-              if (lastSep < 0) {
-                pathPart = ''
-                filePart = relativePath
-              }
-              return {
-                requestedCode: fileContents,
-                requestedFileName: filePart,
-                requestedProjectName:
-                  promptMeta.project.name + window.electron.sep + pathPart,
-              }
-            })
-            systemIOActor.send({
-              type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToFile,
-              data: {
-                files: requestedFiles,
-                override: true,
-                requestedProjectName: '',
-                requestedFileNameWithExtension: '',
-              },
-            })
+          return {
+            requestedCode: fileContents,
+            requestedFileName: filePart,
+            requestedProjectName:
+              promptMeta.project.name + window.electron.sep + pathPart,
           }
-        }
-      )
+        })
 
-      if (hadUpdate) {
-        billingActor.send({
-          type: BillingTransition.Update,
-          apiToken: token,
+        // I know, it's confusing as hell.
+        const targetFilePathWithoutFileAndRelativeToProjectDir =
+          promptMeta.targetFile?.path.slice(
+            promptMeta.targetFile?.path.indexOf(promptMeta.project.name) ?? 0
+          ) ?? ''
+
+        const requestedProjectNameNext =
+          targetFilePathWithoutFileAndRelativeToProjectDir.slice(
+            0,
+            targetFilePathWithoutFileAndRelativeToProjectDir.lastIndexOf(
+              window.electron.sep
+            )
+          )
+
+        systemIOActor.send({
+          type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToFile,
+          data: {
+            files: requestedFiles,
+            override: true,
+            requestedProjectName: requestedProjectNameNext,
+            requestedFileNameWithExtension: promptMeta.targetFile?.name ?? '',
+          },
         })
       }
-    })
-    return () => {
-      subscription.unsubscribe()
     }
-  }, [])
+  )
 
   // Save the conversation id for the project id if necessary.
-  useEffect(() => {
-    const subscription = mlEphantManagerActor.subscribe((next) => {
-      if (settings.meta.id.current === undefined) {
-        return
-      }
-      if (settings.meta.id.current === uuidNIL) {
-        return
-      }
-      if (next.context.conversationId === undefined) {
-        return
-      }
-      const systemIOActorSnapshot = systemIOActor.getSnapshot()
-      if (
-        systemIOActorSnapshot.context.mlEphantConversations.has(
-          settings.meta.id.current
-        )
-      ) {
-        return
-      }
-      if (
-        systemIOActorSnapshot.value ===
-        SystemIOMachineStates.savingMlEphantConversations
-      ) {
-        return
-      }
-      systemIOActor.send({
-        type: SystemIOMachineEvents.saveMlEphantConversations,
-        data: {
-          projectId: settings.meta.id.current,
-          conversationId: next.context.conversationId,
-        },
-      })
-    })
-
-    return () => {
-      subscription.unsubscribe()
-    }
-  }, [settings])
+  useProjectIdToConversationId(mlEphantManagerActor, systemIOActor, settings)
 
   useGlobalProjectNavigation()
   useGlobalFileNavigation()

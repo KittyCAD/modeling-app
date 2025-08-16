@@ -1,35 +1,16 @@
-import type { SelectionRange } from '@codemirror/state'
-import { EditorSelection, Transaction } from '@codemirror/state'
 import type { Models } from '@kittycad/lib'
-import { diffLines } from 'diff'
-import toast from 'react-hot-toast'
 import type { TextToCadMultiFileIteration_type } from '@kittycad/lib/dist/types/src/models'
-import { getCookie, TOKEN_PERSIST_KEY } from '@src/machines/authMachine'
-import { COOKIE_NAME } from '@src/lib/constants'
-import { APP_DOWNLOAD_PATH } from '@src/routes/utils'
-import { isDesktop } from '@src/lib/isDesktop'
-import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
-import { ActionButton } from '@src/components/ActionButton'
-import { CustomIcon } from '@src/components/CustomIcon'
 
-import {
-  ToastPromptToEditCadSuccess,
-  writeOverFilesAndExecute,
-} from '@src/components/ToastTextToCad'
-import { modelingMachineEvent } from '@src/editor/manager'
 import { getArtifactOfTypes } from '@src/lang/std/artifactGraph'
-import { topLevelRange } from '@src/lang/util'
 import type { ArtifactGraph, SourceRange } from '@src/lang/wasm'
 import crossPlatformFetch from '@src/lib/crossPlatformFetch'
 import type { Selections } from '@src/lib/selections'
-import { codeManager, editorManager, kclManager } from '@src/lib/singletons'
-import { err, reportRejection } from '@src/lib/trap'
-import { uuidv4 } from '@src/lib/utils'
+import { kclManager } from '@src/lib/singletons'
+import { err } from '@src/lib/trap'
 import type { File as KittyCadLibFile } from '@kittycad/lib/dist/types/src/models'
 import type { FileMeta } from '@src/lib/types'
-import type { RequestedKCLFile } from '@src/machines/systemIO/utils'
-import { withAPIBaseURL, withSiteBaseURL } from '@src/lib/withBaseURL'
 import { connectReasoningStream } from '@src/lib/reasoningWs'
+import { withAPIBaseURL } from '@src/lib/withBaseURL'
 
 type KclFileMetaMap = {
   [execStateFileNamesIndex: number]: Extract<FileMeta, { type: 'kcl' }>

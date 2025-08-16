@@ -49,22 +49,18 @@ import {
   EngineConnectionEvents,
 } from '@src/lang/std/engineConnection'
 import { err, reportRejection, trap, reject } from '@src/lib/trap'
-import { isNonNullable, platform, uuidv4 } from '@src/lib/utils'
-import type { FileMeta } from '@src/lib/types'
+import { platform, uuidv4 } from '@src/lib/utils'
 import { commandBarActor } from '@src/lib/singletons'
-import { useToken, useSettings } from '@src/lib/singletons'
+import { useSettings } from '@src/lib/singletons'
 import type { IndexLoaderData } from '@src/lib/types'
 import {
   EXPORT_TOAST_MESSAGES,
   MAKE_TOAST_MESSAGES,
   EXECUTION_TYPE_MOCK,
-  FILE_EXT,
-  PROJECT_ENTRYPOINT,
 } from '@src/lib/constants'
 import { exportMake } from '@src/lib/exportMake'
 import { exportSave } from '@src/lib/exportSave'
-import { isDesktop } from '@src/lib/isDesktop'
-import type { FileEntry, Project } from '@src/lib/project'
+import type { Project } from '@src/lib/project'
 import type { WebContentSendPayload } from '@src/menu/channels'
 import {
   getPersistedContext,
@@ -153,7 +149,6 @@ export const ModelingMachineProvider = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [projects, loaderData, file])
 
-  const token = useToken()
   const streamRef = useRef<HTMLDivElement>(null)
   const persistedContext = useMemo(() => getPersistedContext(), [])
 

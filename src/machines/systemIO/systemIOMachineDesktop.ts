@@ -626,22 +626,20 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
         }
       }
     ),
-    [SystemIOMachineActors.getMlEphantConversations]: fromPromise(
-      async (args: {}) => {
-        // In the future we can add cache behavior but it's really pointless
-        // for the amount of data and frequency we're dealing with.
+    [SystemIOMachineActors.getMlEphantConversations]: fromPromise(async () => {
+      // In the future we can add cache behavior but it's really pointless
+      // for the amount of data and frequency we're dealing with.
 
-        // We need the settings path to find the sibling `ml-conversations.json`
-        const json = await window.electron.readFile(
-          window.electron.path.join(
-            window.electron.path.dirname(await getAppSettingsFilePath()),
-            ML_CONVERSATIONS_FILE_NAME
-          ),
-          'utf-8'
-        )
-        return jsonToMlConversations(json)
-      }
-    ),
+      // We need the settings path to find the sibling `ml-conversations.json`
+      const json = await window.electron.readFile(
+        window.electron.path.join(
+          window.electron.path.dirname(await getAppSettingsFilePath()),
+          ML_CONVERSATIONS_FILE_NAME
+        ),
+        'utf-8'
+      )
+      return jsonToMlConversations(json)
+    }),
     [SystemIOMachineActors.saveMlEphantConversations]: fromPromise(
       async (args: {
         input: {

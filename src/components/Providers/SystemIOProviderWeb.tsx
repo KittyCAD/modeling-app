@@ -1,20 +1,26 @@
+import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { useEffect, useCallback } from 'react'
 import {
   useClearURLParams,
-  useRequestedTextToCadGeneration,
+  useWatchForNewFileRequestsFromMlEphant,
+  useProjectIdToConversationId,
 } from '@src/machines/systemIO/hooks'
 import { useSearchParams } from 'react-router-dom'
-import { CREATE_FILE_URL_PARAM } from '@src/lib/constants'
-import { reportRejection } from '@src/lib/trap'
-import { useNavigate } from 'react-router-dom'
-import { billingActor, useSettings, useToken } from '@src/lib/singletons'
-import { BillingTransition } from '@src/machines/billingMachine'
+import {
+  CREATE_FILE_URL_PARAM,
+  DEFAULT_PROJECT_KCL_FILE,
+} from '@src/lib/constants'
+import {
+  billingActor,
+  mlEphantManagerActor,
+  systemIOActor,
+  useSettings,
+  useToken,
+} from '@src/lib/singletons'
 
 export function SystemIOMachineLogicListenerWeb() {
   const clearURLParams = useClearURLParams()
-  const navigate = useNavigate()
   const settings = useSettings()
-  const requestedTextToCadGeneration = useRequestedTextToCadGeneration()
   const token = useToken()
   const [searchParams, setSearchParams] = useSearchParams()
   const clearImportSearchParams = useCallback(() => {
@@ -37,5 +43,24 @@ export function SystemIOMachineLogicListenerWeb() {
   }
 
   useClearQueryParams()
+
+  useWatchForNewFileRequestsFromMlEphant(
+    mlEphantManagerActor,
+    billingActor,
+    token,
+    (prompt, promptMeta) => {
+      systemIOActor.send({
+        type: SystemIOMachineEvents.createKCLFile,
+        data: {
+          requestedProjectName: promptMeta.project.name,
+          requestedCode: prompt.outputs['main.kcl'] ?? '',
+          requestedFileNameWithExtension:
+            promptMeta.targetFile?.name ?? DEFAULT_PROJECT_KCL_FILE,
+        },
+      })
+    }
+  )
+  useProjectIdToConversationId(mlEphantManagerActor, systemIOActor, settings)
+
   return null
 }

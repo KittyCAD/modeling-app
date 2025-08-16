@@ -2,10 +2,7 @@ import { PROJECT_ENTRYPOINT } from '@src/lib/constants'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import type { ActorRefFrom } from 'xstate'
 import type { MlEphantManagerActor } from '@src/machines/mlEphantManagerMachine'
-import {
-  MlEphantManagerStates,
-  MlEphantManagerTransitions,
-} from '@src/machines/mlEphantManagerMachine'
+import { MlEphantManagerTransitions } from '@src/machines/mlEphantManagerMachine'
 import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
 import type { RequestedKCLFile } from '@src/machines/systemIO/utils'
 import {
@@ -152,7 +149,6 @@ export function createApplicationCommands({
       if (record) {
         const requestedProjectName = record.newProjectName || record.projectName
         const requestedPrompt = record.prompt
-        const isProjectNew = !!record.newProjectName
 
         const { folders } = systemIOActor.getSnapshot().context
 

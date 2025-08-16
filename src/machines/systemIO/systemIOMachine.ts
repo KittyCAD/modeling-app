@@ -281,6 +281,7 @@ export const systemIOMachine = setup({
       toast.success(
         ('data' in event && typeof event.data === 'string' && event.data) ||
           ('output' in event &&
+            event.output !== undefined &&
             'message' in event.output &&
             typeof event.output.message === 'string' &&
             event.output.message) ||
@@ -572,15 +573,9 @@ export const systemIOMachine = setup({
         }
       }
     ),
-    [SystemIOMachineActors.getMlEphantConversations]: fromPromise(
-      async ({
-        input,
-      }: {
-        input: {}
-      }) => {
-        return new Map()
-      }
-    ),
+    [SystemIOMachineActors.getMlEphantConversations]: fromPromise(async () => {
+      return new Map()
+    }),
     [SystemIOMachineActors.saveMlEphantConversations]: fromPromise(
       async (args: {
         input: {
@@ -622,7 +617,7 @@ export const systemIOMachine = setup({
     lastProjectDeleteRequest: {
       project: NO_PROJECT_DIRECTORY,
     },
-    mlEphantConversations: new Map(),
+    mlEphantConversations: undefined,
   }),
   states: {
     [SystemIOMachineStates.idle]: {
