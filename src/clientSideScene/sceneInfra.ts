@@ -595,14 +595,12 @@ export class SceneInfra {
       intersections: Intersection<Object3D<Object3DEventMap>>[]
     ) => {
       intersections.forEach((intersection) => {
-        if (intersection.object.type !== 'GridHelper') {
-          const existingIntersection = intersectionsMap.get(intersection.object)
-          if (
-            !existingIntersection ||
-            existingIntersection.distance > intersection.distance
-          ) {
-            intersectionsMap.set(intersection.object, intersection)
-          }
+        const existingIntersection = intersectionsMap.get(intersection.object)
+        if (
+          !existingIntersection ||
+          existingIntersection.distance > intersection.distance
+        ) {
+          intersectionsMap.set(intersection.object, intersection)
         }
       })
     }

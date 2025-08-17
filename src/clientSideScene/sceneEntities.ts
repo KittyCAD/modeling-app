@@ -419,8 +419,7 @@ export class SceneEntities {
     yAxisMesh.name = Y_AXIS
 
     this.axisGroup = new Group()
-    const gridHelper = new InfiniteGridRenderer()
-    gridHelper.name = 'gridHelper'
+    const gridRenderer = new InfiniteGridRenderer()
 
     const factor =
       this.sceneInfra.camControls.camera instanceof OrthographicCamera
@@ -429,7 +428,7 @@ export class SceneEntities {
     xAxisMesh?.scale.set(1, factor / this.sceneInfra._baseUnitMultiplier, 1)
     yAxisMesh?.scale.set(factor / this.sceneInfra._baseUnitMultiplier, 1, 1)
 
-    this.axisGroup.add(xAxisMesh, yAxisMesh, gridHelper)
+    this.axisGroup.add(xAxisMesh, yAxisMesh, gridRenderer)
     this.currentSketchQuaternion &&
       this.axisGroup.setRotationFromQuaternion(this.currentSketchQuaternion)
 
@@ -456,10 +455,10 @@ export class SceneEntities {
     if (camera instanceof OrthographicCamera) {
       const settings = this.getSettings?.()
       if (settings) {
-        const gridHelper = this.sceneInfra.scene
+        const gridRenderer = this.sceneInfra.scene
           .getObjectByName(AXIS_GROUP)
-          ?.getObjectByName('gridHelper')
-        if (gridHelper instanceof InfiniteGridRenderer) {
+          ?.children.find((child) => child instanceof InfiniteGridRenderer)
+        if (gridRenderer) {
           const majorGridSpacing =
             settings.modeling.majorGridSpacing.current ?? 1
           const minorGridsPerMajor =
@@ -478,7 +477,7 @@ export class SceneEntities {
             ? [0.2, 0.2, 0.2, 1.0]
             : [0.9, 0.9, 0.9, 1.0]
 
-          gridHelper.update(
+          gridRenderer.update(
             camera,
             [viewportSize.x, viewportSize.y],
             this.sceneInfra.getPixelsPerBaseUnit(camera),
