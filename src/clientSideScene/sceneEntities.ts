@@ -444,7 +444,9 @@ export class SceneEntities {
       new Vector3(...forward)
     )
     this.axisGroup.setRotationFromQuaternion(quat)
-    sketchPosition && this.axisGroup.position.set(...sketchPosition)
+    if (sketchPosition) {
+      this.axisGroup.position.set(...sketchPosition)
+    }
     this.sceneInfra.scene.add(this.axisGroup)
 
     this.updateInfiniteGrid()

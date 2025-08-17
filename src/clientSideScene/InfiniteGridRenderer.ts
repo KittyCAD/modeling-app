@@ -159,6 +159,10 @@ export class InfiniteGridRenderer extends LineSegments<
       return
     }
 
+    // Needed for unproject to work correctly. Other option would be to use mesh.onBeforeRender
+    camera.updateMatrixWorld()
+    camera.updateProjectionMatrix()
+
     let effectiveMajorSpacing = options.majorGridSpacing
     let minorSpacing = effectiveMajorSpacing / options.minorGridsPerMajor
 
@@ -224,8 +228,6 @@ export class InfiniteGridRenderer extends LineSegments<
     ]
 
     const ndc = new Vector3(-1, -1, 0)
-    // camera.updateProjectionMatrix()
-    // camera.updateMatrixWorld()
     ndc.unproject(camera)
     const leftEdge = ndc.y / baseUnitMultiplier // x, other: z // baseMultiplier
     const bottomEdge = ndc.z / baseUnitMultiplier // y, other: z // baseMultiplier
