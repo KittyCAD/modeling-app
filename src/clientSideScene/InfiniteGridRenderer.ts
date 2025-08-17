@@ -1,4 +1,5 @@
-import { Camera, Vector3 } from 'three'
+import type { Camera } from 'three'
+import { Vector3 } from 'three'
 import { OrthographicCamera } from 'three'
 import { GLSL3, LineSegments } from 'three'
 import { BufferGeometry, RawShaderMaterial } from 'three'
