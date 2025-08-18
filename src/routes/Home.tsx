@@ -359,7 +359,11 @@ const Home = () => {
             {!hasUnlimitedCredits && (
               <li className="contents">
                 <div className="my-2">
-                  <BillingDialog billingActor={billingActor} />
+                  <BillingDialog
+                    error={billingContext.error}
+                    credits={billingContext.credits}
+                    allowance={billingContext.allowance}
+                  />
                 </div>
               </li>
             )}

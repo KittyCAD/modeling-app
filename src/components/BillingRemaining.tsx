@@ -1,9 +1,7 @@
 import { Spinner } from '@src/components/Spinner'
-import { useSelector } from '@xstate/react'
 import { useState } from 'react'
 
 import { CustomIcon } from '@src/components/CustomIcon'
-import type { BillingActor } from '@src/machines/billingMachine'
 
 export enum BillingRemainingMode {
   ProgressBarFixed,
@@ -12,7 +10,9 @@ export enum BillingRemainingMode {
 
 export interface BillingRemainingProps {
   mode: BillingRemainingMode
-  billingActor: BillingActor
+  error?: Error
+  credits?: number
+  allowance?: number
 }
 
 const Error = (props: { error: Error }) => {
@@ -81,11 +81,6 @@ const BillingCredit = (props: { amount: number }) => {
 }
 
 export const BillingRemaining = (props: BillingRemainingProps) => {
-  const billingContext = useSelector(
-    props.billingActor,
-    ({ context }) => context
-  )
-
   const isFlex = props.mode === BillingRemainingMode.ProgressBarStretch
   const cssWrapper = [
     'bg-ml-green',
@@ -106,29 +101,29 @@ export const BillingRemaining = (props: BillingRemainingProps) => {
         .join(' ')}
     >
       <div className="flex flex-row gap-2 items-center">
-        {billingContext.error && <Error error={billingContext.error} />}
+        {props.error && <Error error={props.error} />}
         {!isFlex &&
-          (typeof billingContext.credits === 'number' ? (
+          (typeof props.credits === 'number' ? (
             <div className="font-mono" data-testid="billing-credits">
-              <BillingCredit amount={billingContext.credits} />
+              <BillingCredit amount={props.credits} />
             </div>
           ) : (
             <Spinner className="text-inherit w-4 h-4" />
           ))}
-        {billingContext.credits !== Infinity && (
+        {props.credits !== Infinity && (
           <div className={[isFlex ? 'flex-grow' : 'w-9'].join(' ')}>
             <ProgressBar
-              max={billingContext.allowance ?? 1}
-              value={billingContext.credits ?? 0}
+              max={props.allowance ?? 1}
+              value={props.credits ?? 0}
             />
           </div>
         )}
       </div>
       {isFlex && (
         <div className="flex flex-row gap-1">
-          {typeof billingContext.credits === 'number' ? (
-            billingContext.credits !== Infinity ? (
-              <>{billingContext.credits} credits remaining this month</>
+          {typeof props.credits === 'number' ? (
+            props.credits !== Infinity ? (
+              <>{props.credits} credits remaining this month</>
             ) : null
           ) : (
             <>

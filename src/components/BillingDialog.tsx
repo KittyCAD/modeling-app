@@ -1,19 +1,19 @@
-import { useSelector } from '@xstate/react'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { CustomIcon } from '@src/components/CustomIcon'
 import {
   BillingRemaining,
   BillingRemainingMode,
 } from '@src/components/BillingRemaining'
-import { type BillingActor } from '@src/machines/billingMachine'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 
-export const BillingDialog = (props: { billingActor: BillingActor }) => {
-  const billingContext = useSelector(
-    props.billingActor,
-    ({ context }) => context
-  )
-  const hasUnlimited = billingContext.credits === Infinity
+export type BillingDialogProps = {
+  error?: Error
+  credits?: number
+  allowance?: number
+}
+
+export const BillingDialog = (props: BillingDialogProps) => {
+  const hasUnlimited = props.credits === Infinity
 
   return (
     <div className="bg-ml-green fg-ml-black flex flex-row rounded-lg p-4 gap-2 text-xs">
@@ -37,7 +37,9 @@ export const BillingDialog = (props: { billingActor: BillingActor }) => {
         </div>
         <BillingRemaining
           mode={BillingRemainingMode.ProgressBarStretch}
-          billingActor={props.billingActor}
+          error={props.error}
+          credits={props.credits}
+          allowance={props.allowance}
         />
         {!hasUnlimited && (
           <a

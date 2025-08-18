@@ -19,6 +19,7 @@ import {
   EnvironmentChip,
   EnvironmentDescription,
 } from '@src/components/environment/Environment'
+import { useSelector } from '@xstate/react'
 
 export const defaultGlobalStatusBarItems = ({
   location,
@@ -83,6 +84,7 @@ export const defaultGlobalStatusBarItems = ({
 ]
 
 function BillingStatusBarItem() {
+  const billingContext = useSelector(billingActor, ({ context }) => context)
   return (
     <Popover className="relative flex items-stretch">
       <Popover.Button
@@ -91,7 +93,9 @@ function BillingStatusBarItem() {
       >
         <BillingRemaining
           mode={BillingRemainingMode.ProgressBarFixed}
-          billingActor={billingActor}
+          error={billingContext.error}
+          credits={billingContext.credits}
+          allowance={billingContext.allowance}
         />
         <Tooltip
           position="top"
@@ -103,7 +107,11 @@ function BillingStatusBarItem() {
         </Tooltip>
       </Popover.Button>
       <Popover.Panel className="absolute left-0 bottom-full mb-1 w-64 flex flex-col gap-1 align-stretch rounded-lg shadow-lg text-sm">
-        <BillingDialog billingActor={billingActor} />
+        <BillingDialog
+          error={billingContext.error}
+          credits={billingContext.credits}
+          allowance={billingContext.allowance}
+        />
       </Popover.Panel>
     </Popover>
   )
