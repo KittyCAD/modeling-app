@@ -1,6 +1,5 @@
-import { Spinner } from '@src/components/Spinner'
 import { useState } from 'react'
-
+import { Spinner } from '@src/components/Spinner'
 import { CustomIcon } from '@src/components/CustomIcon'
 
 export enum BillingRemainingMode {

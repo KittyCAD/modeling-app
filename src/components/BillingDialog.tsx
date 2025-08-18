@@ -1,15 +1,15 @@
-import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { CustomIcon } from '@src/components/CustomIcon'
 import {
   BillingRemaining,
   BillingRemainingMode,
 } from '@src/components/BillingRemaining'
-import { withSiteBaseURL } from '@src/lib/withBaseURL'
 
 export type BillingDialogProps = {
   error?: Error
   credits?: number
   allowance?: number
+  upgradeHref: string
+  upgradeClick?: React.MouseEventHandler<HTMLAnchorElement>
 }
 
 export const BillingDialog = (props: BillingDialogProps) => {
@@ -44,11 +44,11 @@ export const BillingDialog = (props: BillingDialogProps) => {
         {!hasUnlimited && (
           <a
             className="bg-ml-black text-ml-white rounded-lg text-center p-1 cursor-pointer"
-            href={withSiteBaseURL('/design-studio-pricing')}
+            href={props.upgradeHref}
             target="_blank"
             rel="noopener noreferrer"
             data-testid="billing-upgrade-button"
-            onClick={openExternalBrowserIfDesktop()}
+            onClick={props.upgradeClick}
           >
             Upgrade
           </a>

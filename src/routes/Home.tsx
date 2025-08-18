@@ -360,6 +360,8 @@ const Home = () => {
               <li className="contents">
                 <div className="my-2">
                   <BillingDialog
+                    upgradeHref={withSiteBaseURL('/design-studio-pricing')}
+                    upgradeClick={openExternalBrowserIfDesktop()}
                     error={billingContext.error}
                     credits={billingContext.credits}
                     allowance={billingContext.allowance}

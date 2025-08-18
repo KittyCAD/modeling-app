@@ -20,6 +20,7 @@ import {
   EnvironmentDescription,
 } from '@src/components/environment/Environment'
 import { useSelector } from '@xstate/react'
+import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 
 export const defaultGlobalStatusBarItems = ({
   location,
@@ -108,6 +109,8 @@ function BillingStatusBarItem() {
       </Popover.Button>
       <Popover.Panel className="absolute left-0 bottom-full mb-1 w-64 flex flex-col gap-1 align-stretch rounded-lg shadow-lg text-sm">
         <BillingDialog
+          upgradeHref={withSiteBaseURL('/design-studio-pricing')}
+          upgradeClick={openExternalBrowserIfDesktop()}
           error={billingContext.error}
           credits={billingContext.credits}
           allowance={billingContext.allowance}
