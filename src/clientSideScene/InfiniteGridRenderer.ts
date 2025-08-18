@@ -214,8 +214,8 @@ export class InfiniteGridRenderer extends LineSegments<
 
     // We need as many lines as to cover the whole screen
     const gridAreaSizeNDC = [
-      (1 - lineOffsetNDC[0]) / lineGapNDC[0],
-      (1 - lineOffsetNDC[1]) / lineGapNDC[1],
+      (1 - lineOffsetNDC[0]),
+      (1 - lineOffsetNDC[1]),
     ]
     const lineCount = [
       Math.ceil(gridAreaSizeNDC[0] / lineGapNDC[0]),
