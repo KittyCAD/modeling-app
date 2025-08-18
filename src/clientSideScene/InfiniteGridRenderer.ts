@@ -229,19 +229,19 @@ export class InfiniteGridRenderer extends LineSegments<
 
     const ndc = new Vector3(-1, -1, 0)
     ndc.unproject(camera)
-    const leftEdge = ndc.y / baseUnitMultiplier // x, other: z // baseMultiplier
-    const bottomEdge = ndc.z / baseUnitMultiplier // y, other: z // baseMultiplier
-    console.log('leftEdge', leftEdge, camera.position, camera.left)
+    const leftEdge = ndc.y / baseUnitMultiplier
+    const bottomEdge = ndc.z / baseUnitMultiplier
+
+    const baseUnitToNDC = [
+      (pixelsPerBaseUnit / viewportWidthPx) * 2 * window.devicePixelRatio,
+      (pixelsPerBaseUnit / viewportHeightPx) * 2 * window.devicePixelRatio,
+    ]
+    const leftFractional = leftEdge - Math.floor(leftEdge)
+    const bottomFractional = bottomEdge - Math.floor(bottomEdge)
 
     const lineOffsetNDC = [
-      -1 -
-        ((((leftEdge % 1) + 1) * pixelsPerBaseUnit) / viewportWidthPx) *
-          2 *
-          window.devicePixelRatio, //-camera.position.z % effectiveMinorSpacing / worldViewportWidth * 2,
-      -1 -
-        ((((bottomEdge % 1) + 1) * pixelsPerBaseUnit) / viewportHeightPx) *
-          2 *
-          window.devicePixelRatio, //-camera.position.y % effectiveMinorSpacing / worldViewportHeight * 2,
+      -1 - leftFractional * baseUnitToNDC[0],
+      -1 - bottomFractional * baseUnitToNDC[1],
     ]
 
     const material = this.material
