@@ -53,10 +53,13 @@ export function UnitsMenu() {
   }, [inSketchMode])
 
   useEffect(() => {
-    const unsubscribe = sceneInfra.camControls.cameraChange.add(onCameraChange)
+    const unsubscribers = [
+      sceneInfra.camControls.cameraChange.add(onCameraChange),
+      sceneInfra.baseUnitChange.add(onCameraChange),
+    ]
     onCameraChange()
     return () => {
-      unsubscribe()
+      unsubscribers.forEach((unsubscriber) => unsubscriber())
     }
   }, [onCameraChange])
   useEffect(() => {

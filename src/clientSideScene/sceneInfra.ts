@@ -38,6 +38,7 @@ import type {
   SegmentOverlayPayload,
 } from '@src/machines/modelingMachine'
 import { PROFILE_START } from '@src/clientSideScene/sceneConstants'
+import { Signal } from '@src/lib/signal'
 
 type SendType = ReturnType<typeof useModelingContext>['send']
 
@@ -95,6 +96,7 @@ export class SceneInfra {
   _baseUnitMultiplier = 1
   private _theme: Themes = Themes.System
   lastMouseState: MouseState = { type: 'idle' }
+  public readonly baseUnitChange = new Signal()
   onDragStartCallback: (arg: OnDragCallbackArgs) => Voidish = () => {}
   onDragEndCallback: (arg: OnDragCallbackArgs) => Voidish = () => {}
   onDragCallback: (arg: OnDragCallbackArgs) => Voidish = () => {}
@@ -122,12 +124,16 @@ export class SceneInfra {
   }
 
   set baseUnit(unit: BaseUnit) {
-    this._baseUnitMultiplier = baseUnitTomm(unit)
-    this.scene.scale.set(
-      this._baseUnitMultiplier,
-      this._baseUnitMultiplier,
-      this._baseUnitMultiplier
-    )
+    const newBaseUnitMultiplier = baseUnitTomm(unit)
+    if (newBaseUnitMultiplier !== this._baseUnitMultiplier) {
+      this._baseUnitMultiplier = baseUnitTomm(unit)
+      this.scene.scale.set(
+        this._baseUnitMultiplier,
+        this._baseUnitMultiplier,
+        this._baseUnitMultiplier
+      )
+      this.baseUnitChange.dispatch()
+    }
   }
 
   // Returns the size of the current base unit in screen space pixels in ortho view.
