@@ -219,7 +219,7 @@ export class SceneEntities {
     this.intersectionPlane = SceneEntities.createIntersectionPlane(
       this.sceneInfra
     )
-    this.sceneInfra.camControls.subscribeToCamChange(this.onCamChange)
+    this.sceneInfra.camControls.cameraChange.add(this.onCamChange)
     window.addEventListener('resize', this.onWindowResize)
   }
 
