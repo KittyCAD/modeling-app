@@ -15,10 +15,7 @@ import { setupServer } from 'msw/node'
 import type { Models } from '@kittycad/lib'
 import { createActor } from 'xstate'
 import { useSelector } from '@xstate/react'
-import {
-  BillingRemaining,
-  BillingRemainingMode,
-} from '@src/components/BillingRemaining'
+import { BillingRemaining, BillingRemainingMode } from '@kittycad/react-shared'
 import {
   BILLING_CONTEXT_DEFAULTS,
   billingMachine,

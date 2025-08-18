@@ -3,11 +3,11 @@ import type { Location } from 'react-router-dom'
 import { PATHS } from '@src/lib/paths'
 import { APP_VERSION, getReleaseUrl } from '@src/routes/utils'
 import {
+  BillingDialog,
   BillingRemaining,
   BillingRemainingMode,
-} from '@src/components/BillingRemaining'
+} from '@kittycad/react-shared'
 import { billingActor } from '@src/lib/singletons'
-import { BillingDialog } from '@src/components/BillingDialog'
 import { Popover } from '@headlessui/react'
 import Tooltip from '@src/components/Tooltip'
 import { HelpMenu } from '@src/components/HelpMenu'
