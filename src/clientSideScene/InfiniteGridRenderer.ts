@@ -8,11 +8,6 @@ const vertexShader = `precision highp float;
 
 uniform int verticalLines;
 uniform int horizontalLines;
-uniform vec2 cameraPos;
-uniform float worldToScreenX;
-uniform float worldToScreenY;
-uniform float minorSpacing;
-uniform float majorSpacing;
 uniform vec2 viewportPx; // (drawing buffer width, height) in pixels
 
 uniform vec2 lineGapNDC;
@@ -45,17 +40,11 @@ void main()
 		int lineIndex = gl_VertexID / 2;
 		int vertIndex = gl_VertexID % 2;
 
-		float startWorldX = floor(cameraPos.x / minorSpacing) * minorSpacing - float(verticalLines / 2) * minorSpacing;
-		float worldX = startWorldX + float(lineIndex) * minorSpacing;
-
-		float screenX = (worldX - cameraPos.x) * worldToScreenX;
+		float screenX = lineOffsetNDC.x + float(lineIndex) * lineGapNDC.x;
 		float screenY = (vertIndex == 0) ? -1.0 : 1.0;
-
 		screenX = snapToPixel(screenX, viewportPx.x);
-		screenX = lineOffsetNDC.x + float(lineIndex) * lineGapNDC.x;
 		screenPos = vec2(screenX, screenY);
 
-		vLineType = mod(abs(worldX), majorSpacing) < 0.001 ? 1.0 : 0.0;
 		vLineType = lineIndex % minorsPerMajor == 0 ? 1.0 : 0.0;
 	}
 	else
@@ -63,17 +52,11 @@ void main()
 		int lineIndex = (gl_VertexID - totalVerticalVerts) / 2;
 		int vertIndex = (gl_VertexID - totalVerticalVerts) % 2;
 
-		float startWorldY = floor(cameraPos.y / minorSpacing) * minorSpacing - float(horizontalLines / 2) * minorSpacing;
-		float worldY = startWorldY + float(lineIndex) * minorSpacing;
-
 		float screenX = (vertIndex == 0) ? -1.0 : 1.0;
-		float screenY = (worldY - cameraPos.y) * worldToScreenY;
-		screenY = lineOffsetNDC.y + float(lineIndex) * lineGapNDC.y;
-
+		float screenY = lineOffsetNDC.y + float(lineIndex) * lineGapNDC.y;
 		screenY = snapToPixel(screenY, viewportPx.y);
 		screenPos = vec2(screenX, screenY);
 
-		vLineType = mod(abs(worldY), majorSpacing) < 0.001 ? 1.0 : 0.0;
 		vLineType = lineIndex % minorsPerMajor == 0 ? 1.0 : 0.0;
 	}
 
@@ -166,13 +149,6 @@ export class InfiniteGridRenderer extends LineSegments<
     let effectiveMajorSpacing = options.majorGridSpacing
     let minorSpacing = effectiveMajorSpacing / options.minorGridsPerMajor
 
-    const zoom = camera.zoom
-    const worldViewportWidth = (camera.right - camera.left) / zoom
-    const worldViewportHeight = (camera.top - camera.bottom) / zoom
-
-    const worldToScreenX = 2 / worldViewportWidth
-    const worldToScreenY = 2 / worldViewportHeight
-
     const viewportWidthPx = viewportSize[0]
     const viewportHeightPx = viewportSize[1]
 
@@ -199,8 +175,6 @@ export class InfiniteGridRenderer extends LineSegments<
 
     let effectiveMinorSpacing = minorSpacing
     this.visible = true
-
-    console.log('minorSpacingPx', minorSpacingPx)
 
     if (options.fixedSizeGrid) {
       // If major grid would be too dense on screen, hide the grid entirely
@@ -251,11 +225,6 @@ export class InfiniteGridRenderer extends LineSegments<
     const material = this.material
     material.uniforms.verticalLines.value = lineCount[0]
     material.uniforms.horizontalLines.value = lineCount[1]
-    material.uniforms.cameraPos.value = [camera.position.y, camera.position.z]
-    material.uniforms.worldToScreenX.value = worldToScreenX
-    material.uniforms.worldToScreenY.value = worldToScreenY
-    material.uniforms.minorSpacing.value = effectiveMinorSpacing
-    material.uniforms.majorSpacing.value = effectiveMajorSpacing
     material.uniforms.viewportPx.value = [viewportWidthPx, viewportHeightPx]
     material.uniforms.lineGapNDC.value = lineGapNDC
     material.uniforms.lineOffsetNDC.value = lineOffsetNDC
