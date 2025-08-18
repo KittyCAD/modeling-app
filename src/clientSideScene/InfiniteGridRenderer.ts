@@ -214,12 +214,6 @@ export class InfiniteGridRenderer extends LineSegments<
         effectiveMinorSpacing = effectiveMajorSpacing
       }
     }
-    minorSpacingPx = effectiveMinorSpacing * pixelsPerBaseUnit
-
-    const verticalLines =
-      Math.ceil(worldViewportWidth / effectiveMinorSpacing) + 2
-    const horizontalLines =
-      Math.ceil(worldViewportHeight / effectiveMinorSpacing) + 2
 
     const lineGap = effectiveMinorSpacing * pixelsPerBaseUnit
     const lineGapNDC = [
@@ -244,9 +238,19 @@ export class InfiniteGridRenderer extends LineSegments<
       -1 - bottomFractional * baseUnitToNDC[1],
     ]
 
+    // We need as many lines as to cover the whole screen
+    const gridAreaSizeNDC = [
+      (1 - lineOffsetNDC[0]) / lineGapNDC[0],
+      (1 - lineOffsetNDC[1]) / lineGapNDC[1],
+    ]
+    const lineCount = [
+      Math.ceil(gridAreaSizeNDC[0] / lineGapNDC[0]),
+      Math.ceil(gridAreaSizeNDC[1] / lineGapNDC[1]),
+    ]
+
     const material = this.material
-    material.uniforms.verticalLines.value = verticalLines
-    material.uniforms.horizontalLines.value = horizontalLines
+    material.uniforms.verticalLines.value = lineCount[0]
+    material.uniforms.horizontalLines.value = lineCount[1]
     material.uniforms.cameraPos.value = [camera.position.y, camera.position.z]
     material.uniforms.worldToScreenX.value = worldToScreenX
     material.uniforms.worldToScreenY.value = worldToScreenY
@@ -264,7 +268,7 @@ export class InfiniteGridRenderer extends LineSegments<
       material.uniforms.uMinorColor.value = options.minorColor
     }
 
-    const totalVertices = verticalLines * 2 + horizontalLines * 2
+    const totalVertices = lineCount[0] * 2 + lineCount[1] * 2
     this.geometry.setDrawRange(0, totalVertices)
   }
 }
