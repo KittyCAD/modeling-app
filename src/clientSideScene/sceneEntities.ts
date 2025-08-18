@@ -220,9 +220,11 @@ export class SceneEntities {
       this.sceneInfra
     )
     this.sceneInfra.camControls.cameraChange.add(this.onCamChange)
+    this.sceneInfra.baseUnitChange.add(this.onCamChange)
     window.addEventListener('resize', this.onWindowResize)
   }
 
+  // TODO detect canvas change instead
   onWindowResize = () => {
     this.onCamChange()
   }
