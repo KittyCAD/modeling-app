@@ -334,7 +334,9 @@ export const FileMachineProvider = ({
           }
         }),
         deleteFile: fromPromise(async ({ input }) => {
-          if (!window.electron) return
+          if (!window.electron) {
+            return Promise.reject(new Error('No file system present'))
+          }
           const isDir = !!input.children
 
           if (isDir) {
