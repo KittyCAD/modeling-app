@@ -49,13 +49,9 @@ description: Operations executed subtract_regression00.kcl
             "type": "Number",
             "value": 0.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Mm"
             }
           },
           "sourceRange": []

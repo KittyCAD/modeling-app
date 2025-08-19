@@ -100,11 +100,11 @@ export fn div(@u: [number], v: [number]): [number] {
 /// assert(vz[1], isEqualTo = 0)
 /// assert(vz[2], isEqualTo = 1)
 /// ```
-export fn cross(@u: Point3d, v: Point3d) {
+export fn cross(@u: Point3d, v: Point3d): Point3d {
   return [
-    u[1] * v[2] - (u[2] * v[1]),
-    u[2] * v[0] - (u[0] * v[2]),
-    u[0] * v[1] - (u[1] * v[0])
+    (u[1] * v[2] - (u[2] * v[1])): number(Length),
+    (u[2] * v[0] - (u[0] * v[2])): number(Length),
+    (u[0] * v[1] - (u[1] * v[0])): number(Length)
   ]
 }
 

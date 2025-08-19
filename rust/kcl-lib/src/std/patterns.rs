@@ -211,7 +211,7 @@ async fn make_transform<T: GeometryTrait>(
         ctxt.clone(),
     );
     let transform_fn_return = transform
-        .call_kw(None, exec_state, ctxt, transform_fn_args, source_range)
+        .call(None, exec_state, ctxt, transform_fn_args, source_range)
         .await?;
 
     // Unpack the returned transform object.

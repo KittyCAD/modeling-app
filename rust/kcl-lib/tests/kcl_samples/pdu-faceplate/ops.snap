@@ -864,13 +864,9 @@ description: Operations executed pdu-faceplate.kcl
             "type": "Number",
             "value": 0.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Mm"
             }
           },
           "sourceRange": []
@@ -880,13 +876,9 @@ description: Operations executed pdu-faceplate.kcl
             "type": "Number",
             "value": 0.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Mm"
             }
           },
           "sourceRange": []
@@ -1350,13 +1342,9 @@ description: Operations executed pdu-faceplate.kcl
             "type": "Number",
             "value": 0.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Mm"
             }
           },
           "sourceRange": []
@@ -1366,13 +1354,9 @@ description: Operations executed pdu-faceplate.kcl
             "type": "Number",
             "value": 0.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Mm"
             }
           },
           "sourceRange": []
@@ -1630,13 +1614,9 @@ description: Operations executed pdu-faceplate.kcl
             "type": "Number",
             "value": 0.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Mm"
             }
           },
           "sourceRange": []
@@ -1646,13 +1626,9 @@ description: Operations executed pdu-faceplate.kcl
             "type": "Number",
             "value": 0.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Mm"
             }
           },
           "sourceRange": []
@@ -1971,13 +1947,9 @@ description: Operations executed pdu-faceplate.kcl
             "type": "Number",
             "value": 0.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Mm"
             }
           },
           "sourceRange": []
@@ -1987,13 +1959,9 @@ description: Operations executed pdu-faceplate.kcl
             "type": "Number",
             "value": 0.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Mm"
             }
           },
           "sourceRange": []
@@ -2370,13 +2338,9 @@ description: Operations executed pdu-faceplate.kcl
             "type": "Number",
             "value": 0.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Mm"
             }
           },
           "sourceRange": []
@@ -2386,13 +2350,9 @@ description: Operations executed pdu-faceplate.kcl
             "type": "Number",
             "value": 0.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Mm"
             }
           },
           "sourceRange": []
@@ -2493,13 +2453,9 @@ description: Operations executed pdu-faceplate.kcl
             "type": "Number",
             "value": 0.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Mm"
             }
           },
           "sourceRange": []
@@ -2509,13 +2465,9 @@ description: Operations executed pdu-faceplate.kcl
             "type": "Number",
             "value": 0.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Mm"
             }
           },
           "sourceRange": []
@@ -2695,13 +2647,9 @@ description: Operations executed pdu-faceplate.kcl
             "type": "Number",
             "value": 0.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Mm"
             }
           },
           "sourceRange": []
@@ -2711,13 +2659,9 @@ description: Operations executed pdu-faceplate.kcl
             "type": "Number",
             "value": 0.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Mm"
             }
           },
           "sourceRange": []
@@ -2836,39 +2780,27 @@ description: Operations executed pdu-faceplate.kcl
                 "type": "Number",
                 "value": 1.0,
                 "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "type": "Known",
+                  "type": "Length",
+                  "type": "Mm"
                 }
               },
               {
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "type": "Known",
+                  "type": "Length",
+                  "type": "Mm"
                 }
               },
               {
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "type": "Known",
+                  "type": "Length",
+                  "type": "Mm"
                 }
               }
             ]
@@ -3175,13 +3107,9 @@ description: Operations executed pdu-faceplate.kcl
             "type": "Number",
             "value": 0.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Mm"
             }
           },
           "sourceRange": []
@@ -3191,13 +3119,9 @@ description: Operations executed pdu-faceplate.kcl
             "type": "Number",
             "value": 0.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Mm"
             }
           },
           "sourceRange": []
@@ -3389,13 +3313,9 @@ description: Operations executed pdu-faceplate.kcl
             "type": "Number",
             "value": 0.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Mm"
             }
           },
           "sourceRange": []
@@ -3405,13 +3325,9 @@ description: Operations executed pdu-faceplate.kcl
             "type": "Number",
             "value": -13.335,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Mm"
             }
           },
           "sourceRange": []
