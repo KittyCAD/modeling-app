@@ -7,9 +7,9 @@ import type { Abortable } from 'events'
 import * as nodePath from '@chainner/node-path'
 
 export interface IFs {
-  readdir: (path: string) => Promise<string[]>
+  readdir: IElectronAPI['readdir']
   readFile: IElectronAPI['readFile']
-  stat: (path: string) => Promise<ReturnType<IElectronAPI['stat']>>
+  stat: IElectronAPI['stat']
 }
 
 let testNodeFs
