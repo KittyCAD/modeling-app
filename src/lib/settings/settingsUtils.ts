@@ -332,7 +332,7 @@ export async function loadAndValidateSettings(
   let settingsNext = createSettings()
 
   // Because getting the default directory is async, we need to set it after
-  if (window.electron) {
+  if (isDesktop() && window.electron) {
     settingsNext.app.projectDirectory.default = await getInitialDefaultDir(
       window.electron
     )
@@ -363,8 +363,12 @@ export async function loadAndValidateSettings(
       const projectTomlString = serializeProjectConfiguration(projectSettings)
       if (err(projectTomlString))
         return Promise.reject(new Error('Failed to serialize project settings'))
-      if (onDesktop) {
-        await writeProjectSettingsFile(projectPath, projectTomlString)
+      if (window.electron) {
+        await writeProjectSettingsFile(
+          window.electron,
+          projectPath,
+          projectTomlString
+        )
       } else {
         localStorage.setItem(
           localStorageProjectSettingsPath(),
@@ -395,8 +399,12 @@ export async function loadAndValidateSettings(
         return Promise.reject(
           new Error('Could not serialize project configuration')
         )
-      if (onDesktop) {
-        await writeProjectSettingsFile(projectPath, projectTomlString)
+      if (isDesktop() && window.electron) {
+        await writeProjectSettingsFile(
+          window.electron,
+          projectPath,
+          projectTomlString
+        )
       } else {
         localStorage.setItem(
           localStorageProjectSettingsPath(),
