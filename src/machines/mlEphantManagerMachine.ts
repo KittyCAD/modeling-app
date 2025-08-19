@@ -46,6 +46,7 @@ export enum MlEphantManagerTransitions {
   PromptCreateModel = 'prompt-create-model',
   PromptFeedback = 'prompt-feedback',
   ClearProjectSpecificState = 'clear-project-specific-state',
+  AppendThoughtForPrompt = 'append-thought-for-prompt',
 }
 
 export type MlEphantManagerEvents =
@@ -83,9 +84,16 @@ export type MlEphantManagerEvents =
   | {
       type: MlEphantManagerTransitions.ClearProjectSpecificState
     }
+  | {
+      type: MlEphantManagerTransitions.AppendThoughtForPrompt
+      promptId: string
+      thought: Thought
+    }
 
 // Used to specify a specific event in input properties
 type XSEvent<T> = Extract<MlEphantManagerEvents, { type: T }>
+
+type Thought = any
 
 export interface PromptMeta {
   // If it's a creation prompt, it'll run some SystemIO code that
@@ -97,6 +105,9 @@ export interface PromptMeta {
 
   // The file that was the "target" during prompting.
   targetFile?: FileEntry
+
+  // The reasoning occurring on the prompt
+  thoughts: Thought[]
 }
 
 export interface MlEphantManagerContext {
@@ -109,7 +120,7 @@ export interface MlEphantManagerContext {
 
   // Project related data is reset on project changes.
   // If no project is selected: undefined.
-  promptsBelongingToConversation?: Set<Prompt['id']>
+  promptsBelongingToConversation?: Prompt['id'][]
   pageTokenPromptsBelongingToConversation?: string
 
   // When prompts transition from in_progress to completed
@@ -208,16 +219,16 @@ export const mlEphantManagerMachine = setup({
 
         // Clear the prompts pool and what prompts we were tracking.
         const promptsPoolNext = new Map(context.promptsPool)
-        let promptsBelongingToConversationNext = new Set<string>()
+        let promptsBelongingToConversationNext = []
 
         result.items.reverse().forEach((prompt) => {
           promptsPoolNext.set(prompt.id, { ...prompt, source_ranges: [] })
-          promptsBelongingToConversationNext.add(prompt.id)
+          promptsBelongingToConversationNext.push(prompt.id)
         })
 
         promptsBelongingToConversationNext =
-          promptsBelongingToConversationNext.union(
-            context.promptsBelongingToConversation ?? new Set<string>()
+          promptsBelongingToConversationNext.concat(
+            context.promptsBelongingToConversation ?? []
           )
 
         return {
@@ -252,14 +263,15 @@ export const mlEphantManagerMachine = setup({
 
         const promptsPool = new Map()
         // We're going to create a new project so it'll be the first
-        const promptsBelongingToConversation = new Set<string>()
+        const promptsBelongingToConversation = []
         const promptsMeta = new Map()
 
         promptsPool.set(result.id, { ...result, source_ranges: [] })
-        promptsBelongingToConversation.add(result.id)
+        promptsBelongingToConversation.push(result.id)
         promptsMeta.set(result.id, {
           type: PromptType.Create,
           project: args.input.event.projectForPromptOutput,
+          thoughts: [],
         })
 
         return {
@@ -306,7 +318,7 @@ export const mlEphantManagerMachine = setup({
         }
 
         const promptsPool = context.promptsPool
-        const promptsBelongingToConversation = new Set(
+        const promptsBelongingToConversation = Array.from(
           context.promptsBelongingToConversation
         )
         const promptsMeta = new Map(context.promptsMeta)
@@ -316,11 +328,12 @@ export const mlEphantManagerMachine = setup({
           prompt: result.prompt ?? '',
           output_format: 'glb', // it's a lie. we have no 'none' type...
         })
-        promptsBelongingToConversation.add(result.id)
+        promptsBelongingToConversation.push(result.id)
         promptsMeta.set(result.id, {
           type: PromptType.Edit,
           targetFile: args.input.event.fileSelectedDuringPrompting,
           project: args.input.event.projectForPromptOutput,
+          thoughts: [],
         })
 
         return {
@@ -590,6 +603,19 @@ export const mlEphantManagerMachine = setup({
                   actions: assign(({ event }) => event.output),
                 },
                 onError: { target: S.Await, actions: console.error },
+              },
+            },
+            [MlEphantManagerTransitions.AppendThoughtForPrompt]: {
+              always: {
+                target: S.Await,
+                actions: [
+                  assign({
+                    promptsMeta: ({ event, context }) =>
+                      context.promptsMeta
+                        .get(event.promptId)
+                        ?.thoughts.push(event.thought),
+                  }),
+                ],
               },
             },
           },

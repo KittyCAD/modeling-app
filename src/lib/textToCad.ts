@@ -1,5 +1,4 @@
 import type { Models } from '@kittycad/lib'
-import { connectReasoningStream } from '@src/lib/reasoningWs'
 import crossPlatformFetch from '@src/lib/crossPlatformFetch'
 import { kclManager } from '@src/lib/singletons'
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
@@ -33,10 +32,6 @@ export async function submitTextToCadCreateRequest(
 
   if (!data.id) {
     return new Error('No id returned from Text-to-CAD API')
-  }
-
-  if (token) {
-    connectReasoningStream(token, data.id)
   }
 
   return data
