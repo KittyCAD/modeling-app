@@ -195,7 +195,7 @@ const SignIn = () => {
                       }}
                       className={
                         'm-0 mt-8 w-fit flex gap-4 items-center px-3 py-1 ' +
-                        '!border-transparent !text-lg !text-chalkboard-10 !bg-primary hover:hue-rotate-15'
+                        'border-transparent! text-lg! text-chalkboard-10! bg-primary! hover:hue-rotate-15'
                       }
                       data-testid="sign-in-button"
                     >
@@ -236,7 +236,7 @@ const SignIn = () => {
                       onClick={toSync(cancelSignIn, reportRejection)}
                       className={
                         'm-0 mt-8 w-fit flex gap-4 items-center px-3 py-1 ' +
-                        '!border-transparent !text-lg !text-chalkboard-10 !bg-primary hover:hue-rotate-15'
+                        'border-transparent! text-lg! text-chalkboard-10! bg-primary! hover:hue-rotate-15'
                       }
                       data-testid="cancel-sign-in-button"
                     >
@@ -260,7 +260,7 @@ const SignIn = () => {
                   to={signInUrl}
                   className={
                     'w-fit m-0 mt-8 hidden md:flex gap-4 items-center px-3 py-1 ' +
-                    '!border-transparent !text-lg !text-chalkboard-10 !bg-primary hover:hue-rotate-15'
+                    'border-transparent! text-lg! text-chalkboard-10! bg-primary! hover:hue-rotate-15'
                   }
                   data-testid="sign-in-button"
                 >
@@ -296,7 +296,7 @@ const SignIn = () => {
                 'absolute bottom-0 left-0 right-0 transition translate-y-4 opacity-0 ' +
                 'group-hover:translate-y-0 group-hover:opacity-100 ' +
                 'm-0 mt-8 flex gap-4 items-center px-3 py-1 ' +
-                '!border-transparent !text-lg !text-chalkboard-10 !bg-primary hover:hue-rotate-15'
+                'border-transparent! text-lg! text-chalkboard-10! bg-primary! hover:hue-rotate-15'
               }
               data-testid="view-sample-button"
             >
@@ -315,8 +315,8 @@ const SignIn = () => {
                 <ActionButton
                   Element="externalLink"
                   to="https://github.com/KittyCAD/modeling-app"
-                  iconStart={{ icon: 'code', bgClassName: '!bg-transparent' }}
-                  className="!bg-primary !text-chalkboard-10 !border-transarent"
+                  iconStart={{ icon: 'code', bgClassName: 'bg-transparent!' }}
+                  className="bg-primary! text-chalkboard-10! !border-transarent"
                 >
                   <span className="py-2 lg:py-0">Read our source code</span>
                 </ActionButton>
@@ -325,9 +325,9 @@ const SignIn = () => {
                   to="https://discord.gg/JQEpHR7Nt2"
                   iconStart={{
                     icon: 'keyboard',
-                    bgClassName: '!bg-transparent',
+                    bgClassName: 'bg-transparent!',
                   }}
-                  className="!bg-primary !text-chalkboard-10 !border-transarent"
+                  className="bg-primary! text-chalkboard-10! !border-transarent"
                 >
                   <span className="py-2 lg:py-0">Join our community</span>
                 </ActionButton>
@@ -345,9 +345,9 @@ const SignIn = () => {
                   to={withSiteBaseURL('/docs/kcl-samples/pillow-block-bearing')}
                   iconStart={{
                     icon: 'settings',
-                    bgClassName: '!bg-transparent',
+                    bgClassName: 'bg-transparent!',
                   }}
-                  className="!bg-primary !text-chalkboard-10 !border-transarent"
+                  className="bg-primary! text-chalkboard-10! !border-transarent"
                 >
                   <span className="py-2 lg:py-0">
                     Parametric design with KCL
@@ -358,9 +358,9 @@ const SignIn = () => {
                   to={withSiteBaseURL('/docs/zoo-design-studio/text-to-cad')}
                   iconStart={{
                     icon: 'sparkles',
-                    bgClassName: '!bg-transparent',
+                    bgClassName: 'bg-transparent!',
                   }}
-                  className="!bg-primary !text-chalkboard-10 !border-transarent"
+                  className="bg-primary! text-chalkboard-10! !border-transarent"
                 >
                   <span className="py-2 lg:py-0">ML-unlocked CAD</span>
                 </ActionButton>
@@ -379,8 +379,8 @@ const SignIn = () => {
                 <ActionButton
                   Element="externalLink"
                   to={withSiteBaseURL('/design-api')}
-                  iconStart={{ icon: 'sketch', bgClassName: '!bg-transparent' }}
-                  className="!bg-primary !text-chalkboard-10 !border-transarent"
+                  iconStart={{ icon: 'sketch', bgClassName: 'bg-transparent!' }}
+                  className="bg-primary! text-chalkboard-10! !border-transarent"
                 >
                   <span className="py-2 lg:py-0">KittyCAD Design API</span>
                 </ActionButton>
@@ -389,9 +389,9 @@ const SignIn = () => {
                   to={withSiteBaseURL('/machine-learning-api')}
                   iconStart={{
                     icon: 'elephant',
-                    bgClassName: '!bg-transparent',
+                    bgClassName: 'bg-transparent!',
                   }}
-                  className="!bg-primary !text-chalkboard-10 !border-transarent"
+                  className="bg-primary! text-chalkboard-10! !border-transarent"
                 >
                   <span className="py-2 lg:py-0">
                     ML-ephant Machine Learning API

@@ -145,7 +145,7 @@ function Toolbar() {
   useOnboardingPanes()
 
   return (
-    <div className="cursor-not-allowed fixed inset-0 z-[99] grid items-start justify-center p-24">
+    <div className="cursor-not-allowed fixed inset-0 z-99 grid items-start justify-center p-24">
       <OnboardingCard>
         <h1 className="text-xl font-bold">This is the toolbar</h1>
         <p className="my-4">
@@ -225,7 +225,7 @@ function TextToCadPrompt() {
   useAdvanceOnboardingOnFormSubmit(thisOnboardingStatus, 'desktop')
 
   return (
-    <div className="cursor-not-allowed fixed inset-0 z-[99] grid items-center justify-center">
+    <div className="cursor-not-allowed fixed inset-0 z-99 grid items-center justify-center">
       <OnboardingCard className="pointer-events-auto">
         <h1 className="text-xl font-bold">Text-to-CAD prompt</h1>
         <p className="my-4">
@@ -271,7 +271,7 @@ function FeatureTreePane() {
   }, [])
 
   return (
-    <div className="cursor-not-allowed fixed inset-0 z-[99] p-8 grid justify-center items-end">
+    <div className="cursor-not-allowed fixed inset-0 z-99 p-8 grid justify-center items-end">
       <OnboardingCard className="col-start-3 col-span-2">
         <h1 className="text-xl font-bold">CPU Fan Housing</h1>
         <p className="my-4">
@@ -473,11 +473,11 @@ function PromptToEditPrompt() {
   useAdvanceOnboardingOnFormSubmit(thisOnboardingStatus, 'desktop')
 
   return (
-    <div className="cursor-not-allowed fixed inset-0 z-[99] grid items-center justify-center">
+    <div className="cursor-not-allowed fixed inset-0 z-99 grid items-center justify-center">
       <OnboardingCard className="pointer-events-auto">
         <h1 className="text-xl font-bold">Modify with Text-to-CAD prompt</h1>
         {!isReady && (
-          <p className="absolute top-0 right-0 m-4 w-fit flex items-center py-1 px-2 rounded bg-chalkboard-20 dark:bg-chalkboard-80">
+          <p className="absolute top-0 right-0 m-4 w-fit flex items-center py-1 px-2 rounded-sm bg-chalkboard-20 dark:bg-chalkboard-80">
             <Spinner className="w-5 h-5 inline-block mr-2" />
             Waiting for connection...
           </p>
@@ -536,7 +536,7 @@ function PromptToEditResult() {
   }, [])
 
   return (
-    <div className="cursor-not-allowed fixed inset-0 z-[99] p-8 grid justify-center items-end">
+    <div className="cursor-not-allowed fixed inset-0 z-99 p-8 grid justify-center items-end">
       <OnboardingCard className="col-start-3 col-span-2">
         <h1 className="text-xl font-bold">Result</h1>
         <p className="my-4">

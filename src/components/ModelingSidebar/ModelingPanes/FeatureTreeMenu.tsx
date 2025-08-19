@@ -20,16 +20,16 @@ export const FeatureTreeMenu = ({ children }: PropsWithChildren) => {
           }
         }}
       >
-        <Menu.Button className="!p-0 !bg-transparent hover:text-primary border-transparent dark:!border-transparent hover:!border-primary dark:hover:!border-chalkboard-70 ui-open:!border-primary dark:ui-open:!border-chalkboard-70 !outline-none">
+        <Menu.Button className="p-0! bg-transparent! hover:text-primary border-transparent dark:border-transparent! hover:border-primary! dark:hover:border-chalkboard-70! ui-open:border-primary! dark:ui-open:border-chalkboard-70! outline-hidden!">
           <ActionIcon
             icon="three-dots"
             className="p-1"
             size="sm"
             bgClassName="bg-transparent dark:bg-transparent"
-            iconClassName={'!text-chalkboard-90 dark:!text-chalkboard-40'}
+            iconClassName={'text-chalkboard-90! dark:text-chalkboard-40!'}
           />
         </Menu.Button>
-        <Menu.Items className="absolute right-0 left-auto w-72 flex flex-col gap-1 divide-y divide-chalkboard-20 dark:divide-chalkboard-70 align-stretch px-0 py-1 bg-chalkboard-10 dark:bg-chalkboard-100 rounded-sm shadow-lg border border-solid border-chalkboard-20/50 dark:border-chalkboard-80/50">
+        <Menu.Items className="absolute right-0 left-auto w-72 flex flex-col gap-1 divide-y divide-chalkboard-20 dark:divide-chalkboard-70 align-stretch px-0 py-1 bg-chalkboard-10 dark:bg-chalkboard-100 rounded-xs shadow-lg border border-solid border-chalkboard-20/50 dark:border-chalkboard-80/50">
           <Menu.Item>
             <button
               onClick={() =>

@@ -39,7 +39,7 @@ const hasIssueToIconColors: Record<string | number | symbol, IconColorConfig> =
       bg: 'bg-chalkboard-30 dark:bg-chalkboard-70',
     },
     false: {
-      icon: '!text-chalkboard-110 dark:!text-chalkboard-10',
+      icon: 'text-chalkboard-110! dark:text-chalkboard-10!',
       bg: 'bg-transparent dark:bg-transparent',
     },
   }
@@ -102,7 +102,7 @@ function NetworkHealthPopoverContent() {
 
   return (
     <div
-      className="absolute left-2 bottom-full mb-1 w-64 flex flex-col gap-1 align-stretch bg-chalkboard-10 dark:bg-chalkboard-90 rounded shadow-lg border border-solid border-chalkboard-20/50 dark:border-chalkboard-80/50 text-sm"
+      className="absolute left-2 bottom-full mb-1 w-64 flex flex-col gap-1 align-stretch bg-chalkboard-10 dark:bg-chalkboard-90 rounded-sm shadow-lg border border-solid border-chalkboard-20/50 dark:border-chalkboard-80/50 text-sm"
       data-testid="network-popover"
     >
       <div
@@ -111,7 +111,7 @@ function NetworkHealthPopoverContent() {
         <h2 className="text-sm font-sans font-normal">Network health</h2>
         <p
           data-testid="network"
-          className="font-bold text-xs uppercase px-2 py-1 rounded-sm"
+          className="font-bold text-xs uppercase px-2 py-1 rounded-xs"
         >
           {NETWORK_HEALTH_TEXT[overallState]}
         </p>
@@ -124,7 +124,7 @@ function NetworkHealthPopoverContent() {
         </h2>
         <p
           data-testid="network"
-          className={`font-bold text-xs uppercase px-2 py-1 rounded-sm ${overallConnectionStateColor[overallState].icon}`}
+          className={`font-bold text-xs uppercase px-2 py-1 rounded-xs ${overallConnectionStateColor[overallState].icon}`}
         >
           {ping ?? 'N/A'}
         </p>
@@ -145,7 +145,7 @@ function NetworkHealthPopoverContent() {
                       String(issues[name as ConnectingTypeGroup])
                     ].icon
                   }
-                  bgClassName={`rounded-sm ${
+                  bgClassName={`rounded-xs ${
                     hasIssueToIconColors[
                       String(issues[name as ConnectingTypeGroup])
                     ].bg
@@ -176,7 +176,7 @@ function NetworkHealthPopoverContent() {
                   size="lg"
                   icon={hasCopied ? 'clipboardCheckmark' : 'clipboardPlus'}
                   iconClassName="text-inherit dark:text-inherit"
-                  bgClassName="!bg-transparent"
+                  bgClassName="bg-transparent!"
                 />
               </button>
             )}

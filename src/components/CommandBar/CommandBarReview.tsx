@@ -111,7 +111,7 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
                       })
                     }}
                     key={argName}
-                    className="w-fit px-2 py-1 m-0 rounded-sm flex gap-2 items-center border"
+                    className="w-fit px-2 py-1 m-0 rounded-xs flex gap-2 items-center border"
                   >
                     <span className="capitalize">
                       {arg.displayName || argName}

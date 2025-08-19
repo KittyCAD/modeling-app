@@ -1,3 +1,4 @@
+@reference "../index.css";
 /*
   Some CSS cannot be represented
   in Tailwind, such as complex grid layouts.

@@ -27,7 +27,7 @@ export const AdvancedSignInOptions = ({
       </span>
       <Popover className="relative ml-8">
         <Popover.Button
-          className="gap-1 rounded h-9 mr-auto max-h-min min-w-max border py-1 px-2 flex items-center dark:hover:bg-chalkboard-90"
+          className="gap-1 rounded-sm h-9 mr-auto max-h-min min-w-max border py-1 px-2 flex items-center dark:hover:bg-chalkboard-90"
           data-testid="project-sidebar-toggle"
         >
           <div className="flex flex-col items-start py-0.5">
@@ -67,7 +67,7 @@ export const AdvancedSignInOptions = ({
                   onChange={setSelectedEnvironment}
                 >
                   <Combobox.Input
-                    className="gap-1 rounded h-9 mr-auto max-h-min min-w-max border py-1 flex items-center dark:hover:bg-chalkboard-90 text-xs text-chalkboard-70 dark:text-chalkboard-30"
+                    className="gap-1 rounded-sm h-9 mr-auto max-h-min min-w-max border py-1 flex items-center dark:hover:bg-chalkboard-90 text-xs text-chalkboard-70 dark:text-chalkboard-30"
                     placeholder="auto"
                     onChange={(event) =>
                       setSelectedEnvironment(event.target.value)

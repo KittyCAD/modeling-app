@@ -150,7 +150,7 @@ function CommandBarHeaderFooter({
                       })
                     }}
                     key={argName}
-                    className={`relative w-fit px-2 py-1 rounded-sm flex gap-2 items-center border ${
+                    className={`relative w-fit px-2 py-1 rounded-xs flex gap-2 items-center border ${
                       argName === currentArgument?.name
                         ? selectedCommand.status === 'experimental'
                           ? 'disabled:bg-ml-green/10 dark:disabled:bg-ml-green/20 disabled:border-ml-green dark:disabled:border-ml-green disabled:text-chalkboard-100 dark:disabled:text-chalkboard-10'
@@ -196,7 +196,7 @@ function CommandBarHeaderFooter({
                       ) : null}
                     </span>
                     {showShortcuts && (
-                      <small className="absolute -top-[1px] right-full translate-x-1/2 px-0.5 rounded-sm bg-chalkboard-80 text-chalkboard-10 dark:bg-primary dark:text-chalkboard-100">
+                      <small className="absolute -top-px right-full translate-x-1/2 px-0.5 rounded-xs bg-chalkboard-80 text-chalkboard-10 dark:bg-primary dark:text-chalkboard-100">
                         <span className="sr-only">Hotkey: </span>
                         {i + 1}
                       </small>
@@ -233,31 +233,31 @@ function CommandBarHeaderFooter({
         <div className="px-4 pb-2 flex items-center gap-2">
           <StepBackButton stepBack={stepBack} />
           {!isCurrentArgRequired && clear && <ClearButton clear={clear} />}
-          <div className="flex-grow"></div>
+          <div className="grow"></div>
           {isReviewing ? (
             <ReviewingButton
               bgClassName={
                 selectedCommand.status === 'experimental'
-                  ? '!bg-ml-green'
-                  : '!bg-primary'
+                  ? 'bg-ml-green!'
+                  : 'bg-primary!'
               }
               iconClassName={
                 selectedCommand.status === 'experimental'
-                  ? '!text-ml-black'
-                  : '!text-chalkboard-10'
+                  ? 'text-ml-black!'
+                  : 'text-chalkboard-10!'
               }
             />
           ) : (
             <GatheringArgsButton
               bgClassName={
                 selectedCommand.status === 'experimental'
-                  ? '!bg-ml-green'
-                  : '!bg-primary'
+                  ? 'bg-ml-green!'
+                  : 'bg-primary!'
               }
               iconClassName={
                 selectedCommand.status === 'experimental'
-                  ? '!text-ml-black'
-                  : '!text-chalkboard-10'
+                  ? 'text-ml-black!'
+                  : 'text-chalkboard-10!'
               }
             />
           )}
@@ -281,12 +281,12 @@ function ReviewingButton({ bgClassName, iconClassName }: ButtonProps) {
       ref={buttonRef}
       type="submit"
       form="review-form"
-      className={`w-fit !p-0 rounded-sm hover:brightness-110 hover:shadow focus:outline-current ${bgClassName}`}
+      className={`w-fit p-0! rounded-xs hover:brightness-110 hover:shadow-sm focus:outline-current ${bgClassName}`}
       tabIndex={0}
       data-testid="command-bar-submit"
       iconEnd={{
         icon: 'checkmark',
-        bgClassName: `p-1 rounded-sm ${bgClassName}`,
+        bgClassName: `p-1 rounded-xs ${bgClassName}`,
         iconClassName: `${iconClassName}`,
       }}
     >
@@ -301,12 +301,12 @@ function GatheringArgsButton({ bgClassName, iconClassName }: ButtonProps) {
       Element="button"
       type="submit"
       form="arg-form"
-      className={`w-fit !p-0 rounded-sm hover:brightness-110 hover:shadow focus:outline-current ${bgClassName}`}
+      className={`w-fit p-0! rounded-xs hover:brightness-110 hover:shadow-sm focus:outline-current ${bgClassName}`}
       tabIndex={0}
       data-testid="command-bar-continue"
       iconEnd={{
         icon: 'arrowRight',
-        bgClassName: `p-1 rounded-sm ${bgClassName}`,
+        bgClassName: `p-1 rounded-xs ${bgClassName}`,
         iconClassName: `${iconClassName}`,
       }}
     >
@@ -325,12 +325,12 @@ function StepBackButton({
       Element="button"
       type="button"
       form="arg-form"
-      className={`w-fit !p-0 rounded-sm hover:brightness-110 hover:shadow focus:outline-current bg-chalkboard-20/50 dark:bg-chalkboard-80/50 border-chalkboard-20 dark:border-chalkboard-80 ${bgClassName}`}
+      className={`w-fit p-0! rounded-xs hover:brightness-110 hover:shadow-sm focus:outline-current bg-chalkboard-20/50 dark:bg-chalkboard-80/50 border-chalkboard-20 dark:border-chalkboard-80 ${bgClassName}`}
       tabIndex={0}
       data-testid="command-bar-step-back"
       iconStart={{
         icon: 'arrowLeft',
-        bgClassName: `p-1 rounded-sm bg-chalkboard-20/50 dark:bg-chalkboard-80/50 ${bgClassName}`,
+        bgClassName: `p-1 rounded-xs bg-chalkboard-20/50 dark:bg-chalkboard-80/50 ${bgClassName}`,
         iconClassName: `${iconClassName}`,
       }}
       onClick={stepBack}
@@ -338,8 +338,8 @@ function StepBackButton({
       <span className={`pr-2 ${iconClassName}`}>Step back</span>
       <Tooltip position="bottom">
         Step back
-        <kbd className="hotkey ml-4 dark:!bg-chalkboard-80">Shift</kbd>
-        <kbd className="hotkey ml-2 dark:!bg-chalkboard-80">Bksp</kbd>
+        <kbd className="hotkey ml-4 dark:bg-chalkboard-80!">Shift</kbd>
+        <kbd className="hotkey ml-2 dark:bg-chalkboard-80!">Bksp</kbd>
       </Tooltip>
     </ActionButton>
   )
@@ -355,12 +355,12 @@ function ClearButton({
       Element="button"
       type="button"
       form="arg-form"
-      className={`w-fit !p-0 rounded-sm hover:brightness-110 hover:shadow focus:outline-current bg-chalkboard-20/50 dark:bg-chalkboard-80/50 border-chalkboard-20 dark:border-chalkboard-80 ${bgClassName}`}
+      className={`w-fit p-0! rounded-xs hover:brightness-110 hover:shadow-sm focus:outline-current bg-chalkboard-20/50 dark:bg-chalkboard-80/50 border-chalkboard-20 dark:border-chalkboard-80 ${bgClassName}`}
       tabIndex={0}
       data-testid="command-bar-clear-non-required-button"
       iconStart={{
         icon: 'trash',
-        bgClassName: `p-1 rounded-sm bg-chalkboard-20/50 dark:bg-chalkboard-80/50 ${bgClassName}`,
+        bgClassName: `p-1 rounded-xs bg-chalkboard-20/50 dark:bg-chalkboard-80/50 ${bgClassName}`,
         iconClassName: `${iconClassName}`,
       }}
       onClick={clear}

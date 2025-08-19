@@ -78,7 +78,7 @@ function KeybindingField({
         {item.sequence.split(' ').map((chord, i) => (
           <kbd
             key={`${category}-${item.name}-${chord}-${i}`}
-            className="py-0.5 px-1.5 rounded bg-primary/10 dark:bg-chalkboard-80"
+            className="py-0.5 px-1.5 rounded-sm bg-primary/10 dark:bg-chalkboard-80"
           >
             {chord}
           </kbd>

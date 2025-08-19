@@ -283,7 +283,7 @@ export class SceneInfra {
     this.labelRenderer.domElement.style.pointerEvents = 'none'
     this.renderer.domElement.style.width = '100%'
     this.renderer.domElement.style.height = '100%'
-    this.labelRenderer.domElement.className = 'z-sketchSegmentIndicators'
+    this.labelRenderer.domElement.className = 'z-sketch-segment-indicators'
 
     window.addEventListener('resize', this.onWindowResize)
 

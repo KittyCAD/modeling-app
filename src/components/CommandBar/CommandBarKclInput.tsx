@@ -331,7 +331,7 @@ function CommandBarKclInput({
                 type="text"
                 id="variable-name"
                 name="variable-name"
-                className="flex-1  border-solid border-0 border-b border-chalkboard-50 bg-transparent focus:outline-none"
+                className="flex-1  border-solid border-0 border-b border-chalkboard-50 bg-transparent focus:outline-hidden"
                 placeholder="Variable name"
                 value={newVariableName}
                 autoCapitalize="off"

@@ -16,7 +16,7 @@ export function CommandBarOpenButton() {
     >
       <CustomIcon name="command" className="w-5 h-5" />
       <span>Commands</span>
-      <kbd className="hidden sm:block dark:bg-chalkboard-80 font-mono rounded-sm text-primary/70 dark:text-inherit inline-block px-1">
+      <kbd className="hidden sm:block dark:bg-chalkboard-80 font-mono rounded-xs text-primary/70 dark:text-inherit inline-block px-1">
         {hotkeyDisplay(COMMAND_PALETTE_HOTKEY, platform)}
       </kbd>
     </button>

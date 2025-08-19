@@ -92,7 +92,7 @@ export function SettingsFieldInput({
         <select
           name={`${category}-${settingName}`}
           data-testid={`${category}-${settingName}`}
-          className="p-1 bg-transparent border rounded-sm border-chalkboard-30 w-full"
+          className="p-1 bg-transparent border rounded-xs border-chalkboard-30 w-full"
           value={String(
             setting[settingsLevel] || setting.getFallback(settingsLevel)
           )}
@@ -124,7 +124,7 @@ export function SettingsFieldInput({
           name={`${category}-${settingName}`}
           data-testid={`${category}-${settingName}`}
           type="text"
-          className="p-1 bg-transparent border rounded-sm border-chalkboard-30 w-full"
+          className="p-1 bg-transparent border rounded-xs border-chalkboard-30 w-full"
           defaultValue={String(
             setting[settingsLevel] || setting.getFallback(settingsLevel)
           )}

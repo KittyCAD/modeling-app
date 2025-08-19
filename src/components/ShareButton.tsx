@@ -132,7 +132,7 @@ export const ShareButton = memo(function ShareButton() {
                 autoComplete="off"
                 autoCorrect="off"
                 spellCheck="false"
-                className={`${allowPassword ? 'cursor-pointer' : 'cursor-not-allowed'} text-xs w-full py-1 bg-transparent text-chalkboard-100 placeholder:text-chalkboard-70 dark:text-chalkboard-10 dark:placeholder:text-chalkboard-50 focus:outline-none focus:ring-0`}
+                className={`${allowPassword ? 'cursor-pointer' : 'cursor-not-allowed'} text-xs w-full py-1 bg-transparent text-chalkboard-100 placeholder:text-chalkboard-70 dark:text-chalkboard-10 dark:placeholder:text-chalkboard-50 focus:outline-hidden focus:ring-0`}
                 type="text"
                 placeholder="Set a password"
               />
