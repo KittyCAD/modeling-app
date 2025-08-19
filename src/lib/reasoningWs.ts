@@ -3,7 +3,18 @@
 
 import { withWebSocketURL } from '@src/lib/withBaseURL'
 
-export function connectReasoningStream(token: string, id: string): void {
+export function connectReasoningStream(
+  token: string,
+  id: string,
+  events: {
+    on: {
+      open?: () => void
+      message: (msg: any) => void
+      close?: () => void
+      error?: (e: Event<Error>) => void
+    }
+  }
+): void {
   const url = withWebSocketURL('').replace(
     '/ws/modeling/commands',
     `/ws/ml/reasoning/${id}`
@@ -20,6 +31,7 @@ export function connectReasoningStream(token: string, id: string): void {
     console.log(`[${id}] open ${url}`)
     ws.send(JSON.stringify(authMessage)) // 🔸 send immediately
     console.log(`[${id}] →`, authMessage)
+    events.on.open?.()
   })
 
   ws.addEventListener('message', (ev) => {
@@ -33,6 +45,10 @@ export function connectReasoningStream(token: string, id: string): void {
       return // non-JSON frame
     }
 
+    // If we fail to parse no message will be rendered / visualized.
+    // Technically should never happen, but mistakes happen between client/server.
+    events.on.message(msg as any)
+
     if ('error' in (msg as any)) {
       ws.send(JSON.stringify(authMessage)) // 🔸 send immediately
       console.log(`[${id}] →`, authMessage)
@@ -44,8 +60,13 @@ export function connectReasoningStream(token: string, id: string): void {
     }
   })
 
-  ws.addEventListener('close', (e) =>
+  ws.addEventListener('close', (e) => {
     console.log(`[${id}] close`, e.code, e.reason)
-  )
-  ws.addEventListener('error', console.error)
+    events.on.close?.()
+  })
+
+  ws.addEventListener('error', (e) => {
+    console.error(e)
+    events.on.error?.(e)
+  })
 }

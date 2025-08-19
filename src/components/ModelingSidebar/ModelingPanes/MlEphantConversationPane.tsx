@@ -1,3 +1,4 @@
+import { connectReasoningStream } from '@src/lib/reasoningWs'
 import { reportRejection } from '@src/lib/trap'
 import { NIL as uuidNIL } from 'uuid'
 import { type settings } from '@src/lib/settings/initialSettings'
@@ -44,12 +45,15 @@ export const MlEphantConversationPane = (props: {
   )
   const prompts = Array.from(
     promptsBelongingToConversation
-      ?.values()
-      .map((promptId) =>
+      ?.map((promptId) =>
         mlEphantManagerActorSnapshot.context.promptsPool.get(promptId)
       )
       .filter((x) => x !== undefined) ?? []
   )
+
+  const promptsMeta = useSelector(props.mlEphantManagerActor, () => {
+    return mlEphantManagerActorSnapshot.context.promptsMeta
+  })
 
   const onProcess = async (requestedPrompt: string) => {
     if (props.theProject === undefined) {
@@ -195,10 +199,58 @@ export const MlEphantConversationPane = (props: {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [props.settings.meta.id.current])
 
+  // If a prompt was just created or iterated, let's connect to the websocket,
+  // watch its reasoning, and store the thoughts in the mlephant actor for
+  // passing to components to render.
+  useEffect(() => {
+    const subscription = props.mlEphantManagerActor.subscribe((next) => {
+      if (
+        !(
+          next.matches({
+            [MlEphantManagerStates.Ready]: {
+              [MlEphantManagerStates.Foreground]:
+                MlEphantManagerTransitions.PromptCreateModel,
+            },
+          }) ||
+          next.matches({
+            [MlEphantManagerStates.Ready]: {
+              [MlEphantManagerStates.Foreground]:
+                MlEphantManagerTransitions.PromptEditModel,
+            },
+          })
+        )
+      ) {
+        return
+      }
+
+      if (next.context.promptsBelongingToConversation.length === 0) {
+        console.warn('No prompts belonging to conversation - should not be possible here')
+        return
+      }
+
+      const promptIdLastAdded = next.context.promptsBelongingToConversation[next.context.promptsBelongingToConversation.length - 1]
+
+      connectReasoningStream(next.context.apiTokenMlephant, promptIdLastAdded, {
+        on: {
+          message(msg: any) {
+            console.log("YO")
+            console.log(msg)
+          }
+        }
+      })
+
+    })
+
+    return () => {
+      subscription.unsubscribe()
+    }
+  }, [])
+
   return (
     <MlEphantConversation
       isLoading={promptsBelongingToConversation === undefined || isProcessing}
       prompts={prompts}
+      promptsMeta={promptsMeta}
       onProcess={(requestedPrompt: string) => {
         onProcess(requestedPrompt).catch(reportRejection)
       }}

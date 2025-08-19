@@ -9,7 +9,6 @@ import { kclManager } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
 import type { File as KittyCadLibFile } from '@kittycad/lib/dist/types/src/models'
 import type { FileMeta } from '@src/lib/types'
-import { connectReasoningStream } from '@src/lib/reasoningWs'
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
 
 type KclFileMetaMap = {
@@ -81,8 +80,6 @@ export async function submitTextToCadMultiFileIterationRequest(
     const errorData = data as TextToCadErrorResponse
     return new Error(errorData.message || 'Unknown error')
   }
-
-  connectReasoningStream(token, data.id)
 
   return data as TextToCadMultiFileIteration_type
 }

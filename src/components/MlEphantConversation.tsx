@@ -1,3 +1,4 @@
+import type { MlEphantManagerContext } from '@src/machine/mlEphantManagerMachine'
 import type { ReactNode } from 'react'
 import { useRef, useEffect, useState } from 'react'
 import type { Prompt } from '@src/lib/prompt'
@@ -7,6 +8,7 @@ import { CustomIcon } from '@src/components/CustomIcon'
 export interface MlEphantConversationProps {
   isLoading: boolean
   prompts: Prompt[]
+  promptsMeta: MlEphantManagerContext['promptsMeta']
   onProcess: (requestedPrompt: string) => void
   onFeedback: (id: Prompt['id'], feedback: Prompt['feedback']) => void
   disabled?: boolean
@@ -165,6 +167,7 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
     <PromptCard
       key={prompt.id}
       {...prompt}
+      promptMeta={props.promptsMeta.get(prompt.id)}
       disabled={prompt.status !== 'completed'}
       onFeedback={props.onFeedback}
     />
