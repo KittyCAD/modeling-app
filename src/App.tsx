@@ -75,9 +75,11 @@ import env from '@src/env'
 // CYCLIC REF
 sceneInfra.camControls.engineStreamActor = engineStreamActor
 
-maybeWriteToDisk()
-  .then(() => {})
-  .catch(() => {})
+if (window.electron) {
+  maybeWriteToDisk(window.electron)
+    .then(() => {})
+    .catch(reportRejection)
+}
 
 export function App() {
   const { state: modelingState } = useModelingContext()
@@ -244,7 +246,7 @@ export function App() {
 
   // Only create the native file menus on desktop
   useEffect(() => {
-    if (isDesktop()) {
+    if (window.electron) {
       window.electron
         .createModelingPageMenu()
         .then(() => {

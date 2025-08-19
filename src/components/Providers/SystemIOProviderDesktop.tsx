@@ -215,7 +215,7 @@ export function SystemIOMachineLogicListenerDesktop() {
 
         const folderName =
           systemIOActor.getSnapshot().context.lastProjectDeleteRequest.project
-        const folderPath = `${projectDirectoryPath}${window.electron.sep}${folderName}`
+        const folderPath = `${projectDirectoryPath}${fsManager.path.sep}${folderName}`
         if (
           folderName !== NO_PROJECT_DIRECTORY &&
           (eventType === 'unlinkDir' || eventType === 'unlink') &&
