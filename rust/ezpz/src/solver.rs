@@ -213,12 +213,12 @@ impl NonlinearSystem for Model {
             // Each constraint could have multiple rows, so flat map to combine them into one flat list
             // of rows.
             .flat_map(|constraint| {
-                let section = constraint
+                let rows = constraint
                     .jacobian_section(&self.layout, current_assignments)
                     // TODO: Update the solver crate to handle Result properly.
                     .unwrap();
-                debug_assert_eq!(section.rows.len(), constraint.residual_dim());
-                section
+                debug_assert_eq!(rows.len(), constraint.residual_dim());
+                rows
             })
             .enumerate()
         {
