@@ -648,7 +648,10 @@ function HomeItemsArea(props: HomeItemsAreaProps) {
   }
 
   return (
-    <div className="flex-1 col-start-2 -col-end-1 overflow-y-auto pr-2 pb-24">
+    <div
+      data-testid="home-section"
+      className="flex-1 col-start-2 -col-end-1 overflow-y-auto pr-2 pb-24"
+    >
       {grid}
     </div>
   )
@@ -720,7 +723,7 @@ function ResultGridProjects(props: ResultGridProjectsProps) {
   const state = useSystemIOState()
 
   return (
-    <section data-testid="home-section" className={props.className}>
+    <section className={props.className}>
       {state.matches(SystemIOMachineStates.readingFolders) ? (
         <Loading isDummy={true}>Loading your Projects...</Loading>
       ) : (
