@@ -111,7 +111,7 @@ export function useViewControlMenuItems() {
                 })
               }}
             >
-              Snap to grid
+              Snap to Grid
             </ContextMenuItem>,
           ]
         : []),
