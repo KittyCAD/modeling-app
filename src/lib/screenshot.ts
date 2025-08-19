@@ -1,4 +1,3 @@
-import { isDesktop } from '@src/lib/isDesktop'
 import { writeProjectThumbnailFile } from '@src/lib/desktop'
 
 export function takeScreenshotOfVideoStreamCanvas() {
@@ -50,14 +49,19 @@ export function createThumbnailPNGOnDesktop({
 }: {
   projectDirectoryWithoutEndingSlash: string
 }) {
-  if (isDesktop()) {
+  if (window.electron) {
+    const electron = window.electron
     setTimeout(() => {
       if (!projectDirectoryWithoutEndingSlash) {
         return
       }
       const dataUrl: string = takeScreenshotOfVideoStreamCanvas()
       // zoom to fit command does not wait, wait 500ms to see if zoom to fit finishes
-      writeProjectThumbnailFile(dataUrl, projectDirectoryWithoutEndingSlash)
+      writeProjectThumbnailFile(
+        electron,
+        dataUrl,
+        projectDirectoryWithoutEndingSlash
+      )
         .then(() => {})
         .catch((e) => {
           console.error(
