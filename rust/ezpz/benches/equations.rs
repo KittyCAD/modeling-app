@@ -13,7 +13,6 @@ fn main() {
 
 #[divan::bench(args = [0, 1, 8])]
 fn id_generation(point_id: usize) -> Id {
-    init_global_parallelism(1);
     let entity_id = black_box(Id::new_entity('a'));
     let p0_id = black_box(entity_id.child_point(point_id));
     black_box(p0_id.child_x_component())
@@ -51,6 +50,7 @@ fn bench_solve_easy(bencher: Bencher) {
 
 #[divan::bench]
 fn bench_solve_rectangle(bencher: Bencher) {
+    init_global_parallelism(1);
     let p0 = DatumPoint::new(Id::new_point('p'));
     let p1 = DatumPoint::new(Id::new_point('q'));
     let p2 = DatumPoint::new(Id::new_point('r'));
