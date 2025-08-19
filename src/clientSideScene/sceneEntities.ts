@@ -221,7 +221,7 @@ export class SceneEntities {
     this.intersectionPlane = SceneEntities.createIntersectionPlane(
       this.sceneInfra
     )
-   
+
     this.sceneInfra.camControls.cameraChange.add(this.onCamChange)
     this.sceneInfra.baseUnitChange.add(this.onCamChange)
 
