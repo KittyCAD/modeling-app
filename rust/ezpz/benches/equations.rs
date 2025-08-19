@@ -1,4 +1,6 @@
-use divan::{Bencher, black_box};
+use std::hint::black_box;
+
+use criterion::{Criterion, criterion_group, criterion_main};
 use kcl_ezpz::{
     Constraint, Id,
     datatypes::{DatumPoint, LineSegment},
@@ -6,50 +8,33 @@ use kcl_ezpz::{
 };
 use newton_faer::init_global_parallelism;
 
-fn main() {
-    // Run registered benchmarks.
-    divan::main();
-}
-
-#[divan::bench(args = [0, 1, 8])]
-fn id_generation(point_id: usize) -> Id {
-    let entity_id = black_box(Id::new_entity('a'));
-    let p0_id = black_box(entity_id.child_point(point_id));
-    black_box(p0_id.child_x_component())
-}
-
-#[divan::bench]
-fn bench_solve_easy(bencher: Bencher) {
+fn solve_easy(c: &mut Criterion) {
     init_global_parallelism(1);
     let p = DatumPoint::new(Id::new_point('p'));
     let q = DatumPoint::new(Id::new_point('q'));
+    let initial_guesses = vec![
+        // px and py
+        (p.id_x(), 0.0),
+        (p.id_y(), 0.0),
+        // qx and qy
+        (q.id_x(), 0.01),
+        (q.id_y(), 9.0),
+    ];
+    let constraints = vec![
+        Constraint::Vertical(p, q),
+        Constraint::Fixed(p.id_x(), 0.0),
+        Constraint::Fixed(p.id_y(), 0.0),
+        Constraint::Fixed(q.id_y(), 9.0),
+    ];
 
-    bencher.bench_local(move || {
-        let initial_guesses = vec![
-            // px and py
-            (p.id_x(), 0.0),
-            (p.id_y(), 0.0),
-            // qx and qy
-            (q.id_x(), 0.01),
-            (q.id_y(), 9.0),
-        ];
-        let _actual = black_box(
-            solve(
-                vec![
-                    Constraint::Vertical(p, q),
-                    Constraint::Fixed(p.id_x(), 0.0),
-                    Constraint::Fixed(p.id_y(), 0.0),
-                    Constraint::Fixed(q.id_y(), 9.0),
-                ],
-                initial_guesses,
-            )
-            .unwrap(),
-        );
-    })
+    c.bench_function("solve easy", |b| {
+        b.iter(|| {
+            let _actual = black_box(solve(constraints.clone(), initial_guesses.clone()).unwrap());
+        })
+    });
 }
 
-#[divan::bench]
-fn bench_solve_rectangle(bencher: Bencher) {
+fn solve_two_rectangles(c: &mut Criterion) {
     init_global_parallelism(1);
     let p0 = DatumPoint::new(Id::new_point('p'));
     let p1 = DatumPoint::new(Id::new_point('q'));
@@ -145,7 +130,12 @@ fn bench_solve_rectangle(bencher: Bencher) {
 
     let mut constraints = constraints0;
     constraints.extend(constraints1);
-    bencher.bench_local(move || {
-        let _actual = black_box(solve(constraints.clone(), initial_guesses.clone()).unwrap());
+    c.bench_function("solve two rectangles", |b| {
+        b.iter(|| {
+            let _actual = black_box(solve(constraints.clone(), initial_guesses.clone()).unwrap());
+        })
     });
 }
+
+criterion_group!(benches, solve_easy, solve_two_rectangles);
+criterion_main!(benches);

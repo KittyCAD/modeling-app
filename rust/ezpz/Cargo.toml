@@ -13,7 +13,7 @@ newton_faer = { git = "https://github.com/adamchalmers/newton-faer", branch="ach
 thiserror = "2.0.14"
 
 [dev-dependencies]
-divan = "0.1.21"
+criterion = "0.7.0"
 
 [lints]
 workspace = true
