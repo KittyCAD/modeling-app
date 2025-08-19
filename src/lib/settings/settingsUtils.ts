@@ -342,11 +342,9 @@ export async function loadAndValidateSettings(
   // Make sure we have wasm initialized.
   await initPromise
 
-  const onDesktop = isDesktop()
-
   // Load the app settings from the file system or localStorage.
-  const appSettingsPayload = onDesktop
-    ? await readAppSettingsFile()
+  const appSettingsPayload = window.electron
+    ? await readAppSettingsFile(window.electron)
     : readLocalStorageAppSettingsFile()
 
   if (err(appSettingsPayload)) return Promise.reject(appSettingsPayload)
@@ -354,8 +352,10 @@ export async function loadAndValidateSettings(
   let settingsNext = createSettings()
 
   // Because getting the default directory is async, we need to set it after
-  if (onDesktop) {
-    settingsNext.app.projectDirectory.default = await getInitialDefaultDir()
+  if (window.electron) {
+    settingsNext.app.projectDirectory.default = await getInitialDefaultDir(
+      window.electron
+    )
   }
 
   settingsNext = setSettingsAtLevel(
@@ -366,8 +366,8 @@ export async function loadAndValidateSettings(
 
   // Load the project settings if they exist
   if (projectPath) {
-    let projectSettings = onDesktop
-      ? await readProjectSettingsFile(projectPath)
+    let projectSettings = window.electron
+      ? await readProjectSettingsFile(window.electron, projectPath)
       : readLocalStorageProjectSettingsFile()
 
     if (err(projectSettings))
@@ -396,8 +396,12 @@ export async function loadAndValidateSettings(
         return Promise.reject(
           new Error('Could not serialize project configuration')
         )
-      if (onDesktop) {
-        await writeProjectSettingsFile(projectPath, projectTomlString)
+      if (window.electron) {
+        await writeProjectSettingsFile(
+          window.electron,
+          projectPath,
+          projectTomlString
+        )
       } else {
         localStorage.setItem(
           localStorageProjectSettingsPath(),
@@ -430,7 +434,6 @@ export async function saveSettings(
 ) {
   // Make sure we have wasm initialized.
   await initPromise
-  const onDesktop = isDesktop()
 
   // Get the user settings.
   const jsAppSettings = getChangedSettingsAtLevel(allSettings, 'user')
@@ -440,8 +443,8 @@ export async function saveSettings(
   if (err(appTomlString)) return
 
   // Write the app settings.
-  if (onDesktop) {
-    await writeAppSettingsFile(appTomlString)
+  if (window.electron) {
+    await writeAppSettingsFile(window.electron, appTomlString)
   } else {
     localStorage.setItem(localStorageAppSettingsPath(), appTomlString)
   }
@@ -459,8 +462,12 @@ export async function saveSettings(
   if (err(projectTomlString)) return
 
   // Write the project settings.
-  if (onDesktop) {
-    await writeProjectSettingsFile(projectPath, projectTomlString)
+  if (window.electron) {
+    await writeProjectSettingsFile(
+      window.electron,
+      projectPath,
+      projectTomlString
+    )
   } else {
     localStorage.setItem(localStorageProjectSettingsPath(), projectTomlString)
   }
