@@ -313,8 +313,6 @@ export class SceneInfra {
     this.renderer.domElement.style.height = '100%'
     this.labelRenderer.domElement.className = 'z-sketchSegmentIndicators'
 
-    window.addEventListener('resize', this.onWindowResize)
-
     this.camControls = new CameraControls(
       this.renderer.domElement,
       engineCommandManager,
@@ -393,7 +391,6 @@ export class SceneInfra {
   dispose = () => {
     // Dispose of scene resources, renderer, and controls
     this.renderer.dispose()
-    window.removeEventListener('resize', this.onWindowResize)
     // Dispose of any other resources like geometries, materials, textures
   }
 
