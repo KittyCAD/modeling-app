@@ -85,13 +85,6 @@ Whether to show the debug panel, which lets you see various states of the app to
 
 **Default:** None
 
-##### fixed_size_grid
-
-If true, the grid cells will be fixed-size, where the width is your default length unit. If false, the grid will get larger as you zoom out, and smaller as you zoom in.
-
-
-**Default:** None
-
 
 #### modeling
 
@@ -159,10 +152,37 @@ Whether or not to show a scale grid in the 3D modeling view
 
 **Default:** None
 
+##### fixed_size_grid
+
+When enabled, the grid will use a fixed size based on your selected units rather than automatically scaling with zoom level. If true, the grid cells will be fixed-size, where the width is your default length unit. If false, the grid will get larger as you zoom out, and smaller as you zoom in.
+
+
+**Default:** None
 
 ##### snap_to_grid
 
 Whether or not to snap to the scale grid in sketching mode.
+
+
+**Default:** None
+
+##### major_grid_spacing
+
+The space between major grid lines, specified in the current unit
+
+
+**Default:** None
+
+##### minor_grids_per_major
+
+Specifies ow many minor grid lines to have per major grid line.
+
+
+**Default:** None
+
+##### snaps_per_minor
+
+The number of snaps to have between minor grid lines. 1 means snapping to the minor grid lines.
 
 
 **Default:** None

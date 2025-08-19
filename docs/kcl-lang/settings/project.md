@@ -138,6 +138,41 @@ Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.
 
 **Default:** None
 
+##### fixed_size_grid
+
+When enabled, the grid will use a fixed size based on your selected units rather than automatically scaling with zoom level.
+
+
+**Default:** None
+
+##### snap_to_grid
+
+Whether or not to snap to the scale grid in sketching mode.
+
+
+**Default:** None
+
+##### major_grid_spacing
+
+The space between major grid lines, specified in the current unit
+
+
+**Default:** None
+
+##### minor_grids_per_major
+
+Specifies how many minor grid lines to have per major grid line.
+
+
+**Default:** None
+
+##### snaps_per_minor
+
+The number of snaps to have between minor grid lines. 1 means snapping to the minor grid lines.
+
+
+**Default:** None
+
 
 #### text_editor
 
