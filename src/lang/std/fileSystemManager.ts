@@ -1,24 +1,35 @@
 // Polyfill window.electron fs functions as needed when in a nodejs context
-// (INTENDED FOR VITEST SHINANGANS.)
-if (process.env.NODE_ENV === 'test' && process.env.VITEST) {
-  const fs = require('node:fs/promises')
-  const path = require('node:path')
-  Object.assign(window, {
-    electron: {
-      readFile: fs.readFile,
-      stat: fs.stat,
-      readdir: fs.readdir,
-      path,
-      process: {},
-    },
-  })
+// (INTENDED FOR VITEST SHENANIGANS.)
+
+import type { IElectronAPI } from '@root/interface'
+import type { ObjectEncodingOptions, OpenMode } from 'fs'
+import type { Abortable } from 'events'
+import * as nodePath from '@chainner/node-path'
+
+export interface IFs {
+  readdir: IElectronAPI['readdir']
+  readFile: IElectronAPI['readFile']
+  stat: IElectronAPI['stat']
 }
 
-/// FileSystemManager is a class that provides a way to read files from the local file system.
-/// It assumes that you are in a project since it is solely used by the std lib
-/// when executing code.
-class FileSystemManager {
+let testNodeFs
+if (process.env.NODE_ENV === 'test' && process.env.VITEST) {
+  const fs = require('node:fs/promises')
+  testNodeFs = fs
+}
+
+/// FileSystemManager is a class that provides a way to read files from the
+/// local file system. The module's singleton instance assumes that you are in a
+/// project since it is solely used by the std lib when executing code.
+export class FileSystemManager {
+  private _nodePath: IElectronAPI['path']
+  private _fs: IFs | undefined
   private _dir: string | null = null
+
+  constructor(nodePath: IElectronAPI['path'], fs: IFs | undefined) {
+    this._nodePath = nodePath
+    this._fs = fs
+  }
 
   get dir() {
     return this._dir ?? ''
@@ -28,59 +39,101 @@ class FileSystemManager {
     this._dir = dir
   }
 
-  async join(dir: string, path: string): Promise<string> {
+  get path() {
+    return this._nodePath
+  }
+
+  join(dir: string, path: string): string {
     if (path.startsWith(dir)) {
       path = path.slice(dir.length)
     }
-    return Promise.resolve(window.electron.path.join(dir, path))
+    return this._nodePath.join(dir, path)
   }
 
-  async readFile(path: string): Promise<Uint8Array> {
-    // Using local file system only works from desktop and nodejs
-    if (!window?.electron?.readFile) {
-      return Promise.reject(new Error('No polyfill found for this function'))
-    }
-
-    return this.join(this.dir, path).then((filePath) => {
-      return window.electron.readFile(filePath)
-    })
-  }
-
-  async exists(path: string): Promise<boolean | void> {
-    // Using local file system only works from desktop.
-    if (!window?.electron?.stat) {
-      return Promise.reject(new Error('No polyfill found for this function'))
-    }
-
-    return this.join(this.dir, path).then(async (file) => {
-      try {
-        await window.electron.stat(file)
-      } catch (e) {
-        if (e === 'ENOENT') {
-          return false
+  /**
+   * Called from WASM.
+   */
+  async readFile(
+    path: string,
+    options?: {
+      encoding?: null | undefined
+      flag?: OpenMode | undefined
+    } | null
+  ): Promise<Buffer>
+  async readFile(
+    path: string,
+    options:
+      | {
+          encoding: BufferEncoding
+          flag?: OpenMode | undefined
         }
-      }
-      return true
-    })
-  }
-
-  async getAllFiles(path: string): Promise<string[] | void> {
-    // Using local file system only works from desktop.
-    if (!window?.electron?.readdir) {
+      | BufferEncoding
+  ): Promise<string>
+  async readFile(
+    path: string,
+    options?:
+      | (ObjectEncodingOptions &
+          Abortable & {
+            flag?: OpenMode | undefined
+          })
+      | BufferEncoding
+      | null
+  ): Promise<string | Buffer> {
+    // Using local file system only works from desktop and nodejs
+    if (!this._fs) {
       return Promise.reject(new Error('No polyfill found for this function'))
     }
 
-    return this.join(this.dir, path).then((filepath) => {
-      return window.electron
-        .readdir(filepath)
-        .catch((error: Error) => {
-          return Promise.reject(new Error(`Error reading dir: ${error}`))
-        })
-        .then((files: string[]) => {
-          return files.map((filePath) => filePath)
-        })
-    })
+    const filePath = this.join(this.dir, path)
+    return this._fs.readFile(filePath, options)
+  }
+
+  /**
+   * Called from WASM.
+   */
+  async exists(path: string): Promise<boolean> {
+    // Using local file system only works from desktop.
+    if (!this._fs) {
+      return Promise.reject(new Error('No polyfill found for this function'))
+    }
+
+    const file = this.join(this.dir, path)
+    try {
+      await this._fs.stat(file)
+    } catch (e) {
+      if (e === 'ENOENT') {
+        return false
+      }
+    }
+    return true
+  }
+
+  /**
+   * Called from WASM.
+   */
+  async getAllFiles(path: string): Promise<string[]> {
+    // Using local file system only works from desktop.
+    if (!this._fs) {
+      return Promise.reject(new Error('No polyfill found for this function'))
+    }
+
+    const filepath = this.join(this.dir, path)
+    return await this._fs
+      .readdir(filepath)
+      .catch((error: Error) => {
+        return Promise.reject(new Error(`Error reading dir: ${error}`))
+      })
+      .then((files: string[]) => {
+        return files.map((filePath) => filePath)
+      })
   }
 }
 
-export const fileSystemManager = new FileSystemManager()
+const fsInstance =
+  (typeof window !== 'undefined' ? window.electron : undefined) ?? testNodeFs
+export const fsManager = new FileSystemManager(nodePath, fsInstance)
+
+/**
+ * The project directory is set on this.
+ */
+export const projectFsManager = new FileSystemManager(nodePath, fsInstance)

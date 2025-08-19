@@ -285,11 +285,12 @@ export function createApplicationCommands({
             systemIOActor,
             isProjectNew,
           })
-        } else if (data.source === 'local' && data.path) {
+        } else if (window.electron && data.source === 'local' && data.path) {
+          const electron = window.electron
           const clonePath = data.path
           const fileNameWithExtension = getStringAfterLastSeparator(clonePath)
           const readFileContentsAndCreateNewFile = async () => {
-            const text = await window.electron.readFile(clonePath, 'utf8')
+            const text = await electron.readFile(clonePath, 'utf8')
             systemIOActor.send({
               type: SystemIOMachineEvents.importFileFromURL,
               data: {
@@ -414,7 +415,7 @@ export function createApplicationCommands({
         hidden: !isDesktop(),
         defaultValue: '',
         valueSummary: (value) => {
-          return isDesktop() ? window.electron.path.basename(value) : ''
+          return window.electron ? window.electron.path.basename(value) : ''
         },
         required: (commandContext) =>
           isDesktop() &&
@@ -510,11 +511,15 @@ export function createApplicationCommands({
     icon: 'importFile',
     groupId: 'application',
     onSubmit: (data) => {
+      if (!window.electron) {
+        console.error(new Error('No file system present'))
+        return
+      }
       if (data) {
         const requestedEnvironmentFormatted = returnSelfOrGetHostNameFromURL(
           data.environment
         )
-        writeEnvironmentFile(requestedEnvironmentFormatted)
+        writeEnvironmentFile(window.electron, requestedEnvironmentFormatted)
           .then(() => {
             // Reload the application and it will trigger the correct sign in workflow for the new environment
             window.location.reload()
@@ -538,10 +543,18 @@ export function createApplicationCommands({
     icon: 'importFile',
     groupId: 'application',
     onSubmit: (data) => {
+      if (!window.electron) {
+        console.error(new Error('No file system present'))
+        return
+      }
       if (data) {
         const environmentName = env().VITE_KITTYCAD_BASE_DOMAIN
         if (environmentName)
-          writeEnvironmentConfigurationPool(environmentName, data.pool)
+          writeEnvironmentConfigurationPool(
+            window.electron,
+            environmentName,
+            data.pool
+          )
             .then(() => {
               // Reload the application and it will trigger the correct sign in workflow for the new environment
               window.location.reload()

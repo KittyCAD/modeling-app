@@ -333,6 +333,9 @@ export function createSettings() {
                   ) {
                     updateValue(inputRefVal)
                   } else {
+                    if (!window.electron) {
+                      return Promise.reject(new Error("Can't open file dialog"))
+                    }
                     const newPath = await window.electron.open({
                       properties: ['openDirectory', 'createDirectory'],
                       defaultPath: value,

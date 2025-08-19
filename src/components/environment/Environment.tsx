@@ -104,7 +104,15 @@ export function EnvironmentDescription() {
                   onClick={() => {
                     const environment = env().VITE_KITTYCAD_BASE_DOMAIN
                     if (environment) {
-                      writeEnvironmentConfigurationPool(environment, '')
+                      if (!window.electron) {
+                        console.error("Can't access electron")
+                        return
+                      }
+                      writeEnvironmentConfigurationPool(
+                        window.electron,
+                        environment,
+                        ''
+                      )
                         .then(() => {
                           window.location.reload()
                         })

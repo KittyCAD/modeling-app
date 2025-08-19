@@ -123,7 +123,7 @@ export function indexHtmlCsp(enabled: boolean): Plugin {
     // Allow inline styles and styles from the same origin. This is how we use CSS rightnow.
     "style-src 'self' 'unsafe-inline'",
     // Allow images from any source and inline images. We fetch user profile images from any origin.
-    "img-src * blob: 'unsafe-inline'",
+    "img-src * blob: data: 'unsafe-inline'",
     // Allow WebSocket connections and fetches to our API.
     "connect-src 'self' https://plausible.corp.zoo.dev https://api.zoo.dev wss://api.zoo.dev https://api.dev.zoo.dev wss://api.dev.zoo.dev https://api.zoogov.dev wss://api.zoogov.dev",
     // Disallow legacy stuff
