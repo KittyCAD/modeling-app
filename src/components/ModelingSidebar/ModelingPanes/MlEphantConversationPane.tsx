@@ -207,7 +207,9 @@ export const MlEphantConversationPane = (props: {
   useEffect(() => {
     let promptIdLastSeen = ''
     const subscription = props.mlEphantManagerActor.subscribe((next) => {
-      if (next.context.conversationId === undefined) { return }
+      if (next.context.conversationId === undefined) {
+        return
+      }
 
       const promptIdLastAdded =
         next.context.promptsBelongingToConversation[
@@ -219,7 +221,7 @@ export const MlEphantConversationPane = (props: {
         return
       }
 
-      if (promptIdLastSeen === promptIdLastAdded) { 
+      if (promptIdLastSeen === promptIdLastAdded) {
         return
       }
 

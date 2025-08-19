@@ -27,11 +27,10 @@ export function connectReasoningStream(
     },
   }
 
-
   ws.addEventListener('open', () => {
     console.log(`[${id}] open ${url}`)
     ws.send(JSON.stringify(authMessage)) // 🔸 send immediately
-    ws.send(JSON.stringify({ 'type': 'ping' })) // 🔸 send immediately
+    ws.send(JSON.stringify({ type: 'ping' })) // 🔸 send immediately
     console.log(`[${id}] →`, authMessage)
     events.on.open?.()
   })

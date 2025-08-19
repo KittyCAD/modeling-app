@@ -238,7 +238,10 @@ export const PromptCard = (props: PromptCardProps) => {
         </div>
       )}
       <div className="flex flex-row justify-end gap-2 items-center pl-2 pr-10">
-        <div className={`flex flex-row gap-2 ${showSeeReasoning ? 'hidden' : ''}`} onMouseEnter={() => setShowSeeReasoning(true)}>
+        <div
+          className={`flex flex-row gap-2 ${showSeeReasoning ? 'hidden' : ''}`}
+          onMouseEnter={() => setShowSeeReasoning(true)}
+        >
           {props.onAction !== undefined && (
             <PromptCardActionButton
               status={props.status}
@@ -255,7 +258,10 @@ export const PromptCard = (props: PromptCardProps) => {
             updatedAt={props.updated_at}
           />
         </div>
-        <div onMouseLeave={() => setShowSeeReasoning(false)} className={(showSeeReasoning || showFullReasoning) ? '' : 'hidden'}>
+        <div
+          onMouseLeave={() => setShowSeeReasoning(false)}
+          className={showSeeReasoning || showFullReasoning ? '' : 'hidden'}
+        >
           <button className="w-full p-2" onClick={() => onSeeReasoning()}>
             {showFullReasoning ? 'Hide reasoning' : 'See reasoning'}
           </button>
