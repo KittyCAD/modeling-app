@@ -854,13 +854,9 @@ description: Operations executed rotate_after_fillet.kcl
             "type": "Number",
             "value": 3.14,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Angle",
+              "type": "Degrees"
             }
           },
           "sourceRange": []
@@ -886,13 +882,9 @@ description: Operations executed rotate_after_fillet.kcl
             "type": "Number",
             "value": 3.14,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Angle",
+              "type": "Degrees"
             }
           },
           "sourceRange": []

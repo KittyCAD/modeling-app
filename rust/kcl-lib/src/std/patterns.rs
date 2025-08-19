@@ -215,7 +215,7 @@ async fn make_transform<T: GeometryTrait>(
         exec_state.pipe_value().map(|v| Arg::new(v.clone(), source_range)),
     );
     let transform_fn_return = transform
-        .call_kw(None, exec_state, ctxt, transform_fn_args, source_range)
+        .call(None, exec_state, ctxt, transform_fn_args, source_range)
         .await?;
 
     // Unpack the returned transform object.
