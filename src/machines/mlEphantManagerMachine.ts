@@ -200,7 +200,9 @@ export const mlEphantManagerMachine = setup({
 
         // If no conversation id, simply initialize context.
         if (args.input.event.conversationId === undefined) {
-          return args.input.context
+          return {
+            promptsBelongingToConversation: [],
+          }
         }
 
         const result = await textToCadMlPromptsBelongingToConversation(
