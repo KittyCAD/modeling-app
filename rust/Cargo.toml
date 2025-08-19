@@ -66,6 +66,10 @@ result_large_err = "allow"
 panic = "abort"
 debug = true
 
+[profile.bench]
+panic = "abort"
+debug = true
+
 [profile.dev]
 debug = 0
 

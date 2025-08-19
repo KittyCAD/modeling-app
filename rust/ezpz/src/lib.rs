@@ -14,14 +14,18 @@ mod id;
 /// Numeric solver using sparse matrices.
 mod solver;
 
-type Result<T> = std::result::Result<T, Error>;
-
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
-    #[error("ID {0} not found")]
-    NotFound(Id),
+    #[error("{0}")]
+    NonLinearSystemError(NonLinearSystemError),
     #[error("Solver error {0}")]
     Solver(Box<dyn std::error::Error>),
+}
+
+#[derive(thiserror::Error, Debug)]
+pub enum NonLinearSystemError {
+    #[error("ID {0} not found")]
+    NotFound(Id),
 }
 
 #[derive(Debug)]
@@ -32,7 +36,7 @@ pub struct SolveOutcome {
 
 /// Given some initial guesses, constrain them.
 /// Returns the same variables in the same order, but constrained.
-pub fn solve(constraints: Vec<Constraint>, initial_guesses: Vec<(Id, f64)>) -> Result<SolveOutcome> {
+pub fn solve(constraints: Vec<Constraint>, initial_guesses: Vec<(Id, f64)>) -> Result<SolveOutcome, Error> {
     let (all_variables, mut final_values): (Vec<Id>, Vec<f64>) = initial_guesses.into_iter().unzip();
     let mut model = Model::new(constraints, all_variables);
     let iterations = newton_faer::solve(

@@ -1,7 +1,7 @@
 use faer::sparse::{Pair, SymbolicSparseColMat};
 use newton_faer::{JacobianCache, NonlinearSystem, RowMap};
 
-use crate::{Constraint, constraints::lookup, id::Id};
+use crate::{Constraint, NonLinearSystemError, constraints::lookup, id::Id};
 
 pub struct Layout {
     /// Equivalent to number of rows in the matrix being solved.
@@ -27,7 +27,7 @@ impl RowMap for Layout {
 }
 
 impl Layout {
-    pub fn index_of(&self, var: <Layout as RowMap>::Var) -> crate::Result<usize> {
+    pub fn index_of(&self, var: <Layout as RowMap>::Var) -> Result<usize, NonLinearSystemError> {
         lookup(var, &self.all_variables)
     }
 
@@ -158,6 +158,7 @@ impl NonlinearSystem for Model {
     /// What number type we're using.
     type Real = f64;
     type Layout = Layout;
+    type Error = crate::NonLinearSystemError;
 
     fn layout(&self) -> &Self::Layout {
         &self.layout
@@ -174,68 +175,56 @@ impl NonlinearSystem for Model {
     }
 
     /// Compute the residual F, figuring out how close the problem is to being solved.
-    fn residual(&self, current_assignments: &[Self::Real], out: &mut [Self::Real]) {
+    fn residual(&self, current_assignments: &[Self::Real], out: &mut [Self::Real]) -> Result<(), Self::Error> {
         // Each row of `out` corresponds to one row of the matrix, i.e. one equation.
         // Each item of `current_assignments` corresponds to one column of the matrix, i.e. one variable.
         // eprintln!("Current variables:\n{current_assignments:?}");
-        for (row_num, residual) in self
-            .constraints
-            .iter()
-            // Each constraint could have multiple residuals, so flat map to combine them into
-            // one flat list of residuals.
-            .flat_map(|constraint| {
-                let residual = constraint.residual(&self.layout, current_assignments).unwrap();
-                debug_assert_eq!(
-                    residual.len(),
-                    constraint.residual_dim(),
-                    "Constraint {} should have {} residuals but actually had {}",
-                    constraint.constraint_kind(),
-                    constraint.residual_dim(),
-                    residual.len(),
-                );
-                residual
-            })
-            .enumerate()
-        {
-            out[row_num] = residual;
+        let mut row_num = 0;
+        for constraint in &self.constraints {
+            let residuals = constraint.residual(&self.layout, current_assignments)?;
+            debug_assert_eq!(
+                residuals.len(),
+                constraint.residual_dim(),
+                "Constraint {} should have {} residuals but actually had {}",
+                constraint.constraint_kind(),
+                constraint.residual_dim(),
+                residuals.len(),
+            );
+            for residual in residuals {
+                out[row_num] = residual;
+                row_num += 1;
+            }
         }
-        // eprintln!("R rows: {out:?}");
+        Ok(())
     }
 
     /// Update the values of a cached sparse Jacobian.
-    fn refresh_jacobian(&mut self, current_assignments: &[Self::Real]) {
+    fn refresh_jacobian(&mut self, current_assignments: &[Self::Real]) -> Result<(), Self::Error> {
         // eprintln!("Refreshing jacobian.");
         let num_cols = self.layout.num_cols();
         let num_rows = self.layout.num_rows();
-        for (row_num, jacobian_row) in self
-            .constraints
-            .iter()
-            // Each constraint could have multiple rows, so flat map to combine them into one flat list
-            // of rows.
-            .flat_map(|constraint| {
-                let rows = constraint
-                    .jacobian_section(&self.layout, current_assignments)
-                    // TODO: Update the solver crate to handle Result properly.
-                    .unwrap();
-                debug_assert_eq!(rows.len(), constraint.residual_dim());
-                rows
-            })
-            .enumerate()
-        {
-            // JacobianRow shows only nonzero values, so,
-            // add all the required zeroes.
-            let mut row = vec![0.0; num_cols];
-            for jacobian_var in jacobian_row {
-                // TODO: Update the solver crate to handle Result properly.
-                let i = self.layout.index_of(jacobian_var.id).unwrap();
-                row[i] = jacobian_var.partial_derivative;
-            }
-            let target_column_num = row_num;
-            for (i, v) in row.into_iter().enumerate() {
-                let dst = target_column_num + (i * num_rows);
-                self.jc.values_mut()[dst] = v;
+        let mut row_num = 0;
+        for constraint in &self.constraints {
+            let jacobian_rows = constraint.jacobian_section(&self.layout, current_assignments)?;
+            debug_assert_eq!(jacobian_rows.len(), constraint.residual_dim());
+
+            for jacobian_row in jacobian_rows {
+                // JacobianRow shows only nonzero values, so,
+                // add all the required zeroes.
+                let mut row = vec![0.0; num_cols];
+                for jacobian_var in jacobian_row {
+                    let i = self.layout.index_of(jacobian_var.id)?;
+                    row[i] = jacobian_var.partial_derivative;
+                }
+                let target_column_num = row_num;
+                row_num += 1;
+                for (i, v) in row.into_iter().enumerate() {
+                    let dst = target_column_num + (i * num_rows);
+                    self.jc.values_mut()[dst] = v;
+                }
             }
         }
+        Ok(())
     }
 }
 

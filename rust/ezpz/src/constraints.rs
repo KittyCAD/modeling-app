@@ -1,6 +1,6 @@
 use kittycad_modeling_cmds::shared::Angle;
 
-use crate::{Error, Result, datatypes::*, id::Id, solver::Layout};
+use crate::{NonLinearSystemError, datatypes::*, id::Id, solver::Layout};
 
 /// Each geometric constraint we support.
 #[derive(Clone, Copy)]
@@ -29,7 +29,7 @@ pub enum Constraint {
 }
 
 /// Given a list of all IDs in the system, find the target ID's index in that list.
-pub fn lookup(target_id: Id, all_ids: &[Id]) -> Result<usize> {
+pub fn lookup(target_id: Id, all_ids: &[Id]) -> Result<usize, NonLinearSystemError> {
     // Right now data is small enough that I suspect linear search
     // beats binary search.
     // I think I'm probably supposed to do this in the RowMap type:
@@ -40,7 +40,7 @@ pub fn lookup(target_id: Id, all_ids: &[Id]) -> Result<usize> {
             return Ok(i);
         }
     }
-    Err(Error::NotFound(target_id))
+    Err(NonLinearSystemError::NotFound(target_id))
 }
 
 /// Describes one value in one row of the Jacobian matrix.
@@ -82,7 +82,7 @@ impl IntoIterator for JacobianRow {
 
 impl Constraint {
     /// How close is this constraint to being satisfied?
-    pub fn residual(&self, layout: &Layout, current_assignments: &[f64]) -> Result<Vec<f64>> {
+    pub fn residual(&self, layout: &Layout, current_assignments: &[f64]) -> Result<Vec<f64>, NonLinearSystemError> {
         match self {
             Constraint::Distance(p0, p1, expected_distance) => {
                 let p0_x = current_assignments[layout.index_of(p0.id_x())?];
@@ -146,7 +146,11 @@ impl Constraint {
     /// Returns rows of the Jacobian, where in each row,
     /// each column is a variable's partial derivative for this equation.
     /// One row per equation this constraint corresponds to.
-    pub fn jacobian_section(&self, layout: &Layout, current_assignments: &[f64]) -> Result<Vec<JacobianRow>> {
+    pub fn jacobian_section(
+        &self,
+        layout: &Layout,
+        current_assignments: &[f64],
+    ) -> Result<Vec<JacobianRow>, NonLinearSystemError> {
         match self {
             Constraint::Distance(p0, p1, _expected_distance) => {
                 // Residual: R = sqrt((x1-x2)**2 + (y1-y2)**2) - d
