@@ -1160,9 +1160,10 @@ extrude001 = extrude(profile001, length = 100)`
   }) => {
     const circleCode1 = `circle(center = [0, 0], radius = 30)`
     const circleCode2 = `circle(center = [0, 0], radius = 20)`
-    const initialCode = `sketch001 = startSketchOn(XZ)
+    const initialCode = `offset001 = 50
+sketch001 = startSketchOn(XZ)
   |> ${circleCode1}
-plane001 = offsetPlane(XZ, offset = 50)
+plane001 = offsetPlane(XZ, offset = offset001)
 sketch002 = startSketchOn(plane001)
   |> ${circleCode2}
       `
