@@ -202,6 +202,8 @@ export class SceneEntities {
 
   getSettings: (() => SettingsType) | null = null
 
+  private canvasResizeObserver: ResizeObserver
+
   constructor(
     engineCommandManager: EngineCommandManager,
     sceneInfra: SceneInfra,
@@ -219,15 +221,17 @@ export class SceneEntities {
     this.intersectionPlane = SceneEntities.createIntersectionPlane(
       this.sceneInfra
     )
+   
     this.sceneInfra.camControls.cameraChange.add(this.onCamChange)
     this.sceneInfra.baseUnitChange.add(this.onCamChange)
-    window.addEventListener('resize', this.onWindowResize)
+
+    const canvas = this.sceneInfra.renderer.domElement
+    this.canvasResizeObserver = new ResizeObserver(() => {
+      this.onCamChange()
+    })
+    this.canvasResizeObserver.observe(canvas)
   }
 
-  // TODO detect canvas change instead
-  onWindowResize = () => {
-    this.onCamChange()
-  }
   onCamChange = () => {
     const orthoFactor = orthoScale(this.sceneInfra.camControls.camera)
     const callbacks: (() => SegmentOverlayPayload | null)[] = []
