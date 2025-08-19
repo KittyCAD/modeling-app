@@ -120,7 +120,7 @@ pub struct ProjectAppearanceSettings {
 }
 
 /// Project specific settings that affect the behavior while modeling.
-#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Validate)]
+#[derive(Debug, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Validate)]
 #[serde(rename_all = "snake_case")]
 #[ts(export)]
 pub struct ProjectModelingSettings {
@@ -140,14 +140,58 @@ pub struct ProjectModelingSettings {
     #[serde(default, skip_serializing_if = "is_default")]
     pub snap_to_grid: bool,
     /// The space between major grid lines, specified in the current unit
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(
+        default = "default_major_grid_spacing",
+        skip_serializing_if = "is_default_major_grid_spacing"
+    )]
     pub major_grid_spacing: f64,
     /// Specifies how many minor grid lines to have per major grid line.
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(
+        default = "default_minor_grids_per_major",
+        skip_serializing_if = "is_default_minor_grids_per_major"
+    )]
     pub minor_grids_per_major: f64,
     /// The number of snaps to have between minor grid lines. 1 means snapping to the minor grid lines.
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(
+        default = "default_snaps_per_minor",
+        skip_serializing_if = "is_default_snaps_per_minor"
+    )]
     pub snaps_per_minor: f64,
+}
+
+fn default_major_grid_spacing() -> f64 {
+    1.0
+}
+fn default_minor_grids_per_major() -> f64 {
+    4.0
+}
+fn default_snaps_per_minor() -> f64 {
+    1.0
+}
+
+fn is_default_major_grid_spacing(value: &f64) -> bool {
+    *value == 1.0
+}
+fn is_default_minor_grids_per_major(value: &f64) -> bool {
+    *value == 4.0
+}
+fn is_default_snaps_per_minor(value: &f64) -> bool {
+    *value == 1.0
+}
+
+impl Default for ProjectModelingSettings {
+    fn default() -> Self {
+        Self {
+            base_unit: Default::default(),
+            highlight_edges: Default::default(),
+            enable_ssao: Default::default(),
+            fixed_size_grid: Default::default(),
+            snap_to_grid: Default::default(),
+            major_grid_spacing: default_major_grid_spacing(),
+            minor_grids_per_major: default_minor_grids_per_major(),
+            snaps_per_minor: default_snaps_per_minor(),
+        }
+    }
 }
 
 fn named_view_point_version_one() -> f64 {
