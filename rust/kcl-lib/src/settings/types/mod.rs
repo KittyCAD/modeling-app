@@ -64,7 +64,7 @@ pub struct Settings {
 }
 
 /// Application wide settings.
-#[derive(Debug, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Validate)]
+#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Validate)]
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
 pub struct AppSettings {
@@ -103,19 +103,6 @@ fn make_it_so() -> bool {
 
 fn is_true(b: &bool) -> bool {
     *b
-}
-
-impl Default for AppSettings {
-    fn default() -> Self {
-        Self {
-            appearance: Default::default(),
-            onboarding_status: Default::default(),
-            dismiss_web_banner: Default::default(),
-            stream_idle_mode: Default::default(),
-            allow_orbit_in_sketch_mode: Default::default(),
-            show_debug_panel: Default::default(),
-        }
-    }
 }
 
 fn deserialize_stream_idle_mode<'de, D>(deserializer: D) -> Result<Option<u32>, D::Error>
