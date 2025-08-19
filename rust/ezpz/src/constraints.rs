@@ -14,9 +14,9 @@ pub enum Constraint {
     /// Two points are the same
     Coincident(DatumPoint, DatumPoint),
     /// These two points have the same Y value.
-    Vertical(DatumPoint, DatumPoint),
+    Vertical(LineSegment),
     /// These two points have the same X value.
-    Horizontal(DatumPoint, DatumPoint),
+    Horizontal(LineSegment),
     /// Two points symmetric across a line.
     Symmetric(DatumLine, DatumPoint, DatumPoint),
     /// Meaningless constraint.
@@ -101,14 +101,14 @@ impl Constraint {
                 let p1_y = current_assignments[layout.index_of(p1.id_y())?];
                 Ok(vec![p0_x - p1_x, p0_y - p1_y])
             }
-            Constraint::Vertical(p0, p1) => {
-                let p0_x = current_assignments[layout.index_of(p0.id_x())?];
-                let p1_x = current_assignments[layout.index_of(p1.id_x())?];
+            Constraint::Vertical(line) => {
+                let p0_x = current_assignments[layout.index_of(line.p0.id_x())?];
+                let p1_x = current_assignments[layout.index_of(line.p1.id_x())?];
                 Ok(vec![p0_x - p1_x])
             }
-            Constraint::Horizontal(p0, p1) => {
-                let p0_y = current_assignments[layout.index_of(p0.id_y())?];
-                let p1_y = current_assignments[layout.index_of(p1.id_y())?];
+            Constraint::Horizontal(line) => {
+                let p0_y = current_assignments[layout.index_of(line.p0.id_y())?];
+                let p1_y = current_assignments[layout.index_of(line.p1.id_y())?];
                 Ok(vec![p0_y - p1_y])
             }
             Constraint::Symmetric(_line, _p0, _p1) => todo!(),
@@ -226,15 +226,15 @@ impl Constraint {
                     },
                 ])
             }
-            Constraint::Vertical(p0, p1) => {
+            Constraint::Vertical(line) => {
                 // Residual: R = x0 - x1
                 // ∂R/∂x for p0 and p1.
                 let dr_dx0 = 1.0;
                 let dr_dx1 = -1.0;
 
                 // Get the 'x' variable ID for the line's points.
-                let p0_x_id = p0.id_x();
-                let p1_x_id = p1.id_x();
+                let p0_x_id = line.p0.id_x();
+                let p1_x_id = line.p1.id_x();
 
                 Ok(vec![
                     // One row with values for both p0.x and p1.x
@@ -252,15 +252,15 @@ impl Constraint {
                     },
                 ])
             }
-            Constraint::Horizontal(p0, p1) => {
+            Constraint::Horizontal(line) => {
                 // Residual: R = y1 - y2
                 // ∂R/∂y for p0 and p1.
                 let dr_dy0 = 1.0;
                 let dr_dy1 = -1.0;
 
                 // Get the 'y' variable ID for the line's points.
-                let p0_y_id = p0.id_y();
-                let p1_y_id = p1.id_y();
+                let p0_y_id = line.p0.id_y();
+                let p1_y_id = line.p1.id_y();
 
                 Ok(vec![
                     // One row with values for both p0.x and p1.x

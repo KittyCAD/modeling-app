@@ -76,7 +76,11 @@ mod tests {
         // Now constrain the points to be vertical.
         let actual = solve(
             vec![
-                Constraint::Vertical(p, q),
+                Constraint::Vertical(LineSegment {
+                    p0: p,
+                    p1: q,
+                    id: Id::new_entity('L'),
+                }),
                 Constraint::Fixed(p.id_x(), 0.0),
                 Constraint::Fixed(p.id_y(), 0.0),
                 Constraint::Fixed(q.id_y(), 9.0),
@@ -165,10 +169,10 @@ mod tests {
         };
         let constraints0 = vec![
             Constraint::PointFixed(p0, 1.0, 1.0),
-            Constraint::Horizontal(line0_bottom.p0, line0_bottom.p1),
-            Constraint::Horizontal(line0_top.p0, line0_top.p1),
-            Constraint::Vertical(line0_left.p0, line0_left.p1),
-            Constraint::Vertical(line0_right.p0, line0_right.p1),
+            Constraint::Horizontal(line0_bottom),
+            Constraint::Horizontal(line0_top),
+            Constraint::Vertical(line0_left),
+            Constraint::Vertical(line0_right),
             Constraint::Distance(p0, p1, 4.0),
             Constraint::Distance(p0, p3, 3.0),
         ];
@@ -223,10 +227,10 @@ mod tests {
 
         let constraints1 = vec![
             Constraint::PointFixed(p4, 2.0, 2.0),
-            Constraint::Horizontal(line1_bottom.p0, line1_bottom.p1),
-            Constraint::Horizontal(line1_top.p0, line1_top.p1),
-            Constraint::Vertical(line1_left.p0, line1_left.p1),
-            Constraint::Vertical(line1_right.p0, line1_right.p1),
+            Constraint::Horizontal(line1_bottom),
+            Constraint::Horizontal(line1_top),
+            Constraint::Vertical(line1_left),
+            Constraint::Vertical(line1_right),
             Constraint::Distance(p4, p5, 4.0),
             Constraint::Distance(p4, p7, 4.0),
         ];

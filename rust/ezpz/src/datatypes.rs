@@ -62,7 +62,7 @@ impl DatumLine {
 }
 
 /// Finite segment of a line.
-#[allow(dead_code)]
+#[derive(Clone, Copy)]
 pub struct LineSegment {
     pub id: Id,
     pub p0: DatumPoint,

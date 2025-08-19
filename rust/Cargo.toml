@@ -67,7 +67,6 @@ panic = "abort"
 debug = true
 
 [profile.bench]
-panic = "abort"
 debug = true
 
 [profile.dev]

@@ -20,8 +20,13 @@ fn solve_easy(c: &mut Criterion) {
         (q.id_x(), 0.01),
         (q.id_y(), 9.0),
     ];
+    let line = LineSegment {
+        p0: p,
+        p1: q,
+        id: Id::new_entity('L'),
+    };
     let constraints = vec![
-        Constraint::Vertical(p, q),
+        Constraint::Vertical(line),
         Constraint::Fixed(p.id_x(), 0.0),
         Constraint::Fixed(p.id_y(), 0.0),
         Constraint::Fixed(q.id_y(), 9.0),
@@ -88,10 +93,10 @@ fn solve_two_rectangles(c: &mut Criterion) {
     // First square (lower case IDs)
     let constraints0 = vec![
         Constraint::PointFixed(p0, 1.0, 1.0),
-        Constraint::Horizontal(line0_bottom.p0, line0_bottom.p1),
-        Constraint::Horizontal(line0_top.p0, line0_top.p1),
-        Constraint::Vertical(line0_left.p0, line0_left.p1),
-        Constraint::Vertical(line0_right.p0, line0_right.p1),
+        Constraint::Horizontal(line0_bottom),
+        Constraint::Horizontal(line0_top),
+        Constraint::Vertical(line0_left),
+        Constraint::Vertical(line0_right),
         Constraint::Distance(p0, p1, 4.0),
         Constraint::Distance(p0, p3, 3.0),
     ];
@@ -120,10 +125,10 @@ fn solve_two_rectangles(c: &mut Criterion) {
 
     let constraints1 = vec![
         Constraint::PointFixed(p4, 2.0, 2.0),
-        Constraint::Horizontal(line1_bottom.p0, line1_bottom.p1),
-        Constraint::Horizontal(line1_top.p0, line1_top.p1),
-        Constraint::Vertical(line1_left.p0, line1_left.p1),
-        Constraint::Vertical(line1_right.p0, line1_right.p1),
+        Constraint::Horizontal(line1_bottom),
+        Constraint::Horizontal(line1_top),
+        Constraint::Vertical(line1_left),
+        Constraint::Vertical(line1_right),
         Constraint::Distance(p4, p5, 4.0),
         Constraint::Distance(p4, p7, 4.0),
     ];
