@@ -4,7 +4,6 @@
 import type { IElectronAPI } from '@root/interface'
 import type { ObjectEncodingOptions, OpenMode } from 'fs'
 import type { Abortable } from 'events'
-// @ts-ignore This lib doesn't have types.
 import * as nodePath from '@chainner/node-path'
 
 export interface IFs {
