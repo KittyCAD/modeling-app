@@ -131,13 +131,13 @@ input {
 }
 
 .mono {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+  font-family: "Source Code VF", Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
 
 code,
-#code-mirror-override .cm-scroller {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+#code-mirror-override .cm-content {
+  font-family: "Source Code VF", Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
 
