@@ -3,16 +3,18 @@
 
 <head>
   <meta charset="utf-8" />
-  <!-- PERPETUAL TODO reconsider this option.
-      <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
-    -->
+  <!--
+        This all-blocking CSP is replaced by the vite html-transform plugin.
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none';">
+   -->
+
   <link rel="icon" href="/favicon.ico" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#000000" />
   <meta name="description" content="An open-source CAD modeling tool from the future by Zoo." />
   <link rel="apple-touch-icon" href="/logo192.png" />
   <link rel="manifest" href="/manifest.json" />
-  <link rel="stylesheet" href="./inter/inter.css" />
+  <link rel="stylesheet" href="./fonts/inter/inter.css" />
   <link rel="stylesheet" href="./fonts/source-code-pro/source-code-variable.css" />
   <script defer data-domain="app.zoo.dev" src="https://plausible.corp.zoo.dev/js/script.tagged-events.js"></script>
   <title>Zoo Design Studio</title>
