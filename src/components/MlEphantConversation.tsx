@@ -15,6 +15,7 @@ export interface MlEphantConversationProps {
   nextPage?: string
   onSeeMoreHistory: (nextPage?: string) => void
   hasPromptCompleted: boolean
+  userAvatarSrc?: string
 }
 
 interface MlEphantConversationInputProps {
@@ -167,6 +168,7 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
     <PromptCard
       key={prompt.id}
       {...prompt}
+      userAvatar={props.userAvatarSrc}
       promptMeta={props.promptsMeta.get(prompt.id)}
       disabled={prompt.status !== 'completed'}
       onFeedback={props.onFeedback}

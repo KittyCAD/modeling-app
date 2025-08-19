@@ -19,6 +19,7 @@ import { collectProjectFiles } from '@src/machines/systemIO/utils'
 import { S } from '@src/machines/utils'
 import type { ModelingMachineContext } from '@src/machines/modelingMachine'
 import type { FileEntry, Project } from '@src/lib/project'
+import type { Models } from '@kittycad/lib'
 
 const hasPromptsPending = (promptsPool: Prompt[]) => {
   return (
@@ -35,6 +36,7 @@ export const MlEphantConversationPane = (props: {
   contextModeling: ModelingMachineContext
   loaderFile: FileEntry | undefined
   settings: typeof settings
+  user: Models['User_type']
 }) => {
   const mlEphantManagerActorSnapshot = props.mlEphantManagerActor.getSnapshot()
   const promptsBelongingToConversation = useSelector(
@@ -203,42 +205,34 @@ export const MlEphantConversationPane = (props: {
   // watch its reasoning, and store the thoughts in the mlephant actor for
   // passing to components to render.
   useEffect(() => {
+    let promptIdLastSeen = ''
     const subscription = props.mlEphantManagerActor.subscribe((next) => {
-      if (
-        !(
-          next.matches({
-            [MlEphantManagerStates.Ready]: {
-              [MlEphantManagerStates.Foreground]:
-                MlEphantManagerTransitions.PromptCreateModel,
-            },
-          }) ||
-          next.matches({
-            [MlEphantManagerStates.Ready]: {
-              [MlEphantManagerStates.Foreground]:
-                MlEphantManagerTransitions.PromptEditModel,
-            },
-          })
-        )
-      ) {
+      if (next.context.conversationId === undefined) { return }
+
+      const promptIdLastAdded =
+        next.context.promptsBelongingToConversation[
+          next.context.promptsBelongingToConversation.length - 1
+        ]
+
+      if (promptIdLastSeen === '') {
+        promptIdLastSeen = promptIdLastAdded
         return
       }
 
-      if (next.context.promptsBelongingToConversation.length === 0) {
-        console.warn('No prompts belonging to conversation - should not be possible here')
+      if (promptIdLastSeen === promptIdLastAdded) { 
         return
       }
 
-      const promptIdLastAdded = next.context.promptsBelongingToConversation[next.context.promptsBelongingToConversation.length - 1]
+      promptIdLastSeen = promptIdLastAdded
 
       connectReasoningStream(next.context.apiTokenMlephant, promptIdLastAdded, {
         on: {
           message(msg: any) {
-            console.log("YO")
+            console.log('YO')
             console.log(msg)
-          }
-        }
+          },
+        },
       })
-
     })
 
     return () => {
@@ -265,6 +259,7 @@ export const MlEphantConversationPane = (props: {
           .pageTokenPromptsBelongingToConversation
       }
       onSeeMoreHistory={onSeeMoreHistory}
+      userAvatarSrc={props.user.image}
     />
   )
 }

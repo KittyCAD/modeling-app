@@ -6,7 +6,7 @@ import { useEffect, useState, useRef, useLayoutEffect } from 'react'
 import type { PromptMeta } from '@src/machines/mlEphantManagerMachine'
 import type { ReactNode } from 'react'
 import Loading from '@src/components/Loading'
-import { Thinking} from '@src/components/Thinking'
+import { Thinking } from '@src/components/Thinking'
 
 // In the future we can split this out but the code is 99% the same as
 // the PromptCard, which came first.
@@ -62,7 +62,14 @@ export const PromptFeedback = (props: {
         onClick={() => props.onFeedback(props.id, 'thumbs_up')}
         disabled={props.disabled}
       >
-        <span style={{ filter: props.selected === 'thumbs_up' ? 'hue-rotate(110deg)' : 'grayscale(100%)' }}>
+        <span
+          style={{
+            filter:
+              props.selected === 'thumbs_up'
+                ? 'hue-rotate(110deg)'
+                : 'grayscale(100%)',
+          }}
+        >
           👍
         </span>
       </button>
@@ -70,7 +77,14 @@ export const PromptFeedback = (props: {
         onClick={() => props.onFeedback(props.id, 'thumbs_down')}
         disabled={props.disabled}
       >
-        <span style={{ filter: props.selected === 'thumbs_down' ? 'hue-rotate(270deg)' : 'grayscale(100%)' }}>
+        <span
+          style={{
+            filter:
+              props.selected === 'thumbs_down'
+                ? 'hue-rotate(270deg)'
+                : 'grayscale(100%)',
+          }}
+        >
           👎
         </span>
       </button>
@@ -104,21 +118,35 @@ export const PromptCardStatus = (props: {
   status: Prompt['status']
   onlyShowImmediateThought: boolean
   startedAt: Prompt['started_at']
-  updatedAt: Prompt['updated_at']
+  updatedAt?: Prompt['updated_at']
   maybeError?: string
 }) => {
-  const thinker = <Thinking
-    thoughts={props.thoughts}
-    onlyShowImmediateThought={props.onlyShowImmediateThought}
-  />
+  const thinker = (
+    <Thinking
+      thoughts={props.thoughts}
+      onlyShowImmediateThought={props.onlyShowImmediateThought}
+    />
+  )
   const failed = <div>{props.maybeError}</div>
-  const completed = <div>
-    Worked for { ms(new Date(props.updatedAt).getTime() - new Date(props.startedAt).getTime(), { long: true }) }
-  </div>
+  const completed = (
+    <div className="p-2 border border-transparent">
+      Worked for{' '}
+      {ms(
+        new Date(props.updatedAt ?? new Date()).getTime() -
+          new Date(props.startedAt ?? new Date()).getTime(),
+        { long: true }
+      )}
+    </div>
+  )
 
   return (
     <div className="text-sm text-chalkboard-70">
-      {props.status === 'failed' ? failed : (props.status === 'completed' && props.onlyShowImmediateThought === true) ? completed : thinker }
+      {props.status === 'failed'
+        ? failed
+        : props.status === 'completed' &&
+            props.onlyShowImmediateThought === true
+          ? completed
+          : thinker}
     </div>
   )
 }
@@ -147,6 +175,8 @@ export const PromptCard = (props: PromptCardProps) => {
   const refHeight = useRef<number>(0)
   const [style, setStyle] = useState({})
   const [showFullReasoning, setShowFullReasoning] = useState<boolean>(false)
+  const [showSeeReasoning, setShowSeeReasoning] = useState<boolean>(false)
+
   const cssCard = `flex flex-col p-2 gap-2 justify-between
     transition-height duration-500 overflow-hidden
     ${props.disabled ? 'text-chalkboard-60' : ''}
@@ -179,35 +209,36 @@ export const PromptCard = (props: PromptCardProps) => {
 
   return (
     <div ref={refCard} className={cssCard} style={style}>
-      <div className="flex flex-row justify-between gap-2">
-        <div className="w-fit flex flex-col items-end">
+      <div className="flex flex-row justify-end items-end gap-2">
+        <div className="flex flex-col items-end gap-2">
           <PromptFeedback
             id={props.id}
             selected={props.feedback}
             disabled={props.disabled}
             onFeedback={(...args) => props.onFeedback?.(...args)}
           />
+          <div className="shadow-sm bg-chalkboard-20 text-chalkboard-100 border rounded-t-md rounded-bl-md pl-4 pr-4 pt-2 pb-2">
+            {props.prompt}
+          </div>
         </div>
-        <div></div>
-      </div>
-      <div className="flex flex-row justify-end items-end gap-2">
-        <div className="shadow-sm bg-chalkboard-20 text-chalkboard-100 border rounded-t-md rounded-bl-md pl-4 pr-4 pt-2 pb-2">{props.prompt}</div>
         <div className="w-fit-content">
           <AvatarUser src={props.userAvatar} />
         </div>
       </div>
-      { showFullReasoning && <div>
-        <PromptCardStatus
-          status={props.status}
-          maybeError={props.error}
-          thoughts={props.promptMeta?.thoughts ?? []}
-          onlyShowImmediateThought={false}
-          startedAt={props.started_at}
-          updatedAt={props.updated_at}
-        />
-      </div> }
-      <div className="flex flex-row justify-between gap-2 items-center pl-2 pr-2">
-        <div className="flex flex-row gap-2">
+      {showFullReasoning && (
+        <div>
+          <PromptCardStatus
+            status={props.status}
+            maybeError={props.error}
+            thoughts={props.promptMeta?.thoughts ?? []}
+            onlyShowImmediateThought={false}
+            startedAt={props.started_at}
+            updatedAt={props.updated_at}
+          />
+        </div>
+      )}
+      <div className="flex flex-row justify-end gap-2 items-center pl-2 pr-10">
+        <div className={`flex flex-row gap-2 ${showSeeReasoning ? 'hidden' : ''}`} onMouseEnter={() => setShowSeeReasoning(true)}>
           {props.onAction !== undefined && (
             <PromptCardActionButton
               status={props.status}
@@ -224,9 +255,9 @@ export const PromptCard = (props: PromptCardProps) => {
             updatedAt={props.updated_at}
           />
         </div>
-        <div>
+        <div onMouseLeave={() => setShowSeeReasoning(false)} className={(showSeeReasoning || showFullReasoning) ? '' : 'hidden'}>
           <button className="w-full p-2" onClick={() => onSeeReasoning()}>
-            { showFullReasoning ? 'Hide reasoning' : 'See reasoning' }
+            {showFullReasoning ? 'Hide reasoning' : 'See reasoning'}
           </button>
         </div>
       </div>

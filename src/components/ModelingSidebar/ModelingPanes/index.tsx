@@ -33,6 +33,7 @@ import {
   kclManager,
   codeManager,
   useSettings,
+  useUser,
 } from '@src/lib/singletons'
 import type { settingsMachine } from '@src/machines/settingsMachine'
 import { ProjectExplorer } from '@src/components/Explorer/ProjectExplorer'
@@ -384,6 +385,7 @@ export const sidebarPanesRight: SidebarPane[] = [
     sidebarName: 'Text-to-CAD',
     Content: (props) => {
       const settings = useSettings()
+      const user = useUser()
       const { context: contextModeling, theProject } = useModelingContext()
       const { file: loaderFile } = useLoaderData() as IndexLoaderData
 
@@ -406,6 +408,7 @@ export const sidebarPanesRight: SidebarPane[] = [
               theProject: theProject.current,
               loaderFile,
               settings,
+              user,
             }}
           />
         </>
