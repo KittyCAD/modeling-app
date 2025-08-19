@@ -38,7 +38,7 @@
     "noEmit": true,
     "jsx": "react-jsx"
   },
-  "include": ["src", "e2e", "packages", "*.ts", "rust"],
+  "include": ["src", "e2e", "packages", "*.ts", "rust", "types"],
   "exclude": ["node_modules", "./*.grammar", "vite.config.ts", ".vscode-test"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
