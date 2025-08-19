@@ -677,6 +677,7 @@ text_wrapping = true"#;
                     base_unit: UnitLength::In,
                     mouse_controls: MouseControlType::Zoo,
                     camera_projection: CameraProjectionType::Perspective,
+                    fixed_size_grid: true,
                     ..Default::default()
                 },
                 project: ProjectSettings {
