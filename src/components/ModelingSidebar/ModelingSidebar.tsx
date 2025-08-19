@@ -272,10 +272,6 @@ export function ModelingSidebar(props: ModelingSidebarProps) {
       [Alignment.Left]: 'flex-row',
       [Alignment.Right]: 'flex-row-reverse',
     },
-    roundedSide: {
-      [Alignment.Left]: 'rounded-r',
-      [Alignment.Right]: 'rounded-l',
-    },
     tailwindDir: {
       [Alignment.Left]: 'r',
       [Alignment.Right]: 'l',
@@ -307,23 +303,9 @@ export function ModelingSidebar(props: ModelingSidebarProps) {
         className={`flex h-full ${css.paneAlign[props.align]}`}
       >
         <ul
-          className={
-            (context.store?.openPanes.length === 0
-              ? css.roundedSide[props.align] + ' '
-              : '') +
-            'relative z-[2] pointer-events-auto p-0 col-start-1 col-span-1 h-fit w-fit flex flex-col ' +
-            'bg-chalkboard-10 border border-solid border-chalkboard-30 dark:bg-chalkboard-90 dark:border-chalkboard-80 group-focus-within:border-primary dark:group-focus-within:border-chalkboard-50 shadow-sm '
-          }
+          className={`relative pointer-events-auto p-0 col-start-1 col-span-1 flex flex-col items-stretch bg-chalkboard-10 border-${css.tailwindDir[props.align]} border-chalkboard-30 dark:bg-chalkboard-90 dark:border-chalkboard-80`}
         >
-          <ul
-            id="pane-buttons-section"
-            className={
-              'w-fit p-2 flex flex-col gap-2 ' +
-              (context.store?.openPanes.length >= 1
-                ? 'p' + css.tailwindDir[props.align] + '0.5'
-                : '')
-            }
-          >
+          <ul id="pane-buttons-section" className="flex flex-col items-stretch">
             {filteredPanes.map((pane) => (
               <ModelingPaneButton
                 key={pane.id}
@@ -432,6 +414,7 @@ function ModelingPaneButton({
   })
 
   const tooltipPosition = props.align === Alignment.Left ? 'left' : 'right'
+  const borderSide = tooltipPosition.slice(0, 1)
 
   return (
     <div
@@ -440,7 +423,7 @@ function ModelingPaneButton({
       data-onboarding-id={`${paneConfig.id}-pane-button`}
     >
       <button
-        className={`group pointer-events-auto flex items-center justify-center border-0 border-r-2 rounded-none border-transparent dark:border-transparent p-2 m-0 !outline-0 ${paneIsOpen ? ' !border-primary' : ''}`}
+        className={`group pointer-events-auto flex items-center justify-center border-0 border-${borderSide}-2 rounded-none border-transparent dark:border-transparent p-2 m-0 !outline-0 ${paneIsOpen ? ' !border-primary' : ''}`}
         onClick={onClick}
         name={paneConfig.sidebarName}
         data-testid={paneConfig.id + SIDEBAR_BUTTON_SUFFIX}
