@@ -23,7 +23,7 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
         BasePath, ExecState, Face, GeoMeta, KclValue, ModelingCmdMeta, Path, Plane, PlaneInfo, Point2d, Point3d,
-        Sketch, SketchSurface, Solid, TagEngineInfo, TagIdentifier,
+        Sketch, SketchSurface, Solid, TagEngineInfo, TagIdentifier, annotations,
         types::{ArrayLen, NumericType, PrimitiveType, RuntimeType, UnitLen},
     },
     parsing::ast::types::TagNode,
@@ -1175,6 +1175,7 @@ pub(crate) async fn inner_start_profile(
             Default::default()
         },
         start: current_path,
+        is_closed: false,
     };
     Ok(sketch)
 }
@@ -1231,6 +1232,19 @@ pub(crate) async fn inner_close(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
+    if sketch.is_closed {
+        exec_state.warn(
+            crate::CompilationError {
+                source_range: args.source_range,
+                message: "This sketch is already closed. Remove this unnecessary `close()` call".to_string(),
+                suggestion: None,
+                severity: crate::errors::Severity::Warning,
+                tag: crate::errors::Tag::Unnecessary,
+            },
+            annotations::WARN_UNNECESSARY_CLOSE,
+        );
+        return Ok(sketch);
+    }
     let from = sketch.current_pen_position()?;
     let to = point_to_len_unit(sketch.start.get_from(), from.units);
 
@@ -1260,8 +1274,8 @@ pub(crate) async fn inner_close(
     if let Some(tag) = &tag {
         new_sketch.add_tag(tag, &current_path, exec_state);
     }
-
     new_sketch.paths.push(current_path);
+    new_sketch.is_closed = true;
 
     Ok(new_sketch)
 }
@@ -1974,19 +1988,13 @@ async fn inner_elliptic_point(
 
 /// Draw an elliptical arc.
 pub async fn elliptic(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    exec_state.warn(crate::CompilationError {
-        source_range: args.source_range,
-        message: "Use of elliptic is currently experimental and the interface may change.".to_string(),
-        suggestion: None,
-        severity: crate::errors::Severity::Warning,
-        tag: crate::errors::Tag::None,
-    });
     let sketch = args.get_unlabeled_kw_arg("sketch", &RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)?;
 
     let center = args.get_kw_arg("center", &RuntimeType::point2d(), exec_state)?;
     let angle_start = args.get_kw_arg("angleStart", &RuntimeType::degrees(), exec_state)?;
     let angle_end = args.get_kw_arg("angleEnd", &RuntimeType::degrees(), exec_state)?;
-    let major_radius = args.get_kw_arg("majorRadius", &RuntimeType::length(), exec_state)?;
+    let major_radius = args.get_kw_arg_opt("majorRadius", &RuntimeType::length(), exec_state)?;
+    let major_axis = args.get_kw_arg_opt("majorAxis", &RuntimeType::point2d(), exec_state)?;
     let minor_radius = args.get_kw_arg("minorRadius", &RuntimeType::length(), exec_state)?;
     let tag = args.get_kw_arg_opt("tag", &RuntimeType::tag_decl(), exec_state)?;
 
@@ -1996,6 +2004,7 @@ pub async fn elliptic(exec_state: &mut ExecState, args: Args) -> Result<KclValue
         angle_start,
         angle_end,
         major_radius,
+        major_axis,
         minor_radius,
         tag,
         exec_state,
@@ -2013,7 +2022,8 @@ pub(crate) async fn inner_elliptic(
     center: [TyF64; 2],
     angle_start: TyF64,
     angle_end: TyF64,
-    major_radius: TyF64,
+    major_radius: Option<TyF64>,
+    major_axis: Option<[TyF64; 2]>,
     minor_radius: TyF64,
     tag: Option<TagNode>,
     exec_state: &mut ExecState,
@@ -2024,13 +2034,39 @@ pub(crate) async fn inner_elliptic(
 
     let (center_u, _) = untype_point(center);
 
+    let major_axis = match (major_axis, major_radius) {
+        (Some(_), Some(_)) | (None, None) => {
+            return Err(KclError::new_type(KclErrorDetails::new(
+                "Provide either `majorAxis` or `majorRadius`.".to_string(),
+                vec![args.source_range],
+            )));
+        }
+        (Some(major_axis), None) => major_axis,
+        (None, Some(major_radius)) => [
+            major_radius.clone(),
+            TyF64 {
+                n: 0.0,
+                ty: major_radius.ty,
+            },
+        ],
+    };
     let start_angle = Angle::from_degrees(angle_start.to_degrees());
     let end_angle = Angle::from_degrees(angle_end.to_degrees());
+    let major_axis_magnitude = (major_axis[0].to_length_units(from.units) * major_axis[0].to_length_units(from.units)
+        + major_axis[1].to_length_units(from.units) * major_axis[1].to_length_units(from.units))
+    .sqrt();
     let to = [
-        center_u[0] + major_radius.to_length_units(from.units) * libm::cos(end_angle.to_radians()),
-        center_u[1] + minor_radius.to_length_units(from.units) * libm::sin(end_angle.to_radians()),
+        major_axis_magnitude * libm::cos(end_angle.to_radians()),
+        minor_radius.to_length_units(from.units) * libm::sin(end_angle.to_radians()),
+    ];
+    let major_axis_angle = libm::atan2(major_axis[1].n, major_axis[0].n);
+
+    let point = [
+        center_u[0] + to[0] * libm::cos(major_axis_angle) - to[1] * libm::sin(major_axis_angle),
+        center_u[1] + to[0] * libm::sin(major_axis_angle) + to[1] * libm::cos(major_axis_angle),
     ];
 
+    let axis = major_axis.map(|x| x.to_mm());
     exec_state
         .batch_modeling_cmd(
             ModelingCmdMeta::from_args_id(&args, id),
@@ -2038,7 +2074,7 @@ pub(crate) async fn inner_elliptic(
                 path: sketch.id.into(),
                 segment: PathSegment::Ellipse {
                     center: KPoint2d::from(untyped_point_to_mm(center_u, from.units)).map(LengthUnit),
-                    major_radius: LengthUnit(major_radius.to_mm()),
+                    major_axis: axis.map(LengthUnit).into(),
                     minor_radius: LengthUnit(minor_radius.to_mm()),
                     start_angle,
                     end_angle,
@@ -2050,11 +2086,11 @@ pub(crate) async fn inner_elliptic(
     let current_path = Path::Ellipse {
         ccw: start_angle < end_angle,
         center: center_u,
-        major_radius: major_radius.to_mm(),
+        major_axis: axis,
         minor_radius: minor_radius.to_mm(),
         base: BasePath {
             from: from.ignore_units(),
-            to,
+            to: point,
             tag: tag.clone(),
             units: sketch.units,
             geo_meta: GeoMeta {
@@ -2123,13 +2159,6 @@ async fn inner_hyperbolic_point(
 
 /// Draw a hyperbolic arc.
 pub async fn hyperbolic(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    exec_state.warn(crate::CompilationError {
-        source_range: args.source_range,
-        message: "Use of hyperbolic is currently experimental and the interface may change.".to_string(),
-        suggestion: None,
-        severity: crate::errors::Severity::Warning,
-        tag: crate::errors::Tag::None,
-    });
     let sketch = args.get_unlabeled_kw_arg("sketch", &RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)?;
 
     let semi_major = args.get_kw_arg("semiMajor", &RuntimeType::length(), exec_state)?;
@@ -2285,13 +2314,6 @@ async fn inner_parabolic_point(
 
 /// Draw a parabolic arc.
 pub async fn parabolic(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    exec_state.warn(crate::CompilationError {
-        source_range: args.source_range,
-        message: "Use of parabolic is currently experimental and the interface may change.".to_string(),
-        suggestion: None,
-        severity: crate::errors::Severity::Warning,
-        tag: crate::errors::Tag::None,
-    });
     let sketch = args.get_unlabeled_kw_arg("sketch", &RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)?;
 
     let coefficients = args.get_kw_arg_opt(
@@ -2476,13 +2498,6 @@ fn conic_tangent(coefficients: [f64; 6], point: [f64; 2]) -> [f64; 2] {
 
 /// Draw a conic section
 pub async fn conic(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    exec_state.warn(crate::CompilationError {
-        source_range: args.source_range,
-        message: "Use of conics is currently experimental and the interface may change.".to_string(),
-        suggestion: None,
-        severity: crate::errors::Severity::Warning,
-        tag: crate::errors::Tag::None,
-    });
     let sketch = args.get_unlabeled_kw_arg("sketch", &RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)?;
 
     let start_tangent = args.get_kw_arg_opt("startTangent", &RuntimeType::point2d(), exec_state)?;

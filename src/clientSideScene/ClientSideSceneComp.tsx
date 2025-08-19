@@ -129,6 +129,20 @@ export const ClientSideScene = ({
       )
       sceneEntitiesManager.tearDownSketch({ removeAxis: true })
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
+  }, [])
+
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const observer = new ResizeObserver(() => {
+      sceneInfra.onWindowResize()
+      sceneInfra.camControls.onWindowResize()
+    })
+    observer.observe(canvas)
+    return () => {
+      observer.disconnect()
+    }
   }, [])
 
   let cursor = 'default'
@@ -498,6 +512,7 @@ const ConstraintSymbol = ({
 
   const _node = useMemo(
     () => getNodeFromPath<Expr>(kclManager.ast, pathToNode),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
     [kclManager.ast, pathToNode]
   )
   if (err(_node)) return
@@ -662,11 +677,13 @@ export const CamDebugSettings = () => {
 
   useEffect(() => {
     sceneInfra.camControls.setReactCameraPropertiesCallback(setCamSettings)
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [sceneInfra])
   useEffect(() => {
     if (camSettings.type === 'perspective' && camSettings.fov) {
       setFov(camSettings.fov)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [(camSettings as any)?.fov])
 
   return (

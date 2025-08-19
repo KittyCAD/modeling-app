@@ -159,10 +159,7 @@ fn parse(test_name: &str) {
 
 fn parse_test(test: &Test) {
     let input = test.read();
-    let tokens = crate::parsing::token::lex(&input, ModuleId::default()).unwrap();
-
-    // Parse the tokens into an AST.
-    let parse_res = Result::<_, KclError>::Ok(crate::parsing::parse_tokens(tokens).unwrap());
+    let parse_res = Result::<_, KclError>::Ok(crate::parsing::parse_str(&input, ModuleId::default()).unwrap());
     assert_snapshot(test, "Result of parsing", || {
         insta::assert_json_snapshot!("ast", parse_res, {
             ".**.start" => 0,
@@ -179,8 +176,7 @@ async fn unparse(test_name: &str) {
 async fn unparse_test(test: &Test) {
     // Parse into an AST
     let input = test.read();
-    let tokens = crate::parsing::token::lex(&input, ModuleId::default()).unwrap();
-    let ast = crate::parsing::parse_tokens(tokens).unwrap();
+    let ast = crate::parsing::parse_str(&input, ModuleId::default()).unwrap();
 
     // Check recasting.
     let actual = ast.recast_top(&Default::default(), 0);
@@ -3819,6 +3815,50 @@ mod elliptic_curve_inches_regression {
 }
 mod tag_inner_face {
     const TEST_NAME: &str = "tag_inner_face";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+
+mod double_close {
+    const TEST_NAME: &str = "double_close";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+
+mod revolve_on_face {
+    const TEST_NAME: &str = "revolve_on_face";
 
     /// Test parsing KCL.
     #[test]

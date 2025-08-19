@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 
 import { ensureProjectDirectoryExists, listProjects } from '@src/lib/desktop'
-import { isDesktop } from '@src/lib/isDesktop'
 import type { Project } from '@src/lib/project'
 import { loadAndValidateSettings } from '@src/lib/settings/settingsUtils'
 import { trap } from '@src/lib/trap'
@@ -17,7 +16,8 @@ export const useProjectsLoader = (deps?: [number]) => {
 
   useEffect(() => {
     // Useless on web, until we get fake filesystems over there.
-    if (!isDesktop()) return
+    if (!window.electron) return
+    const electron = window.electron
 
     if (deps && deps[0] === lastTs) return
 
@@ -26,14 +26,18 @@ export const useProjectsLoader = (deps?: [number]) => {
     }
     ;(async () => {
       const { configuration } = await loadAndValidateSettings()
-      const _projectsDir = await ensureProjectDirectoryExists(configuration)
+      const _projectsDir = await ensureProjectDirectoryExists(
+        electron,
+        configuration
+      )
       setProjectsDir(_projectsDir)
 
       if (projectsDir) {
-        const _projectPaths = await listProjects(configuration)
+        const _projectPaths = await listProjects(electron, configuration)
         setProjectPaths(_projectPaths)
       }
     })().catch(trap)
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, deps ?? [])
 
   return {

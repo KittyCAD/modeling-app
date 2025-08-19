@@ -125,7 +125,7 @@ impl<T> Node<T> {
         }
     }
 
-    pub fn boxed(inner: T, start: usize, end: usize, module_id: ModuleId) -> BoxNode<T> {
+    pub fn boxed(start: usize, end: usize, module_id: ModuleId, inner: T) -> BoxNode<T> {
         Box::new(Node {
             inner,
             start,
@@ -464,12 +464,12 @@ impl Node<Program> {
                 crate::walk::Node::CallExpressionKw(call) => {
                     if call.inner.callee.inner.name.inner.name == "appearance" {
                         for arg in &call.arguments {
-                            if let Some(l) = &arg.label {
-                                if l.inner.name == "color" {
-                                    // Get the value of the argument.
-                                    if let Expr::Literal(literal) = &arg.arg {
-                                        add_color(literal);
-                                    }
+                            if let Some(l) = &arg.label
+                                && l.inner.name == "color"
+                            {
+                                // Get the value of the argument.
+                                if let Expr::Literal(literal) = &arg.arg {
+                                    add_color(literal);
                                 }
                             }
                         }
@@ -633,12 +633,11 @@ impl Program {
         };
 
         // Check if the expr's non code meta contains the position.
-        if let Some(expr) = expr {
-            if let Some(non_code_meta) = expr.get_non_code_meta() {
-                if non_code_meta.in_comment(pos) {
-                    return true;
-                }
-            }
+        if let Some(expr) = expr
+            && let Some(non_code_meta) = expr.get_non_code_meta()
+            && non_code_meta.in_comment(pos)
+        {
+            return true;
         }
 
         false
@@ -2388,11 +2387,31 @@ impl Name {
 
     /// Rename all identifiers that have the old name to the new given name.
     fn rename(&mut self, old_name: &str, new_name: &str) {
-        if let Some(n) = self.local_ident() {
-            if n.inner == old_name {
-                self.name.name = new_name.to_owned();
-            }
+        if let Some(n) = self.local_ident()
+            && n.inner == old_name
+        {
+            self.name.name = new_name.to_owned();
         }
+    }
+}
+
+impl Name {
+    /// Write the full name to the given string.
+    pub fn write_to<W: std::fmt::Write>(&self, buf: &mut W) -> std::fmt::Result {
+        if self.abs_path {
+            buf.write_str("::")?;
+        };
+        for p in &self.path {
+            buf.write_str(&p.name)?;
+            buf.write_str("::")?;
+        }
+        buf.write_str(&self.name.name)
+    }
+}
+
+impl fmt::Display for Name {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        self.write_to(f)
     }
 }
 
@@ -2413,19 +2432,6 @@ impl From<Node<Identifier>> for Node<Name> {
             end,
             mod_id,
         )
-    }
-}
-
-impl fmt::Display for Name {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        if self.abs_path {
-            f.write_str("::")?;
-        }
-        for p in &self.path {
-            f.write_str(&p.name)?;
-            f.write_str("::")?;
-        }
-        f.write_str(&self.name.name)
     }
 }
 

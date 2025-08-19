@@ -17,8 +17,8 @@ import {
   ONBOARDING_DATA_ATTRIBUTE,
   BROWSER_PROJECT_NAME,
   PROJECT_ENTRYPOINT,
-  APP_DOWNLOAD_PATH,
 } from '@src/lib/constants'
+import { APP_DOWNLOAD_PATH } from '@src/routes/utils'
 import { PATHS, joinRouterPaths } from '@src/lib/paths'
 import type { Selections } from '@src/lib/selections'
 import { systemIOActor, commandBarActor } from '@src/lib/singletons'

@@ -1,6 +1,4 @@
 import type { Models } from '@kittycad/lib'
-import toast from 'react-hot-toast'
-import type { NavigateFunction } from 'react-router-dom'
 import {
   ToastTextToCadError,
   ToastTextToCadSuccess,
@@ -9,16 +7,19 @@ import { PROJECT_ENTRYPOINT } from '@src/lib/constants'
 import crossPlatformFetch from '@src/lib/crossPlatformFetch'
 import { getUniqueProjectName } from '@src/lib/desktopFS'
 import { isDesktop } from '@src/lib/isDesktop'
+import { joinOSPaths } from '@src/lib/paths'
+import { connectReasoningStream } from '@src/lib/reasoningWs'
 import { kclManager, systemIOActor } from '@src/lib/singletons'
+import { err, reportRejection } from '@src/lib/trap'
+import { toSync } from '@src/lib/utils'
+import { withAPIBaseURL } from '@src/lib/withBaseURL'
+import { getAllSubDirectoriesAtProjectRoot } from '@src/machines/systemIO/snapshotContext'
 import {
   SystemIOMachineEvents,
   waitForIdleState,
 } from '@src/machines/systemIO/utils'
-import { err, reportRejection } from '@src/lib/trap'
-import { toSync } from '@src/lib/utils'
-import { getAllSubDirectoriesAtProjectRoot } from '@src/machines/systemIO/snapshotContext'
-import { joinOSPaths } from '@src/lib/paths'
-import { withAPIBaseURL } from '@src/lib/withBaseURL'
+import toast from 'react-hot-toast'
+import type { NavigateFunction } from 'react-router-dom'
 
 export async function submitTextToCadPrompt(
   prompt: string,
@@ -49,6 +50,10 @@ export async function submitTextToCadPrompt(
 
   if (!data.id) {
     return new Error('No id returned from Text-to-CAD API')
+  }
+
+  if (token) {
+    connectReasoningStream(token, data.id)
   }
 
   return data

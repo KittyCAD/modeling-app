@@ -87,6 +87,7 @@ export function useEngineConnectionSubscriptions() {
       unSubHover()
       unSubClick()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [engineCommandManager, engineStreamState, context?.sketchEnginePathId])
 
   useEffect(() => {
@@ -281,5 +282,6 @@ export function useEngineConnectionSubscriptions() {
         : () => {},
     })
     return unSub
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [engineCommandManager, engineStreamState, state])
 }

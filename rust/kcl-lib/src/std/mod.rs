@@ -42,7 +42,6 @@ pub type StdFn = fn(
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct StdFnProps {
     pub name: String,
-    pub deprecated: bool,
     pub include_in_feature_tree: bool,
 }
 
@@ -50,7 +49,6 @@ impl StdFnProps {
     fn default(name: &str) -> Self {
         Self {
             name: name.to_owned(),
-            deprecated: false,
             include_in_feature_tree: false,
         }
     }

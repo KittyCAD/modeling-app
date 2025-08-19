@@ -152,7 +152,8 @@ description: Variables in memory after executing tangent_to_3_point_arc.kcl
       "originalId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "isClosed": false
     }
   },
   "seg01": {

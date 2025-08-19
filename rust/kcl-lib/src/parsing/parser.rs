@@ -19,9 +19,9 @@ use super::{
     token::{NumericSuffix, RESERVED_WORDS},
 };
 use crate::{
-    IMPORT_FILE_EXTENSIONS, SourceRange, TypedPath,
+    IMPORT_FILE_EXTENSIONS, MetaSettings, SourceRange, TypedPath,
     errors::{CompilationError, Severity, Tag},
-    execution::types::ArrayLen,
+    execution::{annotations, types::ArrayLen},
     parsing::{
         PIPE_OPERATOR, PIPE_SUBSTITUTION_OPERATOR,
         ast::types::{
@@ -48,6 +48,8 @@ const IF_ELSE_CANNOT_BE_EMPTY: &str = "`if` and `else` blocks cannot be empty";
 const ELSE_STRUCTURE: &str = "This `else` should be followed by a {, then a block of code, then a }";
 const ELSE_MUST_END_IN_EXPR: &str = "This `else` block needs to end in an expression, which will be the value if no preceding `if` condition was matched";
 
+const KEYWORD_EXPECTING_IDENTIFIER: &str = "Expected an identifier, but found a reserved keyword.";
+
 pub fn run_parser(i: TokenSlice) -> super::ParseResult {
     let _stats = crate::log::LogPerfStats::new("Parsing");
     ParseContext::init();
@@ -69,11 +71,15 @@ pub fn run_parser(i: TokenSlice) -> super::ParseResult {
 #[derive(Debug, Clone, Default)]
 struct ParseContext {
     pub errors: Vec<CompilationError>,
+    settings: MetaSettings,
 }
 
 impl ParseContext {
     fn new() -> Self {
-        ParseContext { errors: Vec::new() }
+        ParseContext {
+            errors: Vec::new(),
+            settings: Default::default(),
+        }
     }
 
     /// Set a new `ParseContext` in thread-local storage. Panics if one already exists.
@@ -86,6 +92,22 @@ impl ParseContext {
     /// is not present.
     fn take() -> ParseContext {
         CTXT.with_borrow_mut(|ctxt| ctxt.take()).unwrap()
+    }
+
+    fn handle_attribute(attr: &Node<Annotation>) {
+        // TODO handle scoping of attributes - not currently much of an issue because if settings is
+        // not top-level, then we'll get an error later.
+        match attr.name() {
+            Some(annotations::SETTINGS) => {
+                CTXT.with_borrow_mut(|ctxt| {
+                    let _ = ctxt.as_mut().unwrap().settings.update_from_annotation(attr);
+                });
+            }
+            Some(annotations::WARNINGS) => {
+                // TODO https://github.com/KittyCAD/modeling-app/issues/8021
+            }
+            _ => {}
+        }
     }
 
     /// Add an error to the current `ParseContext`, panics if there is none.
@@ -113,6 +135,24 @@ impl ParseContext {
     fn warn(mut e: CompilationError) {
         e.severity = Severity::Warning;
         Self::err(e);
+    }
+
+    fn experimental(feature: &str, source_range: SourceRange) {
+        CTXT.with_borrow_mut(|ctxt| {
+            let ctxt = ctxt.as_mut().unwrap();
+            let Some(severity) = ctxt.settings.experimental_features.severity() else {
+                return;
+            };
+            let error = CompilationError {
+                source_range,
+                message: format!("Use of {feature} is experimental and may change or be removed."),
+                suggestion: None,
+                severity,
+                tag: crate::errors::Tag::None,
+            };
+
+            ctxt.errors.push(error);
+        });
     }
 }
 
@@ -336,12 +376,20 @@ fn annotation(i: &mut TokenSlice) -> ModalResult<Node<Annotation>> {
         ));
     }
 
-    let value = Annotation {
-        name,
-        properties,
-        digest: None,
-    };
-    Ok(Node::new(value, at.start, end, at.module_id))
+    let value = Node::new(
+        Annotation {
+            name,
+            properties,
+            digest: None,
+        },
+        at.start,
+        end,
+        at.module_id,
+    );
+
+    ParseContext::handle_attribute(&value);
+
+    Ok(value)
 }
 
 // Matches remaining three cases of NonCodeValue
@@ -381,21 +429,30 @@ fn non_code_node_no_leading_whitespace(i: &mut TokenSlice) -> ModalResult<Node<N
     .parse_next(i)
 }
 
-fn pipe_expression(i: &mut TokenSlice) -> ModalResult<Node<PipeExpression>> {
-    let mut non_code_meta = NonCodeMeta::default();
-    let (head, noncode): (_, Vec<_>) = terminated(
-        (
-            expression_but_not_pipe,
-            repeat(0.., preceded(whitespace, non_code_node)),
-        ),
+fn expression(i: &mut TokenSlice) -> ModalResult<Expr> {
+    let head = expression_but_not_pipe.parse_next(i)?;
+    let head_checkpoint = i.checkpoint();
+
+    // Check for any non-code followed by `|>`
+    let noncode: Result<Vec<_>, _> = terminated(
+        repeat(0.., preceded(whitespace, non_code_node)),
         peek(pipe_surrounded_by_whitespace),
     )
-    .context(expected("an expression, followed by the |> (pipe) operator"))
-    .parse_next(i)?;
+    .parse_next(i);
+
+    let Ok(noncode) = noncode else {
+        // No `|>`, so return a single expression.
+        i.reset(&head_checkpoint);
+        return Ok(head);
+    };
+    // Continue to parse the rest of the pipeline and return a pipeline expression.
+
+    let mut non_code_meta = NonCodeMeta::default();
     for nc in noncode {
         non_code_meta.insert(0, nc);
     }
     let mut values = vec![head];
+
     let value_surrounded_by_comments = (
         repeat(0.., preceded(opt(whitespace), non_code_node)), // Before the expression.
         preceded(opt(whitespace), labelled_fn_call),           // The expression.
@@ -425,7 +482,7 @@ fn pipe_expression(i: &mut TokenSlice) -> ModalResult<Node<PipeExpression>> {
             non_code_meta.insert(code_count, nc);
         }
     }
-    Ok(Node::new_node(
+    Ok(Expr::PipeExpression(Node::boxed(
         values.first().unwrap().start(),
         values.last().unwrap().end().max(max_noncode_end),
         values.first().unwrap().module_id(),
@@ -434,7 +491,7 @@ fn pipe_expression(i: &mut TokenSlice) -> ModalResult<Node<PipeExpression>> {
             non_code_meta,
             digest: None,
         },
-    ))
+    )))
 }
 
 fn bool_value(i: &mut TokenSlice) -> ModalResult<Node<Literal>> {
@@ -778,7 +835,7 @@ fn array_separator(i: &mut TokenSlice) -> ModalResult<()> {
         // Normally you need a comma.
         comma_sep,
         // But, if the array is ending, no need for a comma.
-        peek(preceded(opt(whitespace), close_bracket)).void(),
+        peek(preceded((opt(non_code_node), opt(whitespace)), close_bracket)).void(),
     ))
     .parse_next(i)
 }
@@ -791,7 +848,7 @@ pub(crate) fn array_elem_by_elem(i: &mut TokenSlice) -> ModalResult<Node<ArrayEx
         0..,
         alt((
             terminated(expression.map(NonCodeOr::Code), array_separator),
-            terminated(non_code_node.map(NonCodeOr::NonCode), whitespace),
+            terminated(non_code_node.map(NonCodeOr::NonCode), opt(whitespace)),
         )),
     )
     .context(expected("array contents, a list of elements (like [1, 2, 3])"))
@@ -921,7 +978,7 @@ fn object_property_same_key_and_val(i: &mut TokenSlice) -> ModalResult<Node<Obje
 }
 
 fn object_property(i: &mut TokenSlice) -> ModalResult<Node<ObjectProperty>> {
-    let key = identifier.context(expected("the property's key (the name or identifier of the property), e.g. in 'height = 4', 'height' is the property key")).parse_next(i)?;
+    let key_token = identifier_or_keyword.context(expected("the property's key (the name or identifier of the property), e.g. in 'height = 4', 'height' is the property key")).parse_next(i)?;
     ignore_whitespace(i);
     // Temporarily accept both `:` and `=` for compatibility.
     let sep = alt((colon, equals))
@@ -947,6 +1004,18 @@ fn object_property(i: &mut TokenSlice) -> ModalResult<Node<ObjectProperty>> {
             ));
         }
     };
+
+    // Now that we've verified that we can parse everything, ensure that the key
+    // is valid.  If not, we can cut.
+    let key = Node::<Identifier>::try_from(key_token).map_err(|comp_err| {
+        ErrMode::Cut(ContextError {
+            context: Default::default(),
+            cause: Some(CompilationError::err(
+                comp_err.source_range,
+                KEYWORD_EXPECTING_IDENTIFIER,
+            )),
+        })
+    })?;
 
     let result = Node::new_node(
         key.start,
@@ -978,7 +1047,7 @@ fn property_separator(i: &mut TokenSlice) -> ModalResult<()> {
         // Normally you need a comma.
         comma_sep,
         // But, if the object is ending, no need for a comma.
-        peek(preceded(opt(whitespace), close_brace)).void(),
+        peek(preceded((opt(non_code_node), opt(whitespace)), close_brace)).void(),
     ))
     .parse_next(i)
 }
@@ -1008,7 +1077,7 @@ pub(crate) fn object(i: &mut TokenSlice) -> ModalResult<Node<ObjectExpression>> 
     let properties: Vec<_> = repeat(
         0..,
         alt((
-            terminated(non_code_node.map(NonCodeOr::NonCode), whitespace),
+            terminated(non_code_node.map(NonCodeOr::NonCode), opt(whitespace)),
             terminated(
                 alt((object_property, object_property_same_key_and_val)),
                 property_separator,
@@ -1215,16 +1284,16 @@ fn if_expr(i: &mut TokenSlice) -> ModalResult<BoxNode<IfExpression>> {
     // return this after emitting the nonfatal error.
     let if_with_no_else = |cond, then_val, else_ifs| {
         Ok(Node::boxed(
+            if_.start,
+            if_.end,
+            if_.module_id,
             IfExpression {
                 cond,
                 then_val,
                 else_ifs,
-                final_else: Node::boxed(Default::default(), 0, 0, if_.module_id),
+                final_else: Node::boxed(0, 0, if_.module_id, Default::default()),
                 digest: Default::default(),
             },
-            if_.start,
-            if_.end,
-            if_.module_id,
         ))
     };
 
@@ -1275,6 +1344,9 @@ fn if_expr(i: &mut TokenSlice) -> ModalResult<BoxNode<IfExpression>> {
 
     let end = close_brace(i)?.end;
     Ok(Node::boxed(
+        if_.start,
+        end,
+        if_.module_id,
         IfExpression {
             cond,
             then_val,
@@ -1282,9 +1354,6 @@ fn if_expr(i: &mut TokenSlice) -> ModalResult<BoxNode<IfExpression>> {
             final_else,
             digest: Default::default(),
         },
-        if_.start,
-        end,
-        if_.module_id,
     ))
 }
 
@@ -1575,18 +1644,18 @@ fn function_body(i: &mut TokenSlice) -> ModalResult<Node<Program>> {
         // The separator whitespace might be important:
         // if it has an empty line, it should be considered a noncode token, because the user
         // deliberately put an empty line there. We should track this and preserve it.
-        if let Ok(ref ws_token) = found_ws {
-            if ws_token.value.contains("\n\n") || ws_token.value.contains("\n\r\n") {
-                things_within_body.push(WithinFunction::NonCode(Node::new(
-                    NonCodeNode {
-                        value: NonCodeValue::NewLine,
-                        digest: None,
-                    },
-                    ws_token.start,
-                    ws_token.end,
-                    ws_token.module_id,
-                )));
-            }
+        if let Ok(ref ws_token) = found_ws
+            && (ws_token.value.contains("\n\n") || ws_token.value.contains("\n\r\n"))
+        {
+            things_within_body.push(WithinFunction::NonCode(Node::new(
+                NonCodeNode {
+                    value: NonCodeValue::NewLine,
+                    digest: None,
+                },
+                ws_token.start,
+                ws_token.end,
+                ws_token.module_id,
+            )));
         }
 
         match (found_ws, last_match_was_empty_line) {
@@ -1840,16 +1909,14 @@ pub(super) fn import_stmt(i: &mut TokenSlice) -> ModalResult<BoxNode<ImportState
     if let ImportSelector::None {
         alias: ref mut selector_alias,
     } = selector
-    {
-        if let Some(alias) = opt(preceded(
+        && let Some(alias) = opt(preceded(
             (whitespace, import_as_keyword, whitespace),
             identifier.context(expected("an identifier to alias the import")),
         ))
         .parse_next(i)?
-        {
-            end = alias.end;
-            *selector_alias = Some(alias);
-        }
+    {
+        end = alias.end;
+        *selector_alias = Some(alias);
     }
 
     let path_string = match path.inner.value {
@@ -1873,15 +1940,15 @@ pub(super) fn import_stmt(i: &mut TokenSlice) -> ModalResult<BoxNode<ImportState
     }
 
     Ok(Node::boxed(
+        start,
+        end,
+        module_id,
         ImportStatement {
             selector,
             visibility,
             path,
             digest: None,
         },
-        start,
-        end,
-        module_id,
     ))
 }
 
@@ -1952,11 +2019,8 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
         ImportPath::Kcl {
             filename: TypedPath::new(&path_string),
         }
-    } else if path_string.starts_with("std::") {
-        ParseContext::warn(CompilationError::err(
-            path_range,
-            "explicit imports from the standard library are experimental, likely to be buggy, and likely to change.",
-        ));
+    } else if path_string.starts_with("std") {
+        ParseContext::experimental("explicit imports from the standard library", path_range);
 
         let segments: Vec<String> = path_string.split("::").map(str::to_owned).collect();
 
@@ -1969,7 +2033,7 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
         }
 
         // For now we only support importing from singly-nested modules inside std.
-        if segments.len() != 2 {
+        if segments.len() > 2 {
             return Err(ErrMode::Cut(
                 CompilationError::fatal(
                     path_range,
@@ -2077,16 +2141,6 @@ fn return_stmt(i: &mut TokenSlice) -> ModalResult<Node<ReturnStatement>> {
     ))
 }
 
-/// Parse a KCL expression.
-fn expression(i: &mut TokenSlice) -> ModalResult<Expr> {
-    alt((
-        pipe_expression.map(Box::new).map(Expr::PipeExpression),
-        expression_but_not_pipe,
-    ))
-    .context(expected("a KCL value"))
-    .parse_next(i)
-}
-
 fn expression_but_not_pipe(i: &mut TokenSlice) -> ModalResult<Expr> {
     let mut expr = alt((
         binary_expression.map(Box::new).map(Expr::BinaryExpression),
@@ -2114,10 +2168,10 @@ fn label(i: &mut TokenSlice) -> ModalResult<Node<Identifier>> {
     )
     .parse_next(i)?;
 
-    ParseContext::warn(CompilationError::err(
+    ParseContext::experimental(
+        "`as` for tagging expressions",
         SourceRange::new(result.start, result.end, result.module_id),
-        "Using `as` for tagging expressions is experimental, likely to be buggy, and likely to change",
-    ));
+    );
 
     Ok(result)
 }
@@ -2297,6 +2351,9 @@ fn declaration(i: &mut TokenSlice) -> ModalResult<BoxNode<VariableDeclaration>> 
     let end = val.end();
     let module_id = id.module_id;
     Ok(Node::boxed(
+        start,
+        end,
+        module_id,
         VariableDeclaration {
             declaration: Node::new_node(
                 id.start,
@@ -2312,9 +2369,6 @@ fn declaration(i: &mut TokenSlice) -> ModalResult<BoxNode<VariableDeclaration>> 
             kind,
             digest: None,
         },
-        start,
-        end,
-        module_id,
     ))
 }
 
@@ -2363,10 +2417,7 @@ fn ty_decl(i: &mut TokenSlice) -> ModalResult<BoxNode<TypeDeclaration>> {
         ignore_whitespace(i);
         let ty = type_(i)?;
 
-        ParseContext::warn(CompilationError::err(
-            ty.as_source_range(),
-            "Type aliases are experimental, likely to change in the future, and likely to not work properly.",
-        ));
+        ParseContext::experimental("type aliases", ty.as_source_range());
 
         Some(ty)
     } else {
@@ -2375,6 +2426,9 @@ fn ty_decl(i: &mut TokenSlice) -> ModalResult<BoxNode<TypeDeclaration>> {
 
     let module_id = name.module_id;
     let result = Node::boxed(
+        start,
+        end,
+        module_id,
         TypeDeclaration {
             name,
             args,
@@ -2382,15 +2436,9 @@ fn ty_decl(i: &mut TokenSlice) -> ModalResult<BoxNode<TypeDeclaration>> {
             visibility,
             digest: None,
         },
-        start,
-        end,
-        module_id,
     );
 
-    ParseContext::warn(CompilationError::err(
-        result.as_source_range(),
-        "Type declarations are experimental, likely to change, and may or may not do anything useful.",
-    ));
+    ParseContext::experimental("type declarations", result.as_source_range());
 
     Ok(result)
 }
@@ -2425,6 +2473,12 @@ impl TryFrom<Token> for Node<Identifier> {
 fn identifier(i: &mut TokenSlice) -> ModalResult<Node<Identifier>> {
     any.try_map(Node::<Identifier>::try_from)
         .context(expected("an identifier, e.g. 'width' or 'myPart'"))
+        .parse_next(i)
+}
+
+fn identifier_or_keyword(i: &mut TokenSlice) -> ModalResult<Token> {
+    any.verify(|token: &Token| token.token_type == TokenType::Word || token.token_type == TokenType::Keyword)
+        .context(expected("an identifier or keyword"))
         .parse_next(i)
 }
 
@@ -3179,13 +3233,8 @@ fn binding_name(i: &mut TokenSlice) -> ModalResult<Node<Identifier>> {
         .parse_next(i)
 }
 
-/// Either a positional or keyword function call.
-fn fn_call_pos_or_kw(i: &mut TokenSlice) -> ModalResult<Expr> {
-    fn_call_kw.map(Box::new).map(Expr::CallExpressionKw).parse_next(i)
-}
-
 fn labelled_fn_call(i: &mut TokenSlice) -> ModalResult<Expr> {
-    let expr = fn_call_pos_or_kw.parse_next(i)?;
+    let expr = fn_call_kw.map(Box::new).map(Expr::CallExpressionKw).parse_next(i)?;
 
     let label = opt(label).parse_next(i)?;
     match label {
@@ -3200,44 +3249,40 @@ fn fn_call_kw(i: &mut TokenSlice) -> ModalResult<Node<CallExpressionKw>> {
     let _ = open_paren.parse_next(i)?;
     ignore_whitespace(i);
 
-    // Special case: no args
-    let early_close = peek(close_paren).parse_next(i);
-    if early_close.is_ok() {
-        let cl = close_paren.parse_next(i)?;
-        let result = Node::new_node(
-            fn_name.start,
-            cl.end,
-            fn_name.module_id,
-            CallExpressionKw {
-                callee: fn_name,
-                unlabeled: Default::default(),
-                arguments: Default::default(),
-                digest: None,
-                non_code_meta: Default::default(),
-            },
-        );
-        return Ok(result);
+    // Special case: no args or one arg (unlabeled)
+    let checkpoint = i.checkpoint();
+    let mut initial_unlabeled_arg = opt(expression).parse_next(i)?;
+
+    // A label would parse as an expression, but if there's an `=` following then it is more likely
+    // to be a labelled arg.
+    if peek((opt(whitespace), equals)).parse_next(i).is_ok() {
+        i.reset(&checkpoint);
+        initial_unlabeled_arg = None;
+    } else {
+        let early_close = peek((opt(whitespace), close_paren)).parse_next(i);
+        if early_close.is_ok() {
+            ignore_whitespace(i);
+            let end = close_paren.parse_next(i)?.end;
+            let result = Node::new_node(
+                fn_name.start,
+                end,
+                fn_name.module_id,
+                CallExpressionKw {
+                    callee: fn_name,
+                    unlabeled: initial_unlabeled_arg,
+                    arguments: Default::default(),
+                    digest: None,
+                    non_code_meta: Default::default(),
+                },
+            );
+            return Ok(result);
+        }
     }
 
-    // Special case: one arg (unlabeled)
-    let early_close = peek((expression, opt(whitespace), close_paren)).parse_next(i);
-    if early_close.is_ok() {
-        let first_expression = expression.parse_next(i)?;
-        ignore_whitespace(i);
-        let end = close_paren.parse_next(i)?.end;
-        let result = Node::new_node(
-            fn_name.start,
-            end,
-            fn_name.module_id,
-            CallExpressionKw {
-                callee: fn_name,
-                unlabeled: Some(first_expression),
-                arguments: Default::default(),
-                digest: None,
-                non_code_meta: Default::default(),
-            },
-        );
-        return Ok(result);
+    if initial_unlabeled_arg.is_some() {
+        // The comma following the unlabelled arg. If there are no more arguments, then we should
+        // hit the above path, so the comma is not optional.
+        labeled_arg_separator.parse_next(i)?;
     }
 
     #[derive(Debug)]
@@ -3248,7 +3293,6 @@ fn fn_call_kw(i: &mut TokenSlice) -> ModalResult<Node<CallExpressionKw>> {
         UnlabeledArg(Expr),
         Keyword(Token),
     }
-    let initial_unlabeled_arg = opt((expression, comma, opt(whitespace)).map(|(arg, _, _)| arg)).parse_next(i)?;
     let args: Vec<_> = repeat(
         0..,
         alt((
@@ -3641,12 +3685,11 @@ mySk1 = startSketchOn(XY)
         |> d(%)"#;
 
         let tokens = crate::parsing::token::lex(test_input, ModuleId::default()).unwrap();
-        let Node {
-            inner: PipeExpression {
-                body, non_code_meta, ..
-            },
-            ..
-        } = pipe_expression.parse_next(&mut tokens.as_slice()).unwrap();
+        let (body, non_code_meta) = match expression.parse_next(&mut tokens.as_slice()).unwrap() {
+            Expr::PipeExpression(e) => (e.inner.body, e.inner.non_code_meta),
+            _ => panic!(),
+        };
+
         assert_eq!(non_code_meta.non_code_nodes.len(), 1);
         assert_eq!(
             non_code_meta.non_code_nodes.get(&2).unwrap()[0].value,
@@ -3871,10 +3914,13 @@ mySk1 = startSketchOn(XY)
         spanning a few lines */
         |> z(%)"#;
         let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
-        let actual = pipe_expression.parse(tokens.as_slice()).unwrap();
-        let n = actual.non_code_meta.non_code_nodes.len();
+        let non_code_meta = match expression.parse(tokens.as_slice()).unwrap() {
+            Expr::PipeExpression(e) => e.non_code_meta.clone(),
+            _ => panic!(),
+        };
+        let n = non_code_meta.non_code_nodes.len();
         assert_eq!(n, 1, "expected one comment in pipe expression but found {n}");
-        let nc = &actual.non_code_meta.non_code_nodes.get(&1).unwrap()[0];
+        let nc = &non_code_meta.non_code_nodes.get(&1).unwrap()[0];
         assert!(nc.value().starts_with("this"));
         assert!(nc.value().ends_with("lines"));
     }
@@ -3899,11 +3945,16 @@ mySk1 = startSketchOn(XY)
         .enumerate()
         {
             let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
-            let actual = pipe_expression.parse(tokens.as_slice());
+            let actual = expression.parse(tokens.as_slice());
             assert!(actual.is_ok(), "could not parse test {i}, '{test_program}'");
-            let actual = actual.unwrap();
-            let n = actual.non_code_meta.non_code_nodes.len();
-            assert_eq!(n, 1, "expected one comment in pipe expression but found {n}",)
+
+            match actual.unwrap() {
+                Expr::PipeExpression(e) => {
+                    let n = e.non_code_meta.non_code_nodes.len();
+                    assert_eq!(n, 1, "expected one comment in pipe expression but found {n}",);
+                }
+                _ => panic!(),
+            }
         }
     }
 
@@ -4088,7 +4139,7 @@ mySk1 = startSketchOn(XY)
         "#;
         let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
         let tokens = &mut tokens.as_slice();
-        let _actual = pipe_expression.parse_next(tokens).unwrap();
+        let _actual = expression.parse_next(tokens).unwrap();
         assert_eq!(tokens.first().unwrap().token_type, TokenType::Whitespace);
     }
 
@@ -4190,6 +4241,9 @@ mySk1 = startSketchOn(XY)
         let module_id = ModuleId::default();
         let actual = crate::parsing::parse_str(r#"5 + "a""#, module_id).unwrap().inner.body;
         let expr = Node::boxed(
+            0,
+            7,
+            module_id,
             BinaryExpression {
                 operator: BinaryOperator::Add,
                 left: BinaryPart::Literal(Box::new(Node::new(
@@ -4217,9 +4271,6 @@ mySk1 = startSketchOn(XY)
                 ))),
                 digest: None,
             },
-            0,
-            7,
-            module_id,
         );
         let expected = vec![BodyItem::ExpressionStatement(Node::new(
             ExpressionStatement {
@@ -4243,6 +4294,9 @@ mySk1 = startSketchOn(XY)
                 body: vec![BodyItem::ExpressionStatement(Node::new(
                     ExpressionStatement {
                         expression: Expr::BinaryExpression(Node::boxed(
+                            0,
+                            4,
+                            module_id,
                             BinaryExpression {
                                 left: BinaryPart::Literal(Box::new(Node::new(
                                     Literal {
@@ -4273,9 +4327,6 @@ mySk1 = startSketchOn(XY)
                                 ))),
                                 digest: None,
                             },
-                            0,
-                            4,
-                            module_id,
                         )),
                         digest: None,
                     },
@@ -4846,6 +4897,46 @@ export fn cos(num: number(rad)): number(_) {}"#;
     }
 
     #[test]
+    fn array_no_trailing_comma_with_comment() {
+        let program = r#"[
+            1, // one
+            2, // two
+            3  // three
+        ]"#;
+        let module_id = ModuleId::default();
+        let tokens = crate::parsing::token::lex(program, module_id).unwrap();
+        let _arr = array_elem_by_elem(&mut tokens.as_slice()).unwrap();
+    }
+
+    #[test]
+    fn array_block_comment_no_whitespace() {
+        let program = r#"[1/* comment*/]"#;
+        let module_id = ModuleId::default();
+        let tokens = crate::parsing::token::lex(program, module_id).unwrap();
+        let _arr = array_elem_by_elem(&mut tokens.as_slice()).unwrap();
+    }
+
+    #[test]
+    fn object_no_trailing_comma_with_comment() {
+        let program = r#"{
+            x=1, // one
+            y=2, // two
+            z=3  // three
+        }"#;
+        let module_id = ModuleId::default();
+        let tokens = crate::parsing::token::lex(program, module_id).unwrap();
+        let _arr = object(&mut tokens.as_slice()).unwrap();
+    }
+
+    #[test]
+    fn object_block_comment_no_whitespace() {
+        let program = r#"{x=1/* comment*/}"#;
+        let module_id = ModuleId::default();
+        let tokens = crate::parsing::token::lex(program, module_id).unwrap();
+        let _arr = object(&mut tokens.as_slice()).unwrap();
+    }
+
+    #[test]
     fn basic_if_else() {
         let some_program_string = "if true {
             3
@@ -5031,7 +5122,8 @@ let myBox = box(p=[0,0], h=-3, l=-16, w=-10)
 
     #[test]
     fn parse_function_types() {
-        let code = r#"foo = x: fn
+        let code = r#"@settings(experimentalFeatures = allow)
+foo = x: fn
 foo = x: fn(number)
 fn foo(x: fn(): number): fn { return 0 }
 fn foo(x: fn(a, b: number(mm), c: d): number(Angle)): fn { return 0 }
@@ -5045,6 +5137,24 @@ type foo = fn(fn, f: fn(number(_))): [fn([any]): string]
     "#;
         assert_no_err(code);
     }
+
+    #[test]
+    fn experimental() {
+        let code = r#"4 as foo"#;
+        assert_err(code, "Use of `as` for tagging expressions is experimental", [5, 8]);
+
+        let code = r#"@settings(experimentalFeatures = allow)
+4 as foo
+    "#;
+        assert_no_err(code);
+
+        let code = r#"@settings(experimentalFeatures = warn)
+4 as foo
+    "#;
+        let (_, errs) = assert_no_err(code);
+        assert_eq!(errs.len(), 1);
+    }
+
     #[test]
     fn test_parse_tag_starting_with_bang() {
         let some_program_string = r#"startSketchOn(XY)
@@ -5357,6 +5467,18 @@ bar = 1
         let cause = must_fail_compilation(program_source);
         assert!(!cause.was_fatal);
         assert_eq!(cause.err.message, MISSING_ELSE);
+        assert_eq!(cause.err.source_range.start(), expected_src_start);
+    }
+
+    #[test]
+    fn test_sensible_error_when_using_keyword_as_object_key() {
+        let source = r#"material = {
+  type = "Steel 45"
+}"#;
+        let expected_src_start = source.find("type").unwrap();
+        let cause = must_fail_compilation(source);
+        assert!(cause.was_fatal);
+        assert_eq!(cause.err.message, KEYWORD_EXPECTING_IDENTIFIER);
         assert_eq!(cause.err.source_range.start(), expected_src_start);
     }
 

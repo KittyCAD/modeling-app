@@ -218,13 +218,19 @@ impl ModulePath {
 
     pub(crate) fn from_std_import_path(path: &[String]) -> Result<Self, KclError> {
         // For now we only support importing from singly-nested modules inside std.
-        if path.len() != 2 || path[0] != "std" {
+        if path.len() > 2 || path[0] != "std" {
             let message = format!("Invalid std import path: {path:?}.");
             debug_assert!(false, "{}", &message);
             return Err(KclError::new_internal(KclErrorDetails::new(message, vec![])));
         }
 
-        Ok(ModulePath::Std { value: path[1].clone() })
+        if path.len() == 1 {
+            Ok(ModulePath::Std {
+                value: "prelude".to_owned(),
+            })
+        } else {
+            Ok(ModulePath::Std { value: path[1].clone() })
+        }
     }
 }
 

@@ -648,6 +648,17 @@ pub struct Sketch {
     /// Metadata.
     #[serde(skip)]
     pub meta: Vec<Metadata>,
+    /// If not given, defaults to true.
+    #[serde(default = "very_true", skip_serializing_if = "is_true")]
+    pub is_closed: bool,
+}
+
+fn very_true() -> bool {
+    true
+}
+
+fn is_true(b: &bool) -> bool {
+    *b
 }
 
 impl Sketch {
@@ -731,7 +742,7 @@ pub(crate) enum GetTangentialInfoFromPathsResult {
     Ellipse {
         center: [f64; 2],
         ccw: bool,
-        major_radius: f64,
+        major_axis: [f64; 2],
         _minor_radius: f64,
     },
 }
@@ -750,10 +761,10 @@ impl GetTangentialInfoFromPathsResult {
             } => [center[0] + radius, center[1] + if *ccw { -1.0 } else { 1.0 }],
             GetTangentialInfoFromPathsResult::Ellipse {
                 center,
-                major_radius,
+                major_axis,
                 ccw,
                 ..
-            } => [center[0] + major_radius, center[1] + if *ccw { -1.0 } else { 1.0 }],
+            } => [center[0] + major_axis[0], center[1] + if *ccw { -1.0 } else { 1.0 }],
         }
     }
 }
@@ -1261,7 +1272,7 @@ pub enum Path {
         #[serde(flatten)]
         base: BasePath,
         center: [f64; 2],
-        major_radius: f64,
+        major_axis: [f64; 2],
         minor_radius: f64,
         ccw: bool,
     },
@@ -1270,41 +1281,6 @@ pub enum Path {
         #[serde(flatten)]
         base: BasePath,
     },
-}
-
-/// What kind of path is this?
-#[derive(Display)]
-enum PathType {
-    ToPoint,
-    Base,
-    TangentialArc,
-    TangentialArcTo,
-    Circle,
-    CircleThreePoint,
-    Horizontal,
-    AngledLineTo,
-    Arc,
-    Ellipse,
-    Conic,
-}
-
-impl From<&Path> for PathType {
-    fn from(value: &Path) -> Self {
-        match value {
-            Path::ToPoint { .. } => Self::ToPoint,
-            Path::TangentialArcTo { .. } => Self::TangentialArcTo,
-            Path::TangentialArc { .. } => Self::TangentialArc,
-            Path::Circle { .. } => Self::Circle,
-            Path::CircleThreePoint { .. } => Self::CircleThreePoint,
-            Path::Horizontal { .. } => Self::Horizontal,
-            Path::AngledLineTo { .. } => Self::AngledLineTo,
-            Path::Base { .. } => Self::Base,
-            Path::Arc { .. } => Self::Arc,
-            Path::ArcThreePoint { .. } => Self::Arc,
-            Path::Ellipse { .. } => Self::Ellipse,
-            Path::Conic { .. } => Self::Conic,
-        }
-    }
 }
 
 impl Path {
@@ -1513,13 +1489,13 @@ impl Path {
             // TODO: (bc) fix me
             Path::Ellipse {
                 center,
-                major_radius,
+                major_axis,
                 minor_radius,
                 ccw,
                 ..
             } => GetTangentialInfoFromPathsResult::Ellipse {
                 center: *center,
-                major_radius: *major_radius,
+                major_axis: *major_axis,
                 _minor_radius: *minor_radius,
                 ccw: *ccw,
             },

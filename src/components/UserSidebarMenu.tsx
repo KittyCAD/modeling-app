@@ -36,11 +36,13 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
   useEffect(() => {
     if (!didListEnvironments) {
       didListEnvironments = true
-      listAllEnvironmentsWithTokens()
-        .then((environmentsWithTokens) => {
-          setHasMultipleEnvironments(environmentsWithTokens.length > 1)
-        })
-        .catch(reportRejection)
+      if (window.electron) {
+        listAllEnvironmentsWithTokens(window.electron)
+          .then((environmentsWithTokens) => {
+            setHasMultipleEnvironments(environmentsWithTokens.length > 1)
+          })
+          .catch(reportRejection)
+      }
     }
   }, [])
 
@@ -51,6 +53,20 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
   const userMenuItems = useMemo<(ActionButtonProps | 'break')[]>(
     () =>
       [
+        {
+          id: 'account',
+          Element: 'externalLink',
+          to: withSiteBaseURL('/account'),
+          children: (
+            <>
+              <span className="flex-1">Manage Zoo account</span>
+              <CustomIcon
+                name="link"
+                className="w-3 h-3 text-chalkboard-70 dark:text-chalkboard-40"
+              />
+            </>
+          ),
+        },
         {
           id: 'settings',
           Element: 'button',
@@ -80,20 +96,6 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
               : PATHS.HOME + PATHS.SETTINGS_KEYBINDINGS
             navigate(targetPath)
           },
-        },
-        {
-          id: 'account',
-          Element: 'externalLink',
-          to: withSiteBaseURL('/account'),
-          children: (
-            <>
-              <span className="flex-1">Manage account</span>
-              <CustomIcon
-                name="link"
-                className="w-3 h-3 text-chalkboard-70 dark:text-chalkboard-40"
-              />
-            </>
-          ),
         },
         'break',
         {
@@ -157,7 +159,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
           Element: 'button',
           hide: !isDesktop(),
           onClick: () => {
-            window.electron.appCheckForUpdates().catch(reportRejection)
+            window.electron?.appCheckForUpdates().catch(reportRejection)
           },
           children: <span className="flex-1">Check for updates</span>,
         },
@@ -209,6 +211,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
           props === 'break' ||
           (typeof props !== 'string' && !props.className?.includes('hidden'))
       ) as (ActionButtonProps | 'break')[],
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
     [platform, location, filePath, navigate, send, hasMultipleEnvironments]
   )
 
