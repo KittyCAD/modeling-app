@@ -95,12 +95,18 @@ type XSEvent<T> = Extract<MlEphantManagerEvents, { type: T }>
 
 export interface Thought {
   reasoning?: {
-    type: 'text' | 'kcl_code_examples' | 'kcl_docs' | 'generated_kcl_code' | 'feature_tree_outline' | 'error',
+    type:
+      | 'text'
+      | 'kcl_code_examples'
+      | 'kcl_docs'
+      | 'generated_kcl_code'
+      | 'feature_tree_outline'
+      | 'error'
     content: string
-  },
+  }
   tool_output?: {
     result: {
-      type: 'text_to_cad',
+      type: 'text_to_cad'
       outputs: Record<string, string>
       status_code: number
     }
@@ -629,7 +635,7 @@ export const mlEphantManagerMachine = setup({
                       let next = new Map(context.promptsMeta)
                       next.get(event.promptId)?.thoughts.push(event.thought)
                       return next
-                    }
+                    },
                   }),
                 ],
               },

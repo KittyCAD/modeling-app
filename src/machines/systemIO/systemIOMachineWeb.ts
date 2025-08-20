@@ -75,7 +75,7 @@ export const systemIOMachineWeb = systemIOMachine.provide({
     [SystemIOMachineActors.getMlEphantConversations]: fromPromise(async () => {
       const json = localStorage.getItem(LOCAL_STORAGE_ML_CONVERSATIONS)
       if (json === null) {
-        return Promise.reject(new Error('No LOCAL_STORAGE_ML_CONVERSATIONS'))
+        return new Map()
       }
       return jsonToMlConversations(json)
     }),

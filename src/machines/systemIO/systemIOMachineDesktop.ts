@@ -694,14 +694,19 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
       // for the amount of data and frequency we're dealing with.
 
       // We need the settings path to find the sibling `ml-conversations.json`
-      const json = await window.electron.readFile(
-        window.electron.path.join(
-          window.electron.path.dirname(await getAppSettingsFilePath()),
-          ML_CONVERSATIONS_FILE_NAME
-        ),
-        'utf-8'
-      )
-      return jsonToMlConversations(json)
+      try {
+        const json = await window.electron.readFile(
+          window.electron.path.join(
+            window.electron.path.dirname(await getAppSettingsFilePath()),
+            ML_CONVERSATIONS_FILE_NAME
+          ),
+          'utf-8'
+        )
+        return jsonToMlConversations(json)
+      } catch(e) {
+        console.warn('Cannot get conversations', e)
+        return new Map()
+      }
     }),
     [SystemIOMachineActors.saveMlEphantConversations]: fromPromise(
       async (args: {
