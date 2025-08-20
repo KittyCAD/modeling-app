@@ -470,11 +470,13 @@ export class KclManager extends EventTarget {
       rustContext: this.singletons.rustContext,
     })
 
-    const livePathsToWatch = Object.values(execState.filenames).filter((file)=>{
-      return file?.type === 'Local'
-    }).map((file)=>{
-      return file.value
-    })
+    const livePathsToWatch = Object.values(execState.filenames)
+      .filter((file) => {
+        return file?.type === 'Local'
+      })
+      .map((file) => {
+        return file.value
+      })
     kclEditorActor.send({ type: 'setLivePathsToWatch', data: livePathsToWatch })
 
     // Program was not interrupted, setup the scene

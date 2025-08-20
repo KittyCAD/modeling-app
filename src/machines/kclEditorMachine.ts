@@ -41,13 +41,10 @@ export const kclEditorMachine = setup({
     }),
     setLivePathsToWatch: assign({
       livePathsToWatch: ({ event }) => {
-        assertEvent(
-          event,
-          'setLivePathsToWatch'
-        )
+        assertEvent(event, 'setLivePathsToWatch')
         return event.data
-      }
-  }),
+      },
+    }),
   },
 }).createMachine({
   /** @xstate-layout N4IgpgJg5mDOIC5QGsDGAbAohAlgFwHsAnAWQENUALHAOzAGJYw8BpDbfYkggVxr0gBtAAwBdRKAAOBWPhwEaEkAA9EARmEB2AHTCALACYAzGs0BWMwDYAHNZOWANCACeiALRrL2tQesGzamZ+FgYAnJqaAL7RTjQEEHBKaFi4hKQU1HRK0rJ48opIKupq2tZmwgZ6RpZ6msJGeqaOLupG1tq+bQFalZqWZtHRQA */
@@ -55,7 +52,7 @@ export const kclEditorMachine = setup({
   context: {
     isKclEditorMounted: false,
     lastSelectionEvent: undefined,
-    livePathsToWatch: []
+    livePathsToWatch: [],
   },
   on: {
     setKclEditorMounted: {
@@ -65,8 +62,8 @@ export const kclEditorMachine = setup({
       actions: 'setLastSelectionEvent',
     },
     setLivePathsToWatch: {
-      actions: 'setLivePathsToWatch'
-    }
+      actions: 'setLivePathsToWatch',
+    },
   },
 })
 

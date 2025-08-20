@@ -33,7 +33,10 @@ export function RouteProvider({ children }: { children: ReactNode }) {
   const navigation = useNavigation()
   const navigate = useNavigate()
   const location = useLocation()
-  const livePathsToWatch = useSelector(kclEditorActor, (state)=>state.context.livePathsToWatch)
+  const livePathsToWatch = useSelector(
+    kclEditorActor,
+    (state) => state.context.livePathsToWatch
+  )
 
   useEffect(() => {
     // On initialization, the react-router-dom does not send a 'loading' state event.
@@ -119,37 +122,6 @@ export function RouteProvider({ children }: { children: ReactNode }) {
         settings: data.settings,
         doNotPersist: true,
       })
-
-      // Try to detect file changes and overwrite the editor
-      if (codeManager.writeCausedByAppCheckedInFileTreeFileSystemWatcher) {
-        codeManager.writeCausedByAppCheckedInFileTreeFileSystemWatcher = false
-        return
-      }
-
-      const fileNameWithExtension = getStringAfterLastSeparator(path)
-      // Is the file from the change event type imported into the currently opened file
-      const isImportedInCurrentFile = kclManager.ast.body.some(
-        (n) =>
-          n.type === 'ImportStatement' &&
-          ((n.path.type === 'Kcl' &&
-            n.path.filename.includes(fileNameWithExtension)) ||
-            (n.path.type === 'Foreign' &&
-              n.path.path.includes(fileNameWithExtension)))
-      )
-
-      const isCurrentFile = loadedProject?.file?.path === path
-      if (isCurrentFile && eventType === 'change') {
-        if (window.electron) {
-          // Your current file is changed, read it from disk and write it into the code manager and execute the AST
-          let code = await window.electron.readFile(path, { encoding: 'utf-8' })
-          code = normalizeLineEndings(code)
-          codeManager.updateCodeStateEditor(code)
-          await kclManager.executeCode()
-        }
-      } else if (isImportedInCurrentFile && eventType === 'change') {
-        // Re execute the file you are in because an imported file was changed
-        await kclManager.executeAst()
-      }
     },
     [settingsPath, loadedProject?.project?.path].filter(
       (x: string | undefined) => x !== undefined
