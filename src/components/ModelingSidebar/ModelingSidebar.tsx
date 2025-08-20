@@ -286,7 +286,7 @@ export function ModelingSidebar(props: ModelingSidebarProps) {
     },
   }
 
-  return (
+  return filteredPanes.length === 0 ? null : (
     <Resizable
       className={`group z-10 flex flex-col ${pointerEventsCssClass} ${openPanesForThisSide.length ? undefined : '!w-auto'}`}
       defaultSize={{
