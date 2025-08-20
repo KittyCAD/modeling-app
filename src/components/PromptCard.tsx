@@ -43,8 +43,9 @@ export const ConvoCard = (props: ConvoCardProps) => {
 
 export interface PromptCardProps extends Prompt {
   disabled?: boolean
-  promptMeta?: PromptMeta
+  thoughts?: Thought[]
   userAvatar?: string
+  onSeeReasoning: (id: Prompt['id']) => void
   onAction?: (id: Prompt['id'], prompt: Prompt['prompt']) => void
   onFeedback?: (id: string, feedback: Prompt['feedback']) => void
 }
@@ -113,7 +114,7 @@ export const PromptCardActionButton = (props: {
 
 export const PromptCardStatus = (props: {
   id: Prompt['id']
-  thoughts: Thought[]
+  thoughts?: Thought[]
   status: Prompt['status']
   onlyShowImmediateThought: boolean
   startedAt: Prompt['started_at']
@@ -126,7 +127,13 @@ export const PromptCardStatus = (props: {
       onlyShowImmediateThought={props.onlyShowImmediateThought}
     />
   )
-  const failed = <div>{props.maybeError}</div>
+
+  const failed = props.onlyShowImmediateThought ? (
+    <div>{props.maybeError}</div>
+  ) : (
+    thinker
+  )
+
   const completed = (
     <div className="p-2 border border-transparent">
       Worked for{' '}
@@ -179,8 +186,14 @@ export const PromptCard = (props: PromptCardProps) => {
   `
 
   const onSeeReasoning = () => {
+    props.onSeeReasoning(props.id)
     setShowFullReasoning(!showFullReasoning)
   }
+
+  const cssPrompt =
+    props.status !== 'failed'
+      ? 'break-all shadow-sm bg-chalkboard-20 text-chalkboard-100 border rounded-t-md rounded-bl-md pl-4 pr-4 pt-2 pb-2'
+      : 'break-all shadow-sm bg-chalkboard-20 text-chalkboard-60 border rounded-t-md rounded-bl-md pl-4 pr-4 pt-2 pb-2'
 
   return (
     <div className={cssCard}>
@@ -192,9 +205,7 @@ export const PromptCard = (props: PromptCardProps) => {
             disabled={props.disabled}
             onFeedback={(...args) => props.onFeedback?.(...args)}
           />
-          <div className="break-all shadow-sm bg-chalkboard-20 text-chalkboard-100 border rounded-t-md rounded-bl-md pl-4 pr-4 pt-2 pb-2">
-            {props.prompt}
-          </div>
+          <div className={cssPrompt}>{props.prompt}</div>
         </div>
         <div className="w-fit-content">
           <AvatarUser src={props.userAvatar} />
@@ -206,7 +217,7 @@ export const PromptCard = (props: PromptCardProps) => {
             id={props.id}
             status={props.status}
             maybeError={props.error}
-            thoughts={props.promptMeta?.thoughts ?? []}
+            thoughts={props.thoughts}
             onlyShowImmediateThought={false}
             startedAt={props.started_at}
             updatedAt={props.updated_at}
@@ -216,7 +227,9 @@ export const PromptCard = (props: PromptCardProps) => {
       <div className="flex flex-row justify-end gap-2 items-center pl-2 pr-10">
         <div
           className={`flex flex-row gap-2 ${showSeeReasoning ? 'hidden' : ''}`}
-          onMouseEnter={() => setShowSeeReasoning(true)}
+          onMouseEnter={() =>
+            props.thoughts !== undefined && setShowSeeReasoning(true)
+          }
         >
           {props.onAction !== undefined && (
             <PromptCardActionButton
@@ -229,7 +242,7 @@ export const PromptCard = (props: PromptCardProps) => {
             id={props.id}
             status={props.status}
             maybeError={props.error}
-            thoughts={props.promptMeta?.thoughts ?? []}
+            thoughts={props.thoughts}
             onlyShowImmediateThought={true}
             startedAt={props.started_at}
             updatedAt={props.updated_at}

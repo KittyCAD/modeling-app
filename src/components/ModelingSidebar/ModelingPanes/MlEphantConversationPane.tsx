@@ -55,8 +55,8 @@ export const MlEphantConversationPane = (props: {
       .filter((x) => x !== undefined) ?? []
   )
 
-  const promptsMeta = useSelector(props.mlEphantManagerActor, () => {
-    return mlEphantManagerActorSnapshot.context.promptsMeta
+  const promptsThoughts = useSelector(props.mlEphantManagerActor, () => {
+    return mlEphantManagerActorSnapshot.context.promptsThoughts
   })
 
   const onProcess = async (requestedPrompt: string) => {
@@ -111,6 +111,20 @@ export const MlEphantConversationPane = (props: {
       type: MlEphantManagerTransitions.PromptFeedback,
       promptId: id,
       feedback,
+    })
+  }
+
+  const onSeeReasoning = (id: Prompt['id']) => {
+    // Already have the thoughts!
+    if (promptsThoughts.get(id)) {
+      return
+    }
+
+    props.mlEphantManagerActor.send({
+      type: MlEphantManagerTransitions.GetReasoningForPrompt,
+      // So the machine can send messages to itself.
+      refParent: props.mlEphantManagerActor,
+      promptId: id,
     })
   }
 
@@ -207,11 +221,12 @@ export const MlEphantConversationPane = (props: {
     <MlEphantConversation
       isLoading={promptsBelongingToConversation === undefined || isProcessing}
       prompts={prompts}
-      promptsMeta={promptsMeta}
+      promptsThoughts={promptsThoughts}
       onProcess={(requestedPrompt: string) => {
         onProcess(requestedPrompt).catch(reportRejection)
       }}
       onFeedback={onFeedback}
+      onSeeReasoning={onSeeReasoning}
       disabled={hasPromptsPending(prompts) || isProcessing}
       hasPromptCompleted={
         mlEphantManagerActorSnapshot.context.promptsInProgressToCompleted.size >

@@ -66,6 +66,9 @@ export type MlEphantManagerEvents =
     }
   | {
       type: MlEphantManagerTransitions.GetReasoningForPrompt
+      // Causes a cyclic type dependency if I use MlEphantManagerActor, 
+      // so for now, it's any.
+      refParent: any
       promptId: string
     }
   | {
@@ -100,6 +103,7 @@ export type MlEphantManagerEvents =
 type XSEvent<T> = Extract<MlEphantManagerEvents, { type: T }>
 
 export interface Thought {
+  end_of_stream?: {}
   reasoning?:
     | { type: 'text'; content: string }
     | { type: 'kcl_code_examples'; content: string }
@@ -126,9 +130,6 @@ export interface PromptMeta {
 
   // The file that was the "target" during prompting.
   targetFile?: FileEntry
-
-  // The reasoning occurring on the prompt
-  thoughts: Thought[]
 }
 
 export interface MlEphantManagerContext {
@@ -155,6 +156,9 @@ export interface MlEphantManagerContext {
 
   // Metadata per prompt that needs to be kept track separately.
   promptsMeta: Map<Prompt['id'], PromptMeta>
+
+  // Thoughts for each prompt
+  promptsThoughts: Map<Prompt['id'], Thought[]>
 }
 
 export const mlEphantDefaultContext = () => ({
@@ -168,6 +172,7 @@ export const mlEphantDefaultContext = () => ({
   promptsInProgressToCompleted: new Set<string>(),
   conversationId: undefined,
   promptsMeta: new Map(),
+  promptsThoughts: new Map(),
 })
 
 export const mlEphantManagerMachine = setup({
@@ -285,13 +290,11 @@ export const mlEphantManagerMachine = setup({
               message(msg: any) {
                 if (!msg) return
 
-                if ((msg as Thought).reasoning) {
-                  args.input.event.refParent.send({
-                    type: MlEphantManagerTransitions.AppendThoughtForPrompt,
-                    promptId: args.input.event.promptId,
-                    thought: msg,
-                  })
-                }
+                args.input.event.refParent.send({
+                  type: MlEphantManagerTransitions.AppendThoughtForPrompt,
+                  promptId: args.input.event.promptId,
+                  thought: msg,
+                })
               },
             },
           }
@@ -331,7 +334,6 @@ export const mlEphantManagerMachine = setup({
         promptsMeta.set(result.id, {
           type: PromptType.Create,
           project: args.input.event.projectForPromptOutput,
-          thoughts: [],
         })
 
         return {
@@ -392,7 +394,6 @@ export const mlEphantManagerMachine = setup({
           type: PromptType.Edit,
           targetFile: args.input.event.fileSelectedDuringPrompting,
           project: args.input.event.projectForPromptOutput,
-          thoughts: [],
         })
 
         return {
@@ -624,12 +625,13 @@ export const mlEphantManagerMachine = setup({
             [MlEphantManagerTransitions.GetReasoningForPrompt]: {
               invoke: {
                 input: (args) => {
-                  if (args.event.output) {
+                  if ('output' in args.event) {
                     return {
                       event: {
-                        refParent: args.self.ref,
+                        type: MlEphantManagerTransitions.GetReasoningForPrompt,
+                        refParent: args.self,
                         promptId:
-                          args.event.output.promptsBelongingToConversation.slice(
+                          (args.event.output as any).promptsBelongingToConversation.slice(
                             -1
                           )[0],
                       },
@@ -701,13 +703,15 @@ export const mlEphantManagerMachine = setup({
                 target: S.Await,
                 actions: [
                   assign({
-                    promptsMeta: ({ event, context }) => {
+                    promptsThoughts: ({ event, context }) => {
                       assertEvent(
                         event,
                         MlEphantManagerTransitions.AppendThoughtForPrompt
                       )
-                      let next = new Map(context.promptsMeta)
-                      next.get(event.promptId)?.thoughts.push(event.thought)
+                      let next = new Map(context.promptsThoughts)
+                      const promptThoughts = next.get(event.promptId) ?? []
+                      promptThoughts.push(event.thought)
+                      next.set(event.promptId, promptThoughts)
                       return next
                     },
                   }),
