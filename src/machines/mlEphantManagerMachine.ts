@@ -277,21 +277,25 @@ export const mlEphantManagerMachine = setup({
         if (args.input.context.apiTokenMlephant === undefined)
           return Promise.reject('missing api token')
 
-        connectReasoningStream(args.input.context.apiTokenMlephant, args.input.event.promptId, {
-          on: {
-            message(msg: any) {
-              if (!msg) return
+        connectReasoningStream(
+          args.input.context.apiTokenMlephant,
+          args.input.event.promptId,
+          {
+            on: {
+              message(msg: any) {
+                if (!msg) return
 
-              if ((msg as Thought).reasoning) {
-                sendTo(args.input.event.refParent, {
-                  type: MlEphantManagerTransitions.AppendThoughtForPrompt,
-                  promptId: args.input.event.promptId,
-                  thought: msg,
-                })
-              }
+                if ((msg as Thought).reasoning) {
+                  sendTo(args.input.event.refParent, {
+                    type: MlEphantManagerTransitions.AppendThoughtForPrompt,
+                    promptId: args.input.event.promptId,
+                    thought: msg,
+                  })
+                }
+              },
             },
-          },
-        })
+          }
+        )
 
         return {}
       }
@@ -621,10 +625,13 @@ export const mlEphantManagerMachine = setup({
               invoke: {
                 input: (args) => {
                   if (args.event.output) {
-                    return  {
+                    return {
                       event: {
                         refParent: args.self.ref,
-                        promptId: args.event.output.promptsBelongingToConversation.slice(-1)[0],
+                        promptId:
+                          args.event.output.promptsBelongingToConversation.slice(
+                            -1
+                          )[0],
                       },
                       context: args.context,
                     }
