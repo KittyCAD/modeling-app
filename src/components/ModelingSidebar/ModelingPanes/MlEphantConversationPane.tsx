@@ -9,7 +9,7 @@ import { useEffect } from 'react'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { useSelector } from '@xstate/react'
 import { MlEphantConversation } from '@src/components/MlEphantConversation'
-import type { MlEphantManagerActor } from '@src/machines/mlEphantManagerMachine'
+import type { MlEphantManagerActor, Thought } from '@src/machines/mlEphantManagerMachine'
 import {
   MlEphantManagerStates,
   MlEphantManagerTransitions,
@@ -230,8 +230,15 @@ export const MlEphantConversationPane = (props: {
       connectReasoningStream(next.context.apiTokenMlephant, promptIdLastAdded, {
         on: {
           message(msg: any) {
-            console.log('YO')
-            console.log(msg)
+            if (!msg) return
+
+            if ((msg as Thought).reasoning) { 
+              props.mlEphantManagerActor.send({
+                type: MlEphantManagerTransitions.AppendThoughtForPrompt,
+                promptId: promptIdLastAdded,
+                thought: msg
+              })
+            }
           },
         },
       })

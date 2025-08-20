@@ -171,9 +171,6 @@ export const AvatarUser = (props: { src?: string }) => {
 }
 
 export const PromptCard = (props: PromptCardProps) => {
-  const refCard = useRef<HTMLDivElement>(null)
-  const refHeight = useRef<number>(0)
-  const [style, setStyle] = useState({})
   const [showFullReasoning, setShowFullReasoning] = useState<boolean>(false)
   const [showSeeReasoning, setShowSeeReasoning] = useState<boolean>(false)
 
@@ -181,34 +178,13 @@ export const PromptCard = (props: PromptCardProps) => {
     transition-height duration-500 overflow-hidden
     ${props.disabled ? 'text-chalkboard-60' : ''}
   `
-  useLayoutEffect(() => {
-    if (refHeight.current === null) {
-      return
-    }
-    if (refCard.current === null) {
-      return
-    }
-    refHeight.current = refCard.current.getBoundingClientRect().height
-    refCard.current.style.height = '0'
-  }, [])
-
-  useEffect(() => {
-    setStyle({ height: refHeight.current })
-  }, [])
-
-  useEffect(() => {
-    if (props.status !== 'completed') {
-      return
-    }
-    setStyle({ height: 'auto' })
-  }, [props.status])
 
   const onSeeReasoning = () => {
     setShowFullReasoning(!showFullReasoning)
   }
 
   return (
-    <div ref={refCard} className={cssCard} style={style}>
+    <div className={cssCard}>
       <div className="flex flex-row justify-end items-end gap-2">
         <div className="flex flex-col items-end gap-2">
           <PromptFeedback

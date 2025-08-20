@@ -93,7 +93,19 @@ export type MlEphantManagerEvents =
 // Used to specify a specific event in input properties
 type XSEvent<T> = Extract<MlEphantManagerEvents, { type: T }>
 
-type Thought = any
+export interface Thought {
+  reasoning?: {
+    type: 'text' | 'kcl_code_examples' | 'kcl_docs' | 'generated_kcl_code' | 'feature_tree_outline' | 'error',
+    content: string
+  },
+  tool_output?: {
+    result: {
+      type: 'text_to_cad',
+      outputs: Record<string, string>
+      status_code: number
+    }
+  }
+}
 
 export interface PromptMeta {
   // If it's a creation prompt, it'll run some SystemIO code that
@@ -521,6 +533,7 @@ export const mlEphantManagerMachine = setup({
                 MlEphantManagerTransitions.PromptEditModel,
                 MlEphantManagerTransitions.PromptFeedback,
                 MlEphantManagerTransitions.ClearProjectSpecificState,
+                MlEphantManagerTransitions.AppendThoughtForPrompt,
               ]),
             },
             [MlEphantManagerTransitions.ClearProjectSpecificState]: {
@@ -612,10 +625,11 @@ export const mlEphantManagerMachine = setup({
                 target: S.Await,
                 actions: [
                   assign({
-                    promptsMeta: ({ event, context }) =>
-                      context.promptsMeta
-                        .get(event.promptId)
-                        ?.thoughts.push(event.thought),
+                    promptsMeta: ({ event, context }) => {
+                      let next = new Map(context.promptsMeta)
+                      next.get(event.promptId)?.thoughts.push(event.thought)
+                      return next
+                    }
                   }),
                 ],
               },
