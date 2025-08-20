@@ -445,6 +445,9 @@ export class SceneInfra {
 
   private updateCurrentMouseVector(event: MouseEvent, target: HTMLElement) {
     const rect = target.getBoundingClientRect()
+    if (rect.width === 0 || rect.height === 0) {
+      return
+    }
     const localX = event.clientX - rect.left
     const localY = event.clientY - rect.top
     this.currentMouseVector.x = (localX / rect.width) * 2 - 1
