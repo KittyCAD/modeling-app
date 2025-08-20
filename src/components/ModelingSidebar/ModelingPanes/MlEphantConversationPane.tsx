@@ -10,7 +10,6 @@ import { useSelector } from '@xstate/react'
 import { MlEphantConversation } from '@src/components/MlEphantConversation'
 import type {
   MlEphantManagerActor,
-  Thought,
 } from '@src/machines/mlEphantManagerMachine'
 import {
   MlEphantManagerStates,

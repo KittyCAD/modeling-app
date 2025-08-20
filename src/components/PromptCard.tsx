@@ -2,10 +2,8 @@ import ms from 'ms'
 import { CustomIcon } from '@src/components/CustomIcon'
 import type { Prompt } from '@src/lib/prompt'
 import type { IResponseMlConversation } from '@src/lib/textToCad'
-import { useEffect, useState, useRef, useLayoutEffect } from 'react'
-import type { PromptMeta, Thought } from '@src/machines/mlEphantManagerMachine'
-import type { ReactNode } from 'react'
-import Loading from '@src/components/Loading'
+import { useState } from 'react'
+import type { Thought } from '@src/machines/mlEphantManagerMachine'
 import { Thinking } from '@src/components/Thinking'
 
 // In the future we can split this out but the code is 99% the same as
@@ -165,6 +163,7 @@ export const AvatarUser = (props: { src?: string }) => {
           src={props.src || ''}
           className="h-7 w-7 rounded-full"
           referrerPolicy="no-referrer"
+          alt="user avatar"
         />
       ) : (
         <CustomIcon

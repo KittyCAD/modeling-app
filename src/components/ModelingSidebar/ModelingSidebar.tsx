@@ -511,7 +511,6 @@ function ModelingPaneButton({
 function ResizeHandle(
   props: HTMLProps<HTMLDivElement> & { alignment: Alignment }
 ) {
-  const alignmentNegative = props.alignment === Alignment.Left ? '-' : ''
   const oppositeAlignment =
     props.alignment === Alignment.Left ? Alignment.Right : Alignment.Left
   return (
