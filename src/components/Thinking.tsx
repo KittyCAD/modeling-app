@@ -49,7 +49,7 @@ export const GeneratedKclCode = (props: { code: string }) => {
   )
 }
 
-export const ErrorneousThing = (props: { content: string }) => {
+export const ErroneousThing = (props: { content: string }) => {
   return (
     <ThoughtContainer
       heading={
@@ -306,7 +306,7 @@ const fromDataToComponent = (
     }
     case 'error': {
       return (
-        <ErrorneousThing
+        <ErroneousThing
           key={options.key}
           content={thought.reasoning?.content}
         />

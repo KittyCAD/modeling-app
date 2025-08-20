@@ -54,7 +54,7 @@ export function getProjectSortFunction(sortBy: string) {
   }
 }
 
-// Below is to keep the same behavior as above but for converstions.
+// Below is to keep the same behavior as above but for conversations.
 // Do NOT take it as actually "sort by modified" but more like "sort by time".
 export function getConvoSortFunction(sortBy: string) {
   const sortByName = (
