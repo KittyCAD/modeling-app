@@ -88,7 +88,7 @@ const Home = () => {
 
   // Only create the native file menus on desktop
   useEffect(() => {
-    if (isDesktop()) {
+    if (window.electron) {
       window.electron
         .createHomePageMenu()
         .then(() => {

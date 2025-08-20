@@ -5,7 +5,8 @@ import { diffLines } from 'diff'
 import toast from 'react-hot-toast'
 import type { TextToCadMultiFileIteration_type } from '@kittycad/lib/dist/types/src/models'
 import { getCookie, TOKEN_PERSIST_KEY } from '@src/machines/authMachine'
-import { APP_DOWNLOAD_PATH, COOKIE_NAME } from '@src/lib/constants'
+import { COOKIE_NAME } from '@src/lib/constants'
+import { APP_DOWNLOAD_PATH } from '@src/routes/utils'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { ActionButton } from '@src/components/ActionButton'
@@ -28,6 +29,7 @@ import type { File as KittyCadLibFile } from '@kittycad/lib/dist/types/src/model
 import type { FileMeta } from '@src/lib/types'
 import type { RequestedKCLFile } from '@src/machines/systemIO/utils'
 import { withAPIBaseURL, withSiteBaseURL } from '@src/lib/withBaseURL'
+import { connectReasoningStream } from '@src/lib/reasoningWs'
 
 type KclFileMetaMap = {
   [execStateFileNamesIndex: number]: Extract<FileMeta, { type: 'kcl' }>
@@ -96,6 +98,8 @@ async function submitTextToCadRequest(
     const errorData = data as TextToCadErrorResponse
     return new Error(errorData.message || 'Unknown error')
   }
+
+  connectReasoningStream(token, data.id)
 
   return data as TextToCadMultiFileIteration_type
 }

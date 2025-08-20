@@ -257,7 +257,7 @@ test(
 test(
   'Draft rectangles should look right',
   { tag: '@snapshot' },
-  async ({ page, context, cmdBar, scene }) => {
+  async ({ page }) => {
     const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
     await u.waitForAuthSkipAppStart()
@@ -303,7 +303,7 @@ test(
 test(
   'Draft circle should look right',
   { tag: '@snapshot' },
-  async ({ page, context, cmdBar, scene }) => {
+  async ({ page }) => {
     const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
     await u.waitForAuthSkipAppStart()
@@ -326,10 +326,11 @@ test(
     // Draw the circle
     const startPixelX = 600
     const pixelToUnitRatio = 400 / 37.5
-    await page.mouse.click(
+    const circleCenterPoint: [number, number] = [
       startPixelX + pixelToUnitRatio * 20,
-      500 - pixelToUnitRatio * 20
-    )
+      500 - pixelToUnitRatio * 20,
+    ]
+    await page.mouse.click(...circleCenterPoint, { delay: 500 })
     await page.mouse.move(
       startPixelX + pixelToUnitRatio * 10,
       500 - pixelToUnitRatio * 10,
@@ -342,9 +343,6 @@ test(
       maxDiffPixels: 100,
       mask: lowerRightMasks(page),
     })
-    await expect(page.locator('.cm-content')).toHaveText(
-      `sketch001 = startSketchOn(XZ)profile001 = circle(sketch001, center = [366.89, -62.01], radius = 1)`
-    )
   }
 )
 

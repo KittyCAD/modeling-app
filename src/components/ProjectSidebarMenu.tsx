@@ -35,7 +35,7 @@ const ProjectSidebarMenu = ({
   // Make room for traffic lights on desktop left side.
   // TODO: make sure this doesn't look like shit on Linux or Windows
   const trafficLightsOffset =
-    isDesktop() && window.electron.os.isMac ? 'ml-20' : ''
+    window.electron && window.electron.os.isMac ? 'ml-20' : ''
   return (
     <div className={'!no-underline flex gap-2 ' + trafficLightsOffset}>
       <AppLogoLink project={project} file={file} />
@@ -123,7 +123,9 @@ function ProjectMenuPopover({
           Element: 'button',
           children: (
             <>
-              <span className="flex-1">Project settings</span>
+              <span className="flex-1" data-testid="project-settings">
+                Project settings
+              </span>
               <kbd className="hotkey">{`${platform === 'macos' ? '⌘' : 'Ctrl'}${
                 isDesktop() ? '' : '⬆'
               },`}</kbd>
@@ -240,7 +242,7 @@ function ProjectMenuPopover({
     projectName: project?.name || '',
     sep: '/',
     filename:
-      isDesktop() && file?.name
+      window.electron && file?.name
         ? file.name.slice(file.name.lastIndexOf(window.electron.path.sep) + 1)
         : APP_NAME,
   }

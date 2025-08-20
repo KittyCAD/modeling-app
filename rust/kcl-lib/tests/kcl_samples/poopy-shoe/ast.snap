@@ -532,13 +532,13 @@ description: Result of parsing poopy-shoe.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "raw": "60",
+                      "raw": "60deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 60.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -839,13 +839,13 @@ description: Result of parsing poopy-shoe.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "raw": "60",
+                      "raw": "60deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 60.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -1060,13 +1060,13 @@ description: Result of parsing poopy-shoe.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "180",
+                        "raw": "180deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 180.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "moduleId": 0,
@@ -1075,13 +1075,13 @@ description: Result of parsing poopy-shoe.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "60",
+                        "raw": "60deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 60.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "start": 0,
@@ -1355,13 +1355,13 @@ description: Result of parsing poopy-shoe.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "180",
+                        "raw": "180deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 180.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "moduleId": 0,
@@ -1370,13 +1370,13 @@ description: Result of parsing poopy-shoe.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "60",
+                        "raw": "60deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 60.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "start": 0,
@@ -1514,13 +1514,13 @@ description: Result of parsing poopy-shoe.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "raw": "90",
+                  "raw": "90deg",
                   "start": 0,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
                     "value": 90.0,
-                    "suffix": "None"
+                    "suffix": "Deg"
                   }
                 }
               },
@@ -1993,13 +1993,13 @@ description: Result of parsing poopy-shoe.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "raw": "60",
+                      "raw": "60deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 60.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -2300,13 +2300,13 @@ description: Result of parsing poopy-shoe.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "raw": "60",
+                      "raw": "60deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 60.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -2521,13 +2521,13 @@ description: Result of parsing poopy-shoe.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "180",
+                        "raw": "180deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 180.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "moduleId": 0,
@@ -2536,13 +2536,13 @@ description: Result of parsing poopy-shoe.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "60",
+                        "raw": "60deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 60.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "start": 0,
@@ -2816,13 +2816,13 @@ description: Result of parsing poopy-shoe.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "180",
+                        "raw": "180deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 180.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "moduleId": 0,
@@ -2831,13 +2831,13 @@ description: Result of parsing poopy-shoe.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "60",
+                        "raw": "60deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 60.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "start": 0,
@@ -3621,13 +3621,13 @@ description: Result of parsing poopy-shoe.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "raw": "60",
+                      "raw": "60deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 60.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -3702,13 +3702,13 @@ description: Result of parsing poopy-shoe.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "raw": "60",
+                      "raw": "60deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 60.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -4264,13 +4264,13 @@ description: Result of parsing poopy-shoe.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "180",
+                        "raw": "180deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 180.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "moduleId": 0,
@@ -4279,13 +4279,13 @@ description: Result of parsing poopy-shoe.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "60",
+                        "raw": "60deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 60.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "start": 0,
@@ -4492,13 +4492,13 @@ description: Result of parsing poopy-shoe.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "raw": "60",
+                      "raw": "60deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 60.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
