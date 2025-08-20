@@ -135,6 +135,7 @@ export function ModelingSidebarLeft() {
 
   return (
     <ModelingSidebar
+      id="app-sidebar"
       sidebarPanes={sidebarPanesLeft}
       sidebarActions={sidebarActions}
       settings={settings}
@@ -149,6 +150,7 @@ export function ModelingSidebarRight() {
   const sidebarActions: Ref<SidebarAction[]> = useRef([])
   return (
     <ModelingSidebar
+      id="right-sidebar"
       sidebarPanes={sidebarPanesRight || []}
       sidebarActions={sidebarActions.current || []}
       settings={settings}
@@ -158,6 +160,7 @@ export function ModelingSidebarRight() {
 }
 
 interface ModelingSidebarProps {
+  id: string
   sidebarActions: SidebarAction[]
   sidebarPanes: SidebarPane[]
   settings: typeof settings
@@ -168,10 +171,6 @@ export function ModelingSidebar(props: ModelingSidebarProps) {
   const { send, context } = useModelingContext()
 
   const kclContext = useKclContext()
-  const pointerEventsCssClass =
-    context.store?.openPanes.length === 0
-      ? 'pointer-events-none '
-      : 'pointer-events-auto '
   const showDebugPanel = props.settings.app.showDebugPanel
 
   const paneCallbackProps = useMemo(
@@ -205,6 +204,13 @@ export function ModelingSidebar(props: ModelingSidebarProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
     [props.sidebarPanes, paneCallbackProps]
   )
+  // Since we store one persisted list of `openPanes`, we should first filter it to ones that have
+  // been passed into this instance as props
+  const openPanesForThisSide = context.store?.openPanes.filter((openPaneId) =>
+    filteredPanes.some((thisSidePane) => thisSidePane.id === openPaneId)
+  )
+  const pointerEventsCssClass =
+    openPanesForThisSide === 0 ? 'pointer-events-none ' : 'pointer-events-auto '
 
   const paneBadgeMap: Record<SidebarType, BadgeInfoComputed> = useMemo(() => {
     return filteredPanes.reduce(
@@ -266,7 +272,7 @@ export function ModelingSidebar(props: ModelingSidebarProps) {
 
   const css = {
     handle:
-      (context.store?.openPanes.length === 0 ? 'hidden ' : 'block ') +
+      (openPanesForThisSide.length === 0 ? 'hidden ' : 'block ') +
       'translate-x-1/2 hover:bg-chalkboard-10 hover:dark:bg-chalkboard-110 bg-transparent transition-colors duration-75 transition-ease-out delay-100 ',
     paneAlign: {
       [Alignment.Left]: 'flex-row',
@@ -280,12 +286,12 @@ export function ModelingSidebar(props: ModelingSidebarProps) {
 
   return (
     <Resizable
-      className={`group z-10 flex flex-col p${css.tailwindDir[props.align]}-1 ${pointerEventsCssClass} ${context.store?.openPanes.length ? undefined : '!w-auto'}`}
+      className={`group z-10 flex flex-col ${pointerEventsCssClass} ${openPanesForThisSide.length ? undefined : '!w-auto'}`}
       defaultSize={{
         width: '550px',
         height: 'auto',
       }}
-      minWidth={context.store?.openPanes.length ? 200 : undefined}
+      minWidth={openPanesForThisSide.length ? 200 : undefined}
       handleWrapperClass="sidebar-resize-handles"
       handleClasses={{
         right: props.align !== Alignment.Right ? 'hidden' : css.handle,
@@ -299,7 +305,7 @@ export function ModelingSidebar(props: ModelingSidebarProps) {
       }}
     >
       <div
-        id="app-sidebar"
+        id={props.id}
         className={`flex h-full ${css.paneAlign[props.align]}`}
       >
         <ul
@@ -354,7 +360,7 @@ export function ModelingSidebar(props: ModelingSidebarProps) {
           id="pane-section"
           className={
             'ml-[-1px] col-start-2 col-span-1 flex flex-col items-stretch border-x border-chalkboard-30 dark:border-chalkboard-80 ' +
-            (context.store?.openPanes.length >= 1 ? `w-full` : `hidden`)
+            (openPanesForThisSide.length >= 1 ? `w-full` : `hidden`)
           }
         >
           {filteredPanes
