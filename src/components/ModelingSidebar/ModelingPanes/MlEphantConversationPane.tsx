@@ -8,9 +8,7 @@ import { useEffect } from 'react'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { useSelector } from '@xstate/react'
 import { MlEphantConversation } from '@src/components/MlEphantConversation'
-import type {
-  MlEphantManagerActor,
-} from '@src/machines/mlEphantManagerMachine'
+import type { MlEphantManagerActor } from '@src/machines/mlEphantManagerMachine'
 import {
   MlEphantManagerStates,
   MlEphantManagerTransitions,
