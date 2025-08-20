@@ -1,4 +1,5 @@
-import { assertEvent, assign, setup, fromPromise } from 'xstate'
+import { connectReasoningStream } from '@src/lib/reasoningWs'
+import { assertEvent, assign, setup, fromPromise, sendTo } from 'xstate'
 import type { ActorRefFrom } from 'xstate'
 
 import { S, transitions } from '@src/machines/utils'
@@ -42,6 +43,7 @@ export enum MlEphantManagerTransitions {
   GetConversationsThatCreatedProjects = 'get-conversations-that-created-projects',
   GetPromptsBelongingToConversation = 'get-prompts-belonging-to-conversation',
   GetPromptsPendingStatuses = 'get-prompts-pending-statuses',
+  GetReasoningForPrompt = 'get-reasoning-for-prompt',
   PromptEditModel = 'prompt-edit-model',
   PromptCreateModel = 'prompt-create-model',
   PromptFeedback = 'prompt-feedback',
@@ -61,6 +63,13 @@ export type MlEphantManagerEvents =
       type: MlEphantManagerTransitions.GetPromptsBelongingToConversation
       conversationId?: string
       nextPage?: string
+    }
+  | {
+      type: MlEphantManagerTransitions.GetReasoningForPrompt
+      // Causes a cyclic type dependency if I use MlEphantManagerActor,
+      // so for now, it's any.
+      refParent: any
+      promptId: string
     }
   | {
       type: MlEphantManagerTransitions.PromptCreateModel
@@ -94,6 +103,7 @@ export type MlEphantManagerEvents =
 type XSEvent<T> = Extract<MlEphantManagerEvents, { type: T }>
 
 export interface Thought {
+  end_of_stream?: {}
   reasoning?:
     | { type: 'text'; content: string }
     | { type: 'kcl_code_examples'; content: string }
@@ -120,9 +130,6 @@ export interface PromptMeta {
 
   // The file that was the "target" during prompting.
   targetFile?: FileEntry
-
-  // The reasoning occurring on the prompt
-  thoughts: Thought[]
 }
 
 export interface MlEphantManagerContext {
@@ -149,6 +156,9 @@ export interface MlEphantManagerContext {
 
   // Metadata per prompt that needs to be kept track separately.
   promptsMeta: Map<Prompt['id'], PromptMeta>
+
+  // Thoughts for each prompt
+  promptsThoughts: Map<Prompt['id'], Thought[]>
 }
 
 export const mlEphantDefaultContext = () => ({
@@ -162,6 +172,7 @@ export const mlEphantDefaultContext = () => ({
   promptsInProgressToCompleted: new Set<string>(),
   conversationId: undefined,
   promptsMeta: new Map(),
+  promptsThoughts: new Map(),
 })
 
 export const mlEphantManagerMachine = setup({
@@ -257,9 +268,43 @@ export const mlEphantManagerMachine = setup({
         }
       }
     ),
+    // This is a kind of special transition.
+    // We spawn the websocket, and then go back to the idling state.
+    // That socket then can send more messages to the machine.
+    // In a sense, it's an action.
+    [MlEphantManagerTransitions.GetReasoningForPrompt]: fromPromise(
+      async function (args: {
+        input: {
+          event: XSEvent<MlEphantManagerTransitions.GetReasoningForPrompt>
+          context: MlEphantManagerContext
+        }
+      }): Promise<Partial<MlEphantManagerContext>> {
+        if (args.input.context.apiTokenMlephant === undefined)
+          return Promise.reject('missing api token')
+
+        connectReasoningStream(
+          args.input.context.apiTokenMlephant,
+          args.input.event.promptId,
+          {
+            on: {
+              message(msg: any) {
+                if (!msg) return
+
+                args.input.event.refParent.send({
+                  type: MlEphantManagerTransitions.AppendThoughtForPrompt,
+                  promptId: args.input.event.promptId,
+                  thought: msg,
+                })
+              },
+            },
+          }
+        )
+
+        return {}
+      }
+    ),
     [MlEphantManagerTransitions.PromptCreateModel]: fromPromise(
       async function (args: {
-        system: any
         input: {
           event: XSEvent<MlEphantManagerTransitions.PromptCreateModel>
           context: MlEphantManagerContext
@@ -289,7 +334,6 @@ export const mlEphantManagerMachine = setup({
         promptsMeta.set(result.id, {
           type: PromptType.Create,
           project: args.input.event.projectForPromptOutput,
-          thoughts: [],
         })
 
         return {
@@ -304,7 +348,6 @@ export const mlEphantManagerMachine = setup({
     ),
     [MlEphantManagerTransitions.PromptEditModel]: fromPromise(
       async function (args: {
-        system: any
         input: {
           event: XSEvent<MlEphantManagerTransitions.PromptEditModel>
           context: MlEphantManagerContext
@@ -351,7 +394,6 @@ export const mlEphantManagerMachine = setup({
           type: PromptType.Edit,
           targetFile: args.input.event.fileSelectedDuringPrompting,
           project: args.input.event.projectForPromptOutput,
-          thoughts: [],
         })
 
         return {
@@ -533,6 +575,7 @@ export const mlEphantManagerMachine = setup({
               on: transitions([
                 MlEphantManagerTransitions.GetConversationsThatCreatedProjects,
                 MlEphantManagerTransitions.GetPromptsBelongingToConversation,
+                MlEphantManagerTransitions.GetReasoningForPrompt,
                 MlEphantManagerTransitions.PromptCreateModel,
                 MlEphantManagerTransitions.PromptEditModel,
                 MlEphantManagerTransitions.PromptFeedback,
@@ -579,6 +622,36 @@ export const mlEphantManagerMachine = setup({
                 onError: { target: S.Await, actions: console.error },
               },
             },
+            [MlEphantManagerTransitions.GetReasoningForPrompt]: {
+              invoke: {
+                input: (args) => {
+                  if ('output' in args.event) {
+                    return {
+                      event: {
+                        type: MlEphantManagerTransitions.GetReasoningForPrompt,
+                        refParent: args.self,
+                        promptId: (
+                          args.event.output as any
+                        ).promptsBelongingToConversation.slice(-1)[0],
+                      },
+                      context: args.context,
+                    }
+                  }
+
+                  return {
+                    event:
+                      args.event as XSEvent<MlEphantManagerTransitions.GetReasoningForPrompt>,
+                    context: args.context,
+                  }
+                },
+                src: MlEphantManagerTransitions.GetReasoningForPrompt,
+                onDone: {
+                  target: S.Await,
+                  actions: assign(({ event }) => event.output),
+                },
+                onError: { target: S.Await, actions: console.error },
+              },
+            },
             [MlEphantManagerTransitions.PromptCreateModel]: {
               invoke: {
                 input: (args) => ({
@@ -588,7 +661,7 @@ export const mlEphantManagerMachine = setup({
                 }),
                 src: MlEphantManagerTransitions.PromptCreateModel,
                 onDone: {
-                  target: S.Await,
+                  target: MlEphantManagerTransitions.GetReasoningForPrompt,
                   actions: assign(({ event }) => event.output),
                 },
                 onError: { target: S.Await, actions: console.error },
@@ -603,7 +676,7 @@ export const mlEphantManagerMachine = setup({
                 }),
                 src: MlEphantManagerTransitions.PromptEditModel,
                 onDone: {
-                  target: S.Await,
+                  target: MlEphantManagerTransitions.GetReasoningForPrompt,
                   actions: assign(({ event }) => event.output),
                 },
                 onError: { target: S.Await, actions: console.error },
@@ -629,13 +702,15 @@ export const mlEphantManagerMachine = setup({
                 target: S.Await,
                 actions: [
                   assign({
-                    promptsMeta: ({ event, context }) => {
+                    promptsThoughts: ({ event, context }) => {
                       assertEvent(
                         event,
                         MlEphantManagerTransitions.AppendThoughtForPrompt
                       )
-                      let next = new Map(context.promptsMeta)
-                      next.get(event.promptId)?.thoughts.push(event.thought)
+                      let next = new Map(context.promptsThoughts)
+                      const promptThoughts = next.get(event.promptId) ?? []
+                      promptThoughts.push(event.thought)
+                      next.set(event.promptId, promptThoughts)
                       return next
                     },
                   }),

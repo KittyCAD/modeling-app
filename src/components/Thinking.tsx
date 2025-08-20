@@ -240,7 +240,7 @@ export const Text = (props: { content: string }) => {
   )
 }
 
-export const End = (props: { content: string }) => {
+export const End = () => {
   return (
     <ThoughtContainer>
       <ThoughtHeader icon={<CustomIcon name="ellipse1" className="w-6 h-6" />}>
@@ -271,12 +271,16 @@ const fromDataToComponent = (
   thought: Thought,
   options: { key?: string | number }
 ) => {
+  if (thought.end_of_stream) {
+    return <End />
+  }
+
   switch (thought.reasoning?.type) {
     case 'text': {
       return (
         <>
-          <Text key={options.key} content={thought.reasoning?.content} />,
-          <Spacer />,
+          <Text key={options.key} content={thought.reasoning?.content} />
+          <Spacer />
         </>
       )
     }
@@ -318,7 +322,7 @@ const fromDataToComponent = (
 }
 
 export const Thinking = (props: {
-  thoughts: Thought[]
+  thoughts?: Thought[]
   onlyShowImmediateThought: boolean
 }) => {
   const refViewFull = useRef<HTMLDivElement>(null)
@@ -335,11 +339,17 @@ export const Thinking = (props: {
       return
     }
     c[c.length - 1].scrollIntoView({ behavior: 'smooth' })
-  }, [props.thoughts.length])
+  }, [props.thoughts?.length])
+
+  if (props.thoughts === undefined) {
+    return (
+      <div className="animate-shimmer p-2">
+        <Text content={'Processing...'} />
+      </div>
+    )
+  }
 
   const componentThoughts = props.thoughts.map((thought, index: number) => {
-    // Maybe be a tool_output
-    if (thought.reasoning === undefined) return null
     return fromDataToComponent(thought, { key: index })
   })
 
@@ -360,7 +370,11 @@ export const Thinking = (props: {
       ref={refViewFull}
       className="text-chalkboard-100 rounded-md bg-chalkboard-20 pl-2 pr-2 pt-4 pb-6 border border-chalkboard-30 shadow-md"
     >
-      {componentThoughts}
+      {componentThoughts.length > 0 ? (
+        componentThoughts
+      ) : (
+        <Text content={'Processing...'} />
+      )}
     </div>
   )
 

@@ -8,12 +8,13 @@ import { CustomIcon } from '@src/components/CustomIcon'
 export interface MlEphantConversationProps {
   isLoading: boolean
   prompts: Prompt[]
-  promptsMeta: MlEphantManagerContext['promptsMeta']
+  promptsThoughts: MlEphantManagerContext['promptsThoughts']
   onProcess: (requestedPrompt: string) => void
   onFeedback: (id: Prompt['id'], feedback: Prompt['feedback']) => void
+  onSeeReasoning: (id: Prompt['id']) => void
+  onSeeMoreHistory: (nextPage?: string) => void
   disabled?: boolean
   nextPage?: string
-  onSeeMoreHistory: (nextPage?: string) => void
   hasPromptCompleted: boolean
   userAvatarSrc?: string
 }
@@ -169,8 +170,9 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
       key={prompt.id}
       {...prompt}
       userAvatar={props.userAvatarSrc}
-      promptMeta={props.promptsMeta.get(prompt.id)}
+      thoughts={props.promptsThoughts.get(prompt.id)}
       disabled={prompt.status !== 'completed'}
+      onSeeReasoning={props.onSeeReasoning}
       onFeedback={props.onFeedback}
     />
   ))
