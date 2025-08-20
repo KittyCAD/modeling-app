@@ -12,7 +12,6 @@ type Path = string
 // NodeJS side. Because EventEmitters come bundled with their listener
 // methods it complicates things because we can't just do
 // watcher.addListener(() => { ... }).
-const globalListeners = new Map()
 
 export const useFileSystemWatcher = (
   callback: (eventType: string, path: Path) => Promise<void>,
@@ -21,7 +20,6 @@ export const useFileSystemWatcher = (
   // Used to track this instance of useFileSystemWatcher.
   // Assign to ref so it doesn't change between renders.
   const key = useRef(uuidv4())
-  globalListeners.set(key.current, true)
 
   const [output, setOutput] = useState<
     { eventType: string; path: string } | undefined
