@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 
 import { isDesktop } from '@src/lib/isDesktop'
 import { reportRejection } from '@src/lib/trap'
+import { uuidv4 } from '@src/lib/utils'
 
 type Path = string
 
@@ -11,6 +12,7 @@ type Path = string
 // NodeJS side. Because EventEmitters come bundled with their listener
 // methods it complicates things because we can't just do
 // watcher.addListener(() => { ... }).
+const globalListeners = new Map()
 
 export const useFileSystemWatcher = (
   callback: (eventType: string, path: Path) => Promise<void>,
@@ -18,7 +20,8 @@ export const useFileSystemWatcher = (
 ): void => {
   // Used to track this instance of useFileSystemWatcher.
   // Assign to ref so it doesn't change between renders.
-  const key = useRef(Math.random().toString())
+  const key = useRef(uuidv4())
+  globalListeners.set(key.current, true)
 
   const [output, setOutput] = useState<
     { eventType: string; path: string } | undefined
