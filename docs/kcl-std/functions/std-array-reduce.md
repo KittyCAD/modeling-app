@@ -119,7 +119,7 @@ assert(
 // Declare a function that sketches a decagon.
 fn decagon(@radius) {
   // Each side of the decagon is turned this many radians from the previous angle.
-  stepAngle = (1 / 10 * TAU): number(rad)
+  stepAngle = (1 / 10 * TAU): rad
 
   // Start the decagon sketch at this point.
   startOfDecagonSketch = startSketchOn(XY)
@@ -144,7 +144,7 @@ fn decagon(@radius) {
 
 /* The `decagon` above is basically like this pseudo-code:
 fn decagon(radius):
-    stepAngle = ((1/10) * TAU): number(rad)
+    stepAngle = ((1/10) * TAU): rad
     plane = startSketchOn(XY)
     startOfDecagonSketch = startProfile(plane, at = [(cos(0)*radius), (sin(0) * radius)])
 

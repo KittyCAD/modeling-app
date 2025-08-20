@@ -29,7 +29,7 @@ tan(@num: number(Angle)): number
 ```kcl
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
-  |> angledLine(angle = 50deg, length = 50 * tan((1 / 2): number(rad)))
+  |> angledLine(angle = 50deg, length = 50 * tan((1 / 2): rad))
   |> yLine(endAbsolute = 0)
   |> close()
 
