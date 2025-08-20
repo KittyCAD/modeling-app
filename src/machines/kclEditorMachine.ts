@@ -1,6 +1,6 @@
 import type { EditorSelection } from '@codemirror/state'
 import type { StateFrom } from 'xstate'
-import { assign, createActor, setup } from 'xstate'
+import { assign, createActor, setup, assertEvent } from 'xstate'
 
 type SelectionEvent = {
   codeMirrorSelection: EditorSelection
@@ -9,10 +9,12 @@ type SelectionEvent = {
 type KclEditorMachineEvent =
   | { type: 'setKclEditorMounted'; data: boolean }
   | { type: 'setLastSelectionEvent'; data?: SelectionEvent }
+  | { type: 'setLivePathsToWatch'; data: string[] }
 
 interface KclEditorMachineContext {
   isKclEditorMounted: boolean
   lastSelectionEvent?: SelectionEvent
+  livePathsToWatch: string[]
 }
 
 /**
@@ -37,6 +39,15 @@ export const kclEditorMachine = setup({
           ? event.data
           : context.lastSelectionEvent,
     }),
+    setLivePathsToWatch: assign({
+      livePathsToWatch: ({ event }) => {
+        assertEvent(
+          event,
+          'setLivePathsToWatch'
+        )
+        return event.data
+      }
+  }),
   },
 }).createMachine({
   /** @xstate-layout N4IgpgJg5mDOIC5QGsDGAbAohAlgFwHsAnAWQENUALHAOzAGJYw8BpDbfYkggVxr0gBtAAwBdRKAAOBWPhwEaEkAA9EARmEB2AHTCALACYAzGs0BWMwDYAHNZOWANCACeiALRrL2tQesGzamZ+FgYAnJqaAL7RTjQEEHBKaFi4hKQU1HRK0rJ48opIKupq2tZmwgZ6RpZ6msJGeqaOLupG1tq+bQFalZqWZtHRQA */
@@ -44,6 +55,7 @@ export const kclEditorMachine = setup({
   context: {
     isKclEditorMounted: false,
     lastSelectionEvent: undefined,
+    livePathsToWatch: []
   },
   on: {
     setKclEditorMounted: {
@@ -52,6 +64,9 @@ export const kclEditorMachine = setup({
     setLastSelectionEvent: {
       actions: 'setLastSelectionEvent',
     },
+    setLivePathsToWatch: {
+      actions: 'setLivePathsToWatch'
+    }
   },
 })
 
