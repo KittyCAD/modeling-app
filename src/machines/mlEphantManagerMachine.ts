@@ -66,7 +66,7 @@ export type MlEphantManagerEvents =
     }
   | {
       type: MlEphantManagerTransitions.GetReasoningForPrompt
-      // Causes a cyclic type dependency if I use MlEphantManagerActor, 
+      // Causes a cyclic type dependency if I use MlEphantManagerActor,
       // so for now, it's any.
       refParent: any
       promptId: string
@@ -630,10 +630,9 @@ export const mlEphantManagerMachine = setup({
                       event: {
                         type: MlEphantManagerTransitions.GetReasoningForPrompt,
                         refParent: args.self,
-                        promptId:
-                          (args.event.output as any).promptsBelongingToConversation.slice(
-                            -1
-                          )[0],
+                        promptId: (
+                          args.event.output as any
+                        ).promptsBelongingToConversation.slice(-1)[0],
                       },
                       context: args.context,
                     }
