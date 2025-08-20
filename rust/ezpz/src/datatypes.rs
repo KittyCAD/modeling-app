@@ -1,7 +1,7 @@
 use kittycad_modeling_cmds::shared::Angle;
 use libm::{cos, sin};
 
-use crate::id::Id;
+use crate::{IdGenerator, id::Id};
 
 /// 1D distance.
 pub type Distance = f64;
@@ -20,11 +20,17 @@ impl DatumDistance {
 #[derive(Clone, Copy)]
 pub struct DatumPoint {
     id: Id,
+    x_id: Id,
+    y_id: Id,
 }
 
 impl DatumPoint {
-    pub fn new(id: Id) -> Self {
-        Self { id }
+    pub fn new(id_generator: &mut IdGenerator) -> Self {
+        Self {
+            id: id_generator.next_id(),
+            x_id: id_generator.next_id(),
+            y_id: id_generator.next_id(),
+        }
     }
 }
 
@@ -36,12 +42,12 @@ impl DatumPoint {
 
     /// Id for the X component of the point.
     pub fn id_x(&self) -> Id {
-        self.id.child_x_component()
+        self.x_id
     }
 
     /// Id for the Y component of the point.
     pub fn id_y(&self) -> Id {
-        self.id.child_y_component()
+        self.y_id
     }
 }
 
@@ -77,6 +83,16 @@ pub struct LineSegment {
     pub id: Id,
     pub p0: DatumPoint,
     pub p1: DatumPoint,
+}
+
+impl LineSegment {
+    pub fn new(p0: DatumPoint, p1: DatumPoint, id_generator: &mut IdGenerator) -> Self {
+        Self {
+            p0,
+            p1,
+            id: id_generator.next_id(),
+        }
+    }
 }
 
 /// A circle.

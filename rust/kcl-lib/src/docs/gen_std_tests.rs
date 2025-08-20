@@ -193,7 +193,7 @@ fn generate_example(index: usize, src: &str, props: &ExampleProperties, file_nam
         base64::engine::general_purpose::STANDARD.encode(&image_data)
     };
 
-    let gltf_path = if props.norun {
+    let gltf_path = if props.norun || props.no3d {
         String::new()
     } else {
         // Refers to the specific path of zoo.dev that assets are served under.
