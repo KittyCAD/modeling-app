@@ -286,7 +286,7 @@ export const mlEphantManagerMachine = setup({
                 if (!msg) return
 
                 if ((msg as Thought).reasoning) {
-                  sendTo(args.input.event.refParent, {
+                  args.input.event.refParent.send({
                     type: MlEphantManagerTransitions.AppendThoughtForPrompt,
                     promptId: args.input.event.promptId,
                     thought: msg,
