@@ -1,4 +1,4 @@
-import { assign, setup, fromPromise } from 'xstate'
+import { assertEvent, assign, setup, fromPromise } from 'xstate'
 import type { ActorRefFrom } from 'xstate'
 
 import { S, transitions } from '@src/machines/utils'
@@ -94,16 +94,13 @@ export type MlEphantManagerEvents =
 type XSEvent<T> = Extract<MlEphantManagerEvents, { type: T }>
 
 export interface Thought {
-  reasoning?: {
-    type:
-      | 'text'
-      | 'kcl_code_examples'
-      | 'kcl_docs'
-      | 'generated_kcl_code'
-      | 'feature_tree_outline'
-      | 'error'
-    content: string
-  }
+  reasoning?: 
+      { type: 'text', content: string }
+    | { type: 'kcl_code_examples', content:string }
+    | { type: 'kcl_docs', content:string }
+    | { type: 'generated_kcl_code', code:string }
+    | { type: 'feature_tree_outline', content:string }
+    | { type: 'error', content:string }
   tool_output?: {
     result: {
       type: 'text_to_cad'
@@ -239,11 +236,11 @@ export const mlEphantManagerMachine = setup({
 
         // Clear the prompts pool and what prompts we were tracking.
         const promptsPoolNext = new Map(context.promptsPool)
-        let promptsBelongingToConversationNext = []
+        let promptsBelongingToConversationNext: MlEphantManagerContext['promptsBelongingToConversation'] = []
 
         result.items.reverse().forEach((prompt) => {
           promptsPoolNext.set(prompt.id, { ...prompt, source_ranges: [] })
-          promptsBelongingToConversationNext.push(prompt.id)
+          promptsBelongingToConversationNext?.push(prompt.id)
         })
 
         promptsBelongingToConversationNext =
@@ -339,7 +336,7 @@ export const mlEphantManagerMachine = setup({
 
         const promptsPool = context.promptsPool
         const promptsBelongingToConversation = Array.from(
-          context.promptsBelongingToConversation
+          context.promptsBelongingToConversation ?? []
         )
         const promptsMeta = new Map(context.promptsMeta)
 
@@ -632,6 +629,7 @@ export const mlEphantManagerMachine = setup({
                 actions: [
                   assign({
                     promptsMeta: ({ event, context }) => {
+                      assertEvent(event, MlEphantManagerTransitions.AppendThoughtForPrompt)
                       let next = new Map(context.promptsMeta)
                       next.get(event.promptId)?.thoughts.push(event.thought)
                       return next

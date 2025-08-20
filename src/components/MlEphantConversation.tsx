@@ -1,4 +1,4 @@
-import type { MlEphantManagerContext } from '@src/machine/mlEphantManagerMachine'
+import type { MlEphantManagerContext } from '@src/machines/mlEphantManagerMachine'
 import type { ReactNode } from 'react'
 import { useRef, useEffect, useState } from 'react'
 import type { Prompt } from '@src/lib/prompt'

@@ -210,7 +210,7 @@ export function ModelingSidebar(props: ModelingSidebarProps) {
     filteredPanes.some((thisSidePane) => thisSidePane.id === openPaneId)
   )
   const pointerEventsCssClass =
-    openPanesForThisSide === 0 ? 'pointer-events-none ' : 'pointer-events-auto '
+    openPanesForThisSide.length === 0 ? 'pointer-events-none ' : 'pointer-events-auto '
 
   const paneBadgeMap: Record<SidebarType, BadgeInfoComputed> = useMemo(() => {
     return filteredPanes.reduce(

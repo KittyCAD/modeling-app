@@ -3,7 +3,7 @@ import { CustomIcon } from '@src/components/CustomIcon'
 import type { Prompt } from '@src/lib/prompt'
 import type { IResponseMlConversation } from '@src/lib/textToCad'
 import { useEffect, useState, useRef, useLayoutEffect } from 'react'
-import type { PromptMeta } from '@src/machines/mlEphantManagerMachine'
+import type { PromptMeta, Thought } from '@src/machines/mlEphantManagerMachine'
 import type { ReactNode } from 'react'
 import Loading from '@src/components/Loading'
 import { Thinking } from '@src/components/Thinking'
@@ -45,7 +45,8 @@ export const ConvoCard = (props: ConvoCardProps) => {
 
 export interface PromptCardProps extends Prompt {
   disabled?: boolean
-  promptMeta: PromptMeta
+  promptMeta?: PromptMeta
+  userAvatar?: string
   onAction?: (id: Prompt['id'], prompt: Prompt['prompt']) => void
   onFeedback?: (id: string, feedback: Prompt['feedback']) => void
 }
@@ -204,6 +205,7 @@ export const PromptCard = (props: PromptCardProps) => {
       {showFullReasoning && (
         <div>
           <PromptCardStatus
+            id={props.id}
             status={props.status}
             maybeError={props.error}
             thoughts={props.promptMeta?.thoughts ?? []}
@@ -226,6 +228,7 @@ export const PromptCard = (props: PromptCardProps) => {
             />
           )}
           <PromptCardStatus
+            id={props.id}
             status={props.status}
             maybeError={props.error}
             thoughts={props.promptMeta?.thoughts ?? []}

@@ -39,7 +39,7 @@ export const MlEphantConversationPane = (props: {
   contextModeling: ModelingMachineContext
   loaderFile: FileEntry | undefined
   settings: typeof settings
-  user: Models['User_type']
+  user?: Models['User_type']
 }) => {
   const mlEphantManagerActorSnapshot = props.mlEphantManagerActor.getSnapshot()
   const promptsBelongingToConversation = useSelector(
@@ -214,6 +214,10 @@ export const MlEphantConversationPane = (props: {
         return
       }
 
+      if (next.context.promptsBelongingToConversation === undefined) {
+        return 
+      }
+
       const promptIdLastAdded =
         next.context.promptsBelongingToConversation[
           next.context.promptsBelongingToConversation.length - 1
@@ -229,6 +233,11 @@ export const MlEphantConversationPane = (props: {
       }
 
       promptIdLastSeen = promptIdLastAdded
+
+      if (next.context.apiTokenMlephant === undefined) { 
+        console.warn('apiTokenMlephant is unexpectedly undefined')
+        return 
+      }
 
       connectReasoningStream(next.context.apiTokenMlephant, promptIdLastAdded, {
         on: {
@@ -271,7 +280,7 @@ export const MlEphantConversationPane = (props: {
           .pageTokenPromptsBelongingToConversation
       }
       onSeeMoreHistory={onSeeMoreHistory}
-      userAvatarSrc={props.user.image}
+      userAvatarSrc={props.user?.image}
     />
   )
 }

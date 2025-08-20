@@ -1,8 +1,11 @@
+import ms from 'ms'
+
 import { SafeRenderer } from '@src/lib/markdown'
 import { Marked, escape, unescape } from '@ts-stack/markdown'
 
 import { CustomIcon } from '@src/components/CustomIcon'
 import { useEffect, useState, useRef, type ReactNode } from 'react'
+import type { Thought } from '@src/machines/mlEphantManagerMachine'
 
 export const Generic = (props: {
   content: string
@@ -12,7 +15,7 @@ export const Generic = (props: {
 
 export const KclCodeExamples = (props: { content: string }) => {
   return (
-    <Thought
+    <ThoughtContainer
       heading={
         <ThoughtHeader icon={<CustomIcon name="file" className="w-6 h-6" />}>
           KCL Sample
@@ -24,13 +27,13 @@ export const KclCodeExamples = (props: { content: string }) => {
           <pre>{props.content}</pre>
         </div>
       </ThoughtContent>
-    </Thought>
+    </ThoughtContainer>
   )
 }
 
 export const GeneratedKclCode = (props: { code: string }) => {
   return (
-    <Thought
+    <ThoughtContainer
       heading={
         <ThoughtHeader icon={<CustomIcon name="code" className="w-6 h-6" />}>
           'Generated KCL Code'
@@ -42,13 +45,13 @@ export const GeneratedKclCode = (props: { code: string }) => {
           <pre>{props.code}</pre>
         </div>
       </ThoughtContent>
-    </Thought>
+    </ThoughtContainer>
   )
 }
 
 export const ErrorneousThing = (props: { content: string }) => {
   return (
-    <Thought
+    <ThoughtContainer
       heading={
         <ThoughtHeader
           icon={<CustomIcon name="triangleExclamation" className="w-6 h-6" />}
@@ -60,7 +63,7 @@ export const ErrorneousThing = (props: { content: string }) => {
       <ThoughtContent>
         return <div>{props.content}</div>
       </ThoughtContent>
-    </Thought>
+    </ThoughtContainer>
   )
 }
 
@@ -73,7 +76,7 @@ export const KclDocs = (props: { content: string }) => {
     unescape,
   }
   return (
-    <Thought
+    <ThoughtContainer
       heading={
         <ThoughtHeader
           icon={<CustomIcon name="folderOpen" className="w-6 h-6" />}
@@ -92,7 +95,7 @@ export const KclDocs = (props: { content: string }) => {
           }}
         ></div>
       </ThoughtContent>
-    </Thought>
+    </ThoughtContainer>
   )
 }
 
@@ -105,7 +108,7 @@ export const FeatureTreeOutline = (props: { content: string }) => {
     escape,
   }
   return (
-    <Thought
+    <ThoughtContainer
       heading={
         <ThoughtHeader
           icon={<CustomIcon name="fileExplorer" className="w-6 h-6" />}
@@ -124,7 +127,7 @@ export const FeatureTreeOutline = (props: { content: string }) => {
           }}
         ></div>
       </ThoughtContent>
-    </Thought>
+    </ThoughtContainer>
   )
 }
 
@@ -215,7 +218,7 @@ export const ThoughtExpand = (props: {
   )
 }
 
-export const Spacer = (props: { content: string }) => {
+export const Spacer = () => {
   return (
     <ThoughtContent>
       <div></div>
@@ -225,7 +228,7 @@ export const Spacer = (props: { content: string }) => {
 
 export const Text = (props: { content: string }) => {
   return (
-    <Thought
+    <ThoughtContainer
       heading={
         <ThoughtHeader
           icon={<CustomIcon name="ellipse1" className="w-6 h-6" />}
@@ -233,22 +236,21 @@ export const Text = (props: { content: string }) => {
           <Generic content={props.content} />
         </ThoughtHeader>
       }
-    ></Thought>
+    ></ThoughtContainer>
   )
 }
 
 export const End = (props: { content: string }) => {
   return (
-    <Thought>
+    <ThoughtContainer>
       <ThoughtHeader icon={<CustomIcon name="ellipse1" className="w-6 h-6" />}>
         End
       </ThoughtHeader>
-    </Thought>
+    </ThoughtContainer>
   )
 }
 
-export const Thought = (props: {
-  icon: ReactNode
+export const ThoughtContainer = (props: {
   heading?: ReactNode
   children?: ReactNode
 }) => {
@@ -265,16 +267,33 @@ interface Range {
   end?: number
 }
 
-const DATA_TO_COMPONENT: Record<Thought['reasoning']['type'], ReactNode> = {
-  text: Text,
-  kcl_code_examples: KclCodeExamples,
-  feature_tree_outline: FeatureTreeOutline,
-  kcl_docs: KclDocs,
-  generated_kcl_code: GeneratedKclCode,
-  error: ErrorneousThing,
+const fromDataToComponent = (thought: Thought, options: { key?: string | number }) => {
+  switch (thought.reasoning?.type) {
+    case 'text': {
+      return <>
+        <Text key={options.key} content={thought.reasoning?.content} />,
+        <Spacer />,
+      </>
+    }
+    case 'kcl_code_examples': {
+      return <KclCodeExamples key={options.key} content={thought.reasoning?.content} />
+    }
+    case 'feature_tree_outline': {
+      return <FeatureTreeOutline key={options.key} content={thought.reasoning?.content} />
+    }
+    case 'kcl_docs': {
+      return <KclDocs key={options.key} content={thought.reasoning?.content} />
+    }
+    case 'generated_kcl_code': {
+      return <GeneratedKclCode key={options.key} code={thought.reasoning?.code} />
+    }
+    case 'error': {
+      return <ErrorneousThing key={options.key} content={thought.reasoning?.content} />
+    }
+    default:
+      return null
+  }
 }
-
-const Unknown = Text
 
 export const Thinking = (props: {
   thoughts: Thought[]
@@ -296,29 +315,11 @@ export const Thinking = (props: {
     c[c.length - 1].scrollIntoView({ behavior: 'smooth' })
   }, [props.thoughts.length])
 
-  const componentThoughts = props.thoughts.flatMap(
-    (thought: Thought, index: number) => {
+  const componentThoughts = props.thoughts.map(
+    (thought, index: number) => {
       // Maybe be a tool_output
       if (thought.reasoning === undefined) return null
-
-      let Component = DATA_TO_COMPONENT[thought.reasoning.type]
-      if (!Component) {
-        console.warn('Unknown type: ' + thought.reasoning.type)
-        Component = Unknown
-      }
-
-      if (thought.reasoning?.type === 'generated_kcl_code') {
-        return <Component key={index} code={thought.reasoning?.code} />
-      }
-
-      if (thought.reasoning?.type === 'text') {
-        return [
-          <Component key={index} content={thought.reasoning?.content} />,
-          <Spacer />,
-        ]
-      }
-
-      return <Component key={index} content={thought.reasoning?.content} />
+      return fromDataToComponent(thought, { key: index })
     }
   )
 
@@ -326,7 +327,9 @@ export const Thinking = (props: {
     <Generic
       content={
         props.thoughts.findLast(
-          (thought: Thought) => thought.reasoning?.type === 'text'
+          (thought) => thought.reasoning?.type === 'text'
+        // Typescript can't figure out only a `text` type or undefined is found
+        // @ts-expect-error
         )?.reasoning?.content ?? 'Processing...'
       }
     />

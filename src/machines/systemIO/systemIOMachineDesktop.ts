@@ -695,14 +695,14 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
 
       // We need the settings path to find the sibling `ml-conversations.json`
       try {
-        const json = await window.electron.readFile(
-          window.electron.path.join(
-            window.electron.path.dirname(await getAppSettingsFilePath()),
+        const json = await window.electron?.readFile(
+          window.electron?.path.join(
+            window.electron?.path.dirname(await getAppSettingsFilePath(window.electron)),
             ML_CONVERSATIONS_FILE_NAME
           ),
           'utf-8'
         )
-        return jsonToMlConversations(json)
+        return jsonToMlConversations(json ?? '')
       } catch (e) {
         console.warn('Cannot get conversations', e)
         return new Map()
@@ -726,9 +726,9 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           args.input.event.data.conversationId
         )
         const json = mlConversationsToJson(next)
-        await window.electron.writeFile(
-          window.electron.path.join(
-            window.electron.path.dirname(await getAppSettingsFilePath()),
+        await window.electron?.writeFile(
+          window.electron?.path.join(
+            window.electron?.path.dirname(await getAppSettingsFilePath(window.electron)),
             ML_CONVERSATIONS_FILE_NAME
           ),
           json

@@ -11,7 +11,7 @@ export function connectReasoningStream(
       open?: () => void
       message: (msg: any) => void
       close?: () => void
-      error?: (e: Event<Error>) => void
+      error?: (e: Event) => void
     }
   }
 ): void {

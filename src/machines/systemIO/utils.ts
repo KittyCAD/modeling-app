@@ -225,7 +225,7 @@ export const collectProjectFiles = async (args: {
   selectedFileContents: string
   fileNames: ExecState['filenames']
   targetFile?: FileEntry
-  projectContext?: any
+  projectContext?: Project
 }) => {
   let projectFiles: FileMeta[] = [
     {
@@ -259,17 +259,18 @@ export const collectProjectFiles = async (args: {
         }
 
         const absolutePathToFileNameWithExtension = file.path
-        const fileNameWithExtension = window.electron.path.relative(
-          basePath,
-          absolutePathToFileNameWithExtension
-        )
+        const fileNameWithExtension =
+          window.electron?.path.relative(
+            basePath,
+            absolutePathToFileNameWithExtension
+          ) ?? ''
 
         const filePromise = window.electron
-          .readFile(absolutePathToFileNameWithExtension)
+          ?.readFile(absolutePathToFileNameWithExtension)
           .then((file): FileMeta => {
             uploadSize += file.byteLength
             const decoder = new TextDecoder('utf-8')
-            const fileType = window.electron.path.extname(
+            const fileType = window.electron?.path.extname(
               absolutePathToFileNameWithExtension
             )
             if (fileType === FILE_EXT) {
@@ -295,6 +296,8 @@ export const collectProjectFiles = async (args: {
             console.error('error reading file', e)
             return null
           })
+
+        if (filePromise === undefined) { continue }
 
         filePromises.push(filePromise)
       }
