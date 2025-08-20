@@ -1,4 +1,3 @@
-import { connectReasoningStream } from '@src/lib/reasoningWs'
 import { reportRejection } from '@src/lib/trap'
 import { NIL as uuidNIL } from 'uuid'
 import { type settings } from '@src/lib/settings/initialSettings'
@@ -203,63 +202,6 @@ export const MlEphantConversationPane = (props: {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [props.settings.meta.id.current])
-
-  // If a prompt was just created or iterated, let's connect to the websocket,
-  // watch its reasoning, and store the thoughts in the mlephant actor for
-  // passing to components to render.
-  useEffect(() => {
-    let promptIdLastSeen = ''
-    const subscription = props.mlEphantManagerActor.subscribe((next) => {
-      if (next.context.conversationId === undefined) {
-        return
-      }
-
-      if (next.context.promptsBelongingToConversation === undefined) {
-        return
-      }
-
-      const promptIdLastAdded =
-        next.context.promptsBelongingToConversation[
-          next.context.promptsBelongingToConversation.length - 1
-        ]
-
-      if (promptIdLastSeen === '') {
-        promptIdLastSeen = promptIdLastAdded
-        return
-      }
-
-      if (promptIdLastSeen === promptIdLastAdded) {
-        return
-      }
-
-      promptIdLastSeen = promptIdLastAdded
-
-      if (next.context.apiTokenMlephant === undefined) {
-        console.warn('apiTokenMlephant is unexpectedly undefined')
-        return
-      }
-
-      connectReasoningStream(next.context.apiTokenMlephant, promptIdLastAdded, {
-        on: {
-          message(msg: any) {
-            if (!msg) return
-
-            if ((msg as Thought).reasoning) {
-              props.mlEphantManagerActor.send({
-                type: MlEphantManagerTransitions.AppendThoughtForPrompt,
-                promptId: promptIdLastAdded,
-                thought: msg,
-              })
-            }
-          },
-        },
-      })
-    })
-
-    return () => {
-      subscription.unsubscribe()
-    }
-  }, [])
 
   return (
     <MlEphantConversation

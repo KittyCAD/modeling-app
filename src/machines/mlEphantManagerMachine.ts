@@ -1,4 +1,5 @@
-import { assertEvent, assign, setup, fromPromise } from 'xstate'
+import { connectReasoningStream } from '@src/lib/reasoningWs'
+import { assertEvent, assign, setup, fromPromise, sendTo } from 'xstate'
 import type { ActorRefFrom } from 'xstate'
 
 import { S, transitions } from '@src/machines/utils'
@@ -42,6 +43,7 @@ export enum MlEphantManagerTransitions {
   GetConversationsThatCreatedProjects = 'get-conversations-that-created-projects',
   GetPromptsBelongingToConversation = 'get-prompts-belonging-to-conversation',
   GetPromptsPendingStatuses = 'get-prompts-pending-statuses',
+  GetReasoningForPrompt = 'get-reasoning-for-prompt',
   PromptEditModel = 'prompt-edit-model',
   PromptCreateModel = 'prompt-create-model',
   PromptFeedback = 'prompt-feedback',
@@ -61,6 +63,10 @@ export type MlEphantManagerEvents =
       type: MlEphantManagerTransitions.GetPromptsBelongingToConversation
       conversationId?: string
       nextPage?: string
+    }
+  | {
+      type: MlEphantManagerTransitions.GetReasoningForPrompt
+      promptId: string
     }
   | {
       type: MlEphantManagerTransitions.PromptCreateModel
@@ -257,9 +263,41 @@ export const mlEphantManagerMachine = setup({
         }
       }
     ),
+    // This is a kind of special transition.
+    // We spawn the websocket, and then go back to the idling state.
+    // That socket then can send more messages to the machine.
+    // In a sense, it's an action.
+    [MlEphantManagerTransitions.GetReasoningForPrompt]: fromPromise(
+      async function (args: {
+        input: {
+          event: XSEvent<MlEphantManagerTransitions.GetReasoningForPrompt>
+          context: MlEphantManagerContext
+        }
+      }): Promise<Partial<MlEphantManagerContext>> {
+        if (args.input.context.apiTokenMlephant === undefined)
+          return Promise.reject('missing api token')
+
+        connectReasoningStream(args.input.context.apiTokenMlephant, args.input.event.promptId, {
+          on: {
+            message(msg: any) {
+              if (!msg) return
+
+              if ((msg as Thought).reasoning) {
+                sendTo(args.input.event.refParent, {
+                  type: MlEphantManagerTransitions.AppendThoughtForPrompt,
+                  promptId: args.input.event.promptId,
+                  thought: msg,
+                })
+              }
+            },
+          },
+        })
+
+        return {}
+      }
+    ),
     [MlEphantManagerTransitions.PromptCreateModel]: fromPromise(
       async function (args: {
-        system: any
         input: {
           event: XSEvent<MlEphantManagerTransitions.PromptCreateModel>
           context: MlEphantManagerContext
@@ -304,7 +342,6 @@ export const mlEphantManagerMachine = setup({
     ),
     [MlEphantManagerTransitions.PromptEditModel]: fromPromise(
       async function (args: {
-        system: any
         input: {
           event: XSEvent<MlEphantManagerTransitions.PromptEditModel>
           context: MlEphantManagerContext
@@ -533,6 +570,7 @@ export const mlEphantManagerMachine = setup({
               on: transitions([
                 MlEphantManagerTransitions.GetConversationsThatCreatedProjects,
                 MlEphantManagerTransitions.GetPromptsBelongingToConversation,
+                MlEphantManagerTransitions.GetReasoningForPrompt,
                 MlEphantManagerTransitions.PromptCreateModel,
                 MlEphantManagerTransitions.PromptEditModel,
                 MlEphantManagerTransitions.PromptFeedback,
@@ -579,6 +617,33 @@ export const mlEphantManagerMachine = setup({
                 onError: { target: S.Await, actions: console.error },
               },
             },
+            [MlEphantManagerTransitions.GetReasoningForPrompt]: {
+              invoke: {
+                input: (args) => {
+                  if (args.event.output) {
+                    return  {
+                      event: {
+                        refParent: args.self.ref,
+                        promptId: args.event.output.promptsBelongingToConversation.slice(-1)[0],
+                      },
+                      context: args.context,
+                    }
+                  }
+
+                  return {
+                    event:
+                      args.event as XSEvent<MlEphantManagerTransitions.GetReasoningForPrompt>,
+                    context: args.context,
+                  }
+                },
+                src: MlEphantManagerTransitions.GetReasoningForPrompt,
+                onDone: {
+                  target: S.Await,
+                  actions: assign(({ event }) => event.output),
+                },
+                onError: { target: S.Await, actions: console.error },
+              },
+            },
             [MlEphantManagerTransitions.PromptCreateModel]: {
               invoke: {
                 input: (args) => ({
@@ -588,7 +653,7 @@ export const mlEphantManagerMachine = setup({
                 }),
                 src: MlEphantManagerTransitions.PromptCreateModel,
                 onDone: {
-                  target: S.Await,
+                  target: MlEphantManagerTransitions.GetReasoningForPrompt,
                   actions: assign(({ event }) => event.output),
                 },
                 onError: { target: S.Await, actions: console.error },
@@ -603,7 +668,7 @@ export const mlEphantManagerMachine = setup({
                 }),
                 src: MlEphantManagerTransitions.PromptEditModel,
                 onDone: {
-                  target: S.Await,
+                  target: MlEphantManagerTransitions.GetReasoningForPrompt,
                   actions: assign(({ event }) => event.output),
                 },
                 onError: { target: S.Await, actions: console.error },

@@ -360,7 +360,7 @@ export const Thinking = (props: {
       ref={refViewFull}
       className="text-chalkboard-100 rounded-md bg-chalkboard-20 pl-2 pr-2 pt-4 pb-6 border border-chalkboard-30 shadow-md"
     >
-      {componentThoughts}
+      {componentThoughts.length > 0 ? componentThoughts : <Text content={'Processing...'} />}
     </div>
   )
 
