@@ -237,4 +237,49 @@ mod tests {
         //     eprintln!("p{point_num}: ({x},{y})");
         // }
     }
+
+    #[test]
+    fn angle_constraints() {
+        let mut id_generator = IdGenerator::default();
+        // It has 4 points.
+        let p0 = DatumPoint::new(&mut id_generator);
+        let p1 = DatumPoint::new(&mut id_generator);
+        let p2 = DatumPoint::new(&mut id_generator);
+        let line0 = LineSegment::new(p0, p1, &mut id_generator);
+        let line1 = LineSegment::new(p1, p2, &mut id_generator);
+        let constraints = vec![
+            // p0 is the origin
+            Constraint::Fixed(p0.id_x(), 0.0),
+            Constraint::Fixed(p0.id_y(), 0.0),
+            // Both lines are parallel
+            Constraint::lines_parallel([line0, line1]),
+            // Both lines are the same distance
+            Constraint::Distance(p0, p1, 32.0f64.sqrt()),
+            Constraint::Distance(p1, p2, 32.0f64.sqrt()),
+            Constraint::Fixed(p1.id_x(), 4.0),
+        ];
+
+        let initial_guesses = vec![
+            (p0.id_x(), 0.0),
+            (p0.id_y(), 0.0),
+            (p1.id_x(), 3.0f64.sqrt()),
+            (p1.id_y(), 3.0f64.sqrt()),
+            (p2.id_x(), 6.0f64.sqrt()),
+            (p2.id_y(), 6.0f64.sqrt()),
+        ];
+
+        let actual = solve(constraints, initial_guesses).unwrap();
+
+        let expected = [(0.0, 0.0), (4.0, 4.0), (8.0, 8.0)];
+        assert!(actual.iterations <= 10);
+        let actual = [
+            (actual.final_values[0], actual.final_values[1]),
+            (actual.final_values[2], actual.final_values[3]),
+            (actual.final_values[4], actual.final_values[5]),
+        ];
+        for i in 0..3 {
+            assert!((expected[i].0 - actual[i].0).abs() < 0.000001);
+            assert!((expected[i].1 - actual[i].1).abs() < 0.000001);
+        }
+    }
 }
