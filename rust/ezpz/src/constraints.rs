@@ -146,7 +146,7 @@ impl Constraint {
     /// Returns rows of the Jacobian, where in each row,
     /// each column is a variable's partial derivative for this equation.
     /// One row per equation this constraint corresponds to.
-    pub fn jacobian_section(
+    pub fn jacobian_rows(
         &self,
         layout: &Layout,
         current_assignments: &[f64],

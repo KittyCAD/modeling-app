@@ -6,6 +6,7 @@ use crate::{Constraint, NonLinearSystemError, constraints::lookup, id::Id};
 pub struct Layout {
     /// Equivalent to number of rows in the matrix being solved.
     total_num_residuals: usize,
+    /// One variable per column of the matrix.
     all_variables: Vec<Id>,
 }
 
@@ -21,7 +22,7 @@ impl RowMap for Layout {
     // So this function lets you look up the index of a particular variable in that vec.
     // `bus` is the row index and `var` is the variable being looked up,
     // and you get the index (column) of the variable in that row.
-    fn row(&self, _bus: usize, var: Self::Var) -> Option<usize> {
+    fn row(&self, _row_number: usize, var: Self::Var) -> Option<usize> {
         lookup(var, &self.all_variables).ok()
     }
 }
@@ -34,6 +35,7 @@ impl Layout {
     pub fn num_cols(&self) -> usize {
         self.all_variables.len()
     }
+
     pub fn num_rows(&self) -> usize {
         self.dim()
     }
@@ -75,12 +77,6 @@ impl std::fmt::Debug for Jc {
             writeln!(f)?;
         }
         Ok(())
-        // f.debug_struct("Jc")
-        //     // .field("sym", &self.sym)
-        //     .field("vals", &self.vals)
-        //     .field("rows", &nrows)
-        //     .field("cols", &ncols)
-        //     .finish()
     }
 }
 
@@ -118,25 +114,15 @@ impl Model {
             num_cols = total number of variables
                        which is = total number of "involved primitive IDs"
         */
-        // eprintln!("{} constraints", constraints.len());
-        // for (i, c) in constraints.iter().enumerate() {
-        //     eprintln!(
-        //         "\t{i}: {} ({} residual{})",
-        //         c.constraint_kind(),
-        //         c.residual_dim(),
-        //         if c.residual_dim() > 1 { "s" } else { "" }
-        //     );
-        // }
         let num_residuals: usize = constraints.iter().map(|c| c.residual_dim()).sum();
         let num_cols = all_variables.len();
         let num_rows = num_residuals;
-        // eprintln!("Matrix size is {num_rows} rows by {num_cols} cols");
 
         // Generate the matrix.
         let pairs = gen_pairs(num_cols, num_rows);
         let (sym, _) = SymbolicSparseColMat::try_new_from_indices(num_rows, num_cols, &pairs).unwrap();
         let num_cells = sym.col_ptr()[sym.ncols()];
-        assert_eq!(num_cells, num_cols * num_rows);
+        debug_assert_eq!(num_cells, num_cols * num_rows);
 
         // All done.
         Self {
@@ -178,7 +164,6 @@ impl NonlinearSystem for Model {
     fn residual(&self, current_assignments: &[Self::Real], out: &mut [Self::Real]) -> Result<(), Self::Error> {
         // Each row of `out` corresponds to one row of the matrix, i.e. one equation.
         // Each item of `current_assignments` corresponds to one column of the matrix, i.e. one variable.
-        // eprintln!("Current variables:\n{current_assignments:?}");
         let mut row_num = 0;
         for constraint in &self.constraints {
             let residuals = constraint.residual(&self.layout, current_assignments)?;
@@ -200,13 +185,19 @@ impl NonlinearSystem for Model {
 
     /// Update the values of a cached sparse Jacobian.
     fn refresh_jacobian(&mut self, current_assignments: &[Self::Real]) -> Result<(), Self::Error> {
-        // eprintln!("Refreshing jacobian.");
         let num_cols = self.layout.num_cols();
         let num_rows = self.layout.num_rows();
         let mut row_num = 0;
         for constraint in &self.constraints {
-            let jacobian_rows = constraint.jacobian_section(&self.layout, current_assignments)?;
-            debug_assert_eq!(jacobian_rows.len(), constraint.residual_dim());
+            let jacobian_rows = constraint.jacobian_rows(&self.layout, current_assignments)?;
+            debug_assert_eq!(
+                jacobian_rows.len(),
+                constraint.residual_dim(),
+                "Constraint {} should have {} Jacobian rows but actually had {}",
+                constraint.constraint_kind(),
+                constraint.residual_dim(),
+                jacobian_rows.len(),
+            );
 
             for jacobian_row in jacobian_rows {
                 // JacobianRow shows only nonzero values, so,
@@ -216,6 +207,10 @@ impl NonlinearSystem for Model {
                     let i = self.layout.index_of(jacobian_var.id)?;
                     row[i] = jacobian_var.partial_derivative;
                 }
+
+                // newton_faer requires the matrix in column-major order,
+                // so we write this row into a column of the matrix.
+                // Transpose basically.
                 let target_column_num = row_num;
                 row_num += 1;
                 for (i, v) in row.into_iter().enumerate() {
