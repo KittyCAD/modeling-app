@@ -601,7 +601,7 @@ function HomeHeader({
 function NoResults() {
   return (
     <div className="col-start-2 -col-end-1 w-full flex flex-col justify-center items-center">
-      No results.
+      No results found
     </div>
   )
 }
