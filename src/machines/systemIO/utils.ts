@@ -297,7 +297,9 @@ export const collectProjectFiles = async (args: {
             return null
           })
 
-        if (filePromise === undefined) { continue }
+        if (filePromise === undefined) {
+          continue
+        }
 
         filePromises.push(filePromise)
       }

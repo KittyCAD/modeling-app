@@ -215,7 +215,7 @@ export const MlEphantConversationPane = (props: {
       }
 
       if (next.context.promptsBelongingToConversation === undefined) {
-        return 
+        return
       }
 
       const promptIdLastAdded =
@@ -234,9 +234,9 @@ export const MlEphantConversationPane = (props: {
 
       promptIdLastSeen = promptIdLastAdded
 
-      if (next.context.apiTokenMlephant === undefined) { 
+      if (next.context.apiTokenMlephant === undefined) {
         console.warn('apiTokenMlephant is unexpectedly undefined')
-        return 
+        return
       }
 
       connectReasoningStream(next.context.apiTokenMlephant, promptIdLastAdded, {

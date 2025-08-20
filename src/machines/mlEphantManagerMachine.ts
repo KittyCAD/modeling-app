@@ -94,13 +94,13 @@ export type MlEphantManagerEvents =
 type XSEvent<T> = Extract<MlEphantManagerEvents, { type: T }>
 
 export interface Thought {
-  reasoning?: 
-      { type: 'text', content: string }
-    | { type: 'kcl_code_examples', content:string }
-    | { type: 'kcl_docs', content:string }
-    | { type: 'generated_kcl_code', code:string }
-    | { type: 'feature_tree_outline', content:string }
-    | { type: 'error', content:string }
+  reasoning?:
+    | { type: 'text'; content: string }
+    | { type: 'kcl_code_examples'; content: string }
+    | { type: 'kcl_docs'; content: string }
+    | { type: 'generated_kcl_code'; code: string }
+    | { type: 'feature_tree_outline'; content: string }
+    | { type: 'error'; content: string }
   tool_output?: {
     result: {
       type: 'text_to_cad'
@@ -236,7 +236,8 @@ export const mlEphantManagerMachine = setup({
 
         // Clear the prompts pool and what prompts we were tracking.
         const promptsPoolNext = new Map(context.promptsPool)
-        let promptsBelongingToConversationNext: MlEphantManagerContext['promptsBelongingToConversation'] = []
+        let promptsBelongingToConversationNext: MlEphantManagerContext['promptsBelongingToConversation'] =
+          []
 
         result.items.reverse().forEach((prompt) => {
           promptsPoolNext.set(prompt.id, { ...prompt, source_ranges: [] })
@@ -629,7 +630,10 @@ export const mlEphantManagerMachine = setup({
                 actions: [
                   assign({
                     promptsMeta: ({ event, context }) => {
-                      assertEvent(event, MlEphantManagerTransitions.AppendThoughtForPrompt)
+                      assertEvent(
+                        event,
+                        MlEphantManagerTransitions.AppendThoughtForPrompt
+                      )
                       let next = new Map(context.promptsMeta)
                       next.get(event.promptId)?.thoughts.push(event.thought)
                       return next

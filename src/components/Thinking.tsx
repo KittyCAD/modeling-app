@@ -267,28 +267,50 @@ interface Range {
   end?: number
 }
 
-const fromDataToComponent = (thought: Thought, options: { key?: string | number }) => {
+const fromDataToComponent = (
+  thought: Thought,
+  options: { key?: string | number }
+) => {
   switch (thought.reasoning?.type) {
     case 'text': {
-      return <>
-        <Text key={options.key} content={thought.reasoning?.content} />,
-        <Spacer />,
-      </>
+      return (
+        <>
+          <Text key={options.key} content={thought.reasoning?.content} />,
+          <Spacer />,
+        </>
+      )
     }
     case 'kcl_code_examples': {
-      return <KclCodeExamples key={options.key} content={thought.reasoning?.content} />
+      return (
+        <KclCodeExamples
+          key={options.key}
+          content={thought.reasoning?.content}
+        />
+      )
     }
     case 'feature_tree_outline': {
-      return <FeatureTreeOutline key={options.key} content={thought.reasoning?.content} />
+      return (
+        <FeatureTreeOutline
+          key={options.key}
+          content={thought.reasoning?.content}
+        />
+      )
     }
     case 'kcl_docs': {
       return <KclDocs key={options.key} content={thought.reasoning?.content} />
     }
     case 'generated_kcl_code': {
-      return <GeneratedKclCode key={options.key} code={thought.reasoning?.code} />
+      return (
+        <GeneratedKclCode key={options.key} code={thought.reasoning?.code} />
+      )
     }
     case 'error': {
-      return <ErrorneousThing key={options.key} content={thought.reasoning?.content} />
+      return (
+        <ErrorneousThing
+          key={options.key}
+          content={thought.reasoning?.content}
+        />
+      )
     }
     default:
       return null
@@ -315,21 +337,19 @@ export const Thinking = (props: {
     c[c.length - 1].scrollIntoView({ behavior: 'smooth' })
   }, [props.thoughts.length])
 
-  const componentThoughts = props.thoughts.map(
-    (thought, index: number) => {
-      // Maybe be a tool_output
-      if (thought.reasoning === undefined) return null
-      return fromDataToComponent(thought, { key: index })
-    }
-  )
+  const componentThoughts = props.thoughts.map((thought, index: number) => {
+    // Maybe be a tool_output
+    if (thought.reasoning === undefined) return null
+    return fromDataToComponent(thought, { key: index })
+  })
 
   const componentLastGenericThought = (
     <Generic
       content={
         props.thoughts.findLast(
           (thought) => thought.reasoning?.type === 'text'
-        // Typescript can't figure out only a `text` type or undefined is found
-        // @ts-expect-error
+          // Typescript can't figure out only a `text` type or undefined is found
+          // @ts-expect-error
         )?.reasoning?.content ?? 'Processing...'
       }
     />

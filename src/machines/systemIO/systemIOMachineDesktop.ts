@@ -697,7 +697,9 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
       try {
         const json = await window.electron?.readFile(
           window.electron?.path.join(
-            window.electron?.path.dirname(await getAppSettingsFilePath(window.electron)),
+            window.electron?.path.dirname(
+              await getAppSettingsFilePath(window.electron)
+            ),
             ML_CONVERSATIONS_FILE_NAME
           ),
           'utf-8'
@@ -728,7 +730,9 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
         const json = mlConversationsToJson(next)
         await window.electron?.writeFile(
           window.electron?.path.join(
-            window.electron?.path.dirname(await getAppSettingsFilePath(window.electron)),
+            window.electron?.path.dirname(
+              await getAppSettingsFilePath(window.electron)
+            ),
             ML_CONVERSATIONS_FILE_NAME
           ),
           json
