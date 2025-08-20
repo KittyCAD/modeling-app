@@ -178,7 +178,7 @@ fn solve_two_rectangles_dependent(c: &mut Criterion) {
 
     let mut constraints = constraints0;
     constraints.extend(constraints1);
-    c.bench_function("solve two rectangles", |b| {
+    c.bench_function("solve two rectangles dependent", |b| {
         b.iter(|| {
             let _actual = black_box(solve(constraints.clone(), initial_guesses.clone()).unwrap());
         })
