@@ -293,15 +293,23 @@ export function ModelingSidebar(props: ModelingSidebarProps) {
       }}
       minWidth={openPanesForThisSide.length ? 200 : undefined}
       handleWrapperClass="sidebar-resize-handles"
-      handleClasses={{
-        right: props.align !== Alignment.Right ? 'hidden' : css.handle,
-        left: props.align !== Alignment.Left ? 'hidden' : css.handle,
-        top: 'hidden',
-        topLeft: 'hidden',
-        topRight: 'hidden',
-        bottom: 'hidden',
-        bottomLeft: 'hidden',
-        bottomRight: 'hidden',
+      enable={{
+        right: props.align === Alignment.Left,
+        left: props.align === Alignment.Right,
+        top: false,
+        topLeft: false,
+        topRight: false,
+        bottom: false,
+        bottomLeft: false,
+        bottomRight: false,
+      }}
+      handleComponent={{
+        [props.align === Alignment.Left ? Alignment.Right : Alignment.Left]: (
+          <ResizeHandle
+            alignment={props.align}
+            className={openPanesForThisSide.length ? 'block ' : 'hidden '}
+          />
+        ),
       }}
     >
       <div
@@ -473,9 +481,8 @@ function ModelingPaneButton({
           title={
             showBadge.title
               ? showBadge.title
-              : `Click to view ${showBadge.value} notification${
-                  Number(showBadge.value) > 1 ? 's' : ''
-                }`
+              : `Click to view ${showBadge.value} notification{Number(showBadge.value) > 1 ? 's' : ''
+              }`
           }
         >
           <span className="sr-only">&nbsp;has&nbsp;</span>
@@ -496,17 +503,27 @@ function ModelingPaneButton({
   )
 }
 
-function ResizeHandle(props: HTMLProps<HTMLDivElement>) {
+function ResizeHandle(
+  props: HTMLProps<HTMLDivElement> & { alignment: Alignment }
+) {
+  const alignmentNegative = props.alignment === Alignment.Left ? '-' : ''
+  const oppositeAlignment =
+    props.alignment === Alignment.Left ? Alignment.Right : Alignment.Left
   return (
     <div
       {...props}
       className={'group/grip absolute inset-0 ' + props.className}
     >
-      <div className="hidden group-hover/grip:block absolute bg-chalkboard-30 dark:bg-chalkboard-70 w-[1px] h-auto left-1/2 top-0 bottom-0" />
       <div
-        className={
-          'hidden group-hover/grip:block py-1 absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 rounded-sm w-fit group-hover/grip:bg-chalkboard-30 group-hover/grip:dark:bg-chalkboard-70 bg-transparent transition-colors border border-transparent group-hover/grip:border-chalkboard-40 dark:group-hover/grip:border-chalkboard-90 duration-75 transition-ease-out delay-100'
-        }
+        className={`hidden group-hover/grip:block absolute bg-chalkboard-30 dark:bg-chalkboard-70 w-[1px] h-auto top-0 bottom-0`}
+        style={{
+          // Tailwind did not like trying to do computed class names here, so I've inlined the styles
+          [oppositeAlignment]: 'auto',
+          [props.alignment]: '50%',
+        }}
+      />
+      <div
+        className={`hidden group-hover/grip:block py-1 absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 rounded-sm w-fit group-hover/grip:bg-chalkboard-30 group-hover/grip:dark:bg-chalkboard-70 bg-transparent transition-colors border border-transparent group-hover/grip:border-chalkboard-40 dark:group-hover/grip:border-chalkboard-90 duration-75 transition-ease-out delay-100`}
       >
         <CustomIcon className="w-5 -mx-0.5 rotate-90" name="sixDots" />
       </div>
