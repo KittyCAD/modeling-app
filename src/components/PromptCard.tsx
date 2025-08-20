@@ -15,9 +15,7 @@ export interface ConvoCardProps extends IResponseMlConversation {
 }
 
 export const ConvoCard = (props: ConvoCardProps) => {
-  const cssCard = `flex flex-col border rounded-md p-2 gap-2 justify-between
-    transition-height duration-500 overflow-hidden
-  `
+  const cssCard = `flex flex-col border rounded-md p-2 gap-2 justify-between`
   return (
     <div className={cssCard}>
       <div className="flex flex-row justify-between gap-2">
@@ -100,7 +98,7 @@ export const PromptCardActionButton = (props: {
 }) => {
   return (
     <button
-      className="rounded-full bg-gray-100 select-none"
+      className="rounded-full bg-gray-100"
       onClick={props.onClick}
       disabled={
         props.disabled ||
@@ -187,14 +185,14 @@ export const PromptCard = (props: PromptCardProps) => {
   return (
     <div className={cssCard}>
       <div className="flex flex-row justify-end items-end gap-2">
-        <div className="flex flex-col items-end gap-2">
+        <div className="flex flex-col items-end gap-2 w-full">
           <PromptFeedback
             id={props.id}
             selected={props.feedback}
             disabled={props.disabled}
             onFeedback={(...args) => props.onFeedback?.(...args)}
           />
-          <div className="shadow-sm bg-chalkboard-20 text-chalkboard-100 border rounded-t-md rounded-bl-md pl-4 pr-4 pt-2 pb-2">
+          <div className="break-all shadow-sm bg-chalkboard-20 text-chalkboard-100 border rounded-t-md rounded-bl-md pl-4 pr-4 pt-2 pb-2">
             {props.prompt}
           </div>
         </div>
