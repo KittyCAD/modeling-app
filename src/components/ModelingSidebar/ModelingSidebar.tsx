@@ -430,7 +430,6 @@ function ModelingPaneButton({
   })
 
   const tooltipPosition = props.align === Alignment.Left ? 'left' : 'right'
-  const borderSide = tooltipPosition.slice(0, 1)
 
   return (
     <div
@@ -439,7 +438,11 @@ function ModelingPaneButton({
       data-onboarding-id={`${paneConfig.id}-pane-button`}
     >
       <button
-        className={`group pointer-events-auto flex items-center justify-center border-0 border-${borderSide}-2 rounded-none border-transparent dark:border-transparent p-2 m-0 !outline-0 ${paneIsOpen ? ' !border-primary' : ''}`}
+        className={`group pointer-events-auto flex items-center justify-center border-0 rounded-none border-transparent dark:border-transparent p-2 m-0 !outline-0 ${paneIsOpen ? ' !border-primary' : ''}`}
+        style={{
+          [tooltipPosition === 'left' ? 'borderLeft' : 'borderRight']:
+            'solid 2px transparent',
+        }}
         onClick={onClick}
         name={paneConfig.sidebarName}
         data-testid={paneConfig.id + SIDEBAR_BUTTON_SUFFIX}
