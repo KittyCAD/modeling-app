@@ -2,7 +2,7 @@ pub use crate::constraints::Constraint;
 // Only public for now so that I can benchmark it.
 // TODO: Replace this with an end-to-end benchmark,
 // or find a different way to structure modules.
-pub use crate::id::Id;
+pub use crate::id::{Id, IdGenerator};
 use crate::solver::Model;
 
 /// Each kind of constraint we support.
@@ -59,9 +59,10 @@ mod tests {
 
     #[test]
     fn simple() {
+        let mut id_generator = IdGenerator::default();
         // We want to constrain two points.
-        let p = DatumPoint::new(Id::new_point('p'));
-        let q = DatumPoint::new(Id::new_point('q'));
+        let p = DatumPoint::new(&mut id_generator);
+        let q = DatumPoint::new(&mut id_generator);
 
         // Start p at the origin, and q at (0.01,9)
         let initial_guesses = vec![
@@ -76,11 +77,7 @@ mod tests {
         // Now constrain the points to be vertical.
         let actual = solve(
             vec![
-                Constraint::Vertical(LineSegment {
-                    p0: p,
-                    p1: q,
-                    id: Id::new_entity('L'),
-                }),
+                Constraint::Vertical(LineSegment::new(p, q, &mut id_generator)),
                 Constraint::Fixed(p.id_x(), 0.0),
                 Constraint::Fixed(p.id_y(), 0.0),
                 Constraint::Fixed(q.id_y(), 9.0),
@@ -106,8 +103,10 @@ mod tests {
 
     #[test]
     fn dead_simple() {
+        let mut id_generator = IdGenerator::default();
+
         // We want to constrain this point.
-        let p = DatumPoint::new(Id::new_point('p'));
+        let p = DatumPoint::new(&mut id_generator);
 
         // Start p at some initial guess.
         let initial_guesses = vec![
@@ -142,31 +141,16 @@ mod tests {
 
     #[test]
     fn rectangle() {
+        let mut id_generator = IdGenerator::default();
         // First square (lower case IDs)
-        let p0 = DatumPoint::new(Id::new_point('p'));
-        let p1 = DatumPoint::new(Id::new_point('q'));
-        let p2 = DatumPoint::new(Id::new_point('r'));
-        let p3 = DatumPoint::new(Id::new_point('s'));
-        let line0_bottom = LineSegment {
-            id: Id::new_entity('a'),
-            p0,
-            p1,
-        };
-        let line0_right = LineSegment {
-            id: Id::new_entity('b'),
-            p0: p1,
-            p1: p2,
-        };
-        let line0_top = LineSegment {
-            id: Id::new_entity('c'),
-            p0: p2,
-            p1: p3,
-        };
-        let line0_left = LineSegment {
-            id: Id::new_entity('d'),
-            p0: p3,
-            p1: p0,
-        };
+        let p0 = DatumPoint::new(&mut id_generator);
+        let p1 = DatumPoint::new(&mut id_generator);
+        let p2 = DatumPoint::new(&mut id_generator);
+        let p3 = DatumPoint::new(&mut id_generator);
+        let line0_bottom = LineSegment::new(p0, p1, &mut id_generator);
+        let line0_right = LineSegment::new(p1, p2, &mut id_generator);
+        let line0_top = LineSegment::new(p2, p3, &mut id_generator);
+        let line0_left = LineSegment::new(p3, p0, &mut id_generator);
         let constraints0 = vec![
             Constraint::PointFixed(p0, 1.0, 1.0),
             Constraint::Horizontal(line0_bottom),
@@ -178,30 +162,14 @@ mod tests {
         ];
 
         // Second square (upper case IDs)
-        let p4 = DatumPoint::new(Id::new_point('P'));
-        let p5 = DatumPoint::new(Id::new_point('Q'));
-        let p6 = DatumPoint::new(Id::new_point('R'));
-        let p7 = DatumPoint::new(Id::new_point('S'));
-        let line1_bottom = LineSegment {
-            id: Id::new_entity('A'),
-            p0: p4,
-            p1: p5,
-        };
-        let line1_right = LineSegment {
-            id: Id::new_entity('B'),
-            p0: p5,
-            p1: p6,
-        };
-        let line1_top = LineSegment {
-            id: Id::new_entity('C'),
-            p0: p6,
-            p1: p7,
-        };
-        let line1_left = LineSegment {
-            id: Id::new_entity('D'),
-            p0: p7,
-            p1: p4,
-        };
+        let p4 = DatumPoint::new(&mut id_generator);
+        let p5 = DatumPoint::new(&mut id_generator);
+        let p6 = DatumPoint::new(&mut id_generator);
+        let p7 = DatumPoint::new(&mut id_generator);
+        let line1_bottom = LineSegment::new(p4, p5, &mut id_generator);
+        let line1_right = LineSegment::new(p5, p6, &mut id_generator);
+        let line1_top = LineSegment::new(p6, p7, &mut id_generator);
+        let line1_left = LineSegment::new(p7, p4, &mut id_generator);
 
         // Start p at the origin, and q at (1,9)
         let initial_guesses = vec![
