@@ -1432,7 +1432,7 @@ test(
     page.on('console', console.log)
 
     // Our locator constants
-    const searchInput = page.getByPlaceholder('Search projects')
+    const searchInput = page.getByPlaceholder('Search')
     const projectLinks = page.getByTestId('project-link')
 
     await test.step('Search for "basi"', async () => {
