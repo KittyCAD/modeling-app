@@ -444,8 +444,11 @@ export class SceneInfra {
   private _lastUnprocessedMouseEvent: MouseEvent | undefined
 
   private updateCurrentMouseVector(event: MouseEvent, target: HTMLElement) {
-    this.currentMouseVector.x = (event.offsetX / target.clientWidth) * 2 - 1
-    this.currentMouseVector.y = -(event.offsetY / target.clientHeight) * 2 + 1
+    const rect = target.getBoundingClientRect()
+    const localX = event.clientX - rect.left
+    const localY = event.clientY - rect.top
+    this.currentMouseVector.x = (localX / rect.width) * 2 - 1
+    this.currentMouseVector.y = -(localY / rect.height) * 2 + 1
   }
 
   onMouseMove = async (mouseEvent: MouseEvent) => {
