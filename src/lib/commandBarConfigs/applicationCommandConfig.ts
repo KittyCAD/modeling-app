@@ -7,6 +7,7 @@ import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
 import type { RequestedKCLFile } from '@src/machines/systemIO/utils'
 import {
   SystemIOMachineEvents,
+  collectProjectFiles,
   determineProjectFilePathFromPrompt,
 } from '@src/machines/systemIO/utils'
 import { isDesktop } from '@src/lib/isDesktop'
@@ -32,6 +33,8 @@ import {
 } from '@src/lib/desktop'
 import env from '@src/env'
 import { returnSelfOrGetHostNameFromURL } from '@src/lib/utils'
+import { codeManager, kclManager, settingsActor } from '../singletons'
+import { FileEntry } from '../project'
 
 function onSubmitKCLSampleCreation({
   sample,
@@ -246,6 +249,68 @@ export function createApplicationCommands({
         inputType: 'text',
         required: true,
       },
+    },
+  }
+
+  const promptToEditCommand: Command = {
+    name: 'Prompt-to-edit',
+    description:
+      'Use machine learning to edit your parts and code from a text prompt.',
+    displayName: 'Text-to-CAD Edit',
+    groupId: 'application',
+    needsReview: true,
+    status: IS_ML_EXPERIMENTAL ? 'experimental' : 'active',
+    icon: 'sparkles',
+    args: {
+      selection: {
+        inputType: 'selectionMixed',
+        selectionTypes: [
+          'solid2d',
+          'segment',
+          'sweepEdge',
+          'cap',
+          'wall',
+          'edgeCut',
+          'edgeCutEdge',
+        ],
+        multiple: true,
+        required: false,
+        selectionSource: {
+          allowSceneSelection: true,
+          allowCodeSelection: true,
+        },
+        skip: false,
+      },
+      prompt: {
+        inputType: 'text',
+        required: true,
+      },
+    },
+    onSubmit: async (record) => {
+      if (record && codeManager.currentFilePath) {
+        const { currentProject } = settingsActor.getSnapshot().context
+        const loaderFile: FileEntry = {
+          path: codeManager.currentFilePath,
+          name: codeManager.currentFilePath.split('/').pop() || '', // TODO: fix
+          children: null,
+        }
+        const projectFiles = await collectProjectFiles({
+          selectedFileContents: codeManager.code,
+          fileNames: kclManager.execState.filenames,
+          projectContext: currentProject,
+          targetFile: loaderFile,
+        })
+
+        mlEphantManagerActor.send({
+          type: MlEphantManagerTransitions.PromptEditModel,
+          prompt: record.prompt,
+          projectForPromptOutput: currentProject!, // TODO: Fix
+          fileSelectedDuringPrompting: loaderFile,
+          projectFiles,
+          selections: record.selection,
+          artifactGraph: kclManager.artifactGraph,
+        })
+      }
     },
   }
 
@@ -573,10 +638,11 @@ export function createApplicationCommands({
   return isDesktop()
     ? [
         textToCADCommand,
+        promptToEditCommand,
         addKCLFileToProject,
         createASampleDesktopOnly,
         switchEnvironmentsCommand,
         choosePoolCommand,
       ]
-    : [textToCADCommand, addKCLFileToProject]
+    : [textToCADCommand, promptToEditCommand, addKCLFileToProject]
 }

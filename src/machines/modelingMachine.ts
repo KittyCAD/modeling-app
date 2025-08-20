@@ -379,7 +379,6 @@ export type ModelingMachineEvent =
   | { type: 'Chamfer'; data?: ModelingCommandSchema['Chamfer'] }
   | { type: 'Offset plane'; data: ModelingCommandSchema['Offset plane'] }
   | { type: 'Helix'; data: ModelingCommandSchema['Helix'] }
-  | { type: 'Prompt-to-edit'; data: ModelingCommandSchema['Prompt-to-edit'] }
   | {
       type: 'Delete selection'
       data: ModelingCommandSchema['Delete selection']
@@ -2401,13 +2400,6 @@ export const modelingMachine = setup({
         return {} as SketchDetailsUpdate
       }
     ),
-    'submit-prompt-edit': fromPromise(
-      async ({
-        input,
-      }: {
-        input: ModelingCommandSchema['Prompt-to-edit']
-      }) => {}
-    ),
 
     /* Below are recent modeling codemods that are using updateModelinState,
      * trigger toastError on Error, and have the 'no kcl errors' guard yet */
@@ -3411,8 +3403,6 @@ export const modelingMachine = setup({
           reenter: false,
           actions: ['Submit to Text-to-CAD API'],
         },
-
-        'Prompt-to-edit': 'Applying Prompt-to-edit',
 
         Appearance: {
           target: 'Applying appearance',
@@ -4827,26 +4817,6 @@ export const modelingMachine = setup({
           target: '#Modeling.idle',
           actions: 'toastError',
         },
-      },
-    },
-
-    'Applying Prompt-to-edit': {
-      invoke: {
-        src: 'submit-prompt-edit',
-        id: 'submit-prompt-edit',
-
-        input: ({ event }) => {
-          if (event.type !== 'Prompt-to-edit' || !event.data) {
-            return {
-              prompt: '',
-              selection: { graphSelections: [], otherSelections: [] },
-            }
-          }
-          return event.data
-        },
-
-        onDone: 'idle',
-        onError: 'idle',
       },
     },
 
