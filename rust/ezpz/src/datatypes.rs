@@ -6,6 +6,16 @@ use crate::id::Id;
 /// 1D distance.
 pub type Distance = f64;
 
+pub struct DatumDistance {
+    pub id: Id,
+}
+
+impl DatumDistance {
+    pub fn new(id: Id) -> Self {
+        Self { id }
+    }
+}
+
 /// 2D point.
 #[derive(Clone, Copy)]
 pub struct DatumPoint {
@@ -74,7 +84,7 @@ pub struct LineSegment {
 pub struct Circle {
     id: Id,
     pub center: DatumPoint,
-    pub radius: Distance,
+    pub radius: DatumDistance,
 }
 
 /// Arc on the perimeter of a circle.
