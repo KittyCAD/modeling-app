@@ -654,7 +654,7 @@ test.describe(`Project management commands`, () => {
       const projectNameOption = page.getByRole('option', { name: projectName })
       const commandWarning = page.getByText('Are you sure you want to delete?')
       const toastMessage = page.getByText(`Successfully deleted`)
-      const noProjectsMessage = page.getByText('No projects found')
+      const noProjectsMessage = page.getByText('No results found')
 
       await test.step(`Setup`, async () => {
         await page.setBodyDimensions({ width: 1200, height: 500 })
@@ -758,7 +758,7 @@ test.describe(`Project management commands`, () => {
       const projectNameOption = page.getByRole('option', { name: projectName })
       const commandWarning = page.getByText('Are you sure you want to delete?')
       const toastMessage = page.getByText(`Successfully deleted`)
-      const noProjectsMessage = page.getByText('No projects found')
+      const noProjectsMessage = page.getByText('No results found')
 
       await test.step(`Setup`, async () => {
         await page.setBodyDimensions({ width: 1200, height: 500 })
@@ -1042,7 +1042,7 @@ test(
     })
 
     await test.step('Check that the home page is empty', async () => {
-      await expect(page.getByText('No projects found')).toBeVisible()
+      await expect(page.getByText('No results found')).toBeVisible()
     })
 
     await test.step('Check we can still create a project', async () => {
@@ -1217,8 +1217,8 @@ test(
     // Constants and locators
     const projectLinks = page.getByTestId('project-link')
 
-    // expect to see text "No projects found"
-    await expect(page.getByText('No projects found')).toBeVisible()
+    // expect to see text "No results found"
+    await expect(page.getByText('No results found')).toBeVisible()
 
     await createProject({ name: 'project-000', page, returnHome: true })
     await expect(projectLinks.getByText('project-000')).toBeVisible()
@@ -1365,7 +1365,7 @@ test(
 
       await homePage.projectsLoaded()
 
-      await expect(page.getByText('No projects found')).toBeVisible()
+      await expect(page.getByText('No results found')).toBeVisible()
       await createProject({ name: 'project-000', page, returnHome: true })
       await expect(
         page.getByTestId('project-link').filter({ hasText: 'project-000' })

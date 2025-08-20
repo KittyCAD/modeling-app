@@ -50,6 +50,7 @@ import { FILE_EXT, INSERT_FOREIGN_TOAST_ID } from '@src/lib/constants'
 import { relevantFileExtensions } from '@src/lang/wasmUtils'
 import toast from 'react-hot-toast'
 import { ToastInsert } from '@src/components/ToastInsert'
+import { isPlaywright } from '@src/lib/isPlaywright'
 
 export type SidebarType =
   | 'code'
@@ -104,6 +105,43 @@ export type SidebarAction = {
 // For now a lot of icons are the same but the reality is they could totally
 // be different, like an icon based on some data for the pane, or the icon
 // changes to be a spinning loader on loading.
+const textToCadPane: SidebarPane = {
+  id: 'text-to-cad',
+  icon: 'sparkles',
+  keybinding: 'Shift + E',
+  sidebarName: 'Text-to-CAD',
+  Content: (props) => {
+    const settings = useSettings()
+    const user = useUser()
+    const { context: contextModeling, theProject } = useModelingContext()
+    const { file: loaderFile } = useLoaderData() as IndexLoaderData
+
+    return (
+      <>
+        <ModelingPaneHeader
+          id={props.id}
+          icon="sparkles"
+          title="Text-to-CAD"
+          Menu={null}
+          onClose={props.onClose}
+        />
+        <MlEphantConversationPane
+          {...{
+            mlEphantManagerActor,
+            systemIOActor,
+            kclManager,
+            codeManager,
+            contextModeling,
+            theProject: theProject.current,
+            loaderFile,
+            settings,
+            user,
+          }}
+        />
+      </>
+    )
+  },
+}
 
 export const sidebarPanesLeft: SidebarPane[] = [
   {
@@ -380,44 +418,9 @@ export const sidebarPanesLeft: SidebarPane[] = [
     keybinding: 'Shift + D',
     hide: ({ settings }) => !settings.app.showDebugPanel.current,
   },
+  ...(isPlaywright() ? [textToCadPane] : []),
 ]
 
 export const sidebarPanesRight: SidebarPane[] = [
-  {
-    id: 'text-to-cad',
-    icon: 'sparkles',
-    keybinding: 'Shift + E',
-    sidebarName: 'Text-to-CAD',
-    Content: (props) => {
-      const settings = useSettings()
-      const user = useUser()
-      const { context: contextModeling, theProject } = useModelingContext()
-      const { file: loaderFile } = useLoaderData() as IndexLoaderData
-
-      return (
-        <>
-          <ModelingPaneHeader
-            id={props.id}
-            icon="sparkles"
-            title="Text-to-CAD"
-            Menu={null}
-            onClose={props.onClose}
-          />
-          <MlEphantConversationPane
-            {...{
-              mlEphantManagerActor,
-              systemIOActor,
-              kclManager,
-              codeManager,
-              contextModeling,
-              theProject: theProject.current,
-              loaderFile,
-              settings,
-              user,
-            }}
-          />
-        </>
-      )
-    },
-  },
+  ...(!isPlaywright() ? [textToCadPane] : []),
 ]
