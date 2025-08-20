@@ -2,7 +2,7 @@ use std::hint::black_box;
 
 use criterion::{Criterion, criterion_group, criterion_main};
 use kcl_ezpz::{
-    Constraint, Id,
+    Constraint, IdGenerator,
     datatypes::{DatumPoint, LineSegment},
     solve,
 };
@@ -10,8 +10,9 @@ use newton_faer::init_global_parallelism;
 
 fn solve_easy(c: &mut Criterion) {
     init_global_parallelism(1);
-    let p = DatumPoint::new(Id::new_point('p'));
-    let q = DatumPoint::new(Id::new_point('q'));
+    let mut id_generator = IdGenerator::default();
+    let p = DatumPoint::new(&mut id_generator);
+    let q = DatumPoint::new(&mut id_generator);
     let initial_guesses = vec![
         // px and py
         (p.id_x(), 0.0),
@@ -23,7 +24,7 @@ fn solve_easy(c: &mut Criterion) {
     let line = LineSegment {
         p0: p,
         p1: q,
-        id: Id::new_entity('L'),
+        id: id_generator.next_id(),
     };
     let constraints = vec![
         Constraint::Vertical(line),
@@ -40,56 +41,25 @@ fn solve_easy(c: &mut Criterion) {
 }
 
 fn solve_two_rectangles(c: &mut Criterion) {
+    let mut id_generator = IdGenerator::default();
     init_global_parallelism(1);
-    let p0 = DatumPoint::new(Id::new_point('p'));
-    let p1 = DatumPoint::new(Id::new_point('q'));
-    let p2 = DatumPoint::new(Id::new_point('r'));
-    let p3 = DatumPoint::new(Id::new_point('s'));
-    let line0_bottom = LineSegment {
-        id: Id::new_entity('a'),
-        p0,
-        p1,
-    };
-    let line0_right = LineSegment {
-        id: Id::new_entity('b'),
-        p0: p1,
-        p1: p2,
-    };
-    let line0_top = LineSegment {
-        id: Id::new_entity('c'),
-        p0: p2,
-        p1: p3,
-    };
-    let line0_left = LineSegment {
-        id: Id::new_entity('d'),
-        p0: p3,
-        p1: p0,
-    };
+    let p0 = DatumPoint::new(&mut id_generator);
+    let p1 = DatumPoint::new(&mut id_generator);
+    let p2 = DatumPoint::new(&mut id_generator);
+    let p3 = DatumPoint::new(&mut id_generator);
+    let line0_bottom = LineSegment::new(p0, p1, &mut id_generator);
+    let line0_right = LineSegment::new(p1, p2, &mut id_generator);
+    let line0_top = LineSegment::new(p2, p3, &mut id_generator);
+    let line0_left = LineSegment::new(p3, p0, &mut id_generator);
     // Second square (upper case IDs)
-    let p4 = DatumPoint::new(Id::new_point('P'));
-    let p5 = DatumPoint::new(Id::new_point('Q'));
-    let p6 = DatumPoint::new(Id::new_point('R'));
-    let p7 = DatumPoint::new(Id::new_point('S'));
-    let line1_bottom = LineSegment {
-        id: Id::new_entity('A'),
-        p0: p4,
-        p1: p5,
-    };
-    let line1_right = LineSegment {
-        id: Id::new_entity('B'),
-        p0: p5,
-        p1: p6,
-    };
-    let line1_top = LineSegment {
-        id: Id::new_entity('C'),
-        p0: p6,
-        p1: p7,
-    };
-    let line1_left = LineSegment {
-        id: Id::new_entity('D'),
-        p0: p7,
-        p1: p4,
-    };
+    let p4 = DatumPoint::new(&mut id_generator);
+    let p5 = DatumPoint::new(&mut id_generator);
+    let p6 = DatumPoint::new(&mut id_generator);
+    let p7 = DatumPoint::new(&mut id_generator);
+    let line1_bottom = LineSegment::new(p4, p5, &mut id_generator);
+    let line1_right = LineSegment::new(p5, p6, &mut id_generator);
+    let line1_top = LineSegment::new(p6, p7, &mut id_generator);
+    let line1_left = LineSegment::new(p7, p4, &mut id_generator);
     // First square (lower case IDs)
     let constraints0 = vec![
         Constraint::PointFixed(p0, 1.0, 1.0),
