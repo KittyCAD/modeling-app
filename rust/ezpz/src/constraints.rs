@@ -3,7 +3,7 @@ use crate::{NonLinearSystemError, datatypes::*, id::Id, solver::Layout};
 /// Each geometric constraint we support.
 #[derive(Clone, Copy)]
 pub enum Constraint {
-    /// Also length.
+    /// These two points should be a given distance apart.
     Distance(DatumPoint, DatumPoint, Distance),
     /// These two points have the same Y value.
     Vertical(LineSegment),
