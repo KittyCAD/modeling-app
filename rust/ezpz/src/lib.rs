@@ -152,7 +152,8 @@ mod tests {
         let line0_top = LineSegment::new(p2, p3, &mut id_generator);
         let line0_left = LineSegment::new(p3, p0, &mut id_generator);
         let constraints0 = vec![
-            Constraint::PointFixed(p0, 1.0, 1.0),
+            Constraint::Fixed(p0.id_x(), 1.0),
+            Constraint::Fixed(p0.id_y(), 1.0),
             Constraint::Horizontal(line0_bottom),
             Constraint::Horizontal(line0_top),
             Constraint::Vertical(line0_left),
@@ -194,7 +195,8 @@ mod tests {
         ];
 
         let constraints1 = vec![
-            Constraint::PointFixed(p4, 2.0, 2.0),
+            Constraint::Fixed(p4.id_x(), 2.0),
+            Constraint::Fixed(p4.id_y(), 2.0),
             Constraint::Horizontal(line1_bottom),
             Constraint::Horizontal(line1_top),
             Constraint::Vertical(line1_left),
