@@ -200,22 +200,24 @@ impl NonlinearSystem for Model {
             );
 
             for jacobian_row in jacobian_rows {
-                // JacobianRow shows only nonzero values, so,
-                // add all the required zeroes.
-                let mut row = vec![0.0; num_cols];
-                for jacobian_var in jacobian_row {
-                    let i = self.layout.index_of(jacobian_var.id)?;
-                    row[i] = jacobian_var.partial_derivative;
-                }
-
                 // newton_faer requires the matrix in column-major order,
                 // so we write this row into a column of the matrix.
                 // Transpose basically.
                 let target_column_num = row_num;
                 row_num += 1;
-                for (i, v) in row.into_iter().enumerate() {
+
+                // Write zeros in every cell for this row of the Jacobian matrix
+                // (which, again, is internally represented by a column in `jc`).
+                for i in 0..num_cols {
                     let dst = target_column_num + (i * num_rows);
-                    self.jc.values_mut()[dst] = v;
+                    self.jc.values_mut()[dst] = 0.0;
+                }
+                // Overwrite any nonzero cells.
+                // It's probably faster than avoiding the writes of zeroes in the first place.
+                for jacobian_var in jacobian_row {
+                    let i = self.layout.index_of(jacobian_var.id)?;
+                    let dst = target_column_num + (i * num_rows);
+                    self.jc.values_mut()[dst] = jacobian_var.partial_derivative;
                 }
             }
         }
