@@ -290,7 +290,9 @@ export const Thinking = (props: {
       return
     }
     const c = refViewFull.current.children
-    if (c.length === 0) { return }
+    if (c.length === 0) {
+      return
+    }
     c[c.length - 1].scrollIntoView({ behavior: 'smooth' })
   }, [props.thoughts.length])
 

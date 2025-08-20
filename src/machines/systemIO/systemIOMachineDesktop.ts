@@ -703,7 +703,7 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           'utf-8'
         )
         return jsonToMlConversations(json)
-      } catch(e) {
+      } catch (e) {
         console.warn('Cannot get conversations', e)
         return new Map()
       }
