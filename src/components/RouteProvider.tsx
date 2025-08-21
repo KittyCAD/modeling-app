@@ -10,13 +10,13 @@ import {
 import { useAuthNavigation } from '@src/hooks/useAuthNavigation'
 import { useFileSystemWatcher } from '@src/hooks/useFileSystemWatcher'
 import { getAppSettingsFilePath } from '@src/lib/desktop'
-import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
 import { loadAndValidateSettings } from '@src/lib/settings/settingsUtils'
 import { trap } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
 import { settingsActor } from '@src/lib/singletons'
+import { fsManager } from '@src/lang/std/fileSystemManager'
 
 export const RouteProviderContext = createContext({})
 
@@ -48,20 +48,20 @@ export function RouteProvider({ children }: { children: ReactNode }) {
   }, [first, navigation, location.pathname])
 
   useEffect(() => {
-    if (!isDesktop()) return
-    getAppSettingsFilePath().then(setSettingsPath).catch(trap)
+    if (!window.electron) return
+    getAppSettingsFilePath(window.electron).then(setSettingsPath).catch(trap)
   }, [])
 
   useFileSystemWatcher(
     async (eventType: string) => {
       // If there is a projectPath but it no longer exists it means
-      // it was exterally removed. If we let the code past this condition
+      // it was externally removed. If we let the code past this condition
       // execute it will recreate the directory due to code in
       // loadAndValidateSettings trying to recreate files. I do not
       // wish to change the behavior in case anything else uses it.
       // Go home.
       if (loadedProject?.project?.path) {
-        if (!window.electron.exists(loadedProject?.project?.path)) {
+        if (!(await fsManager.exists(loadedProject?.project?.path))) {
           navigate(PATHS.HOME)
           return
         }

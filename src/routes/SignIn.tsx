@@ -24,6 +24,7 @@ import {
   writeEnvironmentFile,
 } from '@src/lib/desktop'
 import { AdvancedSignInOptions } from '@src/routes/AdvancedSignInOptions'
+import type { IElectronAPI } from '@root/interface'
 
 const subtleBorder =
   'border border-solid border-chalkboard-30 dark:border-chalkboard-80'
@@ -33,7 +34,7 @@ let didReadFromDiskCacheForEnvironment = false
 
 const SignIn = () => {
   // Only create the native file menus on desktop
-  if (isDesktop()) {
+  if (window.electron) {
     window.electron.createFallbackMenu().catch(reportRejection)
     // Disable these since they cannot be accessed within the sign in page.
     window.electron
@@ -59,9 +60,10 @@ const SignIn = () => {
   }
 
   useEffect(() => {
-    if (isDesktop() && !didReadFromDiskCacheForEnvironment) {
+    if (window.electron && !didReadFromDiskCacheForEnvironment) {
+      const electron = window.electron
       didReadFromDiskCacheForEnvironment = true
-      readEnvironmentFile()
+      readEnvironmentFile(electron)
         .then((environment) => {
           if (environment) {
             setSelectedEnvironmentFormatter(environment)
@@ -71,7 +73,7 @@ const SignIn = () => {
         .then((environment) => {
           const defaultOrDiskEnvironment = environment || selectedEnvironment
           if (defaultOrDiskEnvironment) {
-            readEnvironmentConfigurationPool(defaultOrDiskEnvironment)
+            readEnvironmentConfigurationPool(electron, defaultOrDiskEnvironment)
               .then((pool) => {
                 setPool(pool)
               })
@@ -103,12 +105,12 @@ const SignIn = () => {
     [theme.current]
   )
 
-  const signInDesktop = async () => {
+  const signInDesktop = async (electron: IElectronAPI) => {
     updateEnvironment(selectedEnvironment)
     updateEnvironmentPool(selectedEnvironment, pool)
 
     // We want to invoke our command to login via device auth.
-    const userCodeToDisplay = await window.electron
+    const userCodeToDisplay = await electron
       .startDeviceFlow(withAPIBaseURL(location.search))
       .catch(reportError)
     if (!userCodeToDisplay) {
@@ -119,18 +121,20 @@ const SignIn = () => {
     setUserCode(userCodeToDisplay)
 
     // Now that we have the user code, we can kick off the final login step.
-    const token = await window.electron.loginWithDeviceFlow().catch(reportError)
+    const token = await electron.loginWithDeviceFlow().catch(reportError)
     if (!token) {
       console.error('No token received while trying to log in')
       toast.error('Error while trying to log in')
-      await writeEnvironmentFile('')
+      await writeEnvironmentFile(electron, '')
       return
     }
 
-    writeEnvironmentFile(selectedEnvironment).catch(reportRejection)
-    writeEnvironmentConfigurationPool(selectedEnvironment, pool).catch(
-      reportRejection
-    )
+    writeEnvironmentFile(electron, selectedEnvironment).catch(reportRejection)
+    writeEnvironmentConfigurationPool(
+      electron,
+      selectedEnvironment,
+      pool
+    ).catch(reportRejection)
     authActor.send({ type: 'Log in', token })
   }
 
@@ -176,12 +180,19 @@ const SignIn = () => {
               collaborate with ML tools like Zoo Text-To-CAD to design parts and
               libraries fast.
             </p>
-            {isDesktop() ? (
+            {window.electron ? (
               <div className="flex flex-col gap-2">
                 {!userCode ? (
                   <>
                     <button
-                      onClick={toSync(signInDesktop, reportRejection)}
+                      onClick={() => {
+                        const electron = window.electron
+                        if (electron) {
+                          ;(async () => {
+                            await signInDesktop(electron)
+                          })().catch(reportRejection)
+                        }
+                      }}
                       className={
                         'm-0 mt-8 w-fit flex gap-4 items-center px-3 py-1 ' +
                         '!border-transparent !text-lg !text-chalkboard-10 !bg-primary hover:hue-rotate-15'

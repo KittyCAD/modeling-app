@@ -24,7 +24,6 @@ import {
 } from '@src/lib/constants'
 import { getProjectInfo } from '@src/lib/desktop'
 import { getNextDirName, getNextFileName } from '@src/lib/desktopFS'
-import { isDesktop } from '@src/lib/isDesktop'
 import { kclCommands } from '@src/lib/kclCommands'
 import { BROWSER_PATH, PATHS } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
@@ -35,6 +34,7 @@ import { useSettings, useToken } from '@src/lib/singletons'
 import { commandBarActor } from '@src/lib/singletons'
 import { fileMachine } from '@src/machines/fileMachine'
 import { modelingMenuCallbackMostActions } from '@src/menu/register'
+import { fsManager } from '@src/lang/std/fileSystemManager'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -127,7 +127,7 @@ export const FileMachineProvider = ({
                 // TODO: Should this be context.selectedDirectory.path?
                 // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
                 context.selectedDirectory +
-                  window.electron.path.sep +
+                  fsManager.path.sep +
                   // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
                   event.output.name
               )}`
@@ -147,20 +147,24 @@ export const FileMachineProvider = ({
           }
 
           commandBarActor.send({ type: 'Close' })
-          window.electron.openInNewWindow(event.data.name)
+          window.electron?.openInNewWindow(event.data.name)
         },
       },
       actors: {
         readFiles: fromPromise(async ({ input }) => {
           const newFiles =
-            (isDesktop() ? (await getProjectInfo(input.path)).children : []) ??
-            []
+            (window.electron
+              ? (await getProjectInfo(window.electron, input.path)).children
+              : []) ?? []
           return {
             ...input,
             children: newFiles,
           }
         }),
         createAndOpenFile: fromPromise(async ({ input }) => {
+          if (!window.electron) {
+            return Promise.reject(new Error('No file system present'))
+          }
           let createdName = input.name.trim() || DEFAULT_FILE_NAME
           let createdPath: string
 
@@ -172,6 +176,7 @@ export const FileMachineProvider = ({
             input.makeDir
           ) {
             let { name, path } = getNextDirName({
+              electron: window.electron,
               entryName: input.targetPathToClone
                 ? window.electron.path.basename(input.targetPathToClone)
                 : createdName,
@@ -187,7 +192,8 @@ export const FileMachineProvider = ({
               input.targetPathToClone &&
               input.selectedDirectory.path.indexOf(input.targetPathToClone) > -1
             if (isTargetPathToCloneASubPath) {
-              const { name, path } = getNextFileName({
+              const { name, path } = await getNextFileName({
+                electron: window.electron,
                 entryName: input.targetPathToClone
                   ? window.electron.path.basename(input.targetPathToClone)
                   : createdName,
@@ -198,7 +204,8 @@ export const FileMachineProvider = ({
               createdName = name
               createdPath = path
             } else {
-              const { name, path } = getNextFileName({
+              const { name, path } = await getNextFileName({
+                electron: window.electron,
                 entryName: input.targetPathToClone
                   ? window.electron.path.basename(input.targetPathToClone)
                   : createdName,
@@ -229,11 +236,15 @@ export const FileMachineProvider = ({
           }
         }),
         createFile: fromPromise(async ({ input }) => {
+          if (!window.electron) {
+            return Promise.reject(new Error('No file system present'))
+          }
           let createdName = input.name.trim() || DEFAULT_FILE_NAME
           let createdPath: string
 
           if (input.makeDir) {
             let { name, path } = getNextDirName({
+              electron: window.electron,
               entryName: createdName,
               baseDir: input.selectedDirectory.path,
             })
@@ -241,7 +252,8 @@ export const FileMachineProvider = ({
             createdPath = path
             await window.electron.mkdir(createdPath)
           } else {
-            const { name, path } = getNextFileName({
+            const { name, path } = await getNextFileName({
+              electron: window.electron,
               entryName: createdName,
               baseDir: input.selectedDirectory.path,
             })
@@ -260,6 +272,9 @@ export const FileMachineProvider = ({
           }
         }),
         renameFile: fromPromise(async ({ input }) => {
+          if (!window.electron) {
+            return Promise.reject(new Error('No file system present'))
+          }
           const { oldName, newName, isDir } = input
           const name = newName
             ? newName.endsWith(FILE_EXT) || isDir
@@ -319,6 +334,9 @@ export const FileMachineProvider = ({
           }
         }),
         deleteFile: fromPromise(async ({ input }) => {
+          if (!window.electron) {
+            return Promise.reject(new Error('No file system present'))
+          }
           const isDir = !!input.children
 
           if (isDir) {
@@ -438,7 +456,7 @@ export const FileMachineProvider = ({
 
   const kclCommandMemo = useMemo(() => {
     const providedOptions = []
-    if (isDesktop() && project?.children && file?.path) {
+    if (window.electron && project?.children && file?.path) {
       const projectPath = project.path
       const filePath = file.path
       let children = project.children

@@ -65,7 +65,7 @@ export fn toRadians(@num: number(Angle)): number(rad) {
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
 ///     angle = 50deg,
-///     length = 70 * cos(units::toDegrees((PI/4): number(rad))),
+///     length = 70 * cos(units::toDegrees((PI/4): rad)),
 ///   )
 ///   |> yLine(endAbsolute = 0)
 ///   |> close()

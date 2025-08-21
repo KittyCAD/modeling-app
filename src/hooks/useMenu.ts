@@ -1,5 +1,4 @@
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
-import { isDesktop } from '@src/lib/isDesktop'
 import type { ToolbarModeName } from '@src/lib/toolbar'
 import { reportRejection } from '@src/lib/trap'
 import { useCommandBarState } from '@src/lib/singletons'
@@ -10,15 +9,14 @@ export function useMenuListener(
   callback: (data: WebContentSendPayload) => void
 ) {
   useEffect(() => {
-    const onDesktop = isDesktop()
-    if (!onDesktop) {
+    if (!window.electron) {
       // NO OP for web
       return
     }
 
     const removeListener = window.electron.menuOn(callback)
     return () => {
-      if (!onDesktop) {
+      if (!window.electron) {
         // NO OP for web
         return
       }
@@ -41,11 +39,11 @@ export function useSketchModeMenuEnableDisable(
   const commands = commandBarState.context.commands
 
   useEffect(() => {
-    const onDesktop = isDesktop()
-    if (!onDesktop) {
+    if (!window.electron) {
       // NO OP for web
       return
     }
+    const electron = window.electron
 
     // Same exact logic as the command bar
     const disableAllButtons =
@@ -58,7 +56,7 @@ export function useSketchModeMenuEnableDisable(
     menus.forEach(({ menuLabel, commandName, groupId }) => {
       // If someone goes wrong, disable all the buttons! Engine cannot take this request
       if (disableAllButtons) {
-        window.electron.disableMenu(menuLabel).catch(reportRejection)
+        electron.disableMenu(menuLabel).catch(reportRejection)
         return
       }
 
@@ -68,26 +66,26 @@ export function useSketchModeMenuEnableDisable(
           return command.name === commandName && command.groupId === groupId
         })
         if (!foundCommand) {
-          window.electron.disableMenu(menuLabel).catch(reportRejection)
+          electron.disableMenu(menuLabel).catch(reportRejection)
         } else {
           if (currentMode === 'sketching') {
-            window.electron.disableMenu(menuLabel).catch(reportRejection)
+            electron.disableMenu(menuLabel).catch(reportRejection)
           } else if (currentMode === 'modeling') {
-            window.electron.enableMenu(menuLabel).catch(reportRejection)
+            electron.enableMenu(menuLabel).catch(reportRejection)
           }
         }
       } else {
         // menu is not tied to a command bar, do the sketch mode check
         if (currentMode === 'sketching') {
-          window.electron.disableMenu(menuLabel).catch(reportRejection)
+          electron.disableMenu(menuLabel).catch(reportRejection)
         } else if (currentMode === 'modeling') {
-          window.electron.enableMenu(menuLabel).catch(reportRejection)
+          electron.enableMenu(menuLabel).catch(reportRejection)
         }
       }
     })
 
     return () => {
-      if (!onDesktop) {
+      if (!window.electron) {
         // NO OP for web
         return
       }
