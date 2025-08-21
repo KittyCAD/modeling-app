@@ -68,6 +68,10 @@ export const kclManager = new KclManager(engineCommandManager, {
   sceneInfra,
 })
 
+// Initialize KCL version
+import { setKclVersion } from '@src/lib/kclVersion'
+setKclVersion(kclManager.kclVersion)
+
 // The most obvious of cyclic dependencies.
 // This is because the   handleOnViewUpdate(viewUpdate: ViewUpdate): void {
 // method requires it for the current ast.

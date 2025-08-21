@@ -1,19 +1,17 @@
 import type { Models } from '@kittycad/lib'
 import type { TextToCadMultiFileIteration_type } from '@kittycad/lib/dist/types/src/models'
-
 import { getArtifactOfTypes } from '@src/lang/std/artifactGraph'
-import type { ArtifactGraph, SourceRange } from '@src/lang/wasm'
+import type { SourceRange } from '@src/lang/wasm'
 import crossPlatformFetch from '@src/lib/crossPlatformFetch'
-import type { Selections } from '@src/lib/selections'
-import { kclManager } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
 import type { File as KittyCadLibFile } from '@kittycad/lib/dist/types/src/models'
-import type { FileMeta } from '@src/lib/types'
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
-
-type KclFileMetaMap = {
-  [execStateFileNamesIndex: number]: Extract<FileMeta, { type: 'kcl' }>
-}
+import type {
+  ConstructRequestArgs,
+  KclFileMetaMap,
+  PromptToEditRequest,
+  TextToCadErrorResponse,
+} from '@src/lib/promptToEditTypes'
 
 function sourceIndexToLineColumn(
   code: string,
@@ -36,21 +34,8 @@ function convertAppRangeToApiRange(
   }
 }
 
-type TextToCadErrorResponse = {
-  error_code: string
-  message: string
-}
-
 export async function submitTextToCadMultiFileIterationRequest(
-  request: {
-    body: {
-      prompt: string
-      source_ranges: Models['SourceRangePrompt_type'][]
-      project_name?: string
-      kcl_version: string
-    }
-    files: KittyCadLibFile[]
-  },
+  request: PromptToEditRequest,
   token: string
 ): Promise<TextToCadMultiFileIteration_type | Error> {
   const formData = new FormData()
@@ -94,14 +79,8 @@ export function constructMultiFileIterationRequestWithPromptHelpers({
   projectFiles,
   artifactGraph,
   projectName,
-}: {
-  conversationId?: string
-  prompt: string
-  selections: Selections | null
-  projectFiles: FileMeta[]
-  projectName: string
-  artifactGraph: ArtifactGraph
-}) {
+  kclVersion,
+}: ConstructRequestArgs): PromptToEditRequest {
   const kclFilesMap: KclFileMetaMap = {}
   const files: KittyCadLibFile[] = []
   projectFiles.forEach((file) => {
@@ -129,7 +108,7 @@ export function constructMultiFileIterationRequestWithPromptHelpers({
           projectName !== '' && projectName !== 'browser'
             ? projectName
             : undefined,
-        kcl_version: kclManager.kclVersion,
+        kcl_version: kclVersion,
       },
       files,
     }
@@ -275,7 +254,7 @@ See later source ranges for more context. about the sweep`,
         projectName !== '' && projectName !== 'browser'
           ? projectName
           : undefined,
-      kcl_version: kclManager.kclVersion,
+      kcl_version: kclVersion,
     },
     files,
   }

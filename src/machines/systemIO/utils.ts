@@ -190,10 +190,13 @@ export const waitForIdleState = async ({
   return waitForIdlePromise
 }
 
-export const determineProjectFilePathFromPrompt = (args: {
-  requestedPrompt: string
-  existingProjectName?: string
-}) => {
+export const determineProjectFilePathFromPrompt = (
+  context: SystemIOContext,
+  args: {
+    requestedPrompt: string
+    existingProjectName?: string
+  }
+) => {
   const TRUNCATED_PROMPT_LENGTH = 24
   // Only add the prompt name if it is a preexisting project
   const promptNameAsDirectory = `${args.requestedPrompt
@@ -207,7 +210,7 @@ export const determineProjectFilePathFromPrompt = (args: {
   if (isDesktop()) {
     // If it's not a new project, create a subdir in the current one.
     if (args.existingProjectName) {
-      const firstLevelDirectories = getAllSubDirectoriesAtProjectRoot({
+      const firstLevelDirectories = getAllSubDirectoriesAtProjectRoot(context, {
         projectFolderName: args.existingProjectName,
       })
       const uniqueSubDirectoryName = getUniqueProjectName(

@@ -91,9 +91,10 @@ function onSubmitKCLSampleCreation({
       if (!isProjectNew) {
         requestedFiles.forEach((requestedFile) => {
           const subDirectoryName = projectPathPart
-          const firstLevelDirectories = getAllSubDirectoriesAtProjectRoot({
-            projectFolderName: requestedFile.requestedProjectName,
-          })
+          const firstLevelDirectories = getAllSubDirectoriesAtProjectRoot(
+            systemIOActor.getSnapshot().context,
+            { projectFolderName: requestedFile.requestedProjectName }
+          )
           const uniqueSubDirectoryName = getUniqueProjectName(
             subDirectoryName,
             firstLevelDirectories
@@ -156,10 +157,13 @@ export function createApplicationCommands({
           requestedProjectName,
           folders
         )
-        const uniquePromptFilePath = determineProjectFilePathFromPrompt({
-          existingProjectName: uniqueProjectPath,
-          requestedPrompt,
-        })
+        const uniquePromptFilePath = determineProjectFilePathFromPrompt(
+          systemIOActor.getSnapshot().context,
+          {
+            existingProjectName: uniqueProjectPath,
+            requestedPrompt,
+          }
+        )
 
         // Maybe create a new project if necessary, and navigate to it.
         systemIOActor.send({

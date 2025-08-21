@@ -4,6 +4,7 @@ import type { ActorRefFrom } from 'xstate'
 
 import { S, transitions } from '@src/machines/utils'
 import { err } from '@src/lib/trap'
+import { getKclVersion } from '@src/lib/kclVersion'
 
 import type { ArtifactGraph } from '@src/lang/wasm'
 import type { Selections } from '@src/lib/selections'
@@ -16,11 +17,11 @@ import { PromptType } from '@src/lib/prompt'
 import {
   textToCadMlConversations,
   textToCadMlPromptsBelongingToConversation,
-  textToCadPromptFeedback,
   getTextToCadCreateResult,
   submitTextToCadCreateRequest,
-  type IResponseMlConversations,
-} from '@src/lib/textToCad'
+} from '@src/lib/textToCadCore'
+import { textToCadPromptFeedback } from '@src/lib/textToCad'
+import type { IResponseMlConversations } from '@src/lib/textToCadTypes'
 
 import {
   getPromptToEditResult,
@@ -379,6 +380,7 @@ export const mlEphantManagerMachine = setup({
             projectFiles: event.projectFiles,
             artifactGraph: event.artifactGraph,
             projectName: event.projectForPromptOutput.name,
+            kclVersion: getKclVersion(),
           }
         )
         const result = await submitTextToCadMultiFileIterationRequest(
