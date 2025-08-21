@@ -1,13 +1,9 @@
 use std::fmt;
 
-use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
-use tower_lsp::lsp_types::{Position as LspPosition, Range as LspRange};
 
 /// Identifier of a source file.  Uses a u32 to keep the size small.
-#[derive(
-    Debug, Default, Ord, PartialOrd, Eq, PartialEq, Clone, Copy, Hash, Deserialize, Serialize, ts_rs::TS, JsonSchema,
-)]
+#[derive(Debug, Default, Ord, PartialOrd, Eq, PartialEq, Clone, Copy, Hash, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export)]
 pub struct ModuleId(u32);
 
@@ -40,7 +36,7 @@ impl std::fmt::Display for ModuleId {
 // Don't use a doc comment for the below since the above goes in the website docs.
 // @see isTopLevelModule() in wasm.ts.
 // TODO we need to handle modules better in the frontend.
-#[derive(Debug, Default, Deserialize, Serialize, PartialEq, Copy, Clone, ts_rs::TS, JsonSchema, Hash, Eq)]
+#[derive(Debug, Default, Deserialize, Serialize, PartialEq, Copy, Clone, ts_rs::TS, Hash, Eq)]
 #[ts(export, type = "[number, number, number]")]
 pub struct SourceRange([usize; 3]);
 
@@ -136,43 +132,5 @@ impl SourceRange {
     /// Check if the range contains another range.  Modules must match.
     pub fn contains_range(&self, other: &Self) -> bool {
         self.module_id() == other.module_id() && self.start() <= other.start() && self.end() >= other.end()
-    }
-
-    pub fn start_to_lsp_position(&self, code: &str) -> LspPosition {
-        // Calculate the line and column of the error from the source range.
-        // Lines are zero indexed in vscode so we need to subtract 1.
-        let mut line = code.get(..self.start()).unwrap_or_default().lines().count();
-        if line > 0 {
-            line = line.saturating_sub(1);
-        }
-        let column = code[..self.start()].lines().last().map(|l| l.len()).unwrap_or_default();
-
-        LspPosition {
-            line: line as u32,
-            character: column as u32,
-        }
-    }
-
-    pub fn end_to_lsp_position(&self, code: &str) -> LspPosition {
-        let lines = code.get(..self.end()).unwrap_or_default().lines();
-        if lines.clone().count() == 0 {
-            return LspPosition { line: 0, character: 0 };
-        }
-
-        // Calculate the line and column of the error from the source range.
-        // Lines are zero indexed in vscode so we need to subtract 1.
-        let line = lines.clone().count() - 1;
-        let column = lines.last().map(|l| l.len()).unwrap_or_default();
-
-        LspPosition {
-            line: line as u32,
-            character: column as u32,
-        }
-    }
-
-    pub fn to_lsp_range(&self, code: &str) -> LspRange {
-        let start = self.start_to_lsp_position(code);
-        let end = self.end_to_lsp_position(code);
-        LspRange { start, end }
     }
 }

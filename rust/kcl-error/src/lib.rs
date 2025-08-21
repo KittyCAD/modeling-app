@@ -1,4 +1,3 @@
-use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 pub use source_range::{ModuleId, SourceRange};
 
@@ -94,7 +93,7 @@ pub enum Tag {
     None,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, ts_rs::TS, PartialEq, Eq, JsonSchema)]
+#[derive(Debug, Clone, Serialize, Deserialize, ts_rs::TS, PartialEq, Eq)]
 #[ts(export)]
 pub struct Suggestion {
     pub title: String,

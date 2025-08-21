@@ -12,7 +12,6 @@ use std::{
 use anyhow::Result;
 use parse_display::{Display, FromStr};
 pub use path::{NodePath, Step};
-use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use tower_lsp::lsp_types::{
     Color, ColorInformation, ColorPresentation, CompletionItem, CompletionItemKind, DocumentSymbol, FoldingRange,
@@ -31,6 +30,7 @@ use crate::{
         KclValue, Metadata, TagIdentifier, annotations,
         types::{ArrayLen, UnitAngle, UnitLen},
     },
+    lsp::ToLspRange,
     parsing::{PIPE_OPERATOR, ast::digest::Digest, token::NumericSuffix},
 };
 
@@ -63,28 +63,6 @@ pub struct Node<T> {
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub pre_comments: Vec<String>,
     pub comment_start: usize,
-}
-
-impl<T: JsonSchema> schemars::JsonSchema for Node<T> {
-    fn schema_name() -> String {
-        T::schema_name()
-    }
-
-    fn json_schema(r#gen: &mut schemars::r#gen::SchemaGenerator) -> schemars::schema::Schema {
-        let mut child = T::json_schema(r#gen).into_object();
-        // We want to add the start and end fields to the schema.
-        // Ideally we would add _any_ extra fields from the Node type automatically
-        // but this is a bit hard since this isn't a macro.
-        let Some(object) = &mut child.object else {
-            // This should never happen. But it will panic at compile time of docs if it does.
-            // Which is better than runtime.
-            panic!("Expected object schema for {}", T::schema_name());
-        };
-        object.properties.insert("start".to_string(), usize::json_schema(r#gen));
-        object.properties.insert("end".to_string(), usize::json_schema(r#gen));
-
-        schemars::schema::Schema::Object(child.clone())
-    }
 }
 
 impl<T> Node<T> {
@@ -238,7 +216,7 @@ pub type NodeList<T> = Vec<Node<T>>;
 pub type NodeRef<'a, T> = &'a Node<T>;
 
 /// A KCL program top level, or function body.
-#[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct Program {
@@ -828,7 +806,7 @@ impl Program {
 /// ```python,no_run
 /// #!/usr/bin/env python
 /// ```
-#[derive(Debug, Default, Clone, PartialEq, Eq, Hash, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Default, Clone, PartialEq, Eq, Hash, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export)]
 pub struct Shebang {
     pub content: String,
@@ -840,7 +818,7 @@ impl Shebang {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum BodyItem {
@@ -960,7 +938,7 @@ impl From<&BodyItem> for SourceRange {
 }
 
 /// An expression can be evaluated to yield a single KCL value.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
 #[allow(clippy::large_enum_variant)]
@@ -1227,7 +1205,7 @@ impl From<&BinaryPart> for Expr {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct LabelledExpression {
@@ -1257,7 +1235,7 @@ impl LabelledExpression {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct AscribedExpression {
@@ -1278,7 +1256,7 @@ impl AscribedExpression {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum BinaryPart {
@@ -1391,7 +1369,7 @@ impl BinaryPart {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct NonCodeNode {
@@ -1423,7 +1401,7 @@ impl NonCodeNode {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub enum CommentStyle {
@@ -1450,7 +1428,7 @@ impl CommentStyle {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
 #[allow(clippy::large_enum_variant)]
@@ -1488,7 +1466,7 @@ pub enum NonCodeValue {
     NewLine,
 }
 
-#[derive(Debug, Default, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Default, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct NonCodeMeta {
@@ -1575,7 +1553,7 @@ impl<'de> Deserialize<'de> for NonCodeMeta {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct Annotation {
@@ -1619,7 +1597,7 @@ impl Annotation {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct ImportItem {
@@ -1671,7 +1649,7 @@ impl ImportItem {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
 #[allow(clippy::large_enum_variant)]
@@ -1737,7 +1715,7 @@ impl ImportSelector {
     }
 }
 
-#[derive(Clone, Eq, PartialEq, Debug, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
+#[derive(Clone, Eq, PartialEq, Debug, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum ImportPath {
@@ -1755,7 +1733,7 @@ impl fmt::Display for ImportPath {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct ImportStatement {
@@ -1869,7 +1847,7 @@ impl From<&ImportStatement> for Vec<CompletionItem> {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct ExpressionStatement {
@@ -1880,7 +1858,7 @@ pub struct ExpressionStatement {
     pub digest: Option<Digest>,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "camelCase", tag = "type")]
 pub struct CallExpressionKw {
@@ -1896,7 +1874,7 @@ pub struct CallExpressionKw {
     pub non_code_meta: NonCodeMeta,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct LabeledArg {
@@ -1976,7 +1954,7 @@ impl CallExpressionKw {
     }
 }
 
-#[derive(Debug, Default, Clone, Copy, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, FromStr, Display)]
+#[derive(Debug, Default, Clone, Copy, Deserialize, Serialize, PartialEq, ts_rs::TS, FromStr, Display)]
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
 #[display(style = "snake_case")]
@@ -1992,7 +1970,7 @@ impl ItemVisibility {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct TypeDeclaration {
@@ -2013,7 +1991,7 @@ impl TypeDeclaration {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct VariableDeclaration {
@@ -2188,7 +2166,7 @@ impl VariableDeclaration {
     }
 }
 
-#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, FromStr, Display)]
+#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, ts_rs::TS, FromStr, Display)]
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
 #[display(style = "snake_case")]
@@ -2233,7 +2211,7 @@ impl VariableKind {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct VariableDeclarator {
@@ -2261,7 +2239,7 @@ impl VariableDeclarator {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct Literal {
@@ -2293,7 +2271,7 @@ impl Literal {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Eq)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, Eq)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct Identifier {
@@ -2335,7 +2313,7 @@ impl Identifier {
 }
 
 /// A qualified name, e.g., `foo`, `bar::foo`, or `::bar::foo`.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct Name {
@@ -2434,7 +2412,7 @@ impl From<Node<Identifier>> for Node<Name> {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Eq)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, Eq)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct TagDeclarator {
@@ -2547,7 +2525,7 @@ impl TagDeclarator {
     }
 }
 
-#[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct PipeSubstitution {
@@ -2568,7 +2546,7 @@ impl From<Node<PipeSubstitution>> for Expr {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "camelCase", tag = "type")]
 pub struct ArrayExpression {
@@ -2627,7 +2605,7 @@ impl ArrayExpression {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "camelCase", tag = "type")]
 pub struct ArrayRangeExpression {
@@ -2679,7 +2657,7 @@ impl ArrayRangeExpression {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "camelCase", tag = "type")]
 pub struct ObjectExpression {
@@ -2732,7 +2710,7 @@ impl ObjectExpression {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct ObjectProperty {
@@ -2774,7 +2752,7 @@ impl ObjectProperty {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct MemberExpression {
@@ -2806,7 +2784,7 @@ impl MemberExpression {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct BinaryExpression {
@@ -2857,7 +2835,7 @@ impl BinaryExpression {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, FromStr, Display)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, FromStr, Display)]
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
 #[display(style = "snake_case")]
@@ -2990,7 +2968,7 @@ impl BinaryOperator {
         matches!(self, Self::Add | Self::Mul | Self::And | Self::Or)
     }
 }
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct UnaryExpression {
@@ -3025,7 +3003,7 @@ impl UnaryExpression {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, FromStr, Display)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, FromStr, Display)]
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
 #[display(style = "snake_case")]
@@ -3049,7 +3027,7 @@ impl UnaryOperator {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "camelCase", tag = "type")]
 pub struct PipeExpression {
@@ -3112,7 +3090,7 @@ impl PipeExpression {
 }
 
 #[allow(clippy::large_enum_variant)]
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "p_type")]
 pub enum PrimitiveType {
@@ -3206,7 +3184,7 @@ impl fmt::Display for PrimitiveType {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 pub struct FunctionType {
     pub unnamed_arg: Option<BoxNode<Type>>,
@@ -3229,7 +3207,7 @@ impl FunctionType {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
 #[allow(clippy::large_enum_variant)]
@@ -3337,7 +3315,7 @@ impl fmt::Display for Type {
 }
 
 /// Default value for a parameter of a KCL function.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
 #[allow(clippy::large_enum_variant)]
@@ -3361,7 +3339,7 @@ impl DefaultParamVal {
 }
 
 /// Parameter of a KCL function.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct Parameter {
@@ -3418,7 +3396,7 @@ fn return_true() -> bool {
     true
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct FunctionExpression {
@@ -3541,7 +3519,7 @@ impl FunctionExpression {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct ReturnStatement {
@@ -3553,7 +3531,7 @@ pub struct ReturnStatement {
 }
 
 /// Format options.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct FormatOptions {
@@ -3614,7 +3592,7 @@ impl FormatOptions {
 }
 
 /// The constraint level.
-#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS, JsonSchema, Display)]
+#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS, Display)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 #[display(style = "snake_case")]
@@ -3684,7 +3662,7 @@ impl ConstraintLevel {
 }
 
 /// A vector of constraint levels.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 pub struct ConstraintLevels(pub Vec<ConstraintLevel>);
 

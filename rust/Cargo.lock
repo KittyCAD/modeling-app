@@ -2494,10 +2494,8 @@ name = "kcl-error"
 version = "0.1.0"
 dependencies = [
  "miette",
- "schemars",
  "serde",
  "serde_json",
- "tower-lsp",
  "ts-rs",
 ]
 

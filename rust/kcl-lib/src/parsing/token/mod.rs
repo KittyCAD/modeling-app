@@ -5,7 +5,6 @@ use std::{fmt, iter::Enumerate, num::NonZeroUsize, str::FromStr};
 
 use anyhow::Result;
 use parse_display::Display;
-use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use tokeniser::Input;
 use tower_lsp::lsp_types::SemanticTokenType;
@@ -28,7 +27,7 @@ pub(crate) use tokeniser::RESERVED_WORDS;
 // Note the ordering, it's important that `m` comes after `mm` and `cm`.
 pub const NUM_SUFFIXES: [&str; 10] = ["mm", "cm", "m", "inch", "in", "ft", "yd", "deg", "rad", "?"];
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize, ts_rs::TS, JsonSchema)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize, ts_rs::TS)]
 #[repr(u32)]
 pub enum NumericSuffix {
     None,

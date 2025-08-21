@@ -10,7 +10,6 @@ use kcmc::{ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit, shared::Angle
 use kittycad_modeling_cmds as kcmc;
 use kittycad_modeling_cmds::shared::PathSegment;
 use parse_display::{Display, FromStr};
-use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use super::{
@@ -39,7 +38,7 @@ use crate::{
 };
 
 /// A tag for a face.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "snake_case", untagged)]
 pub enum FaceTag {
@@ -85,7 +84,7 @@ impl FaceTag {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, FromStr, Display)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, FromStr, Display)]
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
 #[display(style = "snake_case")]
@@ -768,7 +767,7 @@ pub async fn inner_angled_line_that_intersects(
 
 /// Data for start sketch on.
 /// You can start a sketch on a plane or an solid.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "camelCase", untagged)]
 #[allow(clippy::large_enum_variant)]
@@ -779,7 +778,7 @@ pub enum SketchData {
 }
 
 /// Orientation data that can be used to construct a plane, not a plane in itself.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 #[allow(clippy::large_enum_variant)]
@@ -1535,7 +1534,7 @@ async fn inner_tangential_arc(
 }
 
 /// Data to draw a tangential arc.
-#[derive(Debug, Clone, Serialize, PartialEq, JsonSchema, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "camelCase", untagged)]
 pub enum TangentialArcData {

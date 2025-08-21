@@ -1,7 +1,6 @@
 use std::num::NonZeroU32;
 
 use anyhow::Result;
-use schemars::JsonSchema;
 use serde::Serialize;
 
 use super::fillet::EdgeReference;
@@ -88,16 +87,6 @@ impl TyF64 {
     pub fn map_value(mut self, n: f64) -> Self {
         self.n = n;
         self
-    }
-}
-
-impl JsonSchema for TyF64 {
-    fn schema_name() -> String {
-        "TyF64".to_string()
-    }
-
-    fn json_schema(r#gen: &mut schemars::r#gen::SchemaGenerator) -> schemars::schema::Schema {
-        r#gen.subschema_for::<f64>()
     }
 }
 
