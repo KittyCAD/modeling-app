@@ -6,7 +6,7 @@ use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity};
 use crate::{
     SourceRange,
     errors::Suggestion,
-    lsp::IntoDiagnostic,
+    lsp::{IntoDiagnostic, to_lsp_edit},
     parsing::ast::types::{Node as AstNode, Program},
     walk::Node,
 };
@@ -103,7 +103,7 @@ impl IntoDiagnostic for &Discovered {
     fn to_lsp_diagnostics(&self, code: &str) -> Vec<Diagnostic> {
         let message = self.finding.title.to_owned();
         let source_range = self.pos;
-        let edit = self.suggestion.as_ref().map(|s| s.to_lsp_edit(code));
+        let edit = self.suggestion.as_ref().map(|s| to_lsp_edit(s, code));
 
         vec![Diagnostic {
             range: source_range.to_lsp_range(code),

@@ -71,7 +71,6 @@ mod parsing;
 mod settings;
 #[cfg(test)]
 mod simulation_tests;
-mod source_range;
 pub mod std;
 #[cfg(not(target_arch = "wasm32"))]
 pub mod test_server;
@@ -94,6 +93,7 @@ pub use execution::{
     typed_path::TypedPath,
     types::{UnitAngle, UnitLen},
 };
+pub use kcl_error::SourceRange;
 pub use lsp::{
     copilot::Backend as CopilotLspBackend,
     kcl::{Backend as KclLspBackend, Server as KclLspServerSubCommand},
@@ -101,7 +101,6 @@ pub use lsp::{
 pub use modules::ModuleId;
 pub use parsing::ast::types::{FormatOptions, NodePath, Step as NodePathStep};
 pub use settings::types::{Configuration, UnitLength, project::ProjectConfiguration};
-pub use source_range::SourceRange;
 #[cfg(not(target_arch = "wasm32"))]
 pub use unparser::{recast_dir, walk_dir};
 

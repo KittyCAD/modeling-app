@@ -14,12 +14,12 @@ pub use util::IntoDiagnostic;
 
 use crate::{
     CompilationError,
-    errors::{Severity, Tag},
+    errors::{Severity, Suggestion, Tag},
 };
 
 impl IntoDiagnostic for CompilationError {
     fn to_lsp_diagnostics(&self, code: &str) -> Vec<Diagnostic> {
-        let edit = self.suggestion.as_ref().map(|s| s.to_lsp_edit(code));
+        let edit = self.suggestion.as_ref().map(|s| to_lsp_edit(s, code));
 
         vec![Diagnostic {
             range: self.source_range.to_lsp_range(code),
@@ -29,7 +29,7 @@ impl IntoDiagnostic for CompilationError {
             source: Some("kcl".to_string()),
             message: self.message.clone(),
             related_information: None,
-            tags: self.tag.to_lsp_tags(),
+            tags: tag_to_lsp_tags(self.tag),
             data: edit.map(|e| serde_json::to_value(e).unwrap()),
         }]
     }
@@ -42,12 +42,17 @@ impl IntoDiagnostic for CompilationError {
     }
 }
 
-impl Tag {
-    fn to_lsp_tags(self) -> Option<Vec<DiagnosticTag>> {
-        match self {
-            Tag::Deprecated => Some(vec![DiagnosticTag::DEPRECATED]),
-            Tag::Unnecessary => Some(vec![DiagnosticTag::UNNECESSARY]),
-            Tag::UnknownNumericUnits | Tag::None => None,
-        }
+fn tag_to_lsp_tags(tag: Tag) -> Option<Vec<DiagnosticTag>> {
+    match tag {
+        Tag::Deprecated => Some(vec![DiagnosticTag::DEPRECATED]),
+        Tag::Unnecessary => Some(vec![DiagnosticTag::UNNECESSARY]),
+        Tag::UnknownNumericUnits | Tag::None => None,
     }
+}
+
+pub type LspSuggestion = (Suggestion, tower_lsp::lsp_types::Range);
+
+pub(crate) fn to_lsp_edit(suggestion: &Suggestion, code: &str) -> LspSuggestion {
+    let range = suggestion.source_range.to_lsp_range(code);
+    (suggestion.clone(), range)
 }

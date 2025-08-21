@@ -1,8 +1,37 @@
+use std::fmt;
+
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use tower_lsp::lsp_types::{Position as LspPosition, Range as LspRange};
 
-use crate::modules::ModuleId;
+/// Identifier of a source file.  Uses a u32 to keep the size small.
+#[derive(
+    Debug, Default, Ord, PartialOrd, Eq, PartialEq, Clone, Copy, Hash, Deserialize, Serialize, ts_rs::TS, JsonSchema,
+)]
+#[ts(export)]
+pub struct ModuleId(u32);
+
+impl ModuleId {
+    pub fn from_usize(id: usize) -> Self {
+        Self(u32::try_from(id).expect("module ID should fit in a u32"))
+    }
+
+    pub fn as_usize(&self) -> usize {
+        usize::try_from(self.0).expect("module ID should fit in a usize")
+    }
+
+    /// Top-level file is the one being executed.
+    /// Represented by module ID of 0, i.e. the default value.
+    pub fn is_top_level(&self) -> bool {
+        *self == Self::default()
+    }
+}
+
+impl std::fmt::Display for ModuleId {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.0)
+    }
+}
 
 /// The first two items are the start and end points (byte offsets from the start of the file).
 /// The third item is whether the source range belongs to the 'main' file, i.e., the file currently
@@ -105,7 +134,7 @@ impl SourceRange {
     }
 
     /// Check if the range contains another range.  Modules must match.
-    pub(crate) fn contains_range(&self, other: &Self) -> bool {
+    pub fn contains_range(&self, other: &Self) -> bool {
         self.module_id() == other.module_id() && self.start() <= other.start() && self.end() >= other.end()
     }
 

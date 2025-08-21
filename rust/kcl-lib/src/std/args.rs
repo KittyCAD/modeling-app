@@ -7,7 +7,7 @@ use serde::Serialize;
 use super::fillet::EdgeReference;
 pub use crate::execution::fn_call::Args;
 use crate::{
-    ModuleId,
+    ModuleId, SourceRange,
     errors::{KclError, KclErrorDetails},
     execution::{
         ExecState, ExtrudeSurface, Helix, KclObjectFields, KclValue, Metadata, PlaneInfo, Sketch, SketchSurface, Solid,
@@ -16,7 +16,6 @@ use crate::{
         types::{NumericType, PrimitiveType, RuntimeType, UnitAngle, UnitLen, UnitType},
     },
     parsing::ast::types::TagNode,
-    source_range::SourceRange,
     std::{
         shapes::{PolygonType, SketchOrSurface},
         sketch::FaceTag,

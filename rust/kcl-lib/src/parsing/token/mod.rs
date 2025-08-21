@@ -16,10 +16,9 @@ use winnow::{
 };
 
 use crate::{
-    CompilationError, ModuleId,
+    CompilationError, ModuleId, SourceRange,
     errors::KclError,
     parsing::ast::types::{ItemVisibility, VariableKind},
-    source_range::SourceRange,
 };
 
 mod tokeniser;
