@@ -176,12 +176,17 @@ export function ModelingSidebarRight() {
       return
     }
 
+    const newPanes = new Set(
+      modelingContext.store.openPanes.concat('text-to-cad')
+    )
+    if (isDesktop()) {
+      newPanes.add('files')
+    }
+
     modelingContextSend({
       type: 'Set context',
       data: {
-        openPanes: Array.from(
-          new Set(modelingContext.store.openPanes.concat('text-to-cad'))
-        ),
+        openPanes: Array.from(newPanes),
       },
     })
     // React doesn't realize that we are updating `modelingContext.store.openPanes` here
