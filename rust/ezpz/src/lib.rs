@@ -272,14 +272,85 @@ mod tests {
 
         let expected = [(0.0, 0.0), (4.0, 4.0), (8.0, 8.0)];
         assert!(actual.iterations <= 10);
-        let actual = [
+        let actual_points = [
             (actual.final_values[0], actual.final_values[1]),
             (actual.final_values[2], actual.final_values[3]),
             (actual.final_values[4], actual.final_values[5]),
         ];
         for i in 0..3 {
-            assert!((expected[i].0 - actual[i].0).abs() < 0.000001);
-            assert!((expected[i].1 - actual[i].1).abs() < 0.000001);
+            assert!((expected[i].0 - actual_points[i].0).abs() < 0.000001);
+            assert!((expected[i].1 - actual_points[i].1).abs() < 0.000001);
         }
+
+        if std::env::var("GNUPLOT_EZPZ_TEST").is_ok() {
+            pop_gnuplot_window(
+                "angle test",
+                vec![
+                    ((actual.final_values[0], actual.final_values[1]), "p0"),
+                    ((actual.final_values[2], actual.final_values[3]), "p1"),
+                    ((actual.final_values[4], actual.final_values[5]), "p2"),
+                ],
+            );
+        }
+    }
+
+    /// Open a `gnuplot` window displaying these points in a 2D scatter plot.
+    fn pop_gnuplot_window(chart_name: &str, points: Vec<((f64, f64), &str)>) {
+        let gnuplot_program = gnuplot(chart_name, points);
+        let mut child = std::process::Command::new("gnuplot")
+            .args(["-persist", "-"])
+            .stdin(std::process::Stdio::piped())
+            .spawn()
+            .expect("failed to start gnuplot");
+
+        {
+            let stdin = child.stdin.as_mut().expect("failed to open stdin");
+            use std::io::Write;
+            stdin
+                .write_all(gnuplot_program.as_bytes())
+                .expect("failed to write to stdin");
+        }
+        let _ = child.wait();
+    }
+
+    /// Write a gnuplot program to show these points in a 2D scatter plot.
+    fn gnuplot(chart_name: &str, points: Vec<((f64, f64), &str)>) -> String {
+        let all_points = points
+            .iter()
+            .map(|((x, y), _label)| format!("{x} {y}"))
+            .collect::<Vec<_>>()
+            .join("\n");
+        let all_labels = points
+            .iter()
+            .map(|((x, y), label)| format!("set label \"{label} ({x}, {y})\" at {x},{y} offset 1,1"))
+            .collect::<Vec<_>>()
+            .join("\n");
+        let components = points
+            .into_iter()
+            .flat_map(|((x, y), _label)| [x, y])
+            .collect::<Vec<_>>();
+        let min = components.iter().cloned().fold(f64::NAN, f64::min);
+        let max = components.iter().cloned().fold(f64::NAN, f64::max);
+        format!(
+            "set title \"{chart_name}\"
+set xlabel \"X\"
+set ylabel \"Y\"
+set grid
+
+set xrange [{min}:{max}]
+set yrange [{min}:{max}]
+
+# Plot the points
+plot \"-\" with points pointtype 7 pointsize 2 title \"Points\"
+{all_points}
+e
+
+# Add labels for each point
+{all_labels}
+
+# Refresh plot to show labels
+replot
+"
+        )
     }
 }
