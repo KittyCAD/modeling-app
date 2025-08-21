@@ -1,0 +1,12 @@
+[package]
+name = "kcl-api"
+version = "0.1.0"
+edition = "2024"
+description = "KCL interpreter API"
+
+[dependencies]
+indexmap.workspace = true
+kcl-error = { version = "0.1", path = "../kcl-error" }
+
+[lints]
+workspace = true
