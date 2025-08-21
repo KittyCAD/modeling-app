@@ -127,13 +127,16 @@ export const PromptCardStatus = (props: {
   )
 
   const failed = props.onlyShowImmediateThought ? (
-    <div>{props.maybeError}</div>
+    <div data-testid="prompt-card-status-failed">{props.maybeError}</div>
   ) : (
     thinker
   )
 
   const completed = (
-    <div className="p-2 border border-transparent">
+    <div
+      className="p-2 border border-transparent"
+      data-testid="prompt-card-status-completed"
+    >
       Worked for{' '}
       {ms(
         new Date(props.updatedAt ?? new Date()).getTime() -

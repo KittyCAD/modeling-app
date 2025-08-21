@@ -1001,38 +1001,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
     },
   },
-  'Prompt-to-edit': {
-    displayName: 'Text-to-CAD Edit',
-    description:
-      'Use machine learning to edit your parts and code from a text prompt.',
-    icon: 'sparkles',
-    status: IS_ML_EXPERIMENTAL ? 'experimental' : 'active',
-    args: {
-      selection: {
-        inputType: 'selectionMixed',
-        selectionTypes: [
-          'solid2d',
-          'segment',
-          'sweepEdge',
-          'cap',
-          'wall',
-          'edgeCut',
-          'edgeCutEdge',
-        ],
-        multiple: true,
-        required: false,
-        selectionSource: {
-          allowSceneSelection: true,
-          allowCodeSelection: true,
-        },
-        skip: false,
-      },
-      prompt: {
-        inputType: 'text',
-        required: true,
-      },
-    },
-  },
   Appearance: {
     description:
       'Set the appearance of a solid. This only works on solids, not sketches or individual paths.',

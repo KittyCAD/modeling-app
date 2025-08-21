@@ -379,7 +379,9 @@ export const Thinking = (props: {
   )
 
   const ViewImmediate = (
-    <div className="animate-shimmer p-2">{componentLastGenericThought}</div>
+    <div data-testid="thinking-immediate" className="animate-shimmer p-2">
+      {componentLastGenericThought}
+    </div>
   )
 
   return props.onlyShowImmediateThought ? ViewImmediate : ViewFull

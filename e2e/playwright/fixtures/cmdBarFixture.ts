@@ -143,15 +143,9 @@ export class CmdBarFixture {
     await submitButton.click()
   }
 
-  openCmdBar = async (selectCmd?: 'promptToEdit') => {
+  openCmdBar = async () => {
     await this.cmdBarOpenBtn.click()
     await expect(this.page.getByPlaceholder('Search commands')).toBeVisible()
-    if (selectCmd === 'promptToEdit') {
-      const promptEditCommand = this.selectOption({ name: 'Text-to-CAD Edit' })
-      await expect(promptEditCommand.first()).toBeVisible()
-      await promptEditCommand.first().scrollIntoViewIfNeeded()
-      await promptEditCommand.first().click()
-    }
   }
 
   closeCmdBar = async () => {
