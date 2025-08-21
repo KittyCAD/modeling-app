@@ -1,4 +1,5 @@
 import type { Models } from '@kittycad/lib'
+import type { Prompt } from '@src/lib/prompt'
 
 export interface IResponseMlConversation {
   created_at: string
@@ -14,6 +15,6 @@ export interface IResponseMlConversations {
 }
 
 export type PromptsPaged = {
-  items: Models['TextToCad_type'][]
+  items: Prompt[]
   next_page?: string
 }

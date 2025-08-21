@@ -5,6 +5,7 @@ import type { MlEphantManagerActor } from '@src/machines/mlEphantManagerMachine'
 import { MlEphantManagerTransitions } from '@src/machines/mlEphantManagerMachine'
 import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
 import type { RequestedKCLFile } from '@src/machines/systemIO/utils'
+import { waitForIdleState } from '@src/machines/systemIO/utils'
 import {
   SystemIOMachineEvents,
   determineProjectFilePathFromPrompt,
@@ -165,7 +166,6 @@ export function createApplicationCommands({
           }
         )
 
-        // Maybe create a new project if necessary, and navigate to it.
         systemIOActor.send({
           type: SystemIOMachineEvents.importFileFromURL,
           data: {
@@ -175,28 +175,32 @@ export function createApplicationCommands({
           },
         })
 
-        mlEphantManagerActor.send({
-          type: MlEphantManagerTransitions.PromptCreateModel,
-          // It's always going to be a fresh directory since it's a new
-          // project.
-          projectForPromptOutput: {
-            name: '',
-            path: uniquePromptFilePath,
-            children: [],
-            readWriteAccess: true,
-            metadata: {
-              accessed: '',
-              created: '',
-              modified: '',
-              permission: null,
-              type: null,
-              size: 0,
+        // TODO: Remove this await and instead add a call back or something
+        // to the event above
+        waitForIdleState({ systemIOActor }).then(() => {
+          mlEphantManagerActor.send({
+            type: MlEphantManagerTransitions.PromptCreateModel,
+            // It's always going to be a fresh directory since it's a new
+            // project.
+            projectForPromptOutput: {
+              name: '',
+              path: uniquePromptFilePath,
+              children: [],
+              readWriteAccess: true,
+              metadata: {
+                accessed: '',
+                created: '',
+                modified: '',
+                permission: null,
+                type: null,
+                size: 0,
+              },
+              kcl_file_count: 0,
+              directory_count: 0,
+              default_file: '',
             },
-            kcl_file_count: 0,
-            directory_count: 0,
-            default_file: '',
-          },
-          prompt: requestedPrompt,
+            prompt: requestedPrompt,
+          })
         })
       }
     },

@@ -463,9 +463,9 @@ function HomeTab(props: HomeTabProps) {
     { name: 'Prompts', key: HomeTabKeys.Prompts },
   ]
 
-  const cssTab = 'cursor-pointer p-4'
-  const cssActive = `${cssTab} border rounded bg-green`
-  const cssInactive = `${cssTab}`
+  const cssTab = 'cursor-pointer border rounded-t text-lg text-center'
+  const cssActive = `${cssTab} p-2 border-chalkboard-70 border-b-transparent`
+  const cssInactive = `${cssTab} pl-2 pr-2 pt-2 mt-1 border text-chalkboard-90 border-chalkboard-50 bg-chalkboard-20`
 
   const onClickTab = (key: HomeTabKeys) => () => {
     setSelected(key)
@@ -478,6 +478,7 @@ function HomeTab(props: HomeTabProps) {
         <div
           key={el.key}
           className={el.key === selected ? cssActive : cssInactive}
+          style={{ width: '130px' }}
           onClick={onClickTab(el.key)}
           role="tab"
           tabIndex={0}

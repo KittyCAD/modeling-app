@@ -411,8 +411,6 @@ export const mlEphantManagerMachine = setup({
         })
 
         return {
-          // Same deal here
-          // @ts-expect-error
           conversationId: result.conversation_id,
           promptsBelongingToConversation,
           promptsMeta,
@@ -505,6 +503,12 @@ export const mlEphantManagerMachine = setup({
           }
 
           promptsInProgressToCompleted.add(prompt.id)
+
+          // The generate types for this are wrong,
+          // TextToCad create and iterate both return a conversation id always
+          // I believe in some circumstances (legacy prompts), conversation_id
+          // will be undefined or the NIL uuid.
+          // @ts-expect-error
           promptsPool.set(prompt.id, {
             ...result,
             prompt: result.prompt ?? '',
