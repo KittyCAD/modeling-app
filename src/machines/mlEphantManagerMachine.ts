@@ -1,5 +1,5 @@
 import { connectReasoningStream } from '@src/lib/reasoningWs'
-import { assertEvent, assign, setup, fromPromise, sendTo } from 'xstate'
+import { assertEvent, assign, setup, fromPromise } from 'xstate'
 import type { ActorRefFrom } from 'xstate'
 
 import { S, transitions } from '@src/machines/utils'

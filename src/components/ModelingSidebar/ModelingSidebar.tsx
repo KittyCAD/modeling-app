@@ -184,7 +184,12 @@ export function ModelingSidebarRight() {
         ),
       },
     })
-  }, [promptsBelongingToConversation, actuallyNew])
+  }, [
+    promptsBelongingToConversation,
+    actuallyNew,
+    modelingContext.store.openPanes,
+    modelingContextSend,
+  ])
 
   // Prevents rerenders because new array is a new ref.
   const sidebarActions: Ref<SidebarAction[]> = useRef([])

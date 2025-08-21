@@ -146,8 +146,6 @@ test.describe('Prompt-to-edit tests', () => {
     page,
     scene,
   }) => {
-    const body1CapCoords = { x: 571, y: 311 }
-
     await context.addInitScript((file) => {
       localStorage.setItem('persistCode', file)
     }, file)
@@ -215,10 +213,6 @@ test.describe('Prompt-to-edit tests', () => {
     await scene.settled(cmdBar)
 
     await toolbar.openPane('text-to-cad')
-
-    const submittingToast = page.getByText('Submitting to Text-to-CAD API...')
-    const successToast = page.getByText('Prompt to edit successful')
-    const acceptBtn = page.getByRole('button', { name: 'checkmark Continue' })
 
     await test.step('select multiple bodies and fire prompt', async () => {
       // Initial color check

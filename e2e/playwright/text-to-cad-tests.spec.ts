@@ -1,6 +1,6 @@
 import type { Page } from '@playwright/test'
 
-import { createProject, getUtils } from '@e2e/playwright/test-utils'
+import { getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
 

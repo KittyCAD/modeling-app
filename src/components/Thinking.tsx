@@ -339,7 +339,7 @@ export const Thinking = (props: {
       return
     }
     c[c.length - 1].scrollIntoView({ behavior: 'smooth' })
-  }, [props.thoughts?.length])
+  }, [props.thoughts?.length, props.onlyShowImmediateThought])
 
   if (props.thoughts === undefined) {
     return (
