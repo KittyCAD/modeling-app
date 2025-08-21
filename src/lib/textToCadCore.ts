@@ -45,7 +45,7 @@ export async function getTextToCadCreateResult(
   id: string,
   token?: string
 ): Promise<Models['TextToCad_type'] | Error> {
-  const url = withAPIBaseURL(`/ai/text-to-cad/${id}`)
+  const url = withAPIBaseURL(`/user/text-to-cad/${id}`)
   const data: Models['TextToCad_type'] | Error = await crossPlatformFetch(
     url,
     {

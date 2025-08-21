@@ -77,7 +77,7 @@ test.describe('Text-to-CAD tests', () => {
 
     // Make sure the new prompt works.
     await expect(page.getByText('a 2x4 lego')).toBeVisible()
-    await editor.expectEditor.toContain('startSketchOn', { timeout: 30000 })
+    await editor.expectEditor.toContain('startSketchOn', { timeout: 60000 })
     await scene.settled(cmdBar)
   })
 
