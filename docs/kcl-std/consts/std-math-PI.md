@@ -15,7 +15,7 @@ PI: number(_?) = 3.14159265358979323846264338327950288_?
 However, `PI` is nearly always used for converting between different units - usually degrees to or
 from radians. Therefore, `PI` is treated a bit specially by KCL and always has unknown units. This
 means that if you use `PI`, you will need to give KCL some extra information about the units of numbers.
-Usually you should use type ascription on the result of calculations, e.g., `(2 * PI): number(rad)`.
+Usually you should use type ascription on the result of calculations, e.g., `(2 * PI): rad`.
 It is better to use `units::toRadians` or `units::toDegrees` to convert between angles with
 different units where possible.
 
@@ -29,7 +29,7 @@ different units where possible.
 circumference = 70
 
 exampleSketch = startSketchOn(XZ)
-  |> circle(center = [0, 0], radius = (circumference / (2 * PI)): number(mm))
+  |> circle(center = [0, 0], radius = (circumference / (2 * PI)): mm)
 
 example = extrude(exampleSketch, length = 5)
 
