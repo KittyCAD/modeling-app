@@ -194,8 +194,7 @@ pub use lsp::test_util::kcl_lsp_server;
 impl Program {
     pub fn parse(input: &str) -> Result<(Option<Program>, Vec<CompilationError>), KclError> {
         let module_id = ModuleId::default();
-        let tokens = parsing::token::lex(input, module_id)?;
-        let (ast, errs) = parsing::parse_tokens(tokens).0?;
+        let (ast, errs) = parsing::parse_str(input, module_id).0?;
 
         Ok((
             ast.map(|ast| Program {
@@ -208,8 +207,7 @@ impl Program {
 
     pub fn parse_no_errs(input: &str) -> Result<Program, KclError> {
         let module_id = ModuleId::default();
-        let tokens = parsing::token::lex(input, module_id)?;
-        let ast = parsing::parse_tokens(tokens).parse_errs_as_err()?;
+        let ast = parsing::parse_str(input, module_id).parse_errs_as_err()?;
 
         Ok(Program {
             ast,

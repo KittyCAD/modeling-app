@@ -349,7 +349,7 @@ impl BinaryPart {
             }
             BinaryPart::Name(name) => match deprecation(&name.inner.name.inner.name, DeprecationKind::Const) {
                 Some(suggestion) => write!(buf, "{suggestion}").no_fail(),
-                None => write!(buf, "{name}").no_fail(),
+                None => name.write_to(buf).no_fail(),
             },
             BinaryPart::BinaryExpression(binary_expression) => {
                 binary_expression.recast(buf, options, indentation_level, ctxt)
@@ -423,7 +423,7 @@ impl CallExpressionKw {
                 options.get_indentation(indentation_level)
             };
             options.write_indentation(buf, smart_indent_level);
-            write!(buf, "{name}").no_fail();
+            name.write_to(buf).no_fail();
             buf.push('(');
             buf.push('\n');
             write!(buf, "{inner_indentation}").no_fail();
@@ -433,7 +433,7 @@ impl CallExpressionKw {
             buf.push(')');
         } else {
             options.write_indentation(buf, smart_indent_level);
-            write!(buf, "{name}").no_fail();
+            name.write_to(buf).no_fail();
             buf.push('(');
             write!(buf, "{args}").no_fail();
             buf.push(')');
@@ -546,7 +546,8 @@ impl Literal {
 impl TagDeclarator {
     pub fn recast(&self, buf: &mut String) {
         // TagDeclarators are always prefixed with a dollar sign.
-        write!(buf, "${}", self.name).no_fail()
+        buf.push('$');
+        buf.push_str(&self.name);
     }
 }
 
@@ -575,10 +576,10 @@ impl ArrayExpression {
         }
 
         // Format these items into a one-line array.
-        if let Some(item) = format_items.last_mut() {
-            if let Some(norm) = item.strip_suffix(", ") {
-                *item = norm.to_owned();
-            }
+        if let Some(item) = format_items.last_mut()
+            && let Some(norm) = item.strip_suffix(", ")
+        {
+            *item = norm.to_owned();
         }
         let mut flat_recast = String::with_capacity(256);
         flat_recast.push('[');
@@ -2447,6 +2448,57 @@ fn ghi(part001) {
        angle_start = 0,
        angle_end = 180
      })
+"#
+        );
+    }
+
+    #[test]
+    fn test_recast_array_no_trailing_comma_with_comments() {
+        let some_program_string = r#"[
+  1, // one
+  2, // two
+  3  // three
+]"#;
+        let program = crate::parsing::top_level_parse(some_program_string).unwrap();
+
+        let recasted = program.recast_top(&Default::default(), 0);
+        assert_eq!(
+            recasted,
+            r#"[
+  1,
+  // one
+  2,
+  // two
+  3,
+  // three
+]
+"#
+        );
+    }
+
+    #[test]
+    fn test_recast_object_no_trailing_comma_with_comments() {
+        let some_program_string = r#"{
+  x=1, // one
+  y=2, // two
+  z=3  // three
+}"#;
+        let program = crate::parsing::top_level_parse(some_program_string).unwrap();
+
+        let recasted = program.recast_top(&Default::default(), 0);
+        // TODO: We should probably not add an extra new line after the last
+        // comment.
+        assert_eq!(
+            recasted,
+            r#"{
+  x = 1,
+  // one
+  y = 2,
+  // two
+  z = 3,
+  // three
+
+}
 "#
         );
     }

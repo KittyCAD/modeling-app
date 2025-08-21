@@ -29,10 +29,13 @@ import {
   getStringAfterLastSeparator,
   parentPathRelativeToProject,
 } from '@src/lib/paths'
+import type { IElectronAPI } from '@root/interface'
 
 const sharedBulkCreateWorkflow = async ({
+  electron,
   input,
 }: {
+  electron: IElectronAPI
   input: {
     context: SystemIOContext
     files: RequestedKCLFile[]
@@ -40,7 +43,7 @@ const sharedBulkCreateWorkflow = async ({
     override?: boolean
   }
 }) => {
-  const configuration = await readAppSettingsFile()
+  const configuration = await readAppSettingsFile(electron)
   for (let fileIndex = 0; fileIndex < input.files.length; fileIndex++) {
     const file = input.files[fileIndex]
     const requestedProjectName = file.requestedProjectName
@@ -66,20 +69,24 @@ const sharedBulkCreateWorkflow = async ({
       )
     }
 
-    const baseDir = window.electron.join(
+    const baseDir = electron.path.join(
       input.context.projectDirectoryPath,
       newProjectName
     )
     // If override is true, use the requested filename directly
     const fileName = input.override
       ? requestedFileName
-      : getNextFileName({
-          entryName: requestedFileName,
-          baseDir,
-        }).name
+      : (
+          await getNextFileName({
+            electron,
+            entryName: requestedFileName,
+            baseDir,
+          })
+        ).name
 
     // Create the project around the file if newProject
     await createNewProjectDirectory(
+      electron,
       newProjectName,
       requestedCode,
       configuration,
@@ -103,12 +110,15 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
   actors: {
     [SystemIOMachineActors.readFoldersFromProjectDirectory]: fromPromise(
       async ({ input: context }: { input: SystemIOContext }) => {
+        if (!window.electron) {
+          return Promise.reject(new Error('No file system present'))
+        }
         const projects = []
         const projectDirectoryPath = context.projectDirectoryPath
         if (projectDirectoryPath === NO_PROJECT_DIRECTORY) {
           return []
         }
-        await mkdirOrNOOP(projectDirectoryPath)
+        await mkdirOrNOOP(window.electron, projectDirectoryPath)
         // Gotcha: readdir will list all folders at this project directory even if you do not have readwrite access on the directory path
         const entries = await window.electron.readdir(projectDirectoryPath)
         const { value: canReadWriteProjectDirectory } =
@@ -130,7 +140,10 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           if (!isDirectory) {
             continue
           }
-          const project: Project = await getProjectInfo(projectPath)
+          const project: Project = await getProjectInfo(
+            window.electron,
+            projectPath
+          )
           if (
             project.kcl_file_count === 0 &&
             project.readWriteAccess &&
@@ -149,10 +162,13 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
       }: {
         input: { context: SystemIOContext; requestedProjectName: string }
       }) => {
+        if (!window.electron) {
+          return Promise.reject(new Error('No file system present'))
+        }
         const folders = input.context.folders
         const requestedProjectName = input.requestedProjectName
         const uniqueName = getUniqueProjectName(requestedProjectName, folders)
-        await createNewProjectDirectory(uniqueName)
+        await createNewProjectDirectory(window.electron, uniqueName)
         return {
           message: `Successfully created "${uniqueName}"`,
           name: uniqueName,
@@ -169,6 +185,9 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           projectName: string
         }
       }) => {
+        if (!window.electron) {
+          return Promise.reject(new Error('No file system present'))
+        }
         const folders = input.context.folders
         const requestedProjectName = input.requestedProjectName
         const projectName = input.projectName
@@ -189,6 +208,7 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
         }
 
         await renameProjectDirectory(
+          window.electron,
           window.electron.path.join(
             input.context.projectDirectoryPath,
             projectName
@@ -209,6 +229,9 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
       }: {
         input: { context: SystemIOContext; requestedProjectName: string }
       }) => {
+        if (!window.electron) {
+          return Promise.reject(new Error('No file system present'))
+        }
         await window.electron.rm(
           window.electron.path.join(
             input.context.projectDirectoryPath,
@@ -238,6 +261,9 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           requestedSubRoute?: string
         }
       }) => {
+        if (!window.electron) {
+          return Promise.reject(new Error('No file system present'))
+        }
         const requestedProjectName = input.requestedProjectName
         const requestedFileNameWithExtension =
           input.requestedFileNameWithExtension
@@ -267,15 +293,17 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           input.context.projectDirectoryPath,
           newProjectName
         )
-        const { name: newFileName } = getNextFileName({
+        const { name: newFileName } = await getNextFileName({
+          electron: window.electron,
           entryName: requestedFileNameWithExtension,
           baseDir,
         })
 
-        const configuration = await readAppSettingsFile()
+        const configuration = await readAppSettingsFile(window.electron)
 
         // Create the project around the file if newProject
         await createNewProjectDirectory(
+          window.electron,
           newProjectName,
           requestedCode,
           configuration,
@@ -299,6 +327,9 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           requestedProjectDirectoryPath: string
         }
       }) => {
+        if (!window.electron) {
+          return Promise.reject(new Error('No file system present'))
+        }
         const requestProjectDirectoryPath = input.requestedProjectDirectoryPath
         if (!requestProjectDirectoryPath) {
           return { value: true, error: undefined }
@@ -319,6 +350,9 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           requestedFileName: string
         }
       }) => {
+        if (!window.electron) {
+          return Promise.reject(new Error('No file system present'))
+        }
         const path = window.electron.path.join(
           input.context.projectDirectoryPath,
           input.requestedProjectName,
@@ -342,7 +376,13 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           rootContext: AppMachineContext
         }
       }) => {
-        const message = await sharedBulkCreateWorkflow({ input })
+        if (!window.electron) {
+          return Promise.reject(new Error('No file system present'))
+        }
+        const message = await sharedBulkCreateWorkflow({
+          electron: window.electron,
+          input,
+        })
         return {
           ...message,
           subRoute: '',
@@ -362,7 +402,11 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           requestedSubRoute?: string
         }
       }) => {
+        if (!window.electron) {
+          return Promise.reject(new Error('No file system present'))
+        }
         const message = await sharedBulkCreateWorkflow({
+          electron: window.electron,
           input: {
             ...input,
             override: input.override,
@@ -389,7 +433,11 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           requestedSubRoute?: string
         }
       }) => {
+        if (!window.electron) {
+          return Promise.reject(new Error('No file system present'))
+        }
         const message = await sharedBulkCreateWorkflow({
+          electron: window.electron,
           input: {
             ...input,
             override: input.override,
@@ -417,6 +465,9 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           requestedFileNameWithExtension?: string
         }
       }) => {
+        if (!window.electron) {
+          return Promise.reject(new Error('No file system present'))
+        }
         const {
           folderName,
           requestedFolderName,
@@ -457,7 +508,7 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           }
         }
 
-        window.electron.rename(oldPath, newPath)
+        await window.electron.rename(oldPath, newPath)
 
         return {
           message: `Successfully renamed folder "${folderName}" to "${requestedFolderName}"`,
@@ -480,6 +531,9 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           absolutePathToParentDirectory: string
         }
       }) => {
+        if (!window.electron) {
+          return Promise.reject(new Error('No file system present'))
+        }
         const {
           fileNameWithExtension,
           requestedFileNameWithExtension,
@@ -523,7 +577,7 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           }
         }
 
-        window.electron.rename(oldPath, newPath)
+        await window.electron.rename(oldPath, newPath)
 
         return {
           message: `Successfully renamed file "${fileNameWithExtension}" to "${requestedFileNameWithExtension}"`,
@@ -543,6 +597,9 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           requestedProjectName?: string | undefined
         }
       }) => {
+        if (!window.electron) {
+          return Promise.reject(new Error('No file system present'))
+        }
         await window.electron.rm(input.requestedPath, { recursive: true })
         let response = {
           message: 'File deleted successfully',
@@ -562,6 +619,9 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           requestedAbsolutePath: string
         }
       }) => {
+        if (!window.electron) {
+          return Promise.reject(new Error('No file system present'))
+        }
         const fileNameWithExtension = getStringAfterLastSeparator(
           input.requestedAbsolutePath
         )
@@ -592,6 +652,9 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           requestedAbsolutePath: string
         }
       }) => {
+        if (!window.electron) {
+          return Promise.reject(new Error('No file system present'))
+        }
         const folderName = getStringAfterLastSeparator(
           input.requestedAbsolutePath
         )

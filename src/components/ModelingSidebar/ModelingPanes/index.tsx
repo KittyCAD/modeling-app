@@ -180,6 +180,7 @@ export const sidebarPanes: SidebarPane[] = [
         const duplicated = JSON.parse(JSON.stringify(theProject))
         addPlaceHoldersForNewFileAndFolder(duplicated.children, theProject.path)
         setTheProject(duplicated)
+        // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
       }, [projects, loaderData])
 
       const [createFilePressed, setCreateFilePressed] = useState<number>(0)
@@ -213,13 +214,18 @@ export const sidebarPanes: SidebarPane[] = [
               requestedFileName: requestedFileName,
             },
           })
-        } else if (isRelevantFile(entry.path) && projectRef.current?.path) {
+        } else if (
+          window.electron &&
+          isRelevantFile(entry.path) &&
+          projectRef.current?.path
+        ) {
           // Allow insert if it is a importable file
+          const electron = window.electron
           toast.custom(
             ToastInsert({
               onInsert: () => {
                 const relativeFilePath = entry.path.replace(
-                  projectRef.current?.path + window.electron.sep,
+                  projectRef.current?.path + electron.path.sep,
                   ''
                 )
                 commandBarActor.send({

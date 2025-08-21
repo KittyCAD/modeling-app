@@ -144,6 +144,7 @@ export const ProjectExplorer = ({
       newOpenedRows[row?.key] = true
       setOpenedRows(newOpenedRows)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [createFilePressed])
 
   useEffect(() => {
@@ -161,6 +162,7 @@ export const ProjectExplorer = ({
       newOpenedRows[row?.key] = true
       setOpenedRows(newOpenedRows)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [createFolderPressed])
 
   useEffect(() => {
@@ -324,7 +326,7 @@ export const ProjectExplorer = ({
             }
           },
           onOpenInNewWindow: () => {
-            window.electron.openInNewWindow(row.path)
+            window.electron?.openInNewWindow(row.path)
           },
           onRenameStart: () => {
             if (readOnly) {
@@ -373,16 +375,19 @@ export const ProjectExplorer = ({
                   const absolutePathToParentDirectory = getParentAbsolutePath(
                     row.path
                   )
-                  const oldPath = window.electron.path.join(
+                  const oldPath = window.electron?.path.join(
                     absolutePathToParentDirectory,
                     name
                   )
-                  const newPath = window.electron.path.join(
+                  const newPath = window.electron?.path.join(
                     absolutePathToParentDirectory,
                     requestedName
                   )
                   const shouldWeNavigate =
-                    file?.path?.startsWith(oldPath) && canNavigate
+                    oldPath !== undefined &&
+                    newPath !== undefined &&
+                    file?.path?.startsWith(oldPath) &&
+                    canNavigate
 
                   if (shouldWeNavigate && file && file.path) {
                     const requestedFileNameWithExtension =
@@ -549,6 +554,7 @@ export const ProjectExplorer = ({
     setRowsToRender(requestedRowsToRender)
     rowsToRenderRef.current = requestedRowsToRender
     previousProject.current = project
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [project, openedRows, fakeRow, activeIndex, errors])
 
   // Handle clicks and keyboard presses within the global DOM level
@@ -677,8 +683,10 @@ export const ProjectExplorer = ({
       document.removeEventListener('click', handleClickOutside)
       document.removeEventListener('keydown', keyDownHandler)
       fileExplorerContainer.current?.removeEventListener('focus', handleFocus)
+      // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
       fileExplorerContainer.current?.removeEventListener('blur', handleBlur)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [])
 
   return (

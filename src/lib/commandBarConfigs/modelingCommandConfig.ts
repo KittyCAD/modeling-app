@@ -145,7 +145,7 @@ export type ModelingCommandSchema = {
     // Enables editing workflow
     nodeToEdit?: PathToNode
     plane: Selections
-    distance: KclCommandValue
+    offset: KclCommandValue
   }
   Helix: {
     // Enables editing workflow
@@ -686,12 +686,13 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       plane: {
         inputType: 'selection',
-        selectionTypes: ['plane'],
+        selectionTypes: ['plane', 'cap', 'wall'],
         multiple: false,
         required: true,
         skip: true,
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
-      distance: {
+      offset: {
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_LENGTH,
         required: true,

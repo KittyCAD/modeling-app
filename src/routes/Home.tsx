@@ -88,7 +88,7 @@ const Home = () => {
 
   // Only create the native file menus on desktop
   useEffect(() => {
-    if (isDesktop()) {
+    if (window.electron) {
       window.electron
         .createHomePageMenu()
         .then(() => {
@@ -97,6 +97,7 @@ const Home = () => {
         .catch(reportRejection)
     }
     billingActor.send({ type: BillingTransition.Update, apiToken })
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [])
 
   const location = useLocation()

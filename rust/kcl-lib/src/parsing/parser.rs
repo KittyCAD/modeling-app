@@ -19,9 +19,9 @@ use super::{
     token::{NumericSuffix, RESERVED_WORDS},
 };
 use crate::{
-    IMPORT_FILE_EXTENSIONS, SourceRange, TypedPath,
+    IMPORT_FILE_EXTENSIONS, MetaSettings, SourceRange, TypedPath,
     errors::{CompilationError, Severity, Tag},
-    execution::types::ArrayLen,
+    execution::{annotations, types::ArrayLen},
     parsing::{
         PIPE_OPERATOR, PIPE_SUBSTITUTION_OPERATOR,
         ast::types::{
@@ -48,6 +48,8 @@ const IF_ELSE_CANNOT_BE_EMPTY: &str = "`if` and `else` blocks cannot be empty";
 const ELSE_STRUCTURE: &str = "This `else` should be followed by a {, then a block of code, then a }";
 const ELSE_MUST_END_IN_EXPR: &str = "This `else` block needs to end in an expression, which will be the value if no preceding `if` condition was matched";
 
+const KEYWORD_EXPECTING_IDENTIFIER: &str = "Expected an identifier, but found a reserved keyword.";
+
 pub fn run_parser(i: TokenSlice) -> super::ParseResult {
     let _stats = crate::log::LogPerfStats::new("Parsing");
     ParseContext::init();
@@ -69,11 +71,15 @@ pub fn run_parser(i: TokenSlice) -> super::ParseResult {
 #[derive(Debug, Clone, Default)]
 struct ParseContext {
     pub errors: Vec<CompilationError>,
+    settings: MetaSettings,
 }
 
 impl ParseContext {
     fn new() -> Self {
-        ParseContext { errors: Vec::new() }
+        ParseContext {
+            errors: Vec::new(),
+            settings: Default::default(),
+        }
     }
 
     /// Set a new `ParseContext` in thread-local storage. Panics if one already exists.
@@ -86,6 +92,22 @@ impl ParseContext {
     /// is not present.
     fn take() -> ParseContext {
         CTXT.with_borrow_mut(|ctxt| ctxt.take()).unwrap()
+    }
+
+    fn handle_attribute(attr: &Node<Annotation>) {
+        // TODO handle scoping of attributes - not currently much of an issue because if settings is
+        // not top-level, then we'll get an error later.
+        match attr.name() {
+            Some(annotations::SETTINGS) => {
+                CTXT.with_borrow_mut(|ctxt| {
+                    let _ = ctxt.as_mut().unwrap().settings.update_from_annotation(attr);
+                });
+            }
+            Some(annotations::WARNINGS) => {
+                // TODO https://github.com/KittyCAD/modeling-app/issues/8021
+            }
+            _ => {}
+        }
     }
 
     /// Add an error to the current `ParseContext`, panics if there is none.
@@ -113,6 +135,24 @@ impl ParseContext {
     fn warn(mut e: CompilationError) {
         e.severity = Severity::Warning;
         Self::err(e);
+    }
+
+    fn experimental(feature: &str, source_range: SourceRange) {
+        CTXT.with_borrow_mut(|ctxt| {
+            let ctxt = ctxt.as_mut().unwrap();
+            let Some(severity) = ctxt.settings.experimental_features.severity() else {
+                return;
+            };
+            let error = CompilationError {
+                source_range,
+                message: format!("Use of {feature} is experimental and may change or be removed."),
+                suggestion: None,
+                severity,
+                tag: crate::errors::Tag::None,
+            };
+
+            ctxt.errors.push(error);
+        });
     }
 }
 
@@ -336,12 +376,20 @@ fn annotation(i: &mut TokenSlice) -> ModalResult<Node<Annotation>> {
         ));
     }
 
-    let value = Annotation {
-        name,
-        properties,
-        digest: None,
-    };
-    Ok(Node::new(value, at.start, end, at.module_id))
+    let value = Node::new(
+        Annotation {
+            name,
+            properties,
+            digest: None,
+        },
+        at.start,
+        end,
+        at.module_id,
+    );
+
+    ParseContext::handle_attribute(&value);
+
+    Ok(value)
 }
 
 // Matches remaining three cases of NonCodeValue
@@ -787,7 +835,7 @@ fn array_separator(i: &mut TokenSlice) -> ModalResult<()> {
         // Normally you need a comma.
         comma_sep,
         // But, if the array is ending, no need for a comma.
-        peek(preceded(opt(whitespace), close_bracket)).void(),
+        peek(preceded((opt(non_code_node), opt(whitespace)), close_bracket)).void(),
     ))
     .parse_next(i)
 }
@@ -800,7 +848,7 @@ pub(crate) fn array_elem_by_elem(i: &mut TokenSlice) -> ModalResult<Node<ArrayEx
         0..,
         alt((
             terminated(expression.map(NonCodeOr::Code), array_separator),
-            terminated(non_code_node.map(NonCodeOr::NonCode), whitespace),
+            terminated(non_code_node.map(NonCodeOr::NonCode), opt(whitespace)),
         )),
     )
     .context(expected("array contents, a list of elements (like [1, 2, 3])"))
@@ -930,7 +978,7 @@ fn object_property_same_key_and_val(i: &mut TokenSlice) -> ModalResult<Node<Obje
 }
 
 fn object_property(i: &mut TokenSlice) -> ModalResult<Node<ObjectProperty>> {
-    let key = identifier.context(expected("the property's key (the name or identifier of the property), e.g. in 'height = 4', 'height' is the property key")).parse_next(i)?;
+    let key_token = identifier_or_keyword.context(expected("the property's key (the name or identifier of the property), e.g. in 'height = 4', 'height' is the property key")).parse_next(i)?;
     ignore_whitespace(i);
     // Temporarily accept both `:` and `=` for compatibility.
     let sep = alt((colon, equals))
@@ -956,6 +1004,18 @@ fn object_property(i: &mut TokenSlice) -> ModalResult<Node<ObjectProperty>> {
             ));
         }
     };
+
+    // Now that we've verified that we can parse everything, ensure that the key
+    // is valid.  If not, we can cut.
+    let key = Node::<Identifier>::try_from(key_token).map_err(|comp_err| {
+        ErrMode::Cut(ContextError {
+            context: Default::default(),
+            cause: Some(CompilationError::err(
+                comp_err.source_range,
+                KEYWORD_EXPECTING_IDENTIFIER,
+            )),
+        })
+    })?;
 
     let result = Node::new_node(
         key.start,
@@ -987,7 +1047,7 @@ fn property_separator(i: &mut TokenSlice) -> ModalResult<()> {
         // Normally you need a comma.
         comma_sep,
         // But, if the object is ending, no need for a comma.
-        peek(preceded(opt(whitespace), close_brace)).void(),
+        peek(preceded((opt(non_code_node), opt(whitespace)), close_brace)).void(),
     ))
     .parse_next(i)
 }
@@ -1017,7 +1077,7 @@ pub(crate) fn object(i: &mut TokenSlice) -> ModalResult<Node<ObjectExpression>> 
     let properties: Vec<_> = repeat(
         0..,
         alt((
-            terminated(non_code_node.map(NonCodeOr::NonCode), whitespace),
+            terminated(non_code_node.map(NonCodeOr::NonCode), opt(whitespace)),
             terminated(
                 alt((object_property, object_property_same_key_and_val)),
                 property_separator,
@@ -1584,18 +1644,18 @@ fn function_body(i: &mut TokenSlice) -> ModalResult<Node<Program>> {
         // The separator whitespace might be important:
         // if it has an empty line, it should be considered a noncode token, because the user
         // deliberately put an empty line there. We should track this and preserve it.
-        if let Ok(ref ws_token) = found_ws {
-            if ws_token.value.contains("\n\n") || ws_token.value.contains("\n\r\n") {
-                things_within_body.push(WithinFunction::NonCode(Node::new(
-                    NonCodeNode {
-                        value: NonCodeValue::NewLine,
-                        digest: None,
-                    },
-                    ws_token.start,
-                    ws_token.end,
-                    ws_token.module_id,
-                )));
-            }
+        if let Ok(ref ws_token) = found_ws
+            && (ws_token.value.contains("\n\n") || ws_token.value.contains("\n\r\n"))
+        {
+            things_within_body.push(WithinFunction::NonCode(Node::new(
+                NonCodeNode {
+                    value: NonCodeValue::NewLine,
+                    digest: None,
+                },
+                ws_token.start,
+                ws_token.end,
+                ws_token.module_id,
+            )));
         }
 
         match (found_ws, last_match_was_empty_line) {
@@ -1849,16 +1909,14 @@ pub(super) fn import_stmt(i: &mut TokenSlice) -> ModalResult<BoxNode<ImportState
     if let ImportSelector::None {
         alias: ref mut selector_alias,
     } = selector
-    {
-        if let Some(alias) = opt(preceded(
+        && let Some(alias) = opt(preceded(
             (whitespace, import_as_keyword, whitespace),
             identifier.context(expected("an identifier to alias the import")),
         ))
         .parse_next(i)?
-        {
-            end = alias.end;
-            *selector_alias = Some(alias);
-        }
+    {
+        end = alias.end;
+        *selector_alias = Some(alias);
     }
 
     let path_string = match path.inner.value {
@@ -1961,11 +2019,8 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
         ImportPath::Kcl {
             filename: TypedPath::new(&path_string),
         }
-    } else if path_string.starts_with("std::") {
-        ParseContext::warn(CompilationError::err(
-            path_range,
-            "explicit imports from the standard library are experimental, likely to be buggy, and likely to change.",
-        ));
+    } else if path_string.starts_with("std") {
+        ParseContext::experimental("explicit imports from the standard library", path_range);
 
         let segments: Vec<String> = path_string.split("::").map(str::to_owned).collect();
 
@@ -1978,7 +2033,7 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
         }
 
         // For now we only support importing from singly-nested modules inside std.
-        if segments.len() != 2 {
+        if segments.len() > 2 {
             return Err(ErrMode::Cut(
                 CompilationError::fatal(
                     path_range,
@@ -2113,10 +2168,10 @@ fn label(i: &mut TokenSlice) -> ModalResult<Node<Identifier>> {
     )
     .parse_next(i)?;
 
-    ParseContext::warn(CompilationError::err(
+    ParseContext::experimental(
+        "`as` for tagging expressions",
         SourceRange::new(result.start, result.end, result.module_id),
-        "Using `as` for tagging expressions is experimental, likely to be buggy, and likely to change",
-    ));
+    );
 
     Ok(result)
 }
@@ -2362,10 +2417,7 @@ fn ty_decl(i: &mut TokenSlice) -> ModalResult<BoxNode<TypeDeclaration>> {
         ignore_whitespace(i);
         let ty = type_(i)?;
 
-        ParseContext::warn(CompilationError::err(
-            ty.as_source_range(),
-            "Type aliases are experimental, likely to change in the future, and likely to not work properly.",
-        ));
+        ParseContext::experimental("type aliases", ty.as_source_range());
 
         Some(ty)
     } else {
@@ -2386,10 +2438,7 @@ fn ty_decl(i: &mut TokenSlice) -> ModalResult<BoxNode<TypeDeclaration>> {
         },
     );
 
-    ParseContext::warn(CompilationError::err(
-        result.as_source_range(),
-        "Type declarations are experimental, likely to change, and may or may not do anything useful.",
-    ));
+    ParseContext::experimental("type declarations", result.as_source_range());
 
     Ok(result)
 }
@@ -2424,6 +2473,12 @@ impl TryFrom<Token> for Node<Identifier> {
 fn identifier(i: &mut TokenSlice) -> ModalResult<Node<Identifier>> {
     any.try_map(Node::<Identifier>::try_from)
         .context(expected("an identifier, e.g. 'width' or 'myPart'"))
+        .parse_next(i)
+}
+
+fn identifier_or_keyword(i: &mut TokenSlice) -> ModalResult<Token> {
+    any.verify(|token: &Token| token.token_type == TokenType::Word || token.token_type == TokenType::Keyword)
+        .context(expected("an identifier or keyword"))
         .parse_next(i)
 }
 
@@ -4842,6 +4897,46 @@ export fn cos(num: number(rad)): number(_) {}"#;
     }
 
     #[test]
+    fn array_no_trailing_comma_with_comment() {
+        let program = r#"[
+            1, // one
+            2, // two
+            3  // three
+        ]"#;
+        let module_id = ModuleId::default();
+        let tokens = crate::parsing::token::lex(program, module_id).unwrap();
+        let _arr = array_elem_by_elem(&mut tokens.as_slice()).unwrap();
+    }
+
+    #[test]
+    fn array_block_comment_no_whitespace() {
+        let program = r#"[1/* comment*/]"#;
+        let module_id = ModuleId::default();
+        let tokens = crate::parsing::token::lex(program, module_id).unwrap();
+        let _arr = array_elem_by_elem(&mut tokens.as_slice()).unwrap();
+    }
+
+    #[test]
+    fn object_no_trailing_comma_with_comment() {
+        let program = r#"{
+            x=1, // one
+            y=2, // two
+            z=3  // three
+        }"#;
+        let module_id = ModuleId::default();
+        let tokens = crate::parsing::token::lex(program, module_id).unwrap();
+        let _arr = object(&mut tokens.as_slice()).unwrap();
+    }
+
+    #[test]
+    fn object_block_comment_no_whitespace() {
+        let program = r#"{x=1/* comment*/}"#;
+        let module_id = ModuleId::default();
+        let tokens = crate::parsing::token::lex(program, module_id).unwrap();
+        let _arr = object(&mut tokens.as_slice()).unwrap();
+    }
+
+    #[test]
     fn basic_if_else() {
         let some_program_string = "if true {
             3
@@ -5027,7 +5122,8 @@ let myBox = box(p=[0,0], h=-3, l=-16, w=-10)
 
     #[test]
     fn parse_function_types() {
-        let code = r#"foo = x: fn
+        let code = r#"@settings(experimentalFeatures = allow)
+foo = x: fn
 foo = x: fn(number)
 fn foo(x: fn(): number): fn { return 0 }
 fn foo(x: fn(a, b: number(mm), c: d): number(Angle)): fn { return 0 }
@@ -5041,6 +5137,24 @@ type foo = fn(fn, f: fn(number(_))): [fn([any]): string]
     "#;
         assert_no_err(code);
     }
+
+    #[test]
+    fn experimental() {
+        let code = r#"4 as foo"#;
+        assert_err(code, "Use of `as` for tagging expressions is experimental", [5, 8]);
+
+        let code = r#"@settings(experimentalFeatures = allow)
+4 as foo
+    "#;
+        assert_no_err(code);
+
+        let code = r#"@settings(experimentalFeatures = warn)
+4 as foo
+    "#;
+        let (_, errs) = assert_no_err(code);
+        assert_eq!(errs.len(), 1);
+    }
+
     #[test]
     fn test_parse_tag_starting_with_bang() {
         let some_program_string = r#"startSketchOn(XY)
@@ -5353,6 +5467,18 @@ bar = 1
         let cause = must_fail_compilation(program_source);
         assert!(!cause.was_fatal);
         assert_eq!(cause.err.message, MISSING_ELSE);
+        assert_eq!(cause.err.source_range.start(), expected_src_start);
+    }
+
+    #[test]
+    fn test_sensible_error_when_using_keyword_as_object_key() {
+        let source = r#"material = {
+  type = "Steel 45"
+}"#;
+        let expected_src_start = source.find("type").unwrap();
+        let cause = must_fail_compilation(source);
+        assert!(cause.was_fatal);
+        assert_eq!(cause.err.message, KEYWORD_EXPECTING_IDENTIFIER);
         assert_eq!(cause.err.source_range.start(), expected_src_start);
     }
 

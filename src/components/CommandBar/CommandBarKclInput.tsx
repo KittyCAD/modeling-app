@@ -72,6 +72,7 @@ function CommandBarKclInput({
     return !err(node) && node && node.node.type === 'VariableDeclarator'
       ? [node.node.start, node.node.end, node.node.moduleId]
       : undefined
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [kclManager.ast, commandBarState.context.argumentsToSubmit.nodeToEdit])
   const defaultValue = useMemo(
     () =>
@@ -80,6 +81,7 @@ function CommandBarKclInput({
           ? arg.defaultValue(commandBarState.context, argMachineContext)
           : arg.defaultValue
         : '',
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
     [arg.defaultValue, commandBarState.context, argMachineContext]
   )
   const initialVariableName = useMemo(() => {
@@ -94,6 +96,7 @@ function CommandBarKclInput({
       'variableName' in previouslySetValue
       ? previouslySetValue.variableName
       : arg.name
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [
     arg.variableName,
     commandBarState.context,
@@ -191,7 +194,7 @@ function CommandBarKclInput({
           },
         },
         {
-          key: 'Shift-Backspace',
+          key: 'Meta-Backspace',
           run: () => {
             stepBack()
             return true
@@ -220,6 +223,7 @@ function CommandBarKclInput({
         },
       })
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [arg, editorRef])
 
   useEffect(() => {
