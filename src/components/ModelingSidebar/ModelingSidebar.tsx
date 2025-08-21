@@ -1,8 +1,16 @@
+import { useSelector } from '@xstate/react'
 import { type settings } from '@src/lib/settings/initialSettings'
 import type { IconDefinition } from '@fortawesome/free-solid-svg-icons'
 import { Resizable } from 're-resizable'
 import type { HTMLProps, MouseEventHandler, Ref } from 'react'
-import { useCallback, useContext, useEffect, useMemo, useRef } from 'react'
+import {
+  useState,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+} from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 
 import { useAppState } from '@src/AppState'
@@ -27,7 +35,7 @@ import { useKclContext } from '@src/lang/KclProvider'
 import { EngineConnectionStateType } from '@src/lang/std/engineConnection'
 import { SIDEBAR_BUTTON_SUFFIX } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
-import { useSettings } from '@src/lib/singletons'
+import { useSettings, mlEphantManagerActor } from '@src/lib/singletons'
 import { commandBarActor } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import { refreshPage } from '@src/lib/utils'
@@ -146,6 +154,38 @@ export function ModelingSidebarLeft() {
 
 export function ModelingSidebarRight() {
   const settings = useSettings()
+  const { send: modelingContextSend, context: modelingContext } =
+    useModelingContext()
+  const promptsBelongingToConversation = useSelector(
+    mlEphantManagerActor,
+    (actor) => {
+      return actor.context.promptsBelongingToConversation
+    }
+  )
+  const [actuallyNew, setActuallyNew] = useState<boolean>(false)
+
+  useEffect(() => {
+    if (promptsBelongingToConversation === undefined) {
+      return
+    }
+    if (promptsBelongingToConversation.length === 0) {
+      return
+    }
+    if (!actuallyNew) {
+      setActuallyNew(true)
+      return
+    }
+
+    modelingContextSend({
+      type: 'Set context',
+      data: {
+        openPanes: Array.from(
+          new Set(modelingContext.store.openPanes.concat('text-to-cad'))
+        ),
+      },
+    })
+  }, [promptsBelongingToConversation, actuallyNew])
+
   // Prevents rerenders because new array is a new ref.
   const sidebarActions: Ref<SidebarAction[]> = useRef([])
   return (
