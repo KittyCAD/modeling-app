@@ -179,9 +179,6 @@ export function ModelingSidebarRight() {
     const newPanes = new Set(
       modelingContext.store.openPanes.concat('text-to-cad')
     )
-    if (isDesktop()) {
-      newPanes.add('files')
-    }
 
     modelingContextSend({
       type: 'Set context',
