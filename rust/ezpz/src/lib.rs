@@ -73,7 +73,9 @@ fn lint(constraints: &[Constraint]) -> Vec<Lint> {
     for (i, constraint) in constraints.iter().enumerate() {
         match constraint {
             Constraint::LinesAtAngle(_, _, constraints::AngleKind::Other(theta))
-                if nearly_eq(theta.to_degrees(), 0.0) || nearly_eq(theta.to_degrees(), 360.0) =>
+                if nearly_eq(theta.to_degrees(), 0.0)
+                    || nearly_eq(theta.to_degrees(), 360.0)
+                    || nearly_eq(theta.to_degrees(), 180.0) =>
             {
                 lints.push(Lint {
                     about_constraint: Some(i),
