@@ -311,17 +311,17 @@ impl Constraint {
                 // the squared magnitudes of the vectors, i.e.:
                 // x1**2 - 2*x1*x2 + x2**2 + y1**2 - 2*y1*y2 + y2**2 == (x1 - x2)²  + (y1 - y2)²
                 // x3**2 - 2*x3*x4 + x4**2 + y3**2 - 2*y3*y4 + y4**2 == (x3 - x4)²  + (y3 - y4)²
-                let mag1_squared = mag0.powi(2);
-                let mag2_squared = mag1.powi(2);
+                let mag0_squared = mag0.powi(2);
+                let mag1_squared = mag1.powi(2);
 
-                let dr_dx0 = (y0 - y1) / mag1_squared;
-                let dr_dy0 = (-x0 + x1) / mag1_squared;
-                let dr_dx1 = (-y0 + y1) / mag1_squared;
-                let dr_dy1 = (x0 - x1) / mag1_squared;
-                let dr_dx2 = (-y2 + y3) / mag2_squared;
-                let dr_dy2 = (x2 - x3) / mag2_squared;
-                let dr_dx3 = (y2 - y3) / mag2_squared;
-                let dr_dy3 = (-x2 + x3) / mag2_squared;
+                let dr_dx0 = (y0 - y1) / mag0_squared;
+                let dr_dy0 = (-x0 + x1) / mag0_squared;
+                let dr_dx1 = (-y0 + y1) / mag0_squared;
+                let dr_dy1 = (x0 - x1) / mag0_squared;
+                let dr_dx2 = (-y2 + y3) / mag1_squared;
+                let dr_dy2 = (x2 - x3) / mag1_squared;
+                let dr_dx3 = (y2 - y3) / mag1_squared;
+                let dr_dy3 = (-x2 + x3) / mag1_squared;
 
                 Ok(vec![JacobianRow {
                     nonzero_columns: vec![
