@@ -129,6 +129,7 @@ impl Expr {
                 .ty
                 .get_hover_value_for_position(pos, code, opts)
                 .or_else(|| expr.expr.get_hover_value_for_position(pos, code, opts)),
+            Expr::SketchBlock(expr) => expr.get_hover_value_for_position(pos, code, opts),
             // TODO: LSP hover information for symbols. https://github.com/KittyCAD/modeling-app/issues/1127
             Expr::PipeSubstitution(_) => None,
         }
@@ -378,5 +379,28 @@ impl ElseIf {
         self.cond
             .get_hover_value_for_position(pos, code, opts)
             .or_else(|| self.then_val.get_hover_value_for_position(pos, code, opts))
+    }
+}
+
+impl SketchBlock {
+    fn get_hover_value_for_position(&self, pos: usize, code: &str, opts: &HoverOpts) -> Option<Hover> {
+        for (index, arg) in self.args.iter().enumerate() {
+            let source_range: SourceRange = arg.into();
+            if source_range.contains(pos) {
+                return if opts.prefer_sig {
+                    Some(Hover::Signature {
+                        name: "sketch".to_owned(),
+                        parameter_index: index as u32,
+                        range: source_range.to_lsp_range(code),
+                    })
+                } else {
+                    arg.get_hover_value_for_position(pos, code, opts)
+                };
+            }
+        }
+
+        // TODO: sketch-api: Implement hover info for the sketch block's body.
+
+        None
     }
 }

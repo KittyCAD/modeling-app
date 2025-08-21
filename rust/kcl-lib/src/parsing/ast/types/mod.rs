@@ -959,6 +959,7 @@ pub enum Expr {
     IfExpression(BoxNode<IfExpression>),
     LabelledExpression(BoxNode<LabelledExpression>),
     AscribedExpression(BoxNode<AscribedExpression>),
+    SketchBlock(BoxNode<SketchBlock>),
     None(Node<KclNone>),
 }
 
@@ -1008,6 +1009,7 @@ impl Expr {
             Expr::IfExpression(_) => None,
             Expr::LabelledExpression(expr) => expr.expr.get_non_code_meta(),
             Expr::AscribedExpression(expr) => expr.expr.get_non_code_meta(),
+            Expr::SketchBlock(_) => None,
             Expr::None(_none) => None,
         }
     }
@@ -1035,6 +1037,7 @@ impl Expr {
             Expr::PipeSubstitution(_) => {}
             Expr::LabelledExpression(expr) => expr.expr.replace_value(source_range, new_value),
             Expr::AscribedExpression(expr) => expr.expr.replace_value(source_range, new_value),
+            Expr::SketchBlock(e) => e.replace_value(source_range, new_value),
             Expr::None(_) => {}
         }
     }
@@ -1057,6 +1060,7 @@ impl Expr {
             Expr::IfExpression(expr) => expr.start,
             Expr::LabelledExpression(expr) => expr.start,
             Expr::AscribedExpression(expr) => expr.start,
+            Expr::SketchBlock(sketch_block) => sketch_block.start,
             Expr::None(none) => none.start,
         }
     }
@@ -1079,6 +1083,7 @@ impl Expr {
             Expr::IfExpression(expr) => expr.end,
             Expr::LabelledExpression(expr) => expr.end,
             Expr::AscribedExpression(expr) => expr.end,
+            Expr::SketchBlock(expr) => expr.end,
             Expr::None(none) => none.end,
         }
     }
@@ -1107,6 +1112,7 @@ impl Expr {
             Expr::IfExpression(expr) => expr.rename_identifiers(old_name, new_name),
             Expr::LabelledExpression(expr) => expr.expr.rename_identifiers(old_name, new_name),
             Expr::AscribedExpression(expr) => expr.expr.rename_identifiers(old_name, new_name),
+            Expr::SketchBlock(expr) => expr.rename_identifiers(old_name, new_name),
             Expr::None(_) => {}
         }
     }
@@ -1133,6 +1139,9 @@ impl Expr {
             Expr::IfExpression(expr) => expr.get_constraint_level(),
             Expr::LabelledExpression(expr) => expr.expr.get_constraint_level(),
             Expr::AscribedExpression(expr) => expr.expr.get_constraint_level(),
+            Expr::SketchBlock(expr) => ConstraintLevel::Ignore {
+                source_ranges: vec![expr.into()],
+            },
             Expr::None(none) => none.get_constraint_level(),
         }
     }
@@ -1253,6 +1262,87 @@ impl AscribedExpression {
         let end = ty.end;
         let module_id = expr.module_id();
         Node::new(AscribedExpression { expr, ty, digest: None }, start, end, module_id)
+    }
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
+#[serde(tag = "type")]
+pub struct SketchBlock {
+    pub args: Vec<Expr>,
+    pub body: Node<SketchBody>,
+
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub digest: Option<Digest>,
+}
+
+impl SketchBlock {
+    pub(crate) fn new(args: Vec<Expr>, body: Node<SketchBody>) -> Self {
+        SketchBlock {
+            args,
+            body,
+            digest: None,
+        }
+    }
+
+    fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
+        for arg in &mut self.args {
+            arg.replace_value(source_range, new_value.clone());
+        }
+
+        self.body.replace_value(source_range, new_value);
+    }
+
+    fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
+        for arg in &mut self.args {
+            arg.rename_identifiers(old_name, new_name);
+        }
+        self.body.rename_identifiers(old_name, new_name);
+    }
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
+#[serde(tag = "type")]
+pub struct SketchBody {
+    pub items: Vec<Node<SketchItem>>,
+
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub digest: Option<Digest>,
+}
+
+impl SketchBody {
+    pub(crate) fn new(items: Vec<Node<SketchItem>>) -> Self {
+        SketchBody { items, digest: None }
+    }
+
+    fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
+        for item in &mut self.items {
+            item.replace_value(source_range, new_value.clone());
+        }
+    }
+
+    fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
+        for item in &mut self.items {
+            item.rename_identifiers(old_name, new_name);
+        }
+    }
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
+#[serde(tag = "type")]
+pub enum SketchItem {}
+
+impl SketchItem {
+    fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
+        // match self {}
+    }
+
+    fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
+        // match self {}
     }
 }
 
