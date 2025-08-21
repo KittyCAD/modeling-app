@@ -9,8 +9,8 @@ use crate::{
             BinaryOperator, BinaryPart, BodyItem, CallExpressionKw, CommentStyle, DefaultParamVal, Expr, FormatOptions,
             FunctionExpression, IfExpression, ImportSelector, ImportStatement, ItemVisibility, LabeledArg, Literal,
             LiteralValue, MemberExpression, Node, NonCodeNode, NonCodeValue, ObjectExpression, Parameter,
-            PipeExpression, Program, TagDeclarator, TypeDeclaration, UnaryExpression, VariableDeclaration,
-            VariableKind,
+            PipeExpression, Program, SketchBlock, SketchBody, SketchItem, TagDeclarator, TypeDeclaration,
+            UnaryExpression, VariableDeclaration, VariableKind,
         },
         deprecation,
     },
@@ -317,6 +317,7 @@ impl Expr {
                 buf.push_str(&e.label.name);
             }
             Expr::AscribedExpression(e) => e.recast(buf, options, indentation_level, ctxt),
+            Expr::SketchBlock(e) => e.recast(buf, options, indentation_level, ctxt),
             Expr::None(_) => {
                 unimplemented!("there is no literal None, see https://github.com/KittyCAD/modeling-app/issues/1115")
             }
@@ -954,6 +955,42 @@ impl Parameter {
             buf.push_str(" = ");
             literal.recast(buf);
         };
+    }
+}
+
+impl SketchBlock {
+    pub fn recast(&self, buf: &mut String, options: &FormatOptions, indentation_level: usize, ctxt: ExprContext) {
+        // We don't want to end with a new line inside nested blocks.
+        let mut new_options = options.clone();
+        new_options.insert_final_newline = false;
+
+        buf.push_str("sketch(");
+        for (i, arg) in self.args.iter().enumerate() {
+            arg.recast(buf, options, indentation_level, ctxt);
+            if i < self.args.len() - 1 {
+                buf.push_str(", ");
+            }
+        }
+        buf.push(')');
+        writeln!(buf, " {{").no_fail();
+        self.body.recast(buf, &new_options, indentation_level + 1, ctxt);
+        buf.push('\n');
+        options.write_indentation(buf, indentation_level);
+        buf.push('}');
+    }
+}
+
+impl SketchBody {
+    pub fn recast(&self, buf: &mut String, options: &FormatOptions, indentation_level: usize, ctxt: ExprContext) {
+        for item in self.items.iter() {
+            item.recast(buf, options, indentation_level, ctxt);
+        }
+    }
+}
+
+impl SketchItem {
+    pub fn recast(&self, buf: &mut String, options: &FormatOptions, indentation_level: usize, ctxt: ExprContext) {
+        // match self {}
     }
 }
 

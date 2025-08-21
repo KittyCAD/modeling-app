@@ -684,7 +684,8 @@ fn operand(i: &mut TokenSlice) -> ModalResult<BinaryPart> {
                 Expr::FunctionExpression(_)
                 | Expr::PipeExpression(_)
                 | Expr::PipeSubstitution(_)
-                | Expr::LabelledExpression(..) => return Err(CompilationError::fatal(source_range, TODO_783)),
+                | Expr::LabelledExpression(..)
+                | Expr::SketchBlock(_) => return Err(CompilationError::fatal(source_range, TODO_783)),
                 Expr::None(_) => {
                     return Err(CompilationError::fatal(
                         source_range,

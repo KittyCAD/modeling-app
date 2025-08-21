@@ -20,7 +20,8 @@ use crate::{
     parsing::ast::types::{
         Annotation, ArrayExpression, ArrayRangeExpression, AscribedExpression, BinaryExpression, BinaryOperator,
         BinaryPart, BodyItem, Expr, IfExpression, ImportPath, ImportSelector, ItemVisibility, MemberExpression, Name,
-        Node, NodeRef, ObjectExpression, PipeExpression, Program, TagDeclarator, Type, UnaryExpression, UnaryOperator,
+        Node, NodeRef, ObjectExpression, PipeExpression, Program, SketchBlock, TagDeclarator, Type, UnaryExpression,
+        UnaryOperator,
     },
     std::args::TyF64,
 };
@@ -817,6 +818,7 @@ impl ExecutorContext {
                 result
             }
             Expr::AscribedExpression(expr) => expr.get_result(exec_state, self).await?,
+            Expr::SketchBlock(expr) => expr.get_result(exec_state, self).await?,
         };
         Ok(item)
     }
@@ -851,6 +853,19 @@ impl Node<AscribedExpression> {
             .execute_expr(&self.expr, exec_state, &metadata, &[], StatementKind::Expression)
             .await?;
         apply_ascription(&result, &self.ty, exec_state, self.into())
+    }
+}
+
+impl Node<SketchBlock> {
+    pub async fn get_result(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
+        let metadata = Metadata {
+            source_range: SourceRange::from(self),
+        };
+        // TODO: sketch-api: Implement sketch block execution
+        Ok(KclValue::Bool {
+            value: false,
+            meta: vec![metadata],
+        })
     }
 }
 

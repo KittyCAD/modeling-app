@@ -136,6 +136,13 @@ impl<'tree> Visitable<'tree> for Node<'tree> {
                 .into_iter()
                 .chain(n.path.iter().map(|n| n.into()))
                 .collect(),
+            Node::SketchBlock(n) => {
+                let mut children: Vec<Node<'_>> = Vec::with_capacity(n.args.len());
+
+                children.extend(n.args.iter().map(|a| Node::from(a)));
+                // TODO: sketch-api: Include body.
+                children
+            }
             Node::PipeSubstitution(_)
             | Node::TagDeclarator(_)
             | Node::Identifier(_)
