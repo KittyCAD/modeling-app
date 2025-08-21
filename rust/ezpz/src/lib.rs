@@ -32,12 +32,21 @@ pub enum NonLinearSystemError {
 pub struct SolveOutcome {
     pub final_values: Vec<f64>,
     pub iterations: usize,
+    pub lints: Vec<Lint>,
+}
+
+#[derive(Debug)]
+pub struct Lint {
+    pub about_constraint: Option<usize>,
+    pub content: String,
 }
 
 /// Given some initial guesses, constrain them.
 /// Returns the same variables in the same order, but constrained.
 pub fn solve(constraints: Vec<Constraint>, initial_guesses: Vec<(Id, f64)>) -> Result<SolveOutcome, Error> {
     let (all_variables, mut final_values): (Vec<Id>, Vec<f64>) = initial_guesses.into_iter().unzip();
+    let lints = lint(&constraints);
+
     let mut model = Model::new(constraints, all_variables);
     let iterations = newton_faer::solve(
         &mut model,
@@ -45,10 +54,44 @@ pub fn solve(constraints: Vec<Constraint>, initial_guesses: Vec<(Id, f64)>) -> R
         newton_faer::NewtonCfg::sparse().with_adaptive(true),
     )
     .map_err(|errs| Error::Solver(Box::new(errs.into_error())))?;
+
     Ok(SolveOutcome {
         final_values,
         iterations,
+        lints,
     })
+}
+
+fn lint(constraints: &[Constraint]) -> Vec<Lint> {
+    let mut lints = Vec::default();
+    for (i, constraint) in constraints.iter().enumerate() {
+        match constraint {
+            Constraint::LinesAtAngle(_, _, constraints::AngleKind::Other(theta))
+                if theta.to_degrees() == 0.0 || theta.to_degrees() == 360.0 =>
+            {
+                lints.push(Lint {
+                    about_constraint: Some(i),
+                    content: format!(
+                        "Suggest using AngleKind::Parallel instead of AngleKind::Other({})",
+                        theta.to_degrees()
+                    ),
+                });
+            }
+            Constraint::LinesAtAngle(_, _, constraints::AngleKind::Other(theta))
+                if theta.to_degrees() == 90.0 || theta.to_degrees() == -90.0 =>
+            {
+                lints.push(Lint {
+                    about_constraint: Some(i),
+                    content: format!(
+                        "Suggest using AngleKind::Perpendicular instead of AngleKind::Other({})",
+                        theta.to_degrees()
+                    ),
+                });
+            }
+            _ => {}
+        }
+    }
+    lints
 }
 
 #[cfg(test)]

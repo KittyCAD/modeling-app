@@ -97,7 +97,7 @@ impl Constraint {
                 let p0_y = current_assignments[layout.index_of(p0.id_y())?];
                 let p1_x = current_assignments[layout.index_of(p1.id_x())?];
                 let p1_y = current_assignments[layout.index_of(p1.id_y())?];
-                let actual_distance = euclidian_distance((p0_x, p0_y), (p1_x, p1_y));
+                let actual_distance = euclidean_distance((p0_x, p0_y), (p1_x, p1_y));
                 Ok(vec![actual_distance - expected_distance])
             }
             Constraint::Vertical(line) => {
@@ -141,8 +141,8 @@ impl Constraint {
                     }
                     AngleKind::Other(expected_angle) => {
                         // Calculate magnitudes.
-                        let mag0 = euclidian_distance_line(l0);
-                        let mag1 = euclidian_distance_line(l1);
+                        let mag0 = euclidean_distance_line(l0);
+                        let mag1 = euclidean_distance_line(l1);
 
                         // Check for zero-length lines.
                         let is_invalid = (mag0 < EPSILON) || (mag1 < EPSILON);
@@ -203,7 +203,7 @@ impl Constraint {
 
                 // TODO: Handle zero-length vecs gracefully.
 
-                let dist = euclidian_distance((x0, y0), (x1, y1));
+                let dist = euclidean_distance((x0, y0), (x1, y1));
                 let dr_dx0 = (x0 - x1) / dist;
                 let dr_dy0 = (y0 - y1) / dist;
                 let dr_dx1 = (-x0 + x1) / dist;
@@ -335,8 +335,8 @@ impl Constraint {
                     AngleKind::Other(_expected_angle) => {
                         // Expected angle isn't used because its derivative is zero.
                         // Calculate magnitudes.
-                        let mag0 = euclidian_distance_line(l0);
-                        let mag1 = euclidian_distance_line(l1);
+                        let mag0 = euclidean_distance_line(l0);
+                        let mag1 = euclidean_distance_line(l1);
 
                         // Check for zero-length lines.
                         let is_invalid = (mag0 < EPSILON) || (mag1 < EPSILON);
@@ -419,16 +419,16 @@ impl Constraint {
     }
 }
 
-/// Euclidian distance between two points.
-fn euclidian_distance(p0: (f64, f64), p1: (f64, f64)) -> f64 {
+/// Euclidean distance between two points.
+fn euclidean_distance(p0: (f64, f64), p1: (f64, f64)) -> f64 {
     let dx = p0.0 - p1.0;
     let dy = p0.1 - p1.1;
     (dx.powf(2.0) + dy.powf(2.0)).sqrt()
 }
 
-/// Euclidian distance of a line.
-fn euclidian_distance_line(line: ((f64, f64), (f64, f64))) -> f64 {
-    euclidian_distance(line.0, line.1)
+/// Euclidean distance of a line.
+fn euclidean_distance_line(line: ((f64, f64), (f64, f64))) -> f64 {
+    euclidean_distance(line.0, line.1)
 }
 
 fn cross(p0: (f64, f64), p1: (f64, f64)) -> f64 {
@@ -461,7 +461,7 @@ mod tests {
 
     #[test]
     fn test_geometry() {
-        assert_eq!(euclidian_distance((-1.0, 0.0), (2.0, 4.0)), 5.0);
+        assert_eq!(euclidean_distance((-1.0, 0.0), (2.0, 4.0)), 5.0);
         assert_eq!(dot_line(((1.0, 2.0), (4.0, -5.0))), 4.0 - 10.0);
         assert_eq!(cross((1.0, 0.0), (0.0, 1.0)), 1.0);
         assert_eq!(cross((0.0, 1.0), (1.0, 0.0)), -1.0);
