@@ -32,98 +32,57 @@ extrude003 = extrude(sketch003, length = 20)
 `
 
 test.describe('Prompt-to-edit tests', () => {
-  test.describe('Check the happy path, for basic changing color', () => {
-    const cases = [
-      {
-        desc: 'User accepts change',
-        shouldReject: false,
-      },
-      {
-        desc: 'User rejects change',
-        shouldReject: true,
-      },
-    ] as const
-    for (const { desc, shouldReject } of cases) {
-      test(`${desc}`, async ({
-        context,
-        homePage,
-        cmdBar,
-        editor,
-        page,
-        scene,
-      }) => {
-        await context.folderSetupFn(async (dir) => {
-          const projectDir = path.join(dir, 'test-project')
-          await fsp.mkdir(projectDir, { recursive: true })
-          await fsp.writeFile(path.join(projectDir, 'main.kcl'), file)
-        })
-        await homePage.openProject('test-project')
-        await scene.settled(cmdBar)
+  test(`Check the happy path, for basic changing color`, async ({
+    context,
+    homePage,
+    cmdBar,
+    editor,
+    page,
+    scene,
+    toolbar,
+  }) => {
+    await context.folderSetupFn(async (dir) => {
+      const projectDir = path.join(dir, 'test-project')
+      await fsp.mkdir(projectDir, { recursive: true })
+      await fsp.writeFile(path.join(projectDir, 'main.kcl'), file)
+    })
+    await homePage.openProject('test-project')
+    await scene.settled(cmdBar)
 
-        const body1CapCoords = { x: 571, y: 311 }
-        const [clickBody1Cap] = scene.makeMouseHelpers(
-          body1CapCoords.x,
-          body1CapCoords.y
-        )
-        const yellow: [number, number, number] = [179, 179, 131]
-        const submittingToast = page.getByText(
-          'Submitting to Text-to-CAD API...'
-        )
-        const successToast = page.getByText('Prompt to edit successful')
-        const acceptBtn = page.getByRole('button', {
-          name: 'checkmark Continue',
-        })
-        const rejectBtn = page.getByRole('button', { name: 'close Revert' })
+    const body1CapCoords = { x: 571, y: 311 }
+    const [clickBody1Cap] = scene.makeMouseHelpers(
+      body1CapCoords.x,
+      body1CapCoords.y
+    )
+    const yellow: [number, number, number] = [179, 179, 131]
 
-        await test.step('wait for scene to load select body and check selection came through', async () => {
-          await scene.expectPixelColor([134, 134, 134], body1CapCoords, 15)
-          await clickBody1Cap()
-          await scene.expectPixelColor(yellow, body1CapCoords, 20)
-          await editor.expectState({
-            highlightedCode: '',
-            activeLines: ['|>startProfile(at=[-114,85.52])'],
-            diagnostics: [],
-          })
-        })
-
-        await test.step('fire off edit prompt', async () => {
-          await cmdBar.openCmdBar('promptToEdit')
-          await page.waitForTimeout(100)
-          await cmdBar.progressCmdBar()
-          // being specific about the color with a hex means asserting pixel color is more stable
-          await page
-            .getByTestId('cmd-bar-arg-value')
-            .fill('make this neon green please, use #39FF14')
-          await page.waitForTimeout(100)
-          await cmdBar.progressCmdBar()
-          await expect(submittingToast).toBeVisible()
-          await expect(submittingToast).not.toBeVisible({
-            timeout: 2 * 60_000,
-          }) // can take a while
-          await expect(successToast).toBeVisible()
-        })
-
-        await test.step('verify initial change', async () => {
-          await editor.expectEditor.toContain('appearance(')
-        })
-
-        if (!shouldReject) {
-          await test.step('check accept works', async () => {
-            await acceptBtn.click()
-            await expect(successToast).not.toBeVisible()
-
-            await editor.expectEditor.toContain('appearance(')
-          })
-        } else {
-          await test.step('check reject works', async () => {
-            await rejectBtn.click()
-            await expect(successToast).not.toBeVisible()
-
-            await editor.expectEditor.not.toContain('appearance(')
-          })
-        }
+    await test.step('wait for scene to load select body and check selection came through', async () => {
+      await scene.expectPixelColor([134, 134, 134], body1CapCoords, 15)
+      await clickBody1Cap()
+      await scene.expectPixelColor(yellow, body1CapCoords, 20)
+      await editor.expectState({
+        highlightedCode: '',
+        activeLines: ['|>startProfile(at=[-114,85.52])'],
+        diagnostics: [],
       })
-    }
+    })
+
+    await test.step('fire off edit prompt', async () => {
+      await page.setBodyDimensions({ width: 1200, height: 1000 })
+      await new Promise(() => {})
+      await toolbar.fireTtcPrompt('make this neon green please, use #39FF14')
+
+      await page.waitForTimeout(100)
+
+      await expect(page.getByText('Worked for')).toBeVisible({
+        timeout: 15_000,
+      })
+    })
+
+    await new Promise(() => {})
+    await test.step('verify initial change', async () => {
+      await editor.expectEditor.toContain('appearance(')
+    })
   })
 
   test('bad edit prompt', async ({
