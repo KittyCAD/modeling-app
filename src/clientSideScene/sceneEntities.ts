@@ -363,6 +363,11 @@ export class SceneEntities {
       y?.scale.set(factor / this.sceneInfra._baseUnitMultiplier, 1, 1)
       this.updateInfiniteGrid()
     }
+    const draftPoint = this.getDraftPoint()
+    if (draftPoint) {
+      const scale = this.sceneInfra.getClientSceneScaleFactor(draftPoint)
+      draftPoint.scale.set(scale, scale, scale)
+    }
     this.sceneInfra.overlayCallbacks(callbacks)
   }
 
