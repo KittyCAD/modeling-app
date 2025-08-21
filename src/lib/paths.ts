@@ -7,9 +7,10 @@ import {
   BROWSER_PROJECT_NAME,
   FILE_EXT,
 } from '@src/lib/constants'
-import { isDesktop } from '@src/lib/isDesktop'
 import { err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
+import type { IElectronAPI } from '@root/interface'
+import { fsManager } from '@src/lang/std/fileSystemManager'
 
 const SETTINGS = '/settings'
 
@@ -35,19 +36,20 @@ export const PATHS = {
 export const BROWSER_PATH = `%2F${BROWSER_PROJECT_NAME}%2F${BROWSER_FILE_NAME}${FILE_EXT}`
 
 export async function getProjectMetaByRouteId(
-  readAppSettingsFile: () => Promise<DeepPartial<Configuration>>,
+  readAppSettingsFile: (
+    electron: IElectronAPI
+  ) => Promise<DeepPartial<Configuration>>,
   readLocalStorageAppSettingsFile: () => DeepPartial<Configuration> | Error,
   id?: string,
   configuration?: DeepPartial<Configuration> | Error
 ): Promise<ProjectRoute | undefined> {
   if (!id) return undefined
 
-  const onDesktop = isDesktop()
   const isPlaywright = localStorage.getItem(IS_PLAYWRIGHT_KEY) === 'true'
 
   if (configuration === undefined || isPlaywright) {
-    configuration = onDesktop
-      ? await readAppSettingsFile()
+    configuration = window.electron
+      ? await readAppSettingsFile(window.electron)
       : readLocalStorageAppSettingsFile()
   }
 
@@ -169,9 +171,7 @@ export function safeEncodeForRouterPaths(dynamicValue: string): string {
  * Works on all OS!
  */
 export function getStringAfterLastSeparator(path: string): string {
-  // Supports web and desktop runtime
-  const sep = window.electron?.sep || '/'
-  return path.split(sep).pop() || ''
+  return path.split(fsManager.path.sep).pop() || ''
 }
 
 /**
@@ -238,13 +238,13 @@ export function webSafeJoin(paths: string[]): string {
  * Splits any paths safely based on the runtime
  */
 export function desktopSafePathSplit(path: string): string[] {
-  return isDesktop()
-    ? path.split(window?.electron?.sep)
+  return window.electron
+    ? path.split(window.electron.sep)
     : webSafePathSplit(path)
 }
 
 export function desktopSafePathJoin(paths: string[]): string {
-  return isDesktop() ? paths.join(window?.electron?.sep) : webSafeJoin(paths)
+  return window.electron ? paths.join(window.electron.sep) : webSafeJoin(paths)
 }
 
 /**

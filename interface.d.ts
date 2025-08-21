@@ -1,10 +1,10 @@
-import { MachinesListing } from 'components/MachineManagerProvider'
+import type { MachinesListing } from 'components/MachineManagerProvider'
 import 'electron'
-import fs from 'node:fs/promises'
-import path from 'path'
-import { dialog, shell } from 'electron'
+import type fs from 'node:fs/promises'
+import type path from 'path'
+import type { dialog, shell } from 'electron'
 import type { WebContentSendPayload } from 'menu/channels'
-import { ZooLabel } from 'menu/roles'
+import type { ZooLabel } from 'menu/roles'
 
 // Extend the interface with additional custom properties
 declare module 'electron' {
@@ -109,7 +109,9 @@ export interface IElectronAPI {
 
 declare global {
   interface Window {
-    electron: IElectronAPI
-    openExternalLink: (e: React.MouseEvent<HTMLAnchorElement>) => void
+    electron: IElectronAPI | undefined
+    openExternalLink:
+      | ((e: React.MouseEvent<HTMLAnchorElement>) => void)
+      | undefined
   }
 }

@@ -110,11 +110,13 @@ impl KwArgs {
     }
 }
 
+#[derive(Debug)]
 struct FunctionDefinition<'a> {
     input_arg: Option<(String, Option<Type>)>,
     named_args: IndexMap<String, (Option<DefaultParamVal>, Option<Type>)>,
     return_type: Option<Node<Type>>,
     deprecated: bool,
+    experimental: bool,
     include_in_feature_tree: bool,
     is_std: bool,
     body: FunctionBody<'a>,
@@ -153,13 +155,19 @@ impl<'a> From<&'a FunctionSource> for FunctionDefinition<'a> {
         }
 
         match value {
-            FunctionSource::Std { func, ast, props } => {
+            FunctionSource::Std {
+                func,
+                ast,
+                props,
+                attrs,
+            } => {
                 let (input_arg, named_args) = args_from_ast(ast);
                 FunctionDefinition {
                     input_arg,
                     named_args,
                     return_type: ast.return_type.clone(),
-                    deprecated: props.deprecated,
+                    deprecated: attrs.deprecated,
+                    experimental: attrs.experimental,
                     include_in_feature_tree: props.include_in_feature_tree,
                     is_std: true,
                     body: FunctionBody::Rust(*func),
@@ -172,6 +180,7 @@ impl<'a> From<&'a FunctionSource> for FunctionDefinition<'a> {
                     named_args,
                     return_type: ast.return_type.clone(),
                     deprecated: false,
+                    experimental: false,
                     include_in_feature_tree: true,
                     // TODO I think this might be wrong for pure Rust std functions
                     is_std: false,
@@ -302,6 +311,15 @@ impl FunctionDefinition<'_> {
                     ),
                 ),
                 annotations::WARN_DEPRECATED,
+            );
+        }
+        if self.experimental {
+            exec_state.warn_experimental(
+                &match &fn_name {
+                    Some(n) => format!("`{n}`"),
+                    None => "This function".to_owned(),
+                },
+                callsite,
             );
         }
 
@@ -567,7 +585,7 @@ fn type_err_str(expected: &Type, found: &KclValue, source_range: &SourceRange, e
 
     if found.is_unknown_number() {
         exec_state.clear_units_warnings(source_range);
-        result.push_str("\nThe found value is a number but has incomplete units information. You can probably fix this error by specifying the units using type ascription, e.g., `len: number(mm)` or `(a * b): number(deg)`.");
+        result.push_str("\nThe found value is a number but has incomplete units information. You can probably fix this error by specifying the units using type ascription, e.g., `len: mm` or `(a * b): deg`.");
     }
 
     result
@@ -613,7 +631,7 @@ fn type_check_params_kw(
                                 );
                                 if let Some(ty) = e.explicit_coercion {
                                     // TODO if we have access to the AST for the argument we could choose which example to suggest.
-                                    message = format!("{message}\n\nYou may need to add information about the type of the argument, for example:\n  using a numeric suffix: `42{ty}`\n  or using type ascription: `foo(): number({ty})`");
+                                    message = format!("{message}\n\nYou may need to add information about the type of the argument, for example:\n  using a numeric suffix: `42{ty}`\n  or using type ascription: `foo(): {ty}`");
                                 }
                                 KclError::new_argument(KclErrorDetails::new(
                                     message,
@@ -959,7 +977,7 @@ msg2 = makeMessage(prefix = 1, suffix = 3)"#;
         let err = parse_execute(program).await.unwrap_err();
         assert_eq!(
             err.message(),
-            "prefix requires a value with type `string`, but found a value with type `number`.\nThe found value is a number but has incomplete units information. You can probably fix this error by specifying the units using type ascription, e.g., `len: number(mm)` or `(a * b): number(deg)`."
+            "prefix requires a value with type `string`, but found a value with type `number`.\nThe found value is a number but has incomplete units information. You can probably fix this error by specifying the units using type ascription, e.g., `len: mm` or `(a * b): deg`."
         )
     }
 }

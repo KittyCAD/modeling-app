@@ -12,7 +12,7 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
     context: { argumentsToSubmit, selectedCommand },
   } = commandBarState
 
-  useHotkeys('backspace+shift', stepBack, {
+  useHotkeys('backspace+meta', stepBack, {
     enableOnFormTags: true,
     enableOnContentEditable: true,
   })

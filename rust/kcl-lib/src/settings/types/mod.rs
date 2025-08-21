@@ -327,7 +327,11 @@ impl From<bool> for DefaultTrue {
 #[derive(
     Debug, Default, Eq, PartialEq, Copy, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, Display, FromStr,
 )]
-#[cfg_attr(feature = "pyo3", pyo3::pyclass(eq, eq_int))]
+#[cfg_attr(
+    feature = "pyo3",
+    pyo3::pyclass(eq, eq_int),
+    pyo3_stub_gen::derive::gen_stub_pyclass_enum
+)]
 #[ts(export)]
 #[serde(rename_all = "lowercase")]
 #[display(style = "lowercase")]

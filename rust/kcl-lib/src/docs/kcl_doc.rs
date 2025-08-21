@@ -375,6 +375,7 @@ impl ConstData {
             properties: Properties {
                 exported: !var.visibility.is_default(),
                 deprecated: false,
+                experimental: false,
                 doc_hidden: false,
                 impl_kind: annotations::Impl::Kcl,
             },
@@ -546,6 +547,7 @@ impl FnData {
             properties: Properties {
                 exported: !var.visibility.is_default(),
                 deprecated: false,
+                experimental: false,
                 doc_hidden: false,
                 impl_kind: annotations::Impl::Kcl,
             },
@@ -672,6 +674,7 @@ impl FnData {
 #[derive(Debug, Clone)]
 pub struct Properties {
     pub deprecated: bool,
+    pub experimental: bool,
     pub doc_hidden: bool,
     #[allow(dead_code)]
     pub exported: bool,
@@ -682,6 +685,7 @@ pub struct Properties {
 #[derive(Debug, Clone)]
 pub struct ExampleProperties {
     pub norun: bool,
+    pub no3d: bool,
     pub inline: bool,
 }
 
@@ -918,6 +922,7 @@ impl TyData {
             properties: Properties {
                 exported: !ty.visibility.is_default(),
                 deprecated: false,
+                experimental: false,
                 doc_hidden: false,
                 impl_kind: annotations::Impl::Kcl,
             },
@@ -991,6 +996,7 @@ trait ApplyMeta {
         examples: Vec<(String, ExampleProperties)>,
     );
     fn deprecated(&mut self, deprecated: bool);
+    fn experimental(&mut self, experimental: bool);
     fn doc_hidden(&mut self, doc_hidden: bool);
     fn impl_kind(&mut self, impl_kind: annotations::Impl);
 
@@ -1023,14 +1029,16 @@ trait ApplyMeta {
                     let args = l[3..].split(',');
                     let mut inline = false;
                     let mut norun = false;
+                    let mut no3d = false;
                     for a in args {
                         match a.trim() {
                             "inline" => inline = true,
                             "norun" | "no_run" => norun = true,
+                            "no3d" | "no_3d" => no3d = true,
                             _ => {}
                         }
                     }
-                    example = Some((String::new(), ExampleProperties { norun, inline }));
+                    example = Some((String::new(), ExampleProperties { norun, no3d, inline }));
 
                     if inline {
                         description.as_mut().unwrap().push_str("```js\n");
@@ -1111,6 +1119,11 @@ trait ApplyMeta {
                                 self.deprecated(b);
                             }
                         }
+                        annotations::EXPERIMENTAL => {
+                            if let Some(b) = p.value.literal_bool() {
+                                self.experimental(b);
+                            }
+                        }
                         "doc_hidden" => {
                             if let Some(b) = p.value.literal_bool() {
                                 self.doc_hidden(b);
@@ -1140,6 +1153,10 @@ impl ApplyMeta for ConstData {
         self.properties.deprecated = deprecated;
     }
 
+    fn experimental(&mut self, experimental: bool) {
+        self.properties.experimental = experimental;
+    }
+
     fn doc_hidden(&mut self, doc_hidden: bool) {
         self.properties.doc_hidden = doc_hidden;
     }
@@ -1161,6 +1178,10 @@ impl ApplyMeta for FnData {
 
     fn deprecated(&mut self, deprecated: bool) {
         self.properties.deprecated = deprecated;
+    }
+
+    fn experimental(&mut self, experimental: bool) {
+        self.properties.experimental = experimental;
     }
 
     fn doc_hidden(&mut self, doc_hidden: bool) {
@@ -1188,6 +1209,10 @@ impl ApplyMeta for ModData {
         assert!(!deprecated);
     }
 
+    fn experimental(&mut self, experimental: bool) {
+        assert!(!experimental);
+    }
+
     fn doc_hidden(&mut self, doc_hidden: bool) {
         assert!(!doc_hidden);
     }
@@ -1209,6 +1234,10 @@ impl ApplyMeta for TyData {
 
     fn deprecated(&mut self, deprecated: bool) {
         self.properties.deprecated = deprecated;
+    }
+
+    fn experimental(&mut self, experimental: bool) {
+        self.properties.experimental = experimental;
     }
 
     fn doc_hidden(&mut self, doc_hidden: bool) {
@@ -1239,6 +1268,10 @@ impl ApplyMeta for ArgData {
     }
 
     fn deprecated(&mut self, _deprecated: bool) {
+        unreachable!();
+    }
+
+    fn experimental(&mut self, _experimental: bool) {
         unreachable!();
     }
 

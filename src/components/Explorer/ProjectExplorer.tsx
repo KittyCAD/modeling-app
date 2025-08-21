@@ -331,7 +331,7 @@ export const ProjectExplorer = ({
             }
           },
           onOpenInNewWindow: () => {
-            window.electron.openInNewWindow(row.path)
+            window.electron?.openInNewWindow(row.path)
           },
           onCopy: () => {
             copyToClipBoard.current = {
@@ -424,16 +424,19 @@ export const ProjectExplorer = ({
                   const absolutePathToParentDirectory = getParentAbsolutePath(
                     row.path
                   )
-                  const oldPath = window.electron.path.join(
+                  const oldPath = window.electron?.path.join(
                     absolutePathToParentDirectory,
                     name
                   )
-                  const newPath = window.electron.path.join(
+                  const newPath = window.electron?.path.join(
                     absolutePathToParentDirectory,
                     requestedName
                   )
                   const shouldWeNavigate =
-                    file?.path?.startsWith(oldPath) && canNavigate
+                    oldPath !== undefined &&
+                    newPath !== undefined &&
+                    file?.path?.startsWith(oldPath) &&
+                    canNavigate
 
                   if (shouldWeNavigate && file && file.path) {
                     const requestedFileNameWithExtension =
