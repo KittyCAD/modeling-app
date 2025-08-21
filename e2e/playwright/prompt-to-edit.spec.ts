@@ -31,6 +31,7 @@ sketch003 = startSketchOn(XY)
 extrude003 = extrude(sketch003, length = 20)
 `
 
+// e2e/playwright/prompt-to-edit.spec.ts
 test.describe('Prompt-to-edit tests', () => {
   test(`Check the happy path, for basic changing color`, async ({
     context,
@@ -68,8 +69,7 @@ test.describe('Prompt-to-edit tests', () => {
     })
 
     await test.step('fire off edit prompt', async () => {
-      await page.setBodyDimensions({ width: 1200, height: 1000 })
-      await new Promise(() => {})
+      await page.setBodyDimensions({ width: 1200, height: 800 })
       await toolbar.fireTtcPrompt('make this neon green please, use #39FF14')
 
       await page.waitForTimeout(100)
@@ -79,7 +79,6 @@ test.describe('Prompt-to-edit tests', () => {
       })
     })
 
-    await new Promise(() => {})
     await test.step('verify initial change', async () => {
       await editor.expectEditor.toContain('appearance(')
     })
