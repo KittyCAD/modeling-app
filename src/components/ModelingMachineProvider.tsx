@@ -63,7 +63,6 @@ import {
 } from '@src/lib/constants'
 import { exportMake } from '@src/lib/exportMake'
 import { exportSave } from '@src/lib/exportSave'
-import { isDesktop } from '@src/lib/isDesktop'
 import type { FileEntry, Project } from '@src/lib/project'
 import type { WebContentSendPayload } from '@src/menu/channels'
 import {
@@ -1202,7 +1201,8 @@ export const ModelingMachineProvider = ({
             }
           )
           let basePath = ''
-          if (isDesktop() && theProject?.current?.children) {
+          if (window.electron && theProject?.current?.children) {
+            const electron = window.electron
             // Use the entire project directory as the basePath for prompt to edit, do not use relative subdir paths
             basePath = theProject?.current?.path
             const filePromises: Promise<FileMeta | null>[] = []
@@ -1218,17 +1218,17 @@ export const ModelingMachineProvider = ({
                 }
 
                 const absolutePathToFileNameWithExtension = file.path
-                const fileNameWithExtension = window.electron.path.relative(
+                const fileNameWithExtension = electron.path.relative(
                   basePath,
                   absolutePathToFileNameWithExtension
                 )
 
-                const filePromise = window.electron
+                const filePromise = electron
                   .readFile(absolutePathToFileNameWithExtension)
                   .then((file): FileMeta => {
                     uploadSize += file.byteLength
                     const decoder = new TextDecoder('utf-8')
-                    const fileType = window.electron.path.extname(
+                    const fileType = electron.path.extname(
                       absolutePathToFileNameWithExtension
                     )
                     if (fileType === FILE_EXT) {
@@ -1274,7 +1274,7 @@ export const ModelingMachineProvider = ({
           // route to main.kcl by default for web and desktop
           let filePath: string = PROJECT_ENTRYPOINT
           const possibleFileName = file?.path
-          if (possibleFileName && isDesktop()) {
+          if (possibleFileName && window.electron) {
             // When prompt to edit finishes, try to route to the file they were in otherwise go to main.kcl
             filePath = window.electron.path.relative(basePath, possibleFileName)
           }

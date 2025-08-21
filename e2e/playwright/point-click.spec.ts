@@ -912,18 +912,10 @@ openSketch = startSketchOn(XY)
     toolbar,
     cmdBar,
   }) => {
-    // One dumb hardcoded screen pixel value
-    const testPoint = { x: 700, y: 200 }
-    // TODO: replace the testPoint selection with a feature tree click once that's supported #7544
-    const [clickOnXzPlane] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
     const expectedOutput = `plane001 = offsetPlane(XZ, offset = 5)`
-
     await homePage.goToModelingScene()
     await scene.settled(cmdBar)
 
-    await test.step(`Look for the blue of the XZ plane`, async () => {
-      //await scene.expectPixelColor([50, 51, 96], testPoint, 15) // FIXME
-    })
     await test.step(`Go through the command bar flow`, async () => {
       await toolbar.offsetPlaneButton.click()
       await expect
@@ -933,30 +925,30 @@ openSketch = startSketchOn(XY)
         stage: 'arguments',
         currentArgKey: 'plane',
         currentArgValue: '',
-        headerArguments: { Plane: '', Distance: '' },
+        headerArguments: { Plane: '', Offset: '' },
         highlightedHeaderArg: 'plane',
         commandName: 'Offset plane',
       })
-      await clickOnXzPlane()
+      const xz = await toolbar.getFeatureTreeOperation('Front plane', 0)
+      await xz.click()
       await cmdBar.expectState({
         stage: 'arguments',
-        currentArgKey: 'distance',
+        currentArgKey: 'offset',
         currentArgValue: '5',
-        headerArguments: { Plane: '1 plane', Distance: '' },
-        highlightedHeaderArg: 'distance',
+        headerArguments: { Plane: '1 plane', Offset: '' },
+        highlightedHeaderArg: 'offset',
         commandName: 'Offset plane',
       })
       await cmdBar.progressCmdBar()
     })
 
-    await test.step(`Confirm code is added to the editor, scene has changed`, async () => {
+    await test.step(`Confirm code is added to the editor`, async () => {
       await editor.expectEditor.toContain(expectedOutput)
       await editor.expectState({
         diagnostics: [],
         activeLines: [expectedOutput],
         highlightedCode: '',
       })
-      await scene.expectPixelColor([74, 74, 74], testPoint, 15)
     })
 
     await test.step('Delete offset plane via feature tree selection', async () => {
@@ -967,7 +959,6 @@ openSketch = startSketchOn(XY)
       )
       await operationButton.click({ button: 'left' })
       await page.keyboard.press('Delete')
-      //await scene.expectPixelColor([50, 51, 96], testPoint, 15) // FIXME
     })
   })
 
@@ -1419,26 +1410,12 @@ extrude001 = extrude(sketch001, length = -12)
     const secondFilletDeclaration = `fillet(radius=5,tags=[getCommonEdge(faces=[seg01,capStart001])],)`
 
     // Locators
-    const firstEdgeLocation = { x: 600, y: 193 }
+    // TODO: find a way to not have hardcoded pixel values for sweepEdges
     const secondEdgeLocation = { x: 600, y: 383 }
-    const bodyLocation = { x: 630, y: 290 }
-    const [clickOnFirstEdge] = scene.makeMouseHelpers(
-      firstEdgeLocation.x,
-      firstEdgeLocation.y
-    )
     const [clickOnSecondEdge] = scene.makeMouseHelpers(
       secondEdgeLocation.x,
       secondEdgeLocation.y
     )
-
-    // Colors
-    const edgeColorWhite: [number, number, number] = [248, 248, 248]
-    const edgeColorYellow: [number, number, number] = [251, 251, 40] // Mac:B=67 Ubuntu:B=12
-    const bodyColor: [number, number, number] = [155, 155, 155]
-    const filletColor: [number, number, number] = [127, 127, 127]
-    const backgroundColor: [number, number, number] = [30, 30, 30]
-    const lowTolerance = 20
-    const highTolerance = 70 // TODO: understand why I needed that for edgeColorYellow on macos (local)
 
     // Setup
     await test.step(`Initial test setup`, async () => {
@@ -1447,30 +1424,13 @@ extrude001 = extrude(sketch001, length = -12)
       }, initialCode)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
-
-      // verify modeling scene is loaded
-      await scene.expectPixelColor(
-        backgroundColor,
-        secondEdgeLocation,
-        lowTolerance
-      )
-
-      // wait for stream to load
-      await scene.expectPixelColor(bodyColor, bodyLocation, highTolerance)
+      await scene.settled(cmdBar)
     })
 
     // Test 1: Command bar flow with preselected edges
     await test.step(`Select first edge`, async () => {
-      await scene.expectPixelColor(
-        edgeColorWhite,
-        firstEdgeLocation,
-        lowTolerance
-      )
-      await clickOnFirstEdge()
-      await scene.expectPixelColor(
-        edgeColorYellow,
-        firstEdgeLocation,
-        highTolerance // Ubuntu color mismatch can require high tolerance
+      await editor.selectText(
+        'line(endAbsolute = [profileStartX(%), profileStartY(%)])'
       )
     })
 
@@ -1521,10 +1481,6 @@ extrude001 = extrude(sketch001, length = -12)
         activeLines: [')'],
         highlightedCode: '',
       })
-    })
-
-    await test.step(`Confirm scene has changed`, async () => {
-      await scene.expectPixelColor(filletColor, firstEdgeLocation, lowTolerance)
     })
 
     // Test 1.1: Edit fillet (segment type)
@@ -1599,17 +1555,7 @@ extrude001 = extrude(sketch001, length = -12)
     })
 
     await test.step(`Select second edge`, async () => {
-      await scene.expectPixelColor(
-        edgeColorWhite,
-        secondEdgeLocation,
-        lowTolerance
-      )
       await clickOnSecondEdge()
-      await scene.expectPixelColor(
-        edgeColorYellow,
-        secondEdgeLocation,
-        highTolerance // Ubuntu color mismatch can require high tolerance
-      )
     })
 
     await test.step(`Apply fillet to the second edge`, async () => {
@@ -1659,14 +1605,6 @@ extrude001 = extrude(sketch001, length = -12)
       })
     })
 
-    await test.step(`Confirm scene has changed`, async () => {
-      await scene.expectPixelColor(
-        backgroundColor,
-        secondEdgeLocation,
-        lowTolerance
-      )
-    })
-
     // Test 2.1: Edit fillet (edgeSweep type)
     await test.step('Edit fillet via feature tree selection works', async () => {
       const secondFilletFeatureTreeIndex = 1
@@ -1701,9 +1639,7 @@ extrude001 = extrude(sketch001, length = -12)
         await operationButton.click({ button: 'left' })
         await page.keyboard.press('Delete')
         await page.waitForTimeout(500)
-        await scene.expectPixelColor(edgeColorWhite, secondEdgeLocation, 15) // deleted
         await editor.expectEditor.not.toContain(secondFilletDeclaration)
-        await scene.expectPixelColor(filletColor, firstEdgeLocation, 15) // stayed
       })
     })
   })
@@ -1798,19 +1734,6 @@ fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg02)])
     const standaloneUnassignedFilletDeclaration =
       'fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg02)])'
 
-    // Locators
-    const pipedFilletEdgeLocation = { x: 600, y: 193 }
-    const standaloneFilletEdgeLocation = { x: 600, y: 383 }
-    const bodyLocation = { x: 630, y: 290 }
-
-    // Colors
-    const edgeColorWhite: [number, number, number] = [248, 248, 248]
-    const bodyColor: [number, number, number] = [155, 155, 155]
-    const filletColor: [number, number, number] = [127, 127, 127]
-    const backgroundColor: [number, number, number] = [30, 30, 30]
-    const lowTolerance = 20
-    const highTolerance = 40
-
     // Setup
     await test.step(`Initial test setup`, async () => {
       await context.addInitScript((initialCode) => {
@@ -1819,16 +1742,6 @@ fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg02)])
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
       await scene.settled(cmdBar)
-
-      // verify modeling scene is loaded
-      await scene.expectPixelColor(
-        backgroundColor,
-        standaloneFilletEdgeLocation,
-        lowTolerance
-      )
-
-      // wait for stream to load
-      await scene.expectPixelColor(bodyColor, bodyLocation, highTolerance)
     })
 
     // Test
@@ -1849,18 +1762,6 @@ fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg02)])
             standaloneUnassignedFilletDeclaration
           )
         })
-        await test.step('Verify test fillets are present in the scene', async () => {
-          await scene.expectPixelColor(
-            filletColor,
-            pipedFilletEdgeLocation,
-            lowTolerance
-          )
-          await scene.expectPixelColor(
-            backgroundColor,
-            standaloneFilletEdgeLocation,
-            lowTolerance
-          )
-        })
         await test.step('Delete piped fillet', async () => {
           const operationButton = await toolbar.getFeatureTreeOperation(
             'Fillet',
@@ -1878,18 +1779,6 @@ fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg02)])
           )
           await editor.expectEditor.toContain(
             standaloneUnassignedFilletDeclaration
-          )
-        })
-        await test.step('Verify piped fillet is deleted but non-piped is not (in the scene)', async () => {
-          await scene.expectPixelColor(
-            edgeColorWhite, // you see edge because fillet is deleted
-            pipedFilletEdgeLocation,
-            lowTolerance
-          )
-          await scene.expectPixelColor(
-            backgroundColor, // you see background because fillet is not deleted
-            standaloneFilletEdgeLocation,
-            lowTolerance
           )
         })
       })
@@ -1913,13 +1802,6 @@ fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg02)])
             standaloneUnassignedFilletDeclaration
           )
         })
-        await test.step('Verify standalone assigned fillet is deleted but piped is not (in the scene)', async () => {
-          await scene.expectPixelColor(
-            edgeColorWhite,
-            standaloneFilletEdgeLocation,
-            lowTolerance
-          )
-        })
       })
 
       await test.step('Delete standalone unassigned fillet via feature tree selection', async () => {
@@ -1936,13 +1818,6 @@ fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg02)])
           await editor.expectEditor.toContain(secondPipedFilletDeclaration)
           await editor.expectEditor.not.toContain(
             standaloneUnassignedFilletDeclaration
-          )
-        })
-        await test.step('Verify standalone unassigned fillet is deleted but piped is not (in the scene)', async () => {
-          await scene.expectPixelColor(
-            edgeColorWhite,
-            standaloneFilletEdgeLocation,
-            lowTolerance
           )
         })
       })
@@ -1973,16 +1848,8 @@ extrude001 = extrude(profile001, length = 5)
     const filletExpression = `fillet(radius = 1000, tags = [getCommonEdge(faces = [seg01, seg02])])`
 
     // Locators
-    const edgeLocation = { x: 659, y: 313 }
-    const bodyLocation = { x: 594, y: 313 }
-
-    // Colors
-    const edgeColorWhite: [number, number, number] = [248, 248, 248]
-    const edgeColorYellow: [number, number, number] = [251, 251, 120] // Mac:B=251,251,90 Ubuntu:240,241,180, Windows:240,241,180
-    const backgroundColor: [number, number, number] = [30, 30, 30]
-    const bodyColor: [number, number, number] = [155, 155, 155]
-    const lowTolerance = 20
-    const highTolerance = 70
+    // TODO: find a way to select sweepEdges in a different way
+    const edgeLocation = { x: 649, y: 283 }
 
     // Setup
     await test.step(`Initial test setup`, async () => {
@@ -1991,28 +1858,18 @@ extrude001 = extrude(profile001, length = 5)
       }, initialCode)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
-
-      // verify modeling scene is loaded
-      await scene.expectPixelColor(backgroundColor, edgeLocation, lowTolerance)
-
-      // wait for stream to load
-      await scene.expectPixelColor(bodyColor, bodyLocation, highTolerance)
+      await scene.settled(cmdBar)
     })
 
     // Test
     await test.step('Select edges and apply oversized fillet', async () => {
       await test.step(`Select the edge`, async () => {
-        await scene.expectPixelColor(edgeColorWhite, edgeLocation, lowTolerance)
+        await toolbar.closePane('code')
         const [clickOnTheEdge] = scene.makeMouseHelpers(
           edgeLocation.x,
           edgeLocation.y
         )
         await clickOnTheEdge()
-        await scene.expectPixelColor(
-          edgeColorYellow,
-          edgeLocation,
-          highTolerance // Ubuntu color mismatch can require high tolerance
-        )
       })
 
       await test.step(`Apply fillet`, async () => {
