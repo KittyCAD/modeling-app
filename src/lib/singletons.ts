@@ -70,7 +70,14 @@ export const kclManager = new KclManager(engineCommandManager, {
 
 // Initialize KCL version
 import { setKclVersion } from '@src/lib/kclVersion'
-setKclVersion(kclManager.kclVersion)
+import { initPromise } from '@src/lang/wasmUtils'
+initPromise
+  .then(() => {
+    setKclVersion(kclManager.kclVersion)
+  })
+  .catch((e) => {
+    console.error(e)
+  })
 
 // The most obvious of cyclic dependencies.
 // This is because the   handleOnViewUpdate(viewUpdate: ViewUpdate): void {
