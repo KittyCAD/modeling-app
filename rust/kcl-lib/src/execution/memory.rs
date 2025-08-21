@@ -219,9 +219,9 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
+    SourceRange,
     errors::{KclError, KclErrorDetails},
     execution::KclValue,
-    source_range::SourceRange,
 };
 
 /// The distinguished name of the return value of a function.

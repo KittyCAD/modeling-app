@@ -30,7 +30,7 @@ pub use state::{ExecState, MetaSettings};
 use uuid::Uuid;
 
 use crate::{
-    CompilationError, ExecError, KclErrorWithOutputs,
+    CompilationError, ExecError, KclErrorWithOutputs, SourceRange,
     engine::{EngineManager, GridScaleBehavior},
     errors::{KclError, KclErrorDetails},
     execution::{
@@ -42,7 +42,6 @@ use crate::{
     fs::FileManager,
     modules::{ModuleId, ModulePath, ModuleRepr},
     parsing::ast::types::{Expr, ImportPath, NodeRef},
-    source_range::SourceRange,
 };
 
 pub(crate) mod annotations;

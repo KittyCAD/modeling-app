@@ -25,14 +25,13 @@ pub use crate::parsing::ast::types::{
     none::KclNone,
 };
 use crate::{
-    ModuleId, TypedPath,
+    ModuleId, SourceRange, TypedPath,
     errors::KclError,
     execution::{
         KclValue, Metadata, TagIdentifier, annotations,
         types::{ArrayLen, UnitLen},
     },
     parsing::{PIPE_OPERATOR, ast::digest::Digest, token::NumericSuffix},
-    source_range::SourceRange,
 };
 
 mod condition;
