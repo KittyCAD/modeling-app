@@ -164,7 +164,7 @@ export function indexHtmlCsp(enabled: boolean): Plugin {
       [
         reportingEndpoints,
         {
-          key: 'Content-Security-Policy-Report-Only',
+          key: 'Content-Security-Policy',
           value: vercelCsp,
         },
       ],
@@ -180,7 +180,7 @@ export function indexHtmlCsp(enabled: boolean): Plugin {
       [
         reportingEndpoints,
         {
-          key: 'Content-Security-Policy-Report-Only',
+          key: 'Content-Security-Policy',
           value:
             csp
               .concat(vercelCspBase)
