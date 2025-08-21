@@ -1,6 +1,6 @@
 const fs = require('fs')
 const latestRun = fs.readFileSync('/tmp/circular-deps.txt','utf-8')
-const knownCircular = fs.readFileSync('./known-circular.txt','utf-8')
+const knownCircular = fs.readFileSync('./scripts/known/circular.txt','utf-8')
 
 function parseLine (line) {
   let num = null
