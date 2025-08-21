@@ -45,14 +45,15 @@ export function connectReasoningStream(
       return // non-JSON frame
     }
 
-    // If we fail to parse no message will be rendered / visualized.
-    // Technically should never happen, but mistakes happen between client/server.
-    events.on.message(msg as any)
-
     if ('error' in (msg as any)) {
       ws.send(JSON.stringify(authMessage)) // 🔸 send immediately
       console.log(`[${id}] →`, authMessage)
+      return
     }
+
+    // If we fail to parse no message will be rendered / visualized.
+    // Technically should never happen, but mistakes happen between client/server.
+    events.on.message(msg as any)
 
     if ('end_of_stream' in (msg as any)) {
       console.log(`[${id}] end_of_stream → closing`)

@@ -227,7 +227,9 @@ export const PromptCard = (props: PromptCardProps) => {
         <div
           className={`flex flex-row gap-2 ${showSeeReasoning ? 'hidden' : ''}`}
           onMouseEnter={() =>
-            props.thoughts !== undefined && setShowSeeReasoning(true)
+            props.thoughts !== undefined &&
+            props.thoughts.length > 0 &&
+            setShowSeeReasoning(true)
           }
         >
           {props.onAction !== undefined && (
