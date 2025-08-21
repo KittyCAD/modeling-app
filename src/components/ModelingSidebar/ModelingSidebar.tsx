@@ -184,13 +184,9 @@ export function ModelingSidebarRight() {
         ),
       },
     })
-  }, [
-    promptsBelongingToConversation,
-    actuallyNew,
-    // TODO: figure out what to do this is causing a lint error
-    // modelingContext.store.openPanes,
-    // modelingContextSend,
-  ])
+    // React doesn't realize that we are updating `modelingContext.store.openPanes` here
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [promptsBelongingToConversation, actuallyNew])
 
   // Prevents rerenders because new array is a new ref.
   const sidebarActions: Ref<SidebarAction[]> = useRef([])
