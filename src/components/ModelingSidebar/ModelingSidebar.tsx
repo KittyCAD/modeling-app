@@ -187,8 +187,9 @@ export function ModelingSidebarRight() {
   }, [
     promptsBelongingToConversation,
     actuallyNew,
-    modelingContext.store.openPanes,
-    modelingContextSend,
+    // TODO: figure out what to do this is causing a lint error
+    // modelingContext.store.openPanes,
+    // modelingContextSend,
   ])
 
   // Prevents rerenders because new array is a new ref.

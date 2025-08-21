@@ -65,7 +65,7 @@ export async function textToCadMlConversations(
     sortBy: 'created_at_descending'
   }
 ): Promise<IResponseMlConversations | Error> {
-  const url = withAPIBaseURL('/ai/text-to-cad/conversations')
+  const url = withAPIBaseURL('/ml/conversations')
   const data: IResponseMlConversations | Error = await crossPlatformFetch(
     url,
     {
@@ -86,9 +86,7 @@ export async function textToCadMlPromptsBelongingToConversation(
     sortBy: 'created_at_ascending' | 'created_at_descending'
   }
 ): Promise<PromptsPaged | Error> {
-  const url = withAPIBaseURL(
-    `/ai/text-to-cad/conversations/${args.conversationId}/prompts`
-  )
+  const url = withAPIBaseURL(`/ml/conversations/${args.conversationId}/prompts`)
   const data: PromptsPaged | Error = await crossPlatformFetch(
     url,
     {

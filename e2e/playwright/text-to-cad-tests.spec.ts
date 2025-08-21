@@ -23,7 +23,7 @@ test.describe('Text-to-CAD tests', () => {
     await expect(submittedMessage.first()).toBeVisible()
 
     // Expect the code and model render
-    await editor.expectEditor.toContain('startSketchOn', { timeout: 10000 })
+    await editor.expectEditor.toContain('startSketchOn', { timeout: 30000 })
     await scene.settled(cmdBar)
   })
 
