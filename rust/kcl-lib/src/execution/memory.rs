@@ -215,7 +215,6 @@ use std::{
 use anyhow::Result;
 use env::Environment;
 use indexmap::IndexMap;
-use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
@@ -803,7 +802,7 @@ impl PartialEq for Stack {
 /// The first field indexes an environment, the second field is an epoch. An epoch of 0 is indicates
 /// a dummy, error, or placeholder env ref, an epoch of `usize::MAX` represents the current most
 /// recent epoch.
-#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, Hash, Eq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, Hash, Eq, ts_rs::TS)]
 pub struct EnvironmentRef(usize, usize);
 
 impl EnvironmentRef {

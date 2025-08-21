@@ -46,7 +46,7 @@ use crate::{
     exec::KclValue,
     execution::{cache, kcl_value::FunctionSource},
     lsp::{
-        LspSuggestion,
+        LspSuggestion, ToLspRange,
         backend::Backend as _,
         kcl::hover::{Hover, HoverOpts},
         util::IntoDiagnostic,

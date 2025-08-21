@@ -8,14 +8,6 @@ description = "KCL error definitions"
 miette = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
-schemars = { version = "0.8.17", features = [
-  "impl_json_schema",
-  "indexmap2",
-  "url",
-  "uuid1",
-  "preserve_order",
-] }
-tower-lsp = { workspace = true, features = ["proposed", "default"] }
 ts-rs = { version = "11.0.1", features = [
   "uuid-impl",
   "url-impl",

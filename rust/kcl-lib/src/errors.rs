@@ -10,7 +10,7 @@ use crate::{
     ModuleId, SourceRange,
     exec::KclValue,
     execution::DefaultPlanes,
-    lsp::IntoDiagnostic,
+    lsp::{IntoDiagnostic, ToLspRange},
     modules::{ModulePath, ModuleSource},
 };
 
