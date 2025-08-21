@@ -314,6 +314,13 @@ export const mlEphantManagerMachine = setup({
         if (context.apiTokenMlephant === undefined)
           return Promise.reject('missing api token')
 
+        // It's possible for cached prompts to "instant return" so we need
+        // to signal to the system we instantly went from in progress
+        // to completed.
+        const promptsInProgressToCompleted = new Set<string>(
+          context.promptsInProgressToCompleted
+        )
+
         const result = await submitTextToCadCreateRequest(
           args.input.event.prompt,
           args.input.event.projectForPromptOutput.path,
@@ -336,6 +343,10 @@ export const mlEphantManagerMachine = setup({
           project: args.input.event.projectForPromptOutput,
         })
 
+        if (result.status === 'completed') {
+          promptsInProgressToCompleted.add(result.id)
+        }
+
         return {
           promptsPool,
           // When we release new types this'll be fixed and error
@@ -343,6 +354,7 @@ export const mlEphantManagerMachine = setup({
           conversationId: result.conversation_id,
           promptsBelongingToConversation,
           promptsMeta,
+          promptsInProgressToCompleted,
         }
       }
     ),
