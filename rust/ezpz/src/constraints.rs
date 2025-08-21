@@ -122,8 +122,8 @@ impl Constraint {
                 let p1_y_l1 = current_assignments[layout.index_of(line1.p1.id_y())?];
                 let l1 = ((p0_x_l1, p0_y_l1), (p1_x_l1, p1_y_l1));
 
-                let v0 = (p0_x_l0 - p1_x_l0, p0_y_l0 - p1_y_l0);
-                let v1 = (p0_x_l1 - p1_x_l1, p0_y_l1 - p1_y_l1);
+                let v0 = (p1_x_l0 - p0_x_l0, p1_y_l0 - p0_y_l0);
+                let v1 = (p1_x_l1 - p0_x_l1, p1_y_l1 - p0_y_l1);
 
                 // Calculate magnitudes.
                 let mag0 = euclidian_distance_line(l0);
