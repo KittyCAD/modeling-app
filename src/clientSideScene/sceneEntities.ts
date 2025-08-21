@@ -365,8 +365,7 @@ export class SceneEntities {
     }
     const draftPoint = this.getDraftPoint()
     if (draftPoint) {
-      const scale = this.sceneInfra.getClientSceneScaleFactor(draftPoint)
-      draftPoint.scale.set(scale, scale, scale)
+      draftPoint.scale.set(orthoFactor, orthoFactor, orthoFactor)
     }
     this.sceneInfra.overlayCallbacks(callbacks)
   }
