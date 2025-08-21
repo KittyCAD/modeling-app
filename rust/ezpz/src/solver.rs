@@ -66,6 +66,12 @@ impl JacobianCache<f64> for Jc {
     }
 }
 
+impl Jc {
+    fn symbolic_mat(&self) -> faer::sparse::SymbolicSparseColMatRef<'_, usize> {
+        self.sym.as_ref()
+    }
+}
+
 impl std::fmt::Debug for Jc {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let ncols = self.sym.ncols();
@@ -96,10 +102,11 @@ pub struct Model {
     layout: Layout,
     jc: Jc,
     constraints: Vec<Constraint>,
+    initial_guesses: Vec<f64>,
 }
 
 impl Model {
-    pub fn new(constraints: Vec<Constraint>, all_variables: Vec<Id>) -> Self {
+    pub fn new(constraints: Vec<Constraint>, initial_guesses: Vec<(Id, f64)>) -> Self {
         /*
         Firstly, find the size of the relevant matrices.
         Each constraint yields 1 or more residual function f.
@@ -115,7 +122,7 @@ impl Model {
                        which is = total number of "involved primitive IDs"
         */
         let num_residuals: usize = constraints.iter().map(|c| c.residual_dim()).sum();
-        let num_cols = all_variables.len();
+        let num_cols = initial_guesses.len();
         let num_rows = num_residuals;
 
         // Generate the matrix.
@@ -123,9 +130,11 @@ impl Model {
         let (sym, _) = SymbolicSparseColMat::try_new_from_indices(num_rows, num_cols, &pairs).unwrap();
         let num_cells = sym.col_ptr()[sym.ncols()];
         debug_assert_eq!(num_cells, num_cols * num_rows);
+        let (all_variables, initial_guesses) = initial_guesses.into_iter().unzip();
 
         // All done.
         Self {
+            initial_guesses,
             layout: Layout {
                 total_num_residuals: num_rows,
                 all_variables,
@@ -136,6 +145,22 @@ impl Model {
             },
             constraints,
         }
+    }
+
+    pub(crate) fn is_underconstrained(&mut self) -> Result<bool, crate::NonLinearSystemError> {
+        let igs = self.initial_guesses.clone();
+        self.refresh_jacobian(&igs)?;
+        let nrows = self.layout.num_rows();
+        let ncols = self.layout.num_cols();
+        let rank = Ord::min(ncols, nrows);
+
+        use faer::sparse::linalg::qr;
+        let params = todo!();
+        let qr_decomposed = qr::factorize_symbolic_qr(self.jc.symbolic_mat(), params)
+            .map_err(|e| crate::NonLinearSystemError::ValidityCheck(e.to_string()))?;
+
+        // answer
+        Ok(todo!())
     }
 }
 

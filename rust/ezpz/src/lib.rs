@@ -17,7 +17,7 @@ mod solver;
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
     #[error("{0}")]
-    NonLinearSystemError(NonLinearSystemError),
+    NonLinearSystemError(#[from] NonLinearSystemError),
     #[error("Solver error {0}")]
     Solver(Box<dyn std::error::Error>),
     #[error("System is overconstrained, try removing some constraints")]
@@ -28,21 +28,23 @@ pub enum Error {
 pub enum NonLinearSystemError {
     #[error("ID {0} not found")]
     NotFound(Id),
+    #[error("Could not determine under/overconstrained: {0}")]
+    ValidityCheck(String),
 }
 
 #[derive(Debug)]
 pub struct SolveOutcome {
     pub final_values: Vec<f64>,
     pub iterations: usize,
-    pub underconstrained: bool,
+    pub is_underconstrained: bool,
 }
 
 /// Given some initial guesses, constrain them.
 /// Returns the same variables in the same order, but constrained.
 pub fn solve(constraints: Vec<Constraint>, initial_guesses: Vec<(Id, f64)>) -> Result<SolveOutcome, Error> {
-    let (all_variables, mut final_values): (Vec<Id>, Vec<f64>) = initial_guesses.into_iter().unzip();
-    let underconstrained = false; // TODO
-    let mut model = Model::new(constraints, all_variables);
+    let mut model = Model::new(constraints, initial_guesses.clone());
+    let mut final_values: Vec<_> = initial_guesses.into_iter().map(|(_var, value)| value).collect();
+    let is_underconstrained = model.is_underconstrained()?;
     let iterations = newton_faer::solve(
         &mut model,
         &mut final_values,
@@ -52,7 +54,7 @@ pub fn solve(constraints: Vec<Constraint>, initial_guesses: Vec<(Id, f64)>) -> R
     Ok(SolveOutcome {
         final_values,
         iterations,
-        underconstrained,
+        is_underconstrained,
     })
 }
 
@@ -69,7 +71,7 @@ mod tests {
         let initial_guesses = vec![(id0, 0.0)];
         let outcome = solve(vec![], initial_guesses).unwrap();
         assert_eq!(outcome.final_values, vec![0.0]);
-        // assert!(outcome.underconstrained);
+        assert!(outcome.is_underconstrained);
     }
 
     #[test]
