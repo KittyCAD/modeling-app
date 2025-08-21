@@ -293,7 +293,7 @@ See later source ranges for more context. about the sweep`,
       kcl_version: kclManager.kclVersion,
     },
     endPointFiles,
-    _token
+    token
   )
 }
 
