@@ -1,31 +1,16 @@
-use kittycad_modeling_cmds::shared::Angle;
-
 use crate::{NonLinearSystemError, datatypes::*, id::Id, solver::Layout};
 
 /// Each geometric constraint we support.
 #[derive(Clone, Copy)]
 pub enum Constraint {
-    /// Also length.
+    /// These two points should be a given distance apart.
     Distance(DatumPoint, DatumPoint, Distance),
-    /// Also point-on-line
-    DistancePointToLine(DatumPoint, DatumLine),
-    /// Also perpendicular, parallel, tangent
-    Angle(DatumLine, Angle),
-    /// Two points are the same
-    Coincident(DatumPoint, DatumPoint),
     /// These two points have the same Y value.
     Vertical(LineSegment),
     /// These two points have the same X value.
     Horizontal(LineSegment),
-    /// Two points symmetric across a line.
-    Symmetric(DatumLine, DatumPoint, DatumPoint),
-    /// Meaningless constraint.
-    /// Used to ensure matrices are square.
-    Null,
     /// Some scalar value is fixed.
     Fixed(Id, f64),
-    /// This point cannot change.
-    PointFixed(DatumPoint, f64, f64),
 }
 
 /// Given a list of all IDs in the system, find the target ID's index in that list.
@@ -92,15 +77,6 @@ impl Constraint {
                 let actual_distance = euclidian_distance((p0_x, p0_y), (p1_x, p1_y));
                 Ok(vec![actual_distance - expected_distance])
             }
-            Constraint::DistancePointToLine(_p0, _line) => todo!(),
-            Constraint::Angle(_line, _angle) => todo!(),
-            Constraint::Coincident(p0, p1) => {
-                let p0_x = current_assignments[layout.index_of(p0.id_x())?];
-                let p0_y = current_assignments[layout.index_of(p0.id_y())?];
-                let p1_x = current_assignments[layout.index_of(p1.id_x())?];
-                let p1_y = current_assignments[layout.index_of(p1.id_y())?];
-                Ok(vec![p0_x - p1_x, p0_y - p1_y])
-            }
             Constraint::Vertical(line) => {
                 let p0_x = current_assignments[layout.index_of(line.p0.id_x())?];
                 let p1_x = current_assignments[layout.index_of(line.p1.id_x())?];
@@ -111,16 +87,9 @@ impl Constraint {
                 let p1_y = current_assignments[layout.index_of(line.p1.id_y())?];
                 Ok(vec![p0_y - p1_y])
             }
-            Constraint::Symmetric(_line, _p0, _p1) => todo!(),
-            Constraint::Null => Ok(vec![0.0]),
             Constraint::Fixed(id, expected) => {
                 let actual = current_assignments[layout.index_of(*id)?];
                 Ok(vec![actual - expected])
-            }
-            Constraint::PointFixed(p, expected_x, expected_y) => {
-                let actual_x = current_assignments[layout.index_of(p.id_x())?];
-                let actual_y = current_assignments[layout.index_of(p.id_y())?];
-                Ok(vec![actual_x - expected_x, actual_y - expected_y])
             }
         }
     }
@@ -129,16 +98,10 @@ impl Constraint {
     /// Each equation is a residual function (a measure of error)
     pub fn residual_dim(&self) -> usize {
         match self {
-            Constraint::Coincident(_p0, _p1) => 2,
-            Constraint::Null => 1,
             Constraint::Distance(..) => 1,
-            Constraint::DistancePointToLine(..) => 1,
-            Constraint::Angle(..) => 1,
             Constraint::Vertical(..) => 1,
             Constraint::Horizontal(..) => 1,
-            Constraint::Symmetric(..) => 1,
             Constraint::Fixed(..) => 1,
-            Constraint::PointFixed(..) => 2,
         }
     }
 
@@ -194,38 +157,6 @@ impl Constraint {
                     ],
                 }])
             }
-            Constraint::DistancePointToLine(_p0, _line) => todo!(),
-            Constraint::Angle(_line, _angle) => todo!(),
-            Constraint::Coincident(p0, _p1) => {
-                // Residuals: R1 = px - fx, R2 = py - fy
-                // ∂R1/∂px = 1
-                // ∂R1/∂py = 0
-                // ∂R2/∂px = 0
-                // ∂R2/∂py = 1
-
-                // Derivatives with respect to the fixed point's coordinates.
-                let dr0_dx = 1.0;
-                // let dr0_dy = 0.0;
-                // let dr1_dx = 0.0;
-                let dr1_dy = 1.0;
-
-                Ok(vec![
-                    // One row describing the x constraint
-                    JacobianRow {
-                        nonzero_columns: vec![JacobianVar {
-                            id: p0.id_x(),
-                            partial_derivative: dr0_dx,
-                        }],
-                    },
-                    // One row describing the y constraint
-                    JacobianRow {
-                        nonzero_columns: vec![JacobianVar {
-                            id: p0.id_y(),
-                            partial_derivative: dr1_dy,
-                        }],
-                    },
-                ])
-            }
             Constraint::Vertical(line) => {
                 // Residual: R = x0 - x1
                 // ∂R/∂x for p0 and p1.
@@ -278,56 +209,21 @@ impl Constraint {
                     },
                 ])
             }
-            Constraint::Symmetric(_line, _p0, _p1) => todo!(),
-            Constraint::Null => Ok(vec![JacobianRow::default()]),
             Constraint::Fixed(id, _expected) => Ok(vec![JacobianRow {
                 nonzero_columns: vec![JacobianVar {
                     id: *id,
                     partial_derivative: 1.0,
                 }],
             }]),
-            Constraint::PointFixed(p, _expected_x, _expected_y) => {
-                // Residuals: R1 = px - fx, R2 = py - fy
-                // ∂R1/∂px = 1
-                // ∂R1/∂py = 0
-                // ∂R2/∂px = 0
-                // ∂R2/∂py = 1
-
-                // Derivatives with respect to the fixed point's coordinates.
-                let dr0_dx = 1.0;
-                // dr0_dy = 0.0
-                // dr1_dx = 0.0
-                let dr1_dy = 1.0;
-                Ok(vec![
-                    JacobianRow {
-                        nonzero_columns: vec![JacobianVar {
-                            id: p.id_x(),
-                            partial_derivative: dr0_dx,
-                        }],
-                    },
-                    JacobianRow {
-                        nonzero_columns: vec![JacobianVar {
-                            id: p.id_y(),
-                            partial_derivative: dr1_dy,
-                        }],
-                    },
-                ])
-            }
         }
     }
 
     pub fn constraint_kind(&self) -> &'static str {
         match self {
             Constraint::Distance(..) => "Distance",
-            Constraint::DistancePointToLine(..) => "DistancePointToLine",
-            Constraint::Angle(..) => "Angle",
-            Constraint::Coincident(..) => "Coincident",
             Constraint::Vertical(..) => "Vertical",
             Constraint::Horizontal(..) => "Horizontal",
-            Constraint::Symmetric(..) => "Symmetric",
-            Constraint::Null => "Null",
             Constraint::Fixed(..) => "Fixed",
-            Constraint::PointFixed(..) => "PointFixed",
         }
     }
 }
