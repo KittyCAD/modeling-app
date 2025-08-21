@@ -104,7 +104,7 @@ export type MlEphantManagerEvents =
 type XSEvent<T> = Extract<MlEphantManagerEvents, { type: T }>
 
 export interface Thought {
-  end_of_stream?: {}
+  end_of_stream?: object
   reasoning?:
     | { type: 'text'; content: string }
     | { type: 'kcl_code_examples'; content: string }
