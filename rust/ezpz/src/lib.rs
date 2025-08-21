@@ -20,6 +20,8 @@ pub enum Error {
     NonLinearSystemError(NonLinearSystemError),
     #[error("Solver error {0}")]
     Solver(Box<dyn std::error::Error>),
+    #[error("System is overconstrained, try removing some constraints")]
+    Overconstrained,
 }
 
 #[derive(thiserror::Error, Debug)]
@@ -32,12 +34,14 @@ pub enum NonLinearSystemError {
 pub struct SolveOutcome {
     pub final_values: Vec<f64>,
     pub iterations: usize,
+    pub underconstrained: bool,
 }
 
 /// Given some initial guesses, constrain them.
 /// Returns the same variables in the same order, but constrained.
 pub fn solve(constraints: Vec<Constraint>, initial_guesses: Vec<(Id, f64)>) -> Result<SolveOutcome, Error> {
     let (all_variables, mut final_values): (Vec<Id>, Vec<f64>) = initial_guesses.into_iter().unzip();
+    let underconstrained = false; // TODO
     let mut model = Model::new(constraints, all_variables);
     let iterations = newton_faer::solve(
         &mut model,
@@ -48,6 +52,7 @@ pub fn solve(constraints: Vec<Constraint>, initial_guesses: Vec<(Id, f64)>) -> R
     Ok(SolveOutcome {
         final_values,
         iterations,
+        underconstrained,
     })
 }
 
@@ -56,6 +61,16 @@ mod tests {
 
     use super::*;
     use crate::datatypes::{DatumPoint, LineSegment};
+
+    #[test]
+    fn underconstrained() {
+        let mut id_generator = IdGenerator::default();
+        let id0 = id_generator.next_id();
+        let initial_guesses = vec![(id0, 0.0)];
+        let outcome = solve(vec![], initial_guesses).unwrap();
+        assert_eq!(outcome.final_values, vec![0.0]);
+        // assert!(outcome.underconstrained);
+    }
 
     #[test]
     fn simple() {
