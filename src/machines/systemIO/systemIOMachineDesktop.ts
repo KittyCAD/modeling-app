@@ -695,13 +695,17 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           target: string
         }
       }) => {
-        await window.electron.copy(input.src, input.target, {
-          recursive: true,
-          force: false,
-        })
-        return {
-          message: `Folder copied successfully`,
-          requestedAbsolutePath: '',
+        if (window.electron) {
+          await window.electron.copy(input.src, input.target, {
+            recursive: true,
+            force: false,
+          })
+          return {
+            message: `Folder copied successfully`,
+            requestedAbsolutePath: '',
+          }
+        } else {
+          throw new Error('no file system found')
         }
       }
     ),
