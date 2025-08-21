@@ -81,6 +81,7 @@ export const MlEphantConversationInput = (
           autoCapitalize="off"
           autoCorrect="off"
           spellCheck="false"
+          data-testid="ml-ephant-conversation-input"
           ref={refDiv}
           onKeyDown={(e) => {
             if (e.key !== 'Enter') {
@@ -100,6 +101,7 @@ export const MlEphantConversationInput = (
         </div>
         <div className="flex justify-end">
           <button
+            data-testid="ml-ephant-conversation-input-button"
             disabled={props.disabled}
             onClick={onClick}
             className="w-10 m-0 bg-ml-green p-2 flex justify-center"
