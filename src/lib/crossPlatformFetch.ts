@@ -1,6 +1,6 @@
-import isomorphicFetch from 'isomorphic-fetch'
-import { isDesktop } from '@src/lib/isDesktop'
 import env from '@src/env'
+import { isDesktop } from '@src/lib/isDesktop'
+import isomorphicFetch from 'isomorphic-fetch'
 
 const headers = (token?: string): HeadersInit => ({
   'Content-Type': 'application/json',

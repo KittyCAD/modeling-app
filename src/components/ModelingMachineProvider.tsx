@@ -25,7 +25,6 @@ import {
   SEGMENT_BODIES_PLUS_PROFILE_START,
   getParentGroup,
 } from '@src/clientSideScene/sceneConstants'
-import { useFileContext } from '@src/hooks/useFileContext'
 import {
   useMenuListener,
   useSketchModeMenuEnableDisable,
@@ -64,8 +63,7 @@ import {
 } from '@src/lib/constants'
 import { exportMake } from '@src/lib/exportMake'
 import { exportSave } from '@src/lib/exportSave'
-import { isDesktop } from '@src/lib/isDesktop'
-import type { FileEntry } from '@src/lib/project'
+import type { FileEntry, Project } from '@src/lib/project'
 import type { WebContentSendPayload } from '@src/menu/channels'
 import {
   getPersistedContext,
@@ -105,6 +103,9 @@ import { applyConstraintAbsDistance } from '@src/components/Toolbar/SetAbsDistan
 import type { SidebarType } from '@src/components/ModelingSidebar/ModelingPanes'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
+import { useFolders } from '@src/machines/systemIO/hooks'
+
+const OVERLAY_TIMEOUT_MS = 1_000
 
 export const ModelingMachineContext = createContext(
   {} as {
@@ -127,8 +128,29 @@ export const ModelingMachineProvider = ({
     app: { allowOrbitInSketchMode },
     modeling: { defaultUnit, cameraProjection, cameraOrbit },
   } = useSettings()
-  const { context } = useFileContext()
-  const { file } = useLoaderData() as IndexLoaderData
+  const loaderData = useLoaderData() as IndexLoaderData
+  const projects = useFolders()
+  const { project, file } = loaderData
+  const theProject = useRef<Project | undefined>(project)
+  useEffect(() => {
+    // Have no idea why the project loader data doesn't have the children from the ls on disk
+    // That means it is a different object or cached incorrectly?
+    if (!project || !file) {
+      return
+    }
+
+    // You need to find the real project in the storage from the loader information since the loader Project is not hydrated
+    const foundYourProject = projects.find((p) => {
+      return p.name === project.name
+    })
+
+    if (!foundYourProject) {
+      return
+    }
+    theProject.current = foundYourProject
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
+  }, [projects, loaderData, file])
+
   const token = useToken()
   const streamRef = useRef<HTMLDivElement>(null)
   const persistedContext = useMemo(() => getPersistedContext(), [])
@@ -200,8 +222,7 @@ export const ModelingMachineProvider = ({
                     pathToNodeString,
                   },
                 })
-                // overlay timeout is 1s
-              }, 1000) as unknown as number
+              }, OVERLAY_TIMEOUT_MS) as unknown as number
               return {
                 ...context.segmentHoverMap,
                 [pathToNodeString]: timeoutId,
@@ -1180,9 +1201,10 @@ export const ModelingMachineProvider = ({
             }
           )
           let basePath = ''
-          if (isDesktop() && context?.project?.children) {
+          if (window.electron && theProject?.current?.children) {
+            const electron = window.electron
             // Use the entire project directory as the basePath for prompt to edit, do not use relative subdir paths
-            basePath = context?.project?.path
+            basePath = theProject?.current?.path
             const filePromises: Promise<FileMeta | null>[] = []
             let uploadSize = 0
             const recursivelyPushFilePromises = (files: FileEntry[]) => {
@@ -1196,17 +1218,17 @@ export const ModelingMachineProvider = ({
                 }
 
                 const absolutePathToFileNameWithExtension = file.path
-                const fileNameWithExtension = window.electron.path.relative(
+                const fileNameWithExtension = electron.path.relative(
                   basePath,
                   absolutePathToFileNameWithExtension
                 )
 
-                const filePromise = window.electron
+                const filePromise = electron
                   .readFile(absolutePathToFileNameWithExtension)
                   .then((file): FileMeta => {
                     uploadSize += file.byteLength
                     const decoder = new TextDecoder('utf-8')
-                    const fileType = window.electron.path.extname(
+                    const fileType = electron.path.extname(
                       absolutePathToFileNameWithExtension
                     )
                     if (fileType === FILE_EXT) {
@@ -1238,7 +1260,7 @@ export const ModelingMachineProvider = ({
                 filePromises.push(filePromise)
               }
             }
-            recursivelyPushFilePromises(context?.project?.children)
+            recursivelyPushFilePromises(theProject?.current?.children)
             projectFiles = (await Promise.all(filePromises)).filter(
               isNonNullable
             )
@@ -1252,7 +1274,7 @@ export const ModelingMachineProvider = ({
           // route to main.kcl by default for web and desktop
           let filePath: string = PROJECT_ENTRYPOINT
           const possibleFileName = file?.path
-          if (possibleFileName && isDesktop()) {
+          if (possibleFileName && window.electron) {
             // When prompt to edit finishes, try to route to the file they were in otherwise go to main.kcl
             filePath = window.electron.path.relative(basePath, possibleFileName)
           }
@@ -1262,7 +1284,7 @@ export const ModelingMachineProvider = ({
             selections: input.selection,
             token,
             artifactGraph: kclManager.artifactGraph,
-            projectName: context.project.name,
+            projectName: theProject?.current?.name || '',
             filePath,
           })
         }),
@@ -1443,6 +1465,7 @@ export const ModelingMachineProvider = ({
   // wrong
   useEffect(() => {
     sceneInfra.camControls.resetCameraPosition().catch(reportRejection)
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [cameraOrbit.current])
 
   useEffect(() => {
@@ -1464,6 +1487,7 @@ export const ModelingMachineProvider = ({
         onConnectionStateChanged as EventListener
       )
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [engineCommandManager.engineConnection, modelingSend])
 
   useEffect(() => {
@@ -1489,6 +1513,7 @@ export const ModelingMachineProvider = ({
     if (inSketchMode) {
       sceneInfra.camControls.enableRotate = allowOrbitInSketchMode.current
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [allowOrbitInSketchMode.current])
 
   // Allow using the delete key to delete solids. Backspace only on macOS as Windows and Linux have dedicated Delete

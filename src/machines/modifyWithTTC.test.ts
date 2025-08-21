@@ -667,8 +667,8 @@ async function setupTestProjectWithImports(testFiles: Record<string, string>) {
   }
 
   // Configure the FileSystemManager to use our test directory
-  const { fileSystemManager } = await import('@src/lang/std/fileSystemManager')
-  fileSystemManager.dir = testProjectDir
+  const { projectFsManager } = await import('@src/lang/std/fileSystemManager')
+  projectFsManager.dir = testProjectDir
 
   return {
     projectDir: testProjectDir,

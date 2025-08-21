@@ -137,7 +137,8 @@ export default class CodeManager {
   async writeToFile() {
     if (this.isBufferMode) return
 
-    if (isDesktop()) {
+    if (window.electron) {
+      const electron = window.electron
       // Only write our buffer contents to file once per second. Any faster
       // and file-system watchers which read, will receive empty data during
       // writes.
@@ -152,7 +153,7 @@ export default class CodeManager {
 
           // Wait one event loop to give a chance for params to be set
           // Save the file to disk
-          window.electron
+          electron
             .writeFile(this._currentFilePath, this.code ?? '')
             .then(resolve)
             .catch((err: Error) => {

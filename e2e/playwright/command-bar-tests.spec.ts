@@ -324,7 +324,7 @@ test.describe('Command bar tests', () => {
         Length: '5',
       },
     })
-    await page.keyboard.press('Shift+Backspace')
+    await page.keyboard.press('Meta+Backspace')
 
     // Assert we're back on the distance step
     await expect(

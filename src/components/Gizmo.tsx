@@ -67,6 +67,7 @@ export default function Gizmo() {
         ? 'not-allowed'
         : 'auto'
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [modelingState, settings.app.allowOrbitInSketchMode.current])
 
   useEffect(() => {

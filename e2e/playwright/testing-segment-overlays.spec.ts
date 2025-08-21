@@ -545,7 +545,7 @@ part001 = startSketchOn(XZ)
               'persistCode',
               `@settings(defaultLengthUnit = in)
       part001 = startSketchOn(XZ)
-        |> startProfile(at = [5, 6])
+        |> startProfile(at = [-5, 6])
         |> ${lineToBeDeleted}
         |> line(end = [-10, -15])
         |> angledLine(angle = -176, length = segLen(seg01))`
