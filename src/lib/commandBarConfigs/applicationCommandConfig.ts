@@ -177,31 +177,33 @@ export function createApplicationCommands({
 
         // TODO: Remove this await and instead add a call back or something
         // to the event above
-        waitForIdleState({ systemIOActor }).then(() => {
-          mlEphantManagerActor.send({
-            type: MlEphantManagerTransitions.PromptCreateModel,
-            // It's always going to be a fresh directory since it's a new
-            // project.
-            projectForPromptOutput: {
-              name: '',
-              path: uniquePromptFilePath,
-              children: [],
-              readWriteAccess: true,
-              metadata: {
-                accessed: '',
-                created: '',
-                modified: '',
-                permission: null,
-                type: null,
-                size: 0,
+        waitForIdleState({ systemIOActor })
+          .then(() => {
+            mlEphantManagerActor.send({
+              type: MlEphantManagerTransitions.PromptCreateModel,
+              // It's always going to be a fresh directory since it's a new
+              // project.
+              projectForPromptOutput: {
+                name: '',
+                path: uniquePromptFilePath,
+                children: [],
+                readWriteAccess: true,
+                metadata: {
+                  accessed: '',
+                  created: '',
+                  modified: '',
+                  permission: null,
+                  type: null,
+                  size: 0,
+                },
+                kcl_file_count: 0,
+                directory_count: 0,
+                default_file: '',
               },
-              kcl_file_count: 0,
-              directory_count: 0,
-              default_file: '',
-            },
-            prompt: requestedPrompt,
+              prompt: requestedPrompt,
+            })
           })
-        })
+          .catch(reportRejection)
       }
     },
     args: {

@@ -1,4 +1,3 @@
-import type { Models } from '@kittycad/lib'
 import type { Prompt } from '@src/lib/prompt'
 
 export interface IResponseMlConversation {
