@@ -189,10 +189,14 @@ export class InfiniteGridRenderer extends LineSegments<
       }
     }
 
-    const lineGap = effectiveMinorSpacing * pixelsPerBaseUnit
+    const baseUnitToNDC = [
+      (pixelsPerBaseUnit / viewportWidthPx) * 2 * window.devicePixelRatio,
+      (pixelsPerBaseUnit / viewportHeightPx) * 2 * window.devicePixelRatio,
+    ]
+
     const lineGapNDC = [
-      (lineGap / viewportWidthPx) * 2 * window.devicePixelRatio,
-      (lineGap / viewportHeightPx) * 2 * window.devicePixelRatio,
+      effectiveMinorSpacing * baseUnitToNDC[0],
+      effectiveMinorSpacing * baseUnitToNDC[1],
     ]
 
     const ndc = new Vector3(-1, -1, 0)
@@ -200,10 +204,6 @@ export class InfiniteGridRenderer extends LineSegments<
     const leftEdge = ndc.y / baseUnitMultiplier
     const bottomEdge = ndc.z / baseUnitMultiplier
 
-    const baseUnitToNDC = [
-      (pixelsPerBaseUnit / viewportWidthPx) * 2 * window.devicePixelRatio,
-      (pixelsPerBaseUnit / viewportHeightPx) * 2 * window.devicePixelRatio,
-    ]
     const leftFractional = leftEdge - Math.floor(leftEdge)
     const bottomFractional = bottomEdge - Math.floor(bottomEdge)
 
