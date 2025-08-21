@@ -1,8 +1,6 @@
 use kittycad_modeling_cmds::shared::Angle;
 
-use crate::{NonLinearSystemError, datatypes::*, id::Id, solver::Layout};
-
-const EPSILON: f64 = 0.00000001;
+use crate::{EPSILON, NonLinearSystemError, datatypes::*, id::Id, solver::Layout};
 
 /// Each geometric constraint we support.
 #[derive(Clone, Copy)]

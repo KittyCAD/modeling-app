@@ -14,6 +14,8 @@ mod id;
 /// Numeric solver using sparse matrices.
 mod solver;
 
+const EPSILON: f64 = 0.00000001;
+
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
     #[error("{0}")]
@@ -62,12 +64,16 @@ pub fn solve(constraints: Vec<Constraint>, initial_guesses: Vec<(Id, f64)>) -> R
     })
 }
 
+fn nearly_eq(a: f64, b: f64) -> bool {
+    (a - b).abs() < EPSILON
+}
+
 fn lint(constraints: &[Constraint]) -> Vec<Lint> {
     let mut lints = Vec::default();
     for (i, constraint) in constraints.iter().enumerate() {
         match constraint {
             Constraint::LinesAtAngle(_, _, constraints::AngleKind::Other(theta))
-                if theta.to_degrees() == 0.0 || theta.to_degrees() == 360.0 =>
+                if nearly_eq(theta.to_degrees(), 0.0) || nearly_eq(theta.to_degrees(), 360.0) =>
             {
                 lints.push(Lint {
                     about_constraint: Some(i),
@@ -78,7 +84,7 @@ fn lint(constraints: &[Constraint]) -> Vec<Lint> {
                 });
             }
             Constraint::LinesAtAngle(_, _, constraints::AngleKind::Other(theta))
-                if theta.to_degrees() == 90.0 || theta.to_degrees() == -90.0 =>
+                if nearly_eq(theta.to_degrees(), 90.0) || nearly_eq(theta.to_degrees(), -90.0) =>
             {
                 lints.push(Lint {
                     about_constraint: Some(i),
