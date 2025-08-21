@@ -199,6 +199,7 @@ export const ThoughtExpand = (props: {
         <div className="mr-2 w-full border-b border-chalkboard-40 border-dashed"></div>
         <div
           className="mr-1 flex flex-row items-center cursor-pointer text-chalkboard-90"
+          role="feed"
           onClick={() => props.onClick()}
         >
           {props.isExpanded ? (
