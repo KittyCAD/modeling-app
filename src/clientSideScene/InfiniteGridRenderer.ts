@@ -198,18 +198,27 @@ export class InfiniteGridRenderer extends LineSegments<
       effectiveMinorSpacing * baseUnitToNDC[0],
       effectiveMinorSpacing * baseUnitToNDC[1],
     ]
+    const majorGapNDC = [
+      effectiveMajorSpacing * baseUnitToNDC[0],
+      effectiveMajorSpacing * baseUnitToNDC[1],
+    ]
 
     const ndc = new Vector3(-1, -1, 0)
     ndc.unproject(camera)
-    const leftEdge = ndc.y / baseUnitMultiplier
-    const bottomEdge = ndc.z / baseUnitMultiplier
 
-    const leftFractional = leftEdge - Math.floor(leftEdge)
-    const bottomFractional = bottomEdge - Math.floor(bottomEdge)
+    const originNDC = new Vector3(0, 0, 0)
+    originNDC.project(camera)
+    const gridLineNDC = [originNDC.x, originNDC.y]
+    // Find the number of major grid lines (=gaps) to the left from this grid line
+    const bottomLeft = [-1, -1]
 
+    const numberOfGaps = [
+      Math.ceil((gridLineNDC[0] - bottomLeft[0]) / majorGapNDC[0]),
+      Math.ceil((gridLineNDC[1] - bottomLeft[1]) / majorGapNDC[1]),
+    ]
     const lineOffsetNDC = [
-      -1 - leftFractional * baseUnitToNDC[0],
-      -1 - bottomFractional * baseUnitToNDC[1],
+      gridLineNDC[0] - numberOfGaps[0] * majorGapNDC[0],
+      gridLineNDC[1] - numberOfGaps[1] * majorGapNDC[1],
     ]
 
     // We need as many lines as to cover the whole screen
