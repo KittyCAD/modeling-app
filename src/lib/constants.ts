@@ -68,8 +68,8 @@ export const KCL_DEFAULT_COLOR = `#3c73ff`
 
 export const SETTINGS_FILE_NAME = 'settings.toml'
 export const PROJECT_SETTINGS_FILE_NAME = 'project.toml'
-export const COOKIE_NAME = '__Secure-next-auth.session-token'
-export const COOKIE_NAME_DEV = '__Secure-session-token-dev'
+export const LEGACY_COOKIE_NAME = '__Secure-next-auth.session-token'
+export const COOKIE_NAME_PREFIX = '__Secure-session-token-'
 export const TELEMETRY_FILE_NAME = 'boot.txt'
 export const TELEMETRY_RAW_FILE_NAME = 'raw-metrics.txt'
 export const ENVIRONMENT_FILE_NAME = 'environment.txt'

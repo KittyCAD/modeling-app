@@ -5,7 +5,7 @@ import type { BrowserContext, Locator, Page, TestInfo } from '@playwright/test'
 import { expect } from '@playwright/test'
 import type { EngineCommand } from '@src/lang/std/artifactGraph'
 import type { Configuration } from '@src/lang/wasm'
-import { COOKIE_NAME, IS_PLAYWRIGHT_KEY } from '@src/lib/constants'
+import { LEGACY_COOKIE_NAME, IS_PLAYWRIGHT_KEY } from '@src/lib/constants'
 import { reportRejection } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import { isArray } from '@src/lib/utils'
@@ -974,7 +974,7 @@ export async function setup(
 
   await context.addCookies([
     {
-      name: COOKIE_NAME,
+      name: LEGACY_COOKIE_NAME,
       value: token,
       path: '/',
       domain: 'localhost',
