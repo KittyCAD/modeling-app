@@ -820,7 +820,7 @@ impl ArgData {
             Some("Sketch") if self.kind == ArgKind::Special => None,
             Some(s) if s.starts_with("number") => {
                 let value = match &*self.name {
-                    "angleStart" => "0",
+                    "angleStart" => "0deg",
                     "angleEnd" => "180deg",
                     "angle" => "180deg",
                     "arcDegrees" => "360deg",
