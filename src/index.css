@@ -358,6 +358,10 @@ code {
 }
 
 @layer utilities {
+  .text-default {
+    @apply text-chalkboard-100 dark:text-chalkboard-10;
+  }
+
   /*
     This is where your own custom Tailwind utility classes can go,
     which lets you use them with @apply in your CSS, and get
