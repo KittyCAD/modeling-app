@@ -13,7 +13,7 @@ export interface ConvoCardProps extends IResponseMlConversation {
 }
 
 export const ConvoCard = (props: ConvoCardProps) => {
-  const cssCard = `flex flex-col border rounded-md p-2 gap-2 justify-between`
+  const cssCard = `flex flex-col border b-4 rounded-md p-2 gap-2 justify-between`
   return (
     <div className={cssCard}>
       <div className="flex flex-row justify-between gap-2">
@@ -97,7 +97,7 @@ export const PromptCardActionButton = (props: {
 }) => {
   return (
     <button
-      className="rounded-full bg-gray-100"
+      className="rounded-full bg-2 hover:bg-6 text-default hover:text-5"
       onClick={props.onClick}
       disabled={
         props.disabled ||
