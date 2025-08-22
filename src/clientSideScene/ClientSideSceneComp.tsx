@@ -102,7 +102,7 @@ export const ClientSideScene = ({
     const canvas = canvasRef.current
     canvas.appendChild(sceneInfra.renderer.domElement)
     canvas.appendChild(sceneInfra.labelRenderer.domElement)
-    sceneInfra.onWindowResize()
+    sceneInfra.onCanvasResized()
     sceneInfra.animate()
     canvas.addEventListener(
       'mousemove',
@@ -136,7 +136,7 @@ export const ClientSideScene = ({
     const canvas = canvasRef.current
     if (!canvas) return
     const observer = new ResizeObserver(() => {
-      sceneInfra.onWindowResize()
+      sceneInfra.onCanvasResized()
       sceneInfra.camControls.onWindowResize()
     })
     observer.observe(canvas)

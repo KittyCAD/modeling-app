@@ -352,7 +352,7 @@ export class SceneInfra {
   // Note: would be better to use ResizeObserver instead of window.onresize
   // See:
   // https://webglfundamentals.org/webgl/lessons/webgl-resizing-the-canvas.html
-  onWindowResize = () => {
+  onCanvasResized = () => {
     const cssSize = [
       this.renderer.domElement.clientWidth,
       this.renderer.domElement.clientHeight,
