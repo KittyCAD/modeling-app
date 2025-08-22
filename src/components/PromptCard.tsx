@@ -194,8 +194,8 @@ export const PromptCard = (props: PromptCardProps) => {
 
   const cssPrompt =
     props.status !== 'failed'
-      ? 'break-all shadow-sm bg-chalkboard-20 text-chalkboard-100 border rounded-t-md rounded-bl-md pl-4 pr-4 pt-2 pb-2'
-      : 'break-all shadow-sm bg-chalkboard-20 text-chalkboard-60 border rounded-t-md rounded-bl-md pl-4 pr-4 pt-2 pb-2'
+      ? 'break-all shadow-sm bg-2 text-default border b-4 rounded-t-md rounded-bl-md pl-4 pr-4 pt-2 pb-2'
+      : 'break-all shadow-sm bg-2 text-2 border b-4 rounded-t-md rounded-bl-md pl-4 pr-4 pt-2 pb-2'
 
   return (
     <div className={cssCard}>
