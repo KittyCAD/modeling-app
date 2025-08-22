@@ -79,10 +79,14 @@ export function constructMultiFileIterationRequestWithPromptHelpers({
   projectFiles,
   artifactGraph,
   projectName,
+  currentFile,
   kclVersion,
 }: ConstructRequestArgs): PromptToEditRequest {
   const kclFilesMap: KclFileMetaMap = {}
   const files: KittyCadLibFile[] = []
+  const currentFileMeta = projectFiles.find(
+    (f) => f.type !== 'other' && f.absPath === currentFile.entry?.path
+  )
   projectFiles.forEach((file) => {
     let data: Blob
     if (file.type === 'other') {
@@ -98,12 +102,23 @@ export function constructMultiFileIterationRequestWithPromptHelpers({
     })
   })
 
+  // Way to patch in supplying the currently-opened file without updating the API.
+  // TODO: update the API to support currently-opened files as other parts of the payload
+  const currentFilePrompt: Models['SourceRangePrompt_type'] = {
+    prompt: 'This is the active file',
+    range: convertAppRangeToApiRange(
+      [0, currentFile.content.length, 0],
+      currentFile.content
+    ),
+    file: currentFileMeta?.relPath,
+  }
+
   // If no selection, use whole file
   if (selections === null) {
     return {
       body: {
         prompt,
-        source_ranges: [],
+        source_ranges: [currentFilePrompt],
         project_name:
           projectName !== '' && projectName !== 'browser'
             ? projectName
@@ -245,6 +260,8 @@ See later source ranges for more context. about the sweep`,
       }
       return prompts
     })
+  // Push the current file prompt alongside the selection-based prompts
+  ranges.push(currentFilePrompt)
   let payload = {
     body: {
       prompt,
