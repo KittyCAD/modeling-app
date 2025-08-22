@@ -1316,11 +1316,7 @@ export const modelingMachine = setup({
           } else {
             sceneEntitiesManager.removeDraftPoint()
           }
-          updater(
-            group,
-            [intersectionPoint.twoD.x, intersectionPoint.twoD.y],
-            orthoFactor
-          )
+          updater(group, snappedPoint, orthoFactor)
         },
       })
     },

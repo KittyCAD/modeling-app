@@ -558,29 +558,39 @@ export class SceneEntities {
 
   removeDraftPoint() {
     const draftPoint = this.getDraftPoint()
-    if (draftPoint) draftPoint.removeFromParent()
+    if (draftPoint) {
+      draftPoint.removeFromParent()
+    }
   }
 
-  private snapToGrid(point: Coords2d, event: MouseEvent): Coords2d {
+  private snapToGrid(
+    point: Coords2d,
+    event: MouseEvent
+  ): { point: Coords2d; snapped: boolean } {
     if (event.ctrlKey || event.metaKey) {
       // disable snapping with ctrl
-      return point
+      return { point, snapped: false }
     }
 
     const settings = this.getSettings?.()
     if (!settings) {
       console.error('getSettings not injected!')
-      return point
+      return { point, snapped: false }
     }
-    if (!settings.modeling.snapToGrid.current) return point
+    if (!settings.modeling.snapToGrid.current) {
+      return { point, snapped: false }
+    }
 
     const snapsPerMinor = settings.modeling.snapsPerMinor.current
     const minorsPerMajor = settings.modeling.minorGridsPerMajor.current
     const multiplier = minorsPerMajor * snapsPerMinor
-    return [
-      Math.round(point[0] * multiplier) / multiplier,
-      Math.round(point[1] * multiplier) / multiplier,
-    ]
+    return {
+      point: [
+        Math.round(point[0] * multiplier) / multiplier,
+        Math.round(point[1] * multiplier) / multiplier,
+      ],
+      snapped: true,
+    }
   }
 
   setupNoPointsListener({
@@ -618,33 +628,39 @@ export class SceneEntities {
     )
     this.sceneInfra.setCallbacks({
       onMove: (args) => {
-        if (!args.intersects.length) return
+        const { intersectionPoint } = args
+        const snappedPoint = intersectionPoint.twoD.clone()
+        const snapToGrid = this.getSettings?.().modeling.snapToGrid.current
+        if (!args.intersects.length && !snapToGrid) {
+          return
+        }
         const axisIntersection = args.intersects.find(
           (sceneObject) =>
             sceneObject.object.name === X_AXIS ||
             sceneObject.object.name === Y_AXIS
         )
 
-        const arrowHead = getParentGroup(args.intersects[0].object, [
+        const arrowHead = getParentGroup(args.intersects[0]?.object, [
           ARROWHEAD,
           ARC_ANGLE_END,
           THREE_POINT_ARC_HANDLE3,
         ])
         const parent = getParentGroup(
-          args.intersects[0].object,
+          args.intersects[0]?.object,
           SEGMENT_BODIES_PLUS_PROFILE_START
         )
+
         if (
           !axisIntersection &&
           !(
             parent?.userData?.isLastInProfile &&
             (arrowHead || parent?.name === PROFILE_START)
-          )
-        )
+          ) &&
+          !snapToGrid
+        ) {
           return
-        const { intersectionPoint } = args
-        // We're hovering over an axis, so we should show a draft point
-        const snappedPoint = intersectionPoint.twoD.clone()
+        }
+        // We're hovering over an axis, so we should show a draft point (or snapToGrid is enabled)
         let intersectsXY = { x: false, y: false }
         args.intersects.forEach((intersect) => {
           const parent = getParentGroup(intersect.object, [X_AXIS, Y_AXIS])
@@ -665,6 +681,18 @@ export class SceneEntities {
           snappedPoint.set(arrowHead.position.x, arrowHead.position.y)
         } else if (parent?.name === PROFILE_START) {
           snappedPoint.set(parent.position.x, parent.position.y)
+        } else if (snapToGrid) {
+          const snappedToGrid = this.snapToGrid(
+            [snappedPoint.x, snappedPoint.y],
+            args.mouseEvent
+          ).point
+          snappedPoint.set(snappedToGrid[0], snappedToGrid[1])
+          this.positionDraftPoint({
+            snappedPoint,
+            origin: sketchDetails.origin,
+            yAxis: sketchDetails.yAxis,
+            zAxis: sketchDetails.zAxis,
+          })
         }
 
         this.positionDraftPoint({
@@ -720,7 +748,7 @@ export class SceneEntities {
           xAxisIntersection ? 0 : intersectionPoint.twoD.y,
         ]
         if (!xAxisIntersection && !yAxisIntersection) {
-          startPoint = this.snapToGrid(startPoint, args.mouseEvent)
+          startPoint = this.snapToGrid(startPoint, args.mouseEvent).point
         }
 
         const inserted = insertNewStartProfileAt(
@@ -2739,6 +2767,7 @@ export class SceneEntities {
     // Snap to previous segment's tangent direction when drawing a straight segment
     let snappedToTangent = false
     let negativeTangentDirection = false
+    let snappedToGrid = false
 
     const disableTangentSnapping = mouseEvent.ctrlKey || mouseEvent.altKey
     const forceDirectionSnapping = mouseEvent.shiftKey
@@ -2836,12 +2865,20 @@ export class SceneEntities {
       ] as const
 
       if (!intersectsXAxis && !intersectsYAxis) {
-        snappedPoint = this.snapToGrid(snappedPoint, mouseEvent)
+        ;({ point: snappedPoint, snapped: snappedToGrid } = this.snapToGrid(
+          snappedPoint,
+          mouseEvent
+        ))
       }
     }
 
     return {
-      isSnapped: !!(intersectsYAxis || intersectsXAxis || snappedToTangent),
+      isSnapped: !!(
+        intersectsYAxis ||
+        intersectsXAxis ||
+        snappedToTangent ||
+        snappedToGrid
+      ),
       snappedToTangent,
       negativeTangentDirection,
       snappedPoint,
