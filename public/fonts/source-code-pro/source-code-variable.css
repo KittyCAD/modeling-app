@@ -1,0 +1,25 @@
+@font-face{
+    font-family: 'Source Code VF';
+    font-weight: 200 900;
+    font-style: normal;
+    font-stretch: normal;
+    src: url('./WOFF2/VF/SourceCodeVF-Upright.ttf.woff2') format('woff2-variations'),
+         url('./WOFF2/VF/SourceCodeVF-Upright.ttf.woff2') format('woff2 supports variations'),
+         url('./WOFF/VF/SourceCodeVF-Upright.ttf.woff') format('woff-variations'),
+         url('./WOFF/VF/SourceCodeVF-Upright.ttf.woff') format('woff supports variations'),
+         url('./VF/SourceCodeVF-Upright.ttf') format('truetype-variations');
+         url('./VF/SourceCodeVF-Upright.ttf') format('truetype supports variations');
+}
+
+@font-face{
+    font-family: 'Source Code VF';
+    font-weight: 200 900;
+    font-style: italic;
+    font-stretch: normal;
+    src: url('./WOFF2/VF/SourceCodeVF-Italic.ttf.woff2') format('woff2-variations'),
+         url('./WOFF2/VF/SourceCodeVF-Italic.ttf.woff2') format('woff2 supports variations'),
+         url('./WOFF/VF/SourceCodeVF-Italic.ttf.woff') format('woff-variations'),
+         url('./WOFF/VF/SourceCodeVF-Italic.ttf.woff') format('woff supports variations'),
+         url('./VF/SourceCodeVF-Italic.ttf') format('truetype-variations');
+         url('./VF/SourceCodeVF-Italic.ttf') format('truetype supports variations');
+}

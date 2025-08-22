@@ -81,7 +81,8 @@ export type MlEphantManagerEvents =
       type: MlEphantManagerTransitions.PromptEditModel
       projectForPromptOutput: Project
       prompt: string
-      fileSelectedDuringPrompting?: FileEntry
+      applicationProjectDirectory: string
+      fileSelectedDuringPrompting: { entry: FileEntry; content: string }
       projectFiles: FileMeta[]
       selections: Selections
       artifactGraph: ArtifactGraph
@@ -377,9 +378,11 @@ export const mlEphantManagerMachine = setup({
             conversationId: context.conversationId,
             prompt: event.prompt,
             selections: event.selections,
+            applicationProjectDirectory: event.applicationProjectDirectory,
             projectFiles: event.projectFiles,
             artifactGraph: event.artifactGraph,
             projectName: event.projectForPromptOutput.name,
+            currentFile: event.fileSelectedDuringPrompting,
             kclVersion: getKclVersion(),
           }
         )
@@ -406,7 +409,7 @@ export const mlEphantManagerMachine = setup({
         promptsBelongingToConversation.push(result.id)
         promptsMeta.set(result.id, {
           type: PromptType.Edit,
-          targetFile: args.input.event.fileSelectedDuringPrompting,
+          targetFile: args.input.event.fileSelectedDuringPrompting.entry,
           project: args.input.event.projectForPromptOutput,
         })
 

@@ -131,13 +131,18 @@ input {
 }
 
 .mono {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+  font-family: "Source Code VF", Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+code,
+#code-mirror-override .cm-content {
+  font-family: "Source Code VF", Menlo, Monaco, Consolas, "Courier New",
     monospace;
+}
+
+#code-mirror-override {
+  @apply text-xs;
 }
 
 /*

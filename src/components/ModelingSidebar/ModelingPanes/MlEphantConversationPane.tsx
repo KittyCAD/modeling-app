@@ -61,12 +61,15 @@ export const MlEphantConversationPane = (props: {
       console.warn('theProject is `undefined` - should not be possible')
       return
     }
+    if (props.loaderFile === undefined) {
+      console.warn('loaderFile is `undefined` - should not be possible')
+      return
+    }
 
     const projectFiles = await collectProjectFiles({
       selectedFileContents: props.codeManager.code,
       fileNames: props.kclManager.execState.filenames,
       projectContext: props.theProject,
-      targetFile: props.loaderFile,
     })
 
     // Only on initial project creation do we call the create endpoint, which
@@ -76,7 +79,11 @@ export const MlEphantConversationPane = (props: {
       type: MlEphantManagerTransitions.PromptEditModel,
       prompt: requestedPrompt,
       projectForPromptOutput: props.theProject,
-      fileSelectedDuringPrompting: props.loaderFile,
+      applicationProjectDirectory: props.settings.app.projectDirectory.current,
+      fileSelectedDuringPrompting: {
+        entry: props.loaderFile,
+        content: props.codeManager.code,
+      },
       projectFiles,
       selections: props.contextModeling.selectionRanges,
       artifactGraph: props.kclManager.artifactGraph,
