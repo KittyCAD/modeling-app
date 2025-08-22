@@ -42,7 +42,7 @@ export const TOKEN_PERSIST_KEY = 'TOKEN_PERSIST_KEY'
 /**
  * Determine which token do we have persisted to initialize the auth machine
  */
-const persistedCookie = getCookie(LEGACY_COOKIE_NAME)
+const persistedCookie = getCookie()
 const persistedDevToken = env().VITE_KITTYCAD_API_TOKEN
 export const persistedToken = persistedDevToken || persistedCookie || ''
 console.log('Initial persisted token')
@@ -276,7 +276,7 @@ async function getAndSyncStoredToken(input: {
 
   // Find possible tokens
   const inputToken = input.token && input.token !== '' ? input.token : ''
-  const cookieToken = getCookie(LEGACY_COOKIE_NAME)
+  const cookieToken = getCookie()
   const fileToken =
     window.electron && environmentName
       ? await readEnvironmentConfigurationToken(
