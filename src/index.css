@@ -385,7 +385,7 @@ code {
     @apply border-chalkboard-50;
   }
   .b-4 {
-    @apply border-chalkboard-30 dark:border-chalkboard-70;
+    @apply border-chalkboard-30 dark:border-chalkboard-80;
   }
   .b-5 {
     @apply border-chalkboard-20 dark:border-chalkboard-90;
