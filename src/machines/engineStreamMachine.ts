@@ -260,9 +260,7 @@ export const engineStreamMachine = setup({
 
                 let oldEngineConnection =
                   rootContext.engineCommandManager.engineConnection
-                setTimeout(() => {
-                  rootContext.engineCommandManager.tearDown({ idleMode: true })
-                }, 1000)
+                rootContext.engineCommandManager.tearDown({ idleMode: true })
 
                 let timeoutCheckId: ReturnType<typeof setTimeout>
                 const timeoutEjectId = setTimeout(() => {
