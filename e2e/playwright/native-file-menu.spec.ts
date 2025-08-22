@@ -510,7 +510,7 @@ test.describe(
           'Design.Create with Zoo Text-To-CAD'
         )
         await cmdBar.toBeOpened()
-        await cmdBar.expectCommandName('Text-to-CAD Create')
+        await cmdBar.expectCommandName('Create Project using Text-to-CAD')
       })
 
       await test.step('Modeling.Help.KCL code samples', async () => {
