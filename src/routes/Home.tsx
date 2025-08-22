@@ -74,10 +74,7 @@ import {
 } from '@src/components/StatusBar/defaultStatusBarItems'
 import { useSelector } from '@xstate/react'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
-import {
-  MlEphantManagerStates,
-  MlEphantManagerTransitions,
-} from '@src/machines/mlEphantManagerMachine'
+import { MlEphantManagerStates } from '@src/machines/mlEphantManagerMachine'
 
 type ReadWriteProjectState = {
   value: boolean
@@ -107,9 +104,6 @@ const Home = () => {
         .catch(reportRejection)
     }
     billingActor.send({ type: BillingTransition.Update, apiToken })
-    mlEphantManagerActor.send({
-      type: MlEphantManagerTransitions.ClearProjectSpecificState,
-    })
 
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [])
