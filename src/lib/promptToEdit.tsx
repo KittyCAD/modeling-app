@@ -12,7 +12,6 @@ import type {
   PromptToEditRequest,
   TextToCadErrorResponse,
 } from '@src/lib/promptToEditTypes'
-import type { FileMeta } from './types'
 
 function sourceIndexToLineColumn(
   code: string,

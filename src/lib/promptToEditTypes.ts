@@ -3,7 +3,7 @@ import type { ArtifactGraph } from '@src/lang/wasm'
 import type { Selections } from '@src/lib/selections'
 import type { FileMeta } from '@src/lib/types'
 import type { File as KittyCadLibFile } from '@kittycad/lib/dist/types/src/models'
-import type { FileEntry } from './project'
+import type { FileEntry } from '@src/lib/project'
 
 export type KclFileMetaMap = {
   [execStateFileNamesIndex: number]: Extract<FileMeta, { type: 'kcl' }>
