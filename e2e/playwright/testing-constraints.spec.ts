@@ -53,7 +53,7 @@ test.describe('Testing constraints', () => {
     await cmdBar.continue()
 
     await expect(page.locator('.cm-content')).toHaveText(
-      `length001 = 20sketch001 = startSketchOn(XY)  |> startProfile(at = [-10, -10])  |> line(end = [20, 0])  |> angledLine(angle = 90, length = length001)  |> xLine(length = -20)`
+      `length001 = 20sketch001 = startSketchOn(XY)  |> startProfile(at = [-10, -10])  |> line(end = [20, 0])  |> angledLine(angle = 90deg, length = length001)  |> xLine(length = -20)`
     )
 
     // Make sure we didn't pop out of sketch mode.
@@ -204,7 +204,9 @@ test.describe('Testing constraints', () => {
           .click()
 
         // Wait for the codemod to take effect
-        await expect(page.locator('.cm-content')).toContainText(`angle = -57,`)
+        await expect(page.locator('.cm-content')).toContainText(
+          `angle = -57deg,`
+        )
         await expect(page.locator('.cm-content')).toContainText(
           `offset = ${offset},`
         )
@@ -215,7 +217,7 @@ test.describe('Testing constraints', () => {
           `|> line(end = [74.36, 130.4], tag = $seg01)`
         )
         await expect(activeLinesContent[1]).toHaveText(
-          `  |> angledLineThatIntersects(angle = -57, offset = ${offset}, intersectTag = seg01)`
+          `  |> angledLineThatIntersects(angle = -57deg, offset = ${offset}, intersectTag = seg01)`
         )
 
         // checking the count of the overlays is a good proxy check that the client sketch scene is in a good state
@@ -466,7 +468,7 @@ test.describe('Testing constraints', () => {
         addVariable: false,
         axisSelect: false,
         /** must be a regex-escaped string */
-        value: `segAng\\(seg01\\) \\+ ${NUMBER_REGEXP}`,
+        value: `segAng\\(seg01\\) \\+ ${NUMBER_REGEXP}deg`,
       },
       {
         testName: 'Add variable, selecting axis',
@@ -480,7 +482,7 @@ test.describe('Testing constraints', () => {
         addVariable: false,
         axisSelect: true,
         /** must be a regex-escaped string */
-        value: 'turns::QUARTER_TURN - 7',
+        value: 'turns::QUARTER_TURN - 7deg',
       },
     ] as const
     for (const { testName, addVariable, value, axisSelect } of cases) {
@@ -578,7 +580,7 @@ profile001 = startProfile(sketch001, at = [-70, -10])
         testName: 'Angle - No variable',
         addVariable: false,
         constraint: 'angle',
-        value: '83, 78.33',
+        value: '83deg, 78.33',
       },
     ] as const
     for (const { testName, addVariable, value, constraint } of cases) {
@@ -648,13 +650,13 @@ profile001 = startProfile(sketch001, at = [-70, -10])
         testName: 'Length - Add variable',
         addVariable: true,
         constraint: 'length',
-        value: '83, length001',
+        value: '83deg, length001',
       },
       {
         testName: 'Length - No variable',
         addVariable: false,
         constraint: 'length',
-        value: '83, 78.33',
+        value: '83deg, 78.33',
       },
     ] as const
     for (const { testName, addVariable, value, constraint } of cases) {
@@ -832,7 +834,7 @@ part002 = startSketchOn(XZ)
   test.describe('Two segment - no modal constraints', () => {
     const cases = [
       {
-        codeAfter: `|> angledLine(angle = 83, length = segLen(seg01))`,
+        codeAfter: `|> angledLine(angle = 83deg, length = segLen(seg01))`,
         constraintName: 'Equal Length',
       },
       {
@@ -1048,7 +1050,7 @@ test.describe('Electron constraint tests', () => {
         await cmdBar.progressCmdBar()
         await editor.expectEditor.toContain('length001 = 15.3')
         await editor.expectEditor.toContain(
-          '|> angledLine(angle = 9, length = length001)'
+          '|> angledLine(angle = 9deg, length = length001)'
         )
       })
 

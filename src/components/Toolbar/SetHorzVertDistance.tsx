@@ -128,7 +128,7 @@ export async function applyConstraintHorzVertDistance({
   if (
     !variableName &&
     segName === tagInfo?.tag &&
-    Number(value) === valueUsedInTransform
+    value === valueUsedInTransform
   ) {
     return {
       modifiedAst,
