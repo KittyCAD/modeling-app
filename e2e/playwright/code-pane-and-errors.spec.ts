@@ -12,6 +12,7 @@ test.describe('Code pane and errors', () => {
     homePage,
     scene,
     cmdBar,
+    editor,
   }) => {
     const u = await getUtils(page)
 
@@ -41,7 +42,7 @@ extrude001 = extrude(sketch001, length = 5)`
 
     // Delete a character to break the KCL
     await u.openKclCodePanel()
-    await page.getByText('extrude(').click()
+    await editor.codeContent.getByText('sketch001').last().click()
     await page.keyboard.press('Backspace')
 
     // Ensure that a badge appears on the button
