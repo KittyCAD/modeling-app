@@ -12,6 +12,7 @@ import type {
   PromptToEditRequest,
   TextToCadErrorResponse,
 } from '@src/lib/promptToEditTypes'
+import { parentPathRelativeToProject } from '@src/lib/paths'
 
 function sourceIndexToLineColumn(
   code: string,
@@ -57,7 +58,10 @@ export async function submitTextToCadMultiFileIterationRequest(
   )
 
   if (!response.ok) {
-    return new Error(`HTTP error! status: ${response.status}`)
+    const errorBody = await response.json()
+    return new Error(
+      `HTTP error! status: ${response.status}, error: ${JSON.stringify(errorBody)}`
+    )
   }
 
   const data = await response.json()
@@ -77,6 +81,7 @@ export function constructMultiFileIterationRequestWithPromptHelpers({
   prompt,
   selections,
   projectFiles,
+  applicationProjectDirectory,
   artifactGraph,
   projectName,
   currentFile,
@@ -84,9 +89,7 @@ export function constructMultiFileIterationRequestWithPromptHelpers({
 }: ConstructRequestArgs): PromptToEditRequest {
   const kclFilesMap: KclFileMetaMap = {}
   const files: KittyCadLibFile[] = []
-  const currentFileMeta = projectFiles.find(
-    (f) => f.type !== 'other' && f.absPath === currentFile.entry?.path
-  )
+
   projectFiles.forEach((file) => {
     let data: Blob
     if (file.type === 'other') {
@@ -104,21 +107,31 @@ export function constructMultiFileIterationRequestWithPromptHelpers({
 
   // Way to patch in supplying the currently-opened file without updating the API.
   // TODO: update the API to support currently-opened files as other parts of the payload
-  const currentFilePrompt: Models['SourceRangePrompt_type'] = {
-    prompt: 'This is the active file',
-    range: convertAppRangeToApiRange(
-      [0, currentFile.content.length, 0],
-      currentFile.content
-    ),
-    file: currentFileMeta?.relPath,
-  }
+  const currentFilePrompt: Models['SourceRangePrompt_type'] | null =
+    currentFile.entry
+      ? {
+        prompt: 'This is the active file',
+        range: convertAppRangeToApiRange(
+          [0, currentFile.content.length, 0],
+          currentFile.content
+        ),
+        file: parentPathRelativeToProject(
+          currentFile.entry?.path,
+          applicationProjectDirectory
+        ),
+      }
+      : null
 
   // If no selection, use whole file
   if (selections === null) {
+    const rangePrompts: Models['SourceRangePrompt_type'][] = []
+    if (currentFilePrompt !== null) {
+      rangePrompts.push(currentFilePrompt)
+    }
     return {
       body: {
         prompt,
-        source_ranges: [currentFilePrompt],
+        source_ranges: rangePrompts,
         project_name:
           projectName !== '' && projectName !== 'browser'
             ? projectName
@@ -145,11 +158,9 @@ export function constructMultiFileIterationRequestWithPromptHelpers({
         prompts.push({
           prompt: `The users main selection is the end cap of a general-sweep (that is an extrusion, revolve, sweep or loft).
 The source range most likely refers to "startProfile" simply because this is the start of the profile that was swept.
-If you need to operate on this cap, for example for sketching on the face, you can use the special string ${
-            artifact.subType === 'end' ? 'END' : 'START'
-          } i.e. \`startSketchOn(someSweepVariable, face = ${
-            artifact.subType === 'end' ? 'END' : 'START'
-          })\`
+If you need to operate on this cap, for example for sketching on the face, you can use the special string ${artifact.subType === 'end' ? 'END' : 'START'
+            } i.e. \`startSketchOn(someSweepVariable, face = ${artifact.subType === 'end' ? 'END' : 'START'
+            })\`
 When they made this selection they main have intended this surface directly or meant something more general like the sweep body.
 See later source ranges for more context.`,
           range: convertAppRangeToApiRange(selection.codeRef.range, code),
@@ -190,14 +201,12 @@ But it's also worth bearing in mind that the user may have intended to select th
       if (artifact?.type === 'sweepEdge') {
         prompts.push({
           prompt: `The users main selection is the edge of a general-sweep (that is an extrusion, revolve, sweep or loft).
-it is an ${
-            artifact.subType
-          } edge, in order to refer to this edge you should add a tag to the segment function in this source range,
-and then use the function ${
-            artifact.subType === 'adjacent'
+it is an ${artifact.subType
+            } edge, in order to refer to this edge you should add a tag to the segment function in this source range,
+and then use the function ${artifact.subType === 'adjacent'
               ? 'getAdjacentEdge'
               : 'getOppositeEdge'
-          }
+            }
 See later source ranges for more context. about the sweep`,
           range: convertAppRangeToApiRange(selection.codeRef.range, code),
           file: filePath,
@@ -261,7 +270,9 @@ See later source ranges for more context. about the sweep`,
       return prompts
     })
   // Push the current file prompt alongside the selection-based prompts
-  ranges.push(currentFilePrompt)
+  if (currentFilePrompt !== null) {
+    ranges.push(currentFilePrompt)
+  }
   let payload = {
     body: {
       prompt,

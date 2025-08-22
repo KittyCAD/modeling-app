@@ -27,6 +27,7 @@ export interface PromptToEditRequest {
 export interface ConstructRequestArgs {
   conversationId?: string
   prompt: string
+  applicationProjectDirectory: string
   selections: Selections | null
   projectFiles: FileMeta[]
   projectName: string
