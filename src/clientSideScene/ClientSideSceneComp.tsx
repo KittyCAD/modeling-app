@@ -135,13 +135,31 @@ export const ClientSideScene = ({
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
+
+    // Detect canvas size changes
     const observer = new ResizeObserver(() => {
       sceneInfra.onCanvasResized()
       sceneInfra.camControls.onWindowResize()
     })
     observer.observe(canvas)
+
+    // Detect dpr changes
+    let media = window.matchMedia(
+      `(resolution: ${window.devicePixelRatio}dppx)`
+    )
+    function handleChange() {
+      media.removeEventListener('change', handleChange)
+      media = window.matchMedia(`(resolution: ${window.devicePixelRatio}dppx)`)
+      media.addEventListener('change', handleChange)
+
+      sceneInfra.onCanvasResized()
+      sceneInfra.camControls.onWindowResize()
+    }
+    media.addEventListener('change', handleChange)
+
     return () => {
       observer.disconnect()
+      media.removeEventListener('change', handleChange)
     }
   }, [])
 
