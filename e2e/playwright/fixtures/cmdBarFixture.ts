@@ -143,15 +143,9 @@ export class CmdBarFixture {
     await submitButton.click()
   }
 
-  openCmdBar = async (selectCmd?: 'promptToEdit') => {
+  openCmdBar = async () => {
     await this.cmdBarOpenBtn.click()
     await expect(this.page.getByPlaceholder('Search commands')).toBeVisible()
-    if (selectCmd === 'promptToEdit') {
-      const promptEditCommand = this.selectOption({ name: 'Text-to-CAD Edit' })
-      await expect(promptEditCommand.first()).toBeVisible()
-      await promptEditCommand.first().scrollIntoViewIfNeeded()
-      await promptEditCommand.first().click()
-    }
   }
 
   closeCmdBar = async () => {
@@ -267,15 +261,18 @@ export class CmdBarFixture {
           if (part.startsWith('--')) continue
 
           const nameMatch = part.match(/name="([^"]+)"/)
-          if (!nameMatch) continue
+          if (!nameMatch) {
+            console.log('No name match found in part:', part.substring(0, 100))
+            continue
+          }
 
           const name = nameMatch[1]
           const content = part.split(/\r?\n\r?\n/)[1]?.trim()
           if (!content) continue
 
-          if (name === 'event') {
+          if (name === 'body') {
             eventData = JSON.parse(content)
-          } else {
+          } else if (name === 'files') {
             files[name] = content
           }
         }

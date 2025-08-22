@@ -1308,10 +1308,7 @@ class EngineConnection extends EventTarget {
       )
     } else {
       this.state = {
-        type: EngineConnectionStateType.Disconnecting,
-        value: {
-          type: DisconnectingType.Pause,
-        },
+        type: EngineConnectionStateType.Disconnected,
       }
     }
     this.triggeredStart = false
