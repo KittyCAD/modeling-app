@@ -55,8 +55,8 @@ export class EditorFixture {
       await this.scrollToBottom()
       if (!shouldNormalise) {
         const result = not
-          ? await expect(this.codeContent).not.toContainText(code)
-          : await expect(this.codeContent).toContainText(code)
+          ? await expect(this.codeContent).not.toContainText(code, { timeout })
+          : await expect(this.codeContent).toContainText(code, { timeout })
 
         await resetPane()
         return result
