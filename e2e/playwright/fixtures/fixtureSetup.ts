@@ -228,7 +228,10 @@ export class ElectronZoo {
       }, dims)
 
       return this.evaluate(async (dims: { width: number; height: number }) => {
-        await window.electron.resizeWindow(dims.width, dims.height)
+        if (!window.electron) {
+          throw new Error('Electron not defined')
+        }
+        await window.electron?.resizeWindow(dims.width, dims.height)
         window.document.body.style.width = dims.width + 'px'
         window.document.body.style.height = dims.height + 'px'
         window.document.documentElement.style.width = dims.width + 'px'
@@ -247,7 +250,7 @@ export class ElectronZoo {
     }
 
     if (!this.firstUrl) {
-      await this.page.getByRole('heading', { name: 'Projects' }).count()
+      await this.page.getByRole('tab', { name: 'Projects' }).count()
       this.firstUrl = this.page.url()
     }
 

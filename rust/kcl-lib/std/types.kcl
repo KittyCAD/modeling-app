@@ -336,3 +336,12 @@ export type Axis2d
 /// An abstract and infinite line in 3d space.
 @(impl = std_rust)
 export type Axis3d
+
+export type mm = number(mm)
+export type cm = number(cm)
+export type m = number(m)
+export type in = number(in)
+export type ft = number(ft)
+export type yd = number(yd)
+export type rad = number(rad)
+export type deg = number(deg)

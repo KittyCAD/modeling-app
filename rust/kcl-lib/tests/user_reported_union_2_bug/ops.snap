@@ -694,8 +694,7 @@ description: Operations executed user_reported_union_2_bug.kcl
           }
         ]
       },
-      "sourceRange": [],
-      "isError": true
+      "sourceRange": []
     }
   ],
   "std::appearance": [],

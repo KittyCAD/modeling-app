@@ -20,7 +20,6 @@ import type {
   StateMachineCommandSetConfig,
 } from '@src/lib/commandTypes'
 import {
-  IS_ML_EXPERIMENTAL,
   KCL_DEFAULT_CONSTANT_PREFIXES,
   KCL_DEFAULT_DEGREE,
   KCL_DEFAULT_LENGTH,
@@ -1024,38 +1023,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           }
           return currentValue.valueText
         },
-      },
-    },
-  },
-  'Prompt-to-edit': {
-    displayName: 'Text-to-CAD Edit',
-    description:
-      'Use machine learning to edit your parts and code from a text prompt.',
-    icon: 'sparkles',
-    status: IS_ML_EXPERIMENTAL ? 'experimental' : 'active',
-    args: {
-      selection: {
-        inputType: 'selectionMixed',
-        selectionTypes: [
-          'solid2d',
-          'segment',
-          'sweepEdge',
-          'cap',
-          'wall',
-          'edgeCut',
-          'edgeCutEdge',
-        ],
-        multiple: true,
-        required: false,
-        selectionSource: {
-          allowSceneSelection: true,
-          allowCodeSelection: true,
-        },
-        skip: false,
-      },
-      prompt: {
-        inputType: 'text',
-        required: true,
       },
     },
   },

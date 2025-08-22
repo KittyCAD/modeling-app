@@ -685,6 +685,7 @@ pub struct Properties {
 #[derive(Debug, Clone)]
 pub struct ExampleProperties {
     pub norun: bool,
+    pub no3d: bool,
     pub inline: bool,
 }
 
@@ -819,7 +820,7 @@ impl ArgData {
             Some("Sketch") if self.kind == ArgKind::Special => None,
             Some(s) if s.starts_with("number") => {
                 let value = match &*self.name {
-                    "angleStart" => "0",
+                    "angleStart" => "0deg",
                     "angleEnd" => "180deg",
                     "angle" => "180deg",
                     "arcDegrees" => "360deg",
@@ -1028,14 +1029,16 @@ trait ApplyMeta {
                     let args = l[3..].split(',');
                     let mut inline = false;
                     let mut norun = false;
+                    let mut no3d = false;
                     for a in args {
                         match a.trim() {
                             "inline" => inline = true,
                             "norun" | "no_run" => norun = true,
+                            "no3d" | "no_3d" => no3d = true,
                             _ => {}
                         }
                     }
-                    example = Some((String::new(), ExampleProperties { norun, inline }));
+                    example = Some((String::new(), ExampleProperties { norun, no3d, inline }));
 
                     if inline {
                         description.as_mut().unwrap().push_str("```js\n");
