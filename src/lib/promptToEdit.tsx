@@ -110,16 +110,16 @@ export function constructMultiFileIterationRequestWithPromptHelpers({
   const currentFilePrompt: Models['SourceRangePrompt_type'] | null =
     currentFile.entry
       ? {
-        prompt: 'This is the active file',
-        range: convertAppRangeToApiRange(
-          [0, currentFile.content.length, 0],
-          currentFile.content
-        ),
-        file: parentPathRelativeToProject(
-          currentFile.entry?.path,
-          applicationProjectDirectory
-        ),
-      }
+          prompt: 'This is the active file',
+          range: convertAppRangeToApiRange(
+            [0, currentFile.content.length, 0],
+            currentFile.content
+          ),
+          file: parentPathRelativeToProject(
+            currentFile.entry?.path,
+            applicationProjectDirectory
+          ),
+        }
       : null
 
   // If no selection, use whole file
@@ -158,9 +158,11 @@ export function constructMultiFileIterationRequestWithPromptHelpers({
         prompts.push({
           prompt: `The users main selection is the end cap of a general-sweep (that is an extrusion, revolve, sweep or loft).
 The source range most likely refers to "startProfile" simply because this is the start of the profile that was swept.
-If you need to operate on this cap, for example for sketching on the face, you can use the special string ${artifact.subType === 'end' ? 'END' : 'START'
-            } i.e. \`startSketchOn(someSweepVariable, face = ${artifact.subType === 'end' ? 'END' : 'START'
-            })\`
+If you need to operate on this cap, for example for sketching on the face, you can use the special string ${
+            artifact.subType === 'end' ? 'END' : 'START'
+          } i.e. \`startSketchOn(someSweepVariable, face = ${
+            artifact.subType === 'end' ? 'END' : 'START'
+          })\`
 When they made this selection they main have intended this surface directly or meant something more general like the sweep body.
 See later source ranges for more context.`,
           range: convertAppRangeToApiRange(selection.codeRef.range, code),
@@ -201,12 +203,14 @@ But it's also worth bearing in mind that the user may have intended to select th
       if (artifact?.type === 'sweepEdge') {
         prompts.push({
           prompt: `The users main selection is the edge of a general-sweep (that is an extrusion, revolve, sweep or loft).
-it is an ${artifact.subType
-            } edge, in order to refer to this edge you should add a tag to the segment function in this source range,
-and then use the function ${artifact.subType === 'adjacent'
+it is an ${
+            artifact.subType
+          } edge, in order to refer to this edge you should add a tag to the segment function in this source range,
+and then use the function ${
+            artifact.subType === 'adjacent'
               ? 'getAdjacentEdge'
               : 'getOppositeEdge'
-            }
+          }
 See later source ranges for more context. about the sweep`,
           range: convertAppRangeToApiRange(selection.codeRef.range, code),
           file: filePath,
