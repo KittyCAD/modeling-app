@@ -108,6 +108,7 @@ pub struct Settings {}
 
 #[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
 pub struct Object {
+    pub id: ObjectId,
     pub kind: ObjectKind,
     pub artifact_id: usize,
     pub source: SourceRef,
@@ -116,7 +117,7 @@ pub struct Object {
 #[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
 pub enum ObjectKind {
     Sketch(Sketch),
-    Segment,
+    Segment(Segment),
     Constraint,
     Sweep,
 }
@@ -136,6 +137,25 @@ pub struct SketchArgs {
 pub enum Plane {
     Object(ObjectId),
     Default,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
+// TODO: arcs
+pub struct Segment {
+    pub from: Point2d,
+    pub to: Point2d,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
+pub enum Constraint {
+    EqualLength(Vec<ObjectId>),
+}
+
+#[derive(Debug, Clone, Copy, Deserialize, Serialize, ts_rs::TS)]
+pub struct Point2d {
+    // TODO: units?
+    pub x: f64,
+    pub y: f64,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
