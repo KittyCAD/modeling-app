@@ -274,7 +274,7 @@ export const engineStreamMachine = setup({
                   timeoutCheckId = setTimeout(() => {
                     if (
                       oldEngineConnection?.state?.type !==
-                      EngineConnectionStateType.Disconnected
+                      EngineConnectionStateType.Paused
                     ) {
                       checkClosed()
                       return
