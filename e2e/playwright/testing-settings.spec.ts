@@ -554,6 +554,11 @@ test.describe(
                     color: parseFloat(color),
                   },
                 },
+                // TODO: make sure this isn't just working around a bug
+                // where the existing data wouldn't be preserved?
+                meta: {
+                  id: '9379bcda-e1e4-4613-851e-a5c4f5c7e83d',
+                },
               },
             })
           )

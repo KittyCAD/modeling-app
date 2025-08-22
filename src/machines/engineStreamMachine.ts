@@ -2,6 +2,7 @@ import type { MutableRefObject } from 'react'
 import type { ActorRefFrom } from 'xstate'
 import { assign, fromPromise, setup } from 'xstate'
 import type { AppMachineContext } from '@src/lib/types'
+import { EngineConnectionStateType } from '@src/lang/std/engineConnection'
 
 export enum EngineStreamState {
   WaitingForDependencies = 'waiting-for-dependencies',
@@ -9,6 +10,7 @@ export enum EngineStreamState {
   WaitingToPlay = 'waiting-to-play',
   Playing = 'playing',
   Reconfiguring = 'reconfiguring',
+  Pausing = 'pausing',
   Paused = 'paused',
   Stopped = 'stopped',
   // The is the state in-between Paused and Playing *specifically that order*.
@@ -239,25 +241,55 @@ export const engineStreamMachine = setup({
           console.warn('Save remote camera state timed out', e)
         }
 
-        // Make sure we're on the next frame for no flickering between canvas
-        // and the video elements.
-        window.requestAnimationFrame(
-          () =>
-            void (async () => {
-              // Destroy the media stream. We will re-establish it. We could
-              // leave everything at pausing, preventing video decoders from running
-              // but we can do even better by significantly reducing network
-              // cards also.
-              context.mediaStream?.getVideoTracks()[0].stop()
-              context.mediaStream = null
+        await new Promise<void>((resolve, reject) => {
+          // Make sure we're on the next frame for no flickering between canvas
+          // and the video elements.
+          window.requestAnimationFrame(
+            () =>
+              void (async () => {
+                // Destroy the media stream. We will re-establish it. We could
+                // leave everything at pausing, preventing video decoders from running
+                // but we can do even better by significantly reducing network
+                // cards also.
+                context.mediaStream?.getVideoTracks()[0].stop()
+                context.mediaStream = null
 
-              if (context.videoRef.current) {
-                context.videoRef.current.srcObject = null
-              }
+                if (context.videoRef.current) {
+                  context.videoRef.current.srcObject = null
+                }
 
-              rootContext.engineCommandManager.tearDown({ idleMode: true })
-            })()
-        )
+                let oldEngineConnection =
+                  rootContext.engineCommandManager.engineConnection
+                setTimeout(() => {
+                  rootContext.engineCommandManager.tearDown({ idleMode: true })
+                }, 1000)
+
+                let timeoutCheckId: ReturnType<typeof setTimeout>
+                const timeoutEjectId = setTimeout(() => {
+                  clearTimeout(timeoutCheckId)
+                  reject()
+                }, 5000)
+
+                const checkClosed = () => {
+                  timeoutCheckId = setTimeout(() => {
+                    if (
+                      oldEngineConnection?.state?.type !==
+                      EngineConnectionStateType.Disconnected
+                    ) {
+                      checkClosed()
+                      return
+                    }
+                    // Finally disconnected.
+                    clearTimeout(timeoutEjectId)
+                    resolve()
+                  }, 100)
+                }
+                checkClosed()
+              })()
+          )
+        })
+
+        return {}
       }
     ),
   },
@@ -356,7 +388,7 @@ export const engineStreamMachine = setup({
           target: EngineStreamState.Reconfiguring,
         },
         [EngineStreamTransition.Pause]: {
-          target: EngineStreamState.Paused,
+          target: EngineStreamState.Pausing,
         },
         [EngineStreamTransition.Stop]: {
           target: EngineStreamState.Stopped,
@@ -374,14 +406,18 @@ export const engineStreamMachine = setup({
         onDone: [{ target: EngineStreamState.Playing }],
       },
     },
-    [EngineStreamState.Paused]: {
+    [EngineStreamState.Pausing]: {
       invoke: {
         src: EngineStreamTransition.Pause,
         input: (args) => ({
           context: args.context,
           rootContext: args.self.system.get('root').getSnapshot().context,
         }),
+        onDone: [{ target: EngineStreamState.Paused }],
+        onError: [{ target: EngineStreamState.Stopped }],
       },
+    },
+    [EngineStreamState.Paused]: {
       on: {
         [EngineStreamTransition.Resume]: {
           target: EngineStreamState.Resuming,

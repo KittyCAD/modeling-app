@@ -758,11 +758,10 @@ export function kclSettings(
  */
 export function changeDefaultUnits(
   kcl: string,
-  len: UnitLen | null,
-  angle: UnitAng | null
+  len: UnitLen | null
 ): string | Error {
   try {
-    return change_default_units(kcl, JSON.stringify(len), JSON.stringify(angle))
+    return change_default_units(kcl, JSON.stringify(len))
   } catch (e) {
     console.error('Caught error changing kcl settings', e)
     return new Error('Caught error changing kcl settings', { cause: e })
