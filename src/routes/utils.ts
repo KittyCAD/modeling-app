@@ -41,7 +41,7 @@ export const APP_VERSION = getAppVersion({
   isDesktop: isDesktop(),
 })
 
-export const PACKAGE_NAME = isDesktop()
+export const PACKAGE_NAME = window.electron
   ? window.electron.packageJson.name
   : 'zoo-modeling-app'
 

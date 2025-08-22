@@ -59,18 +59,7 @@ springSketch = startSketchOn(XZ)
 ```
 
 
-<model-viewer
-  class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-helix0_output.gltf"
-  ar
-  environment-image="/moon_1k.hdr"
-  poster="/kcl-test-outputs/serial_test_example_fn_std-helix0.png"
-  shadow-intensity="1"
-  camera-controls
-  touch-action="pan-y"
->
-</model-viewer>
+![Rendered example of helix 0](/kcl-test-outputs/serial_test_example_fn_std-helix0.png)
 
 ```kcl
 // Create a helix around an edge.
@@ -95,18 +84,7 @@ springSketch = startSketchOn(XZ)
 ```
 
 
-<model-viewer
-  class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-helix1_output.gltf"
-  ar
-  environment-image="/moon_1k.hdr"
-  poster="/kcl-test-outputs/serial_test_example_fn_std-helix1.png"
-  shadow-intensity="1"
-  camera-controls
-  touch-action="pan-y"
->
-</model-viewer>
+![Rendered example of helix 1](/kcl-test-outputs/serial_test_example_fn_std-helix1.png)
 
 ```kcl
 // Create a helix around a custom axis.
@@ -130,18 +108,7 @@ springSketch = startSketchOn(XZ)
 ```
 
 
-<model-viewer
-  class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-helix2_output.gltf"
-  ar
-  environment-image="/moon_1k.hdr"
-  poster="/kcl-test-outputs/serial_test_example_fn_std-helix2.png"
-  shadow-intensity="1"
-  camera-controls
-  touch-action="pan-y"
->
-</model-viewer>
+![Rendered example of helix 2](/kcl-test-outputs/serial_test_example_fn_std-helix2.png)
 
 ```kcl
 // Create a helix on a cylinder.
@@ -161,17 +128,6 @@ helix(
 ```
 
 
-<model-viewer
-  class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-helix3_output.gltf"
-  ar
-  environment-image="/moon_1k.hdr"
-  poster="/kcl-test-outputs/serial_test_example_fn_std-helix3.png"
-  shadow-intensity="1"
-  camera-controls
-  touch-action="pan-y"
->
-</model-viewer>
+![Rendered example of helix 3](/kcl-test-outputs/serial_test_example_fn_std-helix3.png)
 
 

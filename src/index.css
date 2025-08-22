@@ -131,13 +131,18 @@ input {
 }
 
 .mono {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+  font-family: "Source Code VF", Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+code,
+#code-mirror-override .cm-content {
+  font-family: "Source Code VF", Menlo, Monaco, Consolas, "Courier New",
     monospace;
+}
+
+#code-mirror-override {
+  @apply text-xs;
 }
 
 /*
@@ -229,6 +234,20 @@ code {
   }
 }
 
+@keyframes send-up {
+  from {
+    transform: translateY(0px);
+  }
+  to {
+    transform: translateY(-1000px);
+  }
+}
+
+@keyframes loading-shimmer {
+  100% {
+    mask-position: left;
+  }
+}
 .react-json-view {
   @apply bg-transparent !important;
 }
@@ -406,4 +425,13 @@ code {
 /* Can't use #code-mirror-override here as we're outside of this div */
 .body-bg .cm-diagnosticAction {
   @apply bg-primary;
+}
+
+.animate-shimmer {
+  animation-delay: .5s;
+  animation-duration: 3s;
+  animation-iteration-count: infinite;
+  animation-name: loading-shimmer;
+  mask: linear-gradient(90deg, #000 30%, #0001, #000 70%) right / 350% 100%;
+  display: inline-block;
 }

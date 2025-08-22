@@ -250,7 +250,7 @@ export type SimplifiedArgDetails =
  */
 export interface CreatedSketchExprResult {
   callExp: Expr
-  valueUsedInTransform?: number
+  valueUsedInTransform?: string
 }
 
 export type CreateStdLibSketchCallExpr = (args: {
@@ -288,7 +288,7 @@ export interface SketchLineHelperKw {
     | {
         modifiedAst: Node<Program>
         pathToNode: PathToNode
-        valueUsedInTransform?: number
+        valueUsedInTransform?: string
       }
     | Error
   updateArgs: (a: updateArgs) =>

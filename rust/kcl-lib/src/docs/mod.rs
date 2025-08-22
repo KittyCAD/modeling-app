@@ -106,7 +106,7 @@ mod tests {
         let snippet = data.to_autocomplete_snippet();
         assert_eq!(
             snippet,
-            r#"arc(angleStart = ${0:0}, angleEnd = ${1:180deg}, diameter = ${2:10})"#
+            r#"arc(angleStart = ${0:0deg}, angleEnd = ${1:180deg}, diameter = ${2:10})"#
         );
     }
 
@@ -172,7 +172,7 @@ mod tests {
         let snippet = helix_fn.to_autocomplete_snippet();
         assert_eq!(
             snippet,
-            r#"helix(revolutions = ${0:10}, angleStart = ${1:0}, radius = ${2:10}, axis = ${3:X}, length = ${4:10})"#
+            r#"helix(revolutions = ${0:10}, angleStart = ${1:0deg}, radius = ${2:10}, axis = ${3:X}, length = ${4:10})"#
         );
     }
 

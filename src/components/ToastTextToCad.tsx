@@ -48,6 +48,7 @@ import {
   unescape,
 } from '@ts-stack/markdown'
 import { SafeRenderer } from '@src/lib/markdown'
+import { fsManager } from '@src/lang/std/fileSystemManager'
 
 const CANVAS_SIZE = 128
 const PROMPT_TRUNCATE_LENGTH = 128
@@ -419,7 +420,8 @@ export function ToastTextToCadSuccess({
               onClick={() => {
                 // eslint-disable-next-line @typescript-eslint/no-floating-promises
                 sendTelemetry(modelId, 'accepted', token)
-                const path = `${projectDirectoryPath}${window.electron.path.sep}${projectName}${window.electron.sep}${fileName}`
+                const sep = fsManager.path.sep
+                const path = `${projectDirectoryPath}${sep}${projectName}${sep}${fileName}`
                 navigate(`${PATHS.FILE}/${encodeURIComponent(path)}`)
 
                 toast.dismiss(toastId)

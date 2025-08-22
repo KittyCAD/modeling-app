@@ -622,6 +622,7 @@ export const EngineStream = (props: {
       />
       {![
         EngineStreamState.Playing,
+        EngineStreamState.Pausing,
         EngineStreamState.Paused,
         EngineStreamState.Resuming,
       ].some((s) => s === engineStreamState.value) && (

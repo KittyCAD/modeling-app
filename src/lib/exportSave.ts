@@ -3,12 +3,11 @@ import toast from 'react-hot-toast'
 
 import { browserSaveFile } from '@src/lib/browserSaveFile'
 import { EXPORT_TOAST_MESSAGES } from '@src/lib/constants'
-import { isDesktop } from '@src/lib/isDesktop'
 import type ModelingAppFile from '@src/lib/modelingAppFile'
 
 const save_ = async (file: ModelingAppFile, toastId: string) => {
   try {
-    if (isDesktop()) {
+    if (window.electron) {
       const extension = file.name.split('.').pop() || null
       let extensions: string[] = []
       if (extension !== null) {
