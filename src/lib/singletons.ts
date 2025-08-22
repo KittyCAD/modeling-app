@@ -38,6 +38,7 @@ import type { AppMachineContext } from '@src/lib/types'
 import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
 import { commandBarMachine } from '@src/machines/commandBarMachine'
 import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
+import {EngineDebugger} from '@src/lib/debugger'
 
 export const codeManager = new CodeManager()
 export const engineCommandManager = new EngineCommandManager()
@@ -255,6 +256,19 @@ export const systemIOActor = appActor.system.get(SYSTEM_IO) as SystemIOActor
 export const engineStreamActor = appActor.system.get(
   ENGINE_STREAM
 ) as ActorRefFrom<(typeof appMachineActors)[typeof ENGINE_STREAM]>
+
+engineStreamActor.subscribe((snapshot)=>{
+      EngineDebugger.addLog({
+        message: ``,
+        label: 'engineStreamActor.subscribe',
+        metadata:{
+          snapshot: {
+            value: snapshot.value,
+            status: snapshot.status
+          }
+        }
+      })
+})
 
 export const mlEphantManagerActor = appActor.system.get(
   MLEPHANT_MANAGER

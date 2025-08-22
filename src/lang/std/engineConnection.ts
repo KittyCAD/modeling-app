@@ -5,7 +5,7 @@ import { BSON } from 'bson'
 
 import type { MachineManager } from '@src/components/MachineManagerProvider'
 import type { useModelingContext } from '@src/hooks/useModelingContext'
-import type { KclManager } from '@src/lang/KclSingleton'
+import { KclManager } from '@src/lang/KclSingleton'
 import type CodeManager from '@src/lang/codeManager'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { EngineCommand, ResponseMap } from '@src/lang/std/artifactGraph'
@@ -26,6 +26,7 @@ import {
 import { reportRejection } from '@src/lib/trap'
 import { binaryToUuid, isArray, uuidv4 } from '@src/lib/utils'
 import { withWebSocketURL } from '@src/lib/withBaseURL'
+import {EngineDebugger} from '@src/lib/debugger'
 
 const pingIntervalMs = 1_000
 
@@ -352,6 +353,10 @@ class EngineConnection extends EventTarget {
     token?: string
     callbackOnEngineLiteConnect?: () => void
   }) {
+    EngineDebugger.addLog({
+      message: '',
+      label: 'EngineConnection.constructor',
+    })
     markOnce('code/startInitialEngineConnect')
     super()
 
@@ -437,14 +442,26 @@ class EngineConnection extends EventTarget {
   }
 
   isConnecting() {
+    EngineDebugger.addLog({
+      message: `${this.state.type === EngineConnectionStateType.Connecting}`,
+      label: 'EngineConnection.isConnecting',
+    })
     return this.state.type === EngineConnectionStateType.Connecting
   }
 
   isReady() {
+    EngineDebugger.addLog({
+      message: `${this.state.type === EngineConnectionStateType.ConnectionEstablished}`,
+      label: 'EngineConnection.isReady',
+    })
     return this.state.type === EngineConnectionStateType.ConnectionEstablished
   }
 
   tearDown() {
+    EngineDebugger.addLog({
+      message: `start`,
+      label: 'EngineConnection.tearDown',
+    })
     clearInterval(this.pingIntervalId)
     clearTimeout(this.timeoutToForceConnectId)
 
@@ -478,6 +495,10 @@ class EngineConnection extends EventTarget {
   }
 
   initiateConnectionExclusive(): boolean {
+    EngineDebugger.addLog({
+      message: ``,
+      label: 'EngineConnection.initiateConnectionExclusive',
+    })
     // Only run if:
     // - A peer connection exists,
     // - ICE gathering is complete,
@@ -529,14 +550,46 @@ class EngineConnection extends EventTarget {
    * did not establish.
    */
   connect(args: { reconnect: boolean }): Promise<void> {
+    EngineDebugger.addLog({
+      message: ``,
+      label: 'EngineConnection.connect',
+    })
     // eslint-disable-next-line
     const that = this
     return new Promise((resolve) => {
+      EngineDebugger.addLog({
+        message: `this.isConnecting: ${this.isConnecting()}`,
+        label: 'EngineConnection.connect',
+        metadata:{
+          state: JSON.parse(JSON.stringify(this.state))
+        }
+      })
+      EngineDebugger.addLog({
+        message: `this.isReady: ${this.isReady()}`,
+        label: 'EngineConnection.connect',
+        metadata:{
+          state: JSON.parse(JSON.stringify(this.state))
+        }
+      })
       if (this.isConnecting() || this.isReady()) {
+        EngineDebugger.addLog({
+          message: `return this.isConnecting: ${this.isConnecting()} this.isReady: ${this.isReady()}`,
+          label: 'EngineConnection.connect',
+          metadata:{
+            state: JSON.parse(JSON.stringify(this.state))
+          }
+        })
         return
       }
 
       const createPeerConnection = () => {
+        EngineDebugger.addLog({
+          message: ``,
+          label: 'EngineConnection.createPeerConnection',
+          metadata:{
+            state: JSON.parse(JSON.stringify(this.state))
+          }
+        })
         this.pc = new RTCPeerConnection({
           bundlePolicy: 'max-bundle',
         })
@@ -553,6 +606,13 @@ class EngineConnection extends EventTarget {
         const DATACHANNEL_NAME_UMC = 'unreliable_modeling_cmds'
         this.pc?.createDataChannel?.(DATACHANNEL_NAME_UMC)
 
+        EngineDebugger.addLog({
+          message: ``,
+          label: 'EngineConnection.createPeerConnection',
+          metadata:{
+            state: JSON.parse(JSON.stringify(this.state))
+          }
+        })
         this.state = {
           type: EngineConnectionStateType.Connecting,
           value: {
@@ -560,8 +620,23 @@ class EngineConnection extends EventTarget {
             value: DATACHANNEL_NAME_UMC,
           },
         }
+        EngineDebugger.addLog({
+          message: ``,
+          label: 'EngineConnection.createPeerConnection',
+          metadata:{
+            state: JSON.parse(JSON.stringify(this.state))
+          }
+        })
 
         this.onIceCandidate = (event: RTCPeerConnectionIceEvent) => {
+          EngineDebugger.addLog({
+            message: `RTCPeerConnectionIceEvent`,
+            label: 'EngineConnection.onIceCandidate',
+            metadata:{
+              state: JSON.parse(JSON.stringify(this.state)),
+              event: event
+            }
+          })
           console.log('icecandidate', event.candidate)
 
           // This is null when the ICE gathering state is done.
@@ -571,12 +646,31 @@ class EngineConnection extends EventTarget {
             return
           }
 
+          EngineDebugger.addLog({
+            message: ``,
+            label: 'EngineConnection.onIceCandidate',
+            metadata:{
+              state: JSON.parse(JSON.stringify(this.state)),
+              event: event
+            }
+          })
+
           this.state = {
             type: EngineConnectionStateType.Connecting,
             value: {
               type: ConnectingType.ICECandidateReceived,
             },
           }
+
+          EngineDebugger.addLog({
+            message: ``,
+            label: 'EngineConnection.onIceCandidate',
+            metadata:{
+              state: JSON.parse(JSON.stringify(this.state)),
+              event: event
+            }
+          })
+
 
           this.send({
             type: 'trickle_ice',
@@ -600,6 +694,15 @@ class EngineConnection extends EventTarget {
 
         // Watch out human! The names of the next couple events are really similar!
         this.onIceGatheringStateChange = (event) => {
+          EngineDebugger.addLog({
+            message: ``,
+            label: 'EngineConnection.onIceGatheringStateChange',
+            metadata:{
+              state: JSON.parse(JSON.stringify(this.state)),
+              event: event
+            }
+          })
+
           console.log('icegatheringstatechange', event)
 
           that.initiateConnectionExclusive()
@@ -610,6 +713,14 @@ class EngineConnection extends EventTarget {
         )
 
         this.onIceConnectionStateChange = (event: Event) => {
+          EngineDebugger.addLog({
+            message: ``,
+            label: 'EngineConnection.onIceConnectionStateChange',
+            metadata:{
+              state: JSON.parse(JSON.stringify(this.state)),
+              event: event
+            }
+          })
           console.log('iceconnectionstatechange', event)
         }
         this.pc?.addEventListener?.(
@@ -618,6 +729,14 @@ class EngineConnection extends EventTarget {
         )
 
         this.onNegotiationNeeded = (event: Event) => {
+          EngineDebugger.addLog({
+            message: ``,
+            label: 'EngineConnection.onNegotiationNeeded',
+            metadata:{
+              state: JSON.parse(JSON.stringify(this.state)),
+              event: event
+            }
+          })
           console.log('negotiationneeded', event)
         }
         this.pc?.addEventListener?.(
@@ -626,6 +745,14 @@ class EngineConnection extends EventTarget {
         )
 
         this.onSignalingStateChange = (event) => {
+          EngineDebugger.addLog({
+            message: ``,
+            label: 'EngineConnection.onSignalingStateChange',
+            metadata:{
+              state: JSON.parse(JSON.stringify(this.state)),
+              event: event
+            }
+          })
           console.log('signalingstatechange', event)
         }
         this.pc?.addEventListener?.(
@@ -634,6 +761,14 @@ class EngineConnection extends EventTarget {
         )
 
         this.onIceCandidateError = (_event: Event) => {
+          EngineDebugger.addLog({
+            message: ``,
+            label: 'EngineConnection.onIceCandidateError',
+            metadata:{
+              state: JSON.parse(JSON.stringify(this.state)),
+              event: _event
+            }
+          })
           const event = _event as RTCPeerConnectionIceErrorEvent
           console.warn(
             `ICE candidate returned an error: ${event.errorCode}: ${event.errorText} for ${event.url}`
@@ -647,6 +782,14 @@ class EngineConnection extends EventTarget {
         // https://developer.mozilla.org/en-US/docs/Web/API/RTCPeerConnection/connectionstatechange_event
         // Event type: generic Event type...
         this.onConnectionStateChange = (event: any) => {
+          EngineDebugger.addLog({
+            message: ``,
+            label: 'EngineConnection.onConnectionStateChange',
+            metadata:{
+              state: JSON.parse(JSON.stringify(this.state)),
+              event: event
+            }
+          })
           console.log('connectionstatechange: ' + event.target?.connectionState)
           switch (event.target?.connectionState) {
             // From what I understand, only after have we done the ICE song and
@@ -737,6 +880,14 @@ class EngineConnection extends EventTarget {
         )
 
         this.onTrack = (event) => {
+          EngineDebugger.addLog({
+            message: ``,
+            label: 'EngineConnection.onTrack',
+            metadata:{
+              state: JSON.parse(JSON.stringify(this.state)),
+              event: event
+            }
+          })
           const mediaStream = event.streams[0]
 
           this.state = {
@@ -747,6 +898,14 @@ class EngineConnection extends EventTarget {
           }
 
           this.webrtcStatsCollector = (): Promise<ClientMetrics> => {
+            EngineDebugger.addLog({
+              message: ``,
+              label: 'EngineConnection.webrtcStatsCollector',
+              metadata:{
+                state: JSON.parse(JSON.stringify(this.state)),
+                event: event
+              }
+            })
             return new Promise((resolve, reject) => {
               if (mediaStream.getVideoTracks().length !== 1) {
                 reject(new Error('too many video tracks to report'))
@@ -807,6 +966,14 @@ class EngineConnection extends EventTarget {
         this.pc?.addEventListener?.('track', this.onTrack)
 
         this.onDataChannel = (event) => {
+          EngineDebugger.addLog({
+            message: ``,
+            label: 'EngineConnection.onDataChannel',
+            metadata:{
+              state: JSON.parse(JSON.stringify(this.state)),
+              event: event
+            }
+          })
           this.unreliableDataChannel = event.channel
 
           this.state = {
@@ -818,6 +985,14 @@ class EngineConnection extends EventTarget {
           }
 
           this.onDataChannelOpen = (event) => {
+          EngineDebugger.addLog({
+            message: ``,
+            label: 'EngineConnection.onDataChannelOpen',
+            metadata:{
+              state: JSON.parse(JSON.stringify(this.state)),
+              event: event
+            }
+          })
             this.state = {
               type: EngineConnectionStateType.Connecting,
               value: {
@@ -850,6 +1025,14 @@ class EngineConnection extends EventTarget {
           )
 
           this.onDataChannelClose = (event) => {
+          EngineDebugger.addLog({
+            message: ``,
+            label: 'EngineConnection.onDataChannelClose',
+            metadata:{
+              state: JSON.parse(JSON.stringify(this.state)),
+              event: event
+            }
+          })
             this.unreliableDataChannel?.removeEventListener(
               'open',
               this.onDataChannelOpen
@@ -874,6 +1057,14 @@ class EngineConnection extends EventTarget {
           )
 
           this.onDataChannelError = (event) => {
+          EngineDebugger.addLog({
+            message: ``,
+            label: 'EngineConnection.onDataChannelError',
+            metadata:{
+              state: JSON.parse(JSON.stringify(this.state)),
+              event: event
+            }
+          })
             this.state = {
               type: EngineConnectionStateType.Disconnecting,
               value: {
@@ -891,6 +1082,14 @@ class EngineConnection extends EventTarget {
           )
 
           this.onDataChannelMessage = (event) => {
+          EngineDebugger.addLog({
+            message: ``,
+            label: 'EngineConnection.onDataChannelMessage',
+            metadata:{
+              state: JSON.parse(JSON.stringify(this.state)),
+              event: event
+            }
+          })
             const result: UnreliableResponses = JSON.parse(event.data)
             Object.values(
               this.engineCommandManager.unreliableSubscriptions[result.type] ||
@@ -923,6 +1122,13 @@ class EngineConnection extends EventTarget {
       }
 
       const createWebSocketConnection = () => {
+        EngineDebugger.addLog({
+            message: ``,
+            label: 'EngineConnection.createWebSocketConnection',
+            metadata:{
+              state: JSON.parse(JSON.stringify(this.state)),
+            }
+        })
         this.state = {
           type: EngineConnectionStateType.Connecting,
           value: {
@@ -934,6 +1140,14 @@ class EngineConnection extends EventTarget {
         this.websocket.binaryType = 'arraybuffer'
 
         this.onWebSocketOpen = (event) => {
+        EngineDebugger.addLog({
+            message: ``,
+            label: 'EngineConnection.onWebSocketOpen',
+            metadata:{
+              state: JSON.parse(JSON.stringify(this.state)),
+              event: event
+            }
+        })
           this.state = {
             type: EngineConnectionStateType.Connecting,
             value: {
@@ -960,6 +1174,14 @@ class EngineConnection extends EventTarget {
         this.websocket.addEventListener('open', this.onWebSocketOpen)
 
         this.onWebSocketClose = (event) => {
+          EngineDebugger.addLog({
+            message: ``,
+            label: 'EngineConnection.onWebSocketClose',
+            metadata:{
+              state: JSON.parse(JSON.stringify(this.state)),
+              event: event
+            }
+        })
           this.websocket?.removeEventListener('open', this.onWebSocketOpen)
           this.websocket?.removeEventListener('close', this.onWebSocketClose)
           this.websocket?.removeEventListener('error', this.onWebSocketError)
@@ -981,6 +1203,14 @@ class EngineConnection extends EventTarget {
         this.websocket.addEventListener('close', this.onWebSocketClose)
 
         this.onWebSocketError = (event: Event) => {
+          EngineDebugger.addLog({
+            message: ``,
+            label: 'EngineConnection.onWebSocketError',
+            metadata:{
+              state: JSON.parse(JSON.stringify(this.state)),
+              event: event
+            }
+        })
           if (event.target instanceof WebSocket) {
             this.state = {
               type: EngineConnectionStateType.Disconnecting,
@@ -998,6 +1228,14 @@ class EngineConnection extends EventTarget {
         this.websocket.addEventListener('error', this.onWebSocketError)
 
         this.onWebSocketMessage = (event) => {
+                    EngineDebugger.addLog({
+            message: ``,
+            label: 'EngineConnection.onWebSocketMessage',
+            metadata:{
+              state: JSON.parse(JSON.stringify(this.state)),
+              event: event
+            }
+        })
           // In the EngineConnection, we're looking for messages to/from
           // the server that relate to the ICE handshake, or WebRTC
           // negotiation. There may be other messages (including ArrayBuffer
@@ -1234,6 +1472,13 @@ class EngineConnection extends EventTarget {
         createWebSocketConnection()
       } else {
         this.onNetworkStatusReady = () => {
+                              EngineDebugger.addLog({
+            message: ``,
+            label: 'EngineConnection.onNetworkStatusReady',
+            metadata:{
+              state: JSON.parse(JSON.stringify(this.state)),
+            }
+        })
           createWebSocketConnection()
         }
         window.addEventListener(
@@ -1247,6 +1492,14 @@ class EngineConnection extends EventTarget {
   // Do not change this back to an object or any, we should only be sending the
   // WebSocketRequest type!
   unreliableSend(message: Models['WebSocketRequest_type']) {
+                                  EngineDebugger.addLog({
+            message: ``,
+            label: 'EngineConnection.unreliableSend',
+            metadata:{
+              state: JSON.parse(JSON.stringify(this.state)),
+              message: message
+            }
+        })
     if (this.unreliableDataChannel?.readyState !== 'open') return
 
     // TODO(paultag): Add in logic to determine the connection state and
@@ -1258,6 +1511,14 @@ class EngineConnection extends EventTarget {
   // Do not change this back to an object or any, we should only be sending the
   // WebSocketRequest type!
   send(message: Models['WebSocketRequest_type']) {
+                                      EngineDebugger.addLog({
+            message: ``,
+            label: 'EngineConnection.send',
+            metadata:{
+              state: JSON.parse(JSON.stringify(this.state)),
+              message: message
+            }
+        })
     // Not connected, don't send anything
     if (this.websocket?.readyState !== 1) return
 
@@ -1268,6 +1529,13 @@ class EngineConnection extends EventTarget {
     )
   }
   disconnectAll() {
+      EngineDebugger.addLog({
+            message: ``,
+            label: 'EngineConnection.disconnectAll',
+            metadata:{
+              state: JSON.parse(JSON.stringify(this.state)),
+            }
+        })
     if (this.websocket && this.websocket?.readyState < 3) {
       this.websocket?.close()
     }
@@ -1426,6 +1694,7 @@ export class EngineCommandManager extends EventTarget {
   constructor(settings?: SettingsViaQueryString) {
     super()
 
+
     this.engineConnection = undefined
     this.settings = settings
       ? settings
@@ -1438,6 +1707,14 @@ export class EngineCommandManager extends EventTarget {
           cameraProjection: 'perspective',
           cameraOrbit: 'spherical',
         }
+
+              EngineDebugger.addLog({
+        message: ``,
+        label: 'EngineCommandManager.disconnectAll',
+        metadata:{
+          engineConnection: !!this.engineConnection,
+        }
+    })
   }
 
   private _camControlsCameraChange = () => {}
@@ -1467,12 +1744,26 @@ export class EngineCommandManager extends EventTarget {
 
   // Dispatch to the application the engine needs a restart.
   private onEngineConnectionRestartRequest = () => {
+                  EngineDebugger.addLog({
+        message: ``,
+        label: 'EngineCommandManager.onEngineConnectionRestartRequest',
+        metadata:{
+          engineConnection: !!this.engineConnection,
+        }
+    })
     this.dispatchEvent(
       new CustomEvent(EngineCommandManagerEvents.EngineRestartRequest, {})
     )
   }
 
   private onEngineOffline = () => {
+                      EngineDebugger.addLog({
+        message: ``,
+        label: 'EngineCommandManager.onEngineOffline',
+        metadata:{
+          engineConnection: !!this.engineConnection,
+        }
+    })
     this.dispatchEvent(new CustomEvent(EngineCommandManagerEvents.Offline, {}))
   }
 
@@ -1505,6 +1796,13 @@ export class EngineCommandManager extends EventTarget {
     token?: string
     settings?: SettingsViaQueryString
   }) {
+                          EngineDebugger.addLog({
+        message: ``,
+        label: 'EngineCommandManager.start',
+        metadata:{
+          engineConnection: !!this.engineConnection,
+        }
+    })
     if (settings) {
       this.settings = settings
     }
@@ -1563,6 +1861,13 @@ export class EngineCommandManager extends EventTarget {
 
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     this.onEngineConnectionOpened = async () => {
+                                EngineDebugger.addLog({
+        message: ``,
+        label: 'EngineCommandManager.onEngineConnectionOpened',
+        metadata:{
+          engineConnection: !!this.engineConnection,
+        }
+    })
       console.log('onEngineConnectionOpened')
 
       try {
@@ -1635,6 +1940,13 @@ export class EngineCommandManager extends EventTarget {
     )
 
     this.onEngineConnectionClosed = () => {
+                                      EngineDebugger.addLog({
+        message: ``,
+        label: 'EngineCommandManager.onEngineConnectionClosed',
+        metadata:{
+          engineConnection: !!this.engineConnection,
+        }
+    })
       setIsStreamReady(false)
     }
     this.engineConnection.addEventListener(
@@ -1643,6 +1955,13 @@ export class EngineCommandManager extends EventTarget {
     )
 
     this.onEngineConnectionStarted = ({ detail: engineConnection }: any) => {
+                                            EngineDebugger.addLog({
+        message: ``,
+        label: 'EngineCommandManager.onEngineConnectionStarted',
+        metadata:{
+          engineConnection: !!this.engineConnection,
+        }
+    })
       engineConnection?.pc?.addEventListener(
         'datachannel',
         (event: RTCDataChannelEvent) => {
@@ -1682,16 +2001,38 @@ export class EngineCommandManager extends EventTarget {
       engineConnection.websocket?.addEventListener('message', ((
         event: MessageEvent
       ) => {
+                                                    EngineDebugger.addLog({
+        message: ``,
+        label: 'EngineCommandManager.message',
+        metadata:{
+          engineConnection: !!this.engineConnection,
+          event: event
+        }
+    })
         this.handleMessage(event)
       }) as EventListener)
 
       this.onVideoTrackMute = () => {
+                                                            EngineDebugger.addLog({
+        message: ``,
+        label: 'EngineCommandManager.onVideoTrackMute',
+        metadata:{
+          engineConnection: !!this.engineConnection,
+        }
+    })
         console.warn('video track mute - potentially lost stream for a moment')
       }
 
       this.onEngineConnectionNewTrack = ({
         detail: { mediaStream },
       }: CustomEvent<NewTrackArgs>) => {
+      EngineDebugger.addLog({
+        message: ``,
+        label: 'EngineCommandManager.onEngineConnectionNewTrack',
+        metadata:{
+          engineConnection: !!this.engineConnection,
+        }
+    })
         // Engine side had an oopsie (client sent trickle_ice, engine no happy)
         mediaStream
           .getVideoTracks()[0]
@@ -1715,6 +2056,13 @@ export class EngineCommandManager extends EventTarget {
   }
 
   async startFromWasm(token: string): Promise<boolean> {
+          EngineDebugger.addLog({
+        message: ``,
+        label: 'EngineCommandManager.startFromWasm',
+        metadata:{
+          engineConnection: !!this.engineConnection,
+        }
+    })
     return await new Promise((resolve) => {
       this.start({
         token,
@@ -1730,6 +2078,14 @@ export class EngineCommandManager extends EventTarget {
   }
 
   handleMessage(event: MessageEvent) {
+              EngineDebugger.addLog({
+        message: ``,
+        label: 'EngineCommandManager.handleMessage',
+        metadata:{
+          engineConnection: !!this.engineConnection,
+          event: event
+        }
+    })
     let message: Models['WebSocketResponse_type'] | null = null
 
     if (event.data instanceof ArrayBuffer) {
@@ -1856,6 +2212,13 @@ export class EngineCommandManager extends EventTarget {
   }
 
   handleResize({ width, height }: { width: number; height: number }) {
+                  EngineDebugger.addLog({
+        message: ``,
+        label: 'EngineCommandManager.handleResize',
+        metadata:{
+          engineConnection: !!this.engineConnection,
+        }
+    })
     if (!this.engineConnection?.isReady()) {
       return
     }
@@ -1878,6 +2241,13 @@ export class EngineCommandManager extends EventTarget {
   }
 
   tearDown(opts?: { idleMode: boolean }) {
+                      EngineDebugger.addLog({
+        message: ``,
+        label: 'EngineCommandManager.tearDown',
+        metadata:{
+          engineConnection: !!this.engineConnection,
+        }
+    })
     this.idleMode = opts?.idleMode ?? false
 
     if (this.engineConnection) {
@@ -1936,12 +2306,26 @@ export class EngineCommandManager extends EventTarget {
   }
 
   offline() {
+                          EngineDebugger.addLog({
+        message: ``,
+        label: 'EngineCommandManager.offline',
+        metadata:{
+          engineConnection: !!this.engineConnection,
+        }
+    })
     this.keepForcefulOffline = true
     this.tearDown()
     console.log('offline')
   }
 
   online() {
+                              EngineDebugger.addLog({
+        message: ``,
+        label: 'EngineCommandManager.online',
+        metadata:{
+          engineConnection: !!this.engineConnection,
+        }
+    })
     this.keepForcefulOffline = false
     this.dispatchEvent(
       new CustomEvent(EngineCommandManagerEvents.EngineRestartRequest, {})
@@ -1950,12 +2334,26 @@ export class EngineCommandManager extends EventTarget {
   }
 
   async startNewSession() {
+                                      EngineDebugger.addLog({
+        message: ``,
+        label: 'EngineCommandManager.startNewSession',
+        metadata:{
+          engineConnection: !!this.engineConnection,
+        }
+    })
     this.responseMap = {}
   }
   subscribeTo<T extends ModelTypes>({
     event,
     callback,
   }: Subscription<T>): () => void {
+                                  EngineDebugger.addLog({
+        message: ``,
+        label: 'EngineCommandManager.subscribeTo',
+        metadata:{
+          engineConnection: !!this.engineConnection,
+        }
+    })
     const localUnsubscribeId = uuidv4()
     if (!this.subscriptions[event]) {
       this.subscriptions[event] = {}
@@ -1965,12 +2363,26 @@ export class EngineCommandManager extends EventTarget {
     return () => this.unSubscribeTo(event, localUnsubscribeId)
   }
   private unSubscribeTo(event: ModelTypes, id: string) {
+                                          EngineDebugger.addLog({
+        message: ``,
+        label: 'EngineCommandManager.unSubscribeTo',
+        metadata:{
+          engineConnection: !!this.engineConnection,
+        }
+    })
     delete this.subscriptions[event][id]
   }
   subscribeToUnreliable<T extends UnreliableResponses['type']>({
     event,
     callback,
   }: UnreliableSubscription<T>): () => void {
+                                              EngineDebugger.addLog({
+        message: ``,
+        label: 'EngineCommandManager.subscribeToUnreliable',
+        metadata:{
+          engineConnection: !!this.engineConnection,
+        }
+    })
     const localUnsubscribeId = uuidv4()
     if (!this.unreliableSubscriptions[event]) {
       this.unreliableSubscriptions[event] = {}
@@ -1982,9 +2394,24 @@ export class EngineCommandManager extends EventTarget {
     event: UnreliableResponses['type'],
     id: string
   ) {
+        EngineDebugger.addLog({
+        message: ``,
+        label: 'EngineCommandManager.unSubscribeToUnreliable',
+        metadata:{
+          engineConnection: !!this.engineConnection,
+        }
+    })
     delete this.unreliableSubscriptions[event][id]
   }
   addCommandLog(message: CommandLog) {
+            EngineDebugger.addLog({
+        message: ``,
+        label: 'EngineCommandManager.addCommandLog',
+        metadata:{
+          engineConnection: !!this.engineConnection,
+          message
+        }
+    })
     if (this.commandLogs.length > 500) {
       this.commandLogs.shift()
     }
@@ -1993,10 +2420,24 @@ export class EngineCommandManager extends EventTarget {
     this._commandLogCallBack([...this.commandLogs])
   }
   clearCommandLogs() {
+                EngineDebugger.addLog({
+        message: ``,
+        label: 'EngineCommandManager.clearCommandLogs',
+        metadata:{
+          engineConnection: !!this.engineConnection,
+        }
+    })
     this.commandLogs = []
     this._commandLogCallBack(this.commandLogs)
   }
   registerCommandLogCallback(callback: (command: CommandLog[]) => void) {
+                    EngineDebugger.addLog({
+        message: ``,
+        label: 'EngineCommandManager.registerCommandLogCallback',
+        metadata:{
+          engineConnection: !!this.engineConnection,
+        }
+    })
     this._commandLogCallBack = callback
   }
   async sendSceneCommand(
@@ -2005,6 +2446,13 @@ export class EngineCommandManager extends EventTarget {
   ): Promise<
     Models['WebSocketResponse_type'] | [Models['WebSocketResponse_type']] | null
   > {
+                        EngineDebugger.addLog({
+        message: ``,
+        label: 'EngineCommandManager.sendSceneCommand',
+        metadata:{
+          engineConnection: !!this.engineConnection,
+        }
+    })
     if (this.engineConnection === undefined) {
       return Promise.resolve(null)
     }
@@ -2100,6 +2548,13 @@ export class EngineCommandManager extends EventTarget {
     commandStr: string,
     idToRangeStr: string
   ): void | Error {
+                            EngineDebugger.addLog({
+        message: ``,
+        label: 'EngineCommandManager.fireModelingCommandFromWasm',
+        metadata:{
+          engineConnection: !!this.engineConnection,
+        }
+    })
     if (this.engineConnection === undefined)
       return new Error('engineConnection is undefined')
     if (
@@ -2138,6 +2593,13 @@ export class EngineCommandManager extends EventTarget {
     commandStr: string,
     idToRangeStr: string
   ): Promise<Uint8Array | void> {
+                                EngineDebugger.addLog({
+        message: ``,
+        label: 'EngineCommandManager.sendModelingCommandFromWasm',
+        metadata:{
+          engineConnection: !!this.engineConnection,
+        }
+    })
     if (this.engineConnection === undefined) return Promise.resolve()
     if (
       !this.engineConnection?.isReady() &&
@@ -2188,6 +2650,13 @@ export class EngineCommandManager extends EventTarget {
     },
     isSceneCommand = false
   ): Promise<[Models['WebSocketResponse_type']]> {
+                                    EngineDebugger.addLog({
+        message: ``,
+        label: 'EngineCommandManager.sendCommand',
+        metadata:{
+          engineConnection: !!this.engineConnection,
+        }
+    })
     const { promise, resolve, reject } = promiseFactory<any>()
     this.pendingCommands[id] = {
       resolve,
@@ -2208,6 +2677,13 @@ export class EngineCommandManager extends EventTarget {
    * When this is done when we build the artifact map synchronously.
    */
   waitForAllCommands() {
+                                        EngineDebugger.addLog({
+        message: ``,
+        label: 'EngineCommandManager.waitForAllCommands',
+        metadata:{
+          engineConnection: !!this.engineConnection,
+        }
+    })
     return Promise.all(
       Object.values(this.pendingCommands).map((a) => a.promise)
     )
@@ -2219,6 +2695,13 @@ export class EngineCommandManager extends EventTarget {
    * to the engine
    */
   rejectAllModelingCommands(rejectionMessage: string) {
+                                            EngineDebugger.addLog({
+        message: ``,
+        label: 'EngineCommandManager.rejectAllModelingCommands',
+        metadata:{
+          engineConnection: !!this.engineConnection,
+        }
+    })
     for (const [cmdId, pending] of Object.entries(this.pendingCommands)) {
       if (!pending.isSceneCommand) {
         pending.reject([
@@ -2233,6 +2716,13 @@ export class EngineCommandManager extends EventTarget {
   }
 
   async setPlaneHidden(id: string, hidden: boolean) {
+                                                EngineDebugger.addLog({
+        message: ``,
+        label: 'EngineCommandManager.setPlaneHidden',
+        metadata:{
+          engineConnection: !!this.engineConnection,
+        }
+    })
     if (this.engineConnection === undefined) return
 
     // Can't send commands if there's no connection
@@ -2259,6 +2749,13 @@ export class EngineCommandManager extends EventTarget {
    * Set the engine's theme
    */
   async setTheme(theme: Themes) {
+                                                    EngineDebugger.addLog({
+        message: ``,
+        label: 'EngineCommandManager.setTheme',
+        metadata:{
+          engineConnection: !!this.engineConnection,
+        }
+    })
     // Set the stream background color
     // This takes RGBA values from 0-1
     // So we convert from the conventional 0-255 found in Figma
