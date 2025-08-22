@@ -6,7 +6,6 @@ import {
   createLabeledArg,
   createLiteral,
   createLocalName,
-  createTagDeclarator,
 } from '@src/lang/create'
 import {
   createVariableExpressionsArray,
