@@ -42,7 +42,7 @@ void main()
 
 		float screenX = lineOffsetNDC.x + float(lineIndex) * lineGapNDC.x;
 		float screenY = (vertIndex == 0) ? -1.0 : 1.0;
-		screenX = snapToPixel(screenX, viewportPx.x);
+		//screenX = snapToPixel(screenX, viewportPx.x);
 		screenPos = vec2(screenX, screenY);
 
 		vLineType = lineIndex % minorsPerMajor == 0 ? 1.0 : 0.0;
@@ -54,7 +54,7 @@ void main()
 
 		float screenX = (vertIndex == 0) ? -1.0 : 1.0;
 		float screenY = lineOffsetNDC.y + float(lineIndex) * lineGapNDC.y;
-		screenY = snapToPixel(screenY, viewportPx.y);
+		//screenY = snapToPixel(screenY, viewportPx.y);
 		screenPos = vec2(screenX, screenY);
 
 		vLineType = lineIndex % minorsPerMajor == 0 ? 1.0 : 0.0;
@@ -125,7 +125,6 @@ export class InfiniteGridRenderer extends LineSegments<
     camera: Camera,
     viewportSize: [number, number],
     pixelsPerBaseUnit: number,
-    baseUnitMultiplier: number,
     options: {
       majorGridSpacing: number
       minorGridsPerMajor: number
@@ -178,13 +177,19 @@ export class InfiniteGridRenderer extends LineSegments<
 
     if (options.fixedSizeGrid) {
       // If major grid would be too dense on screen, hide the grid entirely
-      if (majorSpacingPx < this.minMajorGridPixelSpacing) {
+      if (
+        majorSpacingPx <
+        this.minMajorGridPixelSpacing / window.devicePixelRatio
+      ) {
         this.visible = false
         return
       }
 
       // If minors are too small, collapse to majors only by using major spacing
-      if (minorSpacingPx < this.minMinorGridPixelSpacing) {
+      if (
+        minorSpacingPx <
+        this.minMinorGridPixelSpacing / window.devicePixelRatio
+      ) {
         effectiveMinorSpacing = effectiveMajorSpacing
       }
     }

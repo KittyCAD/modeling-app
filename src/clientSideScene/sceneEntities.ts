@@ -493,7 +493,6 @@ export class SceneEntities {
             camera,
             [viewportSize.x, viewportSize.y],
             this.sceneInfra.getPixelsPerBaseUnit(camera),
-            this.sceneInfra._baseUnitMultiplier,
             {
               majorGridSpacing,
               minorGridsPerMajor,

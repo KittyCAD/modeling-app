@@ -136,7 +136,7 @@ export class SceneInfra {
     }
   }
 
-  // Returns the size of the current base unit in screen space pixels in ortho view.
+  // Returns the size of the current base unit in ortho view (in logical/CSS pixels, not device pixels).
   // Eg. if 1 mm takes up 4 pixels in the current view, and the current base unit is 1cm then it returns 40 pixels.
   getPixelsPerBaseUnit(camera: OrthographicCamera) {
     const worldViewportWidth = (camera.right - camera.left) / camera.zoom
