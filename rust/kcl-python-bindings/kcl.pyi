@@ -152,7 +152,7 @@ class Options:
 
 class Options:
     r"""
-    Options for importing glTF 2.0.
+    Options for exporting STEP format.
     """
     def __new__(cls) -> Options:
         r"""
@@ -161,7 +161,16 @@ class Options:
 
 class Options:
     r"""
-    Options for exporting PLY.
+    Options for exporting OBJ.
+    """
+    def __new__(cls) -> Options:
+        r"""
+        Set the options to their defaults.
+        """
+
+class Options:
+    r"""
+    Options for exporting FBX.
     """
     def __new__(cls) -> Options:
         r"""
@@ -179,7 +188,7 @@ class Options:
 
 class Options:
     r"""
-    Options for importing FBX.
+    Options for exporting PLY.
     """
     def __new__(cls) -> Options:
         r"""
@@ -206,7 +215,16 @@ class Options:
 
 class Options:
     r"""
-    Options for exporting FBX.
+    Options for exporting DXF format.
+    """
+    def __new__(cls) -> Options:
+        r"""
+        Set the options to their defaults.
+        """
+
+class Options:
+    r"""
+    Options for importing glTF 2.0.
     """
     def __new__(cls) -> Options:
         r"""
@@ -224,21 +242,6 @@ class Options:
 
 class Options:
     r"""
-    Options for importing STL.
-    """
-    ...
-
-class Options:
-    r"""
-    Options for exporting DXF format.
-    """
-    def __new__(cls) -> Options:
-        r"""
-        Set the options to their defaults.
-        """
-
-class Options:
-    r"""
     Options for importing SolidWorks parts.
     """
     def __new__(cls) -> Options:
@@ -248,7 +251,7 @@ class Options:
 
 class Options:
     r"""
-    Options for exporting OBJ.
+    Options for importing FBX.
     """
     def __new__(cls) -> Options:
         r"""
@@ -257,12 +260,9 @@ class Options:
 
 class Options:
     r"""
-    Options for exporting STEP format.
+    Options for importing STL.
     """
-    def __new__(cls) -> Options:
-        r"""
-        Set the options to their defaults.
-        """
+    ...
 
 class Point3d:
     def __new__(cls, x:builtins.float, y:builtins.float, z:builtins.float) -> Point3d:
@@ -406,6 +406,21 @@ class Storage(Enum):
     Ascii = ...
     r"""
     Plaintext encoding.
+    """
+    Binary = ...
+    r"""
+    Binary STL encoding.
+    
+    This is the default setting.
+    """
+
+class Storage(Enum):
+    r"""
+    Export storage.
+    """
+    Ascii = ...
+    r"""
+    Plaintext encoding.
     
     This is the default setting.
     """
@@ -452,21 +467,6 @@ class Storage(Enum):
     Binary = ...
     r"""
     Binary FBX encoding.
-    """
-
-class Storage(Enum):
-    r"""
-    Export storage.
-    """
-    Ascii = ...
-    r"""
-    Plaintext encoding.
-    """
-    Binary = ...
-    r"""
-    Binary STL encoding.
-    
-    This is the default setting.
     """
 
 class UnitAngle(Enum):
@@ -536,35 +536,6 @@ class UnitLength(Enum):
     r"""
     The valid types of length units.
     """
-    Centimeters = ...
-    r"""
-    Centimeters <https://en.wikipedia.org/wiki/Centimeter>
-    """
-    Feet = ...
-    r"""
-    Feet <https://en.wikipedia.org/wiki/Foot_(unit)>
-    """
-    Inches = ...
-    r"""
-    Inches <https://en.wikipedia.org/wiki/Inch>
-    """
-    Meters = ...
-    r"""
-    Meters <https://en.wikipedia.org/wiki/Meter>
-    """
-    Millimeters = ...
-    r"""
-    Millimeters <https://en.wikipedia.org/wiki/Millimeter>
-    """
-    Yards = ...
-    r"""
-    Yards <https://en.wikipedia.org/wiki/Yard>
-    """
-
-class UnitLength(Enum):
-    r"""
-    The valid types of length units.
-    """
     Cm = ...
     r"""
     Centimeters <https://en.wikipedia.org/wiki/Centimeter>
@@ -586,6 +557,35 @@ class UnitLength(Enum):
     Millimeters <https://en.wikipedia.org/wiki/Millimeter>
     """
     Yd = ...
+    r"""
+    Yards <https://en.wikipedia.org/wiki/Yard>
+    """
+
+class UnitLength(Enum):
+    r"""
+    The valid types of length units.
+    """
+    Centimeters = ...
+    r"""
+    Centimeters <https://en.wikipedia.org/wiki/Centimeter>
+    """
+    Feet = ...
+    r"""
+    Feet <https://en.wikipedia.org/wiki/Foot_(unit)>
+    """
+    Inches = ...
+    r"""
+    Inches <https://en.wikipedia.org/wiki/Inch>
+    """
+    Meters = ...
+    r"""
+    Meters <https://en.wikipedia.org/wiki/Meter>
+    """
+    Millimeters = ...
+    r"""
+    Millimeters <https://en.wikipedia.org/wiki/Millimeter>
+    """
+    Yards = ...
     r"""
     Yards <https://en.wikipedia.org/wiki/Yard>
     """
