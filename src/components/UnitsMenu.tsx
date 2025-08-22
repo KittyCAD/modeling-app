@@ -2,11 +2,7 @@ import { Popover } from '@headlessui/react'
 import { useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 
-import {
-  changeDefaultUnits,
-  unitAngleToUnitAng,
-  unitLengthToUnitLen,
-} from '@src/lang/wasm'
+import { changeDefaultUnits, unitLengthToUnitLen } from '@src/lang/wasm'
 import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
 import { baseUnitLabels, baseUnitsUnion } from '@src/lib/settings/settingsTypes'
 import { codeManager, kclManager, sceneInfra } from '@src/lib/singletons'
@@ -102,8 +98,7 @@ export function UnitsMenu() {
                     onClick={() => {
                       const newCode = changeDefaultUnits(
                         codeManager.code,
-                        unitLengthToUnitLen(unit),
-                        unitAngleToUnitAng(undefined)
+                        unitLengthToUnitLen(unit)
                       )
                       if (err(newCode)) {
                         toast.error(
