@@ -125,11 +125,11 @@ pub enum SourceRef {
     BackTrace(Vec<SourceRange>),
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, Copy, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export)]
 pub struct Number {
-    value: f64,
-    units: NumericSuffix,
+    pub value: f64,
+    pub units: NumericSuffix,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
