@@ -177,19 +177,13 @@ export class InfiniteGridRenderer extends LineSegments<
 
     if (options.fixedSizeGrid) {
       // If major grid would be too dense on screen, hide the grid entirely
-      if (
-        majorSpacingPx <
-        this.minMajorGridPixelSpacing / window.devicePixelRatio
-      ) {
+      if (majorSpacingPx < this.minMajorGridPixelSpacing) {
         this.visible = false
         return
       }
 
       // If minors are too small, collapse to majors only by using major spacing
-      if (
-        minorSpacingPx <
-        this.minMinorGridPixelSpacing / window.devicePixelRatio
-      ) {
+      if (minorSpacingPx < this.minMinorGridPixelSpacing) {
         effectiveMinorSpacing = effectiveMajorSpacing
       }
     }
