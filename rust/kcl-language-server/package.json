@@ -114,7 +114,7 @@
   },
   "devDependencies": {
     "@tsconfig/strictest": "^2.0.5",
-    "@types/glob": "^8.1.0",
+    "@types/glob": "^9.0.0",
     "@types/mocha": "^10.0.10",
     "@types/node": "^22.14.1",
     "@types/vscode": "^1.97.0",
@@ -122,7 +122,7 @@
     "@typescript-eslint/parser": "^8.27.0",
     "@vscode/test-electron": "^2.4.1",
     "@vscode/vsce": "^3.3.2",
-    "cross-env": "^7.0.3",
+    "cross-env": "^10.0.0",
     "esbuild": "^0.25.5",
     "glob": "^11.0.1",
     "mocha": "^11.1.0",
