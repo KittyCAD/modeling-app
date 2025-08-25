@@ -19,6 +19,7 @@ import {
   selectOffsetSketchPlane,
 } from '@src/lib/selections'
 import { getSelectedPlaneId } from '@src/lang/queryAst'
+import toast from 'react-hot-toast'
 
 export function useViewControlMenuItems() {
   const { state: modelingState, send: modelingSend } = useModelingContext()
@@ -30,6 +31,20 @@ export function useViewControlMenuItems() {
   const shouldLockView =
     modelingState.matches('Sketch') &&
     !settings.app.allowOrbitInSketchMode.current
+
+  // Check if there's a valid selection with source range for "View KCL source code"
+  const firstValidSelection = useMemo(() => {
+    return modelingState.context.selectionRanges.graphSelections.find(
+      (selection) => {
+        return (
+          selection.codeRef?.range &&
+          selection.codeRef.range[0] !== undefined &&
+          selection.codeRef.range[1] !== undefined
+        )
+      }
+    )
+  }, [modelingState.context.selectionRanges.graphSelections])
+
   const menuItems = useMemo(
     () => [
       ...Object.entries(VIEW_NAMES_SEMANTIC).map(([axisName, axisSemantic]) => (
@@ -64,6 +79,41 @@ export function useViewControlMenuItems() {
       >
         Center view on selection
       </ContextMenuItem>,
+      <ContextMenuItem
+        onClick={() => {
+          if (firstValidSelection?.codeRef?.range) {
+            // First, open the code pane if it's not already open
+            if (!modelingState.context.store.openPanes.includes('code')) {
+              modelingSend({
+                type: 'Set context',
+                data: {
+                  openPanes: [...modelingState.context.store.openPanes, 'code'],
+                },
+              })
+            }
+
+            // Navigate to the source code location
+            modelingSend({
+              type: 'Set selection',
+              data: {
+                selectionType: 'singleCodeCursor',
+                selection: {
+                  artifact: firstValidSelection.artifact,
+                  codeRef: firstValidSelection.codeRef,
+                },
+                scrollIntoView: true,
+              },
+            })
+          } else {
+            toast.error(
+              'No valid selection with source range found. Please select a valid element.'
+            )
+          }
+        }}
+        disabled={!firstValidSelection}
+      >
+        View KCL source code
+      </ContextMenuItem>,
       <ContextMenuDivider />,
       <ContextMenuItem
         onClick={() => {
@@ -93,8 +143,13 @@ export function useViewControlMenuItems() {
       <ContextMenuDivider />,
       <ContextMenuItemRefresh />,
     ],
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-    [VIEW_NAMES_SEMANTIC, shouldLockView, selectedPlaneId]
+    [
+      shouldLockView,
+      selectedPlaneId,
+      firstValidSelection,
+      modelingSend,
+      modelingState.context.store.openPanes,
+    ]
   )
   return menuItems
 }
