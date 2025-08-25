@@ -1,5 +1,9 @@
 import type { Models } from '@kittycad/lib'
-import { logger, EngineConnectionEvents, toRTCSessionDescriptionInit } from './utils'
+import {
+  logger,
+  EngineConnectionEvents,
+  toRTCSessionDescriptionInit,
+} from './utils'
 import { ConnectionManager } from './connectionManager'
 
 /**
@@ -64,9 +68,9 @@ export const createOnWebSocketMessage = ({
   setSdpAnswer,
   initiateConnectionExclusive,
   addIceCandidate,
-  webrtcStatsCollector
-}:{
-  connectionManager:ConnectionManager
+  webrtcStatsCollector,
+}: {
+  connectionManager: ConnectionManager
   disconnectAll: () => void
   setPong: (pong: number) => void
   dispatchEvent: (event: Event) => boolean
@@ -93,8 +97,7 @@ export const createOnWebSocketMessage = ({
     }
 
     const message: Models['WebSocketResponse_type'] = JSON.parse(event.data)
-  
-  
+
     if (!message.success) {
       const errorsString = message?.errors
         ?.map((error) => {
@@ -133,31 +136,25 @@ export const createOnWebSocketMessage = ({
       return
     }
 
-
     // Message is succesfull, lets process the websocket message
-    switch(resp.type) {
+    switch (resp.type) {
       case 'pong':
         const pong = Date.now()
         setPong(pong)
         dispatchEvent(
           new CustomEvent(EngineConnectionEvents.PingPongChanged, {
-            detail: Math.min(
-              999,
-              Math.floor(
-                pong - (ping() ?? 0)
-              )
-            ),
+            detail: Math.min(999, Math.floor(pong - (ping() ?? 0))),
           })
         )
         setPing(undefined)
         break
       case 'modeling_session_data':
         const apiCallId = resp.data.session.api_call_id
-        logger(`API Call ID: ${apiCallId}`,{})
+        logger(`API Call ID: ${apiCallId}`, {})
         break
       // Only fires on successful authentication.
       case 'ice_server_info':
-        const  iceServers = resp.data.ice_servers
+        const iceServers = resp.data.ice_servers
         // Now that we have some ICE servers it makes sense
         // to start initializing the RTCPeerConnection. RTCPeerConnection
         // will begin the ICE process.
@@ -168,53 +165,53 @@ export const createOnWebSocketMessage = ({
         if (iceServers.length === 0) {
           console.warn('No ICE servers')
           peerConnection.setConfiguration({
-            bundlePolicy: 'max-bundle'
+            bundlePolicy: 'max-bundle',
           })
         } else {
-        // When we set the Configuration, we want to always force
-        // iceTransportPolicy to 'relay', since we know the topology
-        // of the ICE/STUN/TUN server and the engine. We don't wish to
-        // talk to the engine in any configuration /other/ than relay
-        // from a infra POV.
-        peerConnection.setConfiguration({
-          bundlePolicy: 'max-bundle',
-          iceServers: iceServers,
-          iceTransportPolicy: 'relay',
+          // When we set the Configuration, we want to always force
+          // iceTransportPolicy to 'relay', since we know the topology
+          // of the ICE/STUN/TUN server and the engine. We don't wish to
+          // talk to the engine in any configuration /other/ than relay
+          // from a infra POV.
+          peerConnection.setConfiguration({
+            bundlePolicy: 'max-bundle',
+            iceServers: iceServers,
+            iceTransportPolicy: 'relay',
+          })
+        }
+
+        // We have an ICE Servers set now. We just setConfiguration, so let's
+        // start adding things we care about to the PeerConnection and let
+        // ICE negotiation happen in the background. Everything from here
+        // until the end of this function is setup of our end of the
+        // PeerConnection and waiting for events to fire our callbacks.
+
+        // Add a transceiver to our SDP offer
+        peerConnection.addTransceiver('vide', {
+          direction: 'recvonly',
         })
-      }
 
-      // We have an ICE Servers set now. We just setConfiguration, so let's
-      // start adding things we care about to the PeerConnection and let
-      // ICE negotiation happen in the background. Everything from here
-      // until the end of this function is setup of our end of the
-      // PeerConnection and waiting for events to fire our callbacks.
-
-      // Add a transceiver to our SDP offer
-      peerConnection.addTransceiver('vide', {
-        direction: 'recvonly'
-      })
-
-      // Create a session description offer based on our local environment
-      // that we will send to the remote end. The remote will send back
-      // what it supports via sdp_answer.
-      try {
-        const offer = await peerConnection.createOffer()
-        // This was not error handled before!
-        await peerConnection.setLocalDescription(offer)
-        send({
-          type: 'sdp_offer',
-          offer: offer as Models['RtcSessionDescription_type'],
-        })
-      } catch (e) {
-        disconnectAll()
-      }
-      break
+        // Create a session description offer based on our local environment
+        // that we will send to the remote end. The remote will send back
+        // what it supports via sdp_answer.
+        try {
+          const offer = await peerConnection.createOffer()
+          // This was not error handled before!
+          await peerConnection.setLocalDescription(offer)
+          send({
+            type: 'sdp_offer',
+            offer: offer as Models['RtcSessionDescription_type'],
+          })
+        } catch (e) {
+          disconnectAll()
+        }
+        break
       case 'sdp_answer':
         const answer = resp.data.answer
         if (!answer || answer.type === 'unspecified') {
           return
         }
-        
+
         const sdpAnswer = toRTCSessionDescriptionInit(answer)
 
         // sdpAnswer was not handled if undefined!
@@ -228,21 +225,21 @@ export const createOnWebSocketMessage = ({
         // Make sure we attempt to connect when we do.
         initiateConnectionExclusive()
         break
-        case 'trickle_ice':
-          const candidate = resp.data.candidate
-          addIceCandidate(candidate)
-          break
-        case 'metrics_request': 
-          try {
-           const clientMetrics = await webrtcStatsCollector()
-            send({
-              type:'metrics_response',
-              metrics: clientMetrics
-            })
-          } catch (e) {
-            console.error(e)
-          }
-          break
-      }
+      case 'trickle_ice':
+        const candidate = resp.data.candidate
+        addIceCandidate(candidate)
+        break
+      case 'metrics_request':
+        try {
+          const clientMetrics = await webrtcStatsCollector()
+          send({
+            type: 'metrics_response',
+            metrics: clientMetrics,
+          })
+        } catch (e) {
+          console.error(e)
+        }
+        break
+    }
   }
 }

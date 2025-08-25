@@ -38,7 +38,8 @@ export class Connection extends EventTarget {
     ping: number | undefined
     pong: number | undefined
   }
-  private _pingIntervalId: ReturnType<typeof setInterval> | undefined = undefined
+  private _pingIntervalId: ReturnType<typeof setInterval> | undefined =
+    undefined
 
   private peerConnection: RTCPeerConnection | undefined
 
@@ -52,7 +53,7 @@ export class Connection extends EventTarget {
   connectionPromiseResolve: ((value: unknown) => void) | null
   connectionPromiseReject: ((value: unknown) => void) | null
 
-  iceCandidatePromises: Promise<unknown>[] 
+  iceCandidatePromises: Promise<unknown>[]
 
   // event listeners to add and clean up
   public webrtcStatsCollector?: () => Promise<ClientMetrics>
@@ -80,15 +81,15 @@ export class Connection extends EventTarget {
     this.iceCandidatePromises = []
   }
 
-  get token () {
+  get token() {
     return this._token
   }
 
-  get pingPongSpan () {
+  get pingPongSpan() {
     return this._pingPongSpan
   }
 
-  get pingIntervalId () {
+  get pingIntervalId() {
     return this._pingIntervalId
   }
 
@@ -110,7 +111,7 @@ export class Connection extends EventTarget {
     }, pingIntervalMs)
   }
 
-  stopPingPong () {
+  stopPingPong() {
     clearInterval(this._pingIntervalId)
     this._pingIntervalId = undefined
   }
@@ -232,7 +233,7 @@ export class Connection extends EventTarget {
     this.unreliableDataChannel = channel
   }
 
-  setPong (pong: number) {
+  setPong(pong: number) {
     this._pingPongSpan.pong = pong
   }
 
@@ -240,7 +241,7 @@ export class Connection extends EventTarget {
     this._pingPongSpan.ping = ping
   }
 
-  setSdpAnswer (answer: RTCSessionDescriptionInit) {
+  setSdpAnswer(answer: RTCSessionDescriptionInit) {
     this.sdpAnswer = answer
   }
 
@@ -252,12 +253,12 @@ export class Connection extends EventTarget {
     throw new Error('cleanUp')
   }
 
-  addIceCandidate(candidate : RTCIceCandidateInit) {
+  addIceCandidate(candidate: RTCIceCandidateInit) {
     if (!this.peerConnection) {
       throw new Error('do not do this, crashing!')
     }
-    
-    const tracker = new Promise(async (resolve,reject) => {
+
+    const tracker = new Promise(async (resolve, reject) => {
       try {
         const result = await this.peerConnection?.addIceCandidate(candidate)
         resolve(result)
@@ -267,5 +268,4 @@ export class Connection extends EventTarget {
     })
     this.iceCandidatePromises.push(tracker)
   }
-
 }
