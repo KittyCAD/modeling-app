@@ -2457,6 +2457,9 @@ version = "0.1.0"
 dependencies = [
  "indexmap 2.10.0",
  "kcl-error",
+ "serde",
+ "ts-rs",
+ "wasm-bindgen",
 ]
 
 [[package]]
@@ -2689,6 +2692,7 @@ dependencies = [
  "getrandom 0.3.1",
  "gloo-utils",
  "js-sys",
+ "kcl-api",
  "kcl-lib",
  "kittycad",
  "kittycad-modeling-cmds",

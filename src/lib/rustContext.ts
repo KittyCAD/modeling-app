@@ -6,7 +6,8 @@ import type { KclError as RustKclError } from '@rust/kcl-lib/bindings/KclError'
 import type { OutputFormat3d } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Program } from '@rust/kcl-lib/bindings/Program'
-import type { Context } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
+import type { ApiFile } from '@rust/kcl-api/bindings/ApiFile'
+import { type Context } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
 import { BSON } from 'bson'
 
 import type { Models } from '@kittycad/lib/dist/types/src'
@@ -22,6 +23,7 @@ import { err, reportRejection } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { getModule } from '@src/lib/wasm_lib_wrapper'
+import type { FileEntry, Project } from '@src/lib/project'
 
 export default class RustContext {
   private wasmInitFailed: boolean = true
@@ -29,6 +31,7 @@ export default class RustContext {
   private ctxInstance: Context | null = null
   private _defaultPlanes: DefaultPlanes | null = null
   private engineCommandManager: EngineCommandManager
+  private projectId = 0
 
   /** Initialize the WASM module */
   async ensureWasmInit() {
@@ -66,6 +69,28 @@ export default class RustContext {
     )
 
     return ctxInstance
+  }
+
+  async sendOpenProject(
+    project: Project,
+    currentFilePath: string | null
+  ): Promise<void> {
+    this.projectId += 1
+    let files: ApiFile[] = []
+    collectFiles(project, files)
+    let openFile = 0
+    for (let f of files) {
+      if (f.path === currentFilePath) {
+        openFile = f.id
+      }
+    }
+    // TODO need to find text of files and add it to this call (which might mean we want to call this function later when we're not on the
+    // critical path for opening a project).
+    await this.ctxInstance?.open_project(
+      this.projectId,
+      JSON.stringify(files),
+      openFile
+    )
   }
 
   /** Execute a program. */
@@ -231,6 +256,22 @@ export default class RustContext {
     if (this.ctxInstance) {
       // In a real implementation, you might need to manually free resources
       this.ctxInstance = null
+    }
+  }
+}
+
+const collectFiles = (file: FileEntry, files: ApiFile[]) => {
+  if (file.children) {
+    for (let entry of file.children) {
+      if (entry.name.endsWith('.kcl')) {
+        files.push({
+          id: files.length,
+          path: entry.path,
+          text: '',
+        })
+      } else {
+        collectFiles(entry, files)
+      }
     }
   }
 }
