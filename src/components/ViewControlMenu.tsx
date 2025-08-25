@@ -143,12 +143,11 @@ export function useViewControlMenuItems() {
       <ContextMenuDivider />,
       <ContextMenuItemRefresh />,
     ],
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
     [
-      VIEW_NAMES_SEMANTIC,
       shouldLockView,
       selectedPlaneId,
       firstValidSelection,
+      modelingSend,
       modelingState.context.store.openPanes,
     ]
   )
