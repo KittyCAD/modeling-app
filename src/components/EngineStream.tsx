@@ -384,7 +384,7 @@ export const EngineStream = (props: {
      */
   }, [file])
 
-  const IDLE_TIME_MS = Number(streamIdleMode)
+  const IDLE_TIME_MS = Number(2500)
 
   // When streamIdleMode is changed, setup or teardown the timeouts
   const timeoutStart = useRef<number | null>(null)

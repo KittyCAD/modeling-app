@@ -38,7 +38,8 @@ import type { AppMachineContext } from '@src/lib/types'
 import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
 import { commandBarMachine } from '@src/machines/commandBarMachine'
 import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
-import {EngineDebugger} from '@src/lib/debugger'
+import { EngineDebugger } from '@src/lib/debugger'
+import { Connection } from '@src/network/connection'
 
 export const codeManager = new CodeManager()
 export const engineCommandManager = new EngineCommandManager()
@@ -257,17 +258,17 @@ export const engineStreamActor = appActor.system.get(
   ENGINE_STREAM
 ) as ActorRefFrom<(typeof appMachineActors)[typeof ENGINE_STREAM]>
 
-engineStreamActor.subscribe((snapshot)=>{
-      EngineDebugger.addLog({
-        message: ``,
-        label: 'engineStreamActor.subscribe',
-        metadata:{
-          snapshot: {
-            value: snapshot.value,
-            status: snapshot.status
-          }
-        }
-      })
+engineStreamActor.subscribe((snapshot) => {
+  EngineDebugger.addLog({
+    message: ``,
+    label: 'engineStreamActor.subscribe',
+    metadata: {
+      snapshot: {
+        value: snapshot.value,
+        status: snapshot.status,
+      },
+    },
+  })
 })
 
 export const mlEphantManagerActor = appActor.system.get(
@@ -298,3 +299,13 @@ commandBarActor.send({
     ],
   },
 })
+
+const c = new Connection({
+  connectionManager: null,
+  url: '',
+  token: '',
+})
+
+async function dog() {
+  await c.connect()
+}

@@ -7,18 +7,18 @@ interface ILog {
 }
 
 export class Debugger {
-  logs: ILog[];
-  constructor () {
+  logs: ILog[]
+  constructor() {
     this.logs = []
   }
 
-  addLog ({
+  addLog({
     message,
     label,
-    metadata
-  }:{
-    message: string,
-    label: string,
+    metadata,
+  }: {
+    message: string
+    label: string
     metadata?: any
   }) {
     this.logs.push({
@@ -26,13 +26,16 @@ export class Debugger {
       message,
       stack: new Error().stack || '',
       label,
-      metadata : metadata || null
+      metadata: metadata || null,
     })
   }
 
-  writeToDisk () {
+  writeToDisk() {
     if (window.electron) {
-      window.electron.writeFile('/tmp/engineDebug.json', JSON.stringify(this.logs))
+      window.electron.writeFile(
+        '/tmp/engineDebug.json',
+        JSON.stringify(this.logs)
+      )
     }
   }
 }
