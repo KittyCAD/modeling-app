@@ -222,7 +222,7 @@ export function toRTCSessionDescriptionInit(
 // them affects what our needs are!
 export const DATACHANNEL_NAME_UMC = 'unreliable_modeling_cmds'
 
-export function logger(s1 : any, s2: any) {
+export function logger(s1: any, s2: any) {
   console.log('[connection]', s1, s2)
 }
 

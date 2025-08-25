@@ -15,7 +15,10 @@ import {
   createWebrtcStatsCollector,
 } from './peerConnection'
 import type { Models } from '@kittycad/lib'
-import { createOnWebSocketError, createOnWebSocketOpen } from './websocketConnection'
+import {
+  createOnWebSocketError,
+  createOnWebSocketOpen,
+} from './websocketConnection'
 
 export interface INewTrackArgs {
   conn: Connection
@@ -28,28 +31,33 @@ export class Connection extends EventTarget {
   // connection url for the new Websocket()
   readonly url: string
   // Authorization bearer token for headers on websocket
-  private readonly token: string | undefined
+  private readonly _token: string | undefined
 
   // ping pong result
-  private pingPongSpan: {
+  private _pingPongSpan: {
     ping: number | undefined
     pong: number | undefined
   }
-  private pingIntervalId: ReturnType<typeof setInterval> | undefined = undefined
+  private _pingIntervalId: ReturnType<typeof setInterval> | undefined = undefined
 
   private peerConnection: RTCPeerConnection | undefined
 
   unreliableDataChannel: RTCDataChannel | undefined
   mediaStream: MediaStream | undefined
   websocket: WebSocket | undefined
+  sdpAnswer: RTCSessionDescriptionInit | undefined
 
   // Track if the connection has been completed or not
   connectionPromise: Promise<unknown> | null
   connectionPromiseResolve: ((value: unknown) => void) | null
   connectionPromiseReject: ((value: unknown) => void) | null
 
+  iceCandidatePromises: Promise<unknown>[] 
+
   // event listeners to add and clean up
   public webrtcStatsCollector?: () => Promise<ClientMetrics>
+
+  // TODO: offer promise wrapped to track
 
   constructor({
     connectionManager,
@@ -64,11 +72,24 @@ export class Connection extends EventTarget {
     super()
     this.connectionManager = connectionManager
     this.url = url
-    this.token = token
-    this.pingPongSpan = { ping: undefined, pong: undefined }
+    this._token = token
+    this._pingPongSpan = { ping: undefined, pong: undefined }
     this.connectionPromise = null
     this.connectionPromiseResolve = null
     this.connectionPromiseReject = null
+    this.iceCandidatePromises = []
+  }
+
+  get token () {
+    return this._token
+  }
+
+  get pingPongSpan () {
+    return this._pingPongSpan
+  }
+
+  get pingIntervalId () {
+    return this._pingIntervalId
   }
 
   /***
@@ -76,17 +97,22 @@ export class Connection extends EventTarget {
    * lifecycle that needs to start and stop.
    */
   startPingPong() {
-    this.pingIntervalId = setInterval(() => {
-      if (this.pingPongSpan.ping) {
+    this._pingIntervalId = setInterval(() => {
+      if (this._pingPongSpan.ping) {
         return
       }
 
       this.send({ type: 'ping' })
-      this.pingPongSpan = {
+      this._pingPongSpan = {
         ping: Date.now(),
         pong: undefined,
       }
     }, pingIntervalMs)
+  }
+
+  stopPingPong () {
+    clearInterval(this._pingIntervalId)
+    this._pingIntervalId = undefined
   }
 
   send(message: Models['WebSocketRequest_type']) {}
@@ -104,7 +130,9 @@ export class Connection extends EventTarget {
     return connectionPromise
   }
 
-  initiateConnectionExclusive() {}
+  initiateConnectionExclusive() {
+    throw new Error('initiateConnectionExclusive unimplemented')
+  }
 
   createPeerConnection() {
     this.peerConnection = new RTCPeerConnection({
@@ -172,22 +200,23 @@ export class Connection extends EventTarget {
 
     // TODO: Save off all event listener functions and remove thme in clean up
     // recusively for any nested classes with event listener callbacks as well
+    return this.peerConnection
   }
 
-  createWebSocketConnection () {
+  createWebSocketConnection() {
     this.websocket = new WebSocket(this.url, [])
     this.websocket.binaryType = 'arraybuffer'
 
     const onWebSocketOpen = createOnWebSocketOpen({
       send: this.send,
-      token: this.token
+      token: this.token,
     })
 
     const onWebSocketError = createOnWebSocketError()
 
     this.websocket.addEventListener('open', onWebSocketOpen)
     this.websocket.addEventListener('error', onWebSocketError)
-  
+
     // TODO: Save off all callbacks to remove from the event listener in the cleanUp function
   }
 
@@ -203,6 +232,18 @@ export class Connection extends EventTarget {
     this.unreliableDataChannel = channel
   }
 
+  setPong (pong: number) {
+    this._pingPongSpan.pong = pong
+  }
+
+  setPing(ping: number | undefined) {
+    this._pingPongSpan.ping = ping
+  }
+
+  setSdpAnswer (answer: RTCSessionDescriptionInit) {
+    this.sdpAnswer = answer
+  }
+
   disconnectAll() {
     throw new Error('disconnectAll unimplemented')
   }
@@ -210,4 +251,21 @@ export class Connection extends EventTarget {
   cleanUp() {
     throw new Error('cleanUp')
   }
+
+  addIceCandidate(candidate : RTCIceCandidateInit) {
+    if (!this.peerConnection) {
+      throw new Error('do not do this, crashing!')
+    }
+    
+    const tracker = new Promise(async (resolve,reject) => {
+      try {
+        const result = await this.peerConnection?.addIceCandidate(candidate)
+        resolve(result)
+      } catch (e) {
+        reject(e)
+      }
+    })
+    this.iceCandidatePromises.push(tracker)
+  }
+
 }
