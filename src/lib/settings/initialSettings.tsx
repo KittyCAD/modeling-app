@@ -553,7 +553,6 @@ export function createSettings() {
         description:
           'The space between major grid lines, specified in the current unit',
         validate: (v) => typeof v === 'number',
-        isEnabled: (context) => context.modeling.fixedSizeGrid.current,
         commandConfig: {
           inputType: 'number',
         },
@@ -562,7 +561,6 @@ export function createSettings() {
         defaultValue: 4,
         description: 'Number of minor grid lines per major grid line',
         validate: (v) => typeof v === 'number',
-        isEnabled: (context) => context.modeling.fixedSizeGrid.current,
         commandConfig: {
           inputType: 'number',
         },
