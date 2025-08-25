@@ -324,7 +324,7 @@ test.describe('Command bar tests', () => {
         Length: '5',
       },
     })
-    await page.keyboard.press('Shift+Backspace')
+    await page.keyboard.press('Meta+Backspace')
 
     // Assert we're back on the distance step
     await expect(
@@ -762,7 +762,7 @@ theta = 45deg
     await homePage.textToCadBtn.click()
     await cmdBar.expectState({
       stage: 'arguments',
-      commandName: 'Text-to-CAD Create',
+      commandName: 'Create Project using Text-to-CAD',
       currentArgKey: 'prompt',
       currentArgValue: '',
       headerArguments: {

@@ -1,19 +1,32 @@
+import { useSelector } from '@xstate/react'
+import { type settings } from '@src/lib/settings/initialSettings'
 import type { IconDefinition } from '@fortawesome/free-solid-svg-icons'
 import { Resizable } from 're-resizable'
-import type { MouseEventHandler } from 'react'
-import { useCallback, useContext, useEffect, useMemo } from 'react'
+import type { HTMLProps, MouseEventHandler, Ref } from 'react'
+import {
+  useState,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+} from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 
 import { useAppState } from '@src/AppState'
 import { ActionIcon } from '@src/components/ActionIcon'
-import type { CustomIconName } from '@src/components/CustomIcon'
+import { CustomIcon, type CustomIconName } from '@src/components/CustomIcon'
 import { MachineManagerContext } from '@src/components/MachineManagerProvider'
 import { ModelingPane } from '@src/components/ModelingSidebar/ModelingPane'
 import type {
   SidebarAction,
+  SidebarPane,
   SidebarType,
 } from '@src/components/ModelingSidebar/ModelingPanes'
-import { sidebarPanes } from '@src/components/ModelingSidebar/ModelingPanes'
+import {
+  sidebarPanesLeft,
+  sidebarPanesRight,
+} from '@src/components/ModelingSidebar/ModelingPanes'
 import Tooltip from '@src/components/Tooltip'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
@@ -22,7 +35,7 @@ import { useKclContext } from '@src/lang/KclProvider'
 import { EngineConnectionStateType } from '@src/lang/std/engineConnection'
 import { SIDEBAR_BUTTON_SUFFIX } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
-import { useSettings } from '@src/lib/singletons'
+import { useSettings, mlEphantManagerActor } from '@src/lib/singletons'
 import { commandBarActor } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import { refreshPage } from '@src/lib/utils'
@@ -37,21 +50,18 @@ interface BadgeInfoComputed {
   title?: string
 }
 
+enum Alignment {
+  Left = 'left',
+  Right = 'right',
+}
+
 function getPlatformString(): 'web' | 'desktop' {
   return isDesktop() ? 'desktop' : 'web'
 }
 
-export function ModelingSidebar() {
+export function ModelingSidebarLeft() {
   const machineManager = useContext(MachineManagerContext)
-  const kclContext = useKclContext()
   const settings = useSettings()
-  const { send, context } = useModelingContext()
-  const pointerEventsCssClass =
-    context.store?.openPanes.length === 0
-      ? 'pointer-events-none '
-      : 'pointer-events-auto '
-  const showDebugPanel = settings.app.showDebugPanel
-
   const { overallState, immediateState } = useNetworkContext()
   const { isExecuting } = useKclContext()
   const { isStreamReady } = useAppState()
@@ -61,16 +71,6 @@ export function ModelingSidebar() {
     isExecuting ||
     immediateState.type !== EngineConnectionStateType.ConnectionEstablished ||
     !isStreamReady
-
-  const paneCallbackProps = useMemo(
-    () => ({
-      kclContext,
-      settings,
-      platform: getPlatformString(),
-    }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-    [kclContext.diagnostics, settings]
-  )
 
   const sidebarActions: SidebarAction[] = [
     {
@@ -140,7 +140,94 @@ export function ModelingSidebar() {
       },
     },
   ]
-  const filteredActions: SidebarAction[] = sidebarActions.filter(
+
+  return (
+    <ModelingSidebar
+      id="app-sidebar"
+      sidebarPanes={sidebarPanesLeft}
+      sidebarActions={sidebarActions}
+      settings={settings}
+      align={Alignment.Left}
+    />
+  )
+}
+
+export function ModelingSidebarRight() {
+  const settings = useSettings()
+  const { send: modelingContextSend, context: modelingContext } =
+    useModelingContext()
+  const promptsBelongingToConversation = useSelector(
+    mlEphantManagerActor,
+    (actor) => {
+      return actor.context.promptsBelongingToConversation
+    }
+  )
+  const [actuallyNew, setActuallyNew] = useState<boolean>(false)
+
+  useEffect(() => {
+    if (promptsBelongingToConversation === undefined) {
+      return
+    }
+    if (promptsBelongingToConversation.length === 0) {
+      return
+    }
+    if (!actuallyNew) {
+      setActuallyNew(true)
+      return
+    }
+
+    const newPanes = new Set(
+      modelingContext.store.openPanes.concat('text-to-cad')
+    )
+
+    modelingContextSend({
+      type: 'Set context',
+      data: {
+        openPanes: Array.from(newPanes),
+      },
+    })
+    // React doesn't realize that we are updating `modelingContext.store.openPanes` here
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [promptsBelongingToConversation, actuallyNew])
+
+  // Prevents rerenders because new array is a new ref.
+  const sidebarActions: Ref<SidebarAction[]> = useRef([])
+  return (
+    <ModelingSidebar
+      id="right-sidebar"
+      sidebarPanes={sidebarPanesRight || []}
+      sidebarActions={sidebarActions.current || []}
+      settings={settings}
+      align={Alignment.Right}
+    />
+  )
+}
+
+interface ModelingSidebarProps {
+  id: string
+  sidebarActions: SidebarAction[]
+  sidebarPanes: SidebarPane[]
+  settings: typeof settings
+  align: Alignment
+}
+
+export function ModelingSidebar(props: ModelingSidebarProps) {
+  const { send, context } = useModelingContext()
+
+  const kclContext = useKclContext()
+  const showDebugPanel = props.settings.app.showDebugPanel
+
+  const paneCallbackProps = useMemo(
+    () => ({
+      kclContext,
+      settings: props.settings,
+      platform: getPlatformString(),
+    }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
+    [kclContext.diagnostics, props.settings]
+  )
+
+  const filteredActions: SidebarAction[] = props.sidebarActions.filter(
     (action) =>
       !action.hide ||
       (action.hide instanceof Function && !action.hide(paneCallbackProps))
@@ -151,16 +238,25 @@ export function ModelingSidebar() {
   const filteredPanes = useMemo(
     () =>
       (showDebugPanel.current
-        ? sidebarPanes
-        : sidebarPanes.filter((pane) => pane.id !== 'debug')
+        ? props.sidebarPanes
+        : props.sidebarPanes.filter((pane) => pane.id !== 'debug')
       ).filter(
         (pane) =>
           !pane.hide ||
           (pane.hide instanceof Function && !pane.hide(paneCallbackProps))
       ),
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-    [sidebarPanes, paneCallbackProps]
+    [props.sidebarPanes, paneCallbackProps]
   )
+  // Since we store one persisted list of `openPanes`, we should first filter it to ones that have
+  // been passed into this instance as props
+  const openPanesForThisSide = context.store?.openPanes.filter((openPaneId) =>
+    filteredPanes.some((thisSidePane) => thisSidePane.id === openPaneId)
+  )
+  const pointerEventsCssClass =
+    openPanesForThisSide.length === 0
+      ? 'pointer-events-none '
+      : 'pointer-events-auto '
 
   const paneBadgeMap: Record<SidebarType, BadgeInfoComputed> = useMemo(() => {
     return filteredPanes.reduce(
@@ -184,7 +280,7 @@ export function ModelingSidebar() {
   useEffect(() => {
     const panesToReset: SidebarType[] = []
 
-    sidebarPanes.forEach((pane) => {
+    props.sidebarPanes.forEach((pane) => {
       if (
         pane.hide === true ||
         (pane.hide instanceof Function && pane.hide(paneCallbackProps))
@@ -204,7 +300,7 @@ export function ModelingSidebar() {
       })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [settings.app.showDebugPanel])
+  }, [props.settings.app.showDebugPanel])
 
   const togglePane = useCallback(
     (newPane: SidebarType) => {
@@ -220,47 +316,64 @@ export function ModelingSidebar() {
     [context.store?.openPanes, send]
   )
 
-  return (
+  const css = {
+    handle:
+      (openPanesForThisSide.length === 0 ? 'hidden ' : 'block ') +
+      'translate-x-1/2 hover:bg-chalkboard-10 hover:dark:bg-chalkboard-110 bg-transparent transition-colors duration-75 transition-ease-out delay-100 ',
+    paneAlign: {
+      [Alignment.Left]: 'flex-row',
+      [Alignment.Right]: 'flex-row-reverse',
+    },
+    tailwindDir: {
+      [Alignment.Left]: 'r',
+      [Alignment.Right]: 'l',
+    },
+  }
+
+  return filteredPanes.length === 0 ? null : (
     <Resizable
-      className={`group flex-1 flex flex-col z-10 my-2 pr-1 ${pointerEventsCssClass}`}
+      className={`group z-10 flex flex-col ${pointerEventsCssClass} ${openPanesForThisSide.length ? undefined : '!w-auto'}`}
       defaultSize={{
         width: '550px',
         height: 'auto',
       }}
-      minWidth={200}
-      maxWidth={window.innerWidth - 10}
+      minWidth={openPanesForThisSide.length ? 200 : undefined}
       handleWrapperClass="sidebar-resize-handles"
-      handleClasses={{
-        right:
-          (context.store?.openPanes.length === 0 ? 'hidden ' : 'block ') +
-          'translate-x-1/2 hover:bg-chalkboard-10 hover:dark:bg-chalkboard-110 bg-transparent transition-colors duration-75 transition-ease-out delay-100 ',
-        left: 'hidden',
-        top: 'hidden',
-        topLeft: 'hidden',
-        topRight: 'hidden',
-        bottom: 'hidden',
-        bottomLeft: 'hidden',
-        bottomRight: 'hidden',
+      enable={{
+        right: props.align === Alignment.Left,
+        left: props.align === Alignment.Right,
+        top: false,
+        topLeft: false,
+        topRight: false,
+        bottom: false,
+        bottomLeft: false,
+        bottomRight: false,
+      }}
+      handleComponent={{
+        [props.align === Alignment.Left ? Alignment.Right : Alignment.Left]: (
+          <ResizeHandle
+            alignment={props.align}
+            className={openPanesForThisSide.length ? 'block ' : 'hidden '}
+          />
+        ),
       }}
     >
-      <div id="app-sidebar" className="flex flex-row h-full">
+      <div
+        id={props.id}
+        className={`flex h-full ${css.paneAlign[props.align]}`}
+      >
         <ul
-          className={
-            (context.store?.openPanes.length === 0 ? 'rounded-r ' : '') +
-            'relative z-[2] pointer-events-auto p-0 col-start-1 col-span-1 h-fit w-fit flex flex-col ' +
-            'bg-chalkboard-10 border border-solid border-chalkboard-30 dark:bg-chalkboard-90 dark:border-chalkboard-80 group-focus-within:border-primary dark:group-focus-within:border-chalkboard-50 shadow-sm '
-          }
+          className={`relative pointer-events-auto p-0 col-start-1 col-span-1 flex flex-col items-stretch bg-chalkboard-10 border-${css.tailwindDir[props.align]} border-chalkboard-30 dark:bg-chalkboard-90 dark:border-chalkboard-80`}
         >
-          <ul
-            id="pane-buttons-section"
-            className={
-              'w-fit p-2 flex flex-col gap-2 ' +
-              (context.store?.openPanes.length >= 1 ? 'pr-0.5' : '')
-            }
-          >
+          <ul id="pane-buttons-section" className="flex flex-col items-stretch">
             {filteredPanes.map((pane) => (
               <ModelingPaneButton
                 key={pane.id}
+                align={
+                  props.align === Alignment.Right
+                    ? Alignment.Left
+                    : Alignment.Right
+                }
                 paneConfig={pane}
                 paneIsOpen={context.store?.openPanes.includes(pane.id)}
                 onClick={() => togglePane(pane.id)}
@@ -272,12 +385,14 @@ export function ModelingSidebar() {
           {filteredActions.length > 0 && (
             <>
               <hr className="w-full border-chalkboard-30 dark:border-chalkboard-80" />
-              <ul
-                id="sidebar-actions"
-                className="w-fit p-2 flex flex-col gap-2"
-              >
+              <ul id="sidebar-actions" className="flex flex-col">
                 {filteredActions.map((action) => (
                   <ModelingPaneButton
+                    align={
+                      props.align === Alignment.Right
+                        ? Alignment.Left
+                        : Alignment.Right
+                    }
                     key={action.id}
                     paneConfig={{
                       id: action.id,
@@ -298,8 +413,8 @@ export function ModelingSidebar() {
         <ul
           id="pane-section"
           className={
-            'ml-[-1px] col-start-2 col-span-1 flex flex-col items-stretch gap-2 ' +
-            (context.store?.openPanes.length >= 1 ? `w-full` : `hidden`)
+            'ml-[-1px] col-start-2 col-span-1 flex flex-col items-stretch border-x border-chalkboard-30 dark:border-chalkboard-80 ' +
+            (openPanesForThisSide.length >= 1 ? `w-full` : `hidden`)
           }
         >
           {filteredPanes
@@ -338,6 +453,7 @@ interface ModelingPaneButtonProps
     iconClassName?: string
     iconSize?: 'sm' | 'md' | 'lg'
   }
+  align: Alignment
   onClick: () => void
   paneIsOpen?: boolean
   showBadge?: BadgeInfoComputed
@@ -357,14 +473,20 @@ function ModelingPaneButton({
     scopes: ['modeling'],
   })
 
+  const tooltipPosition = props.align === Alignment.Left ? 'left' : 'right'
+
   return (
     <div
       id={paneConfig.id + '-button-holder'}
-      className="relative"
+      className="relative py-[1px]"
       data-onboarding-id={`${paneConfig.id}-pane-button`}
     >
       <button
-        className="group pointer-events-auto flex items-center justify-center border-transparent dark:border-transparent disabled:!border-transparent p-0 m-0 rounded-sm !outline-0 focus-visible:border-primary"
+        className={`group pointer-events-auto flex items-center justify-center border-0 rounded-none border-transparent dark:border-transparent p-2 m-0 !outline-0 ${paneIsOpen ? ' !border-primary' : ''}`}
+        style={{
+          [tooltipPosition === 'left' ? 'borderLeft' : 'borderRight']:
+            'solid 2px transparent',
+        }}
         onClick={onClick}
         name={paneConfig.sidebarName}
         data-testid={paneConfig.id + SIDEBAR_BUTTON_SUFFIX}
@@ -374,19 +496,15 @@ function ModelingPaneButton({
       >
         <ActionIcon
           icon={paneConfig.icon}
-          className={paneConfig.iconClassName || ''}
           size={paneConfig.iconSize || 'md'}
-          iconClassName={paneIsOpen ? ' !text-chalkboard-10' : ''}
-          bgClassName={
-            'rounded-sm ' + (paneIsOpen ? '!bg-primary' : '!bg-transparent')
-          }
+          bgClassName="rounded-sm !bg-transparent"
         />
         <span className="sr-only">
           {paneConfig.sidebarName}
           {paneIsOpen !== undefined ? ` pane` : ''}
         </span>
         <Tooltip
-          position="right"
+          position={tooltipPosition}
           contentClassName="max-w-none flex items-center gap-4"
           hoverOnly
         >
@@ -406,15 +524,14 @@ function ModelingPaneButton({
           className={
             showBadge.className
               ? showBadge.className
-              : 'absolute m-0 p-0 bottom-4 left-4 min-w-3 h-3 flex items-center justify-center text-[10px] font-semibold text-white bg-primary hue-rotate-90 rounded-full border border-chalkboard-10 dark:border-chalkboard-80 z-50 hover:cursor-pointer hover:scale-[2] transition-transform duration-200'
+              : 'absolute m-0 p-0 top-0 right-0 min-w-3 h-3 flex items-center justify-center text-[10px] font-semibold text-white bg-primary hue-rotate-90 rounded-bl border border-chalkboard-10 dark:border-chalkboard-80 z-50 hover:cursor-pointer hover:scale-[2] transition-transform duration-200'
           }
           onClick={showBadge.onClick}
           title={
             showBadge.title
               ? showBadge.title
-              : `Click to view ${showBadge.value} notification${
-                  Number(showBadge.value) > 1 ? 's' : ''
-                }`
+              : `Click to view ${showBadge.value} notification{Number(showBadge.value) > 1 ? 's' : ''
+              }`
           }
         >
           <span className="sr-only">&nbsp;has&nbsp;</span>
@@ -431,6 +548,33 @@ function ModelingPaneButton({
           )}
         </p>
       )}
+    </div>
+  )
+}
+
+function ResizeHandle(
+  props: HTMLProps<HTMLDivElement> & { alignment: Alignment }
+) {
+  const oppositeAlignment =
+    props.alignment === Alignment.Left ? Alignment.Right : Alignment.Left
+  return (
+    <div
+      {...props}
+      className={'group/grip absolute inset-0 ' + props.className}
+    >
+      <div
+        className={`hidden group-hover/grip:block absolute bg-chalkboard-30 dark:bg-chalkboard-70 w-[1px] h-auto top-0 bottom-0`}
+        style={{
+          // Tailwind did not like trying to do computed class names here, so I've inlined the styles
+          [oppositeAlignment]: 'auto',
+          [props.alignment]: '50%',
+        }}
+      />
+      <div
+        className={`hidden group-hover/grip:block py-1 absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 rounded-sm w-fit group-hover/grip:bg-chalkboard-30 group-hover/grip:dark:bg-chalkboard-70 bg-transparent transition-colors border border-transparent group-hover/grip:border-chalkboard-40 dark:group-hover/grip:border-chalkboard-90 duration-75 transition-ease-out delay-100`}
+      >
+        <CustomIcon className="w-5 -mx-0.5 rotate-90" name="sixDots" />
+      </div>
     </div>
   )
 }

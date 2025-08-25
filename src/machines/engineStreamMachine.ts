@@ -2,6 +2,7 @@ import type { MutableRefObject } from 'react'
 import type { ActorRefFrom } from 'xstate'
 import { assign, fromPromise, setup } from 'xstate'
 import type { AppMachineContext } from '@src/lib/types'
+import { EngineConnectionStateType } from '@src/lang/std/engineConnection'
 
 export enum EngineStreamState {
   WaitingForDependencies = 'waiting-for-dependencies',
@@ -9,6 +10,7 @@ export enum EngineStreamState {
   WaitingToPlay = 'waiting-to-play',
   Playing = 'playing',
   Reconfiguring = 'reconfiguring',
+  Pausing = 'pausing',
   Paused = 'paused',
   Stopped = 'stopped',
   // The is the state in-between Paused and Playing *specifically that order*.
@@ -22,6 +24,7 @@ export enum EngineStreamTransition {
   // Our dependencies to set
   SetPool = 'set-pool',
   SetAuthToken = 'set-auth-token',
+  SetContainerElementRef = 'set-container-element-ref',
   SetVideoRef = 'set-video-ref',
   SetCanvasRef = 'set-canvas-ref',
   SetMediaStream = 'set-media-stream',
@@ -39,6 +42,7 @@ export enum EngineStreamTransition {
 export interface EngineStreamContext {
   pool: string | null
   authToken: string | undefined
+  containerElementRef: MutableRefObject<HTMLDivElement | null>
   videoRef: MutableRefObject<HTMLVideoElement | null>
   canvasRef: MutableRefObject<HTMLCanvasElement | null>
   mediaStream: MediaStream | null
@@ -48,6 +52,7 @@ export interface EngineStreamContext {
 export const engineStreamContextCreate = (): EngineStreamContext => ({
   pool: null,
   authToken: undefined,
+  containerElementRef: { current: null },
   videoRef: { current: null },
   canvasRef: { current: null },
   mediaStream: null,
@@ -99,12 +104,13 @@ export const engineStreamMachine = setup({
         }
       }) => {
         if (!context.authToken) return Promise.reject()
+        if (!context.containerElementRef.current) return Promise.reject()
         if (!context.videoRef.current) return Promise.reject()
         if (!context.canvasRef.current) return Promise.reject()
 
         const { width, height } = getDimensions(
-          window.innerWidth,
-          window.innerHeight
+          context.containerElementRef.current.clientWidth,
+          context.containerElementRef.current.clientHeight
         )
 
         context.videoRef.current.width = width
@@ -235,25 +241,53 @@ export const engineStreamMachine = setup({
           console.warn('Save remote camera state timed out', e)
         }
 
-        // Make sure we're on the next frame for no flickering between canvas
-        // and the video elements.
-        window.requestAnimationFrame(
-          () =>
-            void (async () => {
-              // Destroy the media stream. We will re-establish it. We could
-              // leave everything at pausing, preventing video decoders from running
-              // but we can do even better by significantly reducing network
-              // cards also.
-              context.mediaStream?.getVideoTracks()[0].stop()
-              context.mediaStream = null
+        await new Promise<void>((resolve, reject) => {
+          // Make sure we're on the next frame for no flickering between canvas
+          // and the video elements.
+          window.requestAnimationFrame(
+            () =>
+              void (async () => {
+                // Destroy the media stream. We will re-establish it. We could
+                // leave everything at pausing, preventing video decoders from running
+                // but we can do even better by significantly reducing network
+                // cards also.
+                context.mediaStream?.getVideoTracks()[0].stop()
+                context.mediaStream = null
 
-              if (context.videoRef.current) {
-                context.videoRef.current.srcObject = null
-              }
+                if (context.videoRef.current) {
+                  context.videoRef.current.srcObject = null
+                }
 
-              rootContext.engineCommandManager.tearDown({ idleMode: true })
-            })()
-        )
+                let oldEngineConnection =
+                  rootContext.engineCommandManager.engineConnection
+                rootContext.engineCommandManager.tearDown({ idleMode: true })
+
+                let timeoutCheckId: ReturnType<typeof setTimeout>
+                const timeoutEjectId = setTimeout(() => {
+                  clearTimeout(timeoutCheckId)
+                  reject()
+                }, 5000)
+
+                const checkClosed = () => {
+                  timeoutCheckId = setTimeout(() => {
+                    if (
+                      oldEngineConnection?.state?.type !==
+                      EngineConnectionStateType.Paused
+                    ) {
+                      checkClosed()
+                      return
+                    }
+                    // Finally disconnected.
+                    clearTimeout(timeoutEjectId)
+                    resolve()
+                  }, 100)
+                }
+                checkClosed()
+              })()
+          )
+        })
+
+        return {}
       }
     ),
   },
@@ -271,6 +305,14 @@ export const engineStreamMachine = setup({
           target: EngineStreamState.WaitingForDependencies,
           actions: [
             assign({ authToken: ({ context, event }) => event.authToken }),
+          ],
+        },
+        [EngineStreamTransition.SetContainerElementRef]: {
+          target: EngineStreamState.WaitingForDependencies,
+          actions: [
+            assign({
+              containerElementRef: ({ event }) => event.containerElementRef,
+            }),
           ],
         },
         [EngineStreamTransition.SetVideoRef]: {
@@ -344,7 +386,7 @@ export const engineStreamMachine = setup({
           target: EngineStreamState.Reconfiguring,
         },
         [EngineStreamTransition.Pause]: {
-          target: EngineStreamState.Paused,
+          target: EngineStreamState.Pausing,
         },
         [EngineStreamTransition.Stop]: {
           target: EngineStreamState.Stopped,
@@ -362,14 +404,18 @@ export const engineStreamMachine = setup({
         onDone: [{ target: EngineStreamState.Playing }],
       },
     },
-    [EngineStreamState.Paused]: {
+    [EngineStreamState.Pausing]: {
       invoke: {
         src: EngineStreamTransition.Pause,
         input: (args) => ({
           context: args.context,
           rootContext: args.self.system.get('root').getSnapshot().context,
         }),
+        onDone: [{ target: EngineStreamState.Paused }],
+        onError: [{ target: EngineStreamState.Stopped }],
       },
+    },
+    [EngineStreamState.Paused]: {
       on: {
         [EngineStreamTransition.Resume]: {
           target: EngineStreamState.Resuming,
@@ -393,6 +439,7 @@ export const engineStreamMachine = setup({
               assign({
                 videoRef: { current: null },
                 canvasRef: { current: null },
+                containerElementRef: { current: null },
               }),
             ],
           },

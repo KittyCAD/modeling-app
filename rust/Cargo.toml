@@ -11,6 +11,7 @@ members = [
     "kcl-test-server",
     "kcl-to-core",
     "kcl-wasm-lib",
+    "ezpz",
 ]
 
 [workspace.dependencies]
@@ -63,6 +64,9 @@ result_large_err = "allow"
 
 [profile.release]
 panic = "abort"
+debug = true
+
+[profile.bench]
 debug = true
 
 [profile.dev]

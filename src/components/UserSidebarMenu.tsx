@@ -36,11 +36,13 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
   useEffect(() => {
     if (!didListEnvironments) {
       didListEnvironments = true
-      listAllEnvironmentsWithTokens()
-        .then((environmentsWithTokens) => {
-          setHasMultipleEnvironments(environmentsWithTokens.length > 1)
-        })
-        .catch(reportRejection)
+      if (window.electron) {
+        listAllEnvironmentsWithTokens(window.electron)
+          .then((environmentsWithTokens) => {
+            setHasMultipleEnvironments(environmentsWithTokens.length > 1)
+          })
+          .catch(reportRejection)
+      }
     }
   }, [])
 
@@ -157,7 +159,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
           Element: 'button',
           hide: !isDesktop(),
           onClick: () => {
-            window.electron.appCheckForUpdates().catch(reportRejection)
+            window.electron?.appCheckForUpdates().catch(reportRejection)
           },
           children: <span className="flex-1">Check for updates</span>,
         },

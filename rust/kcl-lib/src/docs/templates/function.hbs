@@ -9,6 +9,10 @@ layout: manual
 **WARNING:** This function is deprecated.
 
 {{/if}}
+{{#if experimental}}
+**WARNING:** This function is experimental and may change or be removed.
+
+{{/if}}
 {{{summary}}}
 
 ```kcl
@@ -59,8 +63,12 @@ layout: manual
 >
 </model-viewer>
 {{else}}
-	{{#if this.image_base64}}
+	{{#if this.image_path}}
+![Rendered example of {{@root.name}} {{@index}}]({{this.image_path}})
+	{{else}}
+		{{#if this.image_base64}}
 ![Rendered example of {{@root.name}} {{@index}}](data:image/png;base64,{{{this.image_base64}}})
+		{{/if}}
 	{{/if}}
 {{/if}}
 

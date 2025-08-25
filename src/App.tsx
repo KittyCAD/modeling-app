@@ -13,7 +13,10 @@ import { AppHeader } from '@src/components/AppHeader'
 import { EngineStream } from '@src/components/EngineStream'
 import Gizmo from '@src/components/Gizmo'
 import { useLspContext } from '@src/components/LspProvider'
-import { ModelingSidebar } from '@src/components/ModelingSidebar/ModelingSidebar'
+import {
+  ModelingSidebarLeft,
+  ModelingSidebarRight,
+} from '@src/components/ModelingSidebar/ModelingSidebar'
 import { UnitsMenu } from '@src/components/UnitsMenu'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import { useQueryParamEffects } from '@src/hooks/useQueryParamEffects'
@@ -72,9 +75,11 @@ import env from '@src/env'
 // CYCLIC REF
 sceneInfra.camControls.engineStreamActor = engineStreamActor
 
-maybeWriteToDisk()
-  .then(() => {})
-  .catch(() => {})
+if (window.electron) {
+  maybeWriteToDisk(window.electron)
+    .then(() => {})
+    .catch(reportRejection)
+}
 
 export function App() {
   const { state: modelingState } = useModelingContext()
@@ -241,7 +246,7 @@ export function App() {
 
   // Only create the native file menus on desktop
   useEffect(() => {
-    if (isDesktop()) {
+    if (window.electron) {
       window.electron
         .createModelingPageMenu()
         .then(() => {
@@ -269,54 +274,59 @@ export function App() {
             <CommandBarOpenButton />
             <ShareButton />
           </AppHeader>
-          <Toolbar />
         </div>
         <ModalContainer />
-        <ModelingSidebar />
-        <EngineStream pool={pool} authToken={authToken} />
-        {/* <CamToggle /> */}
-        <section className="absolute bottom-2 right-2 flex flex-col items-end gap-3 pointer-events-none">
-          <UnitsMenu />
-          <Gizmo />
+        <section className="flex flex-1">
+          <ModelingSidebarLeft />
+          <div className="relative z-0 flex flex-col flex-1 items-center overflow-hidden">
+            <Toolbar />
+            <EngineStream pool={pool} authToken={authToken} />
+            <div className="absolute bottom-2 right-2 flex flex-col items-end gap-3 pointer-events-none">
+              <UnitsMenu />
+              <Gizmo />
+            </div>
+          </div>
+          <ModelingSidebarRight />
         </section>
-      </div>
-      <StatusBar
-        globalItems={[
-          networkHealthStatus,
-          ...(isDesktop() ? [networkMachineStatus] : []),
-          ...defaultGlobalStatusBarItems({ location, filePath }),
-        ]}
-        localItems={[
-          ...(getSettings().app.showDebugPanel.current
-            ? ([
-                {
-                  id: 'modeling-state',
-                  element: 'text',
-                  label:
-                    modelingState.value instanceof Object
-                      ? (xStateValueToString(modelingState.value) ?? '')
-                      : modelingState.value,
-                  toolTip: {
-                    children: 'The current state of the modeler',
+        {/* <CamToggle /> */}
+        <StatusBar
+          globalItems={[
+            networkHealthStatus,
+            ...(isDesktop() ? [networkMachineStatus] : []),
+            ...defaultGlobalStatusBarItems({ location, filePath }),
+          ]}
+          localItems={[
+            ...(getSettings().app.showDebugPanel.current
+              ? ([
+                  {
+                    id: 'modeling-state',
+                    element: 'text',
+                    label:
+                      modelingState.value instanceof Object
+                        ? (xStateValueToString(modelingState.value) ?? '')
+                        : modelingState.value,
+                    toolTip: {
+                      children: 'The current state of the modeler',
+                    },
                   },
-                },
-              ] satisfies StatusBarItemType[])
-            : []),
-          {
-            id: 'selection',
-            'data-testid': 'selection-status',
-            element: 'text',
-            label:
-              getSelectionTypeDisplayText(
-                modelingState.context.selectionRanges
-              ) ?? 'No selection',
-            toolTip: {
-              children: 'Currently selected geometry',
+                ] satisfies StatusBarItemType[])
+              : []),
+            {
+              id: 'selection',
+              'data-testid': 'selection-status',
+              element: 'text',
+              label:
+                getSelectionTypeDisplayText(
+                  modelingState.context.selectionRanges
+                ) ?? 'No selection',
+              toolTip: {
+                children: 'Currently selected geometry',
+              },
             },
-          },
-          ...defaultLocalStatusBarItems,
-        ]}
-      />
+            ...defaultLocalStatusBarItems,
+          ]}
+        />
+      </div>
     </div>
   )
 }

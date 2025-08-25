@@ -293,7 +293,9 @@ test(
 
 test(
   'when code with error first loads you get errors in console',
-  { tag: '@desktop' },
+  {
+    tag: '@desktop',
+  },
   async ({ context, page, editor }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
       await fsp.mkdir(path.join(dir, 'broken-code'), { recursive: true })
@@ -324,7 +326,9 @@ test(
 
 test(
   'Rename and delete projects, also spam arrow keys when renaming',
-  { tag: '@desktop' },
+  {
+    tag: '@desktop',
+  },
   async ({ context, page }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
       await fsp.mkdir(`${dir}/router-template-slate`, { recursive: true })
@@ -540,7 +544,9 @@ test(
 
 test(
   'pressing "delete" on home screen should do nothing',
-  { tag: '@desktop' },
+  {
+    tag: '@desktop',
+  },
   async ({ context, page, homePage }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
       await fsp.mkdir(`${dir}/router-template-slate`, { recursive: true })
@@ -648,7 +654,7 @@ test.describe(`Project management commands`, () => {
       const projectNameOption = page.getByRole('option', { name: projectName })
       const commandWarning = page.getByText('Are you sure you want to delete?')
       const toastMessage = page.getByText(`Successfully deleted`)
-      const noProjectsMessage = page.getByText('No projects found')
+      const noProjectsMessage = page.getByText('No results found')
 
       await test.step(`Setup`, async () => {
         await page.setBodyDimensions({ width: 1200, height: 500 })
@@ -752,7 +758,7 @@ test.describe(`Project management commands`, () => {
       const projectNameOption = page.getByRole('option', { name: projectName })
       const commandWarning = page.getByText('Are you sure you want to delete?')
       const toastMessage = page.getByText(`Successfully deleted`)
-      const noProjectsMessage = page.getByText('No projects found')
+      const noProjectsMessage = page.getByText('No results found')
 
       await test.step(`Setup`, async () => {
         await page.setBodyDimensions({ width: 1200, height: 500 })
@@ -911,7 +917,9 @@ test(
 
 test(
   'Nested directories in project without main.kcl do not create main.kcl',
-  { tag: '@desktop' },
+  {
+    tag: '@desktop',
+  },
   async ({ scene, cmdBar, context, page }, testInfo) => {
     let testDir: string | undefined
     await context.folderSetupFn(async (dir) => {
@@ -968,7 +976,9 @@ test(
 
 test(
   'Deleting projects, can delete individual project, can still create projects after deleting all',
-  { tag: '@desktop' },
+  {
+    tag: '@desktop',
+  },
   async ({ context, page }, testInfo) => {
     const projectData = [
       ['router-template-slate', 'cylinder.kcl'],
@@ -1032,7 +1042,7 @@ test(
     })
 
     await test.step('Check that the home page is empty', async () => {
-      await expect(page.getByText('No projects found')).toBeVisible()
+      await expect(page.getByText('No results found')).toBeVisible()
     })
 
     await test.step('Check we can still create a project', async () => {
@@ -1046,7 +1056,9 @@ test(
 
 test(
   'Can load a file with CRLF line endings',
-  { tag: '@desktop' },
+  {
+    tag: '@desktop',
+  },
   async ({ context, page, scene, cmdBar }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
       const routerTemplateDir = path.join(dir, 'router-template-slate')
@@ -1078,7 +1090,9 @@ test(
 
 test(
   'Can sort projects on home page',
-  { tag: '@desktop' },
+  {
+    tag: '@desktop',
+  },
   async ({ context, page }, testInfo) => {
     const projectData = [
       ['router-template-slate', 'cylinder.kcl'],
@@ -1106,7 +1120,7 @@ test(
 
     await test.step('should be shorted by modified initially', async () => {
       const lastModifiedButton = page.getByRole('button', {
-        name: 'Last Modified',
+        name: 'Age',
       })
       await expect(lastModifiedButton).toBeVisible()
       await expect(lastModifiedButton.getByLabel('arrow down')).toBeVisible()
@@ -1127,7 +1141,7 @@ test(
 
     await test.step('Reverse modified order', async () => {
       const lastModifiedButton = page.getByRole('button', {
-        name: 'Last Modified',
+        name: 'Age',
       })
       await lastModifiedButton.click()
       await expect(lastModifiedButton).toBeVisible()
@@ -1185,7 +1199,9 @@ test(
 
 test(
   'When the project folder is empty, user can create new project and open it.',
-  { tag: '@desktop' },
+  {
+    tag: '@desktop',
+  },
   async ({ page }, testInfo) => {
     const u = await getUtils(page)
     await page.setBodyDimensions({ width: 1200, height: 500 })
@@ -1201,8 +1217,8 @@ test(
     // Constants and locators
     const projectLinks = page.getByTestId('project-link')
 
-    // expect to see text "No projects found"
-    await expect(page.getByText('No projects found')).toBeVisible()
+    // expect to see text "No results found"
+    await expect(page.getByText('No results found')).toBeVisible()
 
     await createProject({ name: 'project-000', page, returnHome: true })
     await expect(projectLinks.getByText('project-000')).toBeVisible()
@@ -1281,7 +1297,9 @@ extrude001 = extrude(sketch001, length = 200)`)
 
 test(
   'You can change the root projects directory and nothing is lost',
-  { tag: '@desktop' },
+  {
+    tag: '@desktop',
+  },
   async ({ context, page, tronApp, homePage }, testInfo) => {
     if (!tronApp) {
       fail()
@@ -1347,7 +1365,7 @@ test(
 
       await homePage.projectsLoaded()
 
-      await expect(page.getByText('No projects found')).toBeVisible()
+      await expect(page.getByText('No results found')).toBeVisible()
       await createProject({ name: 'project-000', page, returnHome: true })
       await expect(
         page.getByTestId('project-link').filter({ hasText: 'project-000' })
@@ -1388,7 +1406,9 @@ test(
 
 test(
   'Search projects on desktop home',
-  { tag: '@desktop' },
+  {
+    tag: '@desktop',
+  },
   async ({ context, page }, testInfo) => {
     const projectData = [
       ['basic bracket', 'focusrite_scarlett_mounting_bracket.kcl'],
@@ -1412,7 +1432,7 @@ test(
     page.on('console', console.log)
 
     // Our locator constants
-    const searchInput = page.getByPlaceholder('Search projects')
+    const searchInput = page.getByPlaceholder('Search')
     const projectLinks = page.getByTestId('project-link')
 
     await test.step('Search for "basi"', async () => {
@@ -1444,7 +1464,9 @@ test(
 
 test(
   'file pane is scrollable when there are many files',
-  { tag: '@desktop' },
+  {
+    tag: '@desktop',
+  },
   async ({ scene, cmdBar, context, page }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
       const testDir = path.join(dir, 'testProject')
@@ -1546,7 +1568,9 @@ test(
 
 test(
   'select all in code editor does not actually select all, just what is visible (regression)',
-  { tag: '@desktop' },
+  {
+    tag: '@desktop',
+  },
   async ({ context, page }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
       // rust/kcl-lib/e2e/executor/inputs/mike_stress_test.kcl
@@ -1604,7 +1628,9 @@ test(
 
 test(
   'Settings persist across restarts',
-  { tag: '@desktop' },
+  {
+    tag: '@desktop',
+  },
   async ({ page, toolbar }, testInfo) => {
     await test.step('We can change a user setting like theme', async () => {
       await page.setBodyDimensions({ width: 1200, height: 500 })
@@ -1636,7 +1662,9 @@ test(
 
 test(
   'Original project name persist after onboarding',
-  { tag: '@desktop' },
+  {
+    tag: '@desktop',
+  },
   async ({ page, toolbar }, testInfo) => {
     const nextButton = page.getByTestId('onboarding-next')
     await page.setBodyDimensions({ width: 1200, height: 500 })
