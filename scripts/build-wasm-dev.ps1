@@ -10,12 +10,16 @@ mkdir -p rust/kcl-wasm-lib/pkg
 if (Test-Path rust/kcl-lib/bindings) {
     rm -Recurse -Force rust/kcl-lib/bindings
 }
+if (Test-Path rust/kcl-api/bindings) {
+    rm -Recurse -Force rust/kcl-api/bindings
+}
 
 cd rust
 $env:RUSTFLAGS='--cfg getrandom_backend="wasm_js"'
 wasm-pack build kcl-wasm-lib --dev --target web --out-dir pkg
 $env:RUSTFLAGS=''
 cargo test -p kcl-lib --features artifact-graph export_bindings
+cargo test -p kcl-api
 cd ..
 
 copy rust\kcl-wasm-lib\pkg\kcl_wasm_lib_bg.wasm public

@@ -6,6 +6,7 @@ use indexmap::IndexMap;
 use kcl_api::{Error, FileId, LifecycleApi, ProjectId, Result, SceneGraph, SceneGraphDelta, Version};
 use tokio::sync::RwLock;
 
+#[derive(Debug, Clone)]
 pub struct Project {
     id: ProjectId,
     files: IndexMap<FileId, File>,
@@ -19,6 +20,7 @@ impl Project {
     }
 }
 
+#[derive(Debug, Clone)]
 struct File {
     version: Version,
     path: String,
@@ -29,7 +31,8 @@ lazy_static::lazy_static! {
         static ref PROJECT: Arc<RwLock<Option<Project>>> = Default::default();
 }
 
-pub(crate) struct ProjectManager;
+#[derive(Debug, Clone)]
+pub struct ProjectManager;
 
 impl ProjectManager {
     async fn with_project<T>(f: impl FnOnce(&Option<Project>) -> T) -> T {
@@ -42,7 +45,7 @@ impl ProjectManager {
 }
 
 impl LifecycleApi for ProjectManager {
-    async fn open_project(id: ProjectId, files: Vec<kcl_api::File>, open_file: FileId) -> Result<SceneGraph> {
+    async fn open_project(&self, id: ProjectId, files: Vec<kcl_api::File>, open_file: FileId) -> Result<SceneGraph> {
         Ok(Self::with_project_mut(move |project| {
             *project = Some(Project {
                 id,
@@ -67,7 +70,7 @@ impl LifecycleApi for ProjectManager {
         .await)
     }
 
-    async fn add_file(project_id: ProjectId, file: kcl_api::File) -> Result<SceneGraphDelta> {
+    async fn add_file(&self, project_id: ProjectId, file: kcl_api::File) -> Result<SceneGraphDelta> {
         Self::with_project_mut(move |project| {
             let Some(project) = project else {
                 return Err(Error::bad_project(project_id, None));
@@ -91,7 +94,7 @@ impl LifecycleApi for ProjectManager {
         .await
     }
 
-    async fn remove_file(project_id: ProjectId, file_id: FileId) -> Result<SceneGraphDelta> {
+    async fn remove_file(&self, project_id: ProjectId, file_id: FileId) -> Result<SceneGraphDelta> {
         Self::with_project_mut(move |project| {
             let Some(project) = project else {
                 return Err(Error::bad_project(project_id, None));
@@ -108,7 +111,7 @@ impl LifecycleApi for ProjectManager {
         .await
     }
 
-    async fn update_file(project_id: ProjectId, file_id: FileId, text: String) -> Result<SceneGraphDelta> {
+    async fn update_file(&self, project_id: ProjectId, file_id: FileId, text: String) -> Result<SceneGraphDelta> {
         Self::with_project_mut(move |project| {
             let Some(project) = project else {
                 return Err(Error::bad_project(project_id, None));
@@ -125,7 +128,7 @@ impl LifecycleApi for ProjectManager {
         .await
     }
 
-    async fn switch_file(project_id: ProjectId, file_id: FileId) -> Result<SceneGraph> {
+    async fn switch_file(&self, project_id: ProjectId, file_id: FileId) -> Result<SceneGraph> {
         Self::with_project_mut(move |project| {
             let Some(project) = project else {
                 return Err(Error::bad_project(project_id, None));
@@ -143,7 +146,7 @@ impl LifecycleApi for ProjectManager {
         .await
     }
 
-    async fn refresh(project_id: ProjectId) -> Result<SceneGraph> {
+    async fn refresh(&self, project_id: ProjectId) -> Result<SceneGraph> {
         Self::with_project_mut(move |project| {
             let Some(project) = project else {
                 return Err(Error::bad_project(project_id, None));

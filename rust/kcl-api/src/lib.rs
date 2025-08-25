@@ -2,25 +2,29 @@
 #![allow(async_fn_in_trait)]
 
 use kcl_error::SourceRange;
+use serde::{Deserialize, Serialize};
 
 pub trait LifecycleApi {
-    async fn open_project(project: ProjectId, files: Vec<File>, open_file: FileId) -> Result<SceneGraph>;
-    async fn add_file(project: ProjectId, file: File) -> Result<SceneGraphDelta>;
-    async fn remove_file(project: ProjectId, file: FileId) -> Result<SceneGraphDelta>;
+    async fn open_project(&self, project: ProjectId, files: Vec<File>, open_file: FileId) -> Result<SceneGraph>;
+    async fn add_file(&self, project: ProjectId, file: File) -> Result<SceneGraphDelta>;
+    async fn remove_file(&self, project: ProjectId, file: FileId) -> Result<SceneGraphDelta>;
     // File changed on disk, etc. outside of the editor or applying undo, restore, etc.
-    async fn update_file(project: ProjectId, file: FileId, text: String) -> Result<SceneGraphDelta>;
-    async fn switch_file(project: ProjectId, file: FileId) -> Result<SceneGraph>;
-    async fn refresh(project: ProjectId) -> Result<SceneGraph>;
+    async fn update_file(&self, project: ProjectId, file: FileId, text: String) -> Result<SceneGraphDelta>;
+    async fn switch_file(&self, project: ProjectId, file: FileId) -> Result<SceneGraph>;
+    async fn refresh(&self, project: ProjectId) -> Result<SceneGraph>;
 }
 
 pub trait SketchApi {
     async fn new_sketch(
+        &self,
         project: ProjectId,
         file: FileId,
         version: Version,
         args: SketchArgs,
     ) -> Result<(SourceDelta, SceneGraphDelta, ObjectId)>;
+
     async fn edit_sketch(
+        &self,
         project: ProjectId,
         file: FileId,
         version: Version,
@@ -29,7 +33,8 @@ pub trait SketchApi {
     async fn exit_sketch(sketch: ObjectId) -> Result<SceneGraph>;
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export)]
 pub struct SceneGraph {
     pub project: ProjectId,
     pub file: FileId,
@@ -53,7 +58,8 @@ impl SceneGraph {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export)]
 pub struct SceneGraphDelta {
     pub new_graph: SceneGraph,
     pub invalidates_ids: bool,
@@ -68,39 +74,46 @@ impl SceneGraphDelta {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export)]
 pub struct SourceDelta {}
 
-#[derive(Debug, Clone, Copy, Hash, Eq, PartialEq)]
+#[derive(Debug, Clone, Copy, Hash, Eq, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, rename = "ApiObjectId")]
 pub struct ObjectId(pub usize);
 
-#[derive(Debug, Clone, Copy, Hash, Eq, PartialEq, Ord, PartialOrd)]
+#[derive(Debug, Clone, Copy, Hash, Eq, PartialEq, Ord, PartialOrd, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, rename = "ApiVersion")]
 pub struct Version(pub usize);
 
-#[derive(Debug, Clone, Copy, Hash, Eq, PartialEq)]
+#[derive(Debug, Clone, Copy, Hash, Eq, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, rename = "ApiProjectId")]
 pub struct ProjectId(pub usize);
 
-#[derive(Debug, Clone, Copy, Hash, Eq, PartialEq)]
+#[derive(Debug, Clone, Copy, Hash, Eq, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, rename = "ApiFileId")]
 pub struct FileId(pub usize);
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, rename = "ApiFile")]
 pub struct File {
     pub id: FileId,
     pub path: String,
     pub text: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, rename = "ApiSettings")]
 pub struct Settings {}
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
 pub struct Object {
     pub kind: ObjectKind,
     pub artifact_id: usize,
     pub source: SourceRef,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
 pub enum ObjectKind {
     Sketch(Sketch),
     Segment,
@@ -108,30 +121,30 @@ pub enum ObjectKind {
     Sweep,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
 pub struct Sketch {
     pub args: SketchArgs,
     pub items: Vec<ObjectId>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
 pub struct SketchArgs {
     pub on: Plane,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
 pub enum Plane {
     Object(ObjectId),
     Default,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
 pub enum SourceRef {
     Simple(SourceRange),
     BackTrace(Vec<SourceRange>),
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
 pub struct Error {
     pub msg: String,
 }
@@ -163,6 +176,22 @@ impl Error {
             None => format!("File ID not found: {found:?}"),
         };
         Error { msg }
+    }
+
+    pub fn serialize(e: impl serde::ser::Error) -> Self {
+        Error {
+            msg: format!(
+                "Could not serialize successful KCL result. This is a bug in KCL and not in your code, please report this to Zoo. Details: {e}"
+            ),
+        }
+    }
+
+    pub fn deserialize(name: &str, e: impl serde::de::Error) -> Self {
+        Error {
+            msg: format!(
+                "Could not deserialize argument `{name}`. This is a bug in KCL and not in your code, please report this to Zoo. Details: {e}"
+            ),
+        }
     }
 }
 
