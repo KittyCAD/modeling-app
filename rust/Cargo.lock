@@ -2660,6 +2660,7 @@ dependencies = [
  "insta",
  "itertools 0.14.0",
  "js-sys",
+ "kcl-api",
  "kcl-derive-docs",
  "kcl-directory-test-macro",
  "kcl-error",
