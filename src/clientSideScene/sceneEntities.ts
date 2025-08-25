@@ -500,7 +500,6 @@ export class SceneEntities {
               majorColor,
               minorColor,
               fixedSizeGrid: settings.modeling.fixedSizeGrid.current,
-              majorPxRange: [40, 120],
             }
           )
         }

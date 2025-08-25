@@ -131,7 +131,6 @@ export class InfiniteGridRenderer extends LineSegments<
       majorColor: [number, number, number, number]
       minorColor: [number, number, number, number]
       fixedSizeGrid: boolean
-      majorPxRange: [number, number]
     }
   ) {
     if (!(camera instanceof OrthographicCamera)) {
@@ -146,6 +145,7 @@ export class InfiniteGridRenderer extends LineSegments<
     camera.updateProjectionMatrix()
 
     let effectiveMajorSpacing = options.majorGridSpacing
+    let effectiveMinorGridsPerMajor = options.minorGridsPerMajor
     let minorSpacing = effectiveMajorSpacing / options.minorGridsPerMajor
 
     const viewportWidthPx = viewportSize[0]
@@ -153,20 +153,21 @@ export class InfiniteGridRenderer extends LineSegments<
 
     if (!options.fixedSizeGrid) {
       // In non-fixed size mode, adjust major spacing based on current zoom level
-      const desiredMin = options.majorPxRange[0]
-      const desiredMax = options.majorPxRange[1]
       let majorPx = effectiveMajorSpacing * pixelsPerBaseUnit
 
-      while (majorPx < desiredMin) {
-        effectiveMajorSpacing *= 10
-        majorPx *= 10
+      if (majorPx < 40) {
+        while (majorPx < 40) {
+          effectiveMajorSpacing *= 10
+          majorPx *= 10
+        }
+      } else {
+        while (majorPx > viewportWidthPx * 0.7) {
+          effectiveMajorSpacing /= 10
+          majorPx /= 10
+        }
       }
-      while (majorPx > desiredMax) {
-        effectiveMajorSpacing /= 10
-        majorPx /= 10
-      }
-      minorSpacing =
-        effectiveMajorSpacing / Math.max(1, options.minorGridsPerMajor)
+
+      minorSpacing = effectiveMajorSpacing / options.minorGridsPerMajor
     }
 
     const majorSpacingPx = effectiveMajorSpacing * pixelsPerBaseUnit
@@ -185,6 +186,7 @@ export class InfiniteGridRenderer extends LineSegments<
       // If minors are too small, collapse to majors only by using major spacing
       if (minorSpacingPx < this.minMinorGridPixelSpacing) {
         effectiveMinorSpacing = effectiveMajorSpacing
+        effectiveMinorGridsPerMajor = 1 // No minors, only majors
       }
     }
 
@@ -233,7 +235,7 @@ export class InfiniteGridRenderer extends LineSegments<
     material.uniforms.viewportPx.value = [viewportWidthPx, viewportHeightPx]
     material.uniforms.lineGapNDC.value = lineGapNDC
     material.uniforms.lineOffsetNDC.value = lineOffsetNDC
-    material.uniforms.minorsPerMajor.value = 1 / effectiveMinorSpacing
+    material.uniforms.minorsPerMajor.value = effectiveMinorGridsPerMajor
 
     if (options?.majorColor) {
       material.uniforms.uMajorColor.value = options.majorColor
