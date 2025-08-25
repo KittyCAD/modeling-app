@@ -68,6 +68,7 @@ mod log;
 mod lsp;
 mod modules;
 mod parsing;
+mod project;
 mod settings;
 #[cfg(test)]
 mod simulation_tests;
