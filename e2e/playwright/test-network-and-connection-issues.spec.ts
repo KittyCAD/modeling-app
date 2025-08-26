@@ -1,6 +1,3 @@
-import type { EngineCommand } from '@src/lang/std/artifactGraph'
-import { uuidv4 } from '@src/lib/utils'
-
 import { getUtils, TEST_COLORS, circleMove } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
