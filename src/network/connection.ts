@@ -17,8 +17,10 @@ import {
 import type { Models } from '@kittycad/lib'
 import {
   createOnWebSocketError,
+  createOnWebSocketMessage,
   createOnWebSocketOpen,
 } from './websocketConnection'
+import { C } from 'vitest/dist/chunks/reporters.d.79o4mouw'
 
 export interface INewTrackArgs {
   conn: Connection
@@ -212,11 +214,25 @@ export class Connection extends EventTarget {
       send: this.send,
       token: this.token,
     })
-
     const onWebSocketError = createOnWebSocketError()
+    const onWebSocketMessage = createOnWebSocketMessage({
+      connecitonManager: this.connectionManager,
+      disconnectAll: this.disconnectAll,
+      setPong: this.setPong,
+      dispatchEvent: this.dispatchEvent,
+      ping: ()=>{return this._pingPongSpan.ping},
+      setPing: this.setPing,
+      createPeerConnection: this.createPeerConnection,
+      send: this.send,
+      setSdpAnswer: this.setSdpAnswer,
+      initiateConnectionExclusive: this.initiateConnectionExclusive,
+      addIceCandidate: this.addIceCandidate,
+      webrtcStatsCollector: this.webrtcStatsCollector
+    })
 
     this.websocket.addEventListener('open', onWebSocketOpen)
     this.websocket.addEventListener('error', onWebSocketError)
+  
 
     // TODO: Save off all callbacks to remove from the event listener in the cleanUp function
   }
@@ -254,6 +270,10 @@ export class Connection extends EventTarget {
   }
 
   addIceCandidate(candidate: RTCIceCandidateInit) {
+    // Do we need this awaited before we can say it is completed?
+    // Probably...
+    // I think I should make a default one that is pending until called?
+
     if (!this.peerConnection) {
       throw new Error('do not do this, crashing!')
     }

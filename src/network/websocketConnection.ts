@@ -3,6 +3,7 @@ import {
   logger,
   EngineConnectionEvents,
   toRTCSessionDescriptionInit,
+  ClientMetrics
 } from './utils'
 import { ConnectionManager } from './connectionManager'
 
