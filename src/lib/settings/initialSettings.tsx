@@ -131,6 +131,7 @@ const MS_IN_MINUTE = 1000 * 60
 
 export function createSettings() {
   return {
+    // Gotcha: If you add a new setting here, you will likely need to update rust/kcl-lib/src/settings/types/mod.rs as well.
     app: {
       /**
        * The overall appearance of the app: light, dark, or system
