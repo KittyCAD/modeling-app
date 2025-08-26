@@ -16,6 +16,7 @@ import {
 } from './peerConnection'
 import type { Models } from '@kittycad/lib'
 import {
+  createOnWebSocketClose,
   createOnWebSocketError,
   createOnWebSocketMessage,
   createOnWebSocketOpen,
@@ -216,23 +217,38 @@ export class Connection extends EventTarget {
     })
     const onWebSocketError = createOnWebSocketError()
     const onWebSocketMessage = createOnWebSocketMessage({
-      connecitonManager: this.connectionManager,
+      connectionManager: this.connectionManager,
       disconnectAll: this.disconnectAll,
       setPong: this.setPong,
       dispatchEvent: this.dispatchEvent,
-      ping: ()=>{return this._pingPongSpan.ping},
+      ping: () => {
+        return this._pingPongSpan.ping
+      },
       setPing: this.setPing,
       createPeerConnection: this.createPeerConnection,
       send: this.send,
       setSdpAnswer: this.setSdpAnswer,
       initiateConnectionExclusive: this.initiateConnectionExclusive,
       addIceCandidate: this.addIceCandidate,
-      webrtcStatsCollector: this.webrtcStatsCollector
+      webrtcStatsCollector: this.webrtcStatsCollector,
     })
+    const onWebSocketClose = createOnWebSocketClose({
+      websocket: this.websocket,
+      onWebSocketOpen: onWebSocketOpen,
+      onWebSocketError: onWebSocketError,
+      onWebSocketMessage: onWebSocketMessage,
+      disconnectAll: this.disconnectAll,
+      dispatchEvent: this.dispatchEvent
+    })
+
+    const metaClose = () => {
+      onWebSocketClose()
+    }
 
     this.websocket.addEventListener('open', onWebSocketOpen)
     this.websocket.addEventListener('error', onWebSocketError)
-  
+    this.websocket.addEventListener('message', onWebSocketMessage)
+    this.websocket.addEventListener('close', metaClose)
 
     // TODO: Save off all callbacks to remove from the event listener in the cleanUp function
   }

@@ -82,7 +82,7 @@ export const createOnWebSocketMessage = ({
   setSdpAnswer: (answer: RTCSessionDescriptionInit) => void
   initiateConnectionExclusive: () => void
   addIceCandidate: (candidate: RTCIceCandidateInit) => void
-  webrtcStatsCollector: () => Promise<ClientMetrics>
+  webrtcStatsCollector: (() => Promise<ClientMetrics>) | undefined
 }) => {
   const onWebSocketMessage = async (event: MessageEvent<any>) => {
     // In the EngineConnection, we're looking for messages to/from
@@ -232,6 +232,13 @@ export const createOnWebSocketMessage = ({
         break
       case 'metrics_request':
         try {
+          if (!webrtcStatsCollector) {
+            throw new Error('webrtcStatsCollector is undefined. createPeerConnection failed.')
+          }
+          // webrtcStatsCollector is created from createPeerConnection
+          // which is an event within this switch case so it is not easy
+          // to have this be a sync workflow? You could have two onMessageHandlers
+          // once the other one is created but that could be more confusing.
           const clientMetrics = await webrtcStatsCollector()
           send({
             type: 'metrics_response',
@@ -243,4 +250,36 @@ export const createOnWebSocketMessage = ({
         break
     }
   }
+
+  return onWebSocketMessage
+}
+
+
+export const createOnWebSocketClose = ({
+  websocket,
+  onWebSocketOpen,
+  onWebSocketError,
+  onWebSocketMessage,
+  disconnectAll,
+  dispatchEvent
+}: {
+  websocket: WebSocket
+  onWebSocketOpen: (event: Event) => void
+  onWebSocketError: (event: Event) => void
+  onWebSocketMessage: (event: MessageEvent<any>) => void
+  disconnectAll: () => void
+  dispatchEvent: (event: Event) => boolean
+}) => {
+  const onDataChannelClose = () => {
+    logger('onwebsocketclose', {})
+    websocket.removeEventListener('open', onWebSocketOpen)
+    websocket.removeEventListener('error', onWebSocketError)
+    websocket.removeEventListener('message', onWebSocketMessage)
+    // TODO: remove listener use-network-status-ready
+    dispatchEvent(
+      new CustomEvent(EngineConnectionEvents.Offline, {})
+    )
+    disconnectAll()
+  }
+  return onDataChannelClose
 }
