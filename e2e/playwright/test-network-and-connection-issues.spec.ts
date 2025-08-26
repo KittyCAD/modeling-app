@@ -1,12 +1,7 @@
 import type { EngineCommand } from '@src/lang/std/artifactGraph'
 import { uuidv4 } from '@src/lib/utils'
 
-import {
-  commonPoints,
-  getUtils,
-  TEST_COLORS,
-  circleMove,
-} from '@e2e/playwright/test-utils'
+import { getUtils, TEST_COLORS, circleMove } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.describe('Test network related behaviors', () => {
@@ -106,7 +101,15 @@ test.describe('Test network related behaviors', () => {
 
       const u = await getUtils(page)
       await page.setBodyDimensions({ width: 1200, height: 500 })
+
       const PUR = 400 / 37.5 //pixeltoUnitRatio
+      const commonPoints = {
+        startAt: '[-13.06, -10.63]',
+        num1: 8.27,
+        num2: 14.44,
+        /** The Y-value of a common lineTo move we perform in tests */
+        num3: -2.44,
+      } as const
 
       await homePage.goToModelingScene()
       await u.waitForPageLoad()
@@ -236,6 +239,9 @@ test.describe('Test network related behaviors', () => {
       await page.waitForTimeout(100)
       // Ensure we can continue sketching
       await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 20)
+
+      await page.waitForTimeout(999999999)
+
       await expect
         .poll(u.normalisedEditorCode)
         .toBe(`@settings(defaultLengthUnit = in)
