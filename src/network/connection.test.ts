@@ -136,22 +136,22 @@ describe('connection.ts', () => {
       expect(connection.webrtcStatsCollector).toStrictEqual(expected)
     })
   })
-  describe('setUnreliableDataChannel', ()=> {
-    it('should set unreliableDataChannel', ()=>{
+  describe('setUnreliableDataChannel', () => {
+    it('should set unreliableDataChannel', () => {
       const connectionManager = new ConnectionManager()
       const connection = new Connection({
         connectionManager: connectionManager,
         url: TEST_URL,
         token: TEST_TOKEN,
       })
-      const peerConenction = new RTCPeerConnection();
-      const dataChannel = peerConenction.createDataChannel("my channel");
+      const peerConenction = new RTCPeerConnection()
+      const dataChannel = peerConenction.createDataChannel('my channel')
       connection.setUnreliableDataChannel(dataChannel)
       expect(connection.unreliableDataChannel).toStrictEqual(dataChannel)
     })
   })
   describe('setPong', () => {
-    it('should set pong', () =>{
+    it('should set pong', () => {
       const connectionManager = new ConnectionManager()
       const connection = new Connection({
         connectionManager: connectionManager,
