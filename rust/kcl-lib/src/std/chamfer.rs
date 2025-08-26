@@ -1,7 +1,7 @@
 //! Standard library chamfers.
 
 use anyhow::Result;
-use kcmc::{ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit, shared::CutType};
+use kcmc::{ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit, shared::CutType, shared::CutStrategy};
 use kittycad_modeling_cmds::{self as kcmc, shared::Angle};
 
 use super::args::TyF64;
@@ -53,6 +53,13 @@ async fn inner_chamfer(
 
     let ratio = ratio.map(|x| x.to_mm());
     let angle = angle.map(|x| Angle::from_degrees(x.to_degrees()));
+
+    let strategy = if ratio.is_some() || angle.is_some() {
+        CutStrategy::Csg
+    } else {
+        Default::default()
+    };
+
     let mut solid = solid.clone();
     for edge_tag in tags {
         let edge_id = match edge_tag {
@@ -68,7 +75,7 @@ async fn inner_chamfer(
                     edge_id: None,
                     edge_ids: vec![edge_id],
                     extra_face_ids: vec![],
-                    strategy: Default::default(),
+                    strategy: strategy,
                     object_id: solid.id,
                     radius: LengthUnit(length.to_mm()),
                     tolerance: LengthUnit(DEFAULT_TOLERANCE), // We can let the user set this in the future.
