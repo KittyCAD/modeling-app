@@ -294,6 +294,7 @@ pub struct EdgeCut {
 pub enum EdgeCutSubType {
     Fillet,
     Chamfer,
+    Custom,
 }
 
 impl From<kcmc::shared::CutType> for EdgeCutSubType {
@@ -301,6 +302,7 @@ impl From<kcmc::shared::CutType> for EdgeCutSubType {
         match cut_type {
             kcmc::shared::CutType::Fillet => EdgeCutSubType::Fillet,
             kcmc::shared::CutType::Chamfer { ratio: _, angle: _ } => EdgeCutSubType::Chamfer,
+            kcmc::shared::CutType::Custom { path: _ } => EdgeCutSubType::Custom,
         }
     }
 }

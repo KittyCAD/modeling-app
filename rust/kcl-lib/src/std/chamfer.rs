@@ -1,14 +1,14 @@
 //! Standard library chamfers.
 
 use anyhow::Result;
-use kcmc::{ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit, shared::CutType, shared::CutStrategy};
+use kcmc::{ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit, shared::CutStrategy, shared::CutType};
 use kittycad_modeling_cmds::{self as kcmc, shared::Angle};
 
 use super::args::TyF64;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        ChamferSurface, EdgeCut, ExecState, ExtrudeSurface, GeoMeta, KclValue, ModelingCmdMeta, Solid,
+        ChamferSurface, EdgeCut, ExecState, ExtrudeSurface, GeoMeta, KclValue, ModelingCmdMeta, Sketch, Solid,
         types::RuntimeType,
     },
     parsing::ast::types::TagNode,
@@ -24,11 +24,13 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     let tags = args.kw_arg_edge_array_and_source("tags")?;
     let ratio = args.get_kw_arg_opt("ratio", &RuntimeType::num_any(), exec_state)?;
     let angle = args.get_kw_arg_opt("angle", &RuntimeType::angle(), exec_state)?;
+    let custom_profile = args.get_kw_arg_opt("customProfile", &RuntimeType::sketch(), exec_state)?;
+
     let tag = args.get_kw_arg_opt("tag", &RuntimeType::tag_decl(), exec_state)?;
 
     super::fillet::validate_unique(&tags)?;
     let tags: Vec<EdgeReference> = tags.into_iter().map(|item| item.0).collect();
-    let value = inner_chamfer(solid, length, tags, ratio, angle, tag, exec_state, args).await?;
+    let value = inner_chamfer(solid, length, tags, ratio, angle, custom_profile, tag, exec_state, args).await?;
     Ok(KclValue::Solid { value })
 }
 
@@ -38,6 +40,7 @@ async fn inner_chamfer(
     tags: Vec<EdgeReference>,
     ratio: Option<TyF64>,
     angle: Option<TyF64>,
+    custom_profile: Option<Sketch>,
     tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
@@ -54,10 +57,29 @@ async fn inner_chamfer(
     let ratio = ratio.map(|x| x.to_mm());
     let angle = angle.map(|x| Angle::from_degrees(x.to_degrees()));
 
-    let strategy = if ratio.is_some() || angle.is_some() {
+    let strategy = if ratio.is_some() || angle.is_some() || custom_profile.is_some() {
         CutStrategy::Csg
     } else {
         Default::default()
+    };
+
+    let cut_type = if let Some(custom_profile) = custom_profile {
+        // Hide the custom profile since it's no longer its own profile,
+        // it's just used to modify some other profile.
+        exec_state
+            .batch_modeling_cmd(
+                ModelingCmdMeta::from(&args),
+                ModelingCmd::from(mcmd::ObjectVisible {
+                    object_id: custom_profile.id,
+                    hidden: true,
+                }),
+            )
+            .await?;
+        CutType::Custom {
+            path: custom_profile.id,
+        }
+    } else {
+        CutType::Chamfer { ratio, angle }
     };
 
     let mut solid = solid.clone();
@@ -79,7 +101,7 @@ async fn inner_chamfer(
                     object_id: solid.id,
                     radius: LengthUnit(length.to_mm()),
                     tolerance: LengthUnit(DEFAULT_TOLERANCE), // We can let the user set this in the future.
-                    cut_type: CutType::Chamfer { ratio, angle },
+                    cut_type,
                 }),
             )
             .await?;

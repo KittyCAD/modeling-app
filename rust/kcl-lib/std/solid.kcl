@@ -151,6 +151,8 @@ export fn chamfer(
   ratio?: number,
   /// The angle between the edges
   angle?: number(Angle),
+  /// Use a sketch as a custom profile for the chamfer
+  customProfile?: Sketch,
   /// Create a new tag which refers to this chamfer
   tag?: TagDecl,
 ): Solid {}
