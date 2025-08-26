@@ -1,7 +1,7 @@
 import { markOnce } from '@src/lib/performance'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import type { ClientMetrics } from './utils'
-import { DATACHANNEL_NAME_UMC, pingIntervalMs } from './utils'
+import { DATACHANNEL_NAME_UMC, logger, pingIntervalMs } from './utils'
 import {
   createOnConnectionStateChange,
   createOnDataChannel,
@@ -21,11 +21,18 @@ import {
   createOnWebSocketMessage,
   createOnWebSocketOpen,
 } from './websocketConnection'
-import { C } from 'vitest/dist/chunks/reporters.d.79o4mouw'
 
 export interface INewTrackArgs {
   conn: Connection
   mediaStream: MediaStream
+}
+
+type EventSource = 'window' | 'peerConnection' | 'websocket'
+
+interface IEventListenerTracked {
+  event : string
+  callback: any
+  type: EventSource
 }
 
 export class Connection extends EventTarget {
@@ -45,7 +52,6 @@ export class Connection extends EventTarget {
     undefined
 
   private peerConnection: RTCPeerConnection | undefined
-
   unreliableDataChannel: RTCDataChannel | undefined
   mediaStream: MediaStream | undefined
   websocket: WebSocket | undefined
@@ -57,11 +63,16 @@ export class Connection extends EventTarget {
   connectionPromiseReject: ((value: unknown) => void) | null
 
   iceCandidatePromises: Promise<unknown>[]
+  onNetworkStatusReady: (() => void) | undefined
 
-  // event listeners to add and clean up
-  public webrtcStatsCollector?: () => Promise<ClientMetrics>
+  public webrtcStatsCollector: (() => Promise<ClientMetrics>) | undefined
+
+  // Any event listener into this map to be cleaned up later
+  // helps avoids duplicates as well
+  allEventListeners: Map<string, IEventListenerTracked>
 
   // TODO: offer promise wrapped to track
+  // TODo: event listeners to add and clean up
 
   constructor({
     connectionManager,
@@ -82,6 +93,7 @@ export class Connection extends EventTarget {
     this.connectionPromiseResolve = null
     this.connectionPromiseReject = null
     this.iceCandidatePromises = []
+    this.allEventListeners = new Map()
   }
 
   get token() {
@@ -119,8 +131,7 @@ export class Connection extends EventTarget {
     this._pingIntervalId = undefined
   }
 
-  send(message: Models['WebSocketRequest_type']) {}
-
+  // TODO: Pass reconnect here? or call a function for reconnect
   connect(): Promise<unknown> {
     if (this.connectionPromise) {
       Promise.reject('currently connecting, try again later.')
@@ -131,7 +142,33 @@ export class Connection extends EventTarget {
       this.connectionPromiseReject = reject
     })
     this.connectionPromise = connectionPromise
+
+    // TODO: reconnect with createWebSocketConnection only?
+    if (this.onNetworkStatusReady) {
+      throw new Error('onNetworkStatusReady already exists, you messed up.')
+    }
+
+    // Once the engine is availabe create a web socket connection
+    this.onNetworkStatusReady = () => {
+      logger('onnetworkstatusready', {})
+      this.createWebSocketConnection()
+    }
+
+    // Event comes from onEngineAvailable in the connection manager
+    this.trackListener('use-network-status-ready', {event:'use-network-status-ready', callback: this.onNetworkStatusReady, type:'window'})
+    window.addEventListener('use-network-status-ready', this.onNetworkStatusReady)
+
     return connectionPromise
+  }
+
+  // This is only metadata overhead to keep track of all the event listeners which allows for easy
+  // removal during cleanUp. It can help prevent multiple runtime initializations of events.
+  trackListener (name: string, eventListenerTracked: IEventListenerTracked) {
+    if (this.allEventListeners.has(name)) {
+      throw new Error(`You are trying to track something twice, good luck! you're crashing. ${name}`)
+    }
+
+    this.allEventListeners.set(name, eventListenerTracked)
   }
 
   initiateConnectionExclusive() {
@@ -174,32 +211,49 @@ export class Connection extends EventTarget {
     })
 
     // Watch out human! The names of the next couple events are really similar!
+    this.trackListener('icecandidate', {event:'icecandidate', callback:onIceCandidate, type:'peerConnection'})
     this.peerConnection.addEventListener('icecandidate', onIceCandidate)
+
+    this.trackListener('icegatheringstatechange', {event:'icegatheringstatechange', callback:onIceGatheringStateChange, type:'peerConnection'})
     this.peerConnection.addEventListener(
       'icegatheringstatechange',
       onIceGatheringStateChange
     )
+
+    this.trackListener('iceconnectionstatechange', {event:'iceconnectionstatechange', callback:onIceConnectionStateChange, type:'peerConnection'})
     this.peerConnection.addEventListener(
       'iceconnectionstatechange',
       onIceConnectionStateChange
     )
+
+    this.trackListener('negotiationneeded', {event:'negotiationneeded', callback:onNegotiationNeeded, type:'peerConnection'})
     this.peerConnection.addEventListener(
       'negotiationneeded',
       onNegotiationNeeded
     )
+
+    this.trackListener('signalingstatechange', {event:'signalingstatechange', callback:onSignalingStateChange, type:'peerConnection'})
     this.peerConnection.addEventListener(
       'signalingstatechange',
       onSignalingStateChange
     )
+
+    this.trackListener('icecandidateerror', {event:'icecandidateerror', callback:onIceCandidateError, type:'peerConnection'})
     this.peerConnection.addEventListener(
       'icecandidateerror',
       onIceCandidateError
     )
+
+    this.trackListener('connectionstatechange', {event:'connectionstatechange', callback:onConnectionStateChange, type:'peerConnection'})
     this.peerConnection.addEventListener(
       'connectionstatechange',
       onConnectionStateChange
     )
+
+    this.trackListener('track', {event:'track', callback:onTrack, type:'peerConnection'})
     this.peerConnection.addEventListener('track', onTrack)
+
+    this.trackListener('datachannel', {event:'datachannel', callback:onDataChannel, type:'peerConnection'})
     this.peerConnection.addEventListener('datachannel', onDataChannel)
 
     // TODO: Save off all event listener functions and remove thme in clean up
@@ -238,19 +292,26 @@ export class Connection extends EventTarget {
       onWebSocketError: onWebSocketError,
       onWebSocketMessage: onWebSocketMessage,
       disconnectAll: this.disconnectAll,
-      dispatchEvent: this.dispatchEvent
+      dispatchEvent: this.dispatchEvent,
     })
 
+    // Meta close will remove all the internal events itself but then the this.websocket.close
+    // needs to remove itself so it is wrapped in a metaClose.
     const metaClose = () => {
       onWebSocketClose()
     }
 
+    // the first key name can be anything, the event needs to be the actual eventlistener event name.
+    // multiple JS classes may have a open event listener so we cannot globally register multiple 
+    // open values in the Map. The value can store that same event:'open'
+    this.trackListener('websocket-open', {event:'open', callback:onWebSocketOpen, type:'websocket'})
     this.websocket.addEventListener('open', onWebSocketOpen)
+    this.trackListener('websocket-error', {event:'error', callback:onWebSocketError, type:'websocket'})
     this.websocket.addEventListener('error', onWebSocketError)
+    this.trackListener('websocket-message', {event:'message', callback:onWebSocketMessage, type:'websocket'})
     this.websocket.addEventListener('message', onWebSocketMessage)
+    this.trackListener('websocket-close', {event:'close', callback:metaClose, type:'websocket'})
     this.websocket.addEventListener('close', metaClose)
-
-    // TODO: Save off all callbacks to remove from the event listener in the cleanUp function
   }
 
   setMediaStream(mediaStream: MediaStream) {
@@ -277,8 +338,77 @@ export class Connection extends EventTarget {
     this.sdpAnswer = answer
   }
 
-  disconnectAll() {
-    throw new Error('disconnectAll unimplemented')
+  // Attempt a ton of clean up. Log if you cannot.
+  disconnectAll() { 
+    // Clean up all the event listeners
+    this.removeAllEventListeners()
+    this.disconnectWebsocket()
+    this.disconnectUnreliableDataChannel()
+    this.disconnectPeerConnection()
+    // Function generated from createPeerConnection workflow
+    this.webrtcStatsCollector = undefined
+
+    // TODO: Missing some logic for idle mode and timeouts of websocket??
+    // I think for idle mode we cannot remove all the listeners? Need to manage this.
+  }
+
+  disconnectWebsocket () {
+    if (!this.websocket) {
+      throw new Error('websocket is undefined')
+    }
+
+    // TODO: What is 3? 
+    if (this.websocket.readyState < 3 ){
+      this.websocket.close()
+    } else {
+      throw new Error(`websocket is defined but readyState is wrong ${this.websocket.readyState}`)
+    }
+  }
+
+  disconnectUnreliableDataChannel () {
+    if (!this.unreliableDataChannel) {
+      throw new Error('unreliableDataChannel is undefined')
+    }
+
+    if (this.unreliableDataChannel.readyState === 'open') {
+      this.unreliableDataChannel.close()
+    } else {
+      throw new Error(`unreliableDataChannel is defined but readyState is wrong ${this.unreliableDataChannel.readyState}`)
+    }
+  }
+
+  disconnectPeerConnection () {
+    if (!this.peerConnection) {
+      throw new Error('peerConnection is undefined')
+    }
+
+    if (this.peerConnection.connectionState === 'connected') {
+      this.peerConnection.close()
+    } else {
+      throw new Error(`peerConnection is defined but connectionState is wrong ${this.peerConnection.connectionState}`)
+    }
+  }
+ 
+  removeAllEventListeners () {
+    // Could hard code all the possible event keys and see if each one is removed.
+    const listenersToRemove = Array.from(this.allEventListeners)
+
+    listenersToRemove.forEach(([event, eventListenerTracked]:[string, IEventListenerTracked]) => {
+      const type = eventListenerTracked.type
+
+      if (type === 'window') {
+        window.removeEventListener(eventListenerTracked.event, eventListenerTracked.callback)
+      } else if (type === 'peerConnection') {
+        this.peerConnection?.removeEventListener(eventListenerTracked.event, eventListenerTracked.callback)
+      } else if (type === 'websocket') {
+        this.websocket?.removeEventListener(eventListenerTracked.event, eventListenerTracked.callback)
+      } else {
+        throw new Error(`untracked listener type ${type}`)
+      }
+    })  
+
+    // Remove all references to the event listeners they are already removed.
+    this.allEventListeners = new Map()
   }
 
   cleanUp() {
@@ -304,4 +434,40 @@ export class Connection extends EventTarget {
     })
     this.iceCandidatePromises.push(tracker)
   }
+
+
+  // Do not change this back to an object or any, we should only be sending the
+  // WebSocketRequest type!
+  unreliableSend(message: Models['WebSocketResponse_type']) {
+    if (!this.unreliableDataChannel) {
+      throw new Error('race condition my guy, unreliableSend')
+    }
+
+    // TODO(paultag): Add in logic to determine the connection state and
+    // take actions if needed?
+    this.unreliableDataChannel?.send(
+      typeof message === 'string' ? message : JSON.stringify(message)
+    )
+  }
+
+
+  send(message: Models['WebSocketRequest_type']) {
+    if (!this.websocket) {
+      throw new Error('websocket is undefined')
+    }
+
+    if (this.websocket.readyState !== 1) {
+      throw new Error('websocket is not in a ready state')
+    }
+
+    // Not connected, don't send anything
+    if (this.websocket?.readyState !== 1) return
+
+    // TODO(paultag): Add in logic to determine the connection state and
+    // take actions if needed?
+    this.websocket?.send(
+      typeof message === 'string' ? message : JSON.stringify(message)
+    )
+  }
+
 }

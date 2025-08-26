@@ -3,7 +3,7 @@ import {
   logger,
   EngineConnectionEvents,
   toRTCSessionDescriptionInit,
-  ClientMetrics
+  ClientMetrics,
 } from './utils'
 import { ConnectionManager } from './connectionManager'
 
@@ -233,7 +233,9 @@ export const createOnWebSocketMessage = ({
       case 'metrics_request':
         try {
           if (!webrtcStatsCollector) {
-            throw new Error('webrtcStatsCollector is undefined. createPeerConnection failed.')
+            throw new Error(
+              'webrtcStatsCollector is undefined. createPeerConnection failed.'
+            )
           }
           // webrtcStatsCollector is created from createPeerConnection
           // which is an event within this switch case so it is not easy
@@ -254,14 +256,13 @@ export const createOnWebSocketMessage = ({
   return onWebSocketMessage
 }
 
-
 export const createOnWebSocketClose = ({
   websocket,
   onWebSocketOpen,
   onWebSocketError,
   onWebSocketMessage,
   disconnectAll,
-  dispatchEvent
+  dispatchEvent,
 }: {
   websocket: WebSocket
   onWebSocketOpen: (event: Event) => void
@@ -276,9 +277,7 @@ export const createOnWebSocketClose = ({
     websocket.removeEventListener('error', onWebSocketError)
     websocket.removeEventListener('message', onWebSocketMessage)
     // TODO: remove listener use-network-status-ready
-    dispatchEvent(
-      new CustomEvent(EngineConnectionEvents.Offline, {})
-    )
+    dispatchEvent(new CustomEvent(EngineConnectionEvents.Offline, {}))
     disconnectAll()
   }
   return onDataChannelClose
