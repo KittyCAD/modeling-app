@@ -27,9 +27,9 @@ export interface INewTrackArgs {
   mediaStream: MediaStream
 }
 
-type EventSource = 'window' | 'peerConnection' | 'websocket'
+export type EventSource = 'window' | 'peerConnection' | 'websocket'
 
-interface IEventListenerTracked {
+export interface IEventListenerTracked {
   event: string
   callback: any
   type: EventSource
@@ -529,7 +529,7 @@ export class Connection extends EventTarget {
 
   send(message: Models['WebSocketRequest_type']) {
     if (!this.websocket) {
-      throw new Error('websocket is undefined')
+      throw new Error('send, websocket is undefined')
     }
 
     if (this.websocket.readyState !== 1) {

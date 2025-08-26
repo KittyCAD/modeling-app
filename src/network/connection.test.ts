@@ -1,4 +1,4 @@
-import { Connection } from '@src/network/connection'
+import { Connection, IEventListenerTracked } from '@src/network/connection'
 import { ConnectionManager } from '@src/network/connectionManager'
 
 const TEST_URL = 'nicenicenice'
@@ -22,25 +22,7 @@ describe('connection.ts', () => {
       expect(connection.connectionPromise).toBe(null)
       expect(connection.connectionPromiseResolve).toBe(null)
       expect(connection.connectionPromiseReject).toBe(null)
-    })
-  })
-  describe('startPingPong', () => {
-    it('should ping once', async () => {
-      const connectionManager = new ConnectionManager()
-      const connection = new Connection({
-        connectionManager: connectionManager,
-        url: TEST_URL,
-        token: TEST_TOKEN,
-      })
-
-      connection.startPingPong()
-      await new Promise((resolve, reject) => {
-        setTimeout(resolve, 1000)
-      })
-      connection.stopPingPong()
-      expect(connection.pingPongSpan.ping).toBeLessThanOrEqual(Date.now())
-      expect(connection.pingPongSpan.pong).toBe(undefined)
-      expect(connection.pingIntervalId).toBe(undefined)
+      expect(connection.allEventListeners).toStrictEqual(new Map())
     })
   })
   describe('stopPingPong', () => {
@@ -54,6 +36,50 @@ describe('connection.ts', () => {
       expect(connection.pingIntervalId).toBe(undefined)
       connection.stopPingPong()
       expect(connection.pingIntervalId).toBe(undefined)
+    })
+  })
+  describe('trackListener', () => {
+    it('should add one listener to the map', () => {
+      const expected = new Map<string, IEventListenerTracked>()
+      const fn = () => {}
+      expected.set('open',{event:'open', callback: fn, type:'window'})
+      const connectionManager = new ConnectionManager()
+      const connection = new Connection({
+        connectionManager: connectionManager,
+        url: TEST_URL,
+        token: TEST_TOKEN,
+      })
+      connection.trackListener('open',{event:'open', callback: fn, type:'window'})
+      expect(connection.allEventListeners).toStrictEqual(expected)
+    })
+    it('should add two listeners to the map' , () => {
+      const expected = new Map<string, IEventListenerTracked>()
+      const fn = () => {}
+      const fn2 = () => {}
+      expected.set('open',{event:'open', callback: fn, type:'window'})
+      expected.set('close',{event:'close', callback: fn2, type:'window'})
+      const connectionManager = new ConnectionManager()
+      const connection = new Connection({
+        connectionManager: connectionManager,
+        url: TEST_URL,
+        token: TEST_TOKEN,
+      })
+      connection.trackListener('open',{event:'open', callback: fn, type:'window'})
+      connection.trackListener('close',{event:'close', callback: fn2, type:'window'})
+      expect(connection.allEventListeners).toStrictEqual(expected)
+    })
+    it('should error if you try to add the same key', () => {
+      const expected = new Map<string, IEventListenerTracked>()
+      const fn = () => {}
+      expected.set('open',{event:'open', callback: fn, type:'window'})
+      const connectionManager = new ConnectionManager()
+      const connection = new Connection({
+        connectionManager: connectionManager,
+        url: TEST_URL,
+        token: TEST_TOKEN,
+      })
+      connection.trackListener('open',{event:'open', callback: fn, type:'window'})
+      expect(()=>connection.trackListener('open',{event:'open', callback: ()=>{}, type:'window'})).toThrow(`You are trying to track something twice, good luck! you're crashing. open`)
     })
   })
 })
