@@ -23,7 +23,7 @@ import {
   areHomeItemsConversations,
 } from '@src/components/HomeSearchBar'
 import type { HomeItems } from '@src/components/HomeSearchBar'
-import { BillingDialog } from '@src/components/BillingDialog'
+import { BillingDialog } from '@kittycad/react-shared'
 import { useQueryParamEffects } from '@src/hooks/useQueryParamEffects'
 import { useMenuListener } from '@src/hooks/useMenu'
 import { isDesktop } from '@src/lib/isDesktop'
@@ -382,7 +382,13 @@ const Home = () => {
             {!hasUnlimitedCredits && (
               <li className="contents">
                 <div className="my-2">
-                  <BillingDialog billingActor={billingActor} />
+                  <BillingDialog
+                    upgradeHref={withSiteBaseURL('/design-studio-pricing')}
+                    upgradeClick={openExternalBrowserIfDesktop()}
+                    error={billingContext.error}
+                    credits={billingContext.credits}
+                    allowance={billingContext.allowance}
+                  />
                 </div>
               </li>
             )}
@@ -457,9 +463,9 @@ function HomeTab(props: HomeTabProps) {
     { name: 'Prompts', key: HomeTabKeys.Prompts },
   ]
 
-  const cssTab = 'cursor-pointer border rounded-t text-lg text-center'
-  const cssActive = `${cssTab} p-2 border-chalkboard-70 border-b-transparent`
-  const cssInactive = `${cssTab} pl-2 pr-2 pt-2 mt-1 border text-chalkboard-90 border-chalkboard-50 bg-chalkboard-20`
+  const cssTab = 'cursor-pointer py-2 px-5 border rounded-t text-lg text-center'
+  const cssActive = `${cssTab} border-chalkboard-50 border-b-transparent`
+  const cssInactive = `${cssTab} text-chalkboard-50 border border-transparent border-b-chalkboard-50 hover:text-default hover:bg-primary/10`
 
   const onClickTab = (key: HomeTabKeys) => () => {
     setSelected(key)
@@ -472,7 +478,6 @@ function HomeTab(props: HomeTabProps) {
         <div
           key={el.key}
           className={el.key === selected ? cssActive : cssInactive}
-          style={{ width: '130px' }}
           onClick={onClickTab(el.key)}
           role="tab"
           tabIndex={0}

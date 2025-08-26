@@ -16,6 +16,7 @@ import { expect } from '@e2e/playwright/zoo-test'
 type MouseParams = {
   pixelDiff?: number
   shouldDbClick?: boolean
+  shouldRightClick?: boolean
   delay?: number
 }
 type MouseDragToParams = MouseParams & {
@@ -137,9 +138,14 @@ export class SceneFixture {
                 ? this.page.mouse.dblclick(resolvedPoint.x, resolvedPoint.y, {
                     delay: clickParams?.delay || 0,
                   })
-                : this.page.mouse.click(resolvedPoint.x, resolvedPoint.y, {
-                    delay: clickParams?.delay || 0,
-                  }),
+                : clickParams?.shouldRightClick
+                  ? this.page.mouse.click(resolvedPoint.x, resolvedPoint.y, {
+                      button: 'right',
+                      delay: clickParams?.delay || 0,
+                    })
+                  : this.page.mouse.click(resolvedPoint.x, resolvedPoint.y, {
+                      delay: clickParams?.delay || 0,
+                    }),
             clickParams.pixelDiff
           )
         }
@@ -147,9 +153,14 @@ export class SceneFixture {
           ? this.page.mouse.dblclick(resolvedPoint.x, resolvedPoint.y, {
               delay: clickParams?.delay || 0,
             })
-          : this.page.mouse.click(resolvedPoint.x, resolvedPoint.y, {
-              delay: clickParams?.delay || 0,
-            })
+          : clickParams?.shouldRightClick
+            ? this.page.mouse.click(resolvedPoint.x, resolvedPoint.y, {
+                button: 'right',
+                delay: clickParams?.delay || 0,
+              })
+            : this.page.mouse.click(resolvedPoint.x, resolvedPoint.y, {
+                delay: clickParams?.delay || 0,
+              })
       },
       async (moveParams?: MouseParams) => {
         const resolvedPoint = await this.convertPagePositionToStream(
