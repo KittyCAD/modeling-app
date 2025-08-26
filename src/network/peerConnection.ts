@@ -72,12 +72,8 @@ export function createOnIceGatheringStateChange({
       message: 'icegatheringstatechange',
       metadata: { event },
     })
-    // Gotcha: Don't send this early. sdpAnswer is not available at this moment.
-    EngineDebugger.addLog({
-      label: 'onIceGatheringStateChange',
-      message:
-        'We are purposefully triggering initiateConnectionExclusive early, why?',
-    })
+    // Gotcha: This is invoked here because sdpAnswer could be done by the time this is called
+    // or it could not be done. Who knows!
     initiateConnectionExclusive()
   }
 
@@ -280,6 +276,7 @@ export const createOnDataChannel = ({
   setUnreliableDataChannel,
   dispatchEvent,
   trackListener,
+  startPingPong,
 }: {
   setUnreliableDataChannel: (channel: RTCDataChannel) => void
   dispatchEvent: (event: Event) => boolean
@@ -287,10 +284,14 @@ export const createOnDataChannel = ({
     name: string,
     eventListenerTracked: IEventListenerTracked
   ) => void
+  startPingPong: () => void
 }) => {
   const onDataChannel = (event: RTCDataChannelEvent) => {
     // Initialize the event.channel with 4 event listeners
-    const onDataChannelOpen = createOnDataChannelOpen({ dispatchEvent })
+    const onDataChannelOpen = createOnDataChannelOpen({
+      dispatchEvent,
+      startPingPong,
+    })
     const onDataChannelError = createOnDataChannelError()
     const onDataChannelMessage = createOnDataChannelMessage()
     const onDataChannelClose = createOnDataChannelClose({
@@ -345,10 +346,18 @@ export const createOnDataChannel = ({
  */
 export const createOnDataChannelOpen = ({
   dispatchEvent,
+  startPingPong,
 }: {
   dispatchEvent: (event: Event) => boolean
+  startPingPong: () => void
 }) => {
   const onDataChannelOpen = (event: Event) => {
+    // Start firing off engine commands at this point.
+    // They could be fired at an earlier time, onWebSocketOpen,
+    // but DataChannel can offer some benefits like speed,
+    // and it's nice to say everything's connected before interacting
+    // with the server.
+
     EngineDebugger.addLog({
       label: 'onDataChannelOpen',
       message: 'ondatachannelopen',
@@ -361,6 +370,7 @@ export const createOnDataChannelOpen = ({
         detail: this,
       })
     )
+    startPingPong()
     markOnce('code/endInitialEngineConnect')
   }
   return onDataChannelOpen

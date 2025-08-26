@@ -142,6 +142,11 @@ export class Connection extends EventTarget {
       message: 'startPingPong',
       metadata: { id: this.id },
     })
+
+    if (this._pingIntervalId) {
+      throw new Error('Attempting to startPingPong before stopping it.')
+    }
+
     this._pingIntervalId = setInterval(() => {
       if (this._pingPongSpan.ping) {
         return
@@ -312,6 +317,7 @@ export class Connection extends EventTarget {
       setUnreliableDataChannel: this.setUnreliableDataChannel.bind(this),
       dispatchEvent: this.dispatchEvent.bind(this),
       trackListener: this.trackListener.bind(this),
+      startPingPong: this.startPingPong.bind(this),
     })
 
     // Watch out human! The names of the next couple events are really similar!

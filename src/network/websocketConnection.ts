@@ -170,6 +170,12 @@ export const createOnWebSocketMessage = ({
       case 'modeling_session_data':
         const apiCallId = resp.data.session.api_call_id
         logger(`API Call ID: ${apiCallId}`, {})
+        EngineDebugger.addLog({
+          label: 'onWebSocketMessage',
+          message: 'modeling_session_data',
+          metadata: { apiCallId },
+        })
+
         break
       // Only fires on successful authentication.
       case 'ice_server_info':
