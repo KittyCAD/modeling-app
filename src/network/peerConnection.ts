@@ -45,7 +45,12 @@ export function createOnIceGatheringStateChange({
 }) {
   const onIceGatheringStateChange = (event: Event) => {
     logger('icegatheringstatechange', event)
-    initiateConnectionExclusive()
+    // Gotcha: Don't send this early. sdpAnswer is not available at this moment.
+    logger(
+      'We are purposefully triggering initiateConnectionExclusive early, why?',
+      {}
+    )
+    // initiateConnectionExclusive()
   }
 
   return onIceGatheringStateChange

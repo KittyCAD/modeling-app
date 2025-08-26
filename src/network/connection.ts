@@ -75,6 +75,10 @@ export class Connection extends EventTarget {
   // helps avoids duplicates as well
   allEventListeners: Map<string, IEventListenerTracked>
 
+  // We spam initiateConnectionExclusive but we only need it to connect once
+  // future calls will be rejected.
+  exclusiveConnection: boolean
+
   // TODO: offer promise wrapped to track
   // TODo: event listeners to add and clean up
 
@@ -98,6 +102,8 @@ export class Connection extends EventTarget {
     this.connectionPromiseReject = null
     this.iceCandidatePromises = []
     this.allEventListeners = new Map()
+    // No connection has been made when the class is initialized
+    this.exclusiveConnection = false
   }
 
   get token() {
@@ -184,8 +190,32 @@ export class Connection extends EventTarget {
     this.allEventListeners.set(name, eventListenerTracked)
   }
 
-  initiateConnectionExclusive() {
-    throw new Error('initiateConnectionExclusive unimplemented')
+  /**
+   * This function is being spammed.
+   * You can call this before sdpAnswer is ready.
+   */
+  async initiateConnectionExclusive() {
+    if (!this.peerConnection) {
+      throw new Error('peerConnection is undefined')
+    }
+
+    if (!this.sdpAnswer) {
+      throw new Error('sdpAnswer is undefined')
+    }
+
+    if (this.exclusiveConnection) {
+      logger('dropping initiateConnectionExclusive, it has already started', {})
+      return
+    }
+
+    this.exclusiveConnection = true
+
+    try {
+      await this.peerConnection.setRemoteDescription(this.sdpAnswer)
+    } catch (error) {
+      console.error('Failed to set remote description:', error)
+      this.disconnectAll()
+    }
   }
 
   createPeerConnection() {
@@ -436,7 +466,9 @@ export class Connection extends EventTarget {
 
   disconnectUnreliableDataChannel() {
     if (!this.unreliableDataChannel) {
-      throw new Error('unreliableDataChannel is undefined')
+      // throw new Error('unreliableDataChannel is undefined')
+      logger('unreliableDataChannel is undefined', {})
+      return
     }
 
     if (this.unreliableDataChannel.readyState === 'open') {
@@ -539,7 +571,6 @@ export class Connection extends EventTarget {
   }
 
   send(message: Models['WebSocketRequest_type']) {
-    console.warn('MESSAGE', message)
     if (!this.websocket) {
       throw new Error('send, websocket is undefined')
     }

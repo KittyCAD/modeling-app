@@ -34,6 +34,7 @@ export const createOnWebSocketOpen = ({
           Authorization: `Bearer ${token}`,
         },
       })
+      logger('headers sent off, error should stop soon', {})
 
       // TODO: Why? Why would this need to send a ping?
       // Why not start the pingPong Interval
@@ -116,6 +117,12 @@ export const createOnWebSocketMessage = ({
           )}`
         )
       } else {
+        /**
+         * Gotcha one of the errors can be auth_token_missing: Please send `{ headers: { Authorization: "Bearer <token>" } }` over this websocket.
+         * The moment we open the websocket the server can send this message before we have sent the headers or if they are
+         * in transit. It can be misleading for a moment.
+         * The server will spam ping you with this until you send them. If you see a few then it stops then you set the headers in the websocket safely.
+         */
         console.error(`Error from server:\n${errorsString}`)
       }
 
@@ -136,6 +143,8 @@ export const createOnWebSocketMessage = ({
     if (!resp || !resp.type) {
       return
     }
+
+    logger('onwebsocketmessage', resp.type)
 
     // Message is succesfull, lets process the websocket message
     switch (resp.type) {
@@ -188,7 +197,7 @@ export const createOnWebSocketMessage = ({
         // PeerConnection and waiting for events to fire our callbacks.
 
         // Add a transceiver to our SDP offer
-        peerConnection.addTransceiver('vide', {
+        peerConnection.addTransceiver('video', {
           direction: 'recvonly',
         })
 
@@ -231,11 +240,21 @@ export const createOnWebSocketMessage = ({
         addIceCandidate(candidate)
         break
       case 'metrics_request':
+        /**
+         * Gotcha, metrics_request can be called before the webrtcStatsCollector
+         * is initialized from the ice_server_info workflow. This means we need to drop these requests
+         * until the function is initialized
+         */
         try {
           if (!webrtcStatsCollector) {
-            throw new Error(
-              'webrtcStatsCollector is undefined. createPeerConnection failed.'
+            // throw new Error(
+            //   'webrtcStatsCollector is undefined. createPeerConnection failed.'
+            // )
+            logger(
+              'dropping metrics_request, webrtcStatsCollector is undefined',
+              {}
             )
+            return
           }
           // webrtcStatsCollector is created from createPeerConnection
           // which is an event within this switch case so it is not easy

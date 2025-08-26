@@ -24,6 +24,7 @@ describe('connection.ts', () => {
       expect(connection.connectionPromiseResolve).toBe(null)
       expect(connection.connectionPromiseReject).toBe(null)
       expect(connection.allEventListeners).toStrictEqual(new Map())
+      expect(connection.exclusiveConnection).toBe(false)
     })
   })
   describe('stopPingPong', () => {
