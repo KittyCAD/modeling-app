@@ -12,7 +12,6 @@ import {
   createOnNegotiationNeeded,
   createOnSignalingStateChange,
   createOnTrack,
-  createWebrtcStatsCollector,
 } from './peerConnection'
 import type { Models } from '@kittycad/lib'
 import {
@@ -365,7 +364,7 @@ export class Connection extends EventTarget {
       setSdpAnswer: this.setSdpAnswer.bind(this),
       initiateConnectionExclusive: this.initiateConnectionExclusive.bind(this),
       addIceCandidate: this.addIceCandidate.bind(this),
-      webrtcStatsCollector: this.webrtcStatsCollector?.bind(this),
+      webrtcStatsCollector: () => this.webrtcStatsCollector?.bind(this),
     })
     const onWebSocketClose = createOnWebSocketClose({
       websocket: this.websocket,

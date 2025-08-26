@@ -83,7 +83,7 @@ export const createOnWebSocketMessage = ({
   setSdpAnswer: (answer: RTCSessionDescriptionInit) => void
   initiateConnectionExclusive: () => void
   addIceCandidate: (candidate: RTCIceCandidateInit) => void
-  webrtcStatsCollector: (() => Promise<ClientMetrics>) | undefined
+  webrtcStatsCollector: () => (() => Promise<ClientMetrics>) | undefined
 }) => {
   const onWebSocketMessage = async (event: MessageEvent<any>) => {
     // In the EngineConnection, we're looking for messages to/from
@@ -246,7 +246,8 @@ export const createOnWebSocketMessage = ({
          * until the function is initialized
          */
         try {
-          if (!webrtcStatsCollector) {
+          const collector = webrtcStatsCollector()
+          if (!collector) {
             // throw new Error(
             //   'webrtcStatsCollector is undefined. createPeerConnection failed.'
             // )
@@ -260,7 +261,7 @@ export const createOnWebSocketMessage = ({
           // which is an event within this switch case so it is not easy
           // to have this be a sync workflow? You could have two onMessageHandlers
           // once the other one is created but that could be more confusing.
-          const clientMetrics = await webrtcStatsCollector()
+          const clientMetrics = await collector()
           send({
             type: 'metrics_response',
             metrics: clientMetrics,
