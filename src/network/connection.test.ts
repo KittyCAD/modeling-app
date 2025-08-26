@@ -1,5 +1,6 @@
 import { Connection, IEventListenerTracked } from '@src/network/connection'
 import { ConnectionManager } from '@src/network/connectionManager'
+import { ClientMetrics } from './utils'
 
 const TEST_URL = 'nicenicenice'
 const TEST_TOKEN = 'mycooltoken'
@@ -42,44 +43,135 @@ describe('connection.ts', () => {
     it('should add one listener to the map', () => {
       const expected = new Map<string, IEventListenerTracked>()
       const fn = () => {}
-      expected.set('open',{event:'open', callback: fn, type:'window'})
+      expected.set('open', { event: 'open', callback: fn, type: 'window' })
       const connectionManager = new ConnectionManager()
       const connection = new Connection({
         connectionManager: connectionManager,
         url: TEST_URL,
         token: TEST_TOKEN,
       })
-      connection.trackListener('open',{event:'open', callback: fn, type:'window'})
+      connection.trackListener('open', {
+        event: 'open',
+        callback: fn,
+        type: 'window',
+      })
       expect(connection.allEventListeners).toStrictEqual(expected)
     })
-    it('should add two listeners to the map' , () => {
+    it('should add two listeners to the map', () => {
       const expected = new Map<string, IEventListenerTracked>()
       const fn = () => {}
       const fn2 = () => {}
-      expected.set('open',{event:'open', callback: fn, type:'window'})
-      expected.set('close',{event:'close', callback: fn2, type:'window'})
+      expected.set('open', { event: 'open', callback: fn, type: 'window' })
+      expected.set('close', { event: 'close', callback: fn2, type: 'window' })
       const connectionManager = new ConnectionManager()
       const connection = new Connection({
         connectionManager: connectionManager,
         url: TEST_URL,
         token: TEST_TOKEN,
       })
-      connection.trackListener('open',{event:'open', callback: fn, type:'window'})
-      connection.trackListener('close',{event:'close', callback: fn2, type:'window'})
+      connection.trackListener('open', {
+        event: 'open',
+        callback: fn,
+        type: 'window',
+      })
+      connection.trackListener('close', {
+        event: 'close',
+        callback: fn2,
+        type: 'window',
+      })
       expect(connection.allEventListeners).toStrictEqual(expected)
     })
     it('should error if you try to add the same key', () => {
       const expected = new Map<string, IEventListenerTracked>()
       const fn = () => {}
-      expected.set('open',{event:'open', callback: fn, type:'window'})
+      expected.set('open', { event: 'open', callback: fn, type: 'window' })
       const connectionManager = new ConnectionManager()
       const connection = new Connection({
         connectionManager: connectionManager,
         url: TEST_URL,
         token: TEST_TOKEN,
       })
-      connection.trackListener('open',{event:'open', callback: fn, type:'window'})
-      expect(()=>connection.trackListener('open',{event:'open', callback: ()=>{}, type:'window'})).toThrow(`You are trying to track something twice, good luck! you're crashing. open`)
+      connection.trackListener('open', {
+        event: 'open',
+        callback: fn,
+        type: 'window',
+      })
+      expect(() =>
+        connection.trackListener('open', {
+          event: 'open',
+          callback: () => {},
+          type: 'window',
+        })
+      ).toThrow(
+        `You are trying to track something twice, good luck! you're crashing. open`
+      )
+    })
+  })
+  describe('setMediaStream', () => {
+    it('should set a mediaStream', () => {
+      const connectionManager = new ConnectionManager()
+      const connection = new Connection({
+        connectionManager: connectionManager,
+        url: TEST_URL,
+        token: TEST_TOKEN,
+      })
+      const mediaStream = new MediaStream()
+      connection.setMediaStream(mediaStream)
+      expect(connection.mediaStream).toStrictEqual(mediaStream)
+    })
+  })
+  describe('setWebrtcStatsCollector', () => {
+    it('should set webrtcStatsCollector', () => {
+      const connectionManager = new ConnectionManager()
+      const connection = new Connection({
+        connectionManager: connectionManager,
+        url: TEST_URL,
+        token: TEST_TOKEN,
+      })
+      const expected = async () => {
+        let metrics: ClientMetrics = {}
+        return metrics
+      }
+      connection.setWebrtcStatsCollector(expected)
+      expect(connection.webrtcStatsCollector).toStrictEqual(expected)
+    })
+  })
+  describe('setUnreliableDataChannel', ()=> {
+    it('should set unreliableDataChannel', ()=>{
+      const connectionManager = new ConnectionManager()
+      const connection = new Connection({
+        connectionManager: connectionManager,
+        url: TEST_URL,
+        token: TEST_TOKEN,
+      })
+      const peerConenction = new RTCPeerConnection();
+      const dataChannel = peerConenction.createDataChannel("my channel");
+      connection.setUnreliableDataChannel(dataChannel)
+      expect(connection.unreliableDataChannel).toStrictEqual(dataChannel)
+    })
+  })
+  describe('setPong', () => {
+    it('should set pong', () =>{
+      const connectionManager = new ConnectionManager()
+      const connection = new Connection({
+        connectionManager: connectionManager,
+        url: TEST_URL,
+        token: TEST_TOKEN,
+      })
+      connection.setPong(42)
+      expect(connection.pingPongSpan.pong).toBe(42)
+    })
+  })
+  describe('setPing', () => {
+    it('should set ping', () => {
+      const connectionManager = new ConnectionManager()
+      const connection = new Connection({
+        connectionManager: connectionManager,
+        url: TEST_URL,
+        token: TEST_TOKEN,
+      })
+      connection.setPing(10)
+      expect(connection.pingPongSpan.ping).toBe(10)
     })
   })
 })
