@@ -123,7 +123,7 @@ export const ModelingMachineProvider = ({
   children: React.ReactNode
 }) => {
   const {
-    app: { allowOrbitInSketchMode },
+    app: { allowOrbitInSketchMode, useNewSketchMode },
     modeling: { defaultUnit, cameraProjection, cameraOrbit },
   } = useSettings()
   const loaderData = useLoaderData() as IndexLoaderData
@@ -291,6 +291,10 @@ export const ModelingMachineProvider = ({
         },
         'Has exportable geometry': () =>
           !kclManager.hasErrors() && kclManager.ast.body.length > 0,
+        'should use new sketch mode': () => {
+          console.log('useNewSketchMode', useNewSketchMode)
+          return useNewSketchMode?.current === true
+        },
       },
       actors: {
         exportFromEngine: fromPromise(
@@ -1189,6 +1193,7 @@ export const ModelingMachineProvider = ({
           ...modelingMachineDefaultContext.store,
           ...persistedContext,
           cameraProjection,
+          useNewSketchMode,
         },
         machineManager,
       },

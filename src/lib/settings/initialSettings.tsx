@@ -1,4 +1,5 @@
 import { useRef, useEffect } from 'react'
+import env from '@src/env'
 
 import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
 import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
@@ -287,6 +288,16 @@ export function createSettings() {
         defaultValue: false,
         description: 'Toggle free camera while in sketch mode',
         validate: (v) => typeof v === 'boolean',
+      }),
+      useNewSketchMode: new Setting<boolean>({
+        hideOnLevel: 'project',
+        hideOnPlatform: env().NODE_ENV === 'development' ? undefined : 'both', // Only show in dev mode
+        defaultValue: false,
+        description: 'Use the new sketch mode implementation (Dev only)',
+        validate: (v) => typeof v === 'boolean',
+        commandConfig: {
+          inputType: 'boolean',
+        },
       }),
       onboardingStatus: new Setting<OnboardingStatus>({
         defaultValue: '',

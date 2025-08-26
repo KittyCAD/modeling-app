@@ -1,6 +1,7 @@
 import toast from 'react-hot-toast'
 import { Mesh, Vector2, Vector3 } from 'three'
 import { assign, fromPromise, setup } from 'xstate'
+import { sketchSolveMachine } from '@src/machines/sketchSolveMachine'
 
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
@@ -287,6 +288,7 @@ export interface Store {
   videoElement?: HTMLVideoElement
   openPanes: SidebarType[]
   cameraProjection?: Setting<CameraProjectionType>
+  useNewSketchMode?: Setting<boolean>
 }
 
 export type SketchTool =
@@ -580,6 +582,9 @@ export const modelingMachine = setup({
     input: {} as ModelingMachineContext,
   },
   guards: {
+    'should use new sketch mode': ({ context }) => {
+      return context.store.useNewSketchMode?.current === true
+    },
     'Selection is on face': ({
       context: { selectionRanges },
       event,
@@ -783,6 +788,9 @@ export const modelingMachine = setup({
   },
   // end guards
   actions: {
+    logNewSketchMode: () => {
+      console.log('entered new sketch mode')
+    },
     toastError: ({ event }) => {
       if ('output' in event && event.output instanceof Error) {
         console.error(event.output)
@@ -4623,10 +4631,17 @@ export const modelingMachine = setup({
           return event.data
         },
 
-        onDone: {
-          target: 'Sketch',
-          actions: 'set new sketch metadata',
-        },
+        onDone: [
+          {
+            target: 'sketchMode',
+            guard: 'should use new sketch mode',
+            actions: ['set new sketch metadata', 'logNewSketchMode'],
+          },
+          {
+            target: 'Sketch',
+            actions: 'set new sketch metadata',
+          },
+        ],
 
         onError: 'Sketch no face',
       },
@@ -4652,6 +4667,24 @@ export const modelingMachine = setup({
         },
 
         onError: 'idle',
+      },
+    },
+
+    sketchMode: {
+      invoke: {
+        src: sketchSolveMachine,
+        input: ({ context }) => ({
+          parentContext: context,
+          initialSketchDetails: context.sketchDetails,
+        }),
+        onDone: {
+          target: 'idle',
+          actions: ['enable copilot', 'enter modeling mode'],
+        },
+        onError: {
+          target: 'idle',
+          actions: ['toastError', 'enable copilot', 'enter modeling mode'],
+        },
       },
     },
 
