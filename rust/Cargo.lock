@@ -2530,7 +2530,7 @@ dependencies = [
 name = "kcl-api"
 version = "0.1.0"
 dependencies = [
- "indexmap 2.10.0",
+ "indexmap 2.11.0",
  "kcl-error",
  "serde",
  "ts-rs",

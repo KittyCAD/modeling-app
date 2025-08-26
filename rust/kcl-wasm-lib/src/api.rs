@@ -11,7 +11,7 @@ impl Context {
         console_error_panic_hook::set_once();
 
         let files: Vec<File> =
-            serde_json::from_str(files).map_err(|e| JsValue::from_serde(&Error::deserialize("file", e)).unwrap())?;
+            serde_json::from_str(files).map_err(|e| JsValue::from_serde(&Error::deserialize("files", e)).unwrap())?;
 
         self.project_manager
             .open_project(ProjectId(project), files, FileId(open_file))
@@ -25,7 +25,7 @@ impl Context {
         console_error_panic_hook::set_once();
 
         let file: File =
-            serde_json::from_str(file).map_err(|e| JsValue::from_serde(&Error::deserialize("files", e)).unwrap())?;
+            serde_json::from_str(file).map_err(|e| JsValue::from_serde(&Error::deserialize("file", e)).unwrap())?;
 
         self.project_manager
             .add_file(ProjectId(project), file)

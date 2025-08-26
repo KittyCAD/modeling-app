@@ -5,13 +5,13 @@ use kcl_error::SourceRange;
 use serde::{Deserialize, Serialize};
 
 pub trait LifecycleApi {
-    async fn open_project(&self, project: ProjectId, files: Vec<File>, open_file: FileId) -> Result<SceneGraph>;
-    async fn add_file(&self, project: ProjectId, file: File) -> Result<SceneGraphDelta>;
-    async fn remove_file(&self, project: ProjectId, file: FileId) -> Result<SceneGraphDelta>;
+    async fn open_project(&self, project: ProjectId, files: Vec<File>, open_file: FileId) -> Result<()>;
+    async fn add_file(&self, project: ProjectId, file: File) -> Result<()>;
+    async fn remove_file(&self, project: ProjectId, file: FileId) -> Result<()>;
     // File changed on disk, etc. outside of the editor or applying undo, restore, etc.
-    async fn update_file(&self, project: ProjectId, file: FileId, text: String) -> Result<SceneGraphDelta>;
-    async fn switch_file(&self, project: ProjectId, file: FileId) -> Result<SceneGraph>;
-    async fn refresh(&self, project: ProjectId) -> Result<SceneGraph>;
+    async fn update_file(&self, project: ProjectId, file: FileId, text: String) -> Result<()>;
+    async fn switch_file(&self, project: ProjectId, file: FileId) -> Result<()>;
+    async fn refresh(&self, project: ProjectId) -> Result<()>;
 }
 
 pub trait SketchApi {
@@ -30,7 +30,8 @@ pub trait SketchApi {
         version: Version,
         sketch: ObjectId,
     ) -> Result<SceneGraphDelta>;
-    async fn exit_sketch(sketch: ObjectId) -> Result<SceneGraph>;
+
+    async fn exit_sketch(&self, sketch: ObjectId) -> Result<SceneGraph>;
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]

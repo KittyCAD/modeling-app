@@ -3,7 +3,7 @@
 use std::sync::Arc;
 
 use indexmap::IndexMap;
-use kcl_api::{Error, FileId, LifecycleApi, ProjectId, Result, SceneGraph, SceneGraphDelta, Version};
+use kcl_api::{Error, FileId, LifecycleApi, ProjectId, Result, SceneGraph, Version};
 use tokio::sync::RwLock;
 
 #[derive(Debug, Clone)]
@@ -45,8 +45,8 @@ impl ProjectManager {
 }
 
 impl LifecycleApi for ProjectManager {
-    async fn open_project(&self, id: ProjectId, files: Vec<kcl_api::File>, open_file: FileId) -> Result<SceneGraph> {
-        Ok(Self::with_project_mut(move |project| {
+    async fn open_project(&self, id: ProjectId, files: Vec<kcl_api::File>, open_file: FileId) -> Result<()> {
+        Self::with_project_mut(move |project| {
             *project = Some(Project {
                 id,
                 files: files
@@ -65,12 +65,12 @@ impl LifecycleApi for ProjectManager {
                 open_file,
                 cur_version: Version(0),
             });
-            project.as_ref().unwrap().scene_graph()
+            Ok(())
         })
-        .await)
+        .await
     }
 
-    async fn add_file(&self, project_id: ProjectId, file: kcl_api::File) -> Result<SceneGraphDelta> {
+    async fn add_file(&self, project_id: ProjectId, file: kcl_api::File) -> Result<()> {
         Self::with_project_mut(move |project| {
             let Some(project) = project else {
                 return Err(Error::bad_project(project_id, None));
@@ -89,12 +89,12 @@ impl LifecycleApi for ProjectManager {
                     text: file.text,
                 },
             );
-            Ok(SceneGraphDelta::new(project.scene_graph(), true))
+            Ok(())
         })
         .await
     }
 
-    async fn remove_file(&self, project_id: ProjectId, file_id: FileId) -> Result<SceneGraphDelta> {
+    async fn remove_file(&self, project_id: ProjectId, file_id: FileId) -> Result<()> {
         Self::with_project_mut(move |project| {
             let Some(project) = project else {
                 return Err(Error::bad_project(project_id, None));
@@ -106,12 +106,12 @@ impl LifecycleApi for ProjectManager {
             if old.is_none() {
                 return Err(Error::bad_file(file_id, None));
             }
-            Ok(SceneGraphDelta::new(project.scene_graph(), true))
+            Ok(())
         })
         .await
     }
 
-    async fn update_file(&self, project_id: ProjectId, file_id: FileId, text: String) -> Result<SceneGraphDelta> {
+    async fn update_file(&self, project_id: ProjectId, file_id: FileId, text: String) -> Result<()> {
         Self::with_project_mut(move |project| {
             let Some(project) = project else {
                 return Err(Error::bad_project(project_id, None));
@@ -123,12 +123,12 @@ impl LifecycleApi for ProjectManager {
                 return Err(Error::bad_file(file_id, None));
             };
             file.text = text;
-            Ok(SceneGraphDelta::new(project.scene_graph(), true))
+            Ok(())
         })
         .await
     }
 
-    async fn switch_file(&self, project_id: ProjectId, file_id: FileId) -> Result<SceneGraph> {
+    async fn switch_file(&self, project_id: ProjectId, file_id: FileId) -> Result<()> {
         Self::with_project_mut(move |project| {
             let Some(project) = project else {
                 return Err(Error::bad_project(project_id, None));
@@ -141,12 +141,12 @@ impl LifecycleApi for ProjectManager {
             };
             project.open_file = file_id;
             project.cur_version = file.version;
-            Ok(project.scene_graph())
+            Ok(())
         })
         .await
     }
 
-    async fn refresh(&self, project_id: ProjectId) -> Result<SceneGraph> {
+    async fn refresh(&self, project_id: ProjectId) -> Result<()> {
         Self::with_project_mut(move |project| {
             let Some(project) = project else {
                 return Err(Error::bad_project(project_id, None));
@@ -154,7 +154,7 @@ impl LifecycleApi for ProjectManager {
             if project.id != project_id {
                 return Err(Error::bad_project(project_id, Some(project.id)));
             }
-            Ok(project.scene_graph())
+            Ok(())
         })
         .await
     }
