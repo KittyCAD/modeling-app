@@ -1261,7 +1261,7 @@ impl AscribedExpression {
 #[serde(tag = "type")]
 pub struct SketchBlock {
     pub arguments: Vec<LabeledArg>,
-    pub body: Node<SketchBody>,
+    pub body: Node<Block>,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[ts(optional)]
@@ -1269,7 +1269,7 @@ pub struct SketchBlock {
 }
 
 impl SketchBlock {
-    pub(crate) fn new(arguments: Vec<LabeledArg>, body: Node<SketchBody>) -> Self {
+    pub(crate) fn new(arguments: Vec<LabeledArg>, body: Node<Block>) -> Self {
         SketchBlock {
             arguments,
             body,
@@ -1301,7 +1301,7 @@ impl SketchBlock {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
-pub struct SketchBody {
+pub struct Block {
     pub items: Vec<BodyItem>,
     #[serde(default, skip_serializing_if = "NonCodeMeta::is_empty")]
     pub non_code_meta: NonCodeMeta,
@@ -1313,7 +1313,7 @@ pub struct SketchBody {
     pub digest: Option<Digest>,
 }
 
-impl SketchBody {
+impl Block {
     fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
         for item in &mut self.items {
             item.replace_value(source_range, new_value.clone());

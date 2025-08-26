@@ -6,11 +6,11 @@ use crate::{
         DeprecationKind, PIPE_OPERATOR,
         ast::types::{
             Annotation, ArrayExpression, ArrayRangeExpression, AscribedExpression, Associativity, BinaryExpression,
-            BinaryOperator, BinaryPart, BodyItem, CallExpressionKw, CommentStyle, DefaultParamVal, Expr, FormatOptions,
-            FunctionExpression, IfExpression, ImportSelector, ImportStatement, ItemVisibility, LabeledArg, Literal,
-            LiteralValue, MemberExpression, Node, NodeList, NonCodeMeta, NonCodeNode, NonCodeValue, ObjectExpression,
-            Parameter, PipeExpression, Program, SketchBlock, SketchBody, TagDeclarator, TypeDeclaration,
-            UnaryExpression, VariableDeclaration, VariableKind,
+            BinaryOperator, BinaryPart, Block, BodyItem, CallExpressionKw, CommentStyle, DefaultParamVal, Expr,
+            FormatOptions, FunctionExpression, IfExpression, ImportSelector, ImportStatement, ItemVisibility,
+            LabeledArg, Literal, LiteralValue, MemberExpression, Node, NodeList, NonCodeMeta, NonCodeNode,
+            NonCodeValue, ObjectExpression, Parameter, PipeExpression, Program, SketchBlock, TagDeclarator,
+            TypeDeclaration, UnaryExpression, VariableDeclaration, VariableKind,
         },
         deprecation,
     },
@@ -1003,7 +1003,7 @@ impl SketchBlock {
     }
 }
 
-impl SketchBody {
+impl Block {
     pub fn recast(&self, buf: &mut String, options: &FormatOptions, indentation_level: usize) {
         recast_body(
             &self.items,

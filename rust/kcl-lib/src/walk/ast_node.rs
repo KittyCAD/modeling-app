@@ -36,7 +36,7 @@ pub enum Node<'a> {
     LabelledExpression(NodeRef<'a, types::LabelledExpression>),
     AscribedExpression(NodeRef<'a, types::AscribedExpression>),
     SketchBlock(NodeRef<'a, types::SketchBlock>),
-    SketchBody(NodeRef<'a, types::SketchBody>),
+    Block(NodeRef<'a, types::Block>),
 
     Parameter(&'a types::Parameter),
 
@@ -81,7 +81,7 @@ impl Node<'_> {
             Node::LabelledExpression(n) => n.digest,
             Node::AscribedExpression(n) => n.digest,
             Node::SketchBlock(n) => n.digest,
-            Node::SketchBody(n) => n.digest,
+            Node::Block(n) => n.digest,
         }
     }
 
@@ -127,7 +127,7 @@ impl Node<'_> {
             Node::LabelledExpression(n) => *n as *const _ as *const (),
             Node::AscribedExpression(n) => *n as *const _ as *const (),
             Node::SketchBlock(n) => *n as *const _ as *const (),
-            Node::SketchBody(n) => *n as *const _ as *const (),
+            Node::Block(n) => *n as *const _ as *const (),
         }
     }
 }
@@ -171,7 +171,7 @@ impl TryFrom<&Node<'_>> for SourceRange {
             Node::LabelledExpression(n) => SourceRange::from(*n),
             Node::AscribedExpression(n) => SourceRange::from(*n),
             Node::SketchBlock(n) => SourceRange::from(*n),
-            Node::SketchBody(n) => SourceRange::from(*n),
+            Node::Block(n) => SourceRange::from(*n),
 
             // This is broken too
             Node::ElseIf(n) => SourceRange::new(n.cond.start(), n.cond.end(), n.cond.module_id()),
@@ -286,7 +286,7 @@ impl_from!(Node, ElseIf);
 impl_from!(Node, LabelledExpression);
 impl_from!(Node, AscribedExpression);
 impl_from!(Node, SketchBlock);
-impl_from!(Node, SketchBody);
+impl_from!(Node, Block);
 impl_from!(Node, KclNone);
 
 #[cfg(test)]

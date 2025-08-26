@@ -144,7 +144,7 @@ impl<'tree> Visitable<'tree> for Node<'tree> {
                 children.push((&n.body).into());
                 children
             }
-            Node::SketchBody(n) => n.items.iter().map(|node| node.into()).collect(),
+            Node::Block(n) => n.items.iter().map(|node| node.into()).collect(),
             Node::PipeSubstitution(_)
             | Node::TagDeclarator(_)
             | Node::Identifier(_)

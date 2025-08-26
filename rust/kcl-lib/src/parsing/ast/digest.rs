@@ -1,12 +1,12 @@
 use sha2::{Digest as DigestTrait, Sha256};
 
 use crate::parsing::ast::types::{
-    Annotation, ArrayExpression, ArrayRangeExpression, AscribedExpression, BinaryExpression, BinaryPart, BodyItem,
-    CallExpressionKw, DefaultParamVal, ElseIf, Expr, ExpressionStatement, FunctionExpression, FunctionType, Identifier,
-    IfExpression, ImportItem, ImportSelector, ImportStatement, ItemVisibility, KclNone, LabelledExpression, Literal,
-    LiteralValue, MemberExpression, Name, ObjectExpression, ObjectProperty, Parameter, PipeExpression,
-    PipeSubstitution, PrimitiveType, Program, ReturnStatement, SketchBlock, SketchBody, TagDeclarator, Type,
-    TypeDeclaration, UnaryExpression, VariableDeclaration, VariableDeclarator, VariableKind,
+    Annotation, ArrayExpression, ArrayRangeExpression, AscribedExpression, BinaryExpression, BinaryPart, Block,
+    BodyItem, CallExpressionKw, DefaultParamVal, ElseIf, Expr, ExpressionStatement, FunctionExpression, FunctionType,
+    Identifier, IfExpression, ImportItem, ImportSelector, ImportStatement, ItemVisibility, KclNone, LabelledExpression,
+    Literal, LiteralValue, MemberExpression, Name, ObjectExpression, ObjectProperty, Parameter, PipeExpression,
+    PipeSubstitution, PrimitiveType, Program, ReturnStatement, SketchBlock, TagDeclarator, Type, TypeDeclaration,
+    UnaryExpression, VariableDeclaration, VariableDeclarator, VariableKind,
 };
 
 /// Position-independent digest of the AST node.
@@ -533,7 +533,7 @@ impl SketchBlock {
     });
 }
 
-impl SketchBody {
+impl Block {
     compute_digest!(|slf, hasher| {
         for item in &mut slf.items {
             hasher.update(item.compute_digest());
