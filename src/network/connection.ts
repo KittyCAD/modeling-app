@@ -454,7 +454,7 @@ export class Connection extends EventTarget {
     }
 
     // TODO: What is 3?
-    if (this.websocket.readyState < 3) {
+    if (this.websocket.readyState < WebSocket.CLOSED) {
       this.websocket.close()
     } else {
       throw new Error(
@@ -574,12 +574,12 @@ export class Connection extends EventTarget {
       throw new Error('send, websocket is undefined')
     }
 
-    if (this.websocket.readyState !== 1) {
+    if (this.websocket.readyState !== WebSocket.OPEN) {
       throw new Error('websocket is not in a ready state')
     }
 
     // Not connected, don't send anything
-    if (this.websocket?.readyState !== 1) return
+    if (this.websocket?.readyState !== WebSocket.OPEN) return
 
     // TODO(paultag): Add in logic to determine the connection state and
     // take actions if needed?
