@@ -195,33 +195,33 @@ export class Connection extends EventTarget {
     this.peerConnection.createDataChannel(DATACHANNEL_NAME_UMC)
 
     const onIceCandidate = createOnIceCandidate({
-      initiateConnectionExclusive: this.initiateConnectionExclusive,
-      send: this.send,
+      initiateConnectionExclusive: this.initiateConnectionExclusive.bind(this),
+      send: this.send.bind(this),
     })
     const onIceGatheringStateChange = createOnIceGatheringStateChange({
-      initiateConnectionExclusive: this.initiateConnectionExclusive,
+      initiateConnectionExclusive: this.initiateConnectionExclusive.bind(this),
     })
     const onIceConnectionStateChange = createOnIceConnectionStateChange()
     const onNegotiationNeeded = createOnNegotiationNeeded()
     const onSignalingStateChange = createOnSignalingStateChange()
     const onIceCandidateError = createOnIceCandidateError()
     const onConnectionStateChange = createOnConnectionStateChange({
-      dispatchEvent: this.dispatchEvent,
+      dispatchEvent: this.dispatchEvent.bind(this),
       connection: this,
-      disconnectAll: this.disconnectAll,
-      cleanUp: this.cleanUp,
+      disconnectAll: this.disconnectAll.bind(this),
+      cleanUp: this.cleanUp.bind(this),
     })
     const onTrack = createOnTrack({
-      setMediaStream: this.setMediaStream,
-      setWebrtcStatsCollector: this.setWebrtcStatsCollector,
+      setMediaStream: this.setMediaStream.bind(this),
+      setWebrtcStatsCollector: this.setWebrtcStatsCollector.bind(this),
       peerConnection: this.peerConnection,
     })
 
     // Has a callback workflow that will create a unreliabledatachannel
     const onDataChannel = createOnDataChannel({
-      setUnreliableDataChannel: this.setUnreliableDataChannel,
-      dispatchEvent: this.dispatchEvent,
-      trackListener: this.trackListener,
+      setUnreliableDataChannel: this.setUnreliableDataChannel.bind(this),
+      dispatchEvent: this.dispatchEvent.bind(this),
+      trackListener: this.trackListener.bind(this),
     })
 
     // Watch out human! The names of the next couple events are really similar!
@@ -317,33 +317,33 @@ export class Connection extends EventTarget {
     this.websocket.binaryType = 'arraybuffer'
 
     const onWebSocketOpen = createOnWebSocketOpen({
-      send: this.send,
+      send: this.send.bind(this),
       token: this.token,
     })
     const onWebSocketError = createOnWebSocketError()
     const onWebSocketMessage = createOnWebSocketMessage({
       connectionManager: this.connectionManager,
-      disconnectAll: this.disconnectAll,
-      setPong: this.setPong,
-      dispatchEvent: this.dispatchEvent,
+      disconnectAll: this.disconnectAll.bind(this),
+      setPong: this.setPong.bind(this),
+      dispatchEvent: this.dispatchEvent.bind(this),
       ping: () => {
         return this._pingPongSpan.ping
       },
-      setPing: this.setPing,
-      createPeerConnection: this.createPeerConnection,
-      send: this.send,
-      setSdpAnswer: this.setSdpAnswer,
-      initiateConnectionExclusive: this.initiateConnectionExclusive,
-      addIceCandidate: this.addIceCandidate,
-      webrtcStatsCollector: this.webrtcStatsCollector,
+      setPing: this.setPing.bind(this),
+      createPeerConnection: this.createPeerConnection.bind(this),
+      send: this.send.bind(this),
+      setSdpAnswer: this.setSdpAnswer.bind(this),
+      initiateConnectionExclusive: this.initiateConnectionExclusive.bind(this),
+      addIceCandidate: this.addIceCandidate.bind(this),
+      webrtcStatsCollector: this.webrtcStatsCollector?.bind(this),
     })
     const onWebSocketClose = createOnWebSocketClose({
       websocket: this.websocket,
       onWebSocketOpen: onWebSocketOpen,
       onWebSocketError: onWebSocketError,
       onWebSocketMessage: onWebSocketMessage,
-      disconnectAll: this.disconnectAll,
-      dispatchEvent: this.dispatchEvent,
+      disconnectAll: this.disconnectAll.bind(this),
+      dispatchEvent: this.dispatchEvent.bind(this),
     })
 
     // Meta close will remove all the internal events itself but then the this.websocket.close
@@ -539,6 +539,7 @@ export class Connection extends EventTarget {
   }
 
   send(message: Models['WebSocketRequest_type']) {
+    console.warn('MESSAGE', message)
     if (!this.websocket) {
       throw new Error('send, websocket is undefined')
     }
