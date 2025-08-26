@@ -692,21 +692,7 @@ impl Program {
     /// Rename all identifiers that have the old name to the new given name.
     fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
         for item in &mut self.body {
-            match item {
-                BodyItem::ImportStatement(stmt) => {
-                    stmt.rename_identifiers(old_name, new_name);
-                }
-                BodyItem::ExpressionStatement(expression_statement) => {
-                    expression_statement.expression.rename_identifiers(old_name, new_name);
-                }
-                BodyItem::VariableDeclaration(variable_declaration) => {
-                    variable_declaration.rename_identifiers(old_name, new_name);
-                }
-                BodyItem::TypeDeclaration(_) => {}
-                BodyItem::ReturnStatement(return_statement) => {
-                    return_statement.argument.rename_identifiers(old_name, new_name);
-                }
-            }
+            item.rename_identifiers(old_name, new_name);
         }
     }
 
@@ -737,19 +723,7 @@ impl Program {
     /// Replace a value with the new value, use the source range for matching the exact value.
     pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
         for item in &mut self.body {
-            match item {
-                BodyItem::ImportStatement(_) => {} // TODO
-                BodyItem::ExpressionStatement(expression_statement) => expression_statement
-                    .expression
-                    .replace_value(source_range, new_value.clone()),
-                BodyItem::VariableDeclaration(variable_declaration) => {
-                    variable_declaration.replace_value(source_range, new_value.clone())
-                }
-                BodyItem::TypeDeclaration(_) => {}
-                BodyItem::ReturnStatement(return_statement) => {
-                    return_statement.argument.replace_value(source_range, new_value.clone())
-                }
-            }
+            item.replace_value(source_range, new_value.clone());
         }
     }
 
@@ -904,6 +878,40 @@ impl BodyItem {
             BodyItem::VariableDeclaration(node) => node.visibility,
             BodyItem::TypeDeclaration(node) => node.visibility,
             BodyItem::ExpressionStatement(_) | BodyItem::ReturnStatement(_) => ItemVisibility::Default,
+        }
+    }
+
+    fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
+        match self {
+            BodyItem::ImportStatement(stmt) => {
+                stmt.rename_identifiers(old_name, new_name);
+            }
+            BodyItem::ExpressionStatement(expression_statement) => {
+                expression_statement.expression.rename_identifiers(old_name, new_name);
+            }
+            BodyItem::VariableDeclaration(variable_declaration) => {
+                variable_declaration.rename_identifiers(old_name, new_name);
+            }
+            BodyItem::TypeDeclaration(_) => {}
+            BodyItem::ReturnStatement(return_statement) => {
+                return_statement.argument.rename_identifiers(old_name, new_name);
+            }
+        }
+    }
+
+    fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
+        match self {
+            BodyItem::ImportStatement(_) => {} // TODO
+            BodyItem::ExpressionStatement(expression_statement) => {
+                expression_statement.expression.replace_value(source_range, new_value)
+            }
+            BodyItem::VariableDeclaration(variable_declaration) => {
+                variable_declaration.replace_value(source_range, new_value)
+            }
+            BodyItem::TypeDeclaration(_) => {}
+            BodyItem::ReturnStatement(return_statement) => {
+                return_statement.argument.replace_value(source_range, new_value)
+            }
         }
     }
 }
@@ -1294,7 +1302,11 @@ impl SketchBlock {
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct SketchBody {
-    pub items: Vec<Node<SketchItem>>,
+    pub items: Vec<BodyItem>,
+    #[serde(default, skip_serializing_if = "NonCodeMeta::is_empty")]
+    pub non_code_meta: NonCodeMeta,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub inner_attrs: NodeList<Annotation>,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[ts(optional)]
@@ -1302,10 +1314,6 @@ pub struct SketchBody {
 }
 
 impl SketchBody {
-    pub(crate) fn new(items: Vec<Node<SketchItem>>) -> Self {
-        SketchBody { items, digest: None }
-    }
-
     fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
         for item in &mut self.items {
             item.replace_value(source_range, new_value.clone());
@@ -1316,21 +1324,6 @@ impl SketchBody {
         for item in &mut self.items {
             item.rename_identifiers(old_name, new_name);
         }
-    }
-}
-
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
-#[ts(export)]
-#[serde(tag = "type")]
-pub enum SketchItem {}
-
-impl SketchItem {
-    fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
-        // match self {}
-    }
-
-    fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
-        // match self {}
     }
 }
 

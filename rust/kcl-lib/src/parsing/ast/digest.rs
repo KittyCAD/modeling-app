@@ -5,8 +5,8 @@ use crate::parsing::ast::types::{
     CallExpressionKw, DefaultParamVal, ElseIf, Expr, ExpressionStatement, FunctionExpression, FunctionType, Identifier,
     IfExpression, ImportItem, ImportSelector, ImportStatement, ItemVisibility, KclNone, LabelledExpression, Literal,
     LiteralValue, MemberExpression, Name, ObjectExpression, ObjectProperty, Parameter, PipeExpression,
-    PipeSubstitution, PrimitiveType, Program, ReturnStatement, SketchBlock, SketchBody, SketchItem, TagDeclarator,
-    Type, TypeDeclaration, UnaryExpression, VariableDeclaration, VariableDeclarator, VariableKind,
+    PipeSubstitution, PrimitiveType, Program, ReturnStatement, SketchBlock, SketchBody, TagDeclarator, Type,
+    TypeDeclaration, UnaryExpression, VariableDeclaration, VariableDeclarator, VariableKind,
 };
 
 /// Position-independent digest of the AST node.
@@ -539,20 +539,6 @@ impl SketchBody {
             hasher.update(item.compute_digest());
         }
     });
-}
-
-impl SketchItem {
-    pub fn compute_digest(&mut self) -> Digest {
-        let mut hasher = Sha256::new();
-        // hasher.update(match self {
-        // });
-
-        // TODO: sketch-api: annotations?
-        // for a in self.get_attrs_mut() {
-        //     hasher.update(a.compute_digest());
-        // }
-        hasher.finalize().into()
-    }
 }
 
 #[cfg(test)]

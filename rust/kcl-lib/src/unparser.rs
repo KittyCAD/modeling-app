@@ -8,8 +8,8 @@ use crate::{
             Annotation, ArrayExpression, ArrayRangeExpression, AscribedExpression, Associativity, BinaryExpression,
             BinaryOperator, BinaryPart, BodyItem, CallExpressionKw, CommentStyle, DefaultParamVal, Expr, FormatOptions,
             FunctionExpression, IfExpression, ImportSelector, ImportStatement, ItemVisibility, LabeledArg, Literal,
-            LiteralValue, MemberExpression, Node, NonCodeNode, NonCodeValue, ObjectExpression, Parameter,
-            PipeExpression, Program, SketchBlock, SketchBody, SketchItem, TagDeclarator, TypeDeclaration,
+            LiteralValue, MemberExpression, Node, NodeList, NonCodeMeta, NonCodeNode, NonCodeValue, ObjectExpression,
+            Parameter, PipeExpression, Program, SketchBlock, SketchBody, TagDeclarator, TypeDeclaration,
             UnaryExpression, VariableDeclaration, VariableKind,
         },
         deprecation,
@@ -30,108 +30,125 @@ impl Program {
     }
 
     pub fn recast(&self, buf: &mut String, options: &FormatOptions, indentation_level: usize) {
-        let indentation = options.get_indentation(indentation_level);
-
         if let Some(sh) = self.shebang.as_ref() {
             write!(buf, "{}\n\n", sh.inner.content).no_fail();
         }
 
-        if self
-            .non_code_meta
-            .start_nodes
-            .iter()
-            .any(|noncode| !matches!(noncode.value, NonCodeValue::NewLine))
-        {
-            for start in &self.non_code_meta.start_nodes {
-                let noncode_recast = start.recast(options, indentation_level);
-                buf.push_str(&noncode_recast);
+        recast_body(
+            &self.body,
+            &self.non_code_meta,
+            &self.inner_attrs,
+            buf,
+            options,
+            indentation_level,
+        );
+    }
+}
+
+fn recast_body(
+    items: &[BodyItem],
+    non_code_meta: &NonCodeMeta,
+    inner_attrs: &NodeList<Annotation>,
+    buf: &mut String,
+    options: &FormatOptions,
+    indentation_level: usize,
+) {
+    let indentation = options.get_indentation(indentation_level);
+
+    if non_code_meta
+        .start_nodes
+        .iter()
+        .any(|noncode| !matches!(noncode.value, NonCodeValue::NewLine))
+    {
+        for start in &non_code_meta.start_nodes {
+            let noncode_recast = start.recast(options, indentation_level);
+            buf.push_str(&noncode_recast);
+        }
+    }
+    for attr in inner_attrs {
+        options.write_indentation(buf, indentation_level);
+        attr.recast(buf, options, indentation_level);
+    }
+    if !inner_attrs.is_empty() {
+        buf.push('\n');
+    }
+
+    let body_item_lines = items.iter().map(|body_item| {
+        let mut result = String::with_capacity(256);
+        for comment in body_item.get_comments() {
+            if !comment.is_empty() {
+                result.push_str(&indentation);
+                result.push_str(comment);
+            }
+            if comment.is_empty() && !result.ends_with("\n") {
+                result.push('\n');
+            }
+            if !result.ends_with("\n\n") && result != "\n" {
+                result.push('\n');
             }
         }
-        for attr in &self.inner_attrs {
-            options.write_indentation(buf, indentation_level);
-            attr.recast(buf, options, indentation_level);
+        for attr in body_item.get_attrs() {
+            attr.recast(&mut result, options, indentation_level);
         }
-        if !self.inner_attrs.is_empty() {
-            buf.push('\n');
-        }
-
-        let body_item_lines = self.body.iter().map(|body_item| {
-            let mut result = String::with_capacity(256);
-            for comment in body_item.get_comments() {
-                if !comment.is_empty() {
-                    result.push_str(&indentation);
-                    result.push_str(comment);
-                }
-                if comment.is_empty() && !result.ends_with("\n") {
-                    result.push('\n');
-                }
-                if !result.ends_with("\n\n") && result != "\n" {
-                    result.push('\n');
-                }
+        match body_item {
+            BodyItem::ImportStatement(stmt) => {
+                result.push_str(&stmt.recast(options, indentation_level));
             }
-            for attr in body_item.get_attrs() {
-                attr.recast(&mut result, options, indentation_level);
+            BodyItem::ExpressionStatement(expression_statement) => {
+                expression_statement
+                    .expression
+                    .recast(&mut result, options, indentation_level, ExprContext::Other)
             }
-            match body_item {
-                BodyItem::ImportStatement(stmt) => {
-                    result.push_str(&stmt.recast(options, indentation_level));
-                }
-                BodyItem::ExpressionStatement(expression_statement) => {
-                    expression_statement
-                        .expression
-                        .recast(&mut result, options, indentation_level, ExprContext::Other)
-                }
-                BodyItem::VariableDeclaration(variable_declaration) => {
-                    variable_declaration.recast(&mut result, options, indentation_level);
-                }
-                BodyItem::TypeDeclaration(ty_declaration) => ty_declaration.recast(&mut result),
-                BodyItem::ReturnStatement(return_statement) => {
-                    write!(&mut result, "{indentation}return ").no_fail();
-                    let mut tmp_buf = String::with_capacity(256);
-                    return_statement
-                        .argument
-                        .recast(&mut tmp_buf, options, indentation_level, ExprContext::Other);
-                    write!(&mut result, "{}", tmp_buf.trim_start()).no_fail();
-                }
-            };
-            result
-        });
-        for (index, recast_str) in body_item_lines.enumerate() {
-            write!(buf, "{recast_str}").no_fail();
+            BodyItem::VariableDeclaration(variable_declaration) => {
+                variable_declaration.recast(&mut result, options, indentation_level);
+            }
+            BodyItem::TypeDeclaration(ty_declaration) => ty_declaration.recast(&mut result),
+            BodyItem::ReturnStatement(return_statement) => {
+                write!(&mut result, "{indentation}return ").no_fail();
+                let mut tmp_buf = String::with_capacity(256);
+                return_statement
+                    .argument
+                    .recast(&mut tmp_buf, options, indentation_level, ExprContext::Other);
+                write!(&mut result, "{}", tmp_buf.trim_start()).no_fail();
+            }
+        };
+        result
+    });
+    for (index, recast_str) in body_item_lines.enumerate() {
+        write!(buf, "{recast_str}").no_fail();
 
-            // determine the value of the end string
-            // basically if we are inside a nested function we want to end with a new line
-            let needs_line_break = !(index == self.body.len() - 1 && indentation_level == 0);
+        // determine the value of the end string
+        // basically if we are inside a nested function we want to end with a new line
+        let needs_line_break = !(index == items.len() - 1 && indentation_level == 0);
 
-            let custom_white_space_or_comment = self.non_code_meta.non_code_nodes.get(&index).map(|noncodes| {
-                noncodes.iter().enumerate().map(|(i, custom_white_space_or_comment)| {
-                    let formatted = custom_white_space_or_comment.recast(options, indentation_level);
-                    if i == 0 && !formatted.trim().is_empty() {
-                        if let NonCodeValue::BlockComment { .. } = custom_white_space_or_comment.value {
-                            format!("\n{formatted}")
-                        } else {
-                            formatted
-                        }
+        let custom_white_space_or_comment = non_code_meta.non_code_nodes.get(&index).map(|noncodes| {
+            noncodes.iter().enumerate().map(|(i, custom_white_space_or_comment)| {
+                let formatted = custom_white_space_or_comment.recast(options, indentation_level);
+                if i == 0 && !formatted.trim().is_empty() {
+                    if let NonCodeValue::BlockComment { .. } = custom_white_space_or_comment.value {
+                        format!("\n{formatted}")
                     } else {
                         formatted
                     }
-                })
-            });
-
-            if let Some(custom) = custom_white_space_or_comment {
-                for to_write in custom {
-                    write!(buf, "{to_write}").no_fail();
+                } else {
+                    formatted
                 }
-            } else if needs_line_break {
-                buf.push('\n')
-            }
-        }
-        trim_end(buf);
+            })
+        });
 
-        // Insert a final new line if the user wants it.
-        if options.insert_final_newline && !buf.is_empty() {
-            buf.push('\n');
+        if let Some(custom) = custom_white_space_or_comment {
+            for to_write in custom {
+                write!(buf, "{to_write}").no_fail();
+            }
+        } else if needs_line_break {
+            buf.push('\n')
         }
+    }
+    trim_end(buf);
+
+    // Insert a final new line if the user wants it.
+    if options.insert_final_newline && !buf.is_empty() {
+        buf.push('\n');
     }
 }
 
@@ -959,7 +976,13 @@ impl Parameter {
 }
 
 impl SketchBlock {
-    pub fn recast(&self, buf: &mut String, options: &FormatOptions, indentation_level: usize, ctxt: ExprContext) {
+    pub(crate) fn recast(
+        &self,
+        buf: &mut String,
+        options: &FormatOptions,
+        indentation_level: usize,
+        ctxt: ExprContext,
+    ) {
         // We don't want to end with a new line inside nested blocks.
         let mut new_options = options.clone();
         new_options.insert_final_newline = false;
@@ -973,7 +996,7 @@ impl SketchBlock {
         }
         buf.push(')');
         writeln!(buf, " {{").no_fail();
-        self.body.recast(buf, &new_options, indentation_level + 1, ctxt);
+        self.body.recast(buf, &new_options, indentation_level + 1);
         buf.push('\n');
         options.write_indentation(buf, indentation_level);
         buf.push('}');
@@ -981,16 +1004,15 @@ impl SketchBlock {
 }
 
 impl SketchBody {
-    pub fn recast(&self, buf: &mut String, options: &FormatOptions, indentation_level: usize, ctxt: ExprContext) {
-        for item in self.items.iter() {
-            item.recast(buf, options, indentation_level, ctxt);
-        }
-    }
-}
-
-impl SketchItem {
-    pub fn recast(&self, buf: &mut String, options: &FormatOptions, indentation_level: usize, ctxt: ExprContext) {
-        // match self {}
+    pub fn recast(&self, buf: &mut String, options: &FormatOptions, indentation_level: usize) {
+        recast_body(
+            &self.items,
+            &self.non_code_meta,
+            &self.inner_attrs,
+            buf,
+            options,
+            indentation_level,
+        );
     }
 }
 
