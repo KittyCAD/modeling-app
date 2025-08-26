@@ -309,7 +309,7 @@ const c = new Connection({
 
 async function dog() {
   c.connect()
-  c.createWebSocketConnection()
+  // c.createWebSocketConnection()
 }
 
 dog()

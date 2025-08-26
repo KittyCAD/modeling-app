@@ -540,6 +540,7 @@ export class Connection extends EventTarget {
     // Function generated from createPeerConnection workflow
     this.webrtcStatsCollector = undefined
     this.cleanUpTimeouts()
+    this.stopPingPong()
 
     EngineDebugger.addLog({
       label: 'connection',
