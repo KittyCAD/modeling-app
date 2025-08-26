@@ -93,7 +93,7 @@ export class SceneInfra {
   readonly labelRenderer: CSS2DRenderer
   readonly camControls: CameraControls
   isFovAnimationInProgress = false
-  _baseUnitMultiplier = 1
+  private _baseUnitMultiplier = 1
   private _theme: Themes = Themes.System
   lastMouseState: MouseState = { type: 'idle' }
   public readonly baseUnitChange = new Signal()
@@ -134,6 +134,10 @@ export class SceneInfra {
       )
       this.baseUnitChange.dispatch()
     }
+  }
+
+  get baseUnitMultiplier() {
+    return this._baseUnitMultiplier
   }
 
   // Returns the size of the current base unit in ortho view (in logical/CSS pixels, not device pixels).

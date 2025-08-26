@@ -240,7 +240,7 @@ export class SceneEntities {
         (this.sceneInfra.camControls.camera instanceof OrthographicCamera
           ? orthoFactor
           : perspScale(this.sceneInfra.camControls.camera, segment)) /
-        this.sceneInfra._baseUnitMultiplier
+        this.sceneInfra.baseUnitMultiplier
       let input: SegmentInputs = {
         type: 'straight-segment',
         from: segment.userData.from,
@@ -358,14 +358,14 @@ export class SceneEntities {
           ? orthoFactor
           : perspScale(this.sceneInfra.camControls.camera, this.axisGroup)
       const x = this.axisGroup.getObjectByName(X_AXIS)
-      x?.scale.set(1, factor / this.sceneInfra._baseUnitMultiplier, 1)
+      x?.scale.set(1, factor / this.sceneInfra.baseUnitMultiplier, 1)
       const y = this.axisGroup.getObjectByName(Y_AXIS)
-      y?.scale.set(factor / this.sceneInfra._baseUnitMultiplier, 1, 1)
+      y?.scale.set(factor / this.sceneInfra.baseUnitMultiplier, 1, 1)
       this.updateInfiniteGrid()
     }
     const draftPoint = this.getDraftPoint()
     if (draftPoint) {
-      const scale = orthoFactor / this.sceneInfra._baseUnitMultiplier
+      const scale = orthoFactor / this.sceneInfra.baseUnitMultiplier
       draftPoint.scale.set(scale, scale, scale)
     }
     this.sceneInfra.overlayCallbacks(callbacks)
@@ -436,8 +436,8 @@ export class SceneEntities {
       this.sceneInfra.camControls.camera instanceof OrthographicCamera
         ? orthoFactor
         : perspScale(this.sceneInfra.camControls.camera, this.axisGroup)
-    xAxisMesh?.scale.set(1, factor / this.sceneInfra._baseUnitMultiplier, 1)
-    yAxisMesh?.scale.set(factor / this.sceneInfra._baseUnitMultiplier, 1, 1)
+    xAxisMesh?.scale.set(1, factor / this.sceneInfra.baseUnitMultiplier, 1)
+    yAxisMesh?.scale.set(factor / this.sceneInfra.baseUnitMultiplier, 1, 1)
 
     this.axisGroup.add(xAxisMesh, yAxisMesh, gridRenderer)
     this.currentSketchQuaternion &&
@@ -3305,7 +3305,7 @@ export class SceneEntities {
       (this.sceneInfra.camControls.camera instanceof OrthographicCamera
         ? orthoFactor
         : perspScale(this.sceneInfra.camControls.camera, group)) /
-      this.sceneInfra._baseUnitMultiplier
+      this.sceneInfra.baseUnitMultiplier
     let input: SegmentInputs = {
       type: 'straight-segment',
       from: segment.from,
@@ -3485,7 +3485,7 @@ export class SceneEntities {
             (this.sceneInfra.camControls.camera instanceof OrthographicCamera
               ? orthoFactor
               : perspScale(this.sceneInfra.camControls.camera, parent)) /
-            this.sceneInfra._baseUnitMultiplier
+            this.sceneInfra.baseUnitMultiplier
           let update: SegmentUtils['update'] | null = null
           if (parent.name === STRAIGHT_SEGMENT) {
             update = segmentUtils.straight.update
@@ -3562,7 +3562,7 @@ export class SceneEntities {
             (this.sceneInfra.camControls.camera instanceof OrthographicCamera
               ? orthoFactor
               : perspScale(this.sceneInfra.camControls.camera, parent)) /
-            this.sceneInfra._baseUnitMultiplier
+            this.sceneInfra.baseUnitMultiplier
           let update: SegmentUtils['update'] | null = null
           if (parent.name === STRAIGHT_SEGMENT) {
             update = segmentUtils.straight.update
@@ -3784,7 +3784,7 @@ export class SceneEntities {
           (this.sceneInfra.camControls.camera instanceof OrthographicCamera
             ? orthoFactor
             : perspScale(this.sceneInfra.camControls.camera, group)) /
-          this.sceneInfra._baseUnitMultiplier
+          this.sceneInfra.baseUnitMultiplier
         const from = group.userData.from
 
         const straightSegmentBodyDashed = group.children.find(
