@@ -94,7 +94,9 @@ import { createLineShape } from '@src/clientSideScene/segments'
 import {
   createProfileStartHandle,
   dashedStraight,
+  getSegmentColor,
   getTanPreviousPoint,
+  isSegmentFullyConstrained,
   segmentUtils,
 } from '@src/clientSideScene/segments'
 import type EditorManager from '@src/editor/manager'
@@ -326,6 +328,8 @@ export class SceneEntities {
         group: segment,
         scale: factor,
         sceneInfra: this.sceneInfra,
+        ast: this.kclManager.ast,
+        code: this.codeManager.code,
       })
       callBack && !err(callBack) && callbacks.push(callBack)
       if (segment.name === PROFILE_START) {
@@ -537,6 +541,7 @@ export class SceneEntities {
     this.intersectionPlane.position.copy(
       new Vector3(...(sketchDetails?.origin || [0, 0, 0]))
     )
+    let hasClickedAlready = false
     this.sceneInfra.setCallbacks({
       onMove: (args) => {
         if (!args.intersects.length) return
@@ -599,6 +604,12 @@ export class SceneEntities {
         this.removeDraftPoint()
       },
       onClick: async (args) => {
+        if (hasClickedAlready) {
+          // we only expect one click, and than to be transitioned to the next state.
+          // if the user spams clicks, this handler races itself and causes problems
+          return
+        }
+        hasClickedAlready = true
         this.removeDraftPoint()
         if (!args) return
         // If there is a valid camera interaction that matches, do that instead
@@ -731,6 +742,8 @@ export class SceneEntities {
           scale,
           theme: this.sceneInfra._theme,
           isDraft: false,
+          ast: maybeModdedAst,
+          code: this.codeManager.code,
         })
         _profileStart.layers.set(SKETCH_LAYER)
         _profileStart.traverse((child) => {
@@ -867,6 +880,8 @@ export class SceneEntities {
           isSelected,
           sceneInfra: this.sceneInfra,
           selection,
+          ast: maybeModdedAst,
+          code: this.codeManager.code,
         })
         if (err(result)) return
         const { group: _group, updateOverlaysCallback } = result
@@ -964,10 +979,13 @@ export class SceneEntities {
     if (trap(_node1)) return Promise.reject(_node1)
     const variableDeclarationName = _node1.node?.declaration.id?.name || ''
 
-    const sg = sketchFromKclValue(
-      this.kclManager.variables[variableDeclarationName],
-      variableDeclarationName
-    )
+    const profileVar = this.kclManager.variables[variableDeclarationName]
+    if (!profileVar) {
+      const msg = `No variable found for ${variableDeclarationName} in ${sketchEntryNodePath}`
+      return Promise.reject(new Error(msg))
+    }
+
+    const sg = sketchFromKclValue(profileVar, variableDeclarationName)
     if (err(sg)) return Promise.reject(sg)
     const lastSeg = sg?.paths?.slice(-1)[0] || sg.start
 
@@ -3125,6 +3143,15 @@ export class SceneEntities {
           })
         }
         callbacks.push(startProfileCallBack)
+        let minIndex = -1
+        if (draftInfo) {
+          sketchNodePaths.forEach((path) => {
+            const currentIndex = Number(path[1][0])
+            if (currentIndex < minIndex || minIndex === -1) {
+              minIndex = currentIndex
+            }
+          })
+        }
 
         callbacks.push(
           ...sgPaths.map((group, index) =>
@@ -3135,7 +3162,8 @@ export class SceneEntities {
               modifiedAst,
               orthoFactor,
               sketch,
-              snappedToTangent
+              snappedToTangent,
+              minIndex
             )
           )
         )
@@ -3164,7 +3192,8 @@ export class SceneEntities {
     modifiedAst: Program,
     orthoFactor: number,
     sketch: Sketch,
-    snappedToTangent: boolean = false
+    snappedToTangent: boolean = false,
+    truncatedExpressionIndexOffset?: number
   ): (() => SegmentOverlayPayload | null) => {
     const segPathToNode = getNodePathFromSourceRange(
       modifiedAst,
@@ -3257,6 +3286,9 @@ export class SceneEntities {
         scale: factor,
         prevSegment: sgPaths[index - 1],
         sceneInfra: this.sceneInfra,
+        ast: modifiedAst,
+        code: this.codeManager.code,
+        truncatedExpressionIndexOffset,
       })
     if (callBack && !err(callBack)) return callBack
 
@@ -3275,15 +3307,47 @@ export class SceneEntities {
   updateSegmentBaseColor(newColor: Themes.Light | Themes.Dark) {
     const newColorThreeJs = getThemeColorForThreeJs(newColor)
     Object.values(this.activeSegments).forEach((group) => {
+      // Update the stored base color
       group.userData.baseColor = newColorThreeJs
-      group.traverse((child) => {
-        if (
-          child instanceof Mesh &&
-          child.material instanceof MeshBasicMaterial
-        ) {
-          child.material.color.set(newColorThreeJs)
-        }
-      })
+
+      // Use constraint-aware coloring instead of directly setting theme color
+      if (this.kclManager.ast && this.codeManager.code) {
+        const pathToNode = group.userData.pathToNode
+        const isFullyConstrained =
+          group.userData.callExpName === 'close'
+            ? true
+            : isSegmentFullyConstrained(
+                pathToNode,
+                this.kclManager.ast,
+                this.codeManager.code
+              )
+
+        const constraintAwareColor = getSegmentColor({
+          theme: newColor,
+          isSelected: group.userData.isSelected || false,
+          callExpName: group.userData.callExpName,
+          isFullyConstrained,
+        })
+
+        group.traverse((child) => {
+          if (
+            child instanceof Mesh &&
+            child.material instanceof MeshBasicMaterial
+          ) {
+            child.material.color.set(constraintAwareColor)
+          }
+        })
+      } else {
+        // Fallback to theme color if no AST/code available
+        group.traverse((child) => {
+          if (
+            child instanceof Mesh &&
+            child.material instanceof MeshBasicMaterial
+          ) {
+            child.material.color.set(newColorThreeJs)
+          }
+        })
+      }
     })
   }
 
@@ -3417,6 +3481,8 @@ export class SceneEntities {
               group: parent,
               scale: factor,
               sceneInfra: this.sceneInfra,
+              ast: this.kclManager.ast,
+              code: this.codeManager.code,
             })
           return
         }
@@ -3494,16 +3560,42 @@ export class SceneEntities {
               group: parent,
               scale: factor,
               sceneInfra: this.sceneInfra,
+              ast: this.kclManager.ast,
+              code: this.codeManager.code,
             })
         }
         const isSelected = parent?.userData?.isSelected
-        colorSegment(
-          selected,
-          isSelected
-            ? SEGMENT_BLUE
-            : parent?.userData?.baseColor ||
-                getThemeColorForThreeJs(this.sceneInfra._theme)
-        )
+
+        // Use constraint-aware coloring for mouse leave
+        if (parent && this.kclManager.ast && this.codeManager.code) {
+          const pathToNode = parent.userData.pathToNode
+          const isFullyConstrained =
+            parent.userData.callExpName === 'close'
+              ? true
+              : isSegmentFullyConstrained(
+                  pathToNode,
+                  this.kclManager.ast,
+                  this.codeManager.code
+                )
+
+          const constraintAwareColor = getSegmentColor({
+            theme: this.sceneInfra._theme,
+            isSelected: isSelected || false,
+            callExpName: parent.userData.callExpName,
+            isFullyConstrained,
+          })
+
+          colorSegment(selected, constraintAwareColor)
+        } else {
+          // Fallback to old logic if no constraint info available
+          colorSegment(
+            selected,
+            isSelected
+              ? SEGMENT_BLUE
+              : parent?.userData?.baseColor ||
+                  getThemeColorForThreeJs(this.sceneInfra._theme)
+          )
+        }
         updateExtraSegments(parent, 'hoveringLine', false)
         updateExtraSegments(parent, 'selected', isSelected)
         if ([X_AXIS, Y_AXIS].includes(selected?.userData?.type)) {
