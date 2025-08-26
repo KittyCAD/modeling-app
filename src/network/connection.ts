@@ -51,8 +51,8 @@ export class Connection extends EventTarget {
     ping: number | undefined
     pong: number | undefined
   }
-  private _pingIntervalId: ReturnType<typeof setInterval> | undefined =
-    undefined
+  private _pingIntervalId: ReturnType<typeof setInterval> | undefined
+  timeoutToForceConnectId: ReturnType<typeof setTimeout> | undefined
 
   private peerConnection: RTCPeerConnection | undefined
   unreliableDataChannel: RTCDataChannel | undefined
@@ -211,6 +211,7 @@ export class Connection extends EventTarget {
 
     try {
       await this.peerConnection.setRemoteDescription(this.sdpAnswer)
+      this.cleanUpTimeouts()
     } catch (error) {
       console.error('Failed to set remote description:', error)
       this.disconnectAll()
@@ -226,6 +227,7 @@ export class Connection extends EventTarget {
     const onIceCandidate = createOnIceCandidate({
       initiateConnectionExclusive: this.initiateConnectionExclusive.bind(this),
       send: this.send.bind(this),
+      setTimeoutToForceConnectId: this.setTimeoutToForceConnectId.bind(this),
     })
     const onIceGatheringStateChange = createOnIceGatheringStateChange({
       initiateConnectionExclusive: this.initiateConnectionExclusive.bind(this),
@@ -434,6 +436,10 @@ export class Connection extends EventTarget {
     this.sdpAnswer = answer
   }
 
+  setTimeoutToForceConnectId(id: ReturnType<typeof setTimeout>) {
+    this.timeoutToForceConnectId = id
+  }
+
   // Attempt a ton of clean up. Log if you cannot.
   disconnectAll() {
     // Clean up all the event listeners
@@ -443,7 +449,12 @@ export class Connection extends EventTarget {
     this.disconnectPeerConnection()
     // Function generated from createPeerConnection workflow
     this.webrtcStatsCollector = undefined
+    this.cleanUpTimeouts()
 
+    logger(
+      'cleaned up websocket, unreliable data channel, and peer connection, all event listeners removed',
+      {}
+    )
     // TODO: Missing some logic for idle mode and timeouts of websocket??
     // I think for idle mode we cannot remove all the listeners? Need to manage this.
   }
@@ -453,7 +464,6 @@ export class Connection extends EventTarget {
       throw new Error('websocket is undefined')
     }
 
-    // TODO: What is 3?
     if (this.websocket.readyState < WebSocket.CLOSED) {
       this.websocket.close()
     } else {
@@ -529,6 +539,11 @@ export class Connection extends EventTarget {
 
     // Remove all references to the event listeners they are already removed.
     this.allEventListeners = new Map()
+  }
+
+  cleanUpTimeouts() {
+    clearTimeout(this.timeoutToForceConnectId)
+    this.timeoutToForceConnectId = undefined
   }
 
   cleanUp() {

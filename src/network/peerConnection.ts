@@ -6,9 +6,11 @@ import type { Connection, IEventListenerTracked } from './connection'
 export function createOnIceCandidate({
   initiateConnectionExclusive,
   send,
+  setTimeoutToForceConnectId,
 }: {
   initiateConnectionExclusive: () => void
   send: (message: Models['WebSocketRequest_type']) => void
+  setTimeoutToForceConnectId: (id: ReturnType<typeof setTimeout>) => void
 }) {
   const onIceCandidate = (event: RTCPeerConnectionIceEvent) => {
     logger('icecandidate', event.candidate)
@@ -29,10 +31,15 @@ export function createOnIceCandidate({
       },
     })
 
-    setTimeout(() => {
-      console.warn('this is fucking pointless? initiateConnectionExclusive()')
-      console.warn('connected after 3 second delay')
+    logger('icecandidate not null', event.candidate)
+
+    // Sometimes the remote end doesn't report the end of candidates.
+    // They have 3 seconds to.
+    const id = setTimeout(() => {
+      initiateConnectionExclusive()
+      console.warn('attempting initiateConnectionExclusive after 3 seconds')
     }, 3000)
+    setTimeoutToForceConnectId(id)
   }
 
   return onIceCandidate
