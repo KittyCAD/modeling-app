@@ -6,6 +6,7 @@ import {
   ClientMetrics,
 } from './utils'
 import { ConnectionManager } from './connectionManager'
+import { EngineDebugger } from '@src/lib/debugger'
 
 /**
  * 4 different event listeners to clean up
@@ -28,6 +29,11 @@ export const createOnWebSocketOpen = ({
     // Otherwise when run in a browser, the token is sent implicitly via
     // the Cookie header.
     if (token) {
+      EngineDebugger.addLog({
+        label: 'createOnWebSocketOpen',
+        message: 'send headers bearer',
+        metadata: { event },
+      })
       send({
         type: 'headers',
         headers: {
@@ -47,6 +53,11 @@ export const createOnWebSocketOpen = ({
 export const createOnWebSocketError = () => {
   const onWebSocketError = (event: Event) => {
     logger('onwebsocketerror', event)
+    EngineDebugger.addLog({
+      label: 'onWebSocketError',
+      message: 'onwebsocketerror',
+      metadata: { event },
+    })
 
     if (event.target instanceof WebSocket) {
       // WS error
@@ -144,8 +155,6 @@ export const createOnWebSocketMessage = ({
       return
     }
 
-    logger('onwebsocketmessage', resp.type)
-
     // Message is succesfull, lets process the websocket message
     switch (resp.type) {
       case 'pong':
@@ -171,9 +180,19 @@ export const createOnWebSocketMessage = ({
 
         // You have reference!
         const peerConnection = createPeerConnection()
+        EngineDebugger.addLog({
+          label: 'onWebSocketMessage',
+          message: 'createPeerConnection from ice_server_info',
+          metadata: { event },
+        })
 
         if (iceServers.length === 0) {
           console.warn('No ICE servers')
+          EngineDebugger.addLog({
+            label: 'onWebSocketMessage',
+            message: 'No ICE servers',
+            metadata: { event },
+          })
           peerConnection.setConfiguration({
             bundlePolicy: 'max-bundle',
           })
@@ -248,13 +267,16 @@ export const createOnWebSocketMessage = ({
         try {
           const collector = webrtcStatsCollector()
           if (!collector) {
-            // throw new Error(
-            //   'webrtcStatsCollector is undefined. createPeerConnection failed.'
-            // )
             logger(
               'dropping metrics_request, webrtcStatsCollector is undefined',
               {}
             )
+            EngineDebugger.addLog({
+              label: 'onWebSocketMessage',
+              message:
+                'dropping metrics_request, webrtcStatsCollector is undefined',
+              metadata: { event },
+            })
             return
           }
           // webrtcStatsCollector is created from createPeerConnection

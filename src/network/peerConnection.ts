@@ -2,6 +2,8 @@ import type { ClientMetrics, UnreliableResponses } from './utils'
 import { logger, EngineConnectionEvents } from './utils'
 import type { Models } from '@kittycad/lib'
 import type { Connection, IEventListenerTracked } from './connection'
+import { EngineDebugger } from '@src/lib/debugger'
+import { markOnce } from '@src/lib/performance'
 
 export function createOnIceCandidate({
   initiateConnectionExclusive,
@@ -14,6 +16,11 @@ export function createOnIceCandidate({
 }) {
   const onIceCandidate = (event: RTCPeerConnectionIceEvent) => {
     logger('icecandidate', event.candidate)
+    EngineDebugger.addLog({
+      label: 'onIceCandidate',
+      message: 'icecandidate',
+      metadata: { candidate: event.candidate },
+    })
     // This is null when the ICE gathering state is done.
     // Windows ONLY uses this to signal it's done!
     if (event.candidate === null) {
@@ -30,14 +37,22 @@ export function createOnIceCandidate({
         usernameFragment: event.candidate.usernameFragment || undefined,
       },
     })
-
-    logger('icecandidate not null', event.candidate)
+    EngineDebugger.addLog({
+      label: 'onIceCandidate',
+      message: 'send(trickle_ice)',
+      metadata: { candidate: event.candidate },
+    })
 
     // Sometimes the remote end doesn't report the end of candidates.
     // They have 3 seconds to.
     const id = setTimeout(() => {
       initiateConnectionExclusive()
       console.warn('attempting initiateConnectionExclusive after 3 seconds')
+      EngineDebugger.addLog({
+        label: 'onIceCandidate',
+        message: 'initiateConnectionExclusive after 3 seconds',
+        metadata: { candidate: event.candidate },
+      })
     }, 3000)
     setTimeoutToForceConnectId(id)
   }
@@ -52,12 +67,18 @@ export function createOnIceGatheringStateChange({
 }) {
   const onIceGatheringStateChange = (event: Event) => {
     logger('icegatheringstatechange', event)
+    EngineDebugger.addLog({
+      label: 'onIceGatheringStateChange',
+      message: 'icegatheringstatechange',
+      metadata: { event },
+    })
     // Gotcha: Don't send this early. sdpAnswer is not available at this moment.
-    logger(
-      'We are purposefully triggering initiateConnectionExclusive early, why?',
-      {}
-    )
-    // initiateConnectionExclusive()
+    EngineDebugger.addLog({
+      label: 'onIceGatheringStateChange',
+      message:
+        'We are purposefully triggering initiateConnectionExclusive early, why?',
+    })
+    initiateConnectionExclusive()
   }
 
   return onIceGatheringStateChange
@@ -66,6 +87,11 @@ export function createOnIceGatheringStateChange({
 export function createOnIceConnectionStateChange() {
   const onIceConnectionStateChange = (event: Event) => {
     logger('iceconnectionstatechange', event)
+    EngineDebugger.addLog({
+      label: 'onIceConnectionStateChange',
+      message: 'iceconnectionstatechange',
+      metadata: { event },
+    })
   }
   return onIceConnectionStateChange
 }
@@ -73,6 +99,11 @@ export function createOnIceConnectionStateChange() {
 export function createOnNegotiationNeeded() {
   const onNegotiationNeeded = (event: Event) => {
     logger('negotiationneeded', event)
+    EngineDebugger.addLog({
+      label: 'onNegotiationNeeded',
+      message: 'negotiationneeded',
+      metadata: { event },
+    })
   }
   return onNegotiationNeeded
 }
@@ -80,6 +111,11 @@ export function createOnNegotiationNeeded() {
 export function createOnSignalingStateChange() {
   const onSignalingStateChange = (event: Event) => {
     logger('signalingstatechange', event)
+    EngineDebugger.addLog({
+      label: 'onSignalingStateChange',
+      message: 'signalingstatechange',
+      metadata: { event },
+    })
   }
   return onSignalingStateChange
 }
@@ -87,9 +123,13 @@ export function createOnSignalingStateChange() {
 export function createOnIceCandidateError() {
   const onIceCandidateError = (_event: Event) => {
     const event = _event as RTCPeerConnectionIceErrorEvent
-    console.warn(
-      `ICE candidate returned an error: ${event.errorCode}: ${event.errorText} for ${event.url}`
-    )
+    const message = `ICE candidate returned an error: ${event.errorCode}: ${event.errorText} for ${event.url}`
+    console.warn(message)
+    EngineDebugger.addLog({
+      label: 'onIceCandidateError',
+      message,
+      metadata: { event },
+    })
   }
   return onIceCandidateError
 }
@@ -109,6 +149,11 @@ export function createOnConnectionStateChange({
   // Event type: generic Event type...
   const onConnectionStateChange = (event: any) => {
     logger(`connectionstatechange: ${event.target?.connectionState}`, event)
+    EngineDebugger.addLog({
+      label: 'onConnectionStateChange',
+      message: 'connectionstatechange',
+      metadata: { event, connectionState: event.target?.connectionState },
+    })
 
     switch (event.target?.connnectionState) {
       // From what I understand, only after have we done the ICE song and
@@ -156,6 +201,11 @@ export function createOnTrack({
   peerConnection: RTCPeerConnection
 }) {
   const onTrack = (event: RTCTrackEvent) => {
+    EngineDebugger.addLog({
+      label: 'onTrack',
+      message: 'RTCTrackEvent',
+      metadata: { event },
+    })
     const mediaStream = event.streams[0]
     setMediaStream(mediaStream)
     const webrtcStatusCollector = createWebrtcStatsCollector({
@@ -299,6 +349,11 @@ export const createOnDataChannelOpen = ({
   dispatchEvent: (event: Event) => boolean
 }) => {
   const onDataChannelOpen = (event: Event) => {
+    EngineDebugger.addLog({
+      label: 'onDataChannelOpen',
+      message: 'ondatachannelopen',
+      metadata: { event },
+    })
     // TODO: What?
     // this.engineCommandManager.inSequence = 1
     dispatchEvent(
@@ -306,7 +361,7 @@ export const createOnDataChannelOpen = ({
         detail: this,
       })
     )
-    // markOnce('code/endInitialEngineConnect')
+    markOnce('code/endInitialEngineConnect')
   }
   return onDataChannelOpen
 }
@@ -314,6 +369,11 @@ export const createOnDataChannelOpen = ({
 export const createOnDataChannelError = () => {
   const onDataChannelError = (event: Event) => {
     logger('ondatachannelerror', event)
+    EngineDebugger.addLog({
+      label: 'onDataChannelError',
+      message: 'ondatachannelerror',
+      metadata: { event },
+    })
   }
   return onDataChannelError
 }
@@ -321,6 +381,11 @@ export const createOnDataChannelError = () => {
 export const createOnDataChannelMessage = () => {
   const onDataChannelMessage = (event: MessageEvent<any>) => {
     logger('ondatachannelmessage', event)
+    EngineDebugger.addLog({
+      label: 'onDataChannelMessage',
+      message: 'ondatachannelmessage',
+      metadata: { event },
+    })
     const result: UnreliableResponses = JSON.parse(event.data)
     // TODO: callback? enginecommmand manager in sequence?
   }

@@ -12,6 +12,20 @@ export class Debugger {
     this.logs = []
   }
 
+  getNow() {
+    const isPerformanceSupported =
+      window.performance &&
+      window.performance.now &&
+      window.performance.timing &&
+      window.performance.timing.navigationStart
+
+    const timeStampInMs = isPerformanceSupported
+      ? window.performance.now() + window.performance.timing.navigationStart
+      : Date.now()
+
+    return timeStampInMs
+  }
+
   addLog({
     message,
     label,
@@ -22,7 +36,7 @@ export class Debugger {
     metadata?: any
   }) {
     this.logs.push({
-      time: Date.now(),
+      time: this.getNow(),
       message,
       stack: new Error().stack || '',
       label,

@@ -1,7 +1,7 @@
 import { markOnce } from '@src/lib/performance'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import type { ClientMetrics } from './utils'
-import { DATACHANNEL_NAME_UMC, logger, pingIntervalMs } from './utils'
+import { DATACHANNEL_NAME_UMC, pingIntervalMs } from './utils'
 import {
   createOnConnectionStateChange,
   createOnDataChannel,
@@ -20,6 +20,8 @@ import {
   createOnWebSocketMessage,
   createOnWebSocketOpen,
 } from './websocketConnection'
+import { EngineDebugger } from '@src/lib/debugger'
+import { uuidv4 } from '@src/lib/utils'
 
 export interface INewTrackArgs {
   conn: Connection
@@ -78,6 +80,8 @@ export class Connection extends EventTarget {
   // future calls will be rejected.
   exclusiveConnection: boolean
 
+  id: string
+
   // TODO: offer promise wrapped to track
   // TODo: event listeners to add and clean up
 
@@ -92,6 +96,12 @@ export class Connection extends EventTarget {
   }) {
     markOnce('code/startInitialEngineConnect')
     super()
+    this.id = uuidv4()
+    EngineDebugger.addLog({
+      label: 'connection',
+      message: 'constructor start',
+      metadata: { id: this.id },
+    })
     this.connectionManager = connectionManager
     this.url = url
     this._token = token
@@ -103,6 +113,11 @@ export class Connection extends EventTarget {
     this.allEventListeners = new Map()
     // No connection has been made when the class is initialized
     this.exclusiveConnection = false
+    EngineDebugger.addLog({
+      label: 'connection',
+      message: 'constructor end',
+      metadata: { id: this.id },
+    })
   }
 
   get token() {
@@ -122,6 +137,11 @@ export class Connection extends EventTarget {
    * lifecycle that needs to start and stop.
    */
   startPingPong() {
+    EngineDebugger.addLog({
+      label: 'connection',
+      message: 'startPingPong',
+      metadata: { id: this.id },
+    })
     this._pingIntervalId = setInterval(() => {
       if (this._pingPongSpan.ping) {
         return
@@ -138,10 +158,21 @@ export class Connection extends EventTarget {
   stopPingPong() {
     clearInterval(this._pingIntervalId)
     this._pingIntervalId = undefined
+    EngineDebugger.addLog({
+      label: 'connection',
+      message: 'stopPingPong',
+      metadata: { id: this.id },
+    })
   }
 
   // TODO: Pass reconnect here? or call a function for reconnect
   connect(): Promise<unknown> {
+    EngineDebugger.addLog({
+      label: 'connection',
+      message: 'connect',
+      metadata: { id: this.id },
+    })
+
     if (this.connectionPromise) {
       Promise.reject('currently connecting, try again later.')
     }
@@ -159,7 +190,11 @@ export class Connection extends EventTarget {
 
     // Once the engine is availabe create a web socket connection
     this.onNetworkStatusReady = () => {
-      logger('onnetworkstatusready', {})
+      EngineDebugger.addLog({
+        label: 'connection',
+        message: 'onnetworkstatusready',
+        metadata: { id: this.id },
+      })
       this.createWebSocketConnection()
     }
 
@@ -199,18 +234,37 @@ export class Connection extends EventTarget {
     }
 
     if (!this.sdpAnswer) {
-      throw new Error('sdpAnswer is undefined')
+      EngineDebugger.addLog({
+        label: 'connection',
+        message: 'dropping initiateConnectionExclusive, sdpAnswer is undefined',
+        metadata: { id: this.id },
+      })
+      return
     }
 
     if (this.exclusiveConnection) {
-      logger('dropping initiateConnectionExclusive, it has already started', {})
+      EngineDebugger.addLog({
+        label: 'connection',
+        message: 'dropping initiateConnectionExclusive, it has already started',
+        metadata: { id: this.id },
+      })
       return
     }
 
     this.exclusiveConnection = true
 
     try {
+      EngineDebugger.addLog({
+        label: 'connection',
+        message: 'initiateConnectionExclusive',
+        metadata: { id: this.id },
+      })
       await this.peerConnection.setRemoteDescription(this.sdpAnswer)
+      EngineDebugger.addLog({
+        label: 'connection',
+        message: 'setRemoteDescription',
+        metadata: { id: this.id },
+      })
       this.cleanUpTimeouts()
     } catch (error) {
       console.error('Failed to set remote description:', error)
@@ -223,6 +277,11 @@ export class Connection extends EventTarget {
       bundlePolicy: 'max-bundle',
     })
     this.peerConnection.createDataChannel(DATACHANNEL_NAME_UMC)
+    EngineDebugger.addLog({
+      label: 'connection',
+      message: 'createDataChannel',
+      metadata: { id: this.id },
+    })
 
     const onIceCandidate = createOnIceCandidate({
       initiateConnectionExclusive: this.initiateConnectionExclusive.bind(this),
@@ -344,6 +403,11 @@ export class Connection extends EventTarget {
   }
 
   createWebSocketConnection() {
+    EngineDebugger.addLog({
+      label: 'connection',
+      message: 'createWebSocketConnection',
+      metadata: { id: this.id },
+    })
     this.websocket = new WebSocket(this.url, [])
     this.websocket.binaryType = 'arraybuffer'
 
@@ -413,14 +477,29 @@ export class Connection extends EventTarget {
   }
 
   setMediaStream(mediaStream: MediaStream) {
+    EngineDebugger.addLog({
+      label: 'connection',
+      message: 'setMediaStream',
+      metadata: { id: this.id },
+    })
     this.mediaStream = mediaStream
   }
 
   setWebrtcStatsCollector(webrtcStatsCollector: () => Promise<ClientMetrics>) {
+    EngineDebugger.addLog({
+      label: 'connection',
+      message: 'setWebrtcStatsCollector',
+      metadata: { id: this.id },
+    })
     this.webrtcStatsCollector = webrtcStatsCollector
   }
 
   setUnreliableDataChannel(channel: RTCDataChannel) {
+    EngineDebugger.addLog({
+      label: 'connection',
+      message: 'setUnreliableDataChannel',
+      metadata: { id: this.id },
+    })
     this.unreliableDataChannel = channel
   }
 
@@ -433,6 +512,11 @@ export class Connection extends EventTarget {
   }
 
   setSdpAnswer(answer: RTCSessionDescriptionInit) {
+    EngineDebugger.addLog({
+      label: 'connection',
+      message: 'setSdpAnswer',
+      metadata: { id: this.id },
+    })
     this.sdpAnswer = answer
   }
 
@@ -451,10 +535,12 @@ export class Connection extends EventTarget {
     this.webrtcStatsCollector = undefined
     this.cleanUpTimeouts()
 
-    logger(
-      'cleaned up websocket, unreliable data channel, and peer connection, all event listeners removed',
-      {}
-    )
+    EngineDebugger.addLog({
+      label: 'connection',
+      message:
+        'cleaned up websocket, unreliable data channel, and peer connection, all event listeners removed',
+      metadata: { id: this.id },
+    })
     // TODO: Missing some logic for idle mode and timeouts of websocket??
     // I think for idle mode we cannot remove all the listeners? Need to manage this.
   }
@@ -465,6 +551,11 @@ export class Connection extends EventTarget {
     }
 
     if (this.websocket.readyState < WebSocket.CLOSED) {
+      EngineDebugger.addLog({
+        label: 'connection',
+        message: 'disconnectWebsocket',
+        metadata: { id: this.id },
+      })
       this.websocket.close()
     } else {
       throw new Error(
@@ -476,11 +567,21 @@ export class Connection extends EventTarget {
   disconnectUnreliableDataChannel() {
     if (!this.unreliableDataChannel) {
       // throw new Error('unreliableDataChannel is undefined')
-      logger('unreliableDataChannel is undefined', {})
+      EngineDebugger.addLog({
+        label: 'connection',
+        message:
+          'disconnectUnreliableDataChannel: unreliableDataChannel is undefined',
+        metadata: { id: this.id },
+      })
       return
     }
 
     if (this.unreliableDataChannel.readyState === 'open') {
+      EngineDebugger.addLog({
+        label: 'connection',
+        message: 'disconnectUnreliableDataChannel',
+        metadata: { id: this.id },
+      })
       this.unreliableDataChannel.close()
     } else {
       throw new Error(
@@ -495,6 +596,11 @@ export class Connection extends EventTarget {
     }
 
     if (this.peerConnection.connectionState === 'connected') {
+      EngineDebugger.addLog({
+        label: 'connection',
+        message: 'disconnectPeerConnection',
+        metadata: { id: this.id },
+      })
       this.peerConnection.close()
     } else {
       throw new Error(
@@ -539,6 +645,11 @@ export class Connection extends EventTarget {
 
     // Remove all references to the event listeners they are already removed.
     this.allEventListeners = new Map()
+    EngineDebugger.addLog({
+      label: 'connection',
+      message: 'removeAllEventListeners',
+      metadata: { id: this.id },
+    })
   }
 
   cleanUpTimeouts() {
@@ -568,6 +679,11 @@ export class Connection extends EventTarget {
       }
     })
     this.iceCandidatePromises.push(tracker)
+    EngineDebugger.addLog({
+      label: 'connection',
+      message: 'addIceCandidate',
+      metadata: { id: this.id },
+    })
   }
 
   // Do not change this back to an object or any, we should only be sending the
