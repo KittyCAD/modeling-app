@@ -965,9 +965,9 @@ impl SketchBlock {
         new_options.insert_final_newline = false;
 
         buf.push_str("sketch(");
-        for (i, arg) in self.args.iter().enumerate() {
-            arg.recast(buf, options, indentation_level, ctxt);
-            if i < self.args.len() - 1 {
+        for (i, argument) in self.arguments.iter().enumerate() {
+            argument.recast(buf, options, indentation_level, ctxt);
+            if i < self.arguments.len() - 1 {
                 buf.push_str(", ");
             }
         }

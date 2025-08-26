@@ -323,8 +323,10 @@ impl NodePath {
                 // TODO: Check the type annotation.
             }
             Expr::SketchBlock(node) => {
+                // TODO: sketch-api: implement arguments.
                 if node.contains_range(&range) {
                     path.push(Step::SketchBlock);
+                    // TODO: sketch-api: implement body.
                     return Some(path);
                 }
             }

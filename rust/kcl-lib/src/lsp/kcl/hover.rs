@@ -383,19 +383,31 @@ impl ElseIf {
 }
 
 impl SketchBlock {
+    const CALLEE_NAME: &str = "sketch";
+
     fn get_hover_value_for_position(&self, pos: usize, code: &str, opts: &HoverOpts) -> Option<Hover> {
-        for (index, arg) in self.args.iter().enumerate() {
+        for (index, (label, arg)) in self.iter_arguments().enumerate() {
             let source_range: SourceRange = arg.into();
             if source_range.contains(pos) {
                 return if opts.prefer_sig {
                     Some(Hover::Signature {
-                        name: "sketch".to_owned(),
+                        name: Self::CALLEE_NAME.to_owned(),
                         parameter_index: index as u32,
                         range: source_range.to_lsp_range(code),
                     })
                 } else {
                     arg.get_hover_value_for_position(pos, code, opts)
                 };
+            }
+
+            if let Some(id) = label
+                && id.as_source_range().contains(pos)
+            {
+                return Some(Hover::KwArg {
+                    name: id.name.clone(),
+                    callee_name: Self::CALLEE_NAME.to_owned(),
+                    range: id.as_source_range().to_lsp_range(code),
+                });
             }
         }
 

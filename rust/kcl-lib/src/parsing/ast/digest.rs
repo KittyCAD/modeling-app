@@ -523,8 +523,11 @@ impl ElseIf {
 
 impl SketchBlock {
     compute_digest!(|slf, hasher| {
-        for arg in &mut slf.args {
-            hasher.update(arg.compute_digest());
+        for argument in &mut slf.arguments {
+            if let Some(l) = &mut argument.label {
+                hasher.update(l.compute_digest());
+            }
+            hasher.update(argument.arg.compute_digest());
         }
         hasher.update(slf.body.compute_digest());
     });
