@@ -1,7 +1,7 @@
 import type { ClientMetrics, UnreliableResponses } from './utils'
 import { logger, EngineConnectionEvents } from './utils'
 import type { Models } from '@kittycad/lib'
-import type { Connection } from './connection'
+import type { Connection, IEventListenerTracked } from './connection'
 
 export function createOnIceCandidate({
   initiateConnectionExclusive,
@@ -217,9 +217,14 @@ export function createWebrtcStatsCollector({
 export const createOnDataChannel = ({
   setUnreliableDataChannel,
   dispatchEvent,
+  trackListener,
 }: {
   setUnreliableDataChannel: (channel: RTCDataChannel) => void
   dispatchEvent: (event: Event) => boolean
+  trackListener: (
+    name: string,
+    eventListenerTracked: IEventListenerTracked
+  ) => void
 }) => {
   const onDataChannel = (event: RTCDataChannelEvent) => {
     // Initialize the event.channel with 4 event listeners
@@ -233,22 +238,39 @@ export const createOnDataChannel = ({
       onDataChannelMessage,
     })
 
-    // TODO: needs to be removed from the event.channel in parent?
-    // unless a this or self reference can do it.
     const metaClose = () => {
       onDataChannelClose()
     }
 
+    trackListener('unreliabledatachannel-open', {
+      event: 'open',
+      callback: onDataChannelOpen,
+      type: 'unreliableDataChannel',
+    })
     event.channel.addEventListener('open', onDataChannelOpen)
+    trackListener('unreliabledatachannel-error', {
+      event: 'error',
+      callback: onDataChannelError,
+      type: 'unreliableDataChannel',
+    })
     event.channel.addEventListener('error', onDataChannelError)
+    trackListener('unreliabledatachannel-message', {
+      event: 'message',
+      callback: onDataChannelMessage,
+      type: 'unreliableDataChannel',
+    })
     event.channel.addEventListener('message', onDataChannelMessage)
+    trackListener('unreliabledatachannel-close', {
+      event: 'close',
+      callback: metaClose,
+      type: 'unreliableDataChannel',
+    })
     event.channel.addEventListener('close', metaClose)
 
     // event.channel is availabe and we initialize listeners on it.
     setUnreliableDataChannel(event.channel)
   }
 
-  // TODO: Return onDataChannel and 4 other event.channel callbacks to clean up?
   return onDataChannel
 }
 
@@ -259,7 +281,6 @@ export const createOnDataChannel = ({
  *  onDataChannelError
  *  onDataChannelMessage
  */
-
 export const createOnDataChannelOpen = ({
   dispatchEvent,
 }: {
@@ -294,6 +315,7 @@ export const createOnDataChannelMessage = () => {
   return onDataChannelMessage
 }
 
+// TODO: Maybe this is doubled up from the trackListener?
 export const createOnDataChannelClose = ({
   unreliableDataChannel,
   onDataChannelOpen,

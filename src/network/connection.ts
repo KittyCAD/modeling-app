@@ -27,7 +27,11 @@ export interface INewTrackArgs {
   mediaStream: MediaStream
 }
 
-export type EventSource = 'window' | 'peerConnection' | 'websocket'
+export type EventSource =
+  | 'window'
+  | 'peerConnection'
+  | 'websocket'
+  | 'unreliableDataChannel'
 
 export interface IEventListenerTracked {
   event: string
@@ -217,6 +221,7 @@ export class Connection extends EventTarget {
     const onDataChannel = createOnDataChannel({
       setUnreliableDataChannel: this.setUnreliableDataChannel,
       dispatchEvent: this.dispatchEvent,
+      trackListener: this.trackListener,
     })
 
     // Watch out human! The names of the next couple events are really similar!
@@ -272,6 +277,7 @@ export class Connection extends EventTarget {
       callback: onIceCandidateError,
       type: 'peerConnection',
     })
+
     this.peerConnection.addEventListener(
       'icecandidateerror',
       onIceCandidateError
@@ -476,6 +482,11 @@ export class Connection extends EventTarget {
           )
         } else if (type === 'websocket') {
           this.websocket?.removeEventListener(
+            eventListenerTracked.event,
+            eventListenerTracked.callback
+          )
+        } else if (type === 'unreliableDataChannel') {
+          this.unreliableDataChannel?.removeEventListener(
             eventListenerTracked.event,
             eventListenerTracked.callback
           )
