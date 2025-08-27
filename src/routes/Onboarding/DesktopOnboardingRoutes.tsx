@@ -167,9 +167,9 @@ function TextToCad() {
       <OnboardingCard>
         <h1 className="text-xl font-bold">Text-to-CAD</h1>
         <p className="my-4">
-          This last button is Text-to-CAD. This allows you to write up a
-          description of what you want, and our AI will generate the CAD for
-          you. Text-to-CAD is currently in an experimental stage. We are
+          You can find Text-to-CAD in the command palette. This allows you to
+          write up a description of what you want, and our AI will generate the
+          CAD for you. Text-to-CAD is currently in an experimental stage. We are
           improving it every day.
         </p>
         <p className="my-4">
