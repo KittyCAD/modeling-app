@@ -306,6 +306,7 @@ export class Connection extends EventTarget {
       dispatchEvent: this.dispatchEvent.bind(this),
       trackListener: this.trackListener.bind(this),
       startPingPong: this.startPingPong.bind(this),
+      connectionManager: this.connectionManager,
     })
 
     // Watch out human! The names of the next couple events are really similar!
@@ -683,7 +684,7 @@ export class Connection extends EventTarget {
 
   // Do not change this back to an object or any, we should only be sending the
   // WebSocketRequest type!
-  unreliableSend(message: Models['WebSocketResponse_type']) {
+  unreliableSend(message: Models['WebSocketRequest_type']) {
     if (!this.unreliableDataChannel) {
       throw new Error('race condition my guy, unreliableSend')
     }

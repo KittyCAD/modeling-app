@@ -6,6 +6,16 @@ import { SourceRange } from '@src/lang/wasm'
 // Ping/Pong every 1 second
 export const pingIntervalMs = 1_000
 
+export type ModelTypes = Models['OkModelingCmdResponse_type']['type']
+// TODO: Should eventually be replaced with native EventTarget event system,
+// as it manages events in a more familiar way to other developers.
+export interface Subscription<T extends ModelTypes> {
+  event: T
+  callback: (
+    data: Extract<Models['OkModelingCmdResponse_type'], { type: T }>
+  ) => void
+}
+
 export interface NewTrackArgs {
   conn: Connection
   mediaStream: MediaStream
@@ -282,4 +292,14 @@ export interface IEventListenerTracked {
   event: string
   callback: any
   type: EventSource
+}
+
+export function promiseFactory<T>() {
+  let resolve: (value: T | PromiseLike<T>) => void = () => {}
+  let reject: (value: T | PromiseLike<T>) => void = () => {}
+  const promise = new Promise<T>((_resolve, _reject) => {
+    resolve = _resolve
+    reject = _reject
+  })
+  return { promise, resolve, reject }
 }

@@ -11,7 +11,10 @@ import {
   EngineCommandManagerEvents,
   EngineConnectionEvents,
   IEventListenerTracked,
+  ModelTypes,
   PendingMessage,
+  promiseFactory,
+  Subscription,
   UnreliableResponses,
   UnreliableSubscription,
 } from './utils'
@@ -24,15 +27,19 @@ import {
   createOnEngineOffline,
 } from './connectionManagerEvents'
 import type RustContext from '@src/lib/rustContext'
-import { binaryToUuid, uuidv4 } from '@src/lib/utils'
+import { binaryToUuid, isArray, uuidv4 } from '@src/lib/utils'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import CodeManager from '@src/lang/codeManager'
 import { Models } from '@kittycad/lib/dist/types/src'
 import { BSON } from 'bson'
 import { EngineDebugger } from '@src/lib/debugger'
-import { ResponseMap } from '@src/lang/std/artifactGraph'
+import { EngineCommand, ResponseMap } from '@src/lang/std/artifactGraph'
 import { CommandLog, CommandLogType } from '@src/lang/std/commandLog'
+import { defaultSourceRange } from '@src/lang/sourceRange'
+import { SourceRange } from '@src/lang/wasm'
+import { KclManager } from '@src/lang/KclSingleton'
+import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from '@src/lib/constants'
 
 export class ConnectionManager extends EventTarget {
   started: boolean
@@ -53,11 +60,18 @@ export class ConnectionManager extends EventTarget {
    * us to look up the response by command id
    */
   responseMap: ResponseMap = {}
+  /**
+   * A counter that is incremented with each command sent over the *unreliable* channel to the engine.
+   * This is compared to the latest received {@link inSequence} number to determine if we should ignore
+   * any out-of-order late responses in the unreliable channel.
+   */
+  outSequence = 1
   commandLogs: CommandLog[] = []
 
   connection: Connection | undefined
   sceneInfra: SceneInfra | undefined
   codeManager: CodeManager | undefined
+  kclManager: KclManager | undefined
 
   // Circular dependency that is why it can be undefined
   rustContext: RustContext | undefined
@@ -333,7 +347,141 @@ export class ConnectionManager extends EventTarget {
     darkModeMatcher?.addEventListener('change', onDarkThemeMediaQueryChange)
   }
 
-  sendSceneCommand() {}
+  async sendSceneCommand(
+    command: EngineCommand,
+    forceWebsocket = false
+  ): Promise<
+    Models['WebSocketResponse_type'] | [Models['WebSocketResponse_type']] | null
+  > {
+    if (this.connection === undefined) {
+      EngineDebugger.addLog({
+        label: 'sendSceneCommand',
+        message: 'connection is undefined, you are too early',
+        metadata: {
+          command,
+        },
+      })
+      return Promise.resolve(null)
+    }
+
+    // TODO: connection.isReady()? No.
+
+    if (
+      !(
+        command.type === 'modeling_cmd_req' &&
+        (command.cmd.type === 'highlight_set_entity' ||
+          command.cmd.type === 'mouse_move' ||
+          command.cmd.type === 'camera_drag_move' ||
+          command.cmd.type === ('default_camera_perspective_settings' as any))
+      )
+    ) {
+      // highlight_set_entity, mouse_move and camera_drag_move are sent over the unreliable channel and are too noisy
+      this.addCommandLog({
+        type: CommandLogType.SendScene,
+        data: command,
+      })
+    }
+
+    if (command.type === 'modeling_cmd_batch_req') {
+      this.connection.send(command)
+      // TODO - handlePendingCommands does not handle batch commands
+      // return this.handlePendingCommand(command.requests[0].cmd_id, command.cmd)
+      return Promise.resolve(null)
+    }
+
+    if (command.type !== 'modeling_cmd_req') {
+      return Promise.resolve(null)
+    }
+
+    const cmd = command.cmd
+    if (
+      (cmd.type === 'camera_drag_move' ||
+        cmd.type === 'handle_mouse_drag_move' ||
+        cmd.type === 'default_camera_zoom' ||
+        cmd.type === ('default_camera_perspective_settings' as any)) &&
+      this.connection.unreliableDataChannel &&
+      !forceWebsocket
+    ) {
+      ;(cmd as any).sequence = this.outSequence
+      this.outSequence++
+      this.connection.unreliableSend(command)
+      return Promise.resolve(null)
+    } else if (
+      cmd.type === 'highlight_set_entity' &&
+      this.connection.unreliableDataChannel
+    ) {
+      cmd.sequence = this.outSequence
+      this.outSequence++
+      this.connection.unreliableSend(command)
+      return Promise.resolve(null)
+    } else if (
+      cmd.type === 'mouse_move' &&
+      this.connection.unreliableDataChannel
+    ) {
+      cmd.sequence = this.outSequence
+      this.outSequence++
+      this.connection.unreliableSend(command)
+      return Promise.resolve(null)
+    }
+    if (
+      command.cmd.type === 'default_camera_look_at' ||
+      command.cmd.type === ('default_camera_perspective_settings' as any)
+    ) {
+      ;(cmd as any).sequence = this.outSequence++
+    }
+    // since it's not mouse drag or highlighting send over TCP and keep track of the command
+    return this.sendCommand(
+      command.cmd_id,
+      {
+        command,
+        idToRangeMap: {},
+        range: defaultSourceRange(),
+      },
+      true // isSceneCommand
+    )
+      .then(([a]) => a)
+      .catch((e) => {
+        // TODO: Previously was never caught, we are not rejecting these pendingCommands but this needs to be handled at some point.
+        /*noop*/
+        EngineDebugger.addLog({
+          label: 'sendCommand',
+          message: 'error',
+          metadata: { error: e },
+        })
+        return e
+      })
+  }
+
+  /**
+   * Common send command function used for both modeling and scene commands
+   * So that both have a common way to send pending commands with promises for the responses
+   */
+  async sendCommand(
+    id: string,
+    message: {
+      command: PendingMessage['command']
+      range: PendingMessage['range']
+      idToRangeMap: PendingMessage['idToRangeMap']
+    },
+    isSceneCommand = false
+  ): Promise<[Models['WebSocketResponse_type']]> {
+    if (!this.connection) {
+      throw new Error('sendCommand - this.connection is undefined')
+    }
+    const { promise, resolve, reject } = promiseFactory<any>()
+    this.pendingCommands[id] = {
+      resolve,
+      reject,
+      promise,
+      command: message.command,
+      range: message.range,
+      idToRangeMap: message.idToRangeMap,
+      isSceneCommand,
+    }
+
+    this.connection.send(message.command)
+    return promise
+  }
 
   // this.connection.websocket.addEventListener('message') handler
   handleMessage(event: MessageEvent) {
@@ -477,6 +625,22 @@ export class ConnectionManager extends EventTarget {
     }
   }
 
+  subscribeTo<T extends ModelTypes>({
+    event,
+    callback,
+  }: Subscription<T>): () => void {
+    const localUnsubscribeId = uuidv4()
+    if (!this.subscriptions[event]) {
+      this.subscriptions[event] = {}
+    }
+    this.subscriptions[event][localUnsubscribeId] = callback
+
+    return () => this.unSubscribeTo(event, localUnsubscribeId)
+  }
+  private unSubscribeTo(event: ModelTypes, id: string) {
+    delete this.subscriptions[event][id]
+  }
+
   subscribeToUnreliable<T extends UnreliableResponses['type']>({
     event,
     callback,
@@ -514,6 +678,11 @@ export class ConnectionManager extends EventTarget {
     this._commandLogCallBack([...this.commandLogs])
   }
 
+  clearCommandLogs() {
+    this.commandLogs = []
+    this._commandLogCallBack(this.commandLogs)
+  }
+
   registerCommandLogCallback(callback: (command: CommandLog[]) => void) {
     this._commandLogCallBack = callback
   }
@@ -548,6 +717,7 @@ export class ConnectionManager extends EventTarget {
       }
     }
 
+    // Make sure to get all the deeply nested ones as well.
     this.removeAllEventListeners()
     this.connection.disconnectAll()
     this.connection = undefined
@@ -555,6 +725,34 @@ export class ConnectionManager extends EventTarget {
     // It is possible all connections never even started, but we still want
     // to signal to the whole application we are "offline".
     this.dispatchEvent(new CustomEvent(EngineCommandManagerEvents.Offline, {}))
+  }
+
+  offline() {
+    // TODO: keepForcefulOffline
+    this.tearDown()
+    EngineDebugger.addLog({
+      label: 'connectionManager',
+      message: 'offline',
+    })
+  }
+
+  online() {
+    // TODO: keepForcefulOffline
+    this.dispatchEvent(
+      new CustomEvent(EngineCommandManagerEvents.EngineRestartRequest, {})
+    )
+    EngineDebugger.addLog({
+      label: 'connectionManager',
+      message: 'online - EngineCommandManagerEvents.EngineRestartRequest',
+    })
+  }
+
+  async startNewSession() {
+    this.responseMap = {}
+    EngineDebugger.addLog({
+      label: 'connectionManager',
+      message: 'startNewSession - responseMap = {}',
+    })
   }
 
   // This is only metadata overhead to keep track of all the event listeners which allows for easy
@@ -629,6 +827,162 @@ export class ConnectionManager extends EventTarget {
       label: 'connectionManager',
       message: 'removeAllEventListeners',
       metadata: { id: this.id },
+    })
+  }
+
+  /**
+   * A wrapper around the sendCommand where all inputs are JSON strings
+   *
+   * This one does not wait for a response.
+   */
+  fireModelingCommandFromWasm(
+    id: string,
+    rangeStr: string,
+    commandStr: string,
+    idToRangeStr: string
+  ): void | Error {
+    if (this.connection === undefined) {
+      return new Error('this.connection is undefined')
+    }
+    //TODO isReady() isUsingConnectionLite
+    if (id === undefined) {
+      return new Error('id is undefined')
+    }
+    if (rangeStr === undefined) {
+      return new Error('rangeStr is undefined')
+    }
+    if (commandStr === undefined) {
+      return new Error('commandStr is undefined')
+    }
+    if (!this.kclManager) {
+      return new Error('this.kclManager is undefined')
+    }
+
+    const range: SourceRange = JSON.parse(rangeStr)
+    const command: EngineCommand = JSON.parse(commandStr)
+    const idToRangeMap: { [key: string]: SourceRange } =
+      JSON.parse(idToRangeStr)
+
+    // Current executeAst is stale, going to interrupt, a new executeAst will trigger
+    // Used in conjunction with rejectAllModelingCommands
+    if (this.kclManager.executeIsStale) {
+      return new Error(EXECUTE_AST_INTERRUPT_ERROR_MESSAGE)
+    }
+
+    // We purposely don't wait for a response here
+    this.sendCommand(id, {
+      command,
+      range,
+      idToRangeMap,
+    })
+  }
+
+  /**
+   * A wrapper around the sendCommand where all inputs are JSON strings
+   */
+  async sendModelingCommandFromWasm(
+    id: string,
+    rangeStr: string,
+    commandStr: string,
+    idToRangeStr: string
+  ): Promise<Uint8Array | void> {
+    if (this.connection === undefined) {
+      return Promise.reject(new Error('this.connection is undefined'))
+    }
+    if (!this.kclManager) {
+      return Promise.reject(new Error('this.kclManager is undefined'))
+    }
+    //TODO isReady() isUsingConnectionLite
+    if (id === undefined) {
+      return Promise.reject(new Error('id is undefined'))
+    }
+    if (rangeStr === undefined) {
+      return Promise.reject(new Error('rangeStr is undefined'))
+    }
+    if (commandStr === undefined) {
+      return Promise.reject(new Error('commandStr is undefined'))
+    }
+
+    const range: SourceRange = JSON.parse(rangeStr)
+    const command: EngineCommand = JSON.parse(commandStr)
+    const idToRangeMap: { [key: string]: SourceRange } =
+      JSON.parse(idToRangeStr)
+
+    // Current executeAst is stale, going to interrupt, a new executeAst will trigger
+    // Used in conjunction with rejectAllModelingCommands
+    if (this.kclManager.executeIsStale) {
+      return Promise.reject(EXECUTE_AST_INTERRUPT_ERROR_MESSAGE)
+    }
+
+    try {
+      const resp = await this.sendCommand(id, {
+        command,
+        range,
+        idToRangeMap,
+      })
+      return BSON.serialize(resp[0])
+    } catch (e) {
+      if (isArray(e) && e.length > 0) {
+        EngineDebugger.addLog({
+          label: 'sendCommand',
+          message: 'error',
+          metadata: { e: JSON.stringify(e[0]) },
+        })
+        return Promise.reject(JSON.stringify(e[0]))
+      }
+
+      EngineDebugger.addLog({
+        label: 'sendCommand',
+        message: 'error',
+        metadata: { e: JSON.stringify(e) },
+      })
+      return Promise.reject(JSON.stringify(e))
+    }
+  }
+
+  /**
+   * When an execution takes place we want to wait until we've got replies for all of the commands
+   * When this is done when we build the artifact map synchronously.
+   */
+  waitForAllCommands() {
+    return Promise.all(
+      Object.values(this.pendingCommands).map((a) => a.promise)
+    )
+  }
+
+  /**
+   * Reject all of the modeling pendingCommands created from sendModelingCommandFromWasm
+   * This interrupts the runtime of executeAst. Stops the AST processing and stops sending commands
+   * to the engine
+   */
+  rejectAllModelingCommands(rejectionMessage: string) {
+    for (const [cmdId, pending] of Object.entries(this.pendingCommands)) {
+      if (!pending.isSceneCommand) {
+        pending.reject([
+          {
+            success: false,
+            errors: [{ error_code: 'internal_api', message: rejectionMessage }],
+          },
+        ])
+        delete this.pendingCommands[cmdId]
+      }
+    }
+  }
+
+  async setPlaneHidden(id: string, hidden: boolean) {
+    if (this.connection === undefined) {
+      throw new Error('setPlaneHidden - this.connection is undefined')
+    }
+
+    // TODO: Can't send commands if there's no connection
+    return await this.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'object_visible',
+        object_id: id,
+        hidden: hidden,
+      },
     })
   }
 }

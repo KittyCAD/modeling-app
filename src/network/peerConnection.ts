@@ -4,6 +4,7 @@ import type { Models } from '@kittycad/lib'
 import type { Connection, IEventListenerTracked } from './connection'
 import { EngineDebugger } from '@src/lib/debugger'
 import { markOnce } from '@src/lib/performance'
+import { ConnectionManager } from './connectionManager'
 
 export function createOnIceCandidate({
   initiateConnectionExclusive,
@@ -277,6 +278,7 @@ export const createOnDataChannel = ({
   dispatchEvent,
   trackListener,
   startPingPong,
+  connectionManager,
 }: {
   setUnreliableDataChannel: (channel: RTCDataChannel) => void
   dispatchEvent: (event: Event) => boolean
@@ -285,12 +287,14 @@ export const createOnDataChannel = ({
     eventListenerTracked: IEventListenerTracked
   ) => void
   startPingPong: () => void
+  connectionManager: ConnectionManager
 }) => {
   const onDataChannel = (event: RTCDataChannelEvent) => {
     // Initialize the event.channel with 4 event listeners
     const onDataChannelOpen = createOnDataChannelOpen({
       dispatchEvent,
       startPingPong,
+      connectionManager,
     })
     const onDataChannelError = createOnDataChannelError()
     const onDataChannelMessage = createOnDataChannelMessage()
@@ -347,9 +351,11 @@ export const createOnDataChannel = ({
 export const createOnDataChannelOpen = ({
   dispatchEvent,
   startPingPong,
+  connectionManager,
 }: {
   dispatchEvent: (event: Event) => boolean
   startPingPong: () => void
+  connectionManager: ConnectionManager
 }) => {
   const onDataChannelOpen = (event: Event) => {
     // Start firing off engine commands at this point.
@@ -363,8 +369,10 @@ export const createOnDataChannelOpen = ({
       message: 'ondatachannelopen',
       metadata: { event },
     })
-    // TODO: What?
-    // this.engineCommandManager.inSequence = 1
+
+    // Lets get that bread
+    connectionManager.inSequence = 1
+
     dispatchEvent(
       new CustomEvent(EngineConnectionEvents.Opened, {
         detail: this,
