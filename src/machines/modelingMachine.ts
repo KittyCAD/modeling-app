@@ -4611,10 +4611,36 @@ export const modelingMachine = setup({
 
       exit: ['hide default planes', 'set selection filter to defaults'],
       on: {
-        'Select sketch plane': {
-          target: 'animating to plane',
-          actions: ['reset sketch metadata'],
+        'Select sketch plane': [
+          {
+            target: 'animating to new sketch mode',
+            guard: 'should use new sketch mode',
+            actions: ['reset sketch metadata'],
+          },
+          {
+            target: 'animating to plane',
+            actions: ['reset sketch metadata'],
+          },
+        ],
+      },
+    },
+
+    'animating to new sketch mode': {
+      invoke: {
+        // TODO define other actor than "animate-to-face" to setup three.js stuff specific to new sketch mode
+        src: 'animate-to-face',
+        id: 'animate-to-face',
+
+        input: ({ event }) => {
+          if (event.type !== 'Select sketch plane') return undefined
+          return event.data
         },
+
+        onDone: {
+          target: 'sketchMode',
+        },
+
+        onError: 'Sketch no face',
       },
     },
 
@@ -4628,16 +4654,10 @@ export const modelingMachine = setup({
           return event.data
         },
 
-        onDone: [
-          {
-            target: 'sketchMode',
-            guard: 'should use new sketch mode',
-          },
-          {
-            target: 'Sketch',
-            actions: 'set new sketch metadata',
-          },
-        ],
+        onDone: {
+          target: 'Sketch',
+          actions: 'set new sketch metadata',
+        },
 
         onError: 'Sketch no face',
       },
