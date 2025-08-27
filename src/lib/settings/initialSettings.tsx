@@ -555,6 +555,7 @@ export function createSettings() {
         validate: (v) => typeof v === 'number',
         commandConfig: {
           inputType: 'number',
+          min: 0,
         },
       }),
       minorGridsPerMajor: new Setting<number>({
@@ -563,6 +564,7 @@ export function createSettings() {
         validate: (v) => typeof v === 'number',
         commandConfig: {
           inputType: 'number',
+          min: 0,
         },
       }),
       snapToGrid: new Setting<boolean>({
@@ -582,6 +584,7 @@ export function createSettings() {
         isEnabled: (context) => context.modeling.snapToGrid.current,
         commandConfig: {
           inputType: 'number',
+          min: 0,
         },
       }),
 

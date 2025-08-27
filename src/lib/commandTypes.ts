@@ -257,6 +257,7 @@ export type CommandArgumentConfig<
     }
   | {
       inputType: 'number'
+      min?: number
       defaultValue?:
         | OutputType
         | ((

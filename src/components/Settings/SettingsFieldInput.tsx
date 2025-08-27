@@ -158,6 +158,11 @@ export function SettingsFieldInput({
               ? setting[settingsLevel]
               : setting.getFallback(settingsLevel)
           )}
+          min={
+            setting.commandConfig && 'min' in setting.commandConfig
+              ? setting.commandConfig.min
+              : undefined
+          }
           disabled={!setting.isEnabled(context)}
           onBlur={(e) => {
             const numValue = parseFloat(e.target.value)
