@@ -523,6 +523,11 @@ impl ElseIf {
 
 impl SketchBlock {
     compute_digest!(|slf, hasher| {
+        if let Some(ref mut unlabeled) = slf.unlabeled {
+            hasher.update(unlabeled.compute_digest());
+        } else {
+            hasher.update("no_unlabeled");
+        }
         for argument in &mut slf.arguments {
             if let Some(l) = &mut argument.label {
                 hasher.update(l.compute_digest());

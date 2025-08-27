@@ -988,6 +988,12 @@ impl SketchBlock {
         new_options.insert_final_newline = false;
 
         buf.push_str("sketch(");
+        if let Some(unlabeled) = &self.unlabeled {
+            unlabeled.recast(buf, options, indentation_level, ctxt);
+            if !self.arguments.is_empty() {
+                buf.push_str(", ");
+            }
+        }
         for (i, argument) in self.arguments.iter().enumerate() {
             argument.recast(buf, options, indentation_level, ctxt);
             if i < self.arguments.len() - 1 {
