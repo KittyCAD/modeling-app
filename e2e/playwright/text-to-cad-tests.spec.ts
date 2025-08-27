@@ -156,12 +156,10 @@ async function sendPromptFromCommandBarAndSetNewProject(
   await page.waitForTimeout(1000)
   await test.step(`Send prompt from command bar: ${promptStr}`, async () => {
     await cmdBar.openCmdBar()
-    await cmdBar
-      .selectOption({ name: 'Create Project using Text-to-CAD' })
-      .click()
+    await cmdBar.selectOption({ name: 'Text-to-CAD Create' }).click()
 
     await cmdBar.expectState({
-      commandName: 'Create Project using Text-to-CAD',
+      commandName: 'Text-to-CAD Create',
       stage: 'arguments',
       currentArgKey: 'method',
       currentArgValue: '',
@@ -174,7 +172,7 @@ async function sendPromptFromCommandBarAndSetNewProject(
     await cmdBar.progressCmdBar()
 
     await cmdBar.expectState({
-      commandName: 'Create Project using Text-to-CAD',
+      commandName: 'Text-to-CAD Create',
       stage: 'arguments',
       currentArgKey: 'newProjectName',
       currentArgValue: '',
@@ -189,7 +187,7 @@ async function sendPromptFromCommandBarAndSetNewProject(
     await cmdBar.progressCmdBar()
 
     await cmdBar.expectState({
-      commandName: 'Create Project using Text-to-CAD',
+      commandName: 'Text-to-CAD Create',
       stage: 'arguments',
       currentArgKey: 'prompt',
       currentArgValue: '',
