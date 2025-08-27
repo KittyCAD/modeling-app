@@ -55,6 +55,10 @@ export class Connection extends EventTarget {
   connectionPromiseResolve: ((value: unknown) => void) | null
   connectionPromiseReject: ((value: unknown) => void) | null
 
+  peerConnectionPromise: Promise<unknown> | null
+  peerConnectionPromiseResolve: ((value: unknown) => void) | null
+  peerConnectionPromiseReject: ((value: unknown) => void) | null
+
   iceCandidatePromises: Promise<unknown>[]
   onNetworkStatusReady: (() => void) | undefined
 
@@ -97,6 +101,9 @@ export class Connection extends EventTarget {
     this.connectionPromise = null
     this.connectionPromiseResolve = null
     this.connectionPromiseReject = null
+    this.peerConnectionPromise = null
+    this.peerConnectionPromiseResolve = null
+    this.peerConnectionPromiseReject = null
     this.iceCandidatePromises = []
     this.allEventListeners = new Map()
     // No connection has been made when the class is initialized
@@ -175,6 +182,12 @@ export class Connection extends EventTarget {
       this.connectionPromiseReject = reject
     })
     this.connectionPromise = connectionPromise
+
+    const peerConnectionPrommise = new Promise((resolve, reject) => {
+      this.peerConnectionPromiseResolve = resolve
+      this.peerConnectionPromiseReject = reject
+    })
+    this.peerConnectionPromise = peerConnectionPrommise
 
     // TODO: reconnect with createWebSocketConnection only?
     if (this.onNetworkStatusReady) {
@@ -266,10 +279,14 @@ export class Connection extends EventTarget {
   }
 
   createPeerConnection() {
+    if (!this.peerConnectionPromiseResolve) {
+      throw new Error('peerConnectionPromiseResolve is undefined')
+    }
     this.peerConnection = new RTCPeerConnection({
       bundlePolicy: 'max-bundle',
     })
     this.peerConnection.createDataChannel(DATACHANNEL_NAME_UMC)
+    this.peerConnectionPromiseResolve(true)
     EngineDebugger.addLog({
       label: 'connection',
       message: 'createDataChannel',

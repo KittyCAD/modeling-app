@@ -188,6 +188,11 @@ export class ConnectionManager extends EventTarget {
       url,
       token,
     })
+    // TODO: this should be correct.
+    this.connection.connect()
+    console.warn('connect')
+    await this.connection.peerConnectionPromise
+    console.warn('connectionPromise')
 
     // TODO: This is gonna break instantly.
     if (!this.connection.peerConnection) {

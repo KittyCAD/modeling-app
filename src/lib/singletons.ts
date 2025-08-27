@@ -74,6 +74,7 @@ export const kclManager = new KclManager(engineCommandManager, {
 import { setKclVersion } from '@src/lib/kclVersion'
 import { initPromise } from '@src/lang/wasmUtils'
 import env from '@src/env'
+import { ConnectionManager } from '@src/network/connectionManager'
 initPromise
   .then(() => {
     setKclVersion(kclManager.kclVersion)
@@ -301,15 +302,24 @@ commandBarActor.send({
   },
 })
 
-const c = new Connection({
-  connectionManager: null,
-  url: 'wss://api.dev.zoo.dev/ws/modeling/commands?video_res_width=856&video_res_height=856&post_effect=ssao&show_grid=false',
+const cm = new ConnectionManager()
+cm.rustContext = rustContext
+cm.sceneInfra = sceneInfra
+cm.start({
+  width: 256,
+  height: 256,
   token: env().VITE_KITTYCAD_API_TOKEN,
 })
 
+// const c = new Connection({
+//   connectionManager: cm,
+//   url: 'wss://api.dev.zoo.dev/ws/modeling/commands?video_res_width=856&video_res_height=856&post_effect=ssao&show_grid=false',
+//   token: env().VITE_KITTYCAD_API_TOKEN,
+// })
+
 async function dog() {
-  c.connect()
+  // c.connect()
   // c.createWebSocketConnection()
 }
 
-dog()
+// dog()

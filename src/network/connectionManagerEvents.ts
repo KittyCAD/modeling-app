@@ -300,7 +300,8 @@ export const createOnEngineConnectionStarted = ({
     )
     // Start listening!
     // TODO: Load bearing entry point!
-    connection.connect()
+    // TODO: THIS HAS TO BE WRONG WHAT?? it is a catch 22
+    // connection.connect()
   }
   // TODO: Multiple event listeners on dependencies of member variables are not cleaned up
   return onEngineConnectionStarted
