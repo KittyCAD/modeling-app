@@ -12,7 +12,6 @@ import type {
   PromptToEditRequest,
   TextToCadErrorResponse,
 } from '@src/lib/promptToEditTypes'
-import { parentPathRelativeToProject } from '@src/lib/paths'
 
 function sourceIndexToLineColumn(
   code: string,
@@ -58,10 +57,7 @@ export async function submitTextToCadMultiFileIterationRequest(
   )
 
   if (!response.ok) {
-    const errorBody = await response.json()
-    return new Error(
-      `HTTP error! status: ${response.status}, error: ${JSON.stringify(errorBody)}`
-    )
+    return new Error(`HTTP error! status: ${response.status}`)
   }
 
   const data = await response.json()
@@ -81,7 +77,6 @@ export function constructMultiFileIterationRequestWithPromptHelpers({
   prompt,
   selections,
   projectFiles,
-  applicationProjectDirectory,
   artifactGraph,
   projectName,
   currentFile,
@@ -89,7 +84,9 @@ export function constructMultiFileIterationRequestWithPromptHelpers({
 }: ConstructRequestArgs): PromptToEditRequest {
   const kclFilesMap: KclFileMetaMap = {}
   const files: KittyCadLibFile[] = []
-
+  const currentFileMeta = projectFiles.find(
+    (f) => f.type !== 'other' && f.absPath === currentFile.entry?.path
+  )
   projectFiles.forEach((file) => {
     let data: Blob
     if (file.type === 'other') {
@@ -107,31 +104,21 @@ export function constructMultiFileIterationRequestWithPromptHelpers({
 
   // Way to patch in supplying the currently-opened file without updating the API.
   // TODO: update the API to support currently-opened files as other parts of the payload
-  const currentFilePrompt: Models['SourceRangePrompt_type'] | null =
-    currentFile.entry
-      ? {
-          prompt: 'This is the active file',
-          range: convertAppRangeToApiRange(
-            [0, currentFile.content.length, 0],
-            currentFile.content
-          ),
-          file: parentPathRelativeToProject(
-            currentFile.entry?.path,
-            applicationProjectDirectory
-          ),
-        }
-      : null
+  const currentFilePrompt: Models['SourceRangePrompt_type'] = {
+    prompt: 'This is the active file',
+    range: convertAppRangeToApiRange(
+      [0, currentFile.content.length, 0],
+      currentFile.content
+    ),
+    file: currentFileMeta?.relPath,
+  }
 
   // If no selection, use whole file
   if (selections === null) {
-    const rangePrompts: Models['SourceRangePrompt_type'][] = []
-    if (currentFilePrompt !== null) {
-      rangePrompts.push(currentFilePrompt)
-    }
     return {
       body: {
         prompt,
-        source_ranges: rangePrompts,
+        source_ranges: [currentFilePrompt],
         project_name:
           projectName !== '' && projectName !== 'browser'
             ? projectName
@@ -274,9 +261,7 @@ See later source ranges for more context. about the sweep`,
       return prompts
     })
   // Push the current file prompt alongside the selection-based prompts
-  if (currentFilePrompt !== null) {
-    ranges.push(currentFilePrompt)
-  }
+  ranges.push(currentFilePrompt)
   let payload = {
     body: {
       prompt,

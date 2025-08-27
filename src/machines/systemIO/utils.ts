@@ -227,6 +227,7 @@ export const determineProjectFilePathFromPrompt = (
 export const collectProjectFiles = async (args: {
   selectedFileContents: string
   fileNames: ExecState['filenames']
+  targetFile?: FileEntry
   projectContext?: Project
 }) => {
   let projectFiles: FileMeta[] = [
