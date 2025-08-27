@@ -74,7 +74,7 @@ export const MlEphantConversationInput = (
   return (
     <div className="flex flex-col p-4 gap-2">
       <div className="text-sm text-chalkboard-60">Enter a prompt</div>
-      <div className="p-2 border b-4 focus-within:b-default flex flex-col gap-2">
+      <div className="p-2 border flex flex-col gap-2">
         {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
         <div
           contentEditable={true}
@@ -104,7 +104,7 @@ export const MlEphantConversationInput = (
             data-testid="ml-ephant-conversation-input-button"
             disabled={props.disabled}
             onClick={onClick}
-            className="w-10 m-0 bg-ml-green text-chalkboard-100 hover:text-default p-2 flex justify-center"
+            className="w-10 m-0 bg-ml-green p-2 flex justify-center"
           >
             <CustomIcon name="arrowUp" className="w-5 h-5 animate-bounce" />
           </button>
@@ -206,7 +206,7 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
               {promptCards}
             </div>
           </div>
-          <div className="border-t b-4">
+          <div className="border-t">
             <MlEphantConversationInput
               disabled={props.disabled || props.isLoading}
               onProcess={onProcess}
