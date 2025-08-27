@@ -13,7 +13,11 @@ import {
   useOnModelingCmdGroupReadyOnce,
 } from '@src/routes/Onboarding/utils'
 import { Spinner } from '@src/components/Spinner'
-import { BROWSER_PROJECT_NAME, PROJECT_ENTRYPOINT } from '@src/lib/constants'
+import {
+  ONBOARDING_DATA_ATTRIBUTE,
+  BROWSER_PROJECT_NAME,
+  PROJECT_ENTRYPOINT,
+} from '@src/lib/constants'
 import { APP_DOWNLOAD_PATH } from '@src/routes/utils'
 import { PATHS, joinRouterPaths } from '@src/lib/paths'
 import type { Selections } from '@src/lib/selections'
@@ -161,7 +165,7 @@ function Toolbar() {
 
 function TextToCad() {
   // Highlight the text-to-cad button if it's present
-  useOnboardingHighlight('command-bar-open-button')
+  useOnboardingHighlight('ai-group')
 
   // Ensure panes are closed
   useOnboardingPanes()
@@ -171,9 +175,9 @@ function TextToCad() {
       <OnboardingCard>
         <h1 className="text-xl font-bold">Text-to-CAD</h1>
         <p className="my-4">
-          You can find Text-to-CAD in the command palette. This allows you to
-          write up a description of what you want, and our AI will generate the
-          CAD for you. Text-to-CAD is currently in an experimental stage. We are
+          This last button is Text-to-CAD. This allows you to write up a
+          description of what you want, and our AI will generate the CAD for
+          you. Text-to-CAD is currently in an experimental stage. We are
           improving it every day.
         </p>
         <p className="my-4">
@@ -203,8 +207,8 @@ function TextToCadPrompt() {
   const prompt =
     'Design a fan housing for a CPU cooler for a 120mm diameter fan with four holes for retaining clips.'
 
-  // Open the text-to-cad pane
-  useOnboardingPanes(['text-to-cad'], ['text-to-cad'])
+  // Ensure panes are closed
+  useOnboardingPanes()
 
   // Enter the text-to-cad flow with a prebaked prompt
   useEffect(() => {
@@ -299,8 +303,24 @@ function FeatureTreePane() {
 function PromptToEdit() {
   const thisOnboardingStatus: BrowserOnboardingPath = '/browser/prompt-to-edit'
 
-  // Open the text-to-cad pane
-  useOnboardingPanes(['text-to-cad'], ['text-to-cad'])
+  // Click the text-to-cad dropdown button if it's available
+  useEffect(() => {
+    const dropdownButton = document.querySelector(
+      `[data-${ONBOARDING_DATA_ATTRIBUTE}="ai-dropdown-button"]`
+    )
+    if (dropdownButton === null) {
+      console.error(
+        `Expected dropdown is not present in onboarding step '${thisOnboardingStatus}'`
+      )
+      return
+    }
+
+    if (dropdownButton instanceof HTMLButtonElement) {
+      dropdownButton.click()
+    }
+  }, [])
+  // Close the panes on mount, close on unmount
+  useOnboardingPanes()
 
   // Make it so submitting the command just advances the onboarding
   useAdvanceOnboardingOnFormSubmit(thisOnboardingStatus)
@@ -311,8 +331,8 @@ function PromptToEdit() {
         <h1 className="text-xl font-bold">Modify with Zoo Text-to-CAD</h1>
         <p className="my-4">
           Text-to-CAD not only can <strong>create</strong> a part, but also{' '}
-          <strong>modify</strong> an existing part. In the right toolbar, you’ll
-          see a “Text-to-CAD” pane. Once clicked, you’ll be able to describe the
+          <strong>modify</strong> an existing part. In the dropdown, you’ll see
+          “Modify with Zoo Text-to-CAD”. Once clicked, you’ll describe the
           change you want for your part, and our AI will generate the change.
           Once again, this will cost <strong>one credit per minute</strong> it
           took to generate. Once again, most of the time, this is under a
@@ -333,23 +353,8 @@ function PromptToEditPrompt() {
   const prompt =
     'Change the housing to be for a 150 mm diameter fan, make it 30 mm tall, and change the color to purple.'
 
-  // Open the text-to-cad pane
-  useOnboardingPanes(['text-to-cad'], ['text-to-cad'])
-
-  // Fill in the prompt if available
-  useEffect(() => {
-    const promptInput = document.querySelector(
-      `[data-testid="ml-ephant-conversation-input"]`
-    )
-    if (promptInput === null) {
-      console.error(
-        `Expected promptInput is not present in onboarding step '${thisOnboardingStatus}'`
-      )
-      return
-    }
-
-    promptInput.textContent = prompt
-  }, [])
+  // Ensure panes are closed
+  useOnboardingPanes()
 
   // Enter the prompt-to-edit flow with a prebaked prompt
   const [isReady, setIsReady] = useState(

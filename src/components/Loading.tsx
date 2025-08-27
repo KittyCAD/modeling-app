@@ -20,7 +20,6 @@ import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 
 interface LoadingProps extends React.PropsWithChildren {
   isDummy?: boolean
-  isCompact?: boolean
   className?: string
   dataTestId?: string
   retryAttemptCountdown?: number
@@ -81,7 +80,6 @@ export const CONNECTION_ERROR_CALL_TO_ACTION_TEXT: Record<
 
 const Loading = ({
   isDummy,
-  isCompact,
   children,
   className,
   dataTestId,
@@ -204,11 +202,11 @@ const Loading = ({
   if (isDummy) {
     return (
       <div
-        className={`flex ${isCompact ? 'flex-row gap-2' : 'flex-col'} items-center justify-center ${colorClass} ${className}`}
+        className={`body-bg flex flex-col items-center justify-center ${colorClass} ${className}`}
         data-testid={dataTestId ? dataTestId : 'loading'}
       >
-        <Spinner className={isCompact ? 'w-4 h-4' : 'w-8 w-8'} />
-        <p className={`text-base ${isCompact ? '' : 'mt-4'}`}>{children}</p>
+        <Spinner />
+        <p className={`text-base mt-4`}>{children}</p>
       </div>
     )
   }

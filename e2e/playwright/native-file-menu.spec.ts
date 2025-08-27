@@ -246,6 +246,14 @@ test.describe(
         )
         await openSettingsExpectLocator(page, '#themeColor')
       })
+      await test.step('Modeling.Edit.Modify with Zoo Text-To-CAD', async () => {
+        await page.waitForTimeout(250)
+        await clickElectronNativeMenuById(
+          tronApp,
+          'Edit.Modify with Zoo Text-To-CAD'
+        )
+        await cmdBar.expectCommandName('Text-to-CAD Edit')
+      })
       await test.step('Modeling.Edit.Edit parameter', async () => {
         await page.waitForTimeout(250)
         await clickElectronNativeMenuById(tronApp, 'Edit.Edit parameter')
@@ -510,7 +518,17 @@ test.describe(
           'Design.Create with Zoo Text-To-CAD'
         )
         await cmdBar.toBeOpened()
-        await cmdBar.expectCommandName('Create Project using Text-to-CAD')
+        await cmdBar.expectCommandName('Text-to-CAD Create')
+      })
+
+      await test.step('Modeling.Design.Modify with Zoo Text-To-CAD', async () => {
+        await page.waitForTimeout(250)
+        await clickElectronNativeMenuById(
+          tronApp,
+          'Design.Modify with Zoo Text-To-CAD'
+        )
+        await cmdBar.toBeOpened()
+        await cmdBar.expectCommandName('Text-to-CAD Edit')
       })
 
       await test.step('Modeling.Help.KCL code samples', async () => {
