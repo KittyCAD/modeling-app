@@ -788,9 +788,6 @@ export const modelingMachine = setup({
   },
   // end guards
   actions: {
-    logNewSketchMode: () => {
-      console.log('entered new sketch mode')
-    },
     toastError: ({ event }) => {
       if ('output' in event && event.output instanceof Error) {
         console.error(event.output)
@@ -4635,7 +4632,7 @@ export const modelingMachine = setup({
           {
             target: 'sketchMode',
             guard: 'should use new sketch mode',
-            actions: ['set new sketch metadata', 'logNewSketchMode'],
+            actions: ['set new sketch metadata'],
           },
           {
             target: 'Sketch',

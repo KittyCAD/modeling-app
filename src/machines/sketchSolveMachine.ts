@@ -52,4 +52,7 @@ export const sketchSolveMachine = setup({
     },
   },
   initial: 'idle',
+  entry: () => {
+    console.log('entered new sketch mode')
+  },
 })
