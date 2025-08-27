@@ -547,7 +547,7 @@ extrude002 = extrude(profile002, length = 150)`
   test(
     `Network health indicator only appears in modeling view`,
     { tag: '@desktop' },
-    async ({ context, page }) => {
+    async ({ context, page, homePage }) => {
       await context.folderSetupFn(async (dir) => {
         const bracketDir = path.join(dir, 'bracket')
         await fsp.mkdir(bracketDir, { recursive: true })
@@ -559,7 +559,7 @@ extrude002 = extrude(profile002, length = 150)`
       await page.setBodyDimensions({ width: 1200, height: 500 })
 
       // Locators
-      const projectsHeading = page.getByRole('heading', {
+      const projectsHeading = page.getByRole('tab', {
         name: 'Projects',
       })
       const projectLink = page.getByRole('link', { name: 'bracket' })
