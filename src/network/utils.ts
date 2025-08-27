@@ -230,3 +230,17 @@ export type UnreliableResponses = Extract<
   Models['OkModelingCmdResponse_type'],
   { type: 'highlight_set_entity' | 'camera_drag_move' }
 >
+
+export enum EngineCommandManagerEvents {
+  // engineConnection is available but scene setup may not have run
+  EngineAvailable = 'engine-available',
+
+  // request a restart of engineConnection
+  EngineRestartRequest = 'engine-restart-request',
+
+  // the whole scene is ready (settings loaded)
+  SceneReady = 'scene-ready',
+
+  // we're offline
+  Offline = 'offline',
+}
