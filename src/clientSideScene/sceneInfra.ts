@@ -443,6 +443,17 @@ export class SceneInfra {
   private _processingMouseMove = false
   private _lastUnprocessedMouseEvent: MouseEvent | undefined
 
+  private updateCurrentMouseVector(event: MouseEvent, target: HTMLElement) {
+    const rect = target.getBoundingClientRect()
+    if (rect.width === 0 || rect.height === 0) {
+      return
+    }
+    const localX = event.clientX - rect.left
+    const localY = event.clientY - rect.top
+    this.currentMouseVector.x = (localX / rect.width) * 2 - 1
+    this.currentMouseVector.y = -(localY / rect.height) * 2 + 1
+  }
+
   onMouseMove = async (mouseEvent: MouseEvent) => {
     if (!(mouseEvent.currentTarget instanceof HTMLElement)) {
       console.error('unexpected targetless event')
@@ -461,10 +472,7 @@ export class SceneInfra {
       this._processingMouseMove = true
     }
 
-    this.currentMouseVector.x =
-      (mouseEvent.offsetX / mouseEvent.currentTarget.clientWidth) * 2 - 1
-    this.currentMouseVector.y =
-      -(mouseEvent.offsetY / mouseEvent.currentTarget.clientHeight) * 2 + 1
+    this.updateCurrentMouseVector(mouseEvent, mouseEvent.currentTarget)
 
     const planeIntersectPoint = this.getPlaneIntersectPoint()
     const intersects = this.raycastRing()
@@ -640,10 +648,7 @@ export class SceneInfra {
       console.error('unexpected targetless event')
       return
     }
-    this.currentMouseVector.x =
-      (event.offsetX / event.currentTarget.clientWidth) * 2 - 1
-    this.currentMouseVector.y =
-      -(event.offsetY / event.currentTarget.clientHeight) * 2 + 1
+    this.updateCurrentMouseVector(event, event.currentTarget)
 
     const mouseDownVector = this.currentMouseVector.clone()
     const intersect = this.raycastRing()[0]
@@ -665,10 +670,7 @@ export class SceneInfra {
       console.error('unexpected targetless event')
       return
     }
-    this.currentMouseVector.x =
-      (mouseEvent.offsetX / mouseEvent.currentTarget.clientWidth) * 2 - 1
-    this.currentMouseVector.y =
-      -(mouseEvent.offsetY / mouseEvent.currentTarget.clientHeight) * 2 + 1
+    this.updateCurrentMouseVector(mouseEvent, mouseEvent.currentTarget)
     const planeIntersectPoint = this.getPlaneIntersectPoint()
     const intersects = this.raycastRing()
 
