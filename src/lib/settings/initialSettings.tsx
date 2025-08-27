@@ -290,16 +290,6 @@ export function createSettings() {
         description: 'Toggle free camera while in sketch mode',
         validate: (v) => typeof v === 'boolean',
       }),
-      useNewSketchMode: new Setting<boolean>({
-        hideOnLevel: 'project',
-        hideOnPlatform: env().NODE_ENV === 'development' ? undefined : 'both', // Only show in dev mode
-        defaultValue: false,
-        description: 'Use the new sketch mode implementation (Dev only)',
-        validate: (v) => typeof v === 'boolean',
-        commandConfig: {
-          inputType: 'boolean',
-        },
-      }),
       onboardingStatus: new Setting<OnboardingStatus>({
         defaultValue: '',
         // TODO: this could be better but we don't have a TS side real enum
@@ -476,6 +466,19 @@ export function createSettings() {
         hideOnLevel: 'project',
         description:
           'Enable touch events to navigate the 3D scene. When enabled, orbit with one-finger drag, pan with two-finger drag, and zoom with pinch.',
+        validate: (v) => typeof v === 'boolean',
+        commandConfig: {
+          inputType: 'boolean',
+        },
+      }),
+      /**
+       * Use the new sketch mode implementation - solver (Dev only)
+       */
+      useNewSketchMode: new Setting<boolean>({
+        hideOnLevel: 'project',
+        hideOnPlatform: env().NODE_ENV === 'development' ? undefined : 'both', // Only show in dev mode
+        defaultValue: false,
+        description: 'Use the new sketch mode implementation (Dev only)',
         validate: (v) => typeof v === 'boolean',
         commandConfig: {
           inputType: 'boolean',
