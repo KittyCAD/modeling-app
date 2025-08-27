@@ -1,4 +1,4 @@
-import { SettingsViaQueryString } from '@src/lib/settings/settingsTypes'
+import type { SettingsViaQueryString } from '@src/lib/settings/settingsTypes'
 import { Connection } from './connection'
 import {
   darkModeMatcher,
@@ -7,16 +7,18 @@ import {
   Themes,
 } from '@src/lib/theme'
 import { withWebSocketURL } from '@src/lib/withBaseURL'
-import {
-  EngineCommandManagerEvents,
-  EngineConnectionEvents,
+import type {
   IEventListenerTracked,
   ModelTypes,
   PendingMessage,
-  promiseFactory,
   Subscription,
   UnreliableResponses,
   UnreliableSubscription,
+} from './utils'
+import {
+  EngineCommandManagerEvents,
+  EngineConnectionEvents,
+  promiseFactory,
 } from './utils'
 import {
   createOnDarkThemeMediaQueryChange,
@@ -30,16 +32,18 @@ import type RustContext from '@src/lib/rustContext'
 import { binaryToUuid, isArray, uuidv4 } from '@src/lib/utils'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
-import CodeManager from '@src/lang/codeManager'
-import { Models } from '@kittycad/lib/dist/types/src'
+import type CodeManager from '@src/lang/codeManager'
+import type { Models } from '@kittycad/lib/dist/types/src'
 import { BSON } from 'bson'
 import { EngineDebugger } from '@src/lib/debugger'
-import { EngineCommand, ResponseMap } from '@src/lang/std/artifactGraph'
-import { CommandLog, CommandLogType } from '@src/lang/std/commandLog'
+import type { EngineCommand, ResponseMap } from '@src/lang/std/artifactGraph'
+import type { CommandLog } from '@src/lang/std/commandLog'
+import { CommandLogType } from '@src/lang/std/commandLog'
 import { defaultSourceRange } from '@src/lang/sourceRange'
-import { SourceRange } from '@src/lang/wasm'
-import { KclManager } from '@src/lang/KclSingleton'
+import type { SourceRange } from '@src/lang/wasm'
+import type { KclManager } from '@src/lang/KclSingleton'
 import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from '@src/lib/constants'
+import { useModelingContext } from '@src/hooks/useModelingContext'
 
 export class ConnectionManager extends EventTarget {
   started: boolean
@@ -102,6 +106,9 @@ export class ConnectionManager extends EventTarget {
     }
   } = {} as any
   _commandLogCallBack: (command: CommandLog[]) => void = () => {}
+  // Rogue runtime dependency from the modeling machine. hope it is there!
+  modelingSend: ReturnType<typeof useModelingContext>['send'] =
+    (() => {}) as any
   // Any event listener into this map to be cleaned up later
   // helps avoids duplicates as well
   allEventListeners: Map<string, IEventListenerTracked>
@@ -134,12 +141,21 @@ export class ConnectionManager extends EventTarget {
     width,
     height,
     token,
+    thisNeedsToBeDeletedSetMediaStream,
+    thisNeedsToBeDeletedSetIsStreamReady,
   }: {
     settings?: SettingsViaQueryString
     width: number
     height: number
     token: string
+    thisNeedsToBeDeletedSetMediaStream: (stream: MediaStream) => void
+    thisNeedsToBeDeletedSetIsStreamReady: (isStreamReady: boolean) => void
   }) {
+    console.warn('connectionManager start')
+    EngineDebugger.addLog({
+      label: 'connectionManager',
+      message: 'start',
+    })
     if (this.started) {
       throw new Error(
         'You tried to start the engine again, why are you starting it?'
@@ -187,11 +203,24 @@ export class ConnectionManager extends EventTarget {
       connectionManager: this,
       url,
       token,
+      thisNeedsToBeDeletedSetMediaStream,
     })
     // TODO: this should be correct.
     this.connection.connect()
+    // TODO: inline instead of use-network-status-ready and EngineCommandManagerEvents.ngineAvailable
+    // this.connection.createWebSocketConnection()
     console.warn('connect')
+
+    // Move this to trigger the connection workflow?
+    this.dispatchEvent(
+      new CustomEvent(EngineCommandManagerEvents.EngineAvailable, {
+        detail: this.connection,
+      })
+    )
+
     await this.connection.peerConnectionPromise
+
+    thisNeedsToBeDeletedSetIsStreamReady(true)
     console.warn('connectionPromise')
 
     // TODO: This is gonna break instantly.
@@ -207,12 +236,6 @@ export class ConnectionManager extends EventTarget {
     // TODO:
     // Nothing more to do when using a lite engine initialization
     // if (callbackOnEngineLiteConnect) return
-
-    this.dispatchEvent(
-      new CustomEvent(EngineCommandManagerEvents.EngineAvailable, {
-        detail: this.connection,
-      })
-    )
 
     const onEngineConnetionRestartRequest =
       createOnEngineConnectionRestartRequest({
@@ -249,6 +272,7 @@ export class ConnectionManager extends EventTarget {
       handleMessage: this.handleMessage.bind(this),
       connection: this.connection,
       trackListener: this.trackListener.bind(this),
+      thisNeedsToBeDeletedSetMediaStream,
     })
 
     this.trackListener(EngineConnectionEvents.RestartRequest, {
@@ -300,6 +324,13 @@ export class ConnectionManager extends EventTarget {
       EngineConnectionEvents.ConnectionStarted,
       onEngineConnectionStarted
     )
+    
+    this.connection.dispatchEvent(
+      new CustomEvent(EngineConnectionEvents.ConnectionStarted, {
+        // detail: this,
+      })
+    )
+
   }
 
   generateWebsocketURL() {
@@ -473,6 +504,7 @@ export class ConnectionManager extends EventTarget {
     if (!this.connection) {
       throw new Error('sendCommand - this.connection is undefined')
     }
+    
     const { promise, resolve, reject } = promiseFactory<any>()
     this.pendingCommands[id] = {
       resolve,
@@ -667,6 +699,11 @@ export class ConnectionManager extends EventTarget {
 
   // TODO: What workflow triggers this?
   async startFromWasm(token: string): Promise<void> {
+      EngineDebugger.addLog({
+        label: 'connectionManager',
+        message:
+          'startFromWasm',
+      })
     return await this.start({
       token,
       width: 256,
@@ -697,6 +734,18 @@ export class ConnectionManager extends EventTarget {
   }
 
   tearDown(opts?: { idleMode: boolean }) {
+    if (!this.started) {
+      console.warn(
+        'you called tearDown without ever calling start(), this is okay.'
+      )
+      EngineDebugger.addLog({
+        label: 'connectionManager',
+        message:
+          'you called tearDown without ever calling start(), this is okay.',
+      })
+      return
+    }
+
     if (!this.connection) {
       throw new Error(
         'unable to tear down connectionManager, connection is missing'
@@ -891,6 +940,7 @@ export class ConnectionManager extends EventTarget {
     commandStr: string,
     idToRangeStr: string
   ): Promise<Uint8Array | void> {
+
     if (this.connection === undefined) {
       return Promise.reject(new Error('this.connection is undefined'))
     }
@@ -912,13 +962,11 @@ export class ConnectionManager extends EventTarget {
     const command: EngineCommand = JSON.parse(commandStr)
     const idToRangeMap: { [key: string]: SourceRange } =
       JSON.parse(idToRangeStr)
-
     // Current executeAst is stale, going to interrupt, a new executeAst will trigger
     // Used in conjunction with rejectAllModelingCommands
     if (this.kclManager.executeIsStale) {
       return Promise.reject(EXECUTE_AST_INTERRUPT_ERROR_MESSAGE)
     }
-
     try {
       const resp = await this.sendCommand(id, {
         command,
@@ -927,6 +975,7 @@ export class ConnectionManager extends EventTarget {
       })
       return BSON.serialize(resp[0])
     } catch (e) {
+      console.error(e)
       if (isArray(e) && e.length > 0) {
         EngineDebugger.addLog({
           label: 'sendCommand',

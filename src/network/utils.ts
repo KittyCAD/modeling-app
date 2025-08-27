@@ -1,7 +1,7 @@
 import type { Models } from '@kittycad/lib'
-import { Connection } from './connection'
-import { EngineCommand } from '@src/lang/std/artifactGraph'
-import { SourceRange } from '@src/lang/wasm'
+import type { Connection } from './connection'
+import type { EngineCommand } from '@src/lang/std/artifactGraph'
+import type { SourceRange } from '@src/lang/wasm'
 
 // Ping/Pong every 1 second
 export const pingIntervalMs = 1_000
@@ -241,7 +241,7 @@ export function toRTCSessionDescriptionInit(
 export const DATACHANNEL_NAME_UMC = 'unreliable_modeling_cmds'
 
 export function logger(s1: any, s2: any) {
-  console.log('[connection]', s1, s2)
+  // console.log('[connection]', s1, s2)
 }
 
 export type UnreliableResponses = Extract<

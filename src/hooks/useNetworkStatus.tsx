@@ -240,6 +240,7 @@ export function useNetworkStatus() {
         onConnectionStateChange as EventListener
       )
 
+      console.warn('FIRE!')
       // Tell EngineConnection to start firing events.
       window.dispatchEvent(new CustomEvent('use-network-status-ready', {}))
     }

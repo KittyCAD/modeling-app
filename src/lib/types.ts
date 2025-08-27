@@ -11,6 +11,7 @@ import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import type { ActorRefFrom } from 'xstate'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
 import type { billingMachine } from '@src/machines/billingMachine'
+import { ConnectionManager } from '@src/network/connectionManager'
 
 export type IndexLoaderData = {
   code: string | null
@@ -127,7 +128,7 @@ export type AsyncFn<F extends (...args: any[]) => any> = WithReturnType<
 export type AppMachineContext = {
   codeManager: CodeManager
   kclManager: KclManager
-  engineCommandManager: EngineCommandManager
+  engineCommandManager: ConnectionManager
   sceneInfra: SceneInfra
   sceneEntitiesManager: SceneEntities
   authActor?: ActorRefFrom<typeof authMachine>

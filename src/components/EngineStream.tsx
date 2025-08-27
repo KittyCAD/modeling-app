@@ -36,6 +36,7 @@ import { useRouteLoaderData } from 'react-router-dom'
 import { createThumbnailPNGOnDesktop } from '@src/lib/screenshot'
 import type { SettingsViaQueryString } from '@src/lib/settings/settingsTypes'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
+import { EngineDebugger } from '@src/lib/debugger'
 
 const TIME_1_SECOND = 1000
 
@@ -68,6 +69,9 @@ export const EngineStream = (props: {
   // These will be passed to the engineStreamActor to handle.
   const videoRef = useRef<HTMLVideoElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
+
+  window.videoRef = videoRef
+  window.canvasRef = canvasRef
 
   // For attaching right-click menu events
   const videoWrapperRef = useRef<HTMLDivElement>(null)
@@ -230,16 +234,23 @@ export const EngineStream = (props: {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [needsExecution])
 
+  // TODO: THIS IS ACTUALLY CALLING IT FIRST!
   useEffect(() => {
     // We do a back-off restart, using a fibonacci sequence, since it
     // has a nice retry time curve (somewhat quick then exponential)
     const attemptRestartIfNecessary = () => {
+      console.warn('why?')
+      EngineDebugger.addLog({
+        label: 'EngineStream.tsx',
+        message: 'attemptRestartIfNecessary',
+      })
       // Timeout already set.
       if (timeoutId) return
 
       setTimeoutId(
         setTimeout(() => {
           engineStreamState.context.videoRef.current?.pause()
+          // TODO: THIS IS ACTUALLY CALLING IT FIRST!
           engineCommandManager.tearDown()
           startOrReconfigureEngine()
           setNeedsExecution(true)
@@ -255,9 +266,9 @@ export const EngineStream = (props: {
       if (
         !(
           EngineConnectionStateType.Disconnected ===
-            engineCommandManager.engineConnection?.state.type ||
+            engineCommandManager.connection?.state.type ||
           EngineConnectionStateType.Disconnecting ===
-            engineCommandManager.engineConnection?.state.type
+            engineCommandManager.connection?.state.type
         )
       ) {
         return
@@ -303,7 +314,7 @@ export const EngineStream = (props: {
     attemptTimes,
     goRestart,
     timeoutId,
-    engineCommandManager.engineConnection?.state.type,
+    // engineCommandManager.connection?.state.type,
   ])
 
   useEffect(() => {
@@ -353,7 +364,7 @@ export const EngineStream = (props: {
    * See onSceneReady for the initial scene setup.
    */
   useEffect(() => {
-    if (engineCommandManager.engineConnection?.isReady() && file?.path) {
+    if (engineCommandManager.connection?.isReady() && file?.path) {
       console.log('file changed, executing code')
       kclManager
         .executeCode()
@@ -383,6 +394,28 @@ export const EngineStream = (props: {
      * trigger this workflow.
      */
   }, [file])
+  
+  window.startFile = () =>{ 
+          kclManager
+        .executeCode()
+        .catch(trap)
+        .then(() =>
+          // It makes sense to also call zoom to fit here, when a new file is
+          // loaded for the first time, but not overtaking the work kevin did
+          // so the camera isn't moving all the time.
+          engineCommandManager.sendSceneCommand({
+            type: 'modeling_cmd_req',
+            cmd_id: uuidv4(),
+            cmd: {
+              type: 'zoom_to_fit',
+              object_ids: [], // leave empty to zoom to all objects
+              padding: 0.1, // padding around the objects
+              animated: false, // don't animate the zoom for now
+            },
+          })
+        )
+        .catch(trap)
+  }
 
   const IDLE_TIME_MS = Number(30000)
 
@@ -393,47 +426,48 @@ export const EngineStream = (props: {
     timeoutStart.current = streamIdleMode ? Date.now() : null
   }, [streamIdleMode])
 
-  useEffect(() => {
-    let frameId: ReturnType<typeof window.requestAnimationFrame> = 0
-    const frameLoop = () => {
-      // Do not pause if the user is in the middle of an operation
-      if (!modelingMachineState.matches('idle')) {
-        // In fact, stop the timeout, because we don't want to trigger the
-        // pause when we exit the operation.
-        timeoutStart.current = null
-      } else if (timeoutStart.current) {
-        const elapsed = Date.now() - timeoutStart.current
-        // Don't pause if we're already disconnected.
-        if (
-          // It's unnecessary to once again setup an event listener for
-          // offline/online to capture this state, when this state already
-          // exists on the window.navigator object. In hindsight it makes
-          // me (lee) regret we set React state variables such as
-          // isInternetConnected in other files when we could check this
-          // object instead.
-          engineCommandManager.engineConnection?.state.type ===
-            EngineConnectionStateType.ConnectionEstablished &&
-          elapsed >= IDLE_TIME_MS &&
-          engineStreamState.value === EngineStreamState.Playing
-        ) {
-          timeoutStart.current = null
-          console.log('Pausing')
-          console.log(
-            engineStreamActor.getSnapshot().value,
-            engineStreamState.value
-          )
-          engineStreamActor.send({ type: EngineStreamTransition.Pause })
-        }
-      }
-      frameId = window.requestAnimationFrame(frameLoop)
-    }
-    frameId = window.requestAnimationFrame(frameLoop)
+  // TODO: Turning off frameloop
+  // useEffect(() => {
+  //   let frameId: ReturnType<typeof window.requestAnimationFrame> = 0
+  //   const frameLoop = () => {
+  //     // Do not pause if the user is in the middle of an operation
+  //     if (!modelingMachineState.matches('idle')) {
+  //       // In fact, stop the timeout, because we don't want to trigger the
+  //       // pause when we exit the operation.
+  //       timeoutStart.current = null
+  //     } else if (timeoutStart.current) {
+  //       const elapsed = Date.now() - timeoutStart.current
+  //       // Don't pause if we're already disconnected.
+  //       if (
+  //         // It's unnecessary to once again setup an event listener for
+  //         // offline/online to capture this state, when this state already
+  //         // exists on the window.navigator object. In hindsight it makes
+  //         // me (lee) regret we set React state variables such as
+  //         // isInternetConnected in other files when we could check this
+  //         // object instead.
+  //         engineCommandManager.connection?.state.type ===
+  //           EngineConnectionStateType.ConnectionEstablished &&
+  //         elapsed >= IDLE_TIME_MS &&
+  //         engineStreamState.value === EngineStreamState.Playing
+  //       ) {
+  //         timeoutStart.current = null
+  //         console.log('Pausing')
+  //         console.log(
+  //           engineStreamActor.getSnapshot().value,
+  //           engineStreamState.value
+  //         )
+  //         engineStreamActor.send({ type: EngineStreamTransition.Pause })
+  //       }
+  //     }
+  //     frameId = window.requestAnimationFrame(frameLoop)
+  //   }
+  //   frameId = window.requestAnimationFrame(frameLoop)
 
-    return () => {
-      window.cancelAnimationFrame(frameId)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [modelingMachineState, engineStreamState.value])
+  //   return () => {
+  //     window.cancelAnimationFrame(frameId)
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
+  // }, [modelingMachineState, engineStreamState.value])
 
   useEffect(() => {
     if (!streamIdleMode) return
@@ -620,21 +654,6 @@ export const EngineStream = (props: {
         }
         menuTargetElement={videoWrapperRef}
       />
-      {![
-        EngineStreamState.Playing,
-        EngineStreamState.Pausing,
-        EngineStreamState.Paused,
-        EngineStreamState.Resuming,
-      ].some((s) => s === engineStreamState.value) && (
-        <Loading
-          isRetrying={timeoutId !== undefined && !firstRun}
-          retryAttemptCountdown={attemptTimes[1]}
-          dataTestId="loading-engine"
-          className="absolute inset-0 h-screen"
-        >
-          Connecting and setting up scene...
-        </Loading>
-      )}
     </div>
   )
 }

@@ -50,6 +50,7 @@ import {
 } from '@src/lib/utils'
 import { deg2Rad } from '@src/lib/utils2d'
 import { degToRad } from 'three/src/math/MathUtils'
+import { ConnectionManager } from '@src/network/connectionManager'
 
 const ORTHOGRAPHIC_CAMERA_SIZE = 20
 const FRAMES_TO_ANIMATE_IN = 30
@@ -114,7 +115,7 @@ class CameraRateLimiter {
 }
 
 export class CameraControls {
-  engineCommandManager: EngineCommandManager
+  engineCommandManager: ConnectionManager
   engineStreamActor?: EngineStreamActor
   syncDirection: 'clientToEngine' | 'engineToClient' = 'engineToClient'
   camera: PerspectiveCamera | OrthographicCamera
@@ -294,7 +295,7 @@ export class CameraControls {
 
   constructor(
     domElement: HTMLCanvasElement,
-    engineCommandManager: EngineCommandManager,
+    engineCommandManager: ConnectionManager,
     isOrtho = false
   ) {
     this.engineCommandManager = engineCommandManager

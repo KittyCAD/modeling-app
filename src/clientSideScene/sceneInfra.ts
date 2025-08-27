@@ -46,6 +46,7 @@ import type {
   SegmentOverlayPayload,
 } from '@src/machines/modelingMachine'
 import { PROFILE_START } from '@src/clientSideScene/sceneConstants'
+import { ConnectionManager } from '@src/network/connectionManager'
 
 type SendType = ReturnType<typeof useModelingContext>['send']
 
@@ -266,7 +267,7 @@ export class SceneInfra {
   private isRenderingPaused = false
   private lastFrameTime = 0
 
-  constructor(engineCommandManager: EngineCommandManager) {
+  constructor(engineCommandManager: ConnectionManager) {
     // SCENE
     this.scene = new Scene()
     this.scene.background = new Color(0x000000)

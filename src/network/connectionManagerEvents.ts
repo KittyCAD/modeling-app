@@ -1,23 +1,25 @@
 import { EngineDebugger } from '@src/lib/debugger'
-import {
-  EngineCommandManagerEvents,
-  EngineConnectionEvents,
+import type {
   IEventListenerTracked,
-  isHighlightSetEntity_type,
   NewTrackArgs,
   UnreliableResponses,
 } from './utils'
+import {
+  EngineCommandManagerEvents,
+  EngineConnectionEvents,
+  isHighlightSetEntity_type,
+} from './utils'
 import type RustContext from '@src/lib/rustContext'
-import { DeepPartial } from '@src/lib/types'
-import { Configuration } from '@src/lang/wasm'
-import { SettingsViaQueryString } from '@src/lib/settings/settingsTypes'
+import type { DeepPartial } from '@src/lib/types'
+import type { Configuration } from '@src/lang/wasm'
+import type { SettingsViaQueryString } from '@src/lib/settings/settingsTypes'
 import { uuidv4 } from '@src/lib/utils'
-import { EngineCommand } from '@src/lang/std/artifactGraph'
-import { Models } from '@kittycad/lib/dist/types/src'
+import type { EngineCommand } from '@src/lang/std/artifactGraph'
+import type { Models } from '@kittycad/lib/dist/types/src'
 import { Themes } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import { Connection } from './connection'
+import type { Connection } from './connection'
 
 export const createOnEngineConnectionRestartRequest = ({
   dispatchEvent,
@@ -76,7 +78,9 @@ export const createOnEngineConnectionOpened = ({
         label: 'onEngineConnectionOpened',
         message: 'clearing scene and busting cache',
       })
+      console.warn('KEVIN1')
       await rustContext.clearSceneAndBustCache(jsAppSettings, path)
+      console.warn('KEVIN2')
     } catch (e) {
       console.warn('unknown error in onEngineConnectionOpened:', e)
       EngineDebugger.addLog({
@@ -146,6 +150,7 @@ export const createOnEngineConnectionOpened = ({
       message: 'Dispatching SceneReady',
     })
 
+    console.warn('SCENE IS READY!')
     dispatchEvent(
       new CustomEvent(EngineCommandManagerEvents.SceneReady, {
         detail: connection,
@@ -183,6 +188,7 @@ export const createOnEngineConnectionStarted = ({
   handleMessage,
   connection,
   trackListener,
+  thisNeedsToBeDeletedSetMediaStream,
 }: {
   peerConnection: RTCPeerConnection
   getUnreliableSubscriptions: () => {
@@ -199,7 +205,9 @@ export const createOnEngineConnectionStarted = ({
     name: string,
     eventListenerTracked: IEventListenerTracked
   ) => void
+  thisNeedsToBeDeletedSetMediaStream: (stream: MediaStream) => void
 }) => {
+  console.warn('THIS RUNS')
   // TODO: connection.ts may not send the detail: connection back within this event handler.
   // Do not use the detail: connection yet, use the one from the connectionManager
   // This is the second datachannel initialized on the peerConnection. One is already
@@ -219,6 +227,7 @@ export const createOnEngineConnectionStarted = ({
         label: 'onEngineConnectionStarted',
         message: 'adding message on unreliableDataChannel',
       })
+
       // TODO: This event listener would need to be cleaned up if the connection is destroyed
       unreliableDataChannel.addEventListener(
         'message',
@@ -286,6 +295,10 @@ export const createOnEngineConnectionStarted = ({
         message: 'adding mute on mediaStream.getVideoTracks()[0]',
       })
       mediaStream.getVideoTracks()[0].addEventListener('mute', onVideoTrackMute)
+      if (!mediaStream) {
+        throw new Error('no media stream found, this is bad.')
+      }
+      thisNeedsToBeDeletedSetMediaStream(mediaStream)
     }
 
     trackListener(EngineConnectionEvents.NewTrack, {

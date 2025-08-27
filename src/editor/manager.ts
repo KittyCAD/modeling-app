@@ -36,6 +36,7 @@ import type {
 } from '@src/machines/modelingMachine'
 import { historyCompartment } from '@src/editor/compartments'
 import type CodeManager from '@src/lang/codeManager'
+import { ConnectionManager } from '@src/network/connectionManager'
 
 declare global {
   interface Window {
@@ -60,7 +61,7 @@ export const setDiagnosticsEvent = setDiagnosticsAnnotation.of(true)
 
 export default class EditorManager {
   private _copilotEnabled: boolean = true
-  private engineCommandManager: EngineCommandManager
+  private engineCommandManager: ConnectionManager
 
   private _isAllTextSelected: boolean = false
   private _isShiftDown: boolean = false
@@ -84,7 +85,7 @@ export default class EditorManager {
   public kclManager?: KclManager
   public codeManager?: CodeManager
 
-  constructor(engineCommandManager: EngineCommandManager) {
+  constructor(engineCommandManager: ConnectionManager) {
     this.engineCommandManager = engineCommandManager
 
     this._editorState = EditorState.create({

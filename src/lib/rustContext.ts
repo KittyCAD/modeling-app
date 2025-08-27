@@ -22,13 +22,14 @@ import { err, reportRejection } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { getModule } from '@src/lib/wasm_lib_wrapper'
+import type { ConnectionManager } from '@src/network/connectionManager'
 
 export default class RustContext {
   private wasmInitFailed: boolean = true
   private rustInstance: ModuleType | null = null
   private ctxInstance: Context | null = null
   private _defaultPlanes: DefaultPlanes | null = null
-  private engineCommandManager: EngineCommandManager
+  private engineCommandManager: ConnectionManager
 
   /** Initialize the WASM module */
   async ensureWasmInit() {
@@ -43,7 +44,7 @@ export default class RustContext {
     }
   }
 
-  constructor(engineCommandManager: EngineCommandManager) {
+  constructor(engineCommandManager: ConnectionManager) {
     this.engineCommandManager = engineCommandManager
 
     this.ensureWasmInit()
@@ -171,12 +172,12 @@ export default class RustContext {
     path?: string
   ): Promise<ExecState> {
     const instance = await this._checkInstance()
-
     try {
       const result = await instance.bustCacheAndResetScene(
         JSON.stringify(settings),
         path
       )
+
       /* Set the default planes, safe to call after execute. */
       const outcome = execStateFromRust(result)
 

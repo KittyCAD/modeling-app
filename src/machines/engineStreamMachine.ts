@@ -127,8 +127,11 @@ export const engineStreamMachine = setup({
 
         window.requestAnimationFrame(() => {
           rootContext.engineCommandManager.start({
-            setMediaStream: event.onMediaStream,
-            setIsStreamReady: (isStreamReady: boolean) => {
+            thisNeedsToBeDeletedSetMediaStream: (stream: MediaStream) => {
+              console.warn('SETTING MEDIA STREAM!')
+              event.onMediaStream(stream)
+            },
+            thisNeedsToBeDeletedSetIsStreamReady: (isStreamReady: boolean) => {
               event.setAppState({ isStreamReady })
             },
             width,

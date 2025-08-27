@@ -1,11 +1,11 @@
 import type { Models } from '@kittycad/lib'
+import type { ClientMetrics } from './utils'
 import {
   logger,
   EngineConnectionEvents,
   toRTCSessionDescriptionInit,
-  ClientMetrics,
 } from './utils'
-import { ConnectionManager } from './connectionManager'
+import type { ConnectionManager } from './connectionManager'
 import { EngineDebugger } from '@src/lib/debugger'
 
 /**

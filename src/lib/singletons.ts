@@ -3,7 +3,7 @@ import { withAPIBaseURL } from '@src/lib/withBaseURL'
 import EditorManager from '@src/editor/manager'
 import { KclManager } from '@src/lang/KclSingleton'
 import CodeManager from '@src/lang/codeManager'
-import { EngineCommandManager } from '@src/lang/std/engineConnection'
+import type { EngineCommandManager } from '@src/lang/std/engineConnection'
 import RustContext from '@src/lib/rustContext'
 import { uuidv4 } from '@src/lib/utils'
 
@@ -40,15 +40,17 @@ import { commandBarMachine } from '@src/machines/commandBarMachine'
 import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
 import { EngineDebugger } from '@src/lib/debugger'
 import { Connection } from '@src/network/connection'
+import { ConnectionManager } from '@src/network/connectionManager'
 
 export const codeManager = new CodeManager()
-export const engineCommandManager = new EngineCommandManager()
+// export const engineCommandManager = new EngineCommandManager()
+export const engineCommandManager = new ConnectionManager()
 export const rustContext = new RustContext(engineCommandManager)
 
 declare global {
   interface Window {
     editorManager: EditorManager
-    engineCommandManager: EngineCommandManager
+    engineCommandManager: ConnectionManager
   }
 }
 
@@ -74,7 +76,6 @@ export const kclManager = new KclManager(engineCommandManager, {
 import { setKclVersion } from '@src/lib/kclVersion'
 import { initPromise } from '@src/lang/wasmUtils'
 import env from '@src/env'
-import { ConnectionManager } from '@src/network/connectionManager'
 initPromise
   .then(() => {
     setKclVersion(kclManager.kclVersion)
@@ -291,6 +292,8 @@ export const useCommandBarState = () => {
   return useSelector(commandBarActor, cmdBarStateSelector)
 }
 
+window.engineStreamActor = engineStreamActor
+
 // Initialize global commands
 commandBarActor.send({
   type: 'Add commands',
@@ -302,14 +305,29 @@ commandBarActor.send({
   },
 })
 
-const cm = new ConnectionManager()
-cm.rustContext = rustContext
-cm.sceneInfra = sceneInfra
-cm.start({
-  width: 256,
-  height: 256,
-  token: env().VITE_KITTYCAD_API_TOKEN,
-})
+
+window.start = () => {
+  window.engineCommandManager.start({
+    width: 500,
+    height: 500,
+    token: env().VITE_KITTYCAD_API_TOKEN,
+    thisNeedsToBeDeletedSetIsStreamReady: () => {
+      console.warn('thisNeedsToBeDeletedSetIsStreamReady')
+    },
+    thisNeedsToBeDeletedSetMediaStream: () => {
+      console.warn('thisNeedsToBeDeletedSetMediaStream')
+    }
+  })
+}
+
+// const cm = new ConnectionManager()
+// cm.rustContext = rustContext
+// cm.sceneInfra = sceneInfra
+// cm.start({
+//   width: 256,
+//   height: 256,
+//   token: env().VITE_KITTYCAD_API_TOKEN,
+// })
 
 // const c = new Connection({
 //   connectionManager: cm,
@@ -317,9 +335,9 @@ cm.start({
 //   token: env().VITE_KITTYCAD_API_TOKEN,
 // })
 
-async function dog() {
-  // c.connect()
-  // c.createWebSocketConnection()
-}
+// async function dog() {
+// c.connect()
+// c.createWebSocketConnection()
+// }
 
 // dog()

@@ -49,6 +49,7 @@ import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { err, reportRejection } from '@src/lib/trap'
 import { deferExecution, uuidv4 } from '@src/lib/utils'
 import type { PlaneVisibilityMap } from '@src/machines/modelingMachine'
+import { ConnectionManager } from '@src/network/connectionManager'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -131,7 +132,7 @@ export class KclManager extends EventTarget {
   // In the future this could be a setting.
   public longExecutionTimeMs = 1000 * 60 * 5
 
-  engineCommandManager: EngineCommandManager
+  engineCommandManager: ConnectionManager
 
   private _isExecutingCallback: (arg: boolean) => void = () => {}
   private _astCallBack: (arg: Node<Program>) => void = () => {}
@@ -271,10 +272,7 @@ export class KclManager extends EventTarget {
     this._wasmInitFailedCallback(wasmInitFailed)
   }
 
-  constructor(
-    engineCommandManager: EngineCommandManager,
-    singletons: Singletons
-  ) {
+  constructor(engineCommandManager: ConnectionManager, singletons: Singletons) {
     super()
     this.engineCommandManager = engineCommandManager
     this.singletons = singletons
@@ -468,7 +466,6 @@ export class KclManager extends EventTarget {
       path: this.singletons.codeManager.currentFilePath || undefined,
       rustContext: this.singletons.rustContext,
     })
-
     // Program was not interrupted, setup the scene
     // Do not send send scene commands if the program was interrupted, go to clean up
     if (!isInterrupted) {
@@ -597,9 +594,9 @@ export class KclManager extends EventTarget {
       // By clearing the AST we indicate to our callers that there was an issue with execution and
       // the pre-execution state should be restored.
       this.clearAst()
+
       return
     }
-
     clearTimeout(this.executionTimeoutId)
 
     // We consider anything taking longer than 5 minutes a long execution.

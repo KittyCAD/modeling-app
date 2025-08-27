@@ -4,7 +4,7 @@ import type { Models } from '@kittycad/lib'
 import type { Connection, IEventListenerTracked } from './connection'
 import { EngineDebugger } from '@src/lib/debugger'
 import { markOnce } from '@src/lib/performance'
-import { ConnectionManager } from './connectionManager'
+import type { ConnectionManager } from './connectionManager'
 
 export function createOnIceCandidate({
   initiateConnectionExclusive,
@@ -190,12 +190,14 @@ export function createOnTrack({
   setMediaStream,
   setWebrtcStatsCollector,
   peerConnection,
+  thisNeedsToBeDeletedSetMediaStream,
 }: {
   setMediaStream: (mediaStream: MediaStream) => void
   setWebrtcStatsCollector: (
     webrtcStatsCollector: () => Promise<ClientMetrics>
   ) => void
   peerConnection: RTCPeerConnection
+  thisNeedsToBeDeletedSetMediaStream: (stream: MediaStream) => void
 }) {
   const onTrack = (event: RTCTrackEvent) => {
     EngineDebugger.addLog({
@@ -210,6 +212,7 @@ export function createOnTrack({
       peerConnection,
     })
     setWebrtcStatsCollector(webrtcStatusCollector)
+    thisNeedsToBeDeletedSetMediaStream(mediaStream)
   }
   return onTrack
 }
@@ -279,6 +282,7 @@ export const createOnDataChannel = ({
   trackListener,
   startPingPong,
   connectionManager,
+  connectionPromiseResolve,
 }: {
   setUnreliableDataChannel: (channel: RTCDataChannel) => void
   dispatchEvent: (event: Event) => boolean
@@ -288,6 +292,7 @@ export const createOnDataChannel = ({
   ) => void
   startPingPong: () => void
   connectionManager: ConnectionManager
+  connectionPromiseResolve: (value: unknown) => void
 }) => {
   const onDataChannel = (event: RTCDataChannelEvent) => {
     // Initialize the event.channel with 4 event listeners
@@ -295,6 +300,7 @@ export const createOnDataChannel = ({
       dispatchEvent,
       startPingPong,
       connectionManager,
+      connectionPromiseResolve,
     })
     const onDataChannelError = createOnDataChannelError()
     const onDataChannelMessage = createOnDataChannelMessage()
@@ -352,10 +358,12 @@ export const createOnDataChannelOpen = ({
   dispatchEvent,
   startPingPong,
   connectionManager,
+  connectionPromiseResolve,
 }: {
   dispatchEvent: (event: Event) => boolean
   startPingPong: () => void
   connectionManager: ConnectionManager
+  connectionPromiseResolve: (value: unknown) => void
 }) => {
   const onDataChannelOpen = (event: Event) => {
     // Start firing off engine commands at this point.
@@ -371,6 +379,7 @@ export const createOnDataChannelOpen = ({
     })
 
     // Lets get that bread
+    // TODO: connectionManager.inSequence = 1
     connectionManager.inSequence = 1
 
     dispatchEvent(
@@ -380,6 +389,7 @@ export const createOnDataChannelOpen = ({
     )
     startPingPong()
     markOnce('code/endInitialEngineConnect')
+    connectionPromiseResolve(true)
   }
   return onDataChannelOpen
 }

@@ -77,17 +77,21 @@ export class Connection extends EventTarget {
   // TODO: offer promise wrapped to track
   // TODo: event listeners to add and clean up
 
+  thisNeedsToBeDeletedSetMediaStream: (stream: MediaStream) => void
   constructor({
     connectionManager,
     url,
     token,
+    thisNeedsToBeDeletedSetMediaStream,
   }: {
     connectionManager: ConnectionManager
     url: string
     token: string
+    thisNeedsToBeDeletedSetMediaStream: (stream: MediaStream) => void
   }) {
     markOnce('code/startInitialEngineConnect')
     super()
+    this.thisNeedsToBeDeletedSetMediaStream = thisNeedsToBeDeletedSetMediaStream
     this.id = uuidv4()
     EngineDebugger.addLog({
       label: 'connection',
@@ -194,6 +198,7 @@ export class Connection extends EventTarget {
       throw new Error('onNetworkStatusReady already exists, you messed up.')
     }
 
+    // TODO: make sync .connect()
     // Once the engine is availabe create a web socket connection
     this.onNetworkStatusReady = () => {
       EngineDebugger.addLog({
@@ -282,8 +287,18 @@ export class Connection extends EventTarget {
     if (!this.peerConnectionPromiseResolve) {
       throw new Error('peerConnectionPromiseResolve is undefined')
     }
+
+    if (!this.connectionPromiseResolve) {
+      throw new Error('connectionPromiseResolve is undefined')
+    }
+
     this.peerConnection = new RTCPeerConnection({
       bundlePolicy: 'max-bundle',
+    })
+    EngineDebugger.addLog({
+      label: 'connection',
+      message: 'RTCPeerConnection',
+      metadata: { id: this.id },
     })
     this.peerConnection.createDataChannel(DATACHANNEL_NAME_UMC)
     this.peerConnectionPromiseResolve(true)
@@ -315,6 +330,8 @@ export class Connection extends EventTarget {
       setMediaStream: this.setMediaStream.bind(this),
       setWebrtcStatsCollector: this.setWebrtcStatsCollector.bind(this),
       peerConnection: this.peerConnection,
+      thisNeedsToBeDeletedSetMediaStream:
+        this.thisNeedsToBeDeletedSetMediaStream,
     })
 
     // Has a callback workflow that will create a unreliabledatachannel
@@ -324,6 +341,7 @@ export class Connection extends EventTarget {
       trackListener: this.trackListener.bind(this),
       startPingPong: this.startPingPong.bind(this),
       connectionManager: this.connectionManager,
+      connectionPromiseResolve: this.connectionPromiseResolve,
     })
 
     // Watch out human! The names of the next couple events are really similar!
@@ -723,7 +741,14 @@ export class Connection extends EventTarget {
     }
 
     // Not connected, don't send anything
-    if (this.websocket?.readyState !== WebSocket.OPEN) return
+    if (this.websocket?.readyState !== WebSocket.OPEN) {
+      EngineDebugger.addLog({
+        label: 'websocket',
+        message: 'readyState is not WebSocket.OPEN',
+        metadata: { id: this.id, readyState: this.websocket?.readyState },
+      })
+      return
+    }
 
     // TODO(paultag): Add in logic to determine the connection state and
     // take actions if needed?
