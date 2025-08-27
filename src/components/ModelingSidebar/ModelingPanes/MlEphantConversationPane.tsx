@@ -76,10 +76,7 @@ export const MlEphantConversationPane = (props: {
       type: MlEphantManagerTransitions.PromptEditModel,
       prompt: requestedPrompt,
       projectForPromptOutput: props.theProject,
-      fileSelectedDuringPrompting: {
-        entry: props.loaderFile,
-        content: props.codeManager.code,
-      },
+      fileSelectedDuringPrompting: props.loaderFile,
       projectFiles,
       selections: props.contextModeling.selectionRanges,
       artifactGraph: props.kclManager.artifactGraph,
