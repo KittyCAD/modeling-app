@@ -185,14 +185,12 @@ export const mlEphantManagerMachine = setup({
   },
   actions: {
     toastError: ({ event }) => {
+      console.error(event)
       if ('output' in event && event.output instanceof Error) {
-        console.error(event.output)
         toast.error(event.output.message)
       } else if ('data' in event && event.data instanceof Error) {
-        console.error(event.data)
         toast.error(event.data.message)
       } else if ('error' in event && event.error instanceof Error) {
-        console.error(event.error)
         toast.error(event.error.message)
       }
     },
