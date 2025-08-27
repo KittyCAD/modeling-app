@@ -1,6 +1,6 @@
 import { markOnce } from '@src/lib/performance'
 import type { ConnectionManager } from '@src/network/connectionManager'
-import type { ClientMetrics } from './utils'
+import type { ClientMetrics, IEventListenerTracked } from './utils'
 import { DATACHANNEL_NAME_UMC, pingIntervalMs } from './utils'
 import {
   createOnConnectionStateChange,
@@ -28,18 +28,6 @@ export interface INewTrackArgs {
   mediaStream: MediaStream
 }
 
-export type EventSource =
-  | 'window'
-  | 'peerConnection'
-  | 'websocket'
-  | 'unreliableDataChannel'
-
-export interface IEventListenerTracked {
-  event: string
-  callback: any
-  type: EventSource
-}
-
 export class Connection extends EventTarget {
   // connection manager?
   connectionManager: ConnectionManager
@@ -56,7 +44,7 @@ export class Connection extends EventTarget {
   private _pingIntervalId: ReturnType<typeof setInterval> | undefined
   timeoutToForceConnectId: ReturnType<typeof setTimeout> | undefined
 
-  private peerConnection: RTCPeerConnection | undefined
+  peerConnection: RTCPeerConnection | undefined
   unreliableDataChannel: RTCDataChannel | undefined
   mediaStream: MediaStream | undefined
   websocket: WebSocket | undefined

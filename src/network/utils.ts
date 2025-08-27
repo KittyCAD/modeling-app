@@ -1,7 +1,15 @@
 import type { Models } from '@kittycad/lib'
+import { Connection } from './connection'
+import { EngineCommand } from '@src/lang/std/artifactGraph'
+import { SourceRange } from '@src/lang/wasm'
 
 // Ping/Pong every 1 second
 export const pingIntervalMs = 1_000
+
+export interface NewTrackArgs {
+  conn: Connection
+  mediaStream: MediaStream
+}
 
 // When unreliable responses are listened, check if it is a highlight type
 export function isHighlightSetEntity_type(
@@ -243,4 +251,35 @@ export enum EngineCommandManagerEvents {
 
   // we're offline
   Offline = 'offline',
+}
+
+export interface UnreliableSubscription<T extends UnreliableResponses['type']> {
+  event: T
+  callback: (data: Extract<UnreliableResponses, { type: T }>) => void
+}
+
+export interface PendingMessage {
+  command: EngineCommand
+  range: SourceRange
+  idToRangeMap: { [key: string]: SourceRange }
+  resolve: (data: [Models['WebSocketResponse_type']]) => void
+  // BOTH resolve and reject get passed back to the rust side which
+  // assumes it is this type! Do not change it!
+  // Format your errors as this type!
+  reject: (reason: [Models['WebSocketResponse_type']]) => void
+  promise: Promise<[Models['WebSocketResponse_type']]>
+  isSceneCommand: boolean
+}
+export type EventSource =
+  | 'window'
+  | 'peerConnection'
+  | 'websocket'
+  | 'unreliableDataChannel'
+  | 'connection'
+  | 'darkModeMatcher'
+
+export interface IEventListenerTracked {
+  event: string
+  callback: any
+  type: EventSource
 }

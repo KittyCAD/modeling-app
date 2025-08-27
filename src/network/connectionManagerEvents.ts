@@ -1,5 +1,12 @@
 import { EngineDebugger } from '@src/lib/debugger'
-import { EngineCommandManagerEvents } from './utils'
+import {
+  EngineCommandManagerEvents,
+  EngineConnectionEvents,
+  IEventListenerTracked,
+  isHighlightSetEntity_type,
+  NewTrackArgs,
+  UnreliableResponses,
+} from './utils'
 import type RustContext from '@src/lib/rustContext'
 import { DeepPartial } from '@src/lib/types'
 import { Configuration } from '@src/lang/wasm'
@@ -157,7 +164,144 @@ export const createOnDarkThemeMediaQueryChange = ({
   return onDarkThemeMediaQueryChange
 }
 
-export const onEngineConnectionStarted = () => {
-  const onEngineConnectionStarted = () => {}
+export const createOnEngineConnectionClosed = () => {
+  const onEngineConnectionClosed = () => {
+    EngineDebugger.addLog({
+      label: 'onEngineConnectionClosed',
+      message: 'stream is not ready. closing.',
+    })
+  }
+  return onEngineConnectionClosed
+}
+
+export const createOnEngineConnectionStarted = ({
+  peerConnection,
+  getUnreliableSubscriptions,
+  setInSequence,
+  getInSequence,
+  websocket,
+  handleMessage,
+  connection,
+  trackListener,
+}: {
+  peerConnection: RTCPeerConnection
+  getUnreliableSubscriptions: () => {
+    [event: string]: {
+      [localUnsubscribeId: string]: (a: any) => void
+    }
+  }
+  setInSequence: (sequence: number) => void
+  getInSequence: () => number
+  websocket: WebSocket
+  handleMessage: (event: MessageEvent) => void
+  connection: Connection
+  trackListener: (
+    name: string,
+    eventListenerTracked: IEventListenerTracked
+  ) => void
+}) => {
+  // TODO: connection.ts may not send the detail: connection back within this event handler.
+  // Do not use the detail: connection yet, use the one from the connectionManager
+  // This is the second datachannel initialized on the peerConnection. One is already
+  // attached when the createWebsocket() workflow is triggered before this code.
+  const onEngineConnectionStarted = () => {
+    // When the EngineConnection starts a connection, we want to register
+    // callbacks into the WebSocket/PeerConnection.
+    EngineDebugger.addLog({
+      label: 'onEngineConnectionStarted',
+      message: 'adding datachannel on peerConnection',
+    })
+
+    const onDataChannel = (event: RTCDataChannelEvent) => {
+      const unreliableDataChannel = event.channel
+
+      EngineDebugger.addLog({
+        label: 'onEngineConnectionStarted',
+        message: 'adding message on unreliableDataChannel',
+      })
+      // TODO: This event listener would need to be cleaned up if the connection is destroyed
+      unreliableDataChannel.addEventListener(
+        'message',
+        (event: MessageEvent) => {
+          const result: UnreliableResponses = JSON.parse(event.data)
+          Object.values(
+            getUnreliableSubscriptions()[result.type] || {}
+          ).forEach((callback) => {
+            // TODO: There is only one response that uses the unreliable channel atm,
+            // highlight_set_entity, if there are more it's likely they will all have the same
+            // sequence logic, but I'm not sure if we use a single global sequence or a sequence
+            // per unreliable subscription.
+            const data = result.data
+            if (isHighlightSetEntity_type(data)) {
+              if (
+                data.sequence !== undefined &&
+                data.sequence > getInSequence()
+              ) {
+                setInSequence(data.sequence)
+                callback(result)
+              }
+            }
+          })
+        }
+      )
+    }
+    trackListener('datachannel', {
+      event: 'datachannel',
+      callback: onDataChannel,
+      type: 'peerConnection',
+    })
+    // TODO: This event listener would need to be cleaned up if the connection is destroyed
+    peerConnection.addEventListener('datachannel', onDataChannel)
+
+    EngineDebugger.addLog({
+      label: 'onEngineConnectionStarted',
+      message: 'adding message on websocket',
+    })
+
+    const onMessage = (event: MessageEvent) => {
+      handleMessage(event)
+    }
+    trackListener('message', {
+      event: 'message',
+      callback: onMessage,
+      type: 'websocket',
+    })
+    websocket.addEventListener('message', onMessage)
+
+    const onVideoTrackMute = () => {
+      console.warn('video track mute - potentially lost stream for a moment')
+      EngineDebugger.addLog({
+        label: 'onVideoTrackMute',
+        message: 'video track mute - potentially lost stream for a moment',
+      })
+    }
+
+    // Gotcha: Why are we adding a new NewTrack listener again? It is already on the peerConnection
+    const onEngineConnectionNewTrack = ({
+      detail: { mediaStream },
+    }: CustomEvent<NewTrackArgs>) => {
+      // TODO: Adding an event listener that is not properly cleaned up.
+      EngineDebugger.addLog({
+        label: 'onEngineConnectionNewTrack',
+        message: 'adding mute on mediaStream.getVideoTracks()[0]',
+      })
+      mediaStream.getVideoTracks()[0].addEventListener('mute', onVideoTrackMute)
+    }
+
+    trackListener(EngineConnectionEvents.NewTrack, {
+      event: EngineConnectionEvents.NewTrack,
+      callback: onEngineConnectionNewTrack,
+      type: 'connection',
+    })
+    // Yikes, thanks for the massive class interface as EventListener it is
+    connection.addEventListener(
+      EngineConnectionEvents.NewTrack,
+      onEngineConnectionNewTrack as EventListener
+    )
+    // Start listening!
+    // TODO: Load bearing entry point!
+    connection.connect()
+  }
+  // TODO: Multiple event listeners on dependencies of member variables are not cleaned up
   return onEngineConnectionStarted
 }
