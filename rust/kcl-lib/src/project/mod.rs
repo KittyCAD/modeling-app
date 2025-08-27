@@ -159,3 +159,12 @@ impl LifecycleApi for ProjectManager {
         .await
     }
 }
+
+// Dummy struct to ensure we export the types from the API crate :-(
+#[derive(ts_rs::TS, serde::Serialize, serde::Deserialize)]
+#[ts(export)]
+pub struct IgnoreMe {
+    pub a: kcl_api::Error,
+    pub b: kcl_api::SceneGraphDelta,
+    pub c: kcl_api::File,
+}

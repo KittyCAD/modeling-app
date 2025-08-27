@@ -1,8 +1,11 @@
 //! An API for controlling the KCL interpreter from the frontend.
+
 #![allow(async_fn_in_trait)]
 
 use kcl_error::SourceRange;
 use serde::{Deserialize, Serialize};
+
+pub mod sketch;
 
 pub trait LifecycleApi {
     async fn open_project(&self, project: ProjectId, files: Vec<File>, open_file: FileId) -> Result<()>;
@@ -12,26 +15,6 @@ pub trait LifecycleApi {
     async fn update_file(&self, project: ProjectId, file: FileId, text: String) -> Result<()>;
     async fn switch_file(&self, project: ProjectId, file: FileId) -> Result<()>;
     async fn refresh(&self, project: ProjectId) -> Result<()>;
-}
-
-pub trait SketchApi {
-    async fn new_sketch(
-        &self,
-        project: ProjectId,
-        file: FileId,
-        version: Version,
-        args: SketchArgs,
-    ) -> Result<(SourceDelta, SceneGraphDelta, ObjectId)>;
-
-    async fn edit_sketch(
-        &self,
-        project: ProjectId,
-        file: FileId,
-        version: Version,
-        sketch: ObjectId,
-    ) -> Result<SceneGraphDelta>;
-
-    async fn exit_sketch(&self, sketch: ObjectId) -> Result<SceneGraph>;
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
@@ -114,23 +97,13 @@ pub struct Object {
     pub source: SourceRef,
 }
 
+#[allow(clippy::large_enum_variant)]
 #[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
 pub enum ObjectKind {
-    Sketch(Sketch),
-    Segment,
+    Sketch(crate::sketch::Sketch),
+    Segment(crate::sketch::Segment),
     Constraint,
     Sweep,
-}
-
-#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
-pub struct Sketch {
-    pub args: SketchArgs,
-    pub items: Vec<ObjectId>,
-}
-
-#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
-pub struct SketchArgs {
-    pub on: Plane,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
@@ -145,7 +118,49 @@ pub enum SourceRef {
     BackTrace(Vec<SourceRange>),
 }
 
+pub trait Kind: std::fmt::Debug + Clone + ts_rs::TS {}
+
 #[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export)]
+pub struct Number {
+    value: f64,
+    units: NumericSuffix,
+}
+
+impl Kind for Number {}
+
+#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export)]
+pub enum Expr {
+    Number(Number),
+    Var(Number),
+    Variable(String),
+}
+
+impl Kind for Expr {}
+
+// TODO share with kcl-lib
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize, ts_rs::TS)]
+#[repr(u32)]
+#[ts(export)]
+pub enum NumericSuffix {
+    None,
+    Count,
+    Length,
+    Angle,
+    Mm,
+    Cm,
+    M,
+    Inch,
+    Ft,
+    Yd,
+    Deg,
+    Rad,
+    Unknown,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export)]
 pub struct Error {
     pub msg: String,
 }
