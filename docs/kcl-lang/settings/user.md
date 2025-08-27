@@ -140,7 +140,7 @@ Toggle touch controls for 3D view navigation
 
 ##### use_new_sketch_mode
 
-Toggle new sketch mode implementation (Dev only)
+Toggle new sketch mode implementation (pre-production only)
 
 
 **Default:** None
