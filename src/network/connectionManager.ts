@@ -1,18 +1,34 @@
 import { SettingsViaQueryString } from '@src/lib/settings/settingsTypes'
 import { Connection } from './connection'
-import { Themes } from '@src/lib/theme'
+import {
+  darkModeMatcher,
+  getOppositeTheme,
+  getThemeColorForEngine,
+  Themes,
+} from '@src/lib/theme'
 import { withWebSocketURL } from '@src/lib/withBaseURL'
 import { EngineCommandManagerEvents, EngineConnectionEvents } from './utils'
 import {
+  createOnDarkThemeMediaQueryChange,
+  createOnEngineConnectionOpened,
   createOnEngineConnectionRestartRequest,
   createOnEngineOffline,
 } from './connectionManagerEvents'
 import type RustContext from '@src/lib/rustContext'
+import { uuidv4 } from '@src/lib/utils'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import { jsAppSettings } from '@src/lib/settings/settingsUtils'
+import CodeManager from '@src/lang/codeManager'
 
 export class ConnectionManager extends EventTarget {
   started: boolean
+  _camControlsCameraChange = () => {}
 
   connection: Connection | undefined
+  sceneInfra: SceneInfra | undefined
+  codeManager: CodeManager | undefined
+
+  // Circular dependency that is why it can be undefined
   rustContext: RustContext | undefined
 
   streamDimensions = {
@@ -40,9 +56,13 @@ export class ConnectionManager extends EventTarget {
     }
   }
 
+  set camControlsCameraChange(cb: () => void) {
+    this._camControlsCameraChange = cb
+  }
+
   // I guess this in the entry point
   // Don't initialize a different set of default settings, what is the point!
-  start({
+  async start({
     settings,
     width,
     height,
@@ -72,6 +92,19 @@ export class ConnectionManager extends EventTarget {
 
     if (height <= 0) {
       throw new Error(`height is <=0, ${height}`)
+    }
+
+    // Make sure dependencies exist during runtime otherwise crash!
+    if (!this.rustContext) {
+      throw new Error('rustContext is undefined')
+    }
+    1
+    if (!this.sceneInfra) {
+      throw new Error('sceneInfra is undefined')
+    }
+
+    if (settings) {
+      this.settings = settings
     }
 
     this.streamDimensions = {
@@ -109,6 +142,20 @@ export class ConnectionManager extends EventTarget {
       dispatchEvent: this.dispatchEvent.bind(this),
     })
 
+    const onEngineConnectionOpened = createOnEngineConnectionOpened({
+      rustContext: this.rustContext,
+      settings: this.settings,
+      jsAppSettings: await jsAppSettings(),
+      path: this.codeManager?.currentFilePath || '',
+      sendSceneCommand: this.sendSceneCommand.bind(this),
+      setTheme: this.setTheme.bind(this),
+      listenToDarkModeMatcher: this.listenToDarkModeMatcher.bind(this),
+      // Don't think this needs the bind because it is an external set function for the callback
+      camControlsCameraChange: this._camControlsCameraChange,
+      sceneInfra: this.sceneInfra,
+      connection: this.connection,
+    })
+
     this.connection.addEventListener(
       EngineConnectionEvents.RestartRequest,
       onEngineConnetionRestartRequest
@@ -117,8 +164,12 @@ export class ConnectionManager extends EventTarget {
       EngineConnectionEvents.Offline,
       onEngineOffline
     )
+    this.connection.addEventListener(
+      EngineConnectionEvents.Opened,
+      onEngineConnectionOpened
+    )
 
-    // TODO: There are 2 listeners above that would need to be removed if this class is destroyed or restarted.
+    // TODO: There are N listeners above that would need to be removed if this class is destroyed or restarted.
   }
 
   generateWebsocketURL() {
@@ -131,4 +182,40 @@ export class ConnectionManager extends EventTarget {
     )
     return url
   }
+
+  // Set the engine's theme
+  async setTheme(theme: Themes) {
+    // Set the stream background color
+    // This takes RGBA values from 0-1
+    // So we convert from the conventional 0-255 found in Figma
+    await this.sendSceneCommand({
+      cmd_id: uuidv4(),
+      type: 'modeling_cmd_req',
+      cmd: {
+        type: 'set_background_color',
+        color: getThemeColorForEngine(theme),
+      },
+    })
+
+    // Sets the default line colors
+    const opposingTheme = getOppositeTheme(theme)
+    await this.sendSceneCommand({
+      cmd_id: uuidv4(),
+      type: 'modeling_cmd_req',
+      cmd: {
+        type: 'set_default_system_properties',
+        color: getThemeColorForEngine(opposingTheme),
+      },
+    })
+  }
+
+  listenToDarkModeMatcher() {
+    // TODO: Keep track of event listener
+    const onDarkThemeMediaQueryChange = createOnDarkThemeMediaQueryChange({
+      setTheme: this.setTheme.bind(this),
+    })
+    darkModeMatcher?.addEventListener('change', onDarkThemeMediaQueryChange)
+  }
+
+  sendSceneCommand() {}
 }
