@@ -1,5 +1,4 @@
 import { useRef, useEffect } from 'react'
-import env from '@src/env'
 
 import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
 import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
@@ -28,6 +27,7 @@ import { Themes } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
 import { isEnumMember } from '@src/lib/types'
 import { capitaliseFC, isArray, toSync } from '@src/lib/utils'
+import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 
 /**
  * A setting that can be set at the user or project level
@@ -476,7 +476,8 @@ export function createSettings() {
        */
       useNewSketchMode: new Setting<boolean>({
         hideOnLevel: 'project',
-        hideOnPlatform: env().NODE_ENV === 'development' ? undefined : 'both', // Only show in dev mode
+        // Don't show in prod, consider switching to use AdamS's endpoint https://github.com/KittyCAD/common/pull/1704
+        hideOnPlatform: IS_STAGING_OR_DEBUG ? undefined : 'both',
         defaultValue: false,
         description: 'Use the new sketch mode implementation (Dev only)',
         validate: (v) => typeof v === 'boolean',
