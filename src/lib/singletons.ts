@@ -305,7 +305,6 @@ commandBarActor.send({
   },
 })
 
-
 window.start = () => {
   window.engineCommandManager.start({
     width: 500,
@@ -316,7 +315,7 @@ window.start = () => {
     },
     thisNeedsToBeDeletedSetMediaStream: () => {
       console.warn('thisNeedsToBeDeletedSetMediaStream')
-    }
+    },
   })
 }
 

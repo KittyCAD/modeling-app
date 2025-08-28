@@ -324,13 +324,12 @@ export class ConnectionManager extends EventTarget {
       EngineConnectionEvents.ConnectionStarted,
       onEngineConnectionStarted
     )
-    
+
     this.connection.dispatchEvent(
       new CustomEvent(EngineConnectionEvents.ConnectionStarted, {
         // detail: this,
       })
     )
-
   }
 
   generateWebsocketURL() {
@@ -504,7 +503,7 @@ export class ConnectionManager extends EventTarget {
     if (!this.connection) {
       throw new Error('sendCommand - this.connection is undefined')
     }
-    
+
     const { promise, resolve, reject } = promiseFactory<any>()
     this.pendingCommands[id] = {
       resolve,
@@ -699,11 +698,10 @@ export class ConnectionManager extends EventTarget {
 
   // TODO: What workflow triggers this?
   async startFromWasm(token: string): Promise<void> {
-      EngineDebugger.addLog({
-        label: 'connectionManager',
-        message:
-          'startFromWasm',
-      })
+    EngineDebugger.addLog({
+      label: 'connectionManager',
+      message: 'startFromWasm',
+    })
     return await this.start({
       token,
       width: 256,
@@ -940,7 +938,6 @@ export class ConnectionManager extends EventTarget {
     commandStr: string,
     idToRangeStr: string
   ): Promise<Uint8Array | void> {
-
     if (this.connection === undefined) {
       return Promise.reject(new Error('this.connection is undefined'))
     }
