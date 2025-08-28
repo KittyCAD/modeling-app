@@ -37,6 +37,7 @@ export function createOnIceCandidate({
         usernameFragment: event.candidate.usernameFragment || undefined,
       },
     })
+    
     EngineDebugger.addLog({
       label: 'onIceCandidate',
       message: 'send(trickle_ice)',

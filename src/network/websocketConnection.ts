@@ -5,7 +5,6 @@ import {
   EngineConnectionEvents,
   toRTCSessionDescriptionInit,
 } from './utils'
-import type { ConnectionManager } from './connectionManager'
 import { EngineDebugger } from '@src/lib/debugger'
 
 /**
@@ -70,7 +69,6 @@ export const createOnWebSocketError = () => {
 }
 
 export const createOnWebSocketMessage = ({
-  connectionManager,
   disconnectAll,
   setPong,
   dispatchEvent,
@@ -83,7 +81,6 @@ export const createOnWebSocketMessage = ({
   addIceCandidate,
   webrtcStatsCollector,
 }: {
-  connectionManager: ConnectionManager
   disconnectAll: () => void
   setPong: (pong: number) => void
   dispatchEvent: (event: Event) => boolean
@@ -118,14 +115,8 @@ export const createOnWebSocketMessage = ({
         })
         .join('\n')
       if (message.request_id) {
-        const pendingCommand =
-          connectionManager.pendingCommands[message.request_id]
         console.error(
-          `Error in response to request ${message.request_id}:\n${errorsString}\n\nPending command:\n${JSON.stringify(
-            pendingCommand,
-            null,
-            2
-          )}`
+          `Error in response to request ${message.request_id}:\n${errorsString}\n}`
         )
       } else {
         /**

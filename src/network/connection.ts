@@ -113,9 +113,8 @@ export class Connection extends EventTarget {
     return this._pingIntervalId
   }
 
-  /***
-   * Do not start this until we are EngineConnectionStateType.ConnectionEstablished
-   * lifecycle that needs to start and stop.
+  /**
+   * Starts when onDataChannelOpen is ready in the peerConnection
    */
   startPingPong() {
     EngineDebugger.addLog({
