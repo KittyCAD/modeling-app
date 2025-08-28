@@ -413,8 +413,6 @@ export class Connection extends EventTarget {
     })
     this.peerConnection.addEventListener('datachannel', onDataChannel)
 
-    // TODO: Save off all event listener functions and remove them in clean up
-    // recusively for any nested classes with event listener callbacks as well
     return this.peerConnection
   }
 
@@ -704,6 +702,21 @@ export class Connection extends EventTarget {
   unreliableSend(message: Models['WebSocketRequest_type']) {
     if (!this.unreliableDataChannel) {
       throw new Error('race condition my guy, unreliableSend')
+    }
+
+    if (this.unreliableDataChannel.readyState === 'connecting') {
+      throw new Error(
+        'sending message while unreliableDataChannel is connecting'
+      )
+    }
+
+    if (this.unreliableDataChannel.readyState === 'closing') {
+      throw new Error('sending message while unreliableDataChannel is closing')
+    }
+
+    if (this.unreliableDataChannel.readyState === 'closed') {
+      console.warn('unreliableDataChannel is closed, rejecting the send.')
+      return
     }
 
     // TODO(paultag): Add in logic to determine the connection state and
