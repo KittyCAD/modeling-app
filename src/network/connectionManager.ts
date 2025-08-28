@@ -1,5 +1,5 @@
 import type { SettingsViaQueryString } from '@src/lib/settings/settingsTypes'
-import { Connection } from './connection'
+import { Connection } from '@src/network/connection'
 import {
   darkModeMatcher,
   getOppositeTheme,
@@ -14,12 +14,12 @@ import type {
   Subscription,
   UnreliableResponses,
   UnreliableSubscription,
-} from './utils'
+} from '@src/network/utils'
 import {
   EngineCommandManagerEvents,
   EngineConnectionEvents,
   promiseFactory,
-} from './utils'
+} from '@src/network/utils'
 import {
   createOnDarkThemeMediaQueryChange,
   createOnEngineConnectionClosed,
@@ -27,7 +27,7 @@ import {
   createOnEngineConnectionRestartRequest,
   createOnEngineConnectionStarted,
   createOnEngineOffline,
-} from './connectionManagerEvents'
+} from '@src/network/connectionManagerEvents'
 import type RustContext from '@src/lib/rustContext'
 import { binaryToUuid, isArray, uuidv4 } from '@src/lib/utils'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
@@ -152,33 +152,35 @@ export class ConnectionManager extends EventTarget {
       message: 'start',
     })
     if (this.started) {
-      throw new Error(
-        'You tried to start the engine again, why are you starting it? call tearDown first.'
+      return Promise.reject(
+        new Error(
+          'You tried to start the engine again, why are you starting it? call tearDown first.'
+        )
       )
     }
     this.started = true
 
     if (this.connection) {
-      throw new Error(
-        'You tried to make a new connection. You already have one!'
+      return Promise.reject(
+        new Error('You tried to make a new connection. You already have one!')
       )
     }
 
     if (width <= 0) {
-      throw new Error(`width is <=0, ${width}`)
+      return Promise.reject(new Error(`width is <=0, ${width}`))
     }
 
     if (height <= 0) {
-      throw new Error(`height is <=0, ${height}`)
+      return Promise.reject(new Error(`height is <=0, ${height}`))
     }
 
     // Make sure dependencies exist during runtime otherwise crash!
     if (!this.rustContext) {
-      throw new Error('rustContext is undefined')
+      return Promise.reject(new Error('rustContext is undefined'))
     }
     1
     if (!this.sceneInfra) {
-      throw new Error('sceneInfra is undefined')
+      return Promise.reject(new Error('sceneInfra is undefined'))
     }
 
     if (settings) {
@@ -205,10 +207,12 @@ export class ConnectionManager extends EventTarget {
     this.inSequence = 1
 
     if (!this.connection.peerConnection) {
-      throw new Error('this.connection.peerConnection is undefined')
+      return Promise.reject(
+        new Error('this.connection.peerConnection is undefined')
+      )
     }
     if (!this.connection.websocket) {
-      throw new Error('this.connection.websocket is undefined')
+      return Promise.reject(new Error('this.connection.websocket is undefined'))
     }
     // When is this.connection.connect() called?
     // onEngineConnectionStarted callback!
@@ -500,7 +504,9 @@ export class ConnectionManager extends EventTarget {
     isSceneCommand = false
   ): Promise<[Models['WebSocketResponse_type']]> {
     if (!this.connection) {
-      throw new Error('sendCommand - this.connection is undefined')
+      return Promise.reject(
+        new Error('sendCommand - this.connection is undefined')
+      )
     }
 
     const { promise, resolve, reject } = promiseFactory<any>()
@@ -521,7 +527,8 @@ export class ConnectionManager extends EventTarget {
   // this.connection.websocket.addEventListener('message') handler
   handleMessage(event: MessageEvent) {
     if (!this.rustContext) {
-      throw new Error('rustContext is undefined')
+      console.error('rustContext is undefined not processing event:', event)
+      return
     }
 
     let message: Models['WebSocketResponse_type'] | null = null
@@ -725,7 +732,7 @@ export class ConnectionManager extends EventTarget {
   }
 
   handleResize() {
-    throw new Error('handleResize unimplemented, why are you doing this.')
+    console.error('NO OP, please implemented')
   }
 
   tearDown(opts?: { idleMode: boolean }) {
@@ -739,9 +746,10 @@ export class ConnectionManager extends EventTarget {
     }
 
     if (!this.connection) {
-      throw new Error(
+      console.error(
         'unable to tear down connectionManager, connection is missing'
       )
+      return
     }
 
     this.idleMode = opts?.idleMode ?? false
@@ -809,9 +817,10 @@ export class ConnectionManager extends EventTarget {
   // removal during cleanUp. It can help prevent multiple runtime initializations of events.
   trackListener(name: string, eventListenerTracked: IEventListenerTracked) {
     if (this.allEventListeners.has(name)) {
-      throw new Error(
+      console.error(
         `You are trying to track something twice, good luck! you're crashing. ${name}`
       )
+      return
     }
 
     this.allEventListeners.set(name, eventListenerTracked)
@@ -826,23 +835,27 @@ export class ConnectionManager extends EventTarget {
         const type = eventListenerTracked.type
 
         if (!this.connection) {
-          throw new Error('unable to remove event listener on this.connection')
+          console.error('unable to remove event listener on this.connection')
+          return
         }
 
         if (!this.connection.peerConnection) {
-          throw new Error(
+          console.error(
             'unable to remove event listener on this.connection.peerConnection'
           )
+          return
         }
 
         if (!this.connection.websocket) {
-          throw new Error(
+          console.error(
             'unable to remove event listener on this.connection.websocket'
           )
+          return
         }
 
         if (!darkModeMatcher) {
-          throw new Error('unable to remove event listener on darkModeMatcher')
+          console.error('unable to remove event listener on darkModeMatcher')
+          return
         }
 
         if (type === 'connection') {
@@ -1020,7 +1033,7 @@ export class ConnectionManager extends EventTarget {
 
   async setPlaneHidden(id: string, hidden: boolean) {
     if (this.connection === undefined) {
-      throw new Error('setPlaneHidden - this.connection is undefined')
+      Promise.reject(new Error('setPlaneHidden - this.connection is undefined'))
     }
 
     // TODO: Can't send commands if there's no connection

@@ -3,12 +3,12 @@ import type {
   IEventListenerTracked,
   NewTrackArgs,
   UnreliableResponses,
-} from './utils'
+} from '@src/network/utils'
 import {
   EngineCommandManagerEvents,
   EngineConnectionEvents,
   isHighlightSetEntity_type,
-} from './utils'
+} from '@src/network/utils'
 import type RustContext from '@src/lib/rustContext'
 import type { DeepPartial } from '@src/lib/types'
 import type { Configuration } from '@src/lang/wasm'
@@ -19,7 +19,7 @@ import type { Models } from '@kittycad/lib/dist/types/src'
 import { Themes } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import type { Connection } from './connection'
+import type { Connection } from '@src/network/connection'
 
 export const createOnEngineConnectionRestartRequest = ({
   dispatchEvent,
@@ -283,15 +283,14 @@ export const createOnEngineConnectionStarted = ({
     const onEngineConnectionNewTrack = ({
       detail: { mediaStream },
     }: CustomEvent<NewTrackArgs>) => {
-      // TODO: Adding an event listener that is not properly cleaned up.
       EngineDebugger.addLog({
         label: 'onEngineConnectionNewTrack',
         message: 'adding mute on mediaStream.getVideoTracks()[0]',
+        metadata: {
+          mediaStream,
+        },
       })
       mediaStream.getVideoTracks()[0].addEventListener('mute', onVideoTrackMute)
-      if (!mediaStream) {
-        throw new Error('no media stream found, this is bad.')
-      }
     }
 
     trackListener(EngineConnectionEvents.NewTrack, {
