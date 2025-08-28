@@ -42,6 +42,7 @@ export const ConnectionStream = (props: {
     // video wrapper ref
     if (!didInit) {
       didInit = true
+
       if (!props.authToken) {
         throw new Error('authToken is not ready. Good luck!')
       }

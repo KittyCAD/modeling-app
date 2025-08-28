@@ -153,7 +153,7 @@ export class ConnectionManager extends EventTarget {
     })
     if (this.started) {
       throw new Error(
-        'You tried to start the engine again, why are you starting it?'
+        'You tried to start the engine again, why are you starting it? call tearDown first.'
       )
     }
     this.started = true
@@ -771,6 +771,9 @@ export class ConnectionManager extends EventTarget {
     // It is possible all connections never even started, but we still want
     // to signal to the whole application we are "offline".
     this.dispatchEvent(new CustomEvent(EngineCommandManagerEvents.Offline, {}))
+
+    // Allow for restart!
+    this.started = false
   }
 
   offline() {
