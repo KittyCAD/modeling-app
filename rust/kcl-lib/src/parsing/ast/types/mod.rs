@@ -1281,6 +1281,9 @@ pub struct SketchBlock {
     pub arguments: Vec<LabeledArg>,
     pub body: Node<Block>,
 
+    #[serde(default, skip_serializing_if = "NonCodeMeta::is_empty")]
+    pub non_code_meta: NonCodeMeta,
+
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[ts(optional)]
     pub digest: Option<Digest>,

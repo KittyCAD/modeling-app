@@ -3284,6 +3284,7 @@ fn fn_call_or_sketch_block(i: &mut TokenSlice) -> ModalResult<Expr> {
                 unlabeled,
                 arguments,
                 body: *block,
+                non_code_meta,
                 digest: None,
             },
         })));
