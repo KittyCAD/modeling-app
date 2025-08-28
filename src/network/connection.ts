@@ -326,6 +326,18 @@ export class Connection extends EventTarget {
     this.peerConnection.createDataChannel(DATACHANNEL_NAME_UMC)
     this.deferredPeerConnection.resolve(true)
 
+    this.dispatchEvent(
+      new CustomEvent(EngineConnectionEvents.ConnectionStateChanged, {
+        detail: {
+          type: EngineConnectionStateType.Connecting,
+          value: {
+            type: ConnectingType.DataChannelRequested,
+            value: DATACHANNEL_NAME_UMC,
+          },
+        },
+      })
+    )
+
     EngineDebugger.addLog({
       label: 'connection',
       message: 'createDataChannel',
@@ -357,6 +369,7 @@ export class Connection extends EventTarget {
       peerConnection: this.peerConnection,
       deferredMediaStreamAndWebrtcStatsCollectorResolve:
         this.deferredMediaStreamAndWebrtcStatsCollector.resolve,
+      dispatchEvent: this.dispatchEvent.bind(this),
     })
 
     // Has a callback workflow that will create a unreliabledatachannel

@@ -203,6 +203,7 @@ export function createOnTrack({
   setWebrtcStatsCollector,
   peerConnection,
   deferredMediaStreamAndWebrtcStatsCollectorResolve,
+  dispatchEvent,
 }: {
   setMediaStream: (mediaStream: MediaStream) => void
   setWebrtcStatsCollector: (
@@ -210,6 +211,7 @@ export function createOnTrack({
   ) => void
   peerConnection: RTCPeerConnection
   deferredMediaStreamAndWebrtcStatsCollectorResolve: (value: unknown) => void
+  dispatchEvent: (event: Event) => boolean
 }) {
   const onTrack = (event: RTCTrackEvent) => {
     EngineDebugger.addLog({
@@ -225,6 +227,16 @@ export function createOnTrack({
     })
     setWebrtcStatsCollector(webrtcStatusCollector)
     deferredMediaStreamAndWebrtcStatsCollectorResolve(true)
+    dispatchEvent(
+      new CustomEvent(EngineConnectionEvents.ConnectionStateChanged, {
+        detail: {
+          type: EngineConnectionStateType.Connecting,
+          value: {
+            type: ConnectingType.TrackReceived,
+          },
+        },
+      })
+    )
   }
   return onTrack
 }
@@ -312,6 +324,17 @@ export const createOnDataChannel = ({
   handleOnDataChannelMessage: (event: MessageEvent<any>) => void
 }) => {
   const onDataChannel = (event: RTCDataChannelEvent) => {
+    dispatchEvent(
+      new CustomEvent(EngineConnectionEvents.ConnectionStateChanged, {
+        detail: {
+          type: EngineConnectionStateType.Connecting,
+          value: {
+            type: ConnectingType.DataChannelConnecting,
+            value: event.channel.label,
+          },
+        },
+      })
+    )
     // Initialize the event.channel with 4 event listeners
     const onDataChannelOpen = createOnDataChannelOpen({
       dispatchEvent,
@@ -387,6 +410,16 @@ export const createOnDataChannelOpen = ({
     // but DataChannel can offer some benefits like speed,
     // and it's nice to say everything's connected before interacting
     // with the server.
+    dispatchEvent(
+      new CustomEvent(EngineConnectionEvents.ConnectionStateChanged, {
+        detail: {
+          type: EngineConnectionStateType.Connecting,
+          value: {
+            type: ConnectingType.DataChannelEstablished,
+          },
+        },
+      })
+    )
 
     EngineDebugger.addLog({
       label: 'onDataChannelOpen',
