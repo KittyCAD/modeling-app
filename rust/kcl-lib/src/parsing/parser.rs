@@ -3248,11 +3248,13 @@ fn labelled_fn_call(i: &mut TokenSlice) -> ModalResult<Expr> {
     }
 }
 
+fn is_callee_sketch_block(callee: &Name) -> bool {
+    callee.name.name == SketchBlock::CALLEE_NAME && !callee.abs_path && callee.path.is_empty()
+}
+
 fn fn_call_or_sketch_block(i: &mut TokenSlice) -> ModalResult<Expr> {
     let fn_call = fn_call_kw.parse_next(i)?;
-    if fn_call.callee.name.name == SketchBlock::CALLEE_NAME
-        && !fn_call.callee.abs_path
-        && fn_call.callee.path.is_empty()
+    if is_callee_sketch_block(&fn_call.callee)
         && let Node {
             start,
             end,
@@ -3320,13 +3322,14 @@ fn fn_call_kw(i: &mut TokenSlice) -> ModalResult<Node<CallExpressionKw>> {
         if early_close.is_ok() {
             ignore_whitespace(i);
             let end = close_paren.parse_next(i)?.end;
-            let (block, end) = if peek((opt(whitespace), open_brace)).parse_next(i).is_ok() {
-                ignore_whitespace(i);
-                let (_, body, close) = parse_block(i)?;
-                (Some(Box::new(body)), close.end)
-            } else {
-                (None, end)
-            };
+            let (block, end) =
+                if is_callee_sketch_block(&fn_name) && peek((opt(whitespace), open_brace)).parse_next(i).is_ok() {
+                    ignore_whitespace(i);
+                    let (_, body, close) = parse_block(i)?;
+                    (Some(Box::new(body)), close.end)
+                } else {
+                    (None, end)
+                };
             let result = Node::new_node(
                 fn_name.start,
                 end,
@@ -3452,7 +3455,8 @@ fn fn_call_kw(i: &mut TokenSlice) -> ModalResult<Node<CallExpressionKw>> {
             msg,
         ));
     }
-    let (block, end) = if peek((opt(whitespace), open_brace)).parse_next(i).is_ok() {
+    let (block, end) = if is_callee_sketch_block(&fn_name) && peek((opt(whitespace), open_brace)).parse_next(i).is_ok()
+    {
         ignore_whitespace(i);
         let (_, body, close) = parse_block(i)?;
         (Some(Box::new(body)), close.end)
